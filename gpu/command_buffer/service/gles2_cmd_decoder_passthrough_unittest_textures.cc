@@ -4,9 +4,13 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
@@ -747,6 +751,449 @@ TEST_F(GLES2DecoderPassthroughTest,
   // Restore the decoder's surface for teardown.
   ASSERT_TRUE(decoder_context->MakeCurrent(decoder_surface.get()));
   shared_image.reset();
+}
+
+// Tests that shared image textures can only be read through GL commands while
+// a BeginSharedImageAccessDirectCHROMIUM access is active on them.
+class GLES2DecoderPassthroughSharedImageReadAccessTest
+    : public GLES2DecoderPassthroughTestBase,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  GLES2DecoderPassthroughSharedImageReadAccessTest()
+      : GLES2DecoderPassthroughTestBase(GetParam()) {}
+
+  void SetUp() override {
+    GLES2DecoderPassthroughTestBase::SetUp();
+
+    mailbox_ = Mailbox::Generate();
+    shared_image_ = GetSharedImageManager()->Register(
+        AllocateTextureAndCreateSharedImage(
+            mailbox_, viz::SinglePlaneFormat::kRGBA_8888,
+            gfx::Size(kWidth, kHeight), gfx::ColorSpace(),
+            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+            {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE}),
+        &memory_tracker_);
+    CreateSharedImageTexture(kSharedImageClientId);
+
+    // A regular texture used as the destination of copies.
+    GenHelper<cmds::GenTexturesImmediate>(kClientTextureId);
+    DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
+    DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kWidth, kHeight, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, 0, 0);
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  void TearDown() override {
+    DoDeleteTexture(kClientTextureId);
+    DoDeleteTexture(kSharedImageClientId);
+    shared_image_.reset();
+    GLES2DecoderPassthroughTestBase::TearDown();
+  }
+
+ protected:
+  static constexpr GLsizei kWidth = 4;
+  static constexpr GLsizei kHeight = 4;
+  static constexpr GLuint kSharedImageClientId = kNewClientId;
+  static constexpr GLuint kSecondSharedImageClientId = kNewClientId + 1;
+  static constexpr GLuint kDrawFramebufferClientId = kClientFramebufferId + 1;
+  static constexpr uint8_t kSentinel = 0xEE;
+
+  bool IsES3() const { return GetParam() == CONTEXT_TYPE_OPENGLES3; }
+
+  void CreateSharedImageTexture(GLuint client_id) {
+    auto& cmd = *GetImmediateAs<
+        cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+    cmd.Init(client_id, mailbox_.name);
+    EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox_.name)));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  void BeginAccess(GLuint client_id, GLenum mode) {
+    cmds::BeginSharedImageAccessDirectCHROMIUM cmd;
+    cmd.Init(client_id, mode);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  void EndAccess(GLuint client_id) {
+    cmds::EndSharedImageAccessDirectCHROMIUM cmd;
+    cmd.Init(client_id);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  // Binds a framebuffer with `texture_client_id` attached to `attachment` to
+  // GL_FRAMEBUFFER.
+  void AttachToFramebuffer(GLuint texture_client_id, GLenum attachment) {
+    GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
+    DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
+    DoFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D,
+                           texture_client_id, 0);
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  // Issues a synchronous ReadPixels of the whole image into shared memory
+  // pre-filled with kSentinel. Returns the GL error generated, and sets
+  // `pixels_untouched` to whether the client's pixel buffer was left intact.
+  GLenum ReadPixels(bool* pixels_untouched) {
+    auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
+    const uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
+    const size_t pixels_size = kWidth * kHeight * 4;
+    // SAFETY: the shared memory buffer is larger than the result followed by
+    // the pixels.
+    auto pixels_span = UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<uint8_t*>(&result[1]), pixels_size));
+    std::ranges::fill(pixels_span, kSentinel);
+
+    cmds::ReadPixels cmd;
+    cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE,
+             shared_memory_id_, pixels_shm_offset, shared_memory_id_,
+             kSharedMemoryOffset, false);
+    result->success = 0;
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+    // Read the results before GetGLError(), which reuses the shared memory.
+    const bool success = !!result->success;
+    *pixels_untouched = std::ranges::all_of(
+        pixels_span, [](uint8_t value) { return value == kSentinel; });
+    GLenum error = GetGLError();
+    EXPECT_EQ(error == GL_NO_ERROR, success);
+    return error;
+  }
+
+  MemoryTypeTracker memory_tracker_{nullptr};
+  Mailbox mailbox_;
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GLES2DecoderPassthroughSharedImageReadAccessTest,
+                         testing::Values(CONTEXT_TYPE_OPENGLES2,
+                                         CONTEXT_TYPE_OPENGLES3));
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest, ReadPixels) {
+  AttachToFramebuffer(kSharedImageClientId, GL_COLOR_ATTACHMENT0);
+
+  // Reading without an access is rejected and the client buffer is untouched.
+  bool pixels_untouched = false;
+  EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION),
+            ReadPixels(&pixels_untouched));
+  EXPECT_TRUE(pixels_untouched);
+
+  // Reading with a read access succeeds.
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+  EndAccess(kSharedImageClientId);
+
+  // Reading with a read-write access succeeds.
+  BeginAccess(kSharedImageClientId,
+              GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+  EndAccess(kSharedImageClientId);
+
+  // Reading after the access ended is rejected again.
+  EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION),
+            ReadPixels(&pixels_untouched));
+  EXPECT_TRUE(pixels_untouched);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       ReadPixelsFromRegularTexture) {
+  AttachToFramebuffer(kClientTextureId, GL_COLOR_ATTACHMENT0);
+
+  // Reading from a regular texture doesn't require an access, even if shared
+  // image textures exist.
+  bool pixels_untouched = true;
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       ReadPixelsAliasedSharedImageTexture) {
+  // Import the same shared image a second time. Both client ids alias the same
+  // service texture.
+  CreateSharedImageTexture(kSecondSharedImageClientId);
+  AttachToFramebuffer(kSecondSharedImageClientId, GL_COLOR_ATTACHMENT0);
+
+  bool pixels_untouched = false;
+  EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION),
+            ReadPixels(&pixels_untouched));
+  EXPECT_TRUE(pixels_untouched);
+
+  // An access through either client id makes the texture readable.
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+  EndAccess(kSharedImageClientId);
+
+  DoDeleteTexture(kSecondSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       DeleteAliasedSharedImageTexture) {
+  PassthroughResources* resources = GetPassthroughResources();
+  GLuint service_id = 0;
+  ASSERT_TRUE(resources->texture_id_map.GetServiceID(kSharedImageClientId,
+                                                     &service_id));
+  ASSERT_TRUE(
+      resources->shared_image_client_ids_by_service_id.contains(service_id));
+  EXPECT_EQ(
+      1u, resources->shared_image_client_ids_by_service_id[service_id].size());
+
+  // Import the same shared image a second time, and delete the first import
+  // while it has an active access.
+  CreateSharedImageTexture(kSecondSharedImageClientId);
+  EXPECT_EQ(
+      2u, resources->shared_image_client_ids_by_service_id[service_id].size());
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  DoDeleteTexture(kSharedImageClientId);
+  EXPECT_EQ(
+      1u, resources->shared_image_client_ids_by_service_id[service_id].size());
+
+  // The remaining import still requires its own access.
+  AttachToFramebuffer(kSecondSharedImageClientId, GL_COLOR_ATTACHMENT0);
+  bool pixels_untouched = false;
+  EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION),
+            ReadPixels(&pixels_untouched));
+  EXPECT_TRUE(pixels_untouched);
+
+  BeginAccess(kSecondSharedImageClientId,
+              GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+  EndAccess(kSecondSharedImageClientId);
+
+  // Deleting the last import removes the service id from the index.
+  DoDeleteTexture(kSecondSharedImageClientId);
+  EXPECT_FALSE(
+      resources->shared_image_client_ids_by_service_id.contains(service_id));
+  EXPECT_TRUE(resources->texture_shared_image_map.empty());
+
+  // Recreate the import deleted by TearDown().
+  CreateSharedImageTexture(kSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       KillSwitchDisablesEnforcement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnforceSharedImageAccessForGLReads);
+
+  AttachToFramebuffer(kSharedImageClientId, GL_COLOR_ATTACHMENT0);
+  bool pixels_untouched = true;
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+
+  cmds::CopyTextureCHROMIUM cmd;
+  cmd.Init(kSharedImageClientId, 0, GL_TEXTURE_2D, kClientTextureId, 0, GL_RGBA,
+           GL_UNSIGNED_BYTE, GL_FALSE, GL_FALSE, GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       ReadPixelsSeparateReadFramebuffer) {
+  if (!IsES3() &&
+      !feature_info()->feature_flags().chromium_framebuffer_multisample) {
+    GTEST_SKIP() << "Separate read and draw framebuffers are not supported";
+  }
+
+  // The shared image is attached to the read framebuffer while a regular
+  // texture is attached to the draw framebuffer.
+  AttachToFramebuffer(kSharedImageClientId, GL_COLOR_ATTACHMENT0);
+  GenHelper<cmds::GenFramebuffersImmediate>(kDrawFramebufferClientId);
+  DoBindFramebuffer(GL_DRAW_FRAMEBUFFER, kDrawFramebufferClientId);
+  DoFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_2D, kClientTextureId, 0);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  bool pixels_untouched = false;
+  EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION),
+            ReadPixels(&pixels_untouched));
+  EXPECT_TRUE(pixels_untouched);
+
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+  EndAccess(kSharedImageClientId);
+
+  // Conversely, a shared image attached only to the draw framebuffer isn't
+  // read.
+  DoBindFramebuffer(GL_READ_FRAMEBUFFER, kDrawFramebufferClientId);
+  DoBindFramebuffer(GL_DRAW_FRAMEBUFFER, kClientFramebufferId);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       ReadPixelsOnlyChecksReadBuffer) {
+  if (!IsES3()) {
+    GTEST_SKIP() << "glReadBuffer requires ES3";
+  }
+
+  // The regular texture is the read buffer; the shared image is attached to
+  // another color attachment which isn't read.
+  AttachToFramebuffer(kClientTextureId, GL_COLOR_ATTACHMENT0);
+  DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D,
+                         kSharedImageClientId, 0);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  bool pixels_untouched = true;
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+
+  // Selecting the shared image as the read buffer makes the read require an
+  // access.
+  cmds::ReadBuffer read_buffer_cmd;
+  read_buffer_cmd.Init(GL_COLOR_ATTACHMENT1);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(read_buffer_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION),
+            ReadPixels(&pixels_untouched));
+  EXPECT_TRUE(pixels_untouched);
+
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ReadPixels(&pixels_untouched));
+  EXPECT_FALSE(pixels_untouched);
+  EndAccess(kSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest, CopyTexImage2D) {
+  AttachToFramebuffer(kSharedImageClientId, GL_COLOR_ATTACHMENT0);
+  DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
+
+  cmds::CopyTexImage2D cmd;
+  cmd.Init(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, kWidth, kHeight);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EndAccess(kSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest, CopyTexSubImage2D) {
+  AttachToFramebuffer(kSharedImageClientId, GL_COLOR_ATTACHMENT0);
+  DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
+
+  cmds::CopyTexSubImage2D cmd;
+  cmd.Init(GL_TEXTURE_2D, 0, 0, 0, 0, 0, kWidth, kHeight);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EndAccess(kSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest, CopyTexSubImage3D) {
+  if (!IsES3()) {
+    GTEST_SKIP() << "glCopyTexSubImage3D requires ES3";
+  }
+
+  AttachToFramebuffer(kSharedImageClientId, GL_COLOR_ATTACHMENT0);
+
+  constexpr GLuint kTexture3DClientId = kClientTextureId + 1;
+  GenHelper<cmds::GenTexturesImmediate>(kTexture3DClientId);
+  DoBindTexture(GL_TEXTURE_3D, kTexture3DClientId);
+  cmds::TexStorage3D storage_cmd;
+  storage_cmd.Init(GL_TEXTURE_3D, 1, GL_RGBA8, kWidth, kHeight, 1);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(storage_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  cmds::CopyTexSubImage3D cmd;
+  cmd.Init(GL_TEXTURE_3D, 0, 0, 0, 0, 0, 0, kWidth, kHeight);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EndAccess(kSharedImageClientId);
+
+  DoDeleteTexture(kTexture3DClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       BlitFramebufferCHROMIUM) {
+  if (!feature_info()->feature_flags().chromium_framebuffer_multisample) {
+    GTEST_SKIP() << "glBlitFramebufferCHROMIUM is not supported";
+  }
+
+  AttachToFramebuffer(kSharedImageClientId, GL_COLOR_ATTACHMENT0);
+  DoBindFramebuffer(GL_READ_FRAMEBUFFER, kClientFramebufferId);
+  GenHelper<cmds::GenFramebuffersImmediate>(kDrawFramebufferClientId);
+  DoBindFramebuffer(GL_DRAW_FRAMEBUFFER, kDrawFramebufferClientId);
+  DoFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_2D, kClientTextureId, 0);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  cmds::BlitFramebufferCHROMIUM cmd;
+  cmd.Init(0, 0, kWidth, kHeight, 0, 0, kWidth, kHeight, GL_COLOR_BUFFER_BIT,
+           GL_NEAREST);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EndAccess(kSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest, CopyTextureCHROMIUM) {
+  cmds::CopyTextureCHROMIUM cmd;
+  cmd.Init(kSharedImageClientId, 0, GL_TEXTURE_2D, kClientTextureId, 0, GL_RGBA,
+           GL_UNSIGNED_BYTE, GL_FALSE, GL_FALSE, GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EndAccess(kSharedImageClientId);
+
+  // Copying from a regular texture into the shared image doesn't read the
+  // shared image.
+  cmds::CopySubTextureCHROMIUM write_cmd;
+  write_cmd.Init(kClientTextureId, 0, GL_TEXTURE_2D, kSharedImageClientId, 0, 0,
+                 0, 0, 0, kWidth, kHeight, GL_FALSE, GL_FALSE, GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(write_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       CopyTextureCHROMIUMAliasedSharedImageTexture) {
+  CreateSharedImageTexture(kSecondSharedImageClientId);
+
+  cmds::CopyTextureCHROMIUM cmd;
+  cmd.Init(kSecondSharedImageClientId, 0, GL_TEXTURE_2D, kClientTextureId, 0,
+           GL_RGBA, GL_UNSIGNED_BYTE, GL_FALSE, GL_FALSE, GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  // An access through the other client id makes the source readable.
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EndAccess(kSharedImageClientId);
+
+  DoDeleteTexture(kSecondSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       CopySubTextureCHROMIUM) {
+  cmds::CopySubTextureCHROMIUM cmd;
+  cmd.Init(kSharedImageClientId, 0, GL_TEXTURE_2D, kClientTextureId, 0, 0, 0, 0,
+           0, kWidth, kHeight, GL_FALSE, GL_FALSE, GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  BeginAccess(kSharedImageClientId, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EndAccess(kSharedImageClientId);
 }
 
 }  // namespace gles2

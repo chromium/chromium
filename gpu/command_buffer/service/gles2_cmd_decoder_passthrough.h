@@ -17,6 +17,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -33,6 +34,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
@@ -48,6 +50,11 @@ namespace gpu {
 class GLTexturePassthroughImageRepresentation;
 
 namespace gles2 {
+
+// Kill switch for requiring an active shared image access for GL commands that
+// read shared image textures.
+// TODO(crbug.com/577345414): Remove after a safe rollout.
+GPU_GLES2_EXPORT BASE_DECLARE_FEATURE(kEnforceSharedImageAccessForGLReads);
 
 class ContextGroup;
 class GPUTracer;
@@ -111,6 +118,10 @@ struct PassthroughResources {
       return representation_.get();
     }
 
+    // Returns the service id of the shared image's texture. Shared images
+    // imported into the decoder always have exactly one expected plane.
+    GLuint service_id() const;
+
     // Returns true between a successful BeginAccess and the following EndAccess
     // even if access is currently suspended.
     bool is_being_accessed() const { return access_mode_.has_value(); }
@@ -129,10 +140,28 @@ struct PassthroughResources {
         scoped_access_;
     std::optional<GLenum> access_mode_;
   };
+
+  // Adds or removes the shared image imported as `client_id`, keeping
+  // `texture_shared_image_map` and `shared_image_client_ids_by_service_id` in
+  // sync. Use these instead of modifying either map directly.
+  void AddSharedImage(GLuint client_id, SharedImageData shared_image_data);
+  void RemoveSharedImage(GLuint client_id);
+
+  // Returns true if `service_id` is the texture of a shared image and none of
+  // the client ids the shared image is imported as has an active access.
+  bool IsSharedImageWithoutAccess(GLuint service_id) const;
+
   // Mapping of client texture IDs to GLTexturePassthroughImageRepresentations.
   // TODO(ericrk): Remove this once TexturePassthrough holds a reference to
   // the GLTexturePassthroughImageRepresentation itself.
   base::flat_map<GLuint, SharedImageData> texture_shared_image_map;
+
+  // Mapping of shared image texture service IDs to the client IDs they are
+  // imported as in `texture_shared_image_map`. The same shared image may be
+  // imported more than once, in which case all its client ids alias the same
+  // service texture.
+  base::flat_map<GLuint, base::flat_set<GLuint>>
+      shared_image_client_ids_by_service_id;
 };
 
 // Impose an upper bound on the number ANGLE_shader_pixel_local_storage planes
@@ -489,6 +518,24 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   void BuildRequestableExtensionString();
 
   bool CanRedefineBoundTexture(GLenum target);
+
+  // Shared image textures may only be read through GL while a
+  // BeginSharedImageAccessDirectCHROMIUM access is active on them. Reading
+  // them outside of an access is not synchronized with other users of the
+  // backing, and on some backings (e.g. D3D11 textures with a keyed mutex)
+  // the read is silently dropped by the driver. These checks are disabled if
+  // kEnforceSharedImageAccessForGLReads is disabled.
+  //
+  // Generates GL_INVALID_OPERATION and returns false if the texture with
+  // client id `texture_client_id` is a shared image without an active access.
+  bool CheckSharedImageTextureReadAccess(GLuint texture_client_id,
+                                         const char* function_name);
+  // Generates GL_INVALID_OPERATION and returns false if any attachment of the
+  // currently bound read framebuffer that would be read according to `mask`
+  // (a combination of GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT and
+  // GL_STENCIL_BUFFER_BIT) is a shared image without an active access.
+  bool CheckReadFramebufferSharedImageAccess(GLbitfield mask,
+                                             const char* function_name);
 
   PassthroughProgramCache* get_passthrough_program_cache() const;
 
