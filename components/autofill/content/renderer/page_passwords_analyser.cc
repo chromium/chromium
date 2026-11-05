@@ -8,11 +8,12 @@
 #include <map>
 #include <stack>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -42,8 +43,10 @@ namespace autofill {
 namespace {
 
 constexpr const char kDocumentationUrl[] = "https://goo.gl/9p2vKq";
-constexpr const char* kTypeAttributes[] = {"text", "email", "tel", "password"};
-constexpr const char* kTypeTextAttributes[] = {"text", "email", "tel"};
+constexpr auto kTypeAttributes = base::MakeFixedFlatSet<std::string_view>(
+    {"email", "password", "tel", "text"});
+constexpr char kTextInputsSelector[] =
+    R"(input:not([type]), input[type="text"], input[type="email"], input[type="tel"])";
 constexpr char kTextFieldSignature = 'T';
 constexpr char kPasswordFieldSignature = 'P';
 
@@ -142,7 +145,7 @@ struct InputHint {
 // assumption each <form> element corresponds to a single form.
 // |FormIsTooComplex| uses a simple heuristic to guess whether a form may
 // contain too many inputs to be considered a single form.
-bool FormIsTooComplex(const std::string& signature) {
+constexpr bool FormIsTooComplex(std::string_view signature) {
   unsigned kind_changes = 0;
   unsigned password_count = 0;
   for (const char kind : signature) {
@@ -209,8 +212,7 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
       // to be username or password fields.
       if (input.TagName() == "INPUT" &&
           (!input.HasAttribute("type") ||
-           std::ranges::contains(kTypeAttributes,
-                                 input.GetAttribute("type").Utf8()))) {
+           kTypeAttributes.contains(input.GetAttribute("type").Utf8()))) {
         form_input_collections.back().AddInput(input);
         inputs_with_forms.insert(input);
       }
@@ -241,11 +243,8 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   // Check for input fields that are not contained inside forms, to make sure
   // their id attributes don't conflict with other fields also not contained
   // inside forms.
-  std::string selector = "input:not([type])";
-  for (const char* text_type : kTypeTextAttributes)
-    base::StrAppend(&selector, {", input[type=\"", text_type, "\"]"});
-  auto text_inputs = document.QuerySelectorAll(WebString::FromUtf8(selector));
-  for (const WebElement& text_input : text_inputs) {
+  for (const WebElement& text_input :
+       document.QuerySelectorAll(kTextInputsSelector)) {
     const WebInputElement input_element =
         text_input.DynamicTo<WebInputElement>();
     if (!input_element) {
