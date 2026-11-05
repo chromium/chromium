@@ -3471,22 +3471,22 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_SETTINGS_GEIC_SECTION_TITLE" desc="Text of the Gemini Enterprise section header on the AI settings page. Also used as the label of the row button leading to the Gemini Enterprise subpage, and as the title of that subpage.">
         Gemini Enterprise in Chrome
       </message>
-      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE" desc="Heading for the setting row in Gemini Enterprise in Chrome settings that allows a user to switch back to their unmanaged consumer Gemini assistant when Gemini Enterprise was enabled by a device-level policy." translateable="false">
+      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE" desc="Heading for the setting row in Gemini Enterprise in Chrome settings that allows a user to switch back to their unmanaged consumer Gemini assistant when Gemini Enterprise was enabled by a device-level policy.">
         Switch back to your unmanaged Gemini assistant
       </message>
-      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE_SUBLABEL" desc="Description for the setting row in Gemini Enterprise in Chrome settings that explains switching back to the unmanaged consumer Gemini assistant and relaunching Chrome." translateable="false">
+      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_TOGGLE_SUBLABEL" desc="Description for the setting row in Gemini Enterprise in Chrome settings that explains switching back to the unmanaged consumer Gemini assistant and relaunching Chrome.">
         You can switch to the Gemini assistant originally associated with your Google Account and not managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Answers will no longer be grounded in files or services managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph> and your chat history won’t carry over. It may not be suitable to use for work. Switching requires relaunching Chrome.
       </message>
-      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_BUTTON" desc="Label for the button in Gemini settings that switches between Gemini Enterprise and consumer Gemini on this profile and relaunches Chrome." translateable="false">
+      <message name="IDS_SETTINGS_GEIC_ENABLED_BY_DEVICE_POLICY_BUTTON" desc="Label for the button in Gemini settings that switches between Gemini Enterprise and consumer Gemini on this profile and relaunches Chrome.">
         Relaunch Chrome to switch
       </message>
-      <message name="IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE" desc="Heading for the setting row in Gemini in Chrome settings that allows a user to switch to Gemini Enterprise when Gemini Enterprise was enabled by a device-level policy." translateable="false">
+      <message name="IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE" desc="Heading for the setting row in Gemini in Chrome settings that allows a user to switch to Gemini Enterprise when Gemini Enterprise was enabled by a device-level policy.">
         Switch to Gemini Enterprise
       </message>
-      <message name="IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE_SUBLABEL" desc="Description for the setting row in Gemini in Chrome settings that explains switching to Gemini Enterprise and relaunching Chrome." translateable="false">
+      <message name="IDS_SETTINGS_GLIC_SWITCH_TO_GEIC_TOGGLE_SUBLABEL" desc="Description for the setting row in Gemini in Chrome settings that explains switching to Gemini Enterprise and relaunching Chrome.">
         This managed browser can use a Gemini assistant set up for work by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. It can find info and provide answers grounded in the organization’s files and approved services. Using it with a personal profile may not be recommended. Chat history won’t carry over. Switching requires relaunching Chrome.
       </message>
-      <message name="IDS_SETTINGS_GEIC_DEFAULT_MANAGEMENT_DOMAIN" desc="Fallback noun phrase used in place of a domain name when the device manager domain is not known." translateable="false">
+      <message name="IDS_SETTINGS_GEIC_DEFAULT_MANAGEMENT_DOMAIN" desc="Fallback noun phrase used in place of a domain name when the device manager domain is not known.">
         your organization
       </message>
 
