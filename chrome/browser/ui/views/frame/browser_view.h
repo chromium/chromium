@@ -284,6 +284,11 @@ class BrowserView : public BrowserWindow,
     return vertical_tab_strip_region_view_.get();
   }
 
+  // Accessor for the horizontal TabStripRegionView.
+  TabStripRegionView* horizontal_tab_strip_region_view_for_testing() const {
+    return horizontal_tab_strip_region_view_.get();
+  }
+
   // Accessor for the TabStrip.
   TabStrip* horizontal_tab_strip_for_testing();
 

@@ -2232,6 +2232,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "base_tab_strip_region_view_browsertest.cc",
     "browser_frame_view_browsertest.cc",
     "browser_root_view_browsertest.cc",
     "browser_view_browsertest.cc",
@@ -2246,6 +2247,7 @@ source_set("browser_tests") {
   ]
 
   deps = [
+    ":base_tab_strip_region_view",
     ":browser_frame_view",
     ":browser_view_header",
     ":browser_view_layout",
