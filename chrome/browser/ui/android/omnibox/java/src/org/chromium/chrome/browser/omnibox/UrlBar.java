@@ -57,6 +57,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBarFocusChangeInfo.FocusDirection;
 import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.components.browser_ui.share.ShareHelper;
+import org.chromium.components.browser_ui.share.ShareHelper.ShareSourceAndroid;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -1151,7 +1152,7 @@ public class UrlBar extends AutocompleteEditText {
 
             case android.R.id.shareText:
                 RecordUserAction.record("Omnibox.LongPress.Share");
-                ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
+                ShareHelper.recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
                 if (mUrlBarDelegate != null) {
                     String replacementShareText =
                             mTextContextMenuDelegate != null

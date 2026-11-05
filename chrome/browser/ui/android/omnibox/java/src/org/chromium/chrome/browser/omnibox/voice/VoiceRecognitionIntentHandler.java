@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -110,7 +111,7 @@ public class VoiceRecognitionIntentHandler {
     private @Nullable Long mQueryStartTimeMs;
     private @Nullable Boolean mIsVoiceSearchEnabledCached;
     private boolean mRegisteredActivityStateListener;
-    private final ApplicationStatus.ApplicationStateListener mApplicationStateListener =
+    private final ApplicationStateListener mApplicationStateListener =
             this::onApplicationStateChange;
 
     public VoiceRecognitionIntentHandler(WindowAndroid windowAndroid) {

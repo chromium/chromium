@@ -45,6 +45,7 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier.FallbackIconType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
@@ -200,7 +201,7 @@ public final class OmniboxImageSupplierUnitTest {
     @Test
     public void generateFavicon_globe() {
         mSupplier.onNativeInitialized();
-        mSupplier.generateFavicon(NAV_URL, OmniboxImageSupplier.FallbackIconType.GLOBE, mCallback1);
+        mSupplier.generateFavicon(NAV_URL, FallbackIconType.GLOBE, mCallback1);
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mCallback1).onResult(mDrawableCaptor.capture());

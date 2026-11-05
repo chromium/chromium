@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -75,7 +76,7 @@ public class SearchEngineServiceUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Captor private ArgumentCaptor<FaviconHelper.FaviconImageCallback> mCallbackCaptor;
+    @Captor private ArgumentCaptor<FaviconImageCallback> mCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mImageFetcherCallbackCaptor;
     @Captor private ArgumentCaptor<StatusIconResource> mStatusIconCaptor;
     @Mock private FaviconHelper mFaviconHelper;
@@ -418,7 +419,7 @@ public class SearchEngineServiceUnitTest {
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         any(), any(), anyInt(), anyBoolean(), mCallbackCaptor.capture());
-        FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
+        FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         faviconCallback.onFaviconAvailable(null, new GURL(LOGO_URL));
 
         // Not emitting second null icon

@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.AppInstallState;
+import org.chromium.chrome.browser.omnibox.OmniboxPrerender.NativeOmniboxPrerender;
 import org.chromium.chrome.browser.omnibox.OmniboxPrerender.Natives;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -131,7 +132,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -220,7 +221,7 @@ public class LocationBarMediatorUnitTest {
     @Mock private UrlBarCoordinator mUrlCoordinator;
     @Mock private StatusCoordinator mStatusCoordinator;
     @Mock private Natives mPrerenderJni;
-    @Mock private JniUniquePtr<OmniboxPrerender.NativeOmniboxPrerender> mNativeOmniboxPrerender;
+    @Mock private JniUniquePtr<NativeOmniboxPrerender> mNativeOmniboxPrerender;
     @Mock private TextView mView;
     @Mock private View mTabView;
     @Mock private KeyEvent mKeyEvent;
@@ -6362,11 +6363,11 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testHandleBackPress_reflectedByBackPressChangedSupplier() {
         assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
-        assertEquals(BackPressHandler.BackPressResult.FAILURE, mMediator.handleBackPress());
+        assertEquals(BackPressResult.FAILURE, mMediator.handleBackPress());
 
         mMediator.onUrlFocusChange(/* hasFocus= */ true);
         assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
-        assertEquals(BackPressHandler.BackPressResult.SUCCESS, mMediator.handleBackPress());
+        assertEquals(BackPressResult.SUCCESS, mMediator.handleBackPress());
 
         mMediator.onUrlFocusChange(/* hasFocus= */ false);
         assertFalse(mMediator.getHandleBackPressChangedSupplier().get());

@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.SetActiveModelSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
@@ -117,11 +118,10 @@ import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconProto.Icon;
-import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
-import org.chromium.components.omnibox.IconResourceIdsProtoIntDef;
-import org.chromium.components.omnibox.InputSourceProto.InputSource;
+import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
+import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
-import org.chromium.components.omnibox.InputTypeProto.InputType;
+import org.chromium.components.omnibox.InputTypeProtoIntDef.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -157,24 +157,24 @@ public class FuseboxMediatorUnitTest {
 
     private static final InputTypeConfig GALLERY_INPUT_TYPE_CONFIG =
             InputTypeConfig.newBuilder()
-                    .setInputType(InputType.INPUT_TYPE_LENS_IMAGE)
+                    .setInputTypeValue(InputType.INPUT_TYPE_LENS_IMAGE)
                     .setMenuLabel("Gallery")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.ADD_PHOTO_ALTERNATE))
-                    .setInputSource(InputSource.INPUT_SOURCE_GALLERY)
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.ADD_PHOTO_ALTERNATE))
+                    .setInputSourceValue(InputSource.INPUT_SOURCE_GALLERY)
                     .build();
     private static final InputTypeConfig CAMERA_INPUT_TYPE_CONFIG =
             InputTypeConfig.newBuilder()
-                    .setInputType(InputType.INPUT_TYPE_LENS_IMAGE)
+                    .setInputTypeValue(InputType.INPUT_TYPE_LENS_IMAGE)
                     .setMenuLabel("Camera")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.LENS_CAMERA))
-                    .setInputSource(InputSource.INPUT_SOURCE_CAMERA)
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.LENS_CAMERA))
+                    .setInputSourceValue(InputSource.INPUT_SOURCE_CAMERA)
                     .build();
     private static final InputTypeConfig FILES_INPUT_TYPE_CONFIG =
             InputTypeConfig.newBuilder()
-                    .setInputType(InputType.INPUT_TYPE_LENS_FILE)
+                    .setInputTypeValue(InputType.INPUT_TYPE_LENS_FILE)
                     .setMenuLabel("Files")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.ATTACH_FILE))
-                    .setInputSource(InputSource.INPUT_SOURCE_FILE_PICKER)
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.ATTACH_FILE))
+                    .setInputSourceValue(InputSource.INPUT_SOURCE_FILE_PICKER)
                     .build();
     private static final ToolConfig IMAGE_GEN_TOOL_CONFIG =
             ToolConfig.newBuilder()
@@ -182,14 +182,14 @@ public class FuseboxMediatorUnitTest {
                     .setMenuLabel("Create images")
                     .setChipLabel("Create")
                     .setHintText("Describe your image")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.BANANA))
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.BANANA))
                     .setMenuTooltip("Create images, illustrations, and art")
                     .build();
     private static final ToolConfig IMAGE_GEN_UPLOAD_TOOL_CONFIG =
             ToolConfig.newBuilder()
                     .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                     .setMenuLabel("Image Gen Upload")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.IMAGE_CREATE))
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.IMAGE_CREATE))
                     .build();
     private static final ToolConfig CANVAS_TOOL_CONFIG =
             ToolConfig.newBuilder()
@@ -198,7 +198,7 @@ public class FuseboxMediatorUnitTest {
                     .setMenuLabel("Canvas")
                     .setChipLabel("Canvas")
                     .setHintText("Create anything")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.DRAFT_SPARK))
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.DRAFT_SPARK))
                     .setMenuTooltip("A workspace to create, edit, and save your progress")
                     .build();
     private static final ToolConfig DEEP_SEARCH_TOOL_CONFIG =
@@ -207,21 +207,21 @@ public class FuseboxMediatorUnitTest {
                     .setMenuLabel("Deep Search")
                     .setChipLabel("Deep Search")
                     .setHintText("Research anything")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.TRAVEL_EXPLORE))
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.TRAVEL_EXPLORE))
                     .setMenuTooltip("Research a topic in depth")
                     .build();
     private static final ModelConfig AUTO_MODEL_CONFIG =
             ModelConfig.newBuilder()
                     .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                     .setMenuLabel("Auto")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.AUTORENEW))
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.AUTORENEW))
                     .setMenuTooltip("Intelligently routes to the best model for your request")
                     .build();
     private static final ModelConfig PRO_MODEL_CONFIG =
             ModelConfig.newBuilder()
                     .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                     .setMenuLabel("Pro")
-                    .setIcon(Icon.newBuilder().setIconId(IconResourceIds.TIMER))
+                    .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.TIMER))
                     .setMenuTooltip("Best for complex logic and math")
                     .build();
     private static final SectionConfig TOOLS_SECTION_CONFIG =
@@ -233,9 +233,9 @@ public class FuseboxMediatorUnitTest {
                     .withHintText("Ask anything")
                     .withMaxTotalInputs(10)
                     .withAllowedInputTypes(
-                            InputType.INPUT_TYPE_LENS_IMAGE_VALUE,
-                            InputType.INPUT_TYPE_LENS_FILE_VALUE,
-                            InputType.INPUT_TYPE_BROWSER_TAB_VALUE)
+                            InputType.INPUT_TYPE_LENS_IMAGE,
+                            InputType.INPUT_TYPE_LENS_FILE,
+                            InputType.INPUT_TYPE_BROWSER_TAB)
                     .withInputTypeConfigs(
                             GALLERY_INPUT_TYPE_CONFIG,
                             CAMERA_INPUT_TYPE_CONFIG,
@@ -289,6 +289,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private DriveDisclaimerBridge.Natives mDriveDisclaimerBridgeNatives;
     @Mock private TabLoadingService mTabLoadingService;
     @Mock private SimpleRecyclerViewAdapter mMockAdapter;
+    @Mock private Callback<Integer> mPopupStateObserver;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
@@ -609,19 +610,17 @@ public class FuseboxMediatorUnitTest {
         doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
         setInputState(
-                new InputStateBuilder()
-                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
-                        .build());
+                new InputStateBuilder().withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE).build());
     }
 
-    private static InputTypeConfig createLabelConfig(InputSource source, String label) {
-        return InputTypeConfig.newBuilder().setInputSource(source).setMenuLabel(label).build();
+    private static InputTypeConfig createLabelConfig(@InputSource int source, String label) {
+        return InputTypeConfig.newBuilder().setInputSourceValue(source).setMenuLabel(label).build();
     }
 
     private void setCustomAttachmentLabelsInputState() {
         setInputState(
                 new InputStateBuilder()
-                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE)
                         .withInputTypeConfigs(
                                 createLabelConfig(InputSource.INPUT_SOURCE_CAMERA, "Snap photo"),
                                 createLabelConfig(InputSource.INPUT_SOURCE_GALLERY, "Photos"),
@@ -652,10 +651,11 @@ public class FuseboxMediatorUnitTest {
                 mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT));
     }
 
-    private static InputTypeConfig createIconConfig(InputSource source, IconResourceIds iconId) {
+    private static InputTypeConfig createIconConfig(
+            @InputSource int source, @IconResourceIds int iconId) {
         return InputTypeConfig.newBuilder()
-                .setInputSource(source)
-                .setIcon(Icon.newBuilder().setIconId(iconId))
+                .setInputSourceValue(source)
+                .setIcon(Icon.newBuilder().setIconIdValue(iconId))
                 .build();
     }
 
@@ -663,9 +663,9 @@ public class FuseboxMediatorUnitTest {
         setInputState(
                 createDefaultInputStateBuilder()
                         .withAllowedInputTypes(
-                                InputType.INPUT_TYPE_LENS_IMAGE_VALUE,
-                                InputType.INPUT_TYPE_LENS_FILE_VALUE,
-                                InputType.INPUT_TYPE_DRIVE_VALUE)
+                                InputType.INPUT_TYPE_LENS_IMAGE,
+                                InputType.INPUT_TYPE_LENS_FILE,
+                                InputType.INPUT_TYPE_DRIVE)
                         .withInputTypeConfigs(
                                 createIconConfig(
                                         InputSource.INPUT_SOURCE_CAMERA, IconResourceIds.BOLT),
@@ -1122,16 +1122,14 @@ public class FuseboxMediatorUnitTest {
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
         recreateMediator();
 
-        @SuppressWarnings("unchecked")
-        org.chromium.base.Callback<Integer> observer = mock(org.chromium.base.Callback.class);
-        mPopupStateSupplier.addSyncObserverAndCallIfNonNull(observer);
-        verify(observer).onResult(PopupState.FLOATING);
-        clearInvocations(observer);
+        mPopupStateSupplier.addSyncObserverAndCallIfNonNull(mPopupStateObserver);
+        verify(mPopupStateObserver).onResult(PopupState.FLOATING);
+        clearInvocations(mPopupStateObserver);
 
         // Trigger second beginInput on the same mediator.
         mMediator.beginInput(mSession);
 
-        verify(observer, never()).onResult(any());
+        verify(mPopupStateObserver, never()).onResult(any());
     }
 
     @Test
@@ -1940,19 +1938,19 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void beginInput_fromNtp_recordsAiModeActivationSource() {
         testBeginInputFromNtpRecordsActivationSourceImpl(
-                AutocompleteRequestType.AI_MODE, FuseboxMetrics.AiModeActivationSource.NTP_BUTTON);
+                AutocompleteRequestType.AI_MODE, AiModeActivationSource.NTP_BUTTON);
     }
 
     @Test
     public void beginInput_fromNtpCreateImage_recordsAiModeActivationSource() {
         testBeginInputFromNtpRecordsActivationSourceImpl(
                 AutocompleteRequestType.IMAGE_GENERATION,
-                FuseboxMetrics.AiModeActivationSource.NTP_CREATE_IMAGE_BUTTON);
+                AiModeActivationSource.NTP_CREATE_IMAGE_BUTTON);
     }
 
     private void testBeginInputFromNtpRecordsActivationSourceImpl(
             @AutocompleteRequestType int requestType,
-            @FuseboxMetrics.AiModeActivationSource int expectedActivationSource) {
+            @AiModeActivationSource int expectedActivationSource) {
         mInput.setRequestType(requestType);
         mInput.setFocusReason(OmniboxFocusReason.NTP_AI_MODE);
 
@@ -1983,7 +1981,7 @@ public class FuseboxMediatorUnitTest {
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AiModeActivationSource",
-                        FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
+                        AiModeActivationSource.TOOL_MENU)) {
             clickToolButton(ToolMode.TOOL_MODE_DEEP_SEARCH);
         }
     }
@@ -1995,7 +1993,7 @@ public class FuseboxMediatorUnitTest {
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AiModeActivationSource",
-                        FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
+                        AiModeActivationSource.TOOL_MENU)) {
             clickToolButton(ToolMode.TOOL_MODE_CANVAS);
         }
     }
@@ -2010,7 +2008,7 @@ public class FuseboxMediatorUnitTest {
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AiModeActivationSource",
-                        FuseboxMetrics.AiModeActivationSource.IMPLICIT)) {
+                        AiModeActivationSource.IMPLICIT)) {
             models.get(0).onClicked.run();
         }
     }
@@ -2524,13 +2522,13 @@ public class FuseboxMediatorUnitTest {
 
         PopupButtonData autoData = models.get(0);
         assertEquals("Auto", autoData.text);
-        assertEquals(IconResourceIds.AUTORENEW_VALUE, autoData.iconId);
+        assertEquals(IconResourceIds.AUTORENEW, autoData.iconId);
         assertTrue(autoData.enabled);
         assertTrue(autoData.selected);
 
         PopupButtonData proData = models.get(1);
         assertEquals("Pro", proData.text);
-        assertEquals(IconResourceIds.TIMER_VALUE, proData.iconId);
+        assertEquals(IconResourceIds.TIMER, proData.iconId);
         assertFalse(proData.enabled);
         assertFalse(proData.selected);
 
@@ -2599,8 +2597,7 @@ public class FuseboxMediatorUnitTest {
         setInputState(
                 createDefaultInputStateBuilder()
                         .withDisabledInputTypes(
-                                InputType.INPUT_TYPE_BROWSER_TAB_VALUE,
-                                InputType.INPUT_TYPE_LENS_FILE_VALUE));
+                                InputType.INPUT_TYPE_BROWSER_TAB, InputType.INPUT_TYPE_LENS_FILE));
         mMediator.onPlusButtonClicked();
 
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
@@ -2616,8 +2613,8 @@ public class FuseboxMediatorUnitTest {
     public void onInputStateChange_updatesDriveButton() {
         setInputState(
                 createDefaultInputStateBuilder()
-                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
-                        .withDisabledInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE));
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE)
+                        .withDisabledInputTypes(InputType.INPUT_TYPE_DRIVE));
         mMediator.onPlusButtonClicked();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED));
@@ -2631,8 +2628,7 @@ public class FuseboxMediatorUnitTest {
     public void onInputStateChange_driveNotAvailable_hidesDriveButton() {
         doReturn(false).when(mDriveFilePickerClient).isAvailable(any(), any());
         setInputState(
-                createDefaultInputStateBuilder()
-                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE));
+                createDefaultInputStateBuilder().withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE));
         mMediator.onPlusButtonClicked();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE));
     }
@@ -3316,7 +3312,9 @@ public class FuseboxMediatorUnitTest {
                         .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setChipLabel("Deep Search Chip")
                         .setIcon(
-                                Icon.newBuilder().setIconId(IconResourceIds.TRAVEL_EXPLORE).build())
+                                Icon.newBuilder()
+                                        .setIconIdValue(IconResourceIds.TRAVEL_EXPLORE)
+                                        .build())
                         .build();
         InputState state =
                 new InputStateBuilder()
@@ -3330,7 +3328,7 @@ public class FuseboxMediatorUnitTest {
                 "Deep Search Chip",
                 mModel.get(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION));
         assertEquals(
-                IconResourceIdsProtoIntDef.IconResourceIds.TRAVEL_EXPLORE,
+                IconResourceIds.TRAVEL_EXPLORE,
                 mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
         assertEquals("Deep Search Chip", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
         assertTrue(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON));
@@ -3343,7 +3341,7 @@ public class FuseboxMediatorUnitTest {
                 ToolConfig.newBuilder()
                         .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .setChipLabel("Create Image Chip")
-                        .setIcon(Icon.newBuilder().setIconId(IconResourceIds.BANANA).build())
+                        .setIcon(Icon.newBuilder().setIconIdValue(IconResourceIds.BANANA).build())
                         .build();
         InputState state =
                 new InputStateBuilder()
@@ -3357,8 +3355,7 @@ public class FuseboxMediatorUnitTest {
                 "Create Image Chip",
                 mModel.get(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION));
         assertEquals(
-                IconResourceIdsProtoIntDef.IconResourceIds.BANANA,
-                mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
+                IconResourceIds.BANANA, mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
         assertEquals("Create Image Chip", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
         assertFalse(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON));
     }
@@ -3370,7 +3367,10 @@ public class FuseboxMediatorUnitTest {
                 ToolConfig.newBuilder()
                         .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .setChipLabel("Create Image Chip")
-                        .setIcon(Icon.newBuilder().setIconId(IconResourceIds.IMAGE_CREATE).build())
+                        .setIcon(
+                                Icon.newBuilder()
+                                        .setIconIdValue(IconResourceIds.IMAGE_CREATE)
+                                        .build())
                         .build();
         setInputState(
                 createDefaultInputStateBuilder()
@@ -3381,7 +3381,7 @@ public class FuseboxMediatorUnitTest {
                 "Create Image Chip",
                 mModel.get(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION));
         assertEquals(
-                IconResourceIdsProtoIntDef.IconResourceIds.IMAGE_CREATE,
+                IconResourceIds.IMAGE_CREATE,
                 mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
         assertEquals("Create Image Chip", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
         assertTrue(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON));
@@ -3400,9 +3400,9 @@ public class FuseboxMediatorUnitTest {
         assertEquals(3, tools.size());
         assertFalse(tools.get(0).hasColor);
         assertTrue(tools.get(1).hasColor);
-        assertEquals(IconResourceIds.BANANA_VALUE, tools.get(1).iconId);
+        assertEquals(IconResourceIds.BANANA, tools.get(1).iconId);
         assertFalse(tools.get(2).hasColor);
-        assertEquals(IconResourceIds.IMAGE_CREATE_VALUE, tools.get(2).iconId);
+        assertEquals(IconResourceIds.IMAGE_CREATE, tools.get(2).iconId);
     }
 
     @Test
@@ -3417,7 +3417,7 @@ public class FuseboxMediatorUnitTest {
                 mContext.getString(R.string.acc_send_button_send_to_ai),
                 mModel.get(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION));
         assertEquals(
-                IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
+                IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
                 mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
         assertEquals("AI Mode", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
         assertTrue(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON));
@@ -3449,7 +3449,7 @@ public class FuseboxMediatorUnitTest {
                 mContext.getString(R.string.acc_send_button_send_to_ai),
                 mModel.get(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION));
         assertEquals(
-                IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
+                IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
                 mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
         assertTrue(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON));
     }
@@ -3471,7 +3471,7 @@ public class FuseboxMediatorUnitTest {
                         .withToolConfigs(config));
 
         assertEquals(
-                IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
+                IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
                 mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
     }
 
@@ -3517,9 +3517,9 @@ public class FuseboxMediatorUnitTest {
         setInputState(
                 createDefaultInputStateBuilder()
                         .withAllowedInputTypes(
-                                InputType.INPUT_TYPE_LENS_IMAGE_VALUE,
-                                InputType.INPUT_TYPE_LENS_FILE_VALUE,
-                                InputType.INPUT_TYPE_DRIVE_VALUE)
+                                InputType.INPUT_TYPE_LENS_IMAGE,
+                                InputType.INPUT_TYPE_LENS_FILE,
+                                InputType.INPUT_TYPE_DRIVE)
                         .withInputTypeConfigs(
                                 createLabelConfig(InputSource.INPUT_SOURCE_CAMERA, "Snap photo"),
                                 createLabelConfig(InputSource.INPUT_SOURCE_GALLERY, "Photos"),
@@ -3546,10 +3546,10 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
-                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
-                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
-                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
-                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                                InputSource.INPUT_SOURCE_CAMERA,
+                                InputSource.INPUT_SOURCE_GALLERY,
+                                InputSource.INPUT_SOURCE_FILE_PICKER,
+                                InputSource.INPUT_SOURCE_DRIVE)
                         .build();
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -3563,7 +3563,7 @@ public class FuseboxMediatorUnitTest {
         recreateMediatorWithDriveAndPdfAllowed();
         setInputState(
                 new InputStateBuilder()
-                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE)
                         .withInputTypeConfigs(
                                 createLabelConfig(InputSource.INPUT_SOURCE_CAMERA, "Snap photo"),
                                 createLabelConfig(InputSource.INPUT_SOURCE_GALLERY, "Photos"),
@@ -3591,9 +3591,9 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
-                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
-                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
-                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                                InputSource.INPUT_SOURCE_GALLERY,
+                                InputSource.INPUT_SOURCE_FILE_PICKER,
+                                InputSource.INPUT_SOURCE_DRIVE)
                         .build();
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -3623,9 +3623,9 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
-                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
-                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
-                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE)
+                                InputSource.INPUT_SOURCE_CAMERA,
+                                InputSource.INPUT_SOURCE_GALLERY,
+                                InputSource.INPUT_SOURCE_FILE_PICKER)
                         .build();
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -3645,10 +3645,10 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
-                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
-                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
-                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
-                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                                InputSource.INPUT_SOURCE_CAMERA,
+                                InputSource.INPUT_SOURCE_GALLERY,
+                                InputSource.INPUT_SOURCE_FILE_PICKER,
+                                InputSource.INPUT_SOURCE_DRIVE)
                         .build();
 
         mMediator.beginInput(mSession);
@@ -3700,10 +3700,10 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
-                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
-                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
-                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
-                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                                InputSource.INPUT_SOURCE_CAMERA,
+                                InputSource.INPUT_SOURCE_GALLERY,
+                                InputSource.INPUT_SOURCE_FILE_PICKER,
+                                InputSource.INPUT_SOURCE_DRIVE)
                         .build();
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -3720,7 +3720,7 @@ public class FuseboxMediatorUnitTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
-                        InputSource.INPUT_SOURCE_GALLERY_VALUE);
+                        InputSource.INPUT_SOURCE_GALLERY);
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
 
@@ -3738,9 +3738,9 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
-                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
-                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
-                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE)
+                                InputSource.INPUT_SOURCE_CAMERA,
+                                InputSource.INPUT_SOURCE_GALLERY,
+                                InputSource.INPUT_SOURCE_FILE_PICKER)
                         .build();
 
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -3759,10 +3759,10 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
-                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
-                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
-                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
-                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                                InputSource.INPUT_SOURCE_CAMERA,
+                                InputSource.INPUT_SOURCE_GALLERY,
+                                InputSource.INPUT_SOURCE_FILE_PICKER,
+                                InputSource.INPUT_SOURCE_DRIVE)
                         .build();
 
         mMediator.beginInput(mSession);

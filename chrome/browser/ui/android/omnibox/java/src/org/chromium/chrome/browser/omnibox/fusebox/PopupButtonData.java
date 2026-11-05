@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,7 +31,7 @@ public class PopupButtonData {
     public final String text;
     public final String subtext;
     // Either iconId (predefined vector drawable) or customIcon (bitmap favicon) is set.
-    public final /*IconResourceIds*/ int iconId;
+    public final @IconResourceIds int iconId;
     public final @Nullable Bitmap customIcon;
     public final boolean enabled;
     public final boolean selected;
@@ -58,7 +59,7 @@ public class PopupButtonData {
         private Callback<PopupButtonData> mOnClicked = (data) -> {};
         private String mText = "";
         private String mSubtext = "";
-        private int mIconId;
+        private @IconResourceIds int mIconId;
         private @Nullable Bitmap mCustomIcon;
         private boolean mEnabled;
         private boolean mSelected;
@@ -82,7 +83,7 @@ public class PopupButtonData {
             return this;
         }
 
-        public Builder setIconId(int iconId) {
+        public Builder setIconId(@IconResourceIds int iconId) {
             assert mCustomIcon == null;
             mIconId = iconId;
             return this;

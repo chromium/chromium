@@ -56,6 +56,7 @@ import org.chromium.components.contextual_search.InputStateBuilder;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -115,7 +116,7 @@ public class HintTextUpdaterUnitTest {
         mAutocompleteInput.reset();
         mAutocompleteInput.setDisplayState(DisplayState.DRAFTING);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mAutocompleteInput.setAutocompleteState(AutocompleteInput.AutocompleteState.ENABLED);
+        mAutocompleteInput.setAutocompleteState(AutocompleteState.ENABLED);
         mAutocompleteInput.setPageUrl(GURL.emptyGURL());
         mAutocompleteInput.setPageTitle("");
         mAutocompleteInput.setUserText("");

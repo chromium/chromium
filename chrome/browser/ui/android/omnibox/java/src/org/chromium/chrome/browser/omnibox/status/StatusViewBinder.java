@@ -10,6 +10,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -51,7 +52,7 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
         } else if (propertyKey == StatusProperties.STATUS_ICON_RESOURCE) {
             StatusIconResource res = model.get(StatusProperties.STATUS_ICON_RESOURCE);
             if (res == null) {
-                view.setStatusIconResources(null, StatusView.IconTransitionType.CROSSFADE, null);
+                view.setStatusIconResources(null, IconTransitionType.CROSSFADE, null);
                 return;
             }
             view.setStatusIconResources(

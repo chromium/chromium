@@ -48,9 +48,9 @@ public class LocationBarBackgroundDrawable extends Drawable {
     static final float GLIF_ENDING_ROTATION_DEGREES = 450f;
 
     @IntDef({
-        LocationBarBackgroundDrawable.HairlineBehavior.NONE,
-        LocationBarBackgroundDrawable.HairlineBehavior.RAINBOW,
-        LocationBarBackgroundDrawable.HairlineBehavior.SOLID,
+        HairlineBehavior.NONE,
+        HairlineBehavior.RAINBOW,
+        HairlineBehavior.SOLID,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface HairlineBehavior {

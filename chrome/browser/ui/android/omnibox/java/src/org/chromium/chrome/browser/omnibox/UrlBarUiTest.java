@@ -68,6 +68,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.KeyUtils;
+import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -92,7 +95,7 @@ public class UrlBarUiTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private UrlBar.UrlBarDelegate mUrlBarDelegate;
+    @Mock private UrlBarDelegate mUrlBarDelegate;
     @Mock private View.OnKeyListener mViewOnKeyListener;
     @Mock private Callback<Boolean> mTextWrappingCallback;
 
@@ -172,8 +175,7 @@ public class UrlBarUiTest {
         }
     }
 
-    private void updateUrlBarText(
-            CharSequence text, @UrlBar.ScrollType int scrollType, int scrollIndex) {
+    private void updateUrlBarText(CharSequence text, @ScrollType int scrollType, int scrollIndex) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(text);
@@ -204,7 +206,7 @@ public class UrlBarUiTest {
     @Feature("Omnibox")
     public void testVisibleTextPrefixHint_ShortUrl() {
         String url = "www.test.com";
-        updateUrlBarText(url, UrlBar.ScrollType.SCROLL_TO_TLD, url.length());
+        updateUrlBarText(url, ScrollType.SCROLL_TO_TLD, url.length());
 
         assertThat(getEndOfUrlHorizontal(), Matchers.lessThan((float) getMeasuredWidth()));
         assertNull(getVisibleTextPrefixHint());
@@ -216,7 +218,7 @@ public class UrlBarUiTest {
     public void testVisibleTextPrefixHint_ShortTld_LongPath() {
         final String domain = "www.test.com";
         final String path = "/" + TextUtils.join("", Collections.nCopies(500, "a"));
-        updateUrlBarText(domain + path, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
+        updateUrlBarText(domain + path, ScrollType.SCROLL_TO_TLD, domain.length());
 
         assertThat(getEndOfUrlHorizontal(), Matchers.greaterThan((float) getMeasuredWidth()));
 
@@ -226,7 +228,7 @@ public class UrlBarUiTest {
         // Append a string to the already long initial text and validate the prefix doesn't change.
         updateUrlBarText(
                 getUrlText() + "bbbbbbbbbbbbbbbbbbbbbbb",
-                UrlBar.ScrollType.SCROLL_TO_TLD,
+                ScrollType.SCROLL_TO_TLD,
                 domain.length());
         final CharSequence prefixHint = getVisibleTextPrefixHint();
         assertNotNull(prefixHint);
@@ -236,11 +238,11 @@ public class UrlBarUiTest {
         assertThat(prefixHint.length(), Matchers.lessThan(urlText.length()));
 
         // Append a character to just the hint prefix text and validate the prefix doesn't change.
-        updateUrlBarText(prefixHint + "a", UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
+        updateUrlBarText(prefixHint + "a", ScrollType.SCROLL_TO_TLD, domain.length());
         assertTextEquals(prefixHint, getVisibleTextPrefixHint());
 
         // Set the text to just the prefix text and ensure the hint remains unchanged.
-        updateUrlBarText(prefixHint, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
+        updateUrlBarText(prefixHint, ScrollType.SCROLL_TO_TLD, domain.length());
         assertTextEquals(prefixHint, getVisibleTextPrefixHint());
 
         // Set the text to be slightly shorter than the prefix, which will result in the text
@@ -250,7 +252,7 @@ public class UrlBarUiTest {
         // account for rounding issues with text positioning.
         updateUrlBarText(
                 TextUtils.substring(prefixHint, 0, prefixHint.length() - 2),
-                UrlBar.ScrollType.SCROLL_TO_TLD,
+                ScrollType.SCROLL_TO_TLD,
                 domain.length());
         assertNull(getVisibleTextPrefixHint());
     }
@@ -262,10 +264,10 @@ public class UrlBarUiTest {
         final String domain1 = "www.a.com";
         final String domain2 = "www.b.com";
         final String path = "/" + TextUtils.join("", Collections.nCopies(500, "a"));
-        updateUrlBarText(domain1 + path, UrlBar.ScrollType.SCROLL_TO_TLD, domain1.length());
+        updateUrlBarText(domain1 + path, ScrollType.SCROLL_TO_TLD, domain1.length());
         assertNull(getVisibleTextPrefixHint());
 
-        updateUrlBarText(domain2 + path, UrlBar.ScrollType.SCROLL_TO_TLD, domain2.length());
+        updateUrlBarText(domain2 + path, ScrollType.SCROLL_TO_TLD, domain2.length());
         assertNull(getVisibleTextPrefixHint());
     }
 
@@ -276,7 +278,7 @@ public class UrlBarUiTest {
         final String domain = "www.test.com";
         // Add a RTL character shortly after the TLD, so that it is visible.
         final String path = "/aت" + TextUtils.join("", Collections.nCopies(500, "a"));
-        updateUrlBarText(domain + path, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
+        updateUrlBarText(domain + path, ScrollType.SCROLL_TO_TLD, domain.length());
 
         assertThat(getEndOfUrlHorizontal(), Matchers.greaterThan((float) getMeasuredWidth()));
 
@@ -287,7 +289,7 @@ public class UrlBarUiTest {
         // Append a string to the already long initial text and validate the prefix doesn't change.
         updateUrlBarText(
                 getUrlText() + "bbbbbbbbbbbbbbbbbbbbbbb",
-                UrlBar.ScrollType.SCROLL_TO_TLD,
+                ScrollType.SCROLL_TO_TLD,
                 domain.length());
         assertNull(prefixHint);
     }
@@ -297,15 +299,14 @@ public class UrlBarUiTest {
     @Feature("Omnibox")
     public void testVisibleTextPrefixHint_LongTld() throws Exception {
         final String domain = "www." + TextUtils.join("", Collections.nCopies(500, "a")) + ".com";
-        updateUrlBarText(domain, UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
+        updateUrlBarText(domain, ScrollType.SCROLL_TO_TLD, domain.length());
 
         final CharSequence urlText = getUrlText();
         CharSequence prefixHint = getVisibleTextPrefixHint();
         assertNotNull(prefixHint);
         assertTextEquals(urlText, prefixHint);
 
-        updateUrlBarText(
-                getUrlText() + "/foooooo", UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
+        updateUrlBarText(getUrlText() + "/foooooo", ScrollType.SCROLL_TO_TLD, domain.length());
         assertTextEquals(urlText, getVisibleTextPrefixHint());
     }
 
@@ -313,12 +314,12 @@ public class UrlBarUiTest {
     @SmallTest
     @Feature("Omnibox")
     public void testVisibleTextPrefixHint_NonUrlText() {
-        updateUrlBarText("a", UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
+        updateUrlBarText("a", ScrollType.SCROLL_TO_BEGINNING, 0);
         assertNull(getVisibleTextPrefixHint());
 
         updateUrlBarText(
                 TextUtils.join("", Collections.nCopies(500, "a")),
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING,
+                ScrollType.SCROLL_TO_BEGINNING,
                 0);
         assertNull(getVisibleTextPrefixHint());
     }
@@ -385,7 +386,7 @@ public class UrlBarUiTest {
     @SmallTest
     @Feature("Omnibox")
     public void testFocusedRightClick_selectsWord() {
-        updateUrlBarText("search google query", UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
+        updateUrlBarText("search google query", ScrollType.SCROLL_TO_BEGINNING, 0);
         requestFocus();
 
         rightClickAtOffset(9);
@@ -398,7 +399,7 @@ public class UrlBarUiTest {
     @SmallTest
     @Feature("Omnibox")
     public void testFocusedRightClick_insideSelection_retainsSelection() {
-        updateUrlBarText("search google query", UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
+        updateUrlBarText("search google query", ScrollType.SCROLL_TO_BEGINNING, 0);
         requestFocus();
         setSelection(/* start= */ 7, /* end= */ 13);
 
@@ -666,8 +667,7 @@ public class UrlBarUiTest {
                 });
     }
 
-    private void setTextContextMenuDelegate(
-            @Nullable UrlBar.UrlBarTextContextMenuDelegate delegate) {
+    private void setTextContextMenuDelegate(@Nullable UrlBarTextContextMenuDelegate delegate) {
         ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setTextContextMenuDelegate(delegate));
     }
 
@@ -1192,8 +1192,8 @@ public class UrlBarUiTest {
         String expectedStripped = "www.foo.com/index.html";
         setText(expectedStripped);
 
-        UrlBar.UrlBarTextContextMenuDelegate delegate =
-                new UrlBar.UrlBarTextContextMenuDelegate() {
+        UrlBarTextContextMenuDelegate delegate =
+                new UrlBarTextContextMenuDelegate() {
                     @Override
                     public @Nullable String getTextToPaste() {
                         return null;

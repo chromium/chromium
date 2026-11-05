@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -49,6 +48,7 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewStructure;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
@@ -83,6 +83,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.BoundsEllipsisSpan;
 import org.chromium.chrome.browser.omnibox.UrlBar.EllipsisSpan;
+import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -172,6 +173,7 @@ public class UrlBarUnitTest {
     @Mock private Runnable mRunnable;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private Callback<Boolean> mTextWrappingCallback;
+    @Mock private InputConnection mInputConnection;
     @Captor private ArgumentCaptor<SpannableStringBuilder> mHaveUrlCaptor;
 
     private ActivityController<Activity> mController;
@@ -315,7 +317,7 @@ public class UrlBarUnitTest {
                 ensureModelMethod.invoke(mUrlBar);
                 model = (AutocompleteEditTextModelBase) modelField.get(mUrlBar);
             }
-            model.onCreateInputConnection(mock(android.view.inputmethod.InputConnection.class));
+            model.onCreateInputConnection(mInputConnection);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -437,7 +439,7 @@ public class UrlBarUnitTest {
     public void testTruncation_LongUrl() {
         measureAndLayoutUrlBar();
         String url = SHORT_DOMAIN + LONG_PATH;
-        mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
+        mUrlBar.setTextWithTruncation(url, ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
         Editable text = mUrlBar.getText();
         assertEquals(url, text.toString());
         BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
@@ -451,7 +453,7 @@ public class UrlBarUnitTest {
         // test fails when the UrlBar.MIN_LENGTH_FOR_TRUCATION_V2 is changed to something smaller.
         String url = SHORT_DOMAIN + LONG_PATH;
         url = url.substring(0, 99);
-        mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
+        mUrlBar.setTextWithTruncation(url, ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
         Editable text = mUrlBar.getText();
         assertEquals(url, text.toString());
         BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
@@ -462,7 +464,7 @@ public class UrlBarUnitTest {
     public void testTruncation_LongTld_ScrollToTld() {
         measureAndLayoutUrlBar();
         String url = LONG_DOMAIN + SHORT_PATH;
-        mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, LONG_DOMAIN.length());
+        mUrlBar.setTextWithTruncation(url, ScrollType.SCROLL_TO_TLD, LONG_DOMAIN.length());
         Editable text = mUrlBar.getText();
         assertEquals(url, text.toString());
         BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
@@ -474,7 +476,7 @@ public class UrlBarUnitTest {
     public void testTruncation_LongTld_ScrollToBeginning() {
         measureAndLayoutUrlBar();
         String url = SHORT_DOMAIN + LONG_PATH;
-        mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
+        mUrlBar.setTextWithTruncation(url, ScrollType.SCROLL_TO_BEGINNING, 0);
         Editable text = mUrlBar.getText();
         assertEquals(url, text.toString());
         BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
@@ -490,7 +492,7 @@ public class UrlBarUnitTest {
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
         mUrlBar.setLayoutParams(params);
 
-        mUrlBar.setTextWithTruncation(LONG_DOMAIN, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
+        mUrlBar.setTextWithTruncation(LONG_DOMAIN, ScrollType.SCROLL_TO_BEGINNING, 0);
         Editable text = mUrlBar.getText();
         assertEquals(LONG_DOMAIN, text.toString());
         BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
@@ -785,7 +787,7 @@ public class UrlBarUnitTest {
         mUrlBar.onFocusChanged(
                 /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
 
-        mUrlBar.setTextWithTruncation(LONG_DOMAIN, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
+        mUrlBar.setTextWithTruncation(LONG_DOMAIN, ScrollType.SCROLL_TO_BEGINNING, 0);
         String text = mUrlBar.getText().toString();
         assertEquals(LONG_DOMAIN, text);
 
@@ -806,8 +808,7 @@ public class UrlBarUnitTest {
         // As long as layouts are not available, no action should be taken.
         // This is typically the case when the text view or content is manipulated in some way and
         // has not yet completed the full measure/layout cycle.
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals(42, mUrlBar.getScrollX());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
 
@@ -820,8 +821,7 @@ public class UrlBarUnitTest {
         // size. This should avoid recalculations and simply re-set the scroll position.
         mUrlBar.setVisibleTextPrefixHintForTesting("");
         mUrlBar.setScrollX(42);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals("", mUrlBar.getVisibleTextPrefixHint());
         assertEquals(0, mUrlBar.getScrollX());
     }
@@ -839,8 +839,7 @@ public class UrlBarUnitTest {
         // As long as layouts are not available, no action should be taken.
         // This is typically the case when the text view or content is manipulated in some way and
         // has not yet completed the full measure/layout cycle.
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals(0, mUrlBar.getScrollX());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
 
@@ -858,8 +857,7 @@ public class UrlBarUnitTest {
         // size. This should avoid recalculations and simply re-set the scroll position.
         mUrlBar.setVisibleTextPrefixHintForTesting("");
         mUrlBar.setScrollX(0);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals("", mUrlBar.getVisibleTextPrefixHint());
         assertEquals(expectedScrollX, mUrlBar.getScrollX());
     }
@@ -877,8 +875,7 @@ public class UrlBarUnitTest {
         // As long as layouts are not available, no action should be taken.
         // This is typically the case when the text view or content is manipulated in some way and
         // has not yet completed the full measure/layout cycle.
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals(42, mUrlBar.getScrollX());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
 
@@ -892,8 +889,7 @@ public class UrlBarUnitTest {
         // size. This should avoid recalculations and simply re-set the scroll position.
         mUrlBar.setVisibleTextPrefixHintForTesting("");
         mUrlBar.setScrollX(42);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals("", mUrlBar.getVisibleTextPrefixHint());
         assertEquals(0, mUrlBar.getScrollX());
     }
@@ -911,8 +907,7 @@ public class UrlBarUnitTest {
         // As long as layouts are not available, no action should be taken.
         // This is typically the case when the text view or content is manipulated in some way and
         // has not yet completed the full measure/layout cycle.
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals(0, mUrlBar.getScrollX());
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
 
@@ -930,8 +925,7 @@ public class UrlBarUnitTest {
         // size. This should avoid recalculations and simply re-set the scroll position.
         mUrlBar.setVisibleTextPrefixHintForTesting("");
         mUrlBar.setScrollX(0);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals("", mUrlBar.getVisibleTextPrefixHint());
         assertEquals(expectedScrollX, mUrlBar.getScrollX());
     }
@@ -940,8 +934,7 @@ public class UrlBarUnitTest {
     public void onFocusChanged_unfocusRestoresRtlHintScrollAfterExpandedFocus() {
         mUrlBar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mUrlBar.setHint("ابحث في Google أو اكتب عنوان URL");
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         measureAndLayoutUrlBar();
 
         int expectedScrollX =
@@ -955,7 +948,7 @@ public class UrlBarUnitTest {
                 /* focused= */ true,
                 /* direction= */ View.FOCUS_DOWN,
                 /* previouslyFocusedRect= */ null);
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.NO_SCROLL, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.NO_SCROLL, /* originChanged= */ false);
         measureAndLayoutUrlBarForSize(URL_BAR_WIDTH * 2, URL_BAR_HEIGHT);
         mUrlBar.setScrollX(0);
 
@@ -976,8 +969,7 @@ public class UrlBarUnitTest {
         mUrlBar.setText(rtlText);
         measureAndLayoutUrlBar();
 
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
 
         float endPointX = mUrlBar.getLayout().getPrimaryHorizontal(rtlText.length());
         int visibleViewportWidth =
@@ -991,8 +983,7 @@ public class UrlBarUnitTest {
     public void layout_noScrollWithNoSizeChanges() {
         // Initialize the URL bar. Verify test conditions.
         mUrlBar.setText(SHORT_DOMAIN);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         measureAndLayoutUrlBar();
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
         mUrlBar.setScrollX(42);
@@ -1007,8 +998,7 @@ public class UrlBarUnitTest {
     public void layout_noScrollWhenHeightChanges() {
         // Initialize the URL bar. Verify test conditions.
         mUrlBar.setText(SHORT_DOMAIN);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         measureAndLayoutUrlBar();
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
         mUrlBar.setScrollX(42);
@@ -1023,8 +1013,7 @@ public class UrlBarUnitTest {
     public void layout_updateScrollWhenWidthChanges() {
         // Initialize the URL bar. Verify test conditions.
         mUrlBar.setText(SHORT_DOMAIN);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         measureAndLayoutUrlBar();
         assertFalse(mUrlBar.hasPendingDisplayTextScrollForTesting());
         mUrlBar.setScrollX(42);
@@ -1042,21 +1031,18 @@ public class UrlBarUnitTest {
 
         // Case 1: Cursor at 0, no selection.
         mUrlBar.setSelection(0);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals(0, mUrlBar.getSelectionStart());
         assertEquals(0, mUrlBar.getSelectionEnd());
 
         // Case 2: Cursor at non-zero, no selection.
         mUrlBar.setSelection(5);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals(0, mUrlBar.getSelectionStart());
 
         // Case 3: Selection exists.
         mUrlBar.setSelection(1, 3);
-        mUrlBar.scrollDisplayText(
-                UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ false);
         assertEquals(0, mUrlBar.getSelectionStart());
         assertEquals(0, mUrlBar.getSelectionEnd());
     }
@@ -1064,7 +1050,7 @@ public class UrlBarUnitTest {
     private void setupInitialDomainScroll() {
         mUrlBar.setText(SHORT_DOMAIN);
         mUrlBar.setScrollState(
-                UrlBar.ScrollType.SCROLL_TO_TLD,
+                ScrollType.SCROLL_TO_TLD,
                 /* scrollToIndex= */ SHORT_DOMAIN.length(),
                 /* originChanged= */ false);
         measureAndLayoutUrlBar();
@@ -1078,7 +1064,7 @@ public class UrlBarUnitTest {
 
         mUrlBar.setText(SHORT_SUBDOMAIN);
         mUrlBar.setScrollState(
-                UrlBar.ScrollType.SCROLL_TO_TLD,
+                ScrollType.SCROLL_TO_TLD,
                 /* scrollToIndex= */ SHORT_SUBDOMAIN.length(),
                 /* originChanged= */ true);
         assertNull(mUrlBar.getVisibleTextPrefixHint());
@@ -1093,7 +1079,7 @@ public class UrlBarUnitTest {
         mUrlBar.setText(SHORT_SUBDOMAIN);
         mUrlBar.requestLayout();
         mUrlBar.setScrollState(
-                UrlBar.ScrollType.SCROLL_TO_TLD,
+                ScrollType.SCROLL_TO_TLD,
                 /* scrollToIndex= */ SHORT_SUBDOMAIN.length(),
                 /* originChanged= */ true);
         assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
@@ -1114,7 +1100,7 @@ public class UrlBarUnitTest {
         // ended at a different index must not be reused.
         mUrlBar.setText(SHORT_SUBDOMAIN);
         mUrlBar.setScrollState(
-                UrlBar.ScrollType.SCROLL_TO_TLD,
+                ScrollType.SCROLL_TO_TLD,
                 /* scrollToIndex= */ SHORT_SUBDOMAIN.length(),
                 /* originChanged= */ false);
         assertNull(mUrlBar.getVisibleTextPrefixHint());
@@ -1659,7 +1645,7 @@ public class UrlBarUnitTest {
                         .length);
 
         mUrlBar.setText(SHORT_DOMAIN);
-        mUrlBar.scrollDisplayText(UrlBar.ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ true);
+        mUrlBar.scrollDisplayText(ScrollType.SCROLL_TO_BEGINNING, /* originChanged= */ true);
 
         Editable text = mUrlBar.getText();
         assertEquals(0, text.getSpans(0, text.length(), BoundsEllipsisSpan.class).length);
@@ -2162,7 +2148,7 @@ public class UrlBarUnitTest {
         assertFalse(mUrlBar.isFocused());
 
         String url = SHORT_DOMAIN + LONG_PATH;
-        mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
+        mUrlBar.setTextWithTruncation(url, ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
 
         Editable text = mUrlBar.getText();
         BoundsEllipsisSpan[] spansBefore =
@@ -2192,7 +2178,7 @@ public class UrlBarUnitTest {
                 /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
         assertFalse(mUrlBar.isFocused());
 
-        mUrlBar.setTextWithTruncation(SUPER_LONG_URL, UrlBar.ScrollType.SCROLL_TO_TLD, 10);
+        mUrlBar.setTextWithTruncation(SUPER_LONG_URL, ScrollType.SCROLL_TO_TLD, 10);
         Editable text = mUrlBar.getText();
         BoundsEllipsisSpan[] spansBefore =
                 text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
@@ -2220,7 +2206,7 @@ public class UrlBarUnitTest {
     public void testSetTextWithTruncation_identicalText_noReset() {
         mUrlBar.setText("hello");
         Editable textBefore = mUrlBar.getText();
-        mUrlBar.setTextWithTruncation("hello", UrlBar.ScrollType.SCROLL_TO_TLD, 5);
+        mUrlBar.setTextWithTruncation("hello", ScrollType.SCROLL_TO_TLD, 5);
         Editable textAfter = mUrlBar.getText();
         assertSame(textBefore, textAfter);
     }
@@ -2242,7 +2228,7 @@ public class UrlBarUnitTest {
                 0,
                 secondText.length(),
                 Editable.SPAN_INCLUSIVE_EXCLUSIVE);
-        mUrlBar.setTextWithTruncation(secondText, UrlBar.ScrollType.SCROLL_TO_TLD, 5);
+        mUrlBar.setTextWithTruncation(secondText, ScrollType.SCROLL_TO_TLD, 5);
 
         assertSame(textBefore, mUrlBar.getText());
     }
@@ -2257,7 +2243,7 @@ public class UrlBarUnitTest {
                 1, textBefore.getSpans(0, textBefore.length(), EllipsisSpan.class).length);
 
         mUrlBar.setTextWithTruncation(
-                SUPER_LONG_URL, UrlBar.ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
+                SUPER_LONG_URL, ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
 
         assertSame(textBefore, mUrlBar.getText());
     }
@@ -2278,7 +2264,7 @@ public class UrlBarUnitTest {
                 0,
                 whiteText.length(),
                 Editable.SPAN_INCLUSIVE_EXCLUSIVE);
-        mUrlBar.setTextWithTruncation(whiteText, UrlBar.ScrollType.SCROLL_TO_TLD, 5);
+        mUrlBar.setTextWithTruncation(whiteText, ScrollType.SCROLL_TO_TLD, 5);
 
         Editable textAfter = mUrlBar.getText();
         UrlEmphasisColorSpan[] spans =
@@ -2297,7 +2283,7 @@ public class UrlBarUnitTest {
                 Editable.SPAN_INCLUSIVE_EXCLUSIVE);
         mUrlBar.setText(emphasizedText);
 
-        mUrlBar.setTextWithTruncation("hello", UrlBar.ScrollType.SCROLL_TO_TLD, 5);
+        mUrlBar.setTextWithTruncation("hello", ScrollType.SCROLL_TO_TLD, 5);
 
         Editable textAfter = mUrlBar.getText();
         assertEquals(
@@ -2386,10 +2372,7 @@ public class UrlBarUnitTest {
 
         SpannableStringBuilder spannable = new SpannableStringBuilder(text);
         spannable.setSpan(
-                UrlBar.BoundsEllipsisSpan.INSTANCE,
-                10,
-                text.length(),
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                BoundsEllipsisSpan.INSTANCE, 10, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         mUrlBar.setText(spannable);
         int widthWithSpan = mUrlBar.getTextWidth();
 

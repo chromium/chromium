@@ -576,7 +576,7 @@ public class StatusMediator
         boolean isStandbyNoFocus =
                 mInputSessionState != null
                         && mInputSessionState.getAutocompleteInput().getAutocompleteState()
-                                == AutocompleteInput.AutocompleteState.STANDBY_NO_FOCUS;
+                                == AutocompleteState.STANDBY_NO_FOCUS;
         return isNtpVisible()
                 && !hasPendingNonNtpNavigation()
                 && (!mUrlHasFocus || isStandbyNoFocus)

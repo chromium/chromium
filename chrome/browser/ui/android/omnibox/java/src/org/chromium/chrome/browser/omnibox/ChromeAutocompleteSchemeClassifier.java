@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
+import org.chromium.components.omnibox.AutocompleteSchemeClassifier.NativeAutocompleteSchemeClassifier;
 
 /**
  * Creates the c++ class that provides scheme classification logic for Chrome. Must call destroy()
@@ -24,7 +25,7 @@ public class ChromeAutocompleteSchemeClassifier extends AutocompleteSchemeClassi
 
     @NativeMethods
     public interface Natives {
-        JniUniquePtr<AutocompleteSchemeClassifier.NativeAutocompleteSchemeClassifier>
-                createAutocompleteClassifier(@JniType("Profile*") Profile profile);
+        JniUniquePtr<NativeAutocompleteSchemeClassifier> createAutocompleteClassifier(
+                @JniType("Profile*") Profile profile);
     }
 }

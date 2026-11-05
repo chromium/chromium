@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -41,7 +42,7 @@ import java.lang.annotation.Target;
 public class UrlBarCoordinator
         implements UrlBarEditingTextStateProvider,
                 UrlFocusChangeListener,
-                KeyboardVisibilityDelegate.KeyboardVisibilityListener {
+                KeyboardVisibilityListener {
 
     @IntDef({
         KeyboardState.HIDDEN,
@@ -302,7 +303,7 @@ public class UrlBarCoordinator
     @Override
     public void onUrlFocusChange(boolean hasFocus) {}
 
-    // KeyboardVisibilityDelegate.KeyboardVisibilityListener implementation.
+    // KeyboardVisibilityListener implementation.
     @Override
     public void keyboardObscuringChanged(boolean isObscuring) {
         if (OmniboxFeatures.isDebounceKeyboardVisibilityEnabled()) {

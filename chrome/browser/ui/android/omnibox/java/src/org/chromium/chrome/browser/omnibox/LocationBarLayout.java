@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -508,7 +508,7 @@ public class LocationBarLayout extends ConstraintLayout {
 
     /** Returns the source of Voice Recognition interactions. */
     public int getVoiceRecognitionSource() {
-        return VoiceRecognitionIntentHandler.VoiceInteractionSource.OMNIBOX;
+        return VoiceInteractionSource.OMNIBOX;
     }
 
     /** Returns the entrypoint used to launch Lens. */

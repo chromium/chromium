@@ -39,8 +39,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundS
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
-import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
-import org.chromium.components.omnibox.IconResourceIdsProtoIntDef;
+import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -504,7 +503,7 @@ class FuseboxViewBinder {
             var drawable = new BitmapDrawable(res, data.customIcon);
             setCustomButtonDrawables(buttonView, drawable, data.selected);
         } else {
-            int iconId = data.iconId == 0 ? IconResourceIds.GLOBE_VALUE : data.iconId;
+            @IconResourceIds int iconId = data.iconId == 0 ? IconResourceIds.GLOBE : data.iconId;
             @DrawableRes int iconRes = FuseboxIconUtils.getResIdForIconId(iconId);
             setButtonDrawables(buttonView, iconRes, data.selected);
         }
@@ -744,8 +743,7 @@ class FuseboxViewBinder {
 
         @ColorInt int colorOnSurface = mResourceProvider.getColorOnSurface();
 
-        @IconResourceIdsProtoIntDef.IconResourceIds
-        int iconId = model.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID);
+        @IconResourceIds int iconId = model.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID);
         @DrawableRes int startIconRes = FuseboxIconUtils.getResIdForIconId(iconId);
         Drawable startDrawable =
                 startIconRes != Resources.ID_NULL ? context.getDrawable(startIconRes) : null;

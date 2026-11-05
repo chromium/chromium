@@ -82,7 +82,7 @@ import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
-import org.chromium.components.omnibox.InputTypeProto.InputType;
+import org.chromium.components.omnibox.InputTypeProtoIntDef.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -1460,25 +1460,22 @@ class FuseboxMediator implements BackPressHandler {
                         && !(disableTabsForCanvas && isCanvasActive)
                         && (inputState == null
                                 || !inputState.disabledInputTypes.contains(
-                                        InputType.INPUT_TYPE_BROWSER_TAB_VALUE));
+                                        InputType.INPUT_TYPE_BROWSER_TAB));
         boolean imagesEnabled =
                 inputState == null
-                        || !inputState.disabledInputTypes.contains(
-                                InputType.INPUT_TYPE_LENS_IMAGE_VALUE);
+                        || !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_IMAGE);
         boolean filesEnabled =
                 inputState == null
-                        || !inputState.disabledInputTypes.contains(
-                                InputType.INPUT_TYPE_LENS_FILE_VALUE);
+                        || !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_FILE);
         // Drive button is visible if native allows it (server config, feature flag, and identity
         // are checked in InputStateModel) and the Drive picker is available on device.
         boolean driveVisible =
                 inputState != null
-                        && inputState.allowedInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE)
+                        && inputState.allowedInputTypes.contains(InputType.INPUT_TYPE_DRIVE)
                         && DriveFilePickerClient.getInstance().isAvailable(mContext, mProfile);
         boolean driveEnabled =
                 inputState == null
-                        || !inputState.disabledInputTypes.contains(
-                                InputType.INPUT_TYPE_DRIVE_VALUE);
+                        || !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_DRIVE);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, tabsEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED, tabsEnabled);
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_ENABLED, tabsEnabled);

@@ -24,6 +24,7 @@ import androidx.core.util.ObjectsCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
@@ -46,8 +47,7 @@ public class StatusProperties {
         private @Nullable String mIconIdentifier;
         private @Nullable Bitmap mBitmap;
         private @Nullable Drawable mDrawable;
-        private @StatusView.IconTransitionType int mIconTransitionType =
-                StatusView.IconTransitionType.CROSSFADE;
+        private @IconTransitionType int mIconTransitionType = IconTransitionType.CROSSFADE;
         private @Nullable Runnable mCallback;
 
         /** Constructor for a custom drawable. */
@@ -79,14 +79,14 @@ public class StatusProperties {
         }
 
         /** Set the animation transition type for this icon. */
-        void setTransitionType(@StatusView.IconTransitionType int type) {
+        void setTransitionType(@IconTransitionType int type) {
             mIconTransitionType = type;
         }
 
         /**
          * @return The animation transition type for this icon.
          */
-        @StatusView.IconTransitionType
+        @IconTransitionType
         int getTransitionType() {
             return mIconTransitionType;
         }

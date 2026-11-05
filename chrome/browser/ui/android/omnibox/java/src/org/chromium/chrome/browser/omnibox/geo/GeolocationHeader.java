@@ -31,6 +31,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.geo.PartnerLocationDescriptor.LatLng;
+import org.chromium.chrome.browser.omnibox.geo.PartnerLocationDescriptor.LocationDescriptor;
+import org.chromium.chrome.browser.omnibox.geo.PartnerLocationDescriptor.LocationProducer;
+import org.chromium.chrome.browser.omnibox.geo.PartnerLocationDescriptor.LocationRole;
+import org.chromium.chrome.browser.omnibox.geo.PartnerLocationDescriptor.PermissionGranularity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
@@ -406,34 +411,28 @@ public class GeolocationHeader {
         int radius = (int) (location.getAccuracy() * 1000);
 
         // Create a LatLng for the coordinates.
-        PartnerLocationDescriptor.LatLng latlng =
-                PartnerLocationDescriptor.LatLng.newBuilder()
-                        .setLatitudeE7(latitudeE7)
-                        .setLongitudeE7(longitudeE7)
-                        .build();
+        LatLng latlng =
+                LatLng.newBuilder().setLatitudeE7(latitudeE7).setLongitudeE7(longitudeE7).build();
 
         // Populate a LocationDescriptor with the LatLng.
-        PartnerLocationDescriptor.LocationDescriptor locationDescriptor =
-                PartnerLocationDescriptor.LocationDescriptor.newBuilder()
+        LocationDescriptor locationDescriptor =
+                LocationDescriptor.newBuilder()
                         .setLatlng(latlng)
                         // Include role, producer, timestamp, radius, and permission granularity.
-                        .setRole(PartnerLocationDescriptor.LocationRole.CURRENT_LOCATION)
-                        .setProducer(PartnerLocationDescriptor.LocationProducer.DEVICE_LOCATION)
+                        .setRole(LocationRole.CURRENT_LOCATION)
+                        .setProducer(LocationProducer.DEVICE_LOCATION)
                         .setTimestamp(timestamp)
                         .setRadius((float) radius)
                         .setPermissionGranularity(
                                 isPreciseLocation
-                                        ? PartnerLocationDescriptor.PermissionGranularity
-                                                .PERMISSION_GRANULARITY_FINE
-                                        : PartnerLocationDescriptor.PermissionGranularity
-                                                .PERMISSION_GRANULARITY_COARSE)
+                                        ? PermissionGranularity.PERMISSION_GRANULARITY_FINE
+                                        : PermissionGranularity.PERMISSION_GRANULARITY_COARSE)
                         .build();
         return encodeLocationDescriptor(locationDescriptor);
     }
 
     /** Encodes the given proto location descriptor into a BASE64 URL_SAFE encoding. */
-    private static String encodeLocationDescriptor(
-            PartnerLocationDescriptor.LocationDescriptor locationDescriptor) {
+    private static String encodeLocationDescriptor(LocationDescriptor locationDescriptor) {
         return Base64.encodeToString(
                 locationDescriptor.toByteArray(), Base64.NO_WRAP | Base64.URL_SAFE);
     }

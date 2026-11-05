@@ -16,7 +16,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.IconProto.Icon;
-import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
@@ -27,50 +27,46 @@ public class FuseboxIconUtilsUnitTest {
     public void getResIdForIconId_mappedIds() {
         assertEquals(
                 R.drawable.ic_globe_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.GLOBE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.GLOBE));
         assertEquals(
                 R.drawable.search_spark_black_24dp,
-                FuseboxIconUtils.getResIdForIconId(
-                        IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE));
         assertEquals(
                 R.drawable.image_create_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.IMAGE_CREATE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.IMAGE_CREATE));
         assertEquals(
                 R.drawable.create_image_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.BANANA_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.BANANA));
         assertEquals(
                 R.drawable.travel_explore_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.TRAVEL_EXPLORE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.TRAVEL_EXPLORE));
         assertEquals(
                 R.drawable.draft_spark_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.DRAFT_SPARK_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.DRAFT_SPARK));
         assertEquals(
                 R.drawable.autorenew_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.AUTORENEW_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.AUTORENEW));
         assertEquals(
-                R.drawable.ic_timer,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.TIMER_VALUE));
+                R.drawable.ic_timer, FuseboxIconUtils.getResIdForIconId(IconResourceIds.TIMER));
         assertEquals(
-                R.drawable.bolt_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.BOLT_VALUE));
+                R.drawable.bolt_24dp, FuseboxIconUtils.getResIdForIconId(IconResourceIds.BOLT));
         assertEquals(
                 R.drawable.task_spark_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.TASK_SPARK_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.TASK_SPARK));
         assertEquals(
-                R.drawable.acute_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ACUTE_VALUE));
+                R.drawable.acute_24dp, FuseboxIconUtils.getResIdForIconId(IconResourceIds.ACUTE));
         assertEquals(
                 R.drawable.add_photo_alternate_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ADD_PHOTO_ALTERNATE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ADD_PHOTO_ALTERNATE));
         assertEquals(
                 R.drawable.photo_camera_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.LENS_CAMERA_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.LENS_CAMERA));
         assertEquals(
                 R.drawable.gs_drive_vd_theme_24,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.DRIVE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.DRIVE));
         assertEquals(
                 R.drawable.pro_model_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.PTM_TOOL_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.PTM_TOOL));
     }
 
     @Test
@@ -81,7 +77,7 @@ public class FuseboxIconUtilsUnitTest {
         OmniboxFeatures.setUseScrollableCarouselForTesting(false);
         assertEquals(
                 R.drawable.ic_folder_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE));
     }
 
     @Test
@@ -92,7 +88,7 @@ public class FuseboxIconUtilsUnitTest {
         OmniboxFeatures.setUseScrollableCarouselForTesting(false);
         assertEquals(
                 R.drawable.ic_folder_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE));
     }
 
     @Test
@@ -103,7 +99,7 @@ public class FuseboxIconUtilsUnitTest {
         OmniboxFeatures.setUseScrollableCarouselForTesting(false);
         assertEquals(
                 R.drawable.ic_attach_file_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE));
     }
 
     @Test
@@ -114,7 +110,7 @@ public class FuseboxIconUtilsUnitTest {
         OmniboxFeatures.setUseScrollableCarouselForTesting(true);
         assertEquals(
                 R.drawable.ic_attach_file_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE));
     }
 
     @Test
@@ -125,18 +121,15 @@ public class FuseboxIconUtilsUnitTest {
         OmniboxFeatures.setUseScrollableCarouselForTesting(false);
         assertEquals(
                 R.drawable.ic_attach_file_24dp,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE));
     }
 
     @Test
     public void getResIdForIconId_unmappedIds() {
         // PLACE_WHITE (0) is treated as unspecified.
         assertEquals(
-                Resources.ID_NULL,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.PLACE_WHITE_VALUE));
-        assertEquals(
-                Resources.ID_NULL,
-                FuseboxIconUtils.getResIdForIconId(IconResourceIds.SOCCER_VALUE));
+                Resources.ID_NULL, FuseboxIconUtils.getResIdForIconId(IconResourceIds.PLACE_WHITE));
+        assertEquals(Resources.ID_NULL, FuseboxIconUtils.getResIdForIconId(IconResourceIds.SOCCER));
         // Values unknown to the client, e.g. newly served by the backend.
         assertEquals(Resources.ID_NULL, FuseboxIconUtils.getResIdForIconId(-1));
         assertEquals(Resources.ID_NULL, FuseboxIconUtils.getResIdForIconId(Integer.MAX_VALUE));
@@ -147,7 +140,7 @@ public class FuseboxIconUtilsUnitTest {
         assertEquals(
                 R.drawable.bolt_24dp,
                 FuseboxIconUtils.resolveIconRes(
-                        Icon.newBuilder().setIconId(IconResourceIds.BOLT).build(),
+                        Icon.newBuilder().setIconIdValue(IconResourceIds.BOLT).build(),
                         R.drawable.ic_globe_24dp));
         assertEquals(
                 R.drawable.ic_globe_24dp,
@@ -159,7 +152,7 @@ public class FuseboxIconUtilsUnitTest {
         assertEquals(
                 R.drawable.ic_globe_24dp,
                 FuseboxIconUtils.resolveIconRes(
-                        Icon.newBuilder().setIconId(IconResourceIds.SOCCER).build(),
+                        Icon.newBuilder().setIconIdValue(IconResourceIds.SOCCER).build(),
                         R.drawable.ic_globe_24dp));
     }
 }

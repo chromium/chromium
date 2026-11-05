@@ -65,8 +65,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
-import org.chromium.components.omnibox.IconResourceIdsProtoIntDef;
+import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -230,7 +229,7 @@ public class FuseboxViewBinderUnitTest {
                 .with(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH)
                 .with(
                         FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                        IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE)
+                        IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE)
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON, false)
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, "test label")
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false)
@@ -648,17 +647,13 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void requestTypeDrawable() {
-        mModel.set(
-                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                IconResourceIdsProtoIntDef.IconResourceIds.BANANA);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID, IconResourceIds.BANANA);
         assertStartDrawable(R.drawable.create_image_24dp);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
 
-        mModel.set(
-                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                IconResourceIdsProtoIntDef.IconResourceIds.IMAGE_CREATE);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID, IconResourceIds.IMAGE_CREATE);
         assertStartDrawable(R.drawable.image_create_24dp);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
@@ -666,36 +661,28 @@ public class FuseboxViewBinderUnitTest {
 
         mModel.set(
                 FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE);
+                IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE);
         assertStartDrawable(R.drawable.search_spark_black_24dp);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
 
-        mModel.set(
-                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                IconResourceIdsProtoIntDef.IconResourceIds.TRAVEL_EXPLORE);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID, IconResourceIds.TRAVEL_EXPLORE);
         assertStartDrawable(R.drawable.travel_explore_24dp);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
 
-        mModel.set(
-                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                IconResourceIdsProtoIntDef.IconResourceIds.DRAFT_SPARK);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID, IconResourceIds.DRAFT_SPARK);
         assertStartDrawable(R.drawable.draft_spark_24dp);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
 
-        mModel.set(
-                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                IconResourceIdsProtoIntDef.IconResourceIds.PLACE_WHITE);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID, IconResourceIds.PLACE_WHITE);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
     }
 
     @Test
     public void requestTypeDrawable_tintToggleKeepsStartIcon() {
-        mModel.set(
-                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                IconResourceIdsProtoIntDef.IconResourceIds.BANANA);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID, IconResourceIds.BANANA);
         assertStartDrawable(R.drawable.create_image_24dp);
 
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON, true);
@@ -854,7 +841,7 @@ public class FuseboxViewBinderUnitTest {
         PopupButtonData buttonData =
                 new PopupButtonData.Builder()
                         .setType(PopupButtonType.MODEL)
-                        .setIconId(IconResourceIds.AUTORENEW_VALUE)
+                        .setIconId(IconResourceIds.AUTORENEW)
                         .build();
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(buttonData));
         assertNotNull(
@@ -916,7 +903,7 @@ public class FuseboxViewBinderUnitTest {
         PopupButtonData buttonData =
                 new PopupButtonData.Builder()
                         .setType(PopupButtonType.TOOL)
-                        .setIconId(IconResourceIds.BANANA_VALUE)
+                        .setIconId(IconResourceIds.BANANA)
                         .build();
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, List.of(buttonData));
         assertNotNull(
@@ -928,7 +915,7 @@ public class FuseboxViewBinderUnitTest {
         PopupButtonData buttonData =
                 new PopupButtonData.Builder()
                         .setType(PopupButtonType.MODEL)
-                        .setIconId(IconResourceIds.ACUTE_VALUE)
+                        .setIconId(IconResourceIds.ACUTE)
                         .build();
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(buttonData));
         assertNotNull(

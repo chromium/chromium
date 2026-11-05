@@ -16,6 +16,7 @@ import org.mockito.Mock;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -42,8 +43,7 @@ public class FakeOmniboxSuggestions {
     @Mock AutocompleteControllerJni mControllerJni;
 
     private final Map<Profile, AutocompleteController> mControllers = new HashMap<>();
-    private final Map<Profile, Set<AutocompleteController.OnSuggestionsReceivedListener>>
-            mListenersMap = new HashMap<>();
+    private final Map<Profile, Set<OnSuggestionsReceivedListener>> mListenersMap = new HashMap<>();
 
     public FakeOmniboxSuggestions() {
         if (sInstance != null) {
@@ -90,10 +90,9 @@ public class FakeOmniboxSuggestions {
                         GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_QUERY_TILES).build());
 
         // Simulate suggestions received.
-        Set<AutocompleteController.OnSuggestionsReceivedListener> listeners =
-                mListenersMap.get(profile);
+        Set<OnSuggestionsReceivedListener> listeners = mListenersMap.get(profile);
         if (listeners != null) {
-            for (AutocompleteController.OnSuggestionsReceivedListener listener : listeners) {
+            for (OnSuggestionsReceivedListener listener : listeners) {
                 ThreadUtils.postOnUiThread(
                         () -> listener.onSuggestionsReceived(result, /* isFinal= */ true));
             }

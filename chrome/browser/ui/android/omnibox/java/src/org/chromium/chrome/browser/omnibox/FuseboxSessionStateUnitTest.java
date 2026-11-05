@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
@@ -348,8 +349,7 @@ public class FuseboxSessionStateUnitTest {
 
         session.deactivate();
         assertEquals(
-                AutocompleteInput.AutocompleteState.DISABLED,
-                session.getAutocompleteInput().getAutocompleteState());
+                AutocompleteState.DISABLED, session.getAutocompleteInput().getAutocompleteState());
     }
 
     @Test

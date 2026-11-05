@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
+import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
@@ -913,9 +914,7 @@ public class LocationBarCoordinator
     @Override
     public void setOmniboxEditingText(String text) {
         mUrlCoordinator.setUrlBarData(
-                UrlBarData.forNonUrlText(text),
-                UrlBar.ScrollType.NO_SCROLL,
-                TextSelection.SELECT_END);
+                UrlBarData.forNonUrlText(text), ScrollType.NO_SCROLL, TextSelection.SELECT_END);
         updateButtonVisibility();
     }
 

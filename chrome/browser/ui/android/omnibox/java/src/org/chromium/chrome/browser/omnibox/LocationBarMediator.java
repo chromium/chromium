@@ -90,6 +90,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.NavigationTarget;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxAnimator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsContainer;
@@ -582,14 +583,13 @@ public class LocationBarMediator
                     @Override
                     public void handleActivationEvent(KeyEvent event) {
                         if (mAutocompleteCoordinator == null) return;
-                        @AutocompleteCoordinator.NavigationTarget
-                        int target = AutocompleteCoordinator.NavigationTarget.CURRENT_TAB;
+                        @NavigationTarget int target = NavigationTarget.CURRENT_TAB;
                         if (event.isAltPressed() && event.isShiftPressed()) {
-                            target = AutocompleteCoordinator.NavigationTarget.NEW_BACKGROUND_TAB;
+                            target = NavigationTarget.NEW_BACKGROUND_TAB;
                         } else if (event.isAltPressed()) {
-                            target = AutocompleteCoordinator.NavigationTarget.NEW_TAB;
+                            target = NavigationTarget.NEW_TAB;
                         } else if (event.isShiftPressed()) {
-                            target = AutocompleteCoordinator.NavigationTarget.NEW_WINDOW;
+                            target = NavigationTarget.NEW_WINDOW;
                         }
                         mAutocompleteCoordinator.loadTypedOmniboxText(event.getEventTime(), target);
                     }
@@ -3476,9 +3476,7 @@ public class LocationBarMediator
     public void onPerformPasteAndGo(String text) {
         if (!mNativeInitialized || mAutocompleteCoordinator == null) return;
         mAutocompleteCoordinator.loadPastedText(
-                text,
-                TimeUtils.uptimeMillis(),
-                AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+                text, TimeUtils.uptimeMillis(), NavigationTarget.CURRENT_TAB);
     }
 
     @Override
@@ -3913,8 +3911,7 @@ public class LocationBarMediator
             // from the views.
             if (mAutocompleteCoordinator != null) {
                 mAutocompleteCoordinator.loadTypedOmniboxText(
-                        TimeUtils.uptimeMillis(),
-                        AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+                        TimeUtils.uptimeMillis(), NavigationTarget.CURRENT_TAB);
             }
             return;
         }
@@ -3932,9 +3929,7 @@ public class LocationBarMediator
     private void clearEditingAndUserText() {
         if (mCurrentInput == null || mUrlCoordinator == null) return;
         mUrlCoordinator.setUrlBarData(
-                UrlBarData.forNonUrlText(""),
-                UrlBar.ScrollType.NO_SCROLL,
-                TextSelection.SELECT_END);
+                UrlBarData.forNonUrlText(""), ScrollType.NO_SCROLL, TextSelection.SELECT_END);
         mCurrentInput.setUserText("");
     }
 

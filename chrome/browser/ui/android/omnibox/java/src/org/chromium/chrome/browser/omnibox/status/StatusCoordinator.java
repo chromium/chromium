@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
+import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -163,7 +164,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
         updateSecurityIcon();
-        mMediator.updateLocationBarIcon(StatusView.IconTransitionType.CROSSFADE);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**

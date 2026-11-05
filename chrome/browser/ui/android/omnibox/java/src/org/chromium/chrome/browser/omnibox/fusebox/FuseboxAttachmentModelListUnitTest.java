@@ -33,6 +33,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxTabAttachStartFailureReason;
@@ -53,7 +54,7 @@ public class FuseboxAttachmentModelListUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
-    @Mock private FuseboxAttachmentModelList.FuseboxAttachmentChangeListener mListener;
+    @Mock private FuseboxAttachmentChangeListener mListener;
     @Mock private Tab mTab;
     @Mock private Runnable mAttachmentUploadFailedListener;
     @Mock private WebContents mWebContents;
