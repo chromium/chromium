@@ -289,7 +289,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   // exclusive, price tracking will take precedence over messages.
   if (placeholderHidden) {
     if (_contextualPanelEntrypointShouldBeVisible) {
-      // TODO(crbug.com/454072799): Adapt to record hiding badges for any badge
+      // TODO(crbug.com/574546707): Adapt to record hiding badges for any badge
       // that goes through LocationBarBadge.
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kPriceTracking);
     } else if ([_badgeConfig fromBadgeFactory]) {
@@ -548,7 +548,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 // User swiped the expanded badge towards the leading edge to dismiss it.
 - (void)expandedBadgeSwiped {
   [self collapseBadgeContainer];
-  // TODO(crbug.com/454072799): Create and use a metric for Location Bar Badge.
+  // TODO(crbug.com/574546267): Create and use a metric for Location Bar Badge.
   base::RecordAction(base::UserMetricsAction(
       "IOSContextualPanelEntrypointLargeChipDismissedWithSwipe"));
 }
