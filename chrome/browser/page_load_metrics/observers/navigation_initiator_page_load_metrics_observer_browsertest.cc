@@ -17,7 +17,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -60,14 +59,7 @@ class NavigationInitiatorPageLoadMetricsBrowserTest
             base::BindRepeating(&NavigationInitiatorPageLoadMetricsBrowserTest::
                                     GetActiveWebContents,
                                 base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-        // is enabled and then remove these two Features.
-        {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup,
-         lens::features::kLensOverlay});
+    scoped_feature_list_.InitAndDisableFeature(lens::features::kLensOverlay);
   }
 
   void SetUp() override {

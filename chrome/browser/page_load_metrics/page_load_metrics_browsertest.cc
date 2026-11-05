@@ -60,7 +60,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -185,14 +184,12 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
         {ukm::kUkmFeature},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
-        // Disable PreloadTopChromeWebUI, InitialWebUI/WebUIReloadButton, and
-        // WebUIOmniboxPopup by default so background top-chrome WebUI
-        // navigations do not pollute global navigation histograms; tests for
-        // InitialWebUI override these in subclasses.
+        // Disable PreloadTopChromeWebUI and InitialWebUI/WebUIReloadButton by
+        // default so background top-chrome WebUI navigations do not pollute
+        // global navigation histograms; tests for InitialWebUI override these
+        // in subclasses.
         {features::kHttpsUpgrades, features::kPreloadTopChromeWebUI,
-         features::kInitialWebUI, features::kWebUIReloadButton,
-         omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+         features::kInitialWebUI, features::kWebUIReloadButton});
   }
 
   PageLoadMetricsBrowserTest(const PageLoadMetricsBrowserTest&) = delete;
