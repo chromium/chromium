@@ -104,6 +104,8 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
                       .is_off_the_record = profile->IsOffTheRecord()});
           ON_CALL(*service, IsAimEligible())
               .WillByDefault(testing::Return(true));
+          ON_CALL(*service, IsFuseboxEligible())
+              .WillByDefault(testing::Return(true));
           return service;
         }));
   }
@@ -271,6 +273,17 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
   ASSERT_TRUE(side_panel_contents);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return side_panel_contents->ContainsOrIsFocusedWebContents(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
+                       DoesNotOpenSidePanelWhenTabSharingIneligible) {
+  auto* aim_service = static_cast<MockAimEligibilityService*>(
+      AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile()));
+  ASSERT_TRUE(aim_service);
+  ON_CALL(*aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_FALSE(GetAutocompleteProviderClient()->ShouldOpenCoBrowsePanel());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
