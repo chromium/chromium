@@ -38,6 +38,7 @@ public class ActorTask {
     private final String mTitle;
     private final WeakReference<Profile> mProfile;
     private @Nullable String mGlicConversationId;
+    private final boolean mIsExperimentalTriggering;
 
     @VisibleForTesting
     @CalledByNative
@@ -46,12 +47,19 @@ public class ActorTask {
             int id,
             @JniType("std::string") String title,
             Profile profile,
-            @Nullable @JniType("std::optional<std::string>") String glicConversationId) {
+            @Nullable @JniType("std::optional<std::string>") String glicConversationId,
+            boolean isExperimentalTriggering) {
         mNativeTask = nativeTask;
         mId = id;
         mTitle = title;
         mProfile = new WeakReference<>(profile);
         mGlicConversationId = glicConversationId;
+        mIsExperimentalTriggering = isExperimentalTriggering;
+    }
+
+    /** Returns whether this task was initiated via Glic experimental triggering. */
+    public boolean isExperimentalTriggering() {
+        return mIsExperimentalTriggering;
     }
 
     /**

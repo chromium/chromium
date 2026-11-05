@@ -287,6 +287,8 @@ public abstract class ChromeFeatureList {
     public static final String ACTOR_LIVE_NOTIFICATION = "ActorLiveNotification";
     public static final String ACTOR_LOGIN_PERMISSIONS_UI = "ActorLoginPermissionsUi";
     public static final String ACTOR_NOTIFICATION_INTENT_ROUTING = "ActorNotificationIntentRouting";
+    public static final String ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING =
+            "ActorSilenceNotificationsAfterFirstWorking";
     public static final String ACTOR_STEP_PROGRESS_NOTIFICATION = "ActorStepProgressNotification";
     public static final String AI_OVERLAY_DIALOG = "AiOverlayDialog";
     public static final String ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE =
@@ -1778,6 +1780,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ACTOR_LIVE_NOTIFICATION, true);
     public static final MutableFlagWithSafeDefault sActorNotificationIntentRouting =
             newMutableFlagWithSafeDefault(ACTOR_NOTIFICATION_INTENT_ROUTING, false);
+    public static final MutableFlagWithSafeDefault sActorSilenceNotificationsAfterFirstWorking =
+            newMutableFlagWithSafeDefault(ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING, false);
     public static final MutableFlagWithSafeDefault sActorStepProgressNotification =
             newMutableFlagWithSafeDefault(ACTOR_STEP_PROGRESS_NOTIFICATION, true);
     public static final MutableFlagWithSafeDefault sAlwaysDrawCompositedToolbarHairline =

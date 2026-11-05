@@ -541,7 +541,14 @@ public class ActorForegroundServiceControllerImplTest {
     public void testActorTask_getTargetTabId() {
         long nativeTaskPtr = 123L;
         ActorTaskJni.setInstanceForTesting(mActorTaskJni);
-        ActorTask task = new ActorTask(nativeTaskPtr, 1, "Task", mProfile, null);
+        ActorTask task =
+                new ActorTask(
+                        nativeTaskPtr,
+                        1,
+                        "Task",
+                        mProfile,
+                        /* glicConversationId= */ null,
+                        /* isExperimentalTriggering= */ false);
 
         when(mActorTaskJni.getLastActuatedTabId(nativeTaskPtr)).thenReturn(789);
         when(mActorTaskJni.getTabs(nativeTaskPtr)).thenReturn(new int[] {456});

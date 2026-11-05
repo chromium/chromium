@@ -11160,6 +11160,12 @@ const FeatureEntry kFeatureEntries[] = {
          kActorTypeToolObservationStartDelayVariations,
          "ActorTypeToolObservationStartDelay")},
 #if BUILDFLAG(IS_ANDROID)
+    {"actor-silence-notifications-after-first-working",
+     flag_descriptions::kActorSilenceNotificationsAfterFirstWorkingName,
+     flag_descriptions::kActorSilenceNotificationsAfterFirstWorkingDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kActorSilenceNotificationsAfterFirstWorking)},
     {"actor-step-progress-notification",
      flag_descriptions::kActorStepProgressNotificationName,
      flag_descriptions::kActorStepProgressNotificationDescription, kOsAndroid,

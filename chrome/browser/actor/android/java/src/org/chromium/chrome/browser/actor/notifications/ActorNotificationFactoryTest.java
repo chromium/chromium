@@ -566,9 +566,11 @@ public class ActorNotificationFactoryTest {
 
     @Test
     public void testBuildTaskStartsSoonNotification() {
-        NotificationWrapper wrapper = ActorNotificationFactory.buildTaskStartsSoonNotification();
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildTaskStartsSoonNotification(/* isSilent= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
+        assertFalse("Task starts soon notification should be loud", wrapper.isSilent());
         Notification notification = wrapper.getNotification();
         assertNotNull("Notification should not be null", notification);
         ShadowNotification shadowNotification = shadowOf(notification);
@@ -587,6 +589,11 @@ public class ActorNotificationFactoryTest {
                 "Notification ID should match",
                 ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID,
                 wrapper.getMetadata().id);
+
+        NotificationWrapper silentWrapper =
+                ActorNotificationFactory.buildTaskStartsSoonNotification(/* isSilent= */ true);
+        assertNotNull("Silent notification wrapper should not be null", silentWrapper);
+        assertTrue("Task starts soon notification should be silent", silentWrapper.isSilent());
     }
 
     @Test

@@ -43,6 +43,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -1698,7 +1699,12 @@ public class ActorNotificationServiceTest {
 
         ActorTask realTask =
                 new ActorTask(
-                        nativeTaskPtr, taskId, "Test Task", mock(Profile.class), "conv-id-50");
+                        nativeTaskPtr,
+                        taskId,
+                        "Test Task",
+                        mock(Profile.class),
+                        "conv-id-50",
+                        /* isExperimentalTriggering= */ false);
         when(mKeyedService.getTask(taskId)).thenReturn(realTask);
         when(mServiceController.createTrustedBringTabToFrontIntent(any()))
                 .thenAnswer(
@@ -1764,7 +1770,12 @@ public class ActorNotificationServiceTest {
 
         ActorTask realTask =
                 new ActorTask(
-                        nativeTaskPtr, taskId, "Test Task", mock(Profile.class), "conv-id-51");
+                        nativeTaskPtr,
+                        taskId,
+                        "Test Task",
+                        mock(Profile.class),
+                        "conv-id-51",
+                        /* isExperimentalTriggering= */ false);
         when(mKeyedService.getTask(taskId)).thenReturn(realTask);
         when(mServiceController.createTrustedBringTabToFrontIntent(any()))
                 .thenAnswer(
@@ -2074,10 +2085,179 @@ public class ActorNotificationServiceTest {
                         ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING)
+    public void
+            testSilenceNotificationsAfterFirstWorking_ExperimentalTriggering_OnlyFirstWorkingIsLoud() {
+        int taskId = 60;
+        setUpTask(taskId, "Experimental Triggering Task", /* isExperimentalTriggering= */ true);
+
+        updateTask(taskId, ActorTaskState.CREATED);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertTrue(
+                "Initial CREATED notification should be silenced",
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertFalse(
+                "First ACTING notification should be loud",
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        mNotificationService.resendWorkingNotificationLoudly(taskId);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+
+        updateTask(taskId, ActorTaskState.PAUSED_BY_ACTOR);
+        assertTrue(mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertTrue(
+                "Subsequent ACTING notification should be silenced",
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        updateTask(taskId, ActorTaskState.WAITING_ON_USER);
+        assertTrue(mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        mNotificationService.updateNotificationForTask(
+                taskId,
+                ActorTaskState.WAITING_ON_USER,
+                /* isSilent= */ false,
+                /* isWarning= */ true);
+        assertTrue(mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        updateTask(taskId, ActorTaskState.FINISHED);
+        assertTrue(mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        int reflectingTaskId = 65;
+        setUpTask(
+                reflectingTaskId,
+                "Reflecting Experimental Task",
+                /* isExperimentalTriggering= */ true);
+        updateTask(reflectingTaskId, ActorTaskState.REFLECTING);
+        assertFalse(
+                "First REFLECTING notification should be loud",
+                mNotificationService
+                        .getCachedNotificationWrapperForTesting(reflectingTaskId)
+                        .isSilent());
+        updateTask(reflectingTaskId, ActorTaskState.PAUSED_BY_ACTOR);
+        updateTask(reflectingTaskId, ActorTaskState.ACTING);
+        assertTrue(
+                "Subsequent ACTING notification after initial REFLECTING should be silenced",
+                mNotificationService
+                        .getCachedNotificationWrapperForTesting(reflectingTaskId)
+                        .isSilent());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING)
+    public void
+            testSilenceNotificationsAfterFirstWorking_ExperimentalTriggering_InitiallySilentWorkingResendsLoudlyOnce() {
+        int taskId = 67;
+        setUpTask(taskId, "Experimental Triggering Task", /* isExperimentalTriggering= */ true);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ true, /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertTrue(mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        mNotificationService.resendWorkingNotificationLoudly(taskId);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+        assertFalse(
+                "First loud working notification triggered via resendWorkingNotificationLoudly"
+                        + " should be loud",
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        mNotificationService.resendWorkingNotificationLoudly(taskId);
+        assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+
+        updateTask(taskId, ActorTaskState.PAUSED_BY_ACTOR);
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertTrue(
+                "Subsequent ACTING notification after loud resend should be silenced",
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING)
+    public void
+            testSilenceNotificationsAfterFirstWorking_NotSilencedWhenNonExperimentalOrFlagDisabled() {
+        int nonExperimentalTaskId = 62;
+        setUpTask(nonExperimentalTaskId, "Standard Task", /* isExperimentalTriggering= */ false);
+        for (int state :
+                new int[] {
+                    ActorTaskState.CREATED,
+                    ActorTaskState.ACTING,
+                    ActorTaskState.PAUSED_BY_ACTOR,
+                    ActorTaskState.ACTING,
+                    ActorTaskState.FINISHED
+                }) {
+            updateTask(nonExperimentalTaskId, state);
+            assertFalse(
+                    mNotificationService
+                            .getCachedNotificationWrapperForTesting(nonExperimentalTaskId)
+                            .isSilent());
+        }
+
+        FeatureOverrides.disable(ChromeFeatureList.ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING);
+        int flagDisabledTaskId = 63;
+        setUpTask(
+                flagDisabledTaskId,
+                "Experimental Triggering Task",
+                /* isExperimentalTriggering= */ true);
+        for (int state :
+                new int[] {
+                    ActorTaskState.CREATED,
+                    ActorTaskState.ACTING,
+                    ActorTaskState.PAUSED_BY_ACTOR,
+                    ActorTaskState.ACTING,
+                    ActorTaskState.FINISHED
+                }) {
+            updateTask(flagDisabledTaskId, state);
+            assertFalse(
+                    mNotificationService
+                            .getCachedNotificationWrapperForTesting(flagDisabledTaskId)
+                            .isSilent());
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING)
+    public void
+            testSilenceNotificationsAfterFirstWorking_TaskCompletionAndClearAll_ResetTracking() {
+        int taskId = 64;
+        setUpTask(taskId, "Experimental Triggering Task", /* isExperimentalTriggering= */ true);
+
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertFalse(mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        updateTask(taskId, ActorTaskState.FINISHED);
+        assertTrue(mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertFalse(
+                "First ACTING notification after task completion should be loud",
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        updateTask(taskId, ActorTaskState.PAUSED_BY_USER);
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertTrue(mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+
+        mNotificationService.clearAll();
+        updateTask(taskId, ActorTaskState.ACTING);
+        assertFalse(
+                "First ACTING notification after clearAll() should be loud",
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId).isSilent());
+    }
+
     private void setUpTask(int taskId) {
+        setUpTask(taskId, "Task " + taskId, /* isExperimentalTriggering= */ false);
+    }
+
+    private void setUpTask(int taskId, String title, boolean isExperimentalTriggering) {
         ActorTask task = mock(ActorTask.class);
         when(task.getId()).thenReturn(taskId);
-        when(task.getTitle()).thenReturn("Task " + taskId);
+        when(task.getTitle()).thenReturn(title);
+        lenient().when(task.isExperimentalTriggering()).thenReturn(isExperimentalTriggering);
         lenient().when(task.getState()).thenReturn(ActorTaskState.ACTING);
         when(mKeyedService.getTask(taskId)).thenReturn(task);
     }

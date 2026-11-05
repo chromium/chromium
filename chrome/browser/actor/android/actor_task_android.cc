@@ -42,10 +42,11 @@ ActorTaskAndroid* ActorTaskAndroid::GetForTask(ActorTask* task) {
 ActorTaskAndroid::ActorTaskAndroid(ActorTask* task) : task_(task) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(
-      env, Java_ActorTask_Constructor(
-               env, reinterpret_cast<int64_t>(this),
-               task_->id().GetUnsafeValue(), task_->title(),
-               task_->GetProfile()->GetJavaObject(), GetGlicConversationId()));
+      env,
+      Java_ActorTask_Constructor(
+          env, reinterpret_cast<int64_t>(this), task_->id().GetUnsafeValue(),
+          task_->title(), task_->GetProfile()->GetJavaObject(),
+          GetGlicConversationId(), task_->IsExperimentalTriggering()));
 }
 
 ActorTaskAndroid::~ActorTaskAndroid() {

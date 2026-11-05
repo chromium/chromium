@@ -1968,6 +1968,12 @@ inline constexpr char kActorScriptToolSkipPageContentName[] =
 inline constexpr char kActorScriptToolSkipPageContentDescription[] =
     "If enabled, script tools will explicitly vote to skip page content.";
 
+inline constexpr char kActorSilenceNotificationsAfterFirstWorkingName[] =
+    "Actor silence notifications after first working";
+inline constexpr char kActorSilenceNotificationsAfterFirstWorkingDescription[] =
+    "Silences all Actor task notifications except for the first working "
+    "notification for experimental-triggering tasks on Android.";
+
 inline constexpr char kActorStepProgressNotificationName[] =
     "Actor step progress notification";
 inline constexpr char kActorStepProgressNotificationDescription[] =

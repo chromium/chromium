@@ -13607,6 +13607,8 @@ from previous Chrome versions.
   <int value="-429419276"
       label="OptimizationPersonalizedHintsFetching:disabled"/>
   <int value="-429043583" label="CCTAuthView:enabled"/>
+  <int value="-428734624"
+      label="ActorSilenceNotificationsAfterFirstWorking:disabled"/>
   <int value="-428599163" label="NTPDownloadSuggestions:enabled"/>
   <int value="-428556995" label="DesktopPWAsTabStripSettings:enabled"/>
   <int value="-428111342" label="FilesInlineSyncStatus:enabled"/>
@@ -15316,6 +15318,8 @@ from previous Chrome versions.
   <int value="87306743" label="VariationsFakeCrashAfterStartup:disabled"/>
   <int value="88127181" label="NotebookLmAppPreinstall:enabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
+  <int value="88858070"
+      label="ActorSilenceNotificationsAfterFirstWorking:enabled"/>
   <int value="88863813" label="DesktopPWAsDetailedInstallDialog:enabled"/>
   <int value="89357752" label="PdfXfaSupport:enabled"/>
   <int value="89748527" label="AllowLegacyMV2Extensions:enabled"/>

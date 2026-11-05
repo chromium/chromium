@@ -342,9 +342,10 @@ public class ActorNotificationFactory {
      * Builds a notification to show that the foreground service has started and the task will start
      * soon.
      *
+     * @param isSilent Whether the notification should be silent.
      * @return The built {@link NotificationWrapper}.
      */
-    public static NotificationWrapper buildTaskStartsSoonNotification() {
+    public static NotificationWrapper buildTaskStartsSoonNotification(boolean isSilent) {
         Context context = ContextUtils.getApplicationContext();
         NotificationMetadata metadata =
                 new NotificationMetadata(
@@ -354,6 +355,7 @@ public class ActorNotificationFactory {
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                         ChromeChannelDefinitions.ChannelId.ACTOR, metadata)
                 .setSmallIcon(R.drawable.ic_chrome)
+                .setSilent(isSilent)
                 .setContentTitle(
                         context.getString(
                                 R.string.actor_notification_title_preparing_to_start_task))

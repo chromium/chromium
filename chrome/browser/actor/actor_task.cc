@@ -228,6 +228,13 @@ ActorTask::State ActorTask::GetState() const {
   return state_;
 }
 
+bool ActorTask::IsExperimentalTriggering() const {
+  return initial_invocation_source_ ==
+             glic::mojom::InvocationSource::kExperimentalTriggering ||
+         feature_mode_ == glic::mojom::FeatureMode::kExperimentalTriggering ||
+         source_info_.type == TaskSourceInfo::Client::kExperimentalActor;
+}
+
 base::WeakPtr<ActorTask> ActorTask::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

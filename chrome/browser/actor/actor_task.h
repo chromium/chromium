@@ -129,6 +129,8 @@ class ActorTask : public base::SupportsUserData {
     return initial_invocation_source_;
   }
 
+  bool IsExperimentalTriggering() const;
+
   const std::string& title() const { return title_; }
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
 

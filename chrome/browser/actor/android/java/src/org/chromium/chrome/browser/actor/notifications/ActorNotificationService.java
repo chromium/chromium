@@ -63,6 +63,7 @@ public class ActorNotificationService {
     private final Map<Integer, NotificationWrapper> mNotificationCache = new HashMap<>();
     private final Map<Integer, Integer> mTaskStates = new HashMap<>();
     private final Map<Integer, Long> mLastWorklogUpdateTimes = new HashMap<>();
+    private final Set<Integer> mTasksWithWorkingNotificationShown = new HashSet<>();
     // Insertion-ordered so that the oldest pending demotion is promoted first.
     private final Map<Integer, Runnable> mDemoteRunnables = new LinkedHashMap<>();
     private final Set<Integer> mUnpinnedTagTaskIds = new HashSet<>();
@@ -203,6 +204,9 @@ public class ActorNotificationService {
         NotificationWrapper old = mNotificationCache.get(taskId);
         NotificationWrapper current =
                 getOrBuildNotificationWrapper(taskId, newState, isSilent, isWarning);
+        if (ActorUtils.isCompletedState(newState)) {
+            mTasksWithWorkingNotificationShown.remove(taskId);
+        }
         if (current == null) {
             cancelTaskNotifications(mNotificationManager, taskId);
             clearTaskData(taskId);
@@ -366,15 +370,23 @@ public class ActorNotificationService {
         if (task == null || !ActorUtils.isRunningState(task.getState())) {
             return;
         }
+        @ActorTaskState int state = task.getState();
+        if (shouldForceSilent(task, state, /* isWarning= */ false)) {
+            return;
+        }
+        if (isExperimentalTriggeringSilenceEnabled(task)
+                && isWorkingNotification(state, /* isWarning= */ false)) {
+            mTasksWithWorkingNotificationShown.add(taskId);
+        }
         NotificationWrapper loudNotification =
                 ActorNotificationFactory.buildNotification(
                         task,
-                        task.getState(),
+                        state,
                         /* isSilent= */ false,
                         /* isWarning= */ false,
                         /* isLive= */ taskId == getLiveTaskId());
         mNotificationCache.put(taskId, loudNotification);
-        mTaskStates.put(taskId, task.getState());
+        mTaskStates.put(taskId, state);
         notifyTaskNotification(loudNotification);
     }
 
@@ -470,14 +482,40 @@ public class ActorNotificationService {
                         || ActorNotificationFactory.shouldUpdateNotification(oldState, state);
 
         if (shouldUpdate) {
+            boolean effectiveIsSilent = isSilent || shouldForceSilent(task, state, isWarning);
+            if (!effectiveIsSilent
+                    && isExperimentalTriggeringSilenceEnabled(task)
+                    && isWorkingNotification(state, isWarning)) {
+                mTasksWithWorkingNotificationShown.add(taskId);
+            }
             cachedNotification =
                     ActorNotificationFactory.buildNotification(
-                            task, state, isSilent, isWarning, taskId == getLiveTaskId());
+                            task, state, effectiveIsSilent, isWarning, taskId == getLiveTaskId());
             mNotificationCache.put(taskId, cachedNotification);
         }
 
         mTaskStates.put(taskId, state);
         return cachedNotification;
+    }
+
+    private static boolean isExperimentalTriggeringSilenceEnabled(ActorTask task) {
+        return ChromeFeatureList.sActorSilenceNotificationsAfterFirstWorking.isEnabled()
+                && task.isExperimentalTriggering();
+    }
+
+    private static boolean isWorkingNotification(@ActorTaskState int state, boolean isWarning) {
+        return !isWarning && (state == ActorTaskState.ACTING || state == ActorTaskState.REFLECTING);
+    }
+
+    private boolean shouldForceSilent(
+            ActorTask task, @ActorTaskState int state, boolean isWarning) {
+        if (!isExperimentalTriggeringSilenceEnabled(task)) {
+            return false;
+        }
+        // Only the first non-warning working notification may alert; all other states and
+        // subsequent working updates are forced silent.
+        return !isWorkingNotification(state, isWarning)
+                || mTasksWithWorkingNotificationShown.contains(task.getId());
     }
 
     private void notifyTaskNotification(NotificationWrapper wrapper) {
@@ -521,6 +559,7 @@ public class ActorNotificationService {
         mNotificationCache.clear();
         mTaskStates.clear();
         mLastWorklogUpdateTimes.clear();
+        mTasksWithWorkingNotificationShown.clear();
         mTaskCache.clear();
     }
 
@@ -532,6 +571,7 @@ public class ActorNotificationService {
         mNotificationCache.remove(taskId);
         mTaskStates.remove(taskId);
         mLastWorklogUpdateTimes.remove(taskId);
+        mTasksWithWorkingNotificationShown.remove(taskId);
         mTaskCache.remove(taskId);
     }
 

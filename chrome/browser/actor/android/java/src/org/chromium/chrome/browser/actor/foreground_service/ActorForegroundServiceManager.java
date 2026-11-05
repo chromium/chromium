@@ -320,8 +320,13 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
 
             if (mPinnedNotificationId
                     != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID) {
+                // Pending tasks only occur for external/experimental triggers before an ActorTask
+                // is created.
                 Notification placeholder =
-                        ActorNotificationFactory.buildTaskStartsSoonNotification()
+                        ActorNotificationFactory.buildTaskStartsSoonNotification(
+                                        /* isSilent= */ ChromeFeatureList
+                                                .sActorSilenceNotificationsAfterFirstWorking
+                                                .isEnabled())
                                 .getNotification();
                 startOrUpdateForegroundService(
                         ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID, placeholder);
