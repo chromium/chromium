@@ -31,9 +31,6 @@ class ContextualSearchManager {
 
   ~ContextualSearchManager();
 
-  // Called by the Java ContextualSearchManager when it is being destroyed.
-  void Destroy(JNIEnv* env);
-
   // Starts the request to get the search terms to use for the given selection,
   // by accessing our server with the content of the page (from the given
   // content view core object).

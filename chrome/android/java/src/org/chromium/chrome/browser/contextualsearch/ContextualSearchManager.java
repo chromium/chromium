@@ -19,6 +19,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -177,8 +179,11 @@ public class ContextualSearchManager
     private final SettableMonotonicObservableSupplier<OverlayPanelStateProvider>
             mOverlayPanelStateProviderSupplier = ObservableSuppliers.createMonotonic();
 
+    @JniType("::ContextualSearchManager")
+    interface NativeContextualSearchManager extends JniTypeToken {}
+
     // The native manager associated with this object.
-    private long mNativeContextualSearchManagerPtr;
+    private JniUniquePtr<NativeContextualSearchManager> mNativeContextualSearchManagerPtr;
 
     private ViewGroup mParentView;
     private RedirectHandler mRedirectHandler;
@@ -414,12 +419,21 @@ public class ContextualSearchManager
             mContext = null;
         }
 
-        if (!mIsInitialized) return;
+        if (!mIsInitialized) {
+            if (mNativeContextualSearchManagerPtr != null) {
+                mNativeContextualSearchManagerPtr.destroy();
+                mNativeContextualSearchManagerPtr = null;
+            }
+            return;
+        }
 
         hideContextualSearch(StateChangeReason.UNKNOWN);
         mFullscreenManager.removeObserver(mFullscreenObserver);
         mParentView.getViewTreeObserver().removeOnGlobalFocusChangeListener(mOnFocusChangeListener);
-        ContextualSearchManagerJni.get().destroy(mNativeContextualSearchManagerPtr);
+        if (mNativeContextualSearchManagerPtr != null) {
+            mNativeContextualSearchManagerPtr.destroy();
+            mNativeContextualSearchManagerPtr = null;
+        }
         stopListeningForHideNotifications();
         mRedirectHandler.clear();
         mInternalStateController.enter(InternalState.UNDEFINED);
@@ -660,23 +674,6 @@ public class ContextualSearchManager
         if (mTabModelSelectorTabObserver != null) mTabModelSelectorTabObserver.destroy();
         mTabModelObserver = null;
         mTabModelSelectorTabObserver = null;
-    }
-
-    /** Clears our private member referencing the native manager. */
-    @CalledByNative
-    public void clearNativeManager() {
-        assert mNativeContextualSearchManagerPtr != 0;
-        mNativeContextualSearchManagerPtr = 0;
-    }
-
-    /**
-     * Sets our private member referencing the native manager.
-     * @param nativeManager The pointer to the native Contextual Search manager.
-     */
-    @CalledByNative
-    public void setNativeManager(long nativeManager) {
-        assert mNativeContextualSearchManagerPtr == 0;
-        mNativeContextualSearchManagerPtr = nativeManager;
     }
 
     /**
@@ -2022,24 +2019,23 @@ public class ContextualSearchManager
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchManager self, @JniType("Profile*") Profile profile);
-
-        void destroy(long nativeContextualSearchManager);
+        JniUniquePtr<NativeContextualSearchManager> init(
+                ContextualSearchManager self, @JniType("Profile*") Profile profile);
 
         void startSearchTermResolutionRequest(
-                long nativeContextualSearchManager,
+                JniPtr<NativeContextualSearchManager> self,
                 @Nullable JniPtr<ContextualSearchContext.NativeContextualSearchContext>
                         contextualSearchContext,
                 @Nullable WebContents baseWebContents);
 
         void gatherSurroundingText(
-                long nativeContextualSearchManager,
+                JniPtr<NativeContextualSearchManager> self,
                 @Nullable JniPtr<ContextualSearchContext.NativeContextualSearchContext>
                         contextualSearchContext,
                 WebContents baseWebContents);
 
         void removeLastHistoryEntry(
-                long nativeContextualSearchManager,
+                JniPtr<NativeContextualSearchManager> self,
                 @JniType("std::string") String historyUrl,
                 long urlTimeMs);
     }
