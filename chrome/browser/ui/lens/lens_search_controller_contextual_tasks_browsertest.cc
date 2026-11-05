@@ -1438,6 +1438,22 @@ class LensSearchControllerStartZeroStateSessionTest
     feature_list_.InitAndDisableFeature(omnibox::kAimServerEligibilityEnabled);
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &LensSearchControllerStartZeroStateSessionTest::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindOnce(&BuildMockAimServiceEligibilityServiceInstance));
+  }
+
   bool IsContextualTasksSidePanelOpen() {
     auto* controller = contextual_tasks::ContextualTasksPanelController::From(
         browser()->GetActiveTabInterface()->GetBrowserWindowInterface());
@@ -1457,6 +1473,7 @@ class LensSearchControllerStartZeroStateSessionTest
   }
 
  private:
+  base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList feature_list_;
 };
 
