@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TOAST_DELEGATE_H_
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TOAST_DELEGATE_H_
 
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "ui/menus/simple_menu_model.h"
+#include "base/memory/weak_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace content {
 class WebContents;
@@ -19,9 +21,10 @@ class ToastController;
 enum class ToastId;
 
 // Delegate for handling actions from the auto sign-in toast.
-class ManagePasswordsAutoSigninToastDelegate
-    : public ui::SimpleMenuModel::Delegate {
+class ManagePasswordsAutoSigninToastDelegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenPasswordManagerSettingsMenuItem);
+
   static constexpr int kAutoSignInOpenPasswordManagerSettingsCommand = 1;
 
   explicit ManagePasswordsAutoSigninToastDelegate(
@@ -30,10 +33,9 @@ class ManagePasswordsAutoSigninToastDelegate
       const ManagePasswordsAutoSigninToastDelegate&) = delete;
   ManagePasswordsAutoSigninToastDelegate& operator=(
       const ManagePasswordsAutoSigninToastDelegate&) = delete;
-  ~ManagePasswordsAutoSigninToastDelegate() override;
+  virtual ~ManagePasswordsAutoSigninToastDelegate();
 
-  // ui::SimpleMenuModel::Delegate:
-  void ExecuteCommand(int command_id, int event_flags) override;
+  void ExecuteCommand(int command_id, int event_flags);
 
   void SetOnToastClosedCallback(base::OnceClosure on_toast_closed_callback);
 
@@ -47,9 +49,11 @@ class ManagePasswordsAutoSigninToastDelegate
  private:
   void OnToastWidgetDestroyed(ToastId toast_id);
 
-  raw_ptr<content::WebContents> web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
   base::OnceClosure on_toast_closed_callback_;
   base::CallbackListSubscription toast_observation_;
+  base::WeakPtrFactory<ManagePasswordsAutoSigninToastDelegate>
+      weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TOAST_DELEGATE_H_

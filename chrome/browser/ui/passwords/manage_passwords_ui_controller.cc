@@ -1502,6 +1502,7 @@ void ManagePasswordsUIController::Cleanup() {
     account_password_store->RemoveObserver(this);
   }
   dialog_controller_.reset();
+  auto_signin_toast_delegate_.reset();
   HideBubble(/*initiated_by_bubble_manager=*/false);
   Observe(nullptr);
 }
