@@ -87,6 +87,12 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kCdpAttributionDetachedActorTtl);
 // new attachment extractions are shed.
 BASE_DECLARE_FEATURE_PARAM(int, kCdpAttributionMaxPendingExtractions);
 
+// Controls whether enterprise security events carry `Event.initiator`
+// identifying the in-browser AI agent (Gemini in Chrome) whose task was
+// controlling the tab when the reported action happened (in-browser agent
+// attribution). See crbug.com/570683671.
+BASE_DECLARE_FEATURE(kEnterpriseGlicActorAttribution);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_

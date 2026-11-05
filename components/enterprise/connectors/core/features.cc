@@ -96,4 +96,7 @@ BASE_FEATURE_PARAM(int,
                    &kEventReportingCdpAttribution,
                    /*default_value=*/16);
 
+BASE_FEATURE(kEnterpriseGlicActorAttribution,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors
