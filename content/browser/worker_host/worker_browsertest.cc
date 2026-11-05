@@ -1802,8 +1802,18 @@ IN_PROC_BROWSER_TEST_P(CrossOriginWorkerScriptTest,
   EXPECT_FALSE(monitor.GetRequestInfo(worker_url));
 }
 
+// TODO(crbug.com/581125012): Flaky on Android because
+// URLLoaderMonitor::GetCompletionStatus() is queried without waiting for the
+// aborted initial redirect request's OnComplete IPC on the IO thread.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CrossOriginRedirectFailsFetchWithSameOriginMode \
+  DISABLED_CrossOriginRedirectFailsFetchWithSameOriginMode
+#else
+#define MAYBE_CrossOriginRedirectFailsFetchWithSameOriginMode \
+  CrossOriginRedirectFailsFetchWithSameOriginMode
+#endif
 IN_PROC_BROWSER_TEST_P(CrossOriginWorkerScriptTest,
-                       CrossOriginRedirectFailsFetchWithSameOriginMode) {
+                       MAYBE_CrossOriginRedirectFailsFetchWithSameOriginMode) {
   const GURL page_url = ssl_server()->GetURL("a.test", "/title1.html");
   const GURL redirect_target =
       ssl_server()->GetURL("b.test", "/workers/post_ready.js");
