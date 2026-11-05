@@ -127,6 +127,7 @@
 #energy {
   background-color: var(--color-composebox-submit-button-background);
   border-radius: 100px;
+  forced-color-adjust: none;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
