@@ -246,7 +246,16 @@
     }
     const worker = restartWorker(onProgressMessage);
     _progress.setValue(0.3);
-    const message = await worker.loadAndBuildTree('from-url://', accessToken);
+    let message;
+    try {
+      message = await worker.loadAndBuildTree('from-url://', accessToken);
+    } catch (err) {
+      // The token may have been revoked. Prompt for a new one next time.
+      if (accessToken) {
+        clearCachedToken();
+      }
+      throw err;
+    }
     await planSymbolTreeFocusPathExpansionIfRequired(worker);
     processLoadTreeResponse(message);
   }

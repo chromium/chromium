@@ -22,6 +22,40 @@ const g_authTokenPromise = new Promise((resolve, reject) => {
 /** @type {boolean} Used to ensure the auth pipeline is only setup once. */
 let g_authFetchCalled = false;
 
+/** localStorage key for the most recent access token and its expiry. */
+const AUTH_TOKEN_STORAGE_KEY = 'authToken';
+/** Treat tokens as expired this long before they actually expire. */
+const AUTH_TOKEN_EXPIRY_MARGIN_MS = 60 * 1000;
+
+/** @return {?string} A previously granted access token that is still valid. */
+function loadCachedToken() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(AUTH_TOKEN_STORAGE_KEY));
+    if (cached && cached.expiresAt - AUTH_TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
+      return cached.token;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  return null;
+}
+
+/**
+ * Forgets the cached token, e.g. after it was rejected because it was revoked
+ * or belongs to a different account.
+ */
+function clearCachedToken() {
+  localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+}
+
+/** @param {{access_token: string, expires_in: (number|string)}} resp */
+function saveToken(resp) {
+  const expiresAt = Date.now() + Number(resp.expires_in) * 1000;
+  localStorage.setItem(
+      AUTH_TOKEN_STORAGE_KEY,
+      JSON.stringify({token: resp.access_token, expiresAt}));
+}
+
 /** @return {Promise<*>} */
 async function initClient() {
   let tokenClient = google.accounts.oauth2.initTokenClient({
@@ -38,6 +72,7 @@ async function getToken() {
   try {
     tokenClient.callback = (resp) => {
       if (resp.error === undefined) {
+        saveToken(resp);
         g_onTokenReceived(resp.access_token);
       }
     };
@@ -49,8 +84,12 @@ async function getToken() {
 
 /** @return {Promise<void>} */
 async function doAuthFetch() {
-  // TODO(mheikal): cache access token in localstorage and check if expired here
-  // and return cached token.
+  // Reuse a token from an earlier session if it has not expired.
+  const cachedToken = loadCachedToken();
+  if (cachedToken) {
+    g_onTokenReceived(cachedToken);
+    return;
+  }
 
   // Show a "Please sign in" dialog.
   toggleSigninModal(true /*show*/);
