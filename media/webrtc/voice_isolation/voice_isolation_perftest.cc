@@ -12,9 +12,11 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
@@ -38,23 +40,78 @@ namespace {
 // Optional command-line switch (`--model=<path>`) to benchmark a custom or
 // production TFLite model instead of the bundled stateful test model.
 constexpr char kModelSwitch[] = "model";
+// Optional command-line switch (`--cache-trash-mb=<mib>`) controlling the size
+// in MiB of the scratch slice swept before each benchmarked call to evict CPU
+// caches (`0` disables cache trashing; defaults to `0`).
+constexpr char kCacheTrashMbSwitch[] = "cache-trash-mb";
 constexpr char kDefaultStoryName[] = "stateful_test_model";
 
 constexpr int kWarmupIterations = 20;
 // BufferedVoiceIsolation invokes the inner 20 ms STFT + TFLite pipeline on
 // every second 10 ms frame, so use an even count of 10 ms frames.
-constexpr int kProcessAudioIterations = 2000;
+constexpr int kProcessAudioIterations = 160;
 static_assert(kProcessAudioIterations %
                   BufferedVoiceIsolation::kNumBufferedFrames ==
               0);
-constexpr int kTfLiteProcessAudioIterations = 1000;
-constexpr int kClearBuffersIterations = 10000;
+constexpr int kTfLiteProcessAudioIterations = 80;
+constexpr int kClearBuffersIterations = 40;
+
+// Stride of the scratch buffer used to evict CPU data caches between
+// benchmarked calls, simulating the ~9.65 ms of unrelated Chrome work between
+// 10 ms real-time audio callbacks. Each `Trash()` call touches a `slice_bytes_`
+// slice at 64-byte cache-line granularity while cycling across a
+// `2 * slice_bytes_` buffer.
+constexpr size_t kCacheLineBytes = 64;
+constexpr size_t kBytesPerMb = 1024 * 1024;
 
 constexpr size_t kNumDftCalls = 16;
 constexpr uint64_t kNoiseSeed = 1;
 
 constexpr float kToneFrequencyHz = 1000.0f;
 constexpr float kToneAmplitude = 0.5f;
+
+size_t GetCacheTrashSliceBytes() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (!command_line.HasSwitch(kCacheTrashMbSwitch)) {
+    return 0;
+  }
+
+  size_t slice_mb = 0;
+  CHECK(base::StringToSizeT(
+      command_line.GetSwitchValueASCII(kCacheTrashMbSwitch), &slice_mb));
+  return slice_mb * kBytesPerMb;
+}
+
+class CpuCacheTrasher {
+ public:
+  explicit CpuCacheTrasher(size_t slice_bytes)
+      : slice_bytes_(slice_bytes), buffer_(2 * slice_bytes, 1u) {}
+
+  // Touches every cache line in the next `slice_bytes_` slice of `buffer_` to
+  // evict the voice isolation pipeline and model state from the CPU caches
+  // between calls.
+  void Trash() {
+    if (slice_bytes_ == 0) {
+      return;
+    }
+    const base::span<uint8_t> slice =
+        base::span(buffer_).subspan(offset_, slice_bytes_);
+    uint8_t acc = sink_;
+    for (size_t i = 0; i < slice.size(); i += kCacheLineBytes) {
+      slice[i] += 1u;
+      acc ^= slice[i];
+    }
+    sink_ = acc;
+    offset_ = (offset_ + slice_bytes_) % buffer_.size();
+  }
+
+ private:
+  const size_t slice_bytes_;
+  std::vector<uint8_t> buffer_;
+  size_t offset_ = 0;
+  volatile uint8_t sink_ = 0;
+};
 
 struct BenchmarkModel {
   std::unique_ptr<tflite::FlatBufferModel> model;
@@ -114,21 +171,27 @@ TEST(VoiceIsolationPerfTest, EndToEndProcessAudioAndClearBuffers) {
     voice_isolation->ProcessAudio(*input_bus, *output_bus);
   }
 
-  const base::TimeTicks process_start = base::TimeTicks::Now();
+  CpuCacheTrasher cache_trasher(GetCacheTrashSliceBytes());
+
+  base::TimeDelta total_process_time;
   for (int i = 0; i < kProcessAudioIterations; ++i) {
+    cache_trasher.Trash();
+    const base::TimeTicks process_start = base::TimeTicks::Now();
     voice_isolation->ProcessAudio(*input_bus, *output_bus);
+    total_process_time += base::TimeTicks::Now() - process_start;
   }
   const double process_us_per_frame =
-      (base::TimeTicks::Now() - process_start).InMicrosecondsF() /
-      kProcessAudioIterations;
+      total_process_time.InMicrosecondsF() / kProcessAudioIterations;
 
-  const base::TimeTicks clear_start = base::TimeTicks::Now();
+  base::TimeDelta total_clear_time;
   for (int i = 0; i < kClearBuffersIterations; ++i) {
+    cache_trasher.Trash();
+    const base::TimeTicks clear_start = base::TimeTicks::Now();
     voice_isolation->ClearBuffers();
+    total_clear_time += base::TimeTicks::Now() - clear_start;
   }
   const double clear_us_per_call =
-      (base::TimeTicks::Now() - clear_start).InMicrosecondsF() /
-      kClearBuffersIterations;
+      total_clear_time.InMicrosecondsF() / kClearBuffersIterations;
 
   perf_test::PerfResultReporter reporter("voice_isolation",
                                          benchmark_model.story_name);
@@ -163,23 +226,29 @@ TEST(VoiceIsolationPerfTest, TfLiteProcessAudioAndClearBuffers) {
     tflite_isolation->ProcessAudio(dft_pair, output_dfts);
   }
 
-  const base::TimeTicks process_start = base::TimeTicks::Now();
+  CpuCacheTrasher cache_trasher(GetCacheTrashSliceBytes());
+
+  base::TimeDelta total_process_time;
   for (int i = 0; i < kTfLiteProcessAudioIterations; ++i) {
     const std::vector<float>& dft_pair =
         input_dfts[static_cast<size_t>(i) % input_dfts.size()];
+    cache_trasher.Trash();
+    const base::TimeTicks process_start = base::TimeTicks::Now();
     tflite_isolation->ProcessAudio(dft_pair, output_dfts);
+    total_process_time += base::TimeTicks::Now() - process_start;
   }
   const double process_us_per_call =
-      (base::TimeTicks::Now() - process_start).InMicrosecondsF() /
-      kTfLiteProcessAudioIterations;
+      total_process_time.InMicrosecondsF() / kTfLiteProcessAudioIterations;
 
-  const base::TimeTicks clear_start = base::TimeTicks::Now();
+  base::TimeDelta total_clear_time;
   for (int i = 0; i < kClearBuffersIterations; ++i) {
+    cache_trasher.Trash();
+    const base::TimeTicks clear_start = base::TimeTicks::Now();
     tflite_isolation->ClearBuffers();
+    total_clear_time += base::TimeTicks::Now() - clear_start;
   }
   const double clear_us_per_call =
-      (base::TimeTicks::Now() - clear_start).InMicrosecondsF() /
-      kClearBuffersIterations;
+      total_clear_time.InMicrosecondsF() / kClearBuffersIterations;
 
   perf_test::PerfResultReporter reporter("tflite_voice_isolation",
                                          benchmark_model.story_name);
