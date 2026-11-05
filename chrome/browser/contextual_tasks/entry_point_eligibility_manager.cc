@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -56,6 +57,14 @@ EntryPointEligibilityManager::EntryPointEligibilityManager(
             base::BindRepeating(&EntryPointEligibilityManager::
                                     MaybeNotifyEntryPointEligibilityChanged,
                                 base::Unretained(this)));
+  }
+  if (profile_ && profile_->GetPrefs()) {
+    pref_change_registrar_.Init(profile_->GetPrefs());
+    pref_change_registrar_.Add(
+        contextual_search::kSearchContentSharingSettings,
+        base::BindRepeating(&EntryPointEligibilityManager::
+                                MaybeNotifyEntryPointEligibilityChanged,
+                            base::Unretained(this)));
   }
   entry_points_are_eligible_ = AreEntryPointsEligible();
   is_pinning_eligible_ = IsPinningEligible(profile_);

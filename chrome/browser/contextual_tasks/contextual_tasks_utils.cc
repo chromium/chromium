@@ -259,6 +259,10 @@ bool IsTabSharingEligible(Profile* profile) {
   if (!profile || profile->IsOffTheRecord()) {
     return false;
   }
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile->GetPrefs())) {
+    return false;
+  }
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
   return aim_service && aim_service->IsAimEligible() &&
          aim_service->IsFuseboxEligible();

@@ -99,7 +99,8 @@ void RecordContextualTasksNavigationMetrics(
     bool is_zero_state);
 
 // Returns true if tab sharing and tab input capabilities are supported
-// for the given profile (checking AIM and Fusebox eligibility).
+// for the given profile (checking context sharing policy, AIM, and Fusebox
+// eligibility).
 bool IsTabSharingEligible(Profile* profile);
 
 // Returns true if contextual tasks updated entry points are enabled for the
