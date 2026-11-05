@@ -1,4 +1,4 @@
-vakh@chromium.org
+vakh@chromium.org #{LAST_RESORT_SUGGESTION}
 xinghuilu@chromium.org
 
 per-file download_protection_*=file://chrome/browser/safe_browsing/download_protection/OWNERS
