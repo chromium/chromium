@@ -20,6 +20,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
@@ -68,8 +69,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
 
   void QueryHistory(const std::string& query,
                     int max_count,
-                    std::optional<double> begin_timestamp,
-                    std::optional<double> end_timestamp,
+                    std::optional<base::Time> begin_time,
+                    std::optional<base::Time> end_time,
                     bool include_user_visits,
                     bool include_actor_visits,
                     const std::vector<std::string>& client_ids,
@@ -140,8 +141,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
  protected:
   virtual void SendHistoryQuery(int count,
                                 const std::string& query,
-                                std::optional<double> begin_timestamp,
-                                std::optional<double> end_timestamp,
+                                std::optional<base::Time> begin_time,
+                                std::optional<base::Time> end_time,
                                 bool include_user_visits,
                                 bool include_actor_visits,
                                 const std::vector<std::string>& client_ids);

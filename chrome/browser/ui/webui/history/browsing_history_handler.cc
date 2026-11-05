@@ -544,8 +544,8 @@ void BrowsingHistoryHandler::ShowSidePanelUI() {
 void BrowsingHistoryHandler::QueryHistory(
     const std::string& query,
     int max_count,
-    std::optional<double> begin_timestamp,
-    std::optional<double> end_timestamp,
+    std::optional<base::Time> begin_time,
+    std::optional<base::Time> end_time,
     bool include_user_visits,
     bool include_actor_visits,
     const std::vector<std::string>& client_ids,
@@ -562,15 +562,15 @@ void BrowsingHistoryHandler::QueryHistory(
 
   query_history_callback_ = std::move(callback);
 
-  SendHistoryQuery(max_count, query, begin_timestamp, end_timestamp,
-                   include_user_visits, include_actor_visits, client_ids);
+  SendHistoryQuery(max_count, query, begin_time, end_time, include_user_visits,
+                   include_actor_visits, client_ids);
 }
 
 void BrowsingHistoryHandler::SendHistoryQuery(
     int max_count,
     const std::string& query,
-    std::optional<double> begin_timestamp,
-    std::optional<double> end_timestamp,
+    std::optional<base::Time> begin_time,
+    std::optional<base::Time> end_time,
     bool include_user_visits,
     bool include_actor_visits,
     const std::vector<std::string>& client_ids) {
@@ -614,13 +614,11 @@ void BrowsingHistoryHandler::SendHistoryQuery(
 
   query_hostname_suffix_ = options.hostname_suffix;
 
-  if (begin_timestamp.has_value()) {
-    options.begin_time =
-        base::Time::FromMillisecondsSinceUnixEpoch(begin_timestamp.value());
+  if (begin_time.has_value()) {
+    options.begin_time = begin_time.value();
   }
-  if (end_timestamp.has_value()) {
-    options.end_time =
-        base::Time::FromMillisecondsSinceUnixEpoch(end_timestamp.value());
+  if (end_time.has_value()) {
+    options.end_time = end_time.value();
   }
 
   options.client_ids = client_ids;
@@ -1144,11 +1142,10 @@ void BrowsingHistoryHandler::GetTimePeriodOptions(
         static_cast<history::mojom::TimePeriodOptionId>(option.id);
     option_mojom->label = base::UTF16ToUTF8(option.label);
     if (!option.begin_time.is_null()) {
-      option_mojom->begin_time =
-          option.begin_time.InMillisecondsFSinceUnixEpoch();
+      option_mojom->begin_time = option.begin_time;
     }
     if (!option.end_time.is_null()) {
-      option_mojom->end_time = option.end_time.InMillisecondsFSinceUnixEpoch();
+      option_mojom->end_time = option.end_time;
     }
     options_mojom.push_back(std::move(option_mojom));
   }

@@ -4,6 +4,7 @@
 
 module history.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 /**
@@ -245,13 +246,11 @@ struct TimePeriodOption {
   // The localized label shown to the user in the filter UI.
   string label;
 
-  // The start of the time period (inclusive), in milliseconds since the Unix
-  // epoch. Null if unbounded.
-  double? begin_time;
+  // The start of the time period (inclusive). Null if unbounded.
+  mojo_base.mojom.Time? begin_time;
 
-  // The end of the time period (exclusive), in milliseconds since the Unix
-  // epoch. Null if unbounded.
-  double? end_time;
+  // The end of the time period (exclusive). Null if unbounded.
+  mojo_base.mojom.Time? end_time;
 };
 
 // Browser-side handler for requests from WebUI page.
@@ -260,14 +259,13 @@ interface PageHandler {
   SetPage(pending_remote<Page> page);
 
   // Queries for entries matching the query term. Returns a promise of a
-  // result object. `begin_time` (inclusive) and `end_time` (exclusive) are
-  // milliseconds since the Unix epoch and restrict the visit time; null means
-  // unbounded.
+  // result object. `begin_time` (inclusive) and `end_time` (exclusive)
+  // restrict the visit time; null means unbounded.
   QueryHistory(
       string query,
       int32 max_results,
-      double? begin_time,
-      double? end_time,
+      mojo_base.mojom.Time? begin_time,
+      mojo_base.mojom.Time? end_time,
       bool include_user_visits,
       bool include_actor_visits,
       array<string> client_ids) => (QueryResult results);

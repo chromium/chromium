@@ -6,6 +6,7 @@ import type {QueryResult, QueryState, TimePeriodOption} from 'chrome://resources
 import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {RESULTS_PER_PAGE} from './constants.js';
@@ -100,8 +101,8 @@ export class HistoryQueryManagerElement extends CrLitElement {
     // (e.g. options not loaded yet) is treated as "all time".
     const timePeriodOption = this.timePeriodOptions.find(
         option => option.id === this.queryState.timePeriodOptionId);
-    const beginTime: number|null = timePeriodOption?.beginTime ?? null;
-    const endTime: number|null = timePeriodOption?.endTime ?? null;
+    const beginTime: Time|null = timePeriodOption?.beginTime ?? null;
+    const endTime: Time|null = timePeriodOption?.endTime ?? null;
 
     const browserProxy = BrowserProxyImpl.getInstance();
     const promise = incremental ?

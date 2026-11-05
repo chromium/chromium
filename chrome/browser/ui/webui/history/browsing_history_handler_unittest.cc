@@ -212,12 +212,12 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 
   mojom::QueryResultPtr RunQueryHistory(
       const std::string& query,
-      std::optional<double> begin_timestamp = std::nullopt,
-      std::optional<double> end_timestamp = std::nullopt) {
+      std::optional<base::Time> begin_time = std::nullopt,
+      std::optional<base::Time> end_time = std::nullopt) {
     mojom::QueryResultPtr history_query_results;
     base::RunLoop run_loop;
     handler_->QueryHistory(
-        query, 150, begin_timestamp, end_timestamp, true, true, {},
+        query, 150, begin_time, end_time, true, true, {},
         base::BindLambdaForTesting([&](history::mojom::QueryResultPtr result) {
           history_query_results = std::move(result);
           run_loop.Quit();
@@ -348,11 +348,12 @@ TEST_F(BrowsingHistoryHandlerTest,
 TEST_F(BrowsingHistoryHandlerTest, BeginTimestamp) {
   {
     std::u16string query = u"query";
-    double timestamp = 1713546406359L;
+    base::Time begin_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(1713546406359L);
     QueryOptions options;
-    options.begin_time = base::Time::FromMillisecondsSinceUnixEpoch(timestamp);
+    options.begin_time = begin_time;
     MockHistoryServiceCall(query, options);
-    RunQueryHistory("query", timestamp);
+    RunQueryHistory("query", begin_time);
   }
 
   {
@@ -367,26 +368,26 @@ TEST_F(BrowsingHistoryHandlerTest, BeginAndEndTimestamp) {
   {
     // Both bounds set, e.g. a selected time period option.
     std::u16string query = u"query";
-    double begin_timestamp = 1713456000000L;
-    double end_timestamp = 1713542400000L;
+    base::Time begin_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(1713456000000L);
+    base::Time end_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(1713542400000L);
     QueryOptions options;
-    options.begin_time =
-        base::Time::FromMillisecondsSinceUnixEpoch(begin_timestamp);
-    options.end_time =
-        base::Time::FromMillisecondsSinceUnixEpoch(end_timestamp);
+    options.begin_time = begin_time;
+    options.end_time = end_time;
     MockHistoryServiceCall(query, options);
-    RunQueryHistory("query", begin_timestamp, end_timestamp);
+    RunQueryHistory("query", begin_time, end_time);
   }
 
   {
     // Only the end bound set.
     std::u16string query = u"query";
-    double end_timestamp = 1713542400000L;
+    base::Time end_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(1713542400000L);
     QueryOptions options;
-    options.end_time =
-        base::Time::FromMillisecondsSinceUnixEpoch(end_timestamp);
+    options.end_time = end_time;
     MockHistoryServiceCall(query, options);
-    RunQueryHistory("query", std::nullopt, end_timestamp);
+    RunQueryHistory("query", std::nullopt, end_time);
   }
 }
 

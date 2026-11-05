@@ -15,6 +15,7 @@ mojom("mojo_bindings") {
     "history_cross_device_signin_promo.mojom",
   ]
   public_deps = [
+    "//mojo/public/mojom/base",
     "//ui/base/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

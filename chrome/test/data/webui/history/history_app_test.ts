@@ -382,8 +382,8 @@ suite('HistoryFilterChipsVisibility', function() {
       options: [{
         id: TimePeriodOptionId.kYesterday,
         label: 'Yesterday',
-        beginTime: 0,
-        endTime: 1,
+        beginTime: {internalValue: BigInt(0)},
+        endTime: {internalValue: BigInt(1)},
       }],
     }));
     // Re-create the element to pick up the new loadTimeData.
@@ -403,8 +403,8 @@ suite('HistoryFilterChipsVisibility', function() {
       options: [{
         id: TimePeriodOptionId.kYesterday,
         label: 'Yesterday',
-        beginTime: 0,
-        endTime: 1,
+        beginTime: {internalValue: BigInt(0)},
+        endTime: {internalValue: BigInt(1)},
       }],
     }));
     await createPage();
@@ -472,8 +472,8 @@ suite('HistoryFilterChipsVisibility', function() {
         {
           id: TimePeriodOptionId.kYesterday,
           label: 'Yesterday',
-          beginTime: 1000,
-          endTime: 2000,
+          beginTime: {internalValue: BigInt(1000)},
+          endTime: {internalValue: BigInt(2000)},
         },
       ],
     }));
@@ -498,8 +498,8 @@ suite('HistoryFilterChipsVisibility', function() {
 
     // Verify beginTime and endTime match the selected time period.
     const args = await browserProxy.handler.whenCalled('queryHistory');
-    assertEquals(1000, args[2]);  // beginTime
-    assertEquals(2000, args[3]);  // endTime
+    assertDeepEquals({internalValue: BigInt(1000)}, args[2]);  // beginTime
+    assertDeepEquals({internalValue: BigInt(2000)}, args[3]);  // endTime
   });
 
   test('HidesFilterChipsOnGroupedView', async () => {

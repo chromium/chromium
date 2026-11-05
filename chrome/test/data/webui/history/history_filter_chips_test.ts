@@ -489,14 +489,14 @@ suite('HistoryFilterChipsTest', function() {
       {
         id: TimePeriodOptionId.kYesterday,
         label: 'Yesterday',
-        beginTime: 1000,
-        endTime: 2000,
+        beginTime: {internalValue: BigInt(1000)},
+        endTime: {internalValue: BigInt(2000)},
       },
       {
         id: TimePeriodOptionId.kLastWeek,
         label: 'Last week',
-        beginTime: 3000,
-        endTime: 4000,
+        beginTime: {internalValue: BigInt(3000)},
+        endTime: {internalValue: BigInt(4000)},
       },
     ];
 
