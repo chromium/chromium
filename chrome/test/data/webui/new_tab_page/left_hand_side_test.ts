@@ -312,7 +312,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertEquals(collapsedWidth, getHostWidthProperty());
 
     await expandLeftHandSide();
-    assertEquals(2, windowProxy.getCallCount('ensureLazyLoaded'));
+    assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
     assertEquals(initialExpanded, getExpandedIframe());
     assertFalse(initialExpanded.hidden);
     assertTrue(folded.hidden);
@@ -340,6 +340,49 @@ suite('NewTabPageLeftHandSideTest', () => {
     await microtasksFinished();
     assertFalse(expanded.hidden);
     assertTrue(folded.hidden);
+  });
+
+  ['pointerenter', 'focusin'].forEach(eventName => {
+    test(
+        `preloads expanded LHS iframe on ${eventName} in hybrid mode`,
+        async () => {
+          loadTimeData.overrideValues({enableThreadsRailHybrid: true});
+          await createLeftHandSide();
+
+          assertFalse(!!getExpandedIframe());
+          const folded =
+              leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+          const collapsedWidth = `${folded.offsetWidth}px`;
+
+          // Hovering or focusing the folded rail preloads the expanded iframe
+          // while keeping the rail folded.
+          folded.dispatchEvent(new Event(eventName));
+          await microtasksFinished();
+          assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
+          const preloaded = getExpandedIframe();
+          assertTrue(!!preloaded);
+          assertTrue(preloaded.hidden);
+          assertFalse(folded.hidden);
+          assertEquals(collapsedWidth, getHostWidthProperty());
+
+          // Receiving NTP_LHS_READY while preloaded marks the iframe ready and
+          // updates its width, but keeps the rail folded until clicked.
+          postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
+          await microtasksFinished();
+          assertEquals('320px', preloaded.style.width);
+          assertTrue(preloaded.classList.contains('ready'));
+          assertTrue(preloaded.hidden);
+          assertFalse(folded.hidden);
+          assertEquals(collapsedWidth, getHostWidthProperty());
+
+          // Clicking the folded rail expands immediately since the preloaded
+          // iframe is already ready.
+          folded.click();
+          await microtasksFinished();
+          assertFalse(preloaded.hidden);
+          assertTrue(folded.hidden);
+          assertEquals('320px', getHostWidthProperty());
+        });
   });
 
   test(

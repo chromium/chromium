@@ -84,6 +84,7 @@ export class LeftHandSideElement extends CrLitElement {
       enableThreadsRailHybrid_: {type: Boolean},
       expandedLhsUrl_: {type: String},
       expandedWidth_: {type: Number},
+      hasPreloaded_: {type: Boolean},
       isDark: {
         type: Boolean,
         reflect: true,
@@ -102,6 +103,7 @@ export class LeftHandSideElement extends CrLitElement {
   protected accessor expandedLhsUrl_: string =
       loadTimeData.getString('expandedLhsUrl');
   protected accessor expandedWidth_: number = DEFAULT_EXPANDED_LHS_WIDTH_PX;
+  protected accessor hasPreloaded_: boolean = false;
   protected accessor isExpanded_: boolean = false;
   protected accessor isExpandedReady_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
@@ -190,11 +192,19 @@ export class LeftHandSideElement extends CrLitElement {
   }
 
   // Returns the expanded LHS iframe, or null while it is not in the DOM. In
-  // hybrid mode it is not stamped until the rail is first expanded (see
-  // getHtml()), so that the embedded page is not loaded until the user asks for
-  // it.
+  // hybrid mode it is only stamped once the folded rail is hovered, focused,
+  // or expanded (see getHtml()), so that the embedded page is not loaded until
+  // the user interacts with the rail.
   private getExpandedIframe_(): IframeElement|null {
     return this.shadowRoot.querySelector<IframeElement>('#expanded');
+  }
+
+  protected async onFoldedPointerenter_() {
+    await this.preloadExpanded_();
+  }
+
+  protected async onFoldedFocusin_() {
+    await this.preloadExpanded_();
   }
 
   protected async onFoldedClick_() {
@@ -205,10 +215,19 @@ export class LeftHandSideElement extends CrLitElement {
     await this.expand_();
   }
 
-  private async expand_() {
+  private async preloadExpanded_() {
+    if (this.hasPreloaded_) {
+      return;
+    }
     // <ntp-iframe> is defined in the lazily loaded bundle, which may not have
-    // been loaded yet if the folded rail is clicked right after the NTP loads.
+    // been loaded yet if the folded rail is hovered or clicked right after the
+    // NTP loads.
     await WindowProxy.getInstance().ensureLazyLoaded();
+    this.hasPreloaded_ = true;
+  }
+
+  private async expand_() {
+    await this.preloadExpanded_();
     this.isExpanded_ = true;
   }
 
