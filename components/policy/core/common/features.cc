@@ -130,4 +130,7 @@ bool IsMigrateSecureConnectApiToDmServerEnabled() {
 BASE_FEATURE(kPolicyUserInfoFetcherUseOmitBugWorkaround,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCbcmRequireErrorDetailForUnenrollment,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace policy::features

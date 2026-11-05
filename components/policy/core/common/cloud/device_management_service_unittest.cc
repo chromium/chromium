@@ -20,12 +20,14 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
+#include "components/policy/core/common/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
@@ -377,19 +379,19 @@ class DeviceManagementServiceTestBase : public testing::Test {
 };
 
 struct FailedRequestParams {
-  FailedRequestParams(DeviceManagementStatus expected_status,
-                      net::Error error,
-                      int http_status,
-                      const std::string& response)
-      : expected_status_(expected_status),
-        error_(error),
-        http_status_(http_status),
-        response_(response) {}
+  DeviceManagementStatus GetExpectedStatus() const {
+    if (!feature_enabled_) {
+      return expected_status_feature_disabled_.value_or(expected_status_);
+    }
+    return expected_status_;
+  }
 
   DeviceManagementStatus expected_status_;
   net::Error error_;
   int http_status_;
   std::string response_;
+  bool feature_enabled_;
+  std::optional<DeviceManagementStatus> expected_status_feature_disabled_;
 };
 
 void PrintTo(const FailedRequestParams& params, std::ostream* os) {
@@ -401,10 +403,21 @@ void PrintTo(const FailedRequestParams& params, std::ostream* os) {
 // the same for all kinds of requests.
 class DeviceManagementServiceFailedRequestTest
     : public DeviceManagementServiceTestBase,
-      public testing::WithParamInterface<FailedRequestParams> {};
+      public testing::WithParamInterface<FailedRequestParams> {
+ public:
+  void SetUp() override {
+    DeviceManagementServiceTestBase::SetUp();
+    scoped_feature_list_.InitWithFeatureState(
+        features::kCbcmRequireErrorDetailForUnenrollment,
+        GetParam().feature_enabled_);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_P(DeviceManagementServiceFailedRequestTest, RegisterRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().GetExpectedStatus(), _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this,
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
@@ -418,7 +431,7 @@ TEST_P(DeviceManagementServiceFailedRequestTest, RegisterRequest) {
 }
 
 TEST_P(DeviceManagementServiceFailedRequestTest, CertBasedRegisterRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().GetExpectedStatus(), _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this,
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
@@ -432,7 +445,7 @@ TEST_P(DeviceManagementServiceFailedRequestTest, CertBasedRegisterRequest) {
 }
 
 TEST_P(DeviceManagementServiceFailedRequestTest, BrowserRegistrationRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().GetExpectedStatus(), _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this,
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
@@ -447,7 +460,7 @@ TEST_P(DeviceManagementServiceFailedRequestTest, BrowserRegistrationRequest) {
 
 TEST_P(DeviceManagementServiceFailedRequestTest,
        PolicyAgentRegistrationRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().GetExpectedStatus(), _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this,
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
@@ -461,7 +474,7 @@ TEST_P(DeviceManagementServiceFailedRequestTest,
 }
 
 TEST_P(DeviceManagementServiceFailedRequestTest, OidcEnrollmentRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().GetExpectedStatus(), _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this,
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
@@ -475,7 +488,7 @@ TEST_P(DeviceManagementServiceFailedRequestTest, OidcEnrollmentRequest) {
 }
 
 TEST_P(DeviceManagementServiceFailedRequestTest, ApiAuthCodeFetchRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().GetExpectedStatus(), _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this,
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
@@ -489,7 +502,7 @@ TEST_P(DeviceManagementServiceFailedRequestTest, ApiAuthCodeFetchRequest) {
 }
 
 TEST_P(DeviceManagementServiceFailedRequestTest, PolicyRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().GetExpectedStatus(), _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this,
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
@@ -503,7 +516,7 @@ TEST_P(DeviceManagementServiceFailedRequestTest, PolicyRequest) {
 }
 
 TEST_P(DeviceManagementServiceFailedRequestTest, AutoEnrollmentRequest) {
-  EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
+  EXPECT_CALL(*this, OnJobDone(_, GetParam().GetExpectedStatus(), _, _));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this,
               OnShouldJobRetry(GetParam().http_status_, GetParam().response_));
@@ -516,108 +529,179 @@ TEST_P(DeviceManagementServiceFailedRequestTest, AutoEnrollmentRequest) {
                GetParam().response_);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    DeviceManagementServiceFailedRequestTestInstance,
-    DeviceManagementServiceFailedRequestTest,
-    testing::Values(
-        FailedRequestParams(DM_STATUS_REQUEST_FAILED, net::ERR_FAILED, 0, ""),
-        FailedRequestParams(DM_STATUS_REQUEST_FAILED,
-                            net::ERR_TIMED_OUT,
-                            0,
-                            ""),
-        FailedRequestParams(DM_STATUS_HTTP_STATUS_ERROR,
-                            net::OK,
-                            666,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED,
-                            net::OK,
-                            403,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER,
-                            net::OK,
-                            405,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_SERVICE_DEVICE_ID_CONFLICT,
-                            net::OK,
-                            409,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
-                            net::OK,
-                            410,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(
-            DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
-            net::OK,
-            410,
-            GenerateResponseWithErrorDetail(
-                em::CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN)),
-        FailedRequestParams(
+namespace {
+
+std::vector<FailedRequestParams> GetFailedRequestParamsList() {
+  std::vector<FailedRequestParams> params = {
+      FailedRequestParams{.expected_status_ = DM_STATUS_REQUEST_FAILED,
+                          .error_ = net::ERR_FAILED,
+                          .http_status_ = 0,
+                          .response_ = ""},
+      FailedRequestParams{.expected_status_ = DM_STATUS_REQUEST_FAILED,
+                          .error_ = net::ERR_TIMED_OUT,
+                          .http_status_ = 0,
+                          .response_ = ""},
+      FailedRequestParams{.expected_status_ = DM_STATUS_HTTP_STATUS_ERROR,
+                          .error_ = net::OK,
+                          .http_status_ = 666,
+                          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ = DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED,
+          .error_ = net::OK,
+          .http_status_ = 403,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ = DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER,
+          .error_ = net::OK,
+          .http_status_ = 405,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ = DM_STATUS_SERVICE_DEVICE_ID_CONFLICT,
+          .error_ = net::OK,
+          .http_status_ = 409,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{.expected_status_ =
 #if BUILDFLAG(IS_CHROMEOS)
-            DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
-#else   // BUILDFLAG(IS_CHROMEOS)
-            DM_STATUS_SERVICE_DEVICE_NEEDS_RESET,
-#endif  // BUILDFLAG(IS_CHROMEOS)
-            net::OK,
-            410,
-            GenerateResponseWithErrorDetail(
-                em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN)),
-        FailedRequestParams(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
-                            net::OK,
-                            401,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_REQUEST_INVALID,
-                            net::OK,
-                            400,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_TEMPORARY_UNAVAILABLE,
-                            net::OK,
-                            404,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_SERVICE_ACTIVATION_PENDING,
-                            net::OK,
-                            412,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_SERVICE_MISSING_LICENSES,
-                            net::OK,
-                            402,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(
-            DM_STATUS_SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE,
-            net::OK,
-            417,
-            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(
-            DM_STATUS_SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL,
-            net::OK,
-            905,
-            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(
-            DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED,
-            net::OK,
-            906,
-            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(
-            DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE,
-            net::OK,
-            907,
-            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_REQUEST_TOO_LARGE,
-                            net::OK,
-                            413,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK,
-                            net::OK,
-                            418,
-                            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(
-            DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED,
-            net::OK,
-            419,
-            PROTO_STRING(kResponseEmpty)),
-        FailedRequestParams(DM_STATUS_SERVICE_TOO_MANY_REQUESTS,
-                            net::OK,
-                            429,
-                            PROTO_STRING(kResponseEmpty))));
+                              DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+#else
+                              DM_STATUS_HTTP_STATUS_ERROR,
+#endif
+                          .error_ = net::OK,
+                          .http_status_ = 410,
+                          .response_ = PROTO_STRING(kResponseEmpty),
+                          .feature_enabled_ = false,
+                          .expected_status_feature_disabled_ =
+                              DM_STATUS_SERVICE_DEVICE_NOT_FOUND},
+      FailedRequestParams{.expected_status_ =
+#if BUILDFLAG(IS_CHROMEOS)
+                              DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+#else
+                              DM_STATUS_HTTP_STATUS_ERROR,
+#endif
+                          .error_ = net::OK,
+                          .http_status_ = 410,
+                          .response_ = "bad response",
+                          .feature_enabled_ = false,
+                          .expected_status_feature_disabled_ =
+                              DM_STATUS_SERVICE_DEVICE_NOT_FOUND},
+      FailedRequestParams{
+          .expected_status_ =
+#if BUILDFLAG(IS_CHROMEOS)
+              DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+#else
+              DM_STATUS_HTTP_STATUS_ERROR,
+#endif
+          .error_ = net::OK,
+          .http_status_ = 410,
+          .response_ = GenerateResponseWithErrorDetail(em::NO_ERROR_DETAIL),
+          .feature_enabled_ = false,
+          .expected_status_feature_disabled_ =
+              DM_STATUS_SERVICE_DEVICE_NOT_FOUND},
+      FailedRequestParams{
+          .expected_status_ = DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+          .error_ = net::OK,
+          .http_status_ = 410,
+          .response_ = GenerateResponseWithErrorDetail(
+              em::CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN)},
+      FailedRequestParams{
+          .expected_status_ =
+#if BUILDFLAG(IS_CHROMEOS)
+              DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+#else
+              DM_STATUS_SERVICE_DEVICE_NEEDS_RESET,
+#endif
+          .error_ = net::OK,
+          .http_status_ = 410,
+          .response_ = GenerateResponseWithErrorDetail(
+              em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN)},
+      FailedRequestParams{
+          .expected_status_ = DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
+          .error_ = net::OK,
+          .http_status_ = 401,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{.expected_status_ = DM_STATUS_REQUEST_INVALID,
+                          .error_ = net::OK,
+                          .http_status_ = 400,
+                          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{.expected_status_ = DM_STATUS_TEMPORARY_UNAVAILABLE,
+                          .error_ = net::OK,
+                          .http_status_ = 404,
+                          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ = DM_STATUS_SERVICE_ACTIVATION_PENDING,
+          .error_ = net::OK,
+          .http_status_ = 412,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ = DM_STATUS_SERVICE_MISSING_LICENSES,
+          .error_ = net::OK,
+          .http_status_ = 402,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ =
+              DM_STATUS_SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE,
+          .error_ = net::OK,
+          .http_status_ = 417,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ =
+              DM_STATUS_SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL,
+          .error_ = net::OK,
+          .http_status_ = 905,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ =
+              DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED,
+          .error_ = net::OK,
+          .http_status_ = 906,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ =
+              DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE,
+          .error_ = net::OK,
+          .http_status_ = 907,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{.expected_status_ = DM_STATUS_REQUEST_TOO_LARGE,
+                          .error_ = net::OK,
+                          .http_status_ = 413,
+                          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ =
+              DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK,
+          .error_ = net::OK,
+          .http_status_ = 418,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ =
+              DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED,
+          .error_ = net::OK,
+          .http_status_ = 419,
+          .response_ = PROTO_STRING(kResponseEmpty)},
+      FailedRequestParams{
+          .expected_status_ = DM_STATUS_SERVICE_TOO_MANY_REQUESTS,
+          .error_ = net::OK,
+          .http_status_ = 429,
+          .response_ = PROTO_STRING(kResponseEmpty)}};
+  std::vector<FailedRequestParams> all_params;
+  for (const auto& param : params) {
+    FailedRequestParams enabled = param;
+    enabled.feature_enabled_ = true;
+    all_params.push_back(enabled);
+
+    if (param.expected_status_feature_disabled_.has_value()) {
+      FailedRequestParams disabled = param;
+      disabled.feature_enabled_ = false;
+      all_params.push_back(disabled);
+    }
+  }
+  return all_params;
+}
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(DeviceManagementServiceFailedRequestTestInstance,
+                         DeviceManagementServiceFailedRequestTest,
+                         testing::ValuesIn(GetFailedRequestParamsList()));
 
 // Simple query parameter parser for testing.
 class QueryParams {

@@ -126,6 +126,10 @@ POLICY_EXPORT bool IsMigrateSecureConnectApiToDmServerEnabled();
 // for user info requests.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyUserInfoFetcherUseOmitBugWorkaround);
 
+// When enabled, CBCM unenrollment on HTTP 410 requires an explicit
+// `DeviceManagementErrorDetail` in the response body.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kCbcmRequireErrorDetailForUnenrollment);
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_
