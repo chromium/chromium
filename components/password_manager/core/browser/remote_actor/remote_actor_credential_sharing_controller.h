@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "url/origin.h"
 
 namespace device_reauth {
@@ -91,11 +92,13 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
              std::string_view task_id,
              ResultCallback callback);
 
-  // Configures optional per-actor OAuth client ID and task namespace ID
-  // overrides to forward when sharing a credential. Must be called before
-  // `Start()`. If not set (or empty / `std::nullopt`), the permission client
-  // falls back to default values.
-  void SetActorParameters(std::string_view actor_oauth_client_id,
+  // Configures the requesting remote actor type (used for per-actor metrics)
+  // and optional per-actor OAuth client ID and task namespace ID overrides to
+  // forward when sharing a credential. Must be called before `Start()`. If not
+  // set (or empty / `std::nullopt`), only aggregate metrics are recorded and
+  // the permission client falls back to default values.
+  void SetActorParameters(RemoteActorType actor_type,
+                          std::string_view actor_oauth_client_id,
                           std::optional<int> task_namespace_id);
 
   // Returns whether `Start()` was called and the result was not reported yet.
@@ -136,6 +139,9 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   // Asynchronously posts `result` to the result callback.
   void RespondWithError(RemoteActorCredentialSharingResult result);
 
+  // Records `result` to the aggregate and (if known) per-actor histograms.
+  void LogResult(RemoteActorCredentialSharingResult result) const;
+
   // Runs `callback_` with `result`.
   void RunResultCallback(RemoteActorCredentialSharingResult result);
 
@@ -153,6 +159,8 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   url::Origin origin_;
   // The ID of the remote actor task requesting credentials.
   std::string task_id_;
+  // The requesting remote actor type, if configured.
+  std::optional<RemoteActorType> actor_type_;
   // Optional override for the remote actor's OAuth client ID.
   std::string actor_oauth_client_id_;
   // Optional override for the remote actor's task ID namespace.

@@ -35,6 +35,7 @@
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
@@ -474,6 +475,7 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
 
 TEST_F(RemoteActorCredentialSharingControllerTest,
        SuccessFlow_ForwardsConfiguredAgentParameters) {
+  base::HistogramTester histograms;
   SignIn("user@gmail.com");
 
   PasswordForm form;
@@ -486,7 +488,8 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
 
   base::test::TestFuture<RemoteActorCredentialSharingResult> result;
   auto controller = CreateController();
-  controller->SetActorParameters("test_agent_client_id", 41);
+  controller->SetActorParameters(RemoteActorType::kSearch,
+                                 "test_agent_client_id", 41);
   controller->Start(account_info_.GetGaiaId().ToString(), "google.com", kTaskId,
                     result.GetCallback());
 
@@ -511,6 +514,14 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
 
   delegate_.SelectCredential(*credentials[0]);
   EXPECT_EQ(result.Get(), RemoteActorCredentialSharingResult::kSuccess);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Search.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result", 0);
 }
 
 TEST_F(RemoteActorCredentialSharingControllerTest, FailureFlow_SharingFailed) {

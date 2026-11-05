@@ -85,14 +85,13 @@ void RemoteActorCredentialSharingController::Start(std::string_view gaia_id,
   callback_ = std::move(callback);
 
   if (!client_) {
-    LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kOtherError);
+    LogResult(RemoteActorCredentialSharingResult::kOtherError);
     RespondWithError(RemoteActorCredentialSharingResult::kOtherError);
     return;
   }
 
   if (!VerifyUserIdentityAndSyncState(gaia_id)) {
-    LogRemoteActorCredentialSharingResult(
+    LogResult(
         RemoteActorCredentialSharingResult::kUserIdentityOrSyncStateInvalid);
     RespondWithError(
         RemoteActorCredentialSharingResult::kUserIdentityOrSyncStateInvalid);
@@ -103,9 +102,11 @@ void RemoteActorCredentialSharingController::Start(std::string_view gaia_id,
 }
 
 void RemoteActorCredentialSharingController::SetActorParameters(
+    RemoteActorType actor_type,
     std::string_view actor_oauth_client_id,
     std::optional<int> task_namespace_id) {
   CHECK(!IsActive());
+  actor_type_ = actor_type;
   actor_oauth_client_id_ = actor_oauth_client_id;
   task_namespace_id_ = task_namespace_id;
 }
@@ -201,7 +202,7 @@ void RemoteActorCredentialSharingController::QueryPasswordStores(
   }
 
   if (stores.empty()) {
-    LogRemoteActorCredentialSharingResult(
+    LogResult(
         RemoteActorCredentialSharingResult::kNoSyncOrAccountStorage);
     RespondWithError(
         RemoteActorCredentialSharingResult::kNoSyncOrAccountStorage);
@@ -225,7 +226,7 @@ void RemoteActorCredentialSharingController::OnAllLoginsRetrieved() {
   }
 
   if (credentials_.empty()) {
-    LogRemoteActorCredentialSharingResult(
+    LogResult(
         RemoteActorCredentialSharingResult::kNoPasswordsFound);
     std::move(callback_).Run(
         RemoteActorCredentialSharingResult::kNoPasswordsFound);
@@ -251,7 +252,7 @@ void RemoteActorCredentialSharingController::OnCredentialSelected(
   }
 
   if (!selected_form.has_value()) {
-    LogRemoteActorCredentialSharingResult(selected_form.error());
+    LogResult(selected_form.error());
     RespondWithError(selected_form.error());
     return;
   }
@@ -279,7 +280,7 @@ void RemoteActorCredentialSharingController::AuthenticateIfNeeded(
 
   if (reauth_required) {
     if (!authenticator) {
-      LogRemoteActorCredentialSharingResult(
+      LogResult(
           RemoteActorCredentialSharingResult::kAuthenticatorFailed);
       RespondWithError(
           RemoteActorCredentialSharingResult::kAuthenticatorFailed);
@@ -314,7 +315,7 @@ void RemoteActorCredentialSharingController::OnAuthenticationResult(
   }
 
   if (!success) {
-    LogRemoteActorCredentialSharingResult(
+    LogResult(
         RemoteActorCredentialSharingResult::kAuthenticatorFailed);
     RespondWithError(RemoteActorCredentialSharingResult::kAuthenticatorFailed);
     return;
@@ -330,7 +331,7 @@ void RemoteActorCredentialSharingController::ProceedWithCredential(
   }
 
   if (!sharing_service_) {
-    LogRemoteActorCredentialSharingResult(
+    LogResult(
         RemoteActorCredentialSharingResult::kSharingServiceUnavailable);
     RespondWithError(
         RemoteActorCredentialSharingResult::kSharingServiceUnavailable);
@@ -361,7 +362,7 @@ void RemoteActorCredentialSharingController::OnShareCompleted(bool success) {
   RemoteActorCredentialSharingResult result =
       success ? RemoteActorCredentialSharingResult::kSuccess
               : RemoteActorCredentialSharingResult::kSharingFailed;
-  LogRemoteActorCredentialSharingResult(result);
+  LogResult(result);
   RunResultCallback(result);
 }
 
@@ -376,6 +377,11 @@ void RemoteActorCredentialSharingController::RespondWithError(
 void RemoteActorCredentialSharingController::RunResultCallback(
     RemoteActorCredentialSharingResult result) {
   std::move(callback_).Run(result);
+}
+
+void RemoteActorCredentialSharingController::LogResult(
+    RemoteActorCredentialSharingResult result) const {
+  LogRemoteActorCredentialSharingResult(result, actor_type_);
 }
 
 }  // namespace password_manager

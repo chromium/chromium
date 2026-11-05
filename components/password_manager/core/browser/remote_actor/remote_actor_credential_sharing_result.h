@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_RESULT_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_RESULT_H_
 
+#include <optional>
+
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
+
 namespace password_manager {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -28,9 +32,12 @@ enum class RemoteActorCredentialSharingResult {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:RemoteActorCredentialSharingResult)
 
 // Records `result` to the
-// `PasswordManager.RemoteActorCredentialSharing.Result` histogram.
+// `PasswordManager.RemoteActorCredentialSharing.Result` histogram and, if
+// `actor_type` is set, to the per-actor
+// `PasswordManager.RemoteActorCredentialSharing.{ActorType}.Result` histogram.
 void LogRemoteActorCredentialSharingResult(
-    RemoteActorCredentialSharingResult result);
+    RemoteActorCredentialSharingResult result,
+    std::optional<RemoteActorType> actor_type);
 
 }  // namespace password_manager
 

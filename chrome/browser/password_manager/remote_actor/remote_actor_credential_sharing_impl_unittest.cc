@@ -694,6 +694,9 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   histograms.ExpectBucketCount(
       "PasswordManager.RemoteActorCredentialSharing.Result",
       RemoteActorCredentialSharingResult::kRequestAlreadyInProgress, 1);
+  histograms.ExpectBucketCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result",
+      RemoteActorCredentialSharingResult::kRequestAlreadyInProgress, 1);
 
   // The first request should still proceed unaffected.
   EXPECT_CALL(*mock_sharing_service_, SharePassword)
@@ -703,6 +706,9 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   histograms.ExpectBucketCount(
       "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result",
       RemoteActorCredentialSharingResult::kSuccess, 1);
 }
 
@@ -773,6 +779,9 @@ TEST_F(RemoteActorCredentialSharingImplTest, PolicyDisabled_RequestRejected) {
   EXPECT_FALSE(result.Get());
   histograms.ExpectBucketCount(
       "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kBlockedByPolicy, 1);
+  histograms.ExpectBucketCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result",
       RemoteActorCredentialSharingResult::kBlockedByPolicy, 1);
 }
 
@@ -871,10 +880,14 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   histograms.ExpectBucketCount(
       "PasswordManager.RemoteActorCredentialSharing.Result",
       RemoteActorCredentialSharingResult::kBlockedByPolicy, 1);
+  histograms.ExpectBucketCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result",
+      RemoteActorCredentialSharingResult::kBlockedByPolicy, 1);
 }
 
 TEST_F(RemoteActorCredentialSharingImplTest,
        GeminiOriginPlumbsGeminiBrandingAndAgentParameters) {
+  base::HistogramTester histograms;
   mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
       SetUpAndBindFlow();
   SetSyncActive(true);
@@ -914,12 +927,21 @@ TEST_F(RemoteActorCredentialSharingImplTest,
             "320695880279-gnq6the97ga85scn208u5jctnk82qelk."
             "apps.googleusercontent.com");
   EXPECT_EQ(captured_params.task_namespace_id, 30);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Search.Result", 0);
 }
 
 TEST_F(RemoteActorCredentialSharingImplTest,
        SearchOriginPlumbsSearchBrandingAndAgentParameters) {
   base::test::ScopedFeatureList search_feature_list{
       features::kRemoteActorCredentialSharingSearch};
+  base::HistogramTester histograms;
   mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
       SetUpAndBindFlow(GURL("https://search.google.com"));
   SetSyncActive(true);
@@ -962,6 +984,14 @@ TEST_F(RemoteActorCredentialSharingImplTest,
             "240392999166-p989rucds3hg2lidtif5huititvl4ln1."
             "apps.googleusercontent.com");
   EXPECT_EQ(captured_params.task_namespace_id, 41);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Search.Result",
+      RemoteActorCredentialSharingResult::kSuccess, 1);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result", 0);
 }
 
 TEST_F(RemoteActorCredentialSharingImplTest,
@@ -978,6 +1008,10 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   histograms.ExpectUniqueSample(
       "PasswordManager.RemoteActorCredentialSharing.Result",
       RemoteActorCredentialSharingResult::kOtherError, 1);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result", 0);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Search.Result", 0);
 }
 
 }  // namespace password_manager

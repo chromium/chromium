@@ -114,9 +114,19 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
     return;
   }
 
+  const std::optional<RemoteActorType> actor_type =
+      GetRemoteActorTypeForOrigin(render_frame_host().GetLastCommittedOrigin());
+  if (!actor_type.has_value()) {
+    LogRemoteActorCredentialSharingResult(
+        RemoteActorCredentialSharingResult::kOtherError, std::nullopt);
+    RespondWithError(std::move(callback));
+    return;
+  }
+
   if (controller_ && controller_->IsActive()) {
     LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kRequestAlreadyInProgress);
+        RemoteActorCredentialSharingResult::kRequestAlreadyInProgress,
+        *actor_type);
     RespondWithError(std::move(callback));
     return;
   }
@@ -126,28 +136,20 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
 
   if (!IsAllowedByPolicy(profile)) {
     LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kBlockedByPolicy);
+        RemoteActorCredentialSharingResult::kBlockedByPolicy, *actor_type);
     RespondWithError(std::move(callback));
     return;
   }
 
   if (profile->IsOffTheRecord()) {
     LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kUserIdentityOrSyncStateInvalid);
+        RemoteActorCredentialSharingResult::kUserIdentityOrSyncStateInvalid,
+        *actor_type);
     RespondWithError(std::move(callback));
     return;
   }
 
-  std::optional<RemoteActorConfig> actor_config =
-      GetRemoteActorConfigForOrigin(
-          render_frame_host().GetLastCommittedOrigin());
-  if (!actor_config.has_value()) {
-    LogRemoteActorCredentialSharingResult(
-        RemoteActorCredentialSharingResult::kOtherError);
-    RespondWithError(std::move(callback));
-    return;
-  }
-  actor_config_ = std::move(actor_config);
+  actor_config_ = GetRemoteActorConfig(*actor_type);
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
@@ -167,7 +169,8 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
           .get(),
       RemoteActorCredentialSharingServiceFactory::GetForProfile(profile),
       client, this);
-  controller_->SetActorParameters(actor_config_->oauth_client_id,
+  controller_->SetActorParameters(actor_config_->actor_type,
+                                  actor_config_->oauth_client_id,
                                   actor_config_->task_namespace_id);
   controller_->Start(
       gaia_id, domain, task_id,
