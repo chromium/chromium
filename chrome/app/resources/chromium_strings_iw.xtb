@@ -306,6 +306,7 @@
 <translation id="4135244987012252068">‏אפשר להתאים אישית את Chromium כדי לשנות את מראה הדפדפן</translation>
 <translation id="4147856324248078748">‏התאמה אישית של Chromium</translation>
 <translation id="4148957013307229264">מתקין...</translation>
+<translation id="4197500750628721662">‏עדכון Chromium לשמירה על האבטחה</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chromium</translation>
 <translation id="4208652172235621272">‏החשבון של <ph name="EXISTING_USER" /> כבר מחובר. כדי לשמור על סביבת גלישה נפרדת, אפשר להיכנס ל-Chromium בפרופיל נפרד בתור <ph name="USER_EMAIL_ADDRESS" />. אפשר לקבל גם את רשימת הקריאה ופריטים נוספים בכל המכשירים.</translation>
 <translation id="421369550622382712">‏אפליקציות, משחקים, תוספים ועיצובים מעולים בשביל Chromium.</translation>
@@ -440,6 +441,7 @@
 <translation id="5596063723521813107">{COUNT,plural, =1{‏האדמין דורש להפעיל מחדש את Chromium כדי להחיל עדכון. החלון המבודד לא ייפתח מחדש.}one{‏האדמין דורש להפעיל מחדש את Chromium כדי להחיל עדכון. ‫# החלונות המבודדים לא ייפתחו מחדש.}two{‏האדמין דורש להפעיל מחדש את Chromium כדי להחיל עדכון. ‫# החלונות המבודדים לא ייפתחו מחדש.}other{‏האדמין דורש להפעיל מחדש את Chromium כדי להחיל עדכון. ‫# החלונות המבודדים לא ייפתחו מחדש.}}</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5605834417512968703">‏אפשר לבחור משהו לחיפוש באמצעות התכונה 'חיפוש תמונות' או ללחוץ על Escape כדי לצאת מחיפוש התמונות</translation>
+<translation id="5614149501995591823">‏‫<ph name="IMPORTANT_UPDATE" /> מוכן. אפשר להפעיל עכשיו את Chromium מחדש, או להגדיר אותו כך שיתעדכן בפעם הבאה שהמסך יישאר דולק ולא יהיה בשימוש במשך <ph name="IDLE_DURATION" />.</translation>
 <translation id="5618818588972826921">‏אפשר לבחור טקסט או תמונה לחיפוש באמצעות התכונה "חיפוש תמונות" או ללחוץ על Escape כדי לצאת מחיפוש התמונות</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}one{‏עדכון של Chromium זמין כבר # ימים}two{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
 <translation id="5643865575100044307">‏מחיקת נתונים מאתרים מהמכשיר בכל פעם שסוגרים את Chromium</translation>
@@ -494,6 +496,7 @@
 <translation id="6192070012454216182">‏הקלדת חיפושים ושאלות מכל מקום במכשיר, גם אם Chromium ממוזער ההגדרה מאפשרת ל-Chromium לפעול ברקע.</translation>
 <translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Chromium ולנסות שוב.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium יופעל מחדש עכשיו}=1{‏Chromium יופעל מחדש בעוד שנייה אחת}one{‏Chromium יופעל מחדש בעוד # שניות}two{‏Chromium יופעל מחדש בעוד # שניות}other{‏Chromium יופעל מחדש בעוד # שניות}}</translation>
+<translation id="6232046770428574552">‏‫Chromium יתעדכן כשהמסך לא יהיה בשימוש</translation>
 <translation id="6241367896540709610">‏נדרשת הרשאת גישה לאחסון ב-Chromium כדי להוריד קבצים</translation>
 <translation id="6245734527075554892">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chromium</translation>
 <translation id="6248213926982192922">‏יש להפוך את Chromium לדפדפן ברירת המחדל</translation>

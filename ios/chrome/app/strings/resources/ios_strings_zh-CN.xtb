@@ -101,6 +101,7 @@
 <translation id="1291506870746876680">您离开<ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" />后，这个网站的权限将重置为停用。</translation>
 <translation id="1293491796138057740">您的信息会保存到 <ph name="USER_EMAIL" /> 的 Google 钱包中。您可以在各项 Google 产品中使用这些信息更快地填写表单。</translation>
 <translation id="1293556467332435079">文件</translation>
+<translation id="1294703224699789269">须遵守<ph name="BEGIN_LINK" />《Google 条款》<ph name="END_LINK" /><ph name="BEGIN_LINK" />《韩国位置信息条款》<ph name="END_LINK" />和<ph name="BEGIN_LINK" />《隐私权声明》<ph name="END_LINK" />。对话内容会经过审核，并用于训练生成式 AI 模型。Gemini 是一款 AI 工具，可能会出现错误（包括与人相关的信息）。部分内容可能并不适合所有人。您可以<ph name="BEGIN_LINK" />管理历史记录<ph name="END_LINK" />，包括您的位置信息。<ph name="BEGIN_LINK" />详细了解您有哪些选择<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1296581780163690620">下载文件？(<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">“使用 AI 模式搜索”任务已完成！</translation>
@@ -385,6 +386,7 @@
 <translation id="2104436223719117661">热搜</translation>
 <translation id="21133533946938348">固定标签页</translation>
 <translation id="2117650889962717098">切换到无痕模式，让浏览不留痕迹</translation>
+<translation id="2119126821484134587">为了提供个性化的帮助，Gemini 会与 Google 地图和 Google 机票等其他 Google 服务分享您的部分数据（例如部分对话内容、位置信息和其他相关信息）。即使您日后删除 Gemini 应用历史记录，这些服务也可能会利用这类信息进行改进。如需了解详情，请前往 <ph name="BEGIN_LINK" />Gemini 应用隐私信息中心<ph name="END_LINK" />。</translation>
 <translation id="2119636449201577317">打开方式…</translation>
 <translation id="2119962645034852864">您的账号无法使用部分服务</translation>
 <translation id="2120553909046681540">您的组织关闭了私密浏览功能。</translation>
@@ -669,6 +671,7 @@
 <translation id="3038136505713492417">如需在此设备上使用通行密钥，请先验证身份</translation>
 <translation id="3039671569659952257">删除文件夹</translation>
 <translation id="3041835740069544003">现在，Chrome 可以更智能地理解表单，从而检测和填充更多表单。为此，系统可能会在云端的私密空间中处理网页内容和网址。您可以在“设置”中进行管理。</translation>
+<translation id="3042118633250374317">Google 会使用您的历史记录来提供服务，保护 Google、Google 用户和公众，并在人工审核员的帮助下开发和改进服务。请勿输入您不希望我们审核或使用的信息。</translation>
 <translation id="3050988301648974170">打开“密码安全检查”</translation>
 <translation id="3053332585453689122">将您访问过的网址以及网页内容、下载内容、扩展程序活动和系统信息的少量样本发送至“Google 安全浏览”功能，以检查这些内容是否有害。</translation>
 <translation id="3055102495753300780">信息存储空间</translation>
@@ -1110,6 +1113,7 @@
 <translation id="4488754974567924717">如果您的密码遭泄露，我们会通知您</translation>
 <translation id="4489536976005181779">{count,plural, =1{网页已添加到您的以下账户的阅读清单中：{email}}other{网页已添加到您的以下账户的阅读清单中：{email}}}</translation>
 <translation id="4493604894403585654">您目前登录的账号是 <ph name="USER_EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据您的历史记录，在 Google 搜索及其他服务中提供个性化的体验。</translation>
+<translation id="4495251723189610737">您的对话会保存在 Gemini 历史记录中。历史记录包括您的音频、Gemini Live 视频和屏幕共享内容、您与 Gemini 共享的内容（例如提示词、<ph name="BEGIN_LINK" />上传内容<ph name="END_LINK" />和<ph name="BEGIN_LINK" />屏幕内容<ph name="END_LINK" />）、Gemini 的回答、任务和工具调用、反馈、您通过 Gemini 访问的网站中的信息、产品使用情况数据、设备的大致位置、IP 地址以及 Google 账号中的住址或工作地址。其中还可能包括您关联到 Gemini 的应用中的数据。</translation>
 <translation id="4502423230170890588">从此设备中移除</translation>
 <translation id="4508486880075514067">展开为全屏</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>
@@ -1198,6 +1202,7 @@
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4764612367328936189">贵单位要求您只能使用特定账号登录。不允许使用的账号会处于隐藏状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">有助于您在任意设备上访问已保存的通行密钥</translation>
+<translation id="476946043193006313">您的活动记录有助于训练生成式 AI</translation>
 <translation id="4782952780741793211">确认码：</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">要在无痕模式下打开吗？</translation>
@@ -1214,6 +1219,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4813345808229079766">连接</translation>
 <translation id="4821595350501541683">标签页已关闭，而且浏览数据已被删除</translation>
+<translation id="4821645169621230110">Google 会如何使用您的历史记录</translation>
 <translation id="4823322556950229674">您可以按住地址栏和返回按钮，将其移到底部</translation>
 <translation id="4824480232751123840">体积</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 以及另外 1 个}other{{domain} 以及另外 {count} 个}}</translation>
@@ -1241,6 +1247,7 @@
 <translation id="4877597489778380935">以后再提醒我</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4883766694719903356">无痕式标签页网格</translation>
+<translation id="4884205780547482830">您的数据有助于训练生成式 AI</translation>
 <translation id="4884937942297374058">已关闭增强型保护</translation>
 <translation id="4887391901725877182">字幕</translation>
 <translation id="488785315393301722">显示详细信息</translation>
@@ -1721,6 +1728,7 @@
 <translation id="6347953390226388422">{count,plural, =1{这个地址将被从您的 Google 账号 (<ph name="USER_EMAIL" />) 和此设备中删除。}other{这些地址将被从您的 Google 账号 (<ph name="USER_EMAIL" />) 和此设备中删除。}}</translation>
 <translation id="634878792104344809">将您的密码、历史记录等信息同步到您的所有设备上</translation>
 <translation id="6350745006329795504">管理设备</translation>
+<translation id="6351000590398820964">Gemini 是一款 AI 工具，可能会出现错误（包括与人相关的信息）。部分内容可能并不适合所有人。对话内容会经过审核，并用于训练生成式 AI 模型。<ph name="BEGIN_LINK" />了解您有哪些选择<ph name="END_LINK" />。须遵守<ph name="BEGIN_LINK" />《Google 条款》<ph name="END_LINK" />和<ph name="BEGIN_LINK" />《隐私权声明》<ph name="END_LINK" />。</translation>
 <translation id="6351147166808964033">进入标签页切换器</translation>
 <translation id="63519665078626091">如需使用网页检查器，请使用数据线连接到计算机上的 Safari，并从“开发”菜单中访问 iPad。您可在计算机上 Safari 设置中的“高级”部分内启用“开发”菜单。</translation>
 <translation id="6354695695659930684">正在填充密码</translation>
@@ -1888,6 +1896,7 @@
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>
+<translation id="6843744036364481304">系统会保存哪些对话历史记录</translation>
 <translation id="6844773122575789617">开启 AI 模式</translation>
 <translation id="6851516051005285358">请求切换到桌面版网站</translation>
 <translation id="6857446173140146664">删除背景</translation>
@@ -2012,6 +2021,7 @@
 <translation id="7223134495231529579">存储到“下载”</translation>
 <translation id="722339453342442311">立即检查</translation>
 <translation id="7227235818314667565">管理共享设置</translation>
+<translation id="7232376892719594461">您与 Gemini 的对话以及您的 <ph name="BEGIN_LINK" />Google Workspace 数据<ph name="END_LINK" />不会经过审核，也不会用于训练生成式 AI 模型。</translation>
 <translation id="7233006041370588369">选择要填充的密码。</translation>
 <translation id="7238074332967840767">安全</translation>
 <translation id="723874023660911012">切换个人资料</translation>
@@ -2522,7 +2532,9 @@
 <translation id="8746155870861185046">分享突出显示的内容</translation>
 <translation id="8748678031495824833">打开网页上的 AI 工具</translation>
 <translation id="8750037785291841318">您打开的标签页会显示在此处</translation>
+<translation id="8751126814549746156">您的历史记录会在保留 18 个月后自动删除。您可以在“设置”中更改此期限。由服务提供商审核的对话会与您的账号解除关联，且最多会保留 3 年。您可以随时<ph name="BEGIN_LINK" />关闭<ph name="END_LINK" />历史记录设置。</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
+<translation id="8762190205387442931">对话内容会经过审核，并用于训练生成式 AI 模型。您可以<ph name="BEGIN_LINK" />管理历史记录<ph name="END_LINK" />，包括您的位置信息。<ph name="BEGIN_LINK" />详细了解您有哪些选择<ph name="END_LINK" />。</translation>
 <translation id="8763613688786959833">转到最后一个标签页</translation>
 <translation id="8766790350274092814">用于登录 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="8775144690796719618">网址无效</translation>
@@ -2567,6 +2579,7 @@
 <translation id="8893208530912252670">视频</translation>
 <translation id="890009681345348416">已自动填充 40 多个密码</translation>
 <translation id="8900845556227858314">浏览器应用</translation>
+<translation id="8903042868629070803">如果您年满 18 周岁，Google 还会使用您的历史记录<ph name="BEGIN_LINK" />训练生成式 AI 模型<ph name="END_LINK" />。您可以随时<ph name="BEGIN_LINK" />关闭此功能<ph name="END_LINK" />，让日后的对话不再用于训练。</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8907722425137681851">在当前页面中查找…</translation>
 <translation id="8909135823018751308">分享…</translation>

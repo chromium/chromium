@@ -101,6 +101,7 @@
 <translation id="1291506870746876680">Le autorizzazioni del sito <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> verranno disattivate quando uscirai dal sito.</translation>
 <translation id="1293491796138057740">Le tue informazioni vengono salvate in Google Wallet per <ph name="USER_EMAIL" />. Puoi usarle in tutti i prodotti Google per compilare i moduli più velocemente.</translation>
 <translation id="1293556467332435079">File</translation>
+<translation id="1294703224699789269">Si applicano i <ph name="BEGIN_LINK" />Termini<ph name="END_LINK" />, i <ph name="BEGIN_LINK" />Termini per la posizione coreani<ph name="END_LINK" /> e l‘<ph name="BEGIN_LINK" />Informativa sulla privacy<ph name="END_LINK" />. Le chat vengono esaminate e utilizzate per addestrare i modelli di AI generativa. Gemini è un'AI e può commettere errori, anche in merito a persone. Alcuni contenuti potrebbero non essere adatti a tutti. Puoi <ph name="BEGIN_LINK" />gestire la tua cronologia<ph name="END_LINK" />, incluse le informazioni sulla tua posizione. <ph name="BEGIN_LINK" />Scopri di più sulle tue scelte<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
 <translation id="1296581780163690620">Vuoi scaricare il file? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Azione completata: "Cerca con AI Mode".</translation>
@@ -385,6 +386,7 @@
 <translation id="2104436223719117661">Ricerche di tendenza</translation>
 <translation id="21133533946938348">Fissa scheda</translation>
 <translation id="2117650889962717098">Mantieni privata la navigazione passando alla modalità Incognito</translation>
+<translation id="2119126821484134587">Per fornirti assistenza personalizzata, Gemini condivide alcuni dei tuoi dati (ad esempio parti delle tue chat, posizione e altre informazioni pertinenti) con altri servizi Google, come Maps e Voli. Questi servizi potrebbero usare quelle informazioni per migliorarsi, anche se in seguito elimini la tua cronologia delle app Gemini. Scopri di più nel <ph name="BEGIN_LINK" />Centro per la privacy delle app Gemini<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Apri in…</translation>
 <translation id="2119962645034852864">Alcuni servizi non sono disponibili per il tuo account</translation>
 <translation id="2120553909046681540">La tua organizzazione ha disattivato la navigazione privata.</translation>
@@ -669,6 +671,7 @@
 <translation id="3038136505713492417">Verifica la tua identità per usare le tue passkey su questo dispositivo</translation>
 <translation id="3039671569659952257">Elimina cartella</translation>
 <translation id="3041835740069544003">Chrome ora può rilevare e compilare più moduli grazie alla comprensione moduli più intelligente. A questo scopo, i contenuti e gli URL delle pagine possono essere elaborati in uno spazio privato nel cloud. Gestisci nelle impostazioni.</translation>
+<translation id="3042118633250374317">Google utilizza la tua cronologia per fornire i suoi servizi, proteggere Google, i suoi utenti e il pubblico, nonché sviluppare e migliorare i suoi servizi con l'aiuto di revisori umani. Non includere informazioni che non vorresti fossero esaminate o utilizzate.</translation>
 <translation id="3050988301648974170">Apri Controllo password</translation>
 <translation id="3053332585453689122">Invia a Google Navigazione sicura gli URL che visiti e un piccolo campione di contenuti di pagine, download, attività delle estensioni e informazioni di sistema per controllare se questi URL sono dannosi.</translation>
 <translation id="3055102495753300780">Archiviazione delle informazioni</translation>
@@ -1110,6 +1113,7 @@
 <translation id="4488754974567924717">Ti informeremo se le tue password vengono compromesse</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura nel tuo account, {email}}other{Pagine aggiunte al tuo elenco di lettura nel tuo account, {email}}}</translation>
 <translation id="4493604894403585654">Hai eseguito l'accesso come <ph name="USER_EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
+<translation id="4495251723189610737">Le tue chat verranno salvate nella cronologia di Gemini. La cronologia include i tuoi audio, i video e le condivisioni dello schermo di Gemini Live, i contenuti che condividi con Gemini (come prompt, <ph name="BEGIN_LINK" />caricamenti<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />schermate<ph name="END_LINK" />), le risposte di Gemini, le attività e le chiamate agli strumenti, i feedback, le informazioni dai siti web che visiti con Gemini, i dati sull'utilizzo dei prodotti, la posizione generica del tuo dispositivo, l'indirizzo IP e gli indirizzi di casa o di lavoro nel tuo Account Google. Può anche includere dati delle app che connetti a Gemini.</translation>
 <translation id="4502423230170890588">Rimuovi da questo dispositivo</translation>
 <translation id="4508486880075514067">Espandi a schermo intero</translation>
 <translation id="4508750114462689118">Chiudi promo accesso</translation>
@@ -1198,6 +1202,7 @@
 <translation id="4759238208242260848">Download</translation>
 <translation id="4764612367328936189">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Ti consente di accedere alle passkey salvate su qualsiasi dispositivo</translation>
+<translation id="476946043193006313">La tua attività aiuta ad addestrare l'AI generativa</translation>
 <translation id="4782952780741793211">Codice di conferma:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Aprire in modalità Incognito?</translation>
@@ -1214,6 +1219,7 @@
 <translation id="4808744395915275922">Aggiornamenti</translation>
 <translation id="4813345808229079766">Connessione</translation>
 <translation id="4821595350501541683">Le schede sono state chiuse e i dati di navigazione eliminati</translation>
+<translation id="4821645169621230110">Come viene usata la tua cronologia</translation>
 <translation id="4823322556950229674">Puoi tenere premuto per spostare la barra degli indirizzi e il pulsante Indietro in basso</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}other{{domain} e altre {count}}}</translation>
@@ -1241,6 +1247,7 @@
 <translation id="4877597489778380935">Ricordamelo più tardi</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4883766694719903356">Griglia schede Incognito</translation>
+<translation id="4884205780547482830">I tuoi dati aiutano ad addestrare l'AI generativa</translation>
 <translation id="4884937942297374058">La Protezione avanzata è disattivata</translation>
 <translation id="4887391901725877182">Sottotitolaggio codificato</translation>
 <translation id="488785315393301722">Mostra dettagli</translation>
@@ -1721,6 +1728,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6347953390226388422">{count,plural, =1{Questo indirizzo verrà eliminato dal tuo Account Google (<ph name="USER_EMAIL" />) e da questo dispositivo.}other{Questi indirizzi verranno eliminati dal tuo Account Google (<ph name="USER_EMAIL" />) e da questo dispositivo.}}</translation>
 <translation id="634878792104344809">Sincronizza le password, la cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="6350745006329795504">Gestisci i tuoi dispositivi</translation>
+<translation id="6351000590398820964">Gemini è un'AI e può commettere errori, anche in merito a persone. Alcuni contenuti potrebbero non essere adatti a tutti. Le chat vengono esaminate e utilizzate per addestrare i modelli di AI generativa. <ph name="BEGIN_LINK" />Scopri le opzioni a tua disposizione<ph name="END_LINK" />. Si applicano i nostri <ph name="BEGIN_LINK" />Termini<ph name="END_LINK" /> e la nostra <ph name="BEGIN_LINK" />Informativa sulla privacy<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Apri selettore di schede</translation>
 <translation id="63519665078626091">Per usare l'inspector web, collegati a Safari sul computer utilizzando un cavo e accedi all'iPad dal menu Sviluppo. Puoi attivare il menu Sviluppo nella sezione Avanzate delle impostazioni di Safari sul tuo computer.</translation>
 <translation id="6354695695659930684">Inserimento della password in corso…</translation>
@@ -1888,6 +1896,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6830728435402077660">Non sicuro</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
+<translation id="6843744036364481304">Quale cronologia della chat viene salvata</translation>
 <translation id="6844773122575789617">Attiva AI Mode</translation>
 <translation id="6851516051005285358">Richiedi sito desktop</translation>
 <translation id="6857446173140146664">Elimina sfondo</translation>
@@ -2012,6 +2021,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7223134495231529579">Salva nei download</translation>
 <translation id="722339453342442311">Controlla ora</translation>
 <translation id="7227235818314667565">Gestisci condivisione</translation>
+<translation id="7232376892719594461">Le tue conversazioni con Gemini e i tuoi <ph name="BEGIN_LINK" />dati di Google Workspace<ph name="END_LINK" /> non saranno esaminati né utilizzati per addestrare i modelli di AI generativa.</translation>
 <translation id="7233006041370588369">Seleziona una password da inserire.</translation>
 <translation id="7238074332967840767">Sicurezza</translation>
 <translation id="723874023660911012">Cambia profilo</translation>
@@ -2522,7 +2532,9 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8746155870861185046">Condividi evidenziazione</translation>
 <translation id="8748678031495824833">Apri gli strumenti AI nella pagina</translation>
 <translation id="8750037785291841318">Qui troverai le tue schede</translation>
+<translation id="8751126814549746156">La cronologia viene eliminata automaticamente dopo 18 mesi. Puoi modificare questo periodo di tempo in Impostazioni. Le chat esaminate dai fornitori di servizi vengono separate dal tuo account e conservate per un massimo di 3 anni. Puoi <ph name="BEGIN_LINK" />disattivare<ph name="END_LINK" /> l'impostazione della cronologia in qualsiasi momento.</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
+<translation id="8762190205387442931">Le chat vengono esaminate e utilizzate per addestrare i modelli di AI generativa. Puoi <ph name="BEGIN_LINK" />gestire la tua cronologia<ph name="END_LINK" />, incluse le informazioni sulla tua posizione. <ph name="BEGIN_LINK" />Scopri di più sulle tue scelte<ph name="END_LINK" />.</translation>
 <translation id="8763613688786959833">Vai all'ultima scheda</translation>
 <translation id="8766790350274092814">Le password di <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> verranno eliminate. I tuoi account non verranno eliminati.</translation>
 <translation id="8775144690796719618">URL non valido</translation>
@@ -2567,6 +2579,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8893208530912252670">Video</translation>
 <translation id="890009681345348416">Più di 40 password compilate automaticamente</translation>
 <translation id="8900845556227858314">App browser</translation>
+<translation id="8903042868629070803">Se hai almeno 18 anni, Google utilizza la tua cronologia anche per <ph name="BEGIN_LINK" />addestrare i modelli di AI generativa<ph name="END_LINK" />. Puoi <ph name="BEGIN_LINK" />disattivare questa funzionalità<ph name="END_LINK" /> per le chat future in qualsiasi momento.</translation>
 <translation id="890565330728586731">Indietro</translation>
 <translation id="8907722425137681851">Trova nella pagina…</translation>
 <translation id="8909135823018751308">Condividi…</translation>

@@ -509,6 +509,7 @@
 <translation id="5940385492829620908">‏היסטוריית האתרים, הסימניות ופריטים נוספים מ-Chrome נמצאים כאן.</translation>
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5941830788786076944">‏Google Chrome יהיה דפדפן ברירת המחדל</translation>
+<translation id="5944731887996253728">‏‫Chrome יתעדכן כשהמסך לא יהיה בשימוש</translation>
 <translation id="5947104538377036631">‏קיצור דרך ב-Chrome</translation>
 <translation id="5960071705175224773">ההגדרות שלך שונו על ידי אפליקציה לא ידועה</translation>
 <translation id="5980111191913430208">‏תוספים, אפליקציות ועיצובים ממקורות לא מוכרים עלולים להזיק למכשיר. ההמלצה של Chromium היא להתקין אותם רק מ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -800,6 +801,7 @@
 <translation id="8367950957770994118">‏פתיחה מהירה של Gemini ב-Chrome</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="8370748943308169953">‏קוד QR לכניסה אל Chrome בתור <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">‏‫<ph name="IMPORTANT_UPDATE" /> מוכן. אפשר להפעיל עכשיו את Chrome מחדש, או להגדיר אותו כך שיתעדכן בפעם הבאה שהמסך יישאר דולק ולא יהיה בשימוש במשך <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">‏החלונית הצדדית של חיפוש Google</translation>
 <translation id="8377158135256176353">‏הפעלה או השבתה של Gemini ב-Chrome Canary</translation>
 <translation id="8380754585531979907">‏כדי לעבור בין Gemini ב-Chrome לבין הכרטיסייה הפתוחה, אפשר להשתמש במקלדת.</translation>
@@ -839,6 +841,7 @@
 <translation id="8656634243791296665">‏פתיחת Gemini ב-Chrome פיתוח</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome.</translation>
+<translation id="8699232386626916686">‏עדכון Chrome לשמירה על האבטחה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8712767363896337380">‏העדכון כמעט הושלם. כדי להשלים את העדכון, עליך להפעיל את Chrome מחדש.</translation>
 <translation id="8717554232729236539">‏החשבון של <ph name="EXISTING_USER" /> כבר מחובר. כדי לשמור על סביבת גלישה נפרדת, אפשר להיכנס ל-Chrome בפרופיל נפרד בתור <ph name="USER_EMAIL_ADDRESS" />. אפשר לקבל גם את רשימת הקריאה ופריטים נוספים ממכשיר <ph name="DEVICE" />.</translation>

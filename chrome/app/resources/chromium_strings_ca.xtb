@@ -303,7 +303,7 @@
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3971865010372729242">Quan escrius a la barra d'adreces o al quadre de cerca, Chromium envia el que escrius a les eines de cerca, d'IA i d'agent de la teva organització per obtenir suggeriments.</translation>
 <translation id="3975724895399328945">Sobre &amp;Google Chrome for Testing</translation>
-<translation id="3984557288004650913">Amb el botó Cerca de Google a Chrome de la barra d'eines, pots tornar a obrir la Cerca de Google a Chrome per fer preguntes mentre navegues</translation>
+<translation id="3984557288004650913">Des del botó Cerca de Google a Chrome de la barra d'eines, pots tornar a obrir la Cerca de Google a Chrome per fer preguntes mentre navegues</translation>
 <translation id="3997429360543082038">Sobre Chromium OS</translation>
 <translation id="4016217212818346953">Protegeix-te amb el gestor de contrasenyes</translation>
 <translation id="4019629340646866719">Chromium OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -462,7 +462,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5623402015214259806">{0,plural, =0{Hi ha una actualització de Chromium disponible}=1{Hi ha una actualització de Chromium disponible}other{Fa # dies que hi ha una actualització de Chromium disponible}}</translation>
 <translation id="5643865575100044307">Suprimeix sempre les dades dels llocs web del dispositiu quan tanquis Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium ara</translation>
-<translation id="565409517765894456">Per obtenir actualitzacions de Chromium en el futur, necessitaràs la versió 1809 de Windows 10 o una versió posterior. Aquest ordinador utilitza una versió anterior de Windows 10.</translation>
+<translation id="565409517765894456">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 (versió 1809) o una versió posterior. Aquest ordinador utilitza una versió anterior de Windows 10.</translation>
 <translation id="568656514202614970">Fet! Ara pots fer preguntes fàcilment mentre navegues amb el tauler lateral de la Cerca de Google.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostra Chromium en aquest idioma</translation>
@@ -524,7 +524,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6270547683008298381">Aquestes pestanyes utilitzen recursos addicionals. Per millorar el rendiment, permet que Chromium les desactivi.</translation>
 <translation id="6281746429495226318">Personalitza el teu perfil de Chromium</translation>
 <translation id="6290827346642914212">Posa nom al teu perfil de Chromium</translation>
-<translation id="6294638840436017818">Amb el botó Tauler lateral de la Cerca de Google de la barra d'eines, pots tornar a obrir el tauler lateral de la Cerca de Google per fer preguntes mentre navegues</translation>
+<translation id="6294638840436017818">Des del botó Tauler lateral de la Cerca de Google de la barra d'eines, pots tornar a obrir el tauler lateral de la Cerca de Google per fer preguntes mentre navegues</translation>
 <translation id="6294831894865512704">Una extensió vol que iniciïs la sessió a Chromium</translation>
 <translation id="6295779123002464101">Chromium ha bloquejat <ph name="FILE_NAME" /> perquè pot ser perillós.</translation>
 <translation id="6308106880471005841">El botó Tauler de la Cerca de Google de la barra d'eines té una icona nova. Fes-hi clic per fer preguntes mentre navegues amb el tauler de la Cerca de Google.</translation>
@@ -644,7 +644,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="7252276985725323153">Comença a navegar a l'instant: ara Chromium es pot obrir quan s'inicia Windows.</translation>
 <translation id="7274695763216404502">S'ha fixat. Torna a utilitzar la cerca d'imatges des de la barra d'eines.</translation>
 <translation id="7288567540154601580">Pestanyes i extensions</translation>
-<translation id="7290997427370476749">Amb el botó Tauler de la Cerca de Google de la barra d'eines, pots tornar a obrir el tauler de la Cerca de Google per fer preguntes mentre navegues</translation>
+<translation id="7290997427370476749">Des del botó Tauler de la Cerca de Google de la barra d'eines, pots tornar a obrir el tauler de la Cerca de Google per fer preguntes mentre navegues</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium et recomana que la suprimeixis}other{Chromium et recomana que les suprimeixis}}</translation>
 <translation id="7296334833518879294">Per compartir l'àudio del sistema, obre Configuració del sistema i permet l'opció Només gravació d'àudio del sistema per a Chromium. Després hauràs de reiniciar Chromium.</translation>
 <translation id="7299899569525778554">Cerca des de l'ordinador</translation>
@@ -825,7 +825,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8890569919834781711">ChromiumOS no ha pogut desar les dades de Chromium al teu Compte de Google a causa d'un error en iniciar la sessió</translation>
 <translation id="8891709362986793894">La teva organització requereix que iniciïs la sessió a Chromium</translation>
 <translation id="8897637834206928776">Nova icona, mateixa drecera: fes clic per fer preguntes mentre navegues amb la Cerca de Google al tauler lateral.</translation>
-<translation id="8906384069222226849">Chromium requereix la versió 1809 de Windows 10 o una versió posterior.</translation>
+<translation id="8906384069222226849">Chromium requereix Windows 10 (versió 1809) o una versió posterior.</translation>
 <translation id="8907580949721785412">Chromium està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="8932992523185907506">Chromium ja no és el teu navegador predeterminat. Vols establir Chromium com a navegador predeterminat?</translation>
 <translation id="8941642502866065432">Chromium no es pot actualitzar</translation>

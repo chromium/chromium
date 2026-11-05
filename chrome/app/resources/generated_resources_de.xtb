@@ -933,6 +933,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1703666494654169921">Websites dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
 <translation id="1704097193565924901">Großschreibung</translation>
 <translation id="1704230497453185209">Websites dürfen keinen Ton wiedergeben</translation>
+<translation id="170494114379308411">Deine Unterhaltungen mit Gemini und deine <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace-Daten<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> werden nicht überprüft und auch nicht verwendet, um generative KI-Modelle zu trainieren. Gemini ist eine KI und kann Fehler machen.</translation>
 <translation id="170658918174941828">Neben den oben angegebenen Informationen werden deine Chrome-Version, die Version deines Betriebssystems, deine Google Cast-Einstellungen, Statistiken zur Spiegelungsleistung und Diagnoseprotokolle des Kommunikationskanals gesendet. Dieses Feedback wird zur Fehlerdiagnose und zur Verbesserung der Funktion genutzt. Von dir absichtlich oder unabsichtlich gesendete personenbezogene Daten werden entsprechend unserer Datenschutzerklärung geschützt. Durch das Senden dieses Feedbacks stimmst du zu, dass Google dein Feedback zur Verbesserung aller Google-Produkte und -Dienste nutzen darf.</translation>
 <translation id="17081583771848899">Launcher-Taste + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">In der Cloud speichern</translation>
@@ -1158,6 +1159,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1881445033931614352">Tastaturlayout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# Elemente}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">Gemini-Verlauf</translation>
 <translation id="1884340228047885921">Die aktuelle Sichtbarkeitseinstellung ist "Einige Kontakte"</translation>
 <translation id="1884705339276589024">Größe des Linux-Laufwerks anpassen</translation>
 <translation id="1885066963699478692">XML-Dateien, die zum Festlegen der Richtlinien verwendet werden.</translation>
@@ -1625,6 +1627,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2246549592927364792">Bildbeschreibungen von Google verwenden?</translation>
 <translation id="2247738527273549923">Dein Gerät wird von deiner Organisation verwaltet</translation>
 <translation id="2247870315273396641">Stimme anhören</translation>
+<translation id="2247960558975094922">Gemini-Verlauf</translation>
 <translation id="224835741840550119">Gerät bereinigen</translation>
 <translation id="2249111429176737533">Als Tab-Fenster öffnen</translation>
 <translation id="2249605167705922988">z. B. 1-5, 8, 11-13</translation>
@@ -2680,6 +2683,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3030772324014024606">Bearbeiten</translation>
 <translation id="3030795534674718505">Darf Informationen nutzen, die zu deiner Person gespeichert wurden</translation>
 <translation id="3030967311408872958">Sonnenuntergang bis -aufgang</translation>
+<translation id="3030970046240311592">Gemini-Verlauf ansehen und verwalten</translation>
 <translation id="3031417829280473749">Agentin X</translation>
 <translation id="3031532026314193077">Zum Rechtsklicken Touchpad und Tastatur verwenden</translation>
 <translation id="3031557471081358569">Zu importierende Daten wählen:</translation>
@@ -4134,6 +4138,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4107793386654579933">Tastenkombination für die Aktion „<ph name="ACTION_NAME" />“ auswählen</translation>
 <translation id="4109135793348361820">Fenster zu <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) verschieben</translation>
 <translation id="4110485659976215879">Warnung wiederherstellen</translation>
+<translation id="4110984310437592352">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Wenn du mit Gemini sprichst, werden die Audiodaten im Gemini-Verlauf gespeichert (sofern aktiviert).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4112282889480354965">Erweiterungen und Skills</translation>
 <translation id="4113743276555482284">Dateipasswort</translation>
@@ -4224,6 +4229,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="419427585139779713">Jeweils eine Silbe eingeben</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4195814663415092787">Zuletzt angesehene Seiten öffnen</translation>
+<translation id="4196632390211257612">Deine Unterhaltungen mit Gemini und deine <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace-Daten<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> werden nicht überprüft und auch nicht verwendet, um generative KI-Modelle zu trainieren. Gemini ist eine KI und kann Fehler machen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet.</translation>
 <translation id="4198268995694216131">Zusätzliche Websites</translation>
 <translation id="4200609364258658652">Videoframe kop&amp;ieren</translation>
 <translation id="4200689466366162458">Benutzerdefinierte Wörter</translation>
@@ -4826,6 +4832,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4665035764476941598">Klicke hier, um deine anderen Tabs wieder einzublenden</translation>
 <translation id="4665446389743427678">Alle von <ph name="SITE" /> gespeicherten Daten werden gelöscht.</translation>
 <translation id="4666472247053585787">Benachrichtigungen von deinem Smartphone auf deinem <ph name="DEVICE_TYPE" /> erhalten</translation>
+<translation id="4666483368282673356">Gemini-Verlauf verwalten</translation>
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PIN darf nur Ziffern enthalten</translation>
@@ -5298,6 +5305,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5012523644916800014">Passwörter und Passkeys verwalten</translation>
 <translation id="501394389332262641">Ton bei niedrigem Akkustand</translation>
 <translation id="5014286001996333986">Ersetzen oder neue Gruppe erstellen?</translation>
+<translation id="5014385104640320445">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Wenn du mit Gemini sprichst, werden die Audiodaten im Gemini-Verlauf gespeichert (sofern aktiviert). Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="5015344424288992913">Proxy auflösen...</translation>
 <translation id="5016305686459575361">Wenn du dein Smartphone verbindest, kannst du Folgendes tun:</translation>
 <translation id="5016491575926936899">Du kannst SMS von deinem Computer senden, deine Internetverbindung teilen, auf Unterhaltungsbenachrichtigungen antworten und dein <ph name="DEVICE_TYPE" /> mit deinem Smartphone entsperren.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -5995,6 +6003,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5558129378926964177">Ver&amp;größern</translation>
 <translation id="5558594314398017686">Standardeinstellung des Betriebssystems (falls verfügbar)</translation>
 <translation id="5559311991468302423">Adresse löschen</translation>
+<translation id="5559646482656763170">Aktualisieren, wenn nicht in Verwendung</translation>
 <translation id="555968128798542113">Diese Website darf meine MIDI-Geräte steuern und neu programmieren</translation>
 <translation id="5559768063688681413">Keine gespeicherten Drucker</translation>
 <translation id="55601339223879446">Die Ränder des Desktops an den Bildschirm anpassen</translation>
@@ -6493,6 +6502,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle ({COUNT}) in &amp;neuem Fenster öffnen}}</translation>
 <translation id="5964247741333118902">Eingebettete Inhalte</translation>
 <translation id="5965607173855879702">Daten werden gelöscht…</translation>
+<translation id="5966067139745999860">„<ph name="SHORTCUT_TITLE" />“ wurde an Position <ph name="SHORTCUT_POSITION" /> von <ph name="TOTAL_SHORTCUTS" /> verschoben.</translation>
 <translation id="5966511985653515929">Websitedaten werden von deinem Gerät gelöscht, wenn du alle Fenster schließt</translation>
 <translation id="5968022600320704045">Keine Suchergebnisse</translation>
 <translation id="5968400720580217226">KI‑Modus</translation>
@@ -7157,6 +7167,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> kann deine Passwörter nicht auf Datenpannen prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="648927581764831596">Keine verfügbar</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
+<translation id="6491890991754498129">Öffnen &amp;mit…</translation>
 <translation id="649396225532207613">Diese Datei kann deinen privaten Konten und Konten in sozialen Netzwerken schaden</translation>
 <translation id="6493991254603208962">Helligkeit verringern</translation>
 <translation id="6494327278868541139">Details zum erweiterten Schutz anzeigen</translation>
@@ -7977,6 +7988,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="710224247908684995">Safe Browsing wurde durch eine Erweiterung deaktiviert</translation>
 <translation id="7102832101143475489">Zeitüberschreitung bei der Anfrage</translation>
 <translation id="7103944802169726298">PC und Übertragungsgerät im selben WLAN</translation>
+<translation id="7104134653119992646">Chats werden geprüft und zum Trainieren von generativen KI-Modellen verwendet. Gemini ist eine KI und kann Fehler machen. Du kannst deinen <ph name="BEGIN_LINK_MANAGE_HISTORY" />Verlauf verwalten<ph name="END_LINK_MANAGE_HISTORY" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-Abo</translation>
 <translation id="7107609441453408294">Dieselben Audioinhalte über alle Lautsprecher wiedergeben</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
@@ -9007,6 +9019,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7903925330883316394">Dienstprogramm: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Lesezeichenmanager öffnen</translation>
+<translation id="7904508617992122201">Chats werden geprüft und zum Trainieren von generativen KI-Modellen verwendet. Gemini ist eine KI und kann Fehler machen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Du kannst deinen <ph name="BEGIN_LINK_MANAGE_HISTORY" />Verlauf verwalten<ph name="END_LINK_MANAGE_HISTORY" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Hier kannst du Linux-Ports für andere Geräte in deinem Netzwerk verfügbar machen.</translation>
 <translation id="7907312522152480478">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, bestätige deine Identität und synchronisiere deinen Verlauf und deine Tabs. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste anhand deines Verlaufs personalisieren.</translation>
 <translation id="7907502219904644296">Zugriff ändern</translation>
@@ -10028,6 +10041,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8666268818656583275">Die F-Tasten haben jetzt das gleiche Verhalten wie Tasten der oberen Reihe</translation>
 <translation id="8666321716757704924">Berechtigungen wieder zugelassen für <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Du hast Passwörter, die verbessert werden können</translation>
+<translation id="8667543835349994431">Öffnen &amp;mit…</translation>
 <translation id="8668378421690365723">Dein Gerät funktioniert dann möglicherweise nicht mehr richtig und es können Sicherheits- und Leistungsprobleme auftreten.</translation>
 <translation id="8669284339312441707">Wärmer</translation>
 <translation id="8670537393737592796">Installiere <ph name="APP_NAME" />, um schnell hierher zurückzukehren, indem du oben auf die Installationsschaltfläche klickst</translation>
@@ -10136,6 +10150,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8738418093147087440">Nach Ländern, Sprache oder Eingabenamen suchen</translation>
 <translation id="8741944563400125534">Einrichtung des Schalterzugriffs</translation>
 <translation id="8743357966416354615">Verwaltete Entwicklungsumgebung (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Stattdessen <ph name="URL" /> aufrufen?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Überprüfe, ob du mit der URL-Änderung einverstanden bist, bevor du das Update durchführst.</translation>
 <translation id="8745034592125932220">Speichern von Daten auf deinem Gerät nicht genehmigt</translation>

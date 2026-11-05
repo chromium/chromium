@@ -318,6 +318,7 @@
 <translation id="4135244987012252068">Personalisiere Chromium nach deinen Vorlieben</translation>
 <translation id="4147856324248078748">Chromium a&amp;npassen</translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
+<translation id="4197500750628721662">Chromium aktualisieren, um dein Gerät zu schützen</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chromium</translation>
 <translation id="4208652172235621272"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chromium an. Du kannst dann auch auf allen deinen Geräten auf deine Leseliste und weitere Daten zugreifen.</translation>
 <translation id="421369550622382712">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Chromium.</translation>
@@ -455,6 +456,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="5596063723521813107">{COUNT,plural, =1{Laut deinem Administrator musst du Chromium neu starten, um ein Update durchzuführen. Dein isoliertes Fenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chromium neu starten, um ein Update durchzuführen. # isolierte Fenster werden nicht wieder geöffnet.}}</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5605834417512968703">Wähle ein beliebiges Element für die Bildersuche aus oder drücke die Esc-Taste, um die Bildersuche zu beenden</translation>
+<translation id="5614149501995591823">Ein <ph name="IMPORTANT_UPDATE" /> ist bereit. Du kannst Chromium jetzt neu starten oder festlegen, dass Chromium das nächste Mal aktualisiert wird, wenn dein Bildschirm eingeschaltet ist und <ph name="IDLE_DURATION" /> lang nicht verwendet wird.</translation>
 <translation id="5618818588972826921">Wähle einen beliebigen Text oder ein beliebiges Bild für die Bildersuche aus oder drücke die Esc-Taste, um die Bildersuche zu beenden</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ein Chromium-Update ist verfügbar}=1{Ein Chromium-Update ist verfügbar}other{Ein Chromium-Update ist seit # Tagen verfügbar}}</translation>
 <translation id="5643865575100044307">Beim Schließen von Chromium immer die Websitedaten von deinem Gerät löschen</translation>
@@ -511,6 +513,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6192070012454216182">Du kannst von überall aus suchen und Fragen stellen, auch wenn Chromium minimiert ist. Ermöglicht die Ausführung von Chromium im Hintergrund.</translation>
 <translation id="6212496753309875659">Auf diesem Computer befindet sich bereits eine neuere Version von Chromium. Falls die Software nicht funktioniert, deinstalliere Chromium bitte und versuche es erneut.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium wird jetzt neu gestartet}=1{Chromium wird in einer Sekunde neu gestartet}other{Chromium wird in # Sekunden neu gestartet}}</translation>
+<translation id="6232046770428574552">Chromium wird aktualisiert, wenn dein Bildschirm nicht verwendet wird</translation>
 <translation id="6241367896540709610">Chromium benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="6245734527075554892">Prüft URLs anhand einer Liste unsicherer Websites, die in Chromium gespeichert ist</translation>
 <translation id="6248213926982192922">Chromium als Standardbrowser verwenden</translation>

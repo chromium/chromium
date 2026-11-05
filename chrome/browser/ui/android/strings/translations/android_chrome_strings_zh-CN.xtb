@@ -1834,7 +1834,7 @@
 <translation id="8084864785646838999">您的部分历史记录可能不会在此处显示。如需查看您的所有 Chrome 历史记录，请打开完整的 Chrome 历史记录。此外，您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="8088176524274673045">若要与附近的人分享，请让他们扫描此二维码</translation>
 <translation id="8090732854597034573">如需帮助，请找家长帮忙</translation>
-<translation id="8095180473590852507">Chrome 推出全新工具栏，旨在为您提供便利。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中切换回来。</translation>
+<translation id="8095180473590852507">Chrome 推出全新工具栏，让操作更顺手。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中切换回来。</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />内没有要关闭的标签页</translation>
 <translation id="810433609302852">提示通知功能宣传内容和使用步骤底部动作条</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1986,7 +1986,7 @@
 <translation id="8635399646025169806">要保留标签页分组吗？</translation>
 <translation id="8636825310635137004">要访问您从其他设备打开的标签页，请开启同步功能。</translation>
 <translation id="8639963783467694461">自动填充设置</translation>
-<translation id="8644482734962137770">Gemini 需要获得使用 Chrome 的权限</translation>
+<translation id="8644482734962137770">Gemini 需要 Chrome 的使用权限</translation>
 <translation id="8662474268934425487">登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">文件名已存在</translation>
 <translation id="8676276370198826499">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 注册 <ph name="SITE_ETLD_PLUS_ONE" /></translation>

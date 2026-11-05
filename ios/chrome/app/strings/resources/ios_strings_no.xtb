@@ -101,6 +101,7 @@
 <translation id="1291506870746876680">Tillatelsene for <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> blir tilbakestilt til å være avslått når du forlater dette nettstedet.</translation>
 <translation id="1293491796138057740">Informasjonen din lagres i Google Wallet for <ph name="USER_EMAIL" />. Du kan bruke den på tvers av alle Google-produkter for å fylle ut skjemaer raskere.</translation>
 <translation id="1293556467332435079">Filer</translation>
+<translation id="1294703224699789269"><ph name="BEGIN_LINK" />Vilkårene våre<ph name="END_LINK" />, <ph name="BEGIN_LINK" />de koreanske vilkårene for posisjonstjenester<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />merknaden om personvern<ph name="END_LINK" /> gjelder. Chatter blir gjennomgått og brukt for å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil, også om personer. Noe innhold er kanskje ikke egnet for alle. Du kan <ph name="BEGIN_LINK" />administrere loggen<ph name="END_LINK" />, inkludert informasjon om posisjonen din. <ph name="BEGIN_LINK" />Finn ut mer om valgmulighetene dine.<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Nylig lukket</translation>
 <translation id="1296581780163690620">Vil du laste ned filen? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">«Søk med AI-modus» er fullført.</translation>
@@ -385,6 +386,7 @@
 <translation id="2104436223719117661">Populære søk</translation>
 <translation id="21133533946938348">Fest fanen</translation>
 <translation id="2117650889962717098">Hold surfingen din privat ved å bytte til inkognitomodus</translation>
+<translation id="2119126821484134587">For å gi deg skreddersydd hjelp deler Gemini noen av dataene dine (for eksempel deler av chattene, posisjonen din og annen relevant informasjon) med andre Google-tjenester, for eksempel Maps og Flyreiser. Disse tjenestene kan bruke informasjonen til forbedringer, selv om du sletter loggen for Gemini-apper senere. Finn ut mer i <ph name="BEGIN_LINK" />hjelpesenteret for personvern i Gemini-apper<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Åpne i…</translation>
 <translation id="2119962645034852864">Noen tjenester er ikke tilgjengelige for kontoen din</translation>
 <translation id="2120553909046681540">Organisasjonen din har slått av privat surfing.</translation>
@@ -669,6 +671,7 @@
 <translation id="3038136505713492417">Bekreft at det er deg, for å bruke passnøklene dine på denne enheten</translation>
 <translation id="3039671569659952257">Slett mappen</translation>
 <translation id="3041835740069544003">Nå kan Chrome gjenkjenne og fylle ut flere skjemaer med smartere skjemaforståelse. For å gjøre dette kan sideinnhold og nettadresser behandles i et privat område i skyen. Administrer dette i innstillingene.</translation>
+<translation id="3042118633250374317">Google bruker loggen din for å levere tjenestene sine, beskytte Google, brukerne og offentligheten samt utvikle og forbedre tjenestene sine med hjelp fra menneskelige evaluerere. Ikke ta med informasjon som du ikke vil at noen skal gjennomgå eller bruke.</translation>
 <translation id="3050988301648974170">Åpne passordsjekken</translation>
 <translation id="3053332585453689122">Sender nettadressene du besøker, samt et lite utvalg av sideinnhold, nedlastinger, utvidelsesaktivitet og systeminformasjon, til Google Safe Browsing for å sjekke om nettadressene er skadelige.</translation>
 <translation id="3055102495753300780">Informasjonslagring</translation>
@@ -1110,6 +1113,7 @@
 <translation id="4488754974567924717">Vi gir deg beskjed hvis passordene dine blir utsatt for sikkerhetsbrudd</translation>
 <translation id="4489536976005181779">{count,plural, =1{Siden er lagt til på leselisten i kontoen din, {email}}other{Sidene er lagt til på leselisten i kontoen din, {email}}}</translation>
 <translation id="4493604894403585654">Du er pålogget som <ph name="USER_EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
+<translation id="4495251723189610737">Chattene lagres i Gemini-loggen. Loggen inkluderer lyd, Gemini Live-videoer og -skjermdelinger, det du deler med Gemini (for eksempel forespørsler, <ph name="BEGIN_LINK" />opplastinger<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />skjermbilder<ph name="END_LINK" />), Geminis svar, oppgaver og verktøykall, tilbakemeldinger, informasjon fra nettsteder du besøker med Gemini, data om produktbruk, enhetens generelle posisjon, IP-adresse og hjemme- eller jobbadressen i Google-kontoen. Den kan også inneholde data fra apper du knytter til Gemini.</translation>
 <translation id="4502423230170890588">Fjern fra denne enheten</translation>
 <translation id="4508486880075514067">Utvid til fullskjerm</translation>
 <translation id="4508750114462689118">Lukk påloggingskampanjen</translation>
@@ -1198,6 +1202,7 @@
 <translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4764612367328936189">Organisasjonen din lar deg kun logge på med visse kontoer. Kontoer som ikke tillates, er skjult. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Hjelper deg med å få tilgang til lagrede passnøkler på alle enheter</translation>
+<translation id="476946043193006313">Aktiviteten din brukes til å lære opp generativ AI</translation>
 <translation id="4782952780741793211">Bekreftelseskode:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vil du åpne linken i Inkognito?</translation>
@@ -1214,6 +1219,7 @@
 <translation id="4808744395915275922">Oppdateringer</translation>
 <translation id="4813345808229079766">Tilkobling</translation>
 <translation id="4821595350501541683">Faner ble lukket, og nettlesingsdata ble slettet</translation>
+<translation id="4821645169621230110">Slik brukes loggen</translation>
 <translation id="4823322556950229674">Du kan trykke og holde for å flytte adressefeltet og tilbakeknappen til bunnen av skjermen</translation>
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 til}other{{domain} og {count} til}}</translation>
@@ -1241,6 +1247,7 @@
 <translation id="4877597489778380935">Påminn meg senere</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="4883766694719903356">Rutenett for inkognitofane</translation>
+<translation id="4884205780547482830">Dataene dine brukes til å lære opp generativ AI</translation>
 <translation id="4884937942297374058">Økt beskyttelse er av</translation>
 <translation id="4887391901725877182">Teksting for hørselshemmede</translation>
 <translation id="488785315393301722">Vis detaljer</translation>
@@ -1721,6 +1728,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6347953390226388422">{count,plural, =1{Denne adressen slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}other{Disse adressene slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}}</translation>
 <translation id="634878792104344809">Synkroniser blant annet passord og logg på alle enhetene dine</translation>
 <translation id="6350745006329795504">Administrer enhetene dine</translation>
+<translation id="6351000590398820964">Gemini er AI og kan gjøre feil, også om personer. Noe innhold er kanskje ikke egnet for alle. Chatter blir gjennomgått og brukt for å lære opp generative AI-modeller. <ph name="BEGIN_LINK" />Finn ut mer om valgmulighetene dine<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Vilkårene<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />merknaden om personvern<ph name="END_LINK" /> gjelder.</translation>
 <translation id="6351147166808964033">Åpne fanevelgeren</translation>
 <translation id="63519665078626091">For å bruke Nettinspektør, koble til Safari på datamaskinen med en kabel og åpne iPad på Utvikle-menyen. Du kan aktivere denne menyen i Avansert-delen i Safari-innstillingene på datamaskinen.</translation>
 <translation id="6354695695659930684">Fyller ut passordet</translation>
@@ -1888,6 +1896,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6830728435402077660">Ikke sikker</translation>
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="6842136130964845393">For å sikre at du alltid har tilgang til de lagrede passordene dine, må du bekrefte at det er deg</translation>
+<translation id="6843744036364481304">Hvilken chatlogg lagres?</translation>
 <translation id="6844773122575789617">Slå på AI-modus</translation>
 <translation id="6851516051005285358">Be om datamaskinversjonen av nettstedet</translation>
 <translation id="6857446173140146664">Slett bakgrunn</translation>
@@ -2012,6 +2021,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="7223134495231529579">Lagre i nedlastinger</translation>
 <translation id="722339453342442311">Sjekk nå</translation>
 <translation id="7227235818314667565">Administrer deling</translation>
+<translation id="7232376892719594461">Verken samtalene dine med Gemini eller <ph name="BEGIN_LINK" />dataene dine i Google Workspace<ph name="END_LINK" /> gjennomgås eller brukes til å lære opp generative AI-modeller.</translation>
 <translation id="7233006041370588369">Velg passordet du vil fylle ut.</translation>
 <translation id="7238074332967840767">Sikkerhet</translation>
 <translation id="723874023660911012">Bytt profil</translation>
@@ -2522,7 +2532,9 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8746155870861185046">Del merket tekst</translation>
 <translation id="8748678031495824833">Åpne AI-verktøy på siden</translation>
 <translation id="8750037785291841318">Her finner du fanene dine</translation>
+<translation id="8751126814549746156">Loggen slettes automatisk etter 18 måneder. Du kan endre denne tidsperioden i innstillingene. Chatter som er gjennomgått av tjenesteleverandører, skilles fra kontoen din og oppbevares i opptil 3 år. Du kan når som helst <ph name="BEGIN_LINK" />slå av<ph name="END_LINK" /> logginnstillingen.</translation>
 <translation id="8756969031206844760">Vil du oppdatere passordet?</translation>
+<translation id="8762190205387442931">Chatter blir gjennomgått og brukt for å lære opp generative AI-modeller. Du kan <ph name="BEGIN_LINK" />administrere loggen<ph name="END_LINK" />, inkludert informasjon om posisjonen din. <ph name="BEGIN_LINK" />Finn ut mer om valgmulighetene dine.<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">Gå til siste fane</translation>
 <translation id="8766790350274092814">Passordene for <ph name="WEBSITE" /> og <ph name="SECOND_WEBSITE" /> slettes. Kontoene dine slettes ikke.</translation>
 <translation id="8775144690796719618">Ugyldig nettadresse</translation>
@@ -2567,6 +2579,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8893208530912252670">Videoer</translation>
 <translation id="890009681345348416">40+ passord er autofylt</translation>
 <translation id="8900845556227858314">Nettleser-app</translation>
+<translation id="8903042868629070803">Hvis du er over 18 år, bruker Google også loggen din til å <ph name="BEGIN_LINK" />lære opp generative AI-modeller<ph name="END_LINK" />. Du kan når som helst <ph name="BEGIN_LINK" />slå av dette<ph name="END_LINK" /> for fremtidige chatter.</translation>
 <translation id="890565330728586731">Tilbake</translation>
 <translation id="8907722425137681851">Finn på siden…</translation>
 <translation id="8909135823018751308">Del</translation>
