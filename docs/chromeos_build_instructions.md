@@ -68,8 +68,8 @@ arguments passed to `ninja`).
 Some additional options you may wish to set by passing in `--args` to `gn gen`
 or running `gn args out/Default`:
 
-    # Reclient is a distributed compiler service that is only available to
-    # Googlers and contributors who have access to Reclient.
+    # Remote execution is only available to Googlers and contributors who have
+    # access to RBE.
     use_remoteexec = true
 
     is_component_build = true  # Links faster.
@@ -98,10 +98,10 @@ NOTE:
  - You can also build and run test targets like `unit_tests`, `browser_tests`,
    etc.
 
- - For contributors (Not a Googler) with access to Reclient, please follow the
+ - For contributors (Not a Googler) with access to RBE, please follow the
    corresponding [Linux build
-   instructions](linux/build_instructions.md#use-reclient) to configure
-   Reclient.
+   instructions](linux/build_instructions.md#use-remote-execution) to configure
+   remote execution.
 
 ### Flags
 

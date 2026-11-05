@@ -283,12 +283,12 @@ nearly impossible (call stacks will not be symbolicated).
 
 #### Faster builds
 
-Reclient is a distributed compiler service that allows you to compile Chromium
-fast. The necessary Reclient binaries are distributed via CIPD and
-automatically installed when you run gclient sync. After you've
-set up Reclient, specify it in `gn args` with `use_remoteexec=true`.
+Remote execution (via Siso and RBE) allows you to compile Chromium fast. After
+you've set up remote execution, specify it in `gn args` with
+`use_remoteexec=true`.
 
-To get started on Reclient, and for more information on how to use it, see
+To get started with remote execution, and for more information on how to use it,
+see
 [macOS build instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md),
 [Windows build instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/windows_build_instructions.md),
 or [Google-internal documentation](go/building-chrome), if you are a Google

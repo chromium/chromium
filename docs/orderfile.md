@@ -31,8 +31,9 @@ tools/cygprofile/generate_orderfile_full.py --target-arch=arm64 --use-remoteexec
 ```
 
 You can specify the architecture (arm or arm64) with `--target-arch`. For quick
-local testing you can use `--streamline-for-debugging`. To build using Reclient,
-use `--use-remoteexec` (Googlers only). There are several other options you can
+local testing you can use `--streamline-for-debugging`. To build using remote
+execution, use `--use-remoteexec` (Googlers only). There are several other
+options you can
 use to configure/debug the orderfile generation. Use the `-h` option to view the
 various options.
 

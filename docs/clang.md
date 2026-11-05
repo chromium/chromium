@@ -32,7 +32,8 @@ If you're working on the plugin, you can build it locally like so:
     incrementally after making changes.
 1.  Run `(cd tools/clang/plugins/tests && ./test.py ../../../../third_party/llvm-build/Release+Asserts/bin/clang)`
     to test the plugin after making changes.
-1.  Build Chromium with clang as usual, but, if you use reclient, disable it.
+1.  Build Chromium with clang as usual, but, if you use remote execution,
+    disable it (`use_remoteexec = false`).
 
 The local plugin will then be used for local builds until the next
 `gclient sync` restores the default toolchain.

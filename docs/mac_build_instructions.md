@@ -179,16 +179,16 @@ improves link speed. See
 [Linkers for macOS and iOS builds](apple_platform_linkers.md)
 for more information.
 
-#### Use Reclient
+#### Use Remote Execution
 
-In addition, Google employees should use Reclient, a distributed compilation system.
+In addition, Google employees should use RBE, a remote execution system.
 Detailed information is available internally but the relevant gn arg is:
 * `use_remoteexec = true`
 
 Google employees can visit
 [go/building-chrome-mac#using-remote-execution](https://goto.google.com/building-chrome-mac#using-remote-execution)
-for more information. For external contributors, Reclient does not support Mac
-builds.
+for more information. For external contributors, Siso's remote execution with
+rbe-chromium-untrusted does not support Mac builds.
 
 #### CCache
 

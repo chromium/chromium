@@ -179,16 +179,16 @@ GN arg `target_os="ios"`.
 This section contains some things you can change to speed up your builds,
 sorted so that the things that make the biggest difference are first.
 
-#### Use Reclient
+#### Use Remote Execution
 
-Google employees should use Reclient, a distributed compilation system. Detailed
+Google employees should use RBE, a remote execution system. Detailed
 information is available internally but the relevant gn arg is:
 * `use_remoteexec = true`
 
 Google employees can visit
 [go/building-chrome-mac#using-remote-execution](https://goto.google.com/building-chrome-mac#using-remote-execution)
-for more information. For external contributors, Reclient does not support iOS
-builds.
+for more information. For external contributors, Siso's remote execution with
+rbe-chromium-untrusted does not support iOS builds.
 
 ## Building for device
 
@@ -521,8 +521,9 @@ lists](https://www.chromium.org/developers/technical-discussion-groups/).
 
 ### Debugging
 
-To help with deterministic builds, and to work with reclient, the path to source
-files in debugging symbols are relative to source directory. To allow Xcode
+To help with deterministic builds, and to work with remote execution, the path
+to source files in debugging symbols are relative to source directory. To allow
+Xcode
 to find the source files, you need to ensure to have an `~/.lldbinit-Xcode`
 file with the following lines into it (substitute {SRC} for your actual path
 to the root of Chromium's sources):

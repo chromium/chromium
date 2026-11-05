@@ -27,10 +27,10 @@ home directory is inaccessible by root (typically because it is mounted on NFS),
 then move this directory onto your local disk and change the corresponding entry
 in `/etc/schroot/mount-lucid64bit`.
 
-### Reclient builds
+### Remote execution builds
 
 If you get mysterious compile errors (glibconfig.h or dbus header error), don't
-use reclient for builds inside the chroot.
+use remote execution for builds inside the chroot.
 
 ### Different color prompt
 

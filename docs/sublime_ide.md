@@ -493,7 +493,7 @@ replacing `out/Debug` with your output directory (on Windows, replace /'s with
   [
     {
       "name": "Build Chrome",
-      "cmd": ["ninja", "-C", "out/Debug", "chrome"],
+      "cmd": ["autoninja", "-C", "out/Debug", "chrome"],
       "working_dir": "${project_path}/src",
       "file_regex": "^[.\\\\/]*([a-z]?:?[\\w.\\\\/]+)[(:]([0-9]+)[,:]?([0-9]+)?[)]?:(.*)$",
       "variants": [],
@@ -503,11 +503,6 @@ replacing `out/Debug` with your output directory (on Windows, replace /'s with
 ```
 
 The file regex will allow you to click on errors to go to the error line.
-
-If you're using reclient, add the -j parameter (replace out/Debug with your out directory):
-```
-    "cmd": ["ninja", "-j", "1000", "-C", "out/Debug", "chrome"],
-```
 
 **Regex explanation:** Aims to capture these error formats while respecting
 [Sublime's perl-like group matching](http://docs.sublimetext.info/en/latest/reference/build_systems/configuration.html#build-capture-error-output):

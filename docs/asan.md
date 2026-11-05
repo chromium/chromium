@@ -70,9 +70,9 @@ Build with:
 ninja -C out/asan base_unittests
 ```
 
-### Reclient build
+### Remote execution build
 
-ASan builds should work seamlessly with Reclient; just add
+ASan builds should work seamlessly with remote execution; just add
 `use_remoteexec=true` in your "gn args".
 
 ### Build options

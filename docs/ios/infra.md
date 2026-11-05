@@ -62,11 +62,11 @@ the results, and collects any files emitted by the test ("test data"). It can
 be found in [src/ios/build/bots/scripts], which means changes to the test runner
 can be tested on the [try server].
 
-### Compiling with reclient
+### Compiling with remote execution
 
-Reclient is the distributed build system used by Chromium. It reduces
-compilation time by avoiding recompilation of objects which have already been
-compiled elsewhere.
+Remote execution (via Siso and RBE) is the distributed build system used by
+Chromium. It reduces compilation time by avoiding recompilation of objects
+which have already been compiled elsewhere.
 
 ### Testing with swarming
 
@@ -108,7 +108,8 @@ requests which they execute and post the results of.
 
 ### Compiling with the analyzer
 
-In addition to reclient, the try bots use another time-saving mechanism called
+In addition to remote execution, the try bots use another time-saving mechanism
+called
 the [analyzer] to determine the subset of compilation targets affected by the
 patch that need to be compiled in order to run the affected tests. If a patch is
 determined not to affect a certain test target, compilation and execution of the

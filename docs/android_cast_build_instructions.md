@@ -162,10 +162,11 @@ to set `CHROMIUM_OUTPUT_DIR=out/Default`.
 This section contains some things you can change to speed up your builds, sorted
 so that the things that make the biggest difference are first.
 
-#### Use Reclient
+#### Use Remote Execution
 
 \*\*\* note **Warning:** If you are a Google employee, do not follow the
-Reclient instructions in this section. Set up remote execution as described in
+remote execution instructions in this section. Set up remote execution as
+described in
 [go/building-android-chrome](https://goto.google.com/building-android-chrome)
 instead.
 
@@ -176,8 +177,8 @@ compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
 you to benefit from remote caching and executing many build actions in parallel
 on a shared cluster of workers.
 
-To use Reclient, follow the corresponding
-[Linux build instructions](linux/build_instructions.md#use-reclient).
+To use remote execution, follow the corresponding
+[Linux build instructions](linux/build_instructions.md#use-remote-execution).
 
 ## Build `cast_browser_apk`
 
