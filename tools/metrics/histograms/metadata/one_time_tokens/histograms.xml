@@ -25,6 +25,23 @@ found in the LICENSE file.
 </variants>
 
 <histogram
+    name="OneTimeTokens.Actor.AttemptOtpFilling.GmailAndGoogleSmartFeaturesConsent"
+    enum="ActorOtpGmailAndGoogleSmartFeaturesConsent"
+    expires_after="2027-06-30">
+  <owner>salmaabdelaziz@google.com</owner>
+  <owner>passwordmanager-mobile-eng@google.com</owner>
+  <summary>
+    Records the combination of the Gmail (comms_apps) and Google (google_apps)
+    Smart Features consent states, with one bucket per combination. Recorded at
+    most once per AttemptOtpFilling attempt, when the consent fetch succeeds.
+    Not recorded when the tool is destroyed before the response or a mock OTP is
+    used. Fetch failures are not recorded here; they are recorded as
+    OneTimeTokens.Actor.AttemptOtpFilling.ToolInvocation bucket
+    UnableToRetrieveGmailAndGoogleSmartFeaturesConsent.
+  </summary>
+</histogram>
+
+<histogram
     name="OneTimeTokens.Actor.AttemptOtpFilling.GmailOtpConfirmationDialogInteraction"
     enum="GmailOtpConfirmationDialogInteraction" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>

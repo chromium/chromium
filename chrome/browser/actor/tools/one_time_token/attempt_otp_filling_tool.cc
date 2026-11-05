@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -172,6 +173,45 @@ AttemptOtpFillingToolEvent GetBeforeFillingMetricsEvent(
   }
 }
 
+// Returns the row or column of `state` in the lookup table of
+// `GetGmailAndGoogleSmartFeaturesConsent()`.
+size_t GetConsentStateIndex(one_time_tokens::ConsentState state) {
+  switch (state) {
+    case one_time_tokens::ConsentState::kEnabled:
+      return 0;
+    case one_time_tokens::ConsentState::kDisabled:
+      return 1;
+    case one_time_tokens::ConsentState::kUnknown:
+      return 2;
+    case one_time_tokens::ConsentState::kUndefined:
+      return 3;
+  }
+  NOTREACHED();
+}
+
+// Returns the metrics bucket for the combination of `consent_states`.
+ActorOtpGmailAndGoogleSmartFeaturesConsent
+GetGmailAndGoogleSmartFeaturesConsent(
+    const one_time_tokens::UserDataProcessingConsentStates& consent_states) {
+  using enum ActorOtpGmailAndGoogleSmartFeaturesConsent;
+  // Rows: Gmail (`comms_apps`) state. Columns: Google (`google_apps`) state.
+  // Both in `GetConsentStateIndex()` order: Enabled, Disabled, Unknown,
+  // Undefined.
+  static constexpr std::array<
+      std::array<ActorOtpGmailAndGoogleSmartFeaturesConsent, 4>, 4>
+      kTable = {{
+          {kGmailEnabledGoogleEnabled, kGmailEnabledGoogleDisabled,
+           kGmailEnabledGoogleUnknown, kGmailEnabledGoogleUndefined},
+          {kGmailDisabledGoogleEnabled, kGmailDisabledGoogleDisabled,
+           kGmailDisabledGoogleUnknown, kGmailDisabledGoogleUndefined},
+          {kGmailUnknownGoogleEnabled, kGmailUnknownGoogleDisabled,
+           kGmailUnknownGoogleUnknown, kGmailUnknownGoogleUndefined},
+          {kGmailUndefinedGoogleEnabled, kGmailUndefinedGoogleDisabled,
+           kGmailUndefinedGoogleUnknown, kGmailUndefinedGoogleUndefined},
+      }};
+  return kTable[GetConsentStateIndex(consent_states.comms_apps)]
+               [GetConsentStateIndex(consent_states.google_apps)];
+}
 }  // namespace
 
 AttemptOtpFillingTool::AttemptOtpFillingTool(
@@ -284,6 +324,9 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
                       .Add("Google User Data Processing (gUDP, google_apps)",
                            ConsentStateToString(consent_states->google_apps))
                       .Build());
+
+  RecordGmailAndGoogleSmartFeaturesConsent(
+      GetGmailAndGoogleSmartFeaturesConsent(*consent_states));
 
   if (consent_states->comms_apps == one_time_tokens::ConsentState::kDisabled) {
     RecordAttemptOtpFillingEvent(

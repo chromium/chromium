@@ -235,11 +235,21 @@ class AttemptOtpFillingToolTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~AttemptOtpFillingToolTest() override = default;
 
+  void TearDown() override {
+    actor_surface_.reset();
+    mock_tab_.reset();
+    delegate_.reset();
+    web_contents_ = nullptr;
+    web_contents_factory_.reset();
+    profile_.reset();
+    task_environment_.RunUntilIdle();
+  }
+
   void SetUp() override {
     profile_ = TestingProfile::Builder().Build();
     delegate_ = std::make_unique<FakeToolDelegate>(profile_.get());
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
-    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    web_contents_ = web_contents_factory_->CreateWebContents(profile_.get());
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents_, GURL("https://example.com"));
     EXPECT_CALL(*mock_tab_, GetContents())
@@ -341,7 +351,8 @@ class AttemptOtpFillingToolTest : public testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  content::TestWebContentsFactory web_contents_factory_;
+  std::optional<content::TestWebContentsFactory> web_contents_factory_{
+      std::in_place};
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   affiliations::FakeAffiliationService fake_affiliation_service_;
   std::unique_ptr<FakeToolDelegate> delegate_;
@@ -1208,7 +1219,144 @@ TEST_F(AttemptOtpFillingToolTest, Validate_ConsentFetchReturnsNullopt) {
       AttemptOtpFillingToolEvent::
           kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent,
       1);
+  histogram_tester_.ExpectTotalCount(
+      kGmailAndGoogleSmartFeaturesConsentHistogram, 0);
 }
+
+struct GmailAndGoogleSmartFeaturesConsentTestCase {
+  std::string_view test_name;
+  one_time_tokens::ConsentState gmail;
+  one_time_tokens::ConsentState google;
+  ActorOtpGmailAndGoogleSmartFeaturesConsent expected;
+};
+
+class AttemptOtpFillingToolGmailAndGoogleSmartFeaturesConsentTest
+    : public AttemptOtpFillingToolTest,
+      public testing::WithParamInterface<
+          GmailAndGoogleSmartFeaturesConsentTestCase> {};
+
+// `Validate()` records the combination of both consent states once the consent
+// fetch succeeds.
+TEST_P(AttemptOtpFillingToolGmailAndGoogleSmartFeaturesConsentTest,
+       Validate_RecordsConsentState) {
+  const GmailAndGoogleSmartFeaturesConsentTestCase& test_case = GetParam();
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce(
+          RunOnceCallback<0>(one_time_tokens::UserDataProcessingConsentStates{
+              .comms_apps = test_case.gmail, .google_apps = test_case.google}));
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  histogram_tester_.ExpectUniqueSample(
+      kGmailAndGoogleSmartFeaturesConsentHistogram, test_case.expected, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttemptOtpFillingToolGmailAndGoogleSmartFeaturesConsentTest,
+    testing::Values(
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "EnabledEnabled",
+            .gmail = one_time_tokens::ConsentState::kEnabled,
+            .google = one_time_tokens::ConsentState::kEnabled,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailEnabledGoogleEnabled},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "EnabledDisabled",
+            .gmail = one_time_tokens::ConsentState::kEnabled,
+            .google = one_time_tokens::ConsentState::kDisabled,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailEnabledGoogleDisabled},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "EnabledUnknown",
+            .gmail = one_time_tokens::ConsentState::kEnabled,
+            .google = one_time_tokens::ConsentState::kUnknown,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailEnabledGoogleUnknown},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "EnabledUndefined",
+            .gmail = one_time_tokens::ConsentState::kEnabled,
+            .google = one_time_tokens::ConsentState::kUndefined,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailEnabledGoogleUndefined},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "DisabledEnabled",
+            .gmail = one_time_tokens::ConsentState::kDisabled,
+            .google = one_time_tokens::ConsentState::kEnabled,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailDisabledGoogleEnabled},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "DisabledDisabled",
+            .gmail = one_time_tokens::ConsentState::kDisabled,
+            .google = one_time_tokens::ConsentState::kDisabled,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailDisabledGoogleDisabled},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "DisabledUnknown",
+            .gmail = one_time_tokens::ConsentState::kDisabled,
+            .google = one_time_tokens::ConsentState::kUnknown,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailDisabledGoogleUnknown},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "DisabledUndefined",
+            .gmail = one_time_tokens::ConsentState::kDisabled,
+            .google = one_time_tokens::ConsentState::kUndefined,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailDisabledGoogleUndefined},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "UnknownEnabled",
+            .gmail = one_time_tokens::ConsentState::kUnknown,
+            .google = one_time_tokens::ConsentState::kEnabled,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailUnknownGoogleEnabled},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "UnknownDisabled",
+            .gmail = one_time_tokens::ConsentState::kUnknown,
+            .google = one_time_tokens::ConsentState::kDisabled,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailUnknownGoogleDisabled},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "UnknownUnknown",
+            .gmail = one_time_tokens::ConsentState::kUnknown,
+            .google = one_time_tokens::ConsentState::kUnknown,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailUnknownGoogleUnknown},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "UnknownUndefined",
+            .gmail = one_time_tokens::ConsentState::kUnknown,
+            .google = one_time_tokens::ConsentState::kUndefined,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailUnknownGoogleUndefined},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "UndefinedEnabled",
+            .gmail = one_time_tokens::ConsentState::kUndefined,
+            .google = one_time_tokens::ConsentState::kEnabled,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailUndefinedGoogleEnabled},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "UndefinedDisabled",
+            .gmail = one_time_tokens::ConsentState::kUndefined,
+            .google = one_time_tokens::ConsentState::kDisabled,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailUndefinedGoogleDisabled},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "UndefinedUnknown",
+            .gmail = one_time_tokens::ConsentState::kUndefined,
+            .google = one_time_tokens::ConsentState::kUnknown,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailUndefinedGoogleUnknown},
+        GmailAndGoogleSmartFeaturesConsentTestCase{
+            .test_name = "UndefinedUndefined",
+            .gmail = one_time_tokens::ConsentState::kUndefined,
+            .google = one_time_tokens::ConsentState::kUndefined,
+            .expected = ActorOtpGmailAndGoogleSmartFeaturesConsent::
+                kGmailUndefinedGoogleUndefined}),
+    [](const testing::TestParamInfo<GmailAndGoogleSmartFeaturesConsentTestCase>&
+           info) { return std::string(info.param.test_name); });
 
 // `Validate()` bypasses consent retrieval and opt-in dialog when
 // `kAttemptOtpFillingToolMockValueSkipsChecks` is set.

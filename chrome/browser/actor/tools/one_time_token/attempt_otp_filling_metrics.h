@@ -96,6 +96,33 @@ enum class GmailOtpConfirmationDialogInteraction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpConfirmationDialogInteraction)
 
+// LINT.IfChange(ActorOtpGmailAndGoogleSmartFeaturesConsent)
+
+// Combination of the Gmail (`comms_apps`) and Google (`google_apps`) Smart
+// Features consent states, one value per combination.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ActorOtpGmailAndGoogleSmartFeaturesConsent {
+  kGmailEnabledGoogleEnabled = 0,
+  kGmailEnabledGoogleDisabled = 1,
+  kGmailEnabledGoogleUnknown = 2,
+  kGmailEnabledGoogleUndefined = 3,
+  kGmailDisabledGoogleEnabled = 4,
+  kGmailDisabledGoogleDisabled = 5,
+  kGmailDisabledGoogleUnknown = 6,
+  kGmailDisabledGoogleUndefined = 7,
+  kGmailUnknownGoogleEnabled = 8,
+  kGmailUnknownGoogleDisabled = 9,
+  kGmailUnknownGoogleUnknown = 10,
+  kGmailUnknownGoogleUndefined = 11,
+  kGmailUndefinedGoogleEnabled = 12,
+  kGmailUndefinedGoogleDisabled = 13,
+  kGmailUndefinedGoogleUnknown = 14,
+  kGmailUndefinedGoogleUndefined = 15,
+  kMaxValue = kGmailUndefinedGoogleUndefined
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOtpGmailAndGoogleSmartFeaturesConsent)
+
 // Histogram name for AttemptOtpFilling tool invocation events.
 inline constexpr char kAttemptOtpFillingToolHistogram[] =
     "OneTimeTokens.Actor.AttemptOtpFilling.ToolInvocation";
@@ -113,6 +140,11 @@ inline constexpr char kGmailOtpConfirmationDialogInteractionHistogram[] =
 inline constexpr std::string_view kActorOtpVerifyIsActorLoginFlowHistogram =
     "OneTimeTokens.Actor.AttemptOtpFilling.VerifyIsActorLoginFlow";
 
+// Histogram name for the combination of the Gmail and Google Smart Features
+// consent states.
+inline constexpr char kGmailAndGoogleSmartFeaturesConsentHistogram[] =
+    "OneTimeTokens.Actor.AttemptOtpFilling.GmailAndGoogleSmartFeaturesConsent";
+
 // Records events during the AttemptOtpFilling tool invocation events.
 void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event);
 
@@ -126,6 +158,11 @@ void RecordGmailOtpConfirmationDialogInteraction(
 
 // Records the result of VerifyIsActorLoginFlow.
 void RecordActorLoginFlowVerification(ActorLoginFlowVerifier::Result result);
+
+// Records the combination of the Gmail and Google Smart Features consent
+// states.
+void RecordGmailAndGoogleSmartFeaturesConsent(
+    ActorOtpGmailAndGoogleSmartFeaturesConsent consent);
 
 void RecordPredictedOtpTypeMetrics(
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,

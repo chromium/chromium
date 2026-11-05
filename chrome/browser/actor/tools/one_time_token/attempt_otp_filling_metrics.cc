@@ -31,6 +31,12 @@ void RecordActorLoginFlowVerification(ActorLoginFlowVerifier::Result result) {
                                 result);
 }
 
+void RecordGmailAndGoogleSmartFeaturesConsent(
+    ActorOtpGmailAndGoogleSmartFeaturesConsent consent) {
+  base::UmaHistogramEnumeration(kGmailAndGoogleSmartFeaturesConsentHistogram,
+                                consent);
+}
+
 void RecordPredictedOtpTypeMetrics(
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
     ukm::SourceId ukm_source_id) {

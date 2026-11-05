@@ -83,6 +83,29 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtp) -->
 
+<!-- LINT.IfChange(ActorOtpGmailAndGoogleSmartFeaturesConsent) -->
+
+<enum name="ActorOtpGmailAndGoogleSmartFeaturesConsent">
+  <int value="0" label="GmailEnabledGoogleEnabled"/>
+  <int value="1" label="GmailEnabledGoogleDisabled"/>
+  <int value="2" label="GmailEnabledGoogleUnknown"/>
+  <int value="3" label="GmailEnabledGoogleUndefined"/>
+  <int value="4" label="GmailDisabledGoogleEnabled"/>
+  <int value="5" label="GmailDisabledGoogleDisabled"/>
+  <int value="6" label="GmailDisabledGoogleUnknown"/>
+  <int value="7" label="GmailDisabledGoogleUndefined"/>
+  <int value="8" label="GmailUnknownGoogleEnabled"/>
+  <int value="9" label="GmailUnknownGoogleDisabled"/>
+  <int value="10" label="GmailUnknownGoogleUnknown"/>
+  <int value="11" label="GmailUnknownGoogleUndefined"/>
+  <int value="12" label="GmailUndefinedGoogleEnabled"/>
+  <int value="13" label="GmailUndefinedGoogleDisabled"/>
+  <int value="14" label="GmailUndefinedGoogleUnknown"/>
+  <int value="15" label="GmailUndefinedGoogleUndefined"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h:ActorOtpGmailAndGoogleSmartFeaturesConsent) -->
+
 <!-- LINT.IfChange(ActorOtpRetrieveOtpCallbackSupersededEvent) -->
 
 <enum name="ActorOtpRetrieveOtpCallbackSupersededEvent">
