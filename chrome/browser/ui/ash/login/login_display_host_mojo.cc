@@ -48,7 +48,6 @@
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
-#include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
@@ -209,7 +208,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
                              multi_user_sign_in_policy_controller,
                              system_clock,
                              update_geolocation_usage_allowed),
-      user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
+      user_selection_screen_(std::make_unique<UserSelectionScreen>(
           local_state,
           application_locale_storage,
           std::move(shared_url_loader_factory),

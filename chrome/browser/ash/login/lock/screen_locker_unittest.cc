@@ -237,7 +237,7 @@ class ScreenLockerUnitTest : public testing::Test {
   // * MojoSystemInfoDispatcher dependencies:
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   system::ScopedFakeStatisticsProvider fake_statictics_provider_;
-  // * ChromeUserSelectionScreen dependencies:
+  // * UserSelectionScreen dependencies:
   ScopedStubInstallAttributes test_install_attributes_;
 
   // * SessionControllerClientImpl dependencies:

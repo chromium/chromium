@@ -25,7 +25,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -61,6 +63,11 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -501,10 +508,16 @@ UserSelectionScreen::UserSelectionScreen(
       multi_user_sign_in_policy_controller_(
           CHECK_DEREF(multi_user_sign_in_policy_controller)),
       system_clock_(CHECK_DEREF(system_clock)),
-      display_type_(display_type) {
+      display_type_(display_type),
+      device_local_account_policy_service_(
+          browser_policy_connector_ash_->GetDeviceLocalAccountPolicyService()) {
   CHECK(shared_url_loader_factory_);
 
   session_manager::SessionManager::Get()->AddObserver(this);
+  if (device_local_account_policy_service_) {
+    device_local_account_policy_observation_.Observe(
+        device_local_account_policy_service_);
+  }
   if (display_type_ != DisplayedScreen::SIGN_IN_SCREEN) {
     return;
   }
@@ -563,12 +576,17 @@ void UserSelectionScreen::Init(const user_manager::UserList& users) {
     sync_token_checkers_.reset();
   }
 
-  if (tpm_locked_checker_) {
-    return;
+  if (!tpm_locked_checker_) {
+    tpm_locked_checker_ = std::make_unique<TpmLockedChecker>(this);
+    tpm_locked_checker_->Check();
   }
 
-  tpm_locked_checker_ = std::make_unique<TpmLockedChecker>(this);
-  tpm_locked_checker_->Check();
+  // Retrieve the current policy for all users.
+  for (const user_manager::User* user : users) {
+    if (user->GetType() == user_manager::UserType::kPublicAccount) {
+      OnPolicyUpdated(user->GetAccountId().GetUserEmail());
+    }
+  }
 }
 
 // static
@@ -806,6 +824,159 @@ void UserSelectionScreen::OnInvalidSyncToken(const AccountId& account_id) {
 void UserSelectionScreen::OnOnlineSigninEnforced(const AccountId& account_id) {
   SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
               std::u16string());
+}
+
+void UserSelectionScreen::OnPolicyUpdated(const std::string& user_id) {
+  policy::DeviceLocalAccountPolicyBroker* broker =
+      device_local_account_policy_service_->GetBrokerForUser(user_id);
+  if (!broker) {
+    return;
+  }
+
+  CheckForPublicSessionDisplayNameChange(broker);
+  CheckForPublicSessionLocalePolicyChange(broker);
+  CheckIfFullManagementDisclosureNeeded(broker);
+}
+
+void UserSelectionScreen::OnDeviceLocalAccountsChanged() {
+  // Nothing to do here. When the list of device-local accounts changes, the
+  // entire UI is reloaded.
+}
+
+void UserSelectionScreen::CheckForPublicSessionDisplayNameChange(
+    policy::DeviceLocalAccountPolicyBroker* broker) {
+  user_manager::KnownUser known_user(&local_state_.get());
+  const AccountId account_id = known_user.GetAccountId(
+      broker->user_id(), std::string() /* id */, AccountType::UNKNOWN);
+  CHECK(account_id.is_valid(), base::NotFatalUntil::M161);
+  const std::string& display_name = broker->GetDisplayName();
+  if (display_name == public_session_display_names_[account_id]) {
+    return;
+  }
+
+  public_session_display_names_[account_id] = display_name;
+
+  if (!users_loaded_) {
+    return;
+  }
+
+  if (!display_name.empty()) {
+    // If a new display name was set by policy, notify the UI about it.
+    LoginScreen::Get()->GetModel()->SetPublicSessionDisplayName(account_id,
+                                                                display_name);
+    return;
+  }
+
+  // When no display name is set by policy, the `User`, owned by `UserManager`,
+  // decides what display name to use. However, the order in which `UserManager`
+  // and `this` are informed of the display name change is undefined. Post a
+  // task that will update the UI after the UserManager is guaranteed to have
+  // been informed of the change.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UserSelectionScreen::SetPublicSessionDisplayName,
+                     weak_factory_.GetWeakPtr(), account_id));
+}
+
+void UserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
+    policy::DeviceLocalAccountPolicyBroker* broker) {
+  user_manager::KnownUser known_user(&local_state_.get());
+  const AccountId account_id = known_user.GetAccountId(
+      broker->user_id(), std::string() /* id */, AccountType::UNKNOWN);
+  CHECK(account_id.is_valid(), base::NotFatalUntil::M161);
+  const policy::PolicyMap::Entry* entry =
+      broker->core()->store()->policy_map().Get(policy::key::kSessionLocales);
+
+  // Parse the list of recommended locales set by policy.
+  std::vector<std::string> new_recommended_locales;
+  if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
+      entry->value(base::Value::Type::LIST)) {
+    for (const auto& locale_entry :
+         entry->value(base::Value::Type::LIST)->GetList()) {
+      if (!locale_entry.is_string()) {
+        NOTREACHED();
+      }
+      new_recommended_locales.push_back(locale_entry.GetString());
+    }
+  }
+
+  std::vector<std::string>& recommended_locales =
+      public_session_recommended_locales_[account_id];
+
+  if (new_recommended_locales != recommended_locales) {
+    SetPublicSessionLocales(account_id, new_recommended_locales);
+  }
+
+  if (new_recommended_locales.empty()) {
+    public_session_recommended_locales_.erase(account_id);
+  } else {
+    recommended_locales = new_recommended_locales;
+  }
+}
+
+void UserSelectionScreen::CheckIfFullManagementDisclosureNeeded(
+    policy::DeviceLocalAccountPolicyBroker* broker) {
+  SetPublicSessionShowFullManagementDisclosure(
+      ash::login::IsFullManagementDisclosureNeeded(local_state_.get(), broker));
+}
+
+void UserSelectionScreen::SetPublicSessionDisplayName(
+    const AccountId& account_id) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
+    return;
+  }
+
+  LoginScreen::Get()->GetModel()->SetPublicSessionDisplayName(
+      account_id, base::UTF16ToUTF8(user->GetDisplayName()));
+}
+
+void UserSelectionScreen::SetPublicSessionLocales(
+    const AccountId& account_id,
+    const std::vector<std::string>& recommended_locales) {
+  if (!users_loaded_) {
+    return;
+  }
+
+  // Construct the list of available locales. This list consists of the
+  // recommended locales, followed by all others.
+  input_method::InputMethodManager& input_method_manager =
+      CHECK_DEREF(input_method::InputMethodManager::Get());
+  base::ListValue available_locales = GetUILanguageList(
+      std::string(application_locale_storage_->GetTag().tag_string()),
+      &recommended_locales, std::string(),
+      CHECK_DEREF(input_method_manager.GetComponentExtensionIMEManager())
+          .GetXkbIMEAsInputMethodDescriptor());
+
+  // Set the initially selected locale to the first recommended locale that is
+  // actually available or the current UI locale if none of them are available.
+  const std::string default_locale = FindMostRelevantLocale(
+      recommended_locales, available_locales,
+      std::string(application_locale_storage_->GetTag().tag_string()));
+
+  // Set a flag to indicate whether the list of recommended locales contains at
+  // least two entries. This is used to decide whether the public session pod
+  // expands to its basic form (for zero or one recommended locales) or the
+  // advanced form (two or more recommended locales).
+  const bool two_or_more_recommended_locales = recommended_locales.size() >= 2;
+
+  // Notify the UI.
+  LoginScreen::Get()->GetModel()->SetPublicSessionLocales(
+      account_id,
+      lock_screen_utils::FromListValueToLocaleItem(
+          std::move(available_locales)),
+      default_locale, two_or_more_recommended_locales);
+
+  // Send a request to get keyboard layouts for `default_locale`.
+  LoginScreenClientImpl::Get()->RequestPublicSessionKeyboardLayouts(
+      account_id, default_locale);
+}
+
+void UserSelectionScreen::SetPublicSessionShowFullManagementDisclosure(
+    bool show_full_management_disclosure) {
+  LoginScreen::Get()->GetModel()->SetPublicSessionShowFullManagementDisclosure(
+      show_full_management_disclosure);
 }
 
 void UserSelectionScreen::AttemptEasyUnlock(const AccountId& account_id) {

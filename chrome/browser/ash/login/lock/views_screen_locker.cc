@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
+#include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
@@ -55,7 +55,7 @@ ViewsScreenLocker::ViewsScreenLocker(
         multi_user_sign_in_policy_controller,
     system::SystemClock* system_clock)
     : local_state_(CHECK_DEREF(local_state)),
-      user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
+      user_selection_screen_(std::make_unique<UserSelectionScreen>(
           local_state,
           &CHECK_DEREF(application_locale_storage),
           std::move(shared_url_loader_factory),

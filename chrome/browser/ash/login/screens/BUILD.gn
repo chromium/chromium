@@ -23,8 +23,6 @@ static_library("screens") {
     "categories_selection_screen.h",
     "choobe_screen.cc",
     "choobe_screen.h",
-    "chrome_user_selection_screen.cc",
-    "chrome_user_selection_screen.h",
     "connectivity_diagnostics_dialog.cc",
     "connectivity_diagnostics_dialog.h",
     "consolidated_consent_screen.cc",

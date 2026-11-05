@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_USER_SELECTION_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_USER_SELECTION_SCREEN_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/signin/token_handle_store.h"
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
+#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
@@ -56,7 +58,8 @@ class UserSelectionScreen
     : public proximity_auth::ScreenlockBridge::LockHandler,
       public session_manager::SessionManagerObserver,
       public PasswordSyncTokenLoginChecker::Observer,
-      public UserOnlineSigninNotifier::Observer {
+      public UserOnlineSigninNotifier::Observer,
+      public policy::DeviceLocalAccountPolicyService::Observer {
  public:
   // `local_state`, `application_locale_storage`,
   // `browser_policy_connector_ash`, `multi_user_sign_in_policy_controller`,
@@ -84,7 +87,7 @@ class UserSelectionScreen
       const AccountId& owner,
       bool is_signin_to_add);
 
-  virtual void Init(const user_manager::UserList& users);
+  void Init(const user_manager::UserList& users);
 
   void CheckUserStatus(const AccountId& account_id);
   void HandleFocusPod(const AccountId& account_id);
@@ -123,25 +126,12 @@ class UserSelectionScreen
   // UserOnlineSigninNotifier::Observer
   void OnOnlineSigninEnforced(const AccountId& account_id) override;
 
+  // policy::DeviceLocalAccountPolicyService::Observer:
+  void OnPolicyUpdated(const std::string& user_id) override;
+  void OnDeviceLocalAccountsChanged() override;
+
   std::vector<LoginUserInfo> UpdateAndReturnUserListForAsh();
   void SetUsersLoaded(bool loaded);
-
- protected:
-  const raw_ref<PrefService> local_state_;
-  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
-  const scoped_refptr<network::SharedURLLoaderFactory>
-      shared_url_loader_factory_;
-  const raw_ref<const policy::BrowserPolicyConnectorAsh>
-      browser_policy_connector_ash_;
-
-  raw_ptr<UserBoardView> view_ = nullptr;
-
-  // Map from public session account IDs to recommended locales set by policy.
-  std::map<AccountId, std::vector<std::string>>
-      public_session_recommended_locales_;
-
-  // Whether users have been sent to the UI(WebUI or Views).
-  bool users_loaded_ = false;
 
  private:
   class DircryptoMigrationChecker;
@@ -155,12 +145,68 @@ class UserSelectionScreen
                            bool reauth_required);
   void OnAllowedInputMethodsChanged();
 
+  // Check whether the display name set by policy for a public session has
+  // changed and if so, notify the UI.
+  void CheckForPublicSessionDisplayNameChange(
+      policy::DeviceLocalAccountPolicyBroker* broker);
+
+  // Check whether the list of recommended locales set by policy for a public
+  // session has changed and if so, notify the UI.
+  void CheckForPublicSessionLocalePolicyChange(
+      policy::DeviceLocalAccountPolicyBroker* broker);
+
+  // Check whether full management disclosure is needed for the public/managed
+  // session login screen and if so, notify the UI.
+  void CheckIfFullManagementDisclosureNeeded(
+      policy::DeviceLocalAccountPolicyBroker* broker);
+
+  // Notify the UI that the display name for a public session has changed,
+  // taking the display name from the `User` owned by `UserManager`.
+  void SetPublicSessionDisplayName(const AccountId& account_id);
+
+  // Send an updated list of locales for a public session to the UI, consisting
+  // of the `recommended_locales` followed by all other available locales.
+  void SetPublicSessionLocales(
+      const AccountId& account_id,
+      const std::vector<std::string>& recommended_locales);
+
+  // Send an updated flag for enabling/disable full management disclosure to the
+  // UI.
+  void SetPublicSessionShowFullManagementDisclosure(
+      bool show_full_management_disclosure);
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
   const raw_ref<const user_manager::MultiUserSignInPolicyController>
       multi_user_sign_in_policy_controller_;
   const raw_ref<system::SystemClock> system_clock_;
 
   // Purpose of the screen.
   const DisplayedScreen display_type_;
+
+  raw_ptr<UserBoardView> view_ = nullptr;
+
+  // Map from public session account IDs to recommended locales set by policy.
+  std::map<AccountId, std::vector<std::string>>
+      public_session_recommended_locales_;
+
+  // Whether users have been sent to the UI(WebUI or Views).
+  bool users_loaded_ = false;
+
+  // May be null.
+  const raw_ptr<policy::DeviceLocalAccountPolicyService>
+      device_local_account_policy_service_;
+
+  base::ScopedObservation<policy::DeviceLocalAccountPolicyService,
+                          policy::DeviceLocalAccountPolicyService::Observer>
+      device_local_account_policy_observation_{this};
+
+  // Map from public session account IDs to their display names set by policy.
+  std::map<AccountId, std::string> public_session_display_names_;
 
   // Set of Users that are visible.
   user_manager::UserList users_;
