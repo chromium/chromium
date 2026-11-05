@@ -2613,6 +2613,15 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())) {
       service->CloseFloatingPanel();
     }
+    if (auto* const action = FindAction(kActionTtcToolbar, browser_)) {
+      action->SetVisible(false);
+      action->SetEnabled(false);
+    }
+    // TTC sessions are per profile, so this also ends TTC in the profile's
+    // other windows.
+    if (auto* ttc_service = ttc::TtcKeyedService::Get(profile())) {
+      ttc_service->EndSession();
+    }
   } else {
     // Do an init call to re-initialize command state after the
     // DisableAllCommands.
@@ -2720,6 +2729,11 @@ void BrowserCommandController::UpdateTtcState(ttc::ServiceState state) {
 
   UpdateCommandAndActionEnabled(IDC_SHOW_TTC_MENU, kActionShowTtcMenu,
                                 state == ttc::ServiceState::kSessionInactive);
+  if (auto* const action = FindAction(kActionTtcToolbar, browser_)) {
+    const bool available = state != ttc::ServiceState::kProfileIneligible;
+    action->SetVisible(available);
+    action->SetEnabled(available);
+  }
 }
 
 void BrowserCommandController::UpdateSaveAsState() {

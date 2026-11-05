@@ -109,12 +109,24 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 
+#include <memory>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/wm/window_pin_util.h"
+#include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
+#include "chrome/browser/ttc/app/public/audio_controller.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/test_utils.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -1084,7 +1096,92 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 INSTANTIATE_TEST_SUITE_P(All,
                          BrowserCommandControllerBrowserTestLockedFullscreen,
                          testing::Bool());
-#endif
+
+class BrowserCommandControllerBrowserTestLockedFullscreenTtc
+    : public BrowserCommandControllerBrowserTestLockedFullscreen {
+ public:
+  BrowserCommandControllerBrowserTestLockedFullscreenTtc() {
+    ttc_feature_list_.InitAndEnableFeature(ttc::kTtc);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    BrowserCommandControllerBrowserTestLockedFullscreen::
+        SetUpBrowserContextKeyedServices(context);
+    // A mock conversation keeps sessions from capturing audio or connecting to
+    // the backend.
+    ttc::TtcKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<ttc::TtcKeyedService>(
+              Profile::FromBrowserContext(context),
+              base::BindRepeating([](ttc::SessionController&,
+                                     std::unique_ptr<ttc::AudioController>)
+                                      -> std::unique_ptr<ttc::Conversation> {
+                return std::make_unique<
+                    testing::NiceMock<ttc::MockConversation>>();
+              }));
+        }));
+  }
+
+ protected:
+  ttc::TtcKeyedService& ttc_service() {
+    return CHECK_DEREF(ttc::TtcKeyedService::Get(browser()->GetProfile()));
+  }
+
+  actions::ActionItem& ttc_toolbar_action() {
+    return CHECK_DEREF(actions::ActionManager::Get().FindAction(
+        kActionTtcToolbar,
+        BrowserActions::From(browser())->root_action_item()));
+  }
+
+ private:
+  base::test::ScopedFeatureList ttc_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreenTtc,
+                       HidesToolbarAndEndsSessionWhileLocked) {
+  auto* const command_controller =
+      chrome::BrowserCommandController::From(browser());
+  EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SHOW_TTC_MENU));
+  ttc_service().StartSession();
+  ASSERT_TRUE(ttc_service().is_session_active());
+  EXPECT_TRUE(ttc_toolbar_action().GetVisible());
+  EXPECT_TRUE(ttc_toolbar_action().GetEnabled());
+
+  EnterLockedFullscreen();
+  EXPECT_FALSE(ttc_service().is_session_active());
+  EXPECT_FALSE(ttc_toolbar_action().GetVisible());
+  EXPECT_FALSE(ttc_toolbar_action().GetEnabled());
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SHOW_TTC_MENU));
+
+  ExitLockedFullscreen();
+  EXPECT_TRUE(ttc_toolbar_action().GetVisible());
+  EXPECT_TRUE(ttc_toolbar_action().GetEnabled());
+  EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SHOW_TTC_MENU));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreenTtc,
+                       ToolbarStaysHiddenOnStateChangeWhileLocked) {
+  EnterLockedFullscreen();
+  ASSERT_FALSE(ttc_toolbar_action().GetVisible());
+
+  // Each session state change runs UpdateTtcState().
+  ttc_service().StartSession();
+  EXPECT_FALSE(ttc_toolbar_action().GetVisible());
+  EXPECT_FALSE(ttc_toolbar_action().GetEnabled());
+  ttc_service().EndSession();
+  EXPECT_FALSE(ttc_toolbar_action().GetVisible());
+  EXPECT_FALSE(ttc_toolbar_action().GetEnabled());
+  EXPECT_FALSE(
+      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
+          IDC_SHOW_TTC_MENU));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserCommandControllerBrowserTestLockedFullscreenTtc,
+                         testing::Bool());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        TestTabRestoreServiceInitialized) {
