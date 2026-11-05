@@ -97,6 +97,12 @@ TEST_F(OmniboxTextUtilTest, TestStripSchemasUnsafeForPaste) {
   }
 }
 
+TEST_F(OmniboxTextUtilTest, FormatAdditionalText) {
+  EXPECT_EQ(u"", omnibox::FormatAdditionalText(u""));
+  EXPECT_EQ(u" - example.com/page",
+            omnibox::FormatAdditionalText(u"example.com/page"));
+}
+
 TEST_F(OmniboxTextUtilTest, SanitizeTextForPaste) {
   const struct {
     std::u16string input;

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "build/build_config.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -37,6 +38,14 @@ std::u16string StripJavascriptSchemas(const std::u16string& text);
 //
 // Finally, calls StripJavascriptSchemas() on the resulting string.
 std::u16string SanitizeTextForPaste(const std::u16string& text);
+
+// Given a raw value of additional text from autocompletion (e.g.
+// "example.com"), i.e. `AutocompleteMatch::additional_text`, combines it with
+// the appropriate separator in the current locale for painting it after the
+// regular omnibox text (e.g. " - example.com"), as well as whatever BiDi
+// control characters are appropriate for providing best results for the
+// locale's preferred direction. Returns an empty string if `text` is empty.
+std::u16string FormatAdditionalText(std::u16string_view text);
 
 // Adjusts the copied text before writing it to the clipboard. If the copied
 // text is a URL with the scheme elided, this method reattaches the scheme.

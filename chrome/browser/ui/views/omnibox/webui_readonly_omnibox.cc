@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_placeholder_util.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
@@ -244,7 +243,7 @@ void WebUIReadOnlyOmnibox::SetCaretPos(size_t caret_pos) {
 
 void WebUIReadOnlyOmnibox::SetAdditionalText(
     const std::u16string& additional_text) {
-  additional_text_ = FormatOmniboxAdditionalText(additional_text);
+  additional_text_ = omnibox::FormatAdditionalText(additional_text);
   RequestUpdateWebUI();
 }
 

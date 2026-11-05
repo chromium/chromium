@@ -101,6 +101,30 @@
   text-decoration-color: currentColor;
 }
 
+/* While showing additional text after the text (see updateMirror_()), the
+ * #mirror lays them out in a row. The text (#mirrorText) keeps its size, like
+ * the input's own text, and the additional text shrinks to fit in the space
+ * left after it, and is elided with an ellipsis, matching the native omnibox's
+ * additional text label. */
+#mirror.has-additional-text {
+  align-items: center;
+  display: flex;
+}
+
+#mirrorText {
+  flex: none;
+}
+
+/* Colored like the native omnibox's additional text label
+ * (kColorOmniboxResultsUrl). */
+#mirror #additionalText {
+  color: var(--color-omnibox-results-url);
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Unselected text is rendered by the #mirror, but selected text is still
  * rendered by the input itself (using its ::selection colors). */
 :host([url-emphasis-enabled]) :is(input, textarea) {

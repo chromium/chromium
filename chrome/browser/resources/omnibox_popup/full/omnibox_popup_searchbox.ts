@@ -2236,14 +2236,15 @@ export class OmniboxPopupSearchboxElement extends
       }
       const defaultMatch = this.result?.matches?.[0];
       const typedText = this.lastQueriedInput ?? '';
+      const isDefaultMatch =
+          !!defaultMatch && defaultMatch.allowedToBeDefaultMatch;
       const inlineText =
-          (defaultMatch && defaultMatch.allowedToBeDefaultMatch) ?
-          defaultMatch.inlineAutocompletion :
-          '';
+          isDefaultMatch ? defaultMatch.inlineAutocompletion : '';
       this.fullUrlShown_ = false;
       inputEl.setInput({
         text: typedText,
         inline: inlineText,
+        additionalText: isDefaultMatch ? defaultMatch.additionalText : '',
         moveCursorToEnd: inlineText.length === 0,
       });
       if (this.virtualFocusEnabled) {

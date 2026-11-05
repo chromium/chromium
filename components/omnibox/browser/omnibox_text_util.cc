@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/omnibox_text_util.h"
 
+#include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,8 +16,10 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -134,6 +137,16 @@ std::u16string SanitizeTextForPaste(const std::u16string& text) {
   return StripJavascriptSchemas(output);
 }
 // LINT.ThenChange(//ui/webui/resources/cr_components/searchbox/utils.ts:SanitizeTextForPaste)
+
+std::u16string FormatAdditionalText(std::u16string_view text) {
+  if (text.empty()) {
+    return std::u16string();
+  }
+  std::u16string adjusted_text(text);
+  base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
+  return l10n_util::GetStringFUTF16(IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE,
+                                    std::u16string(), adjusted_text);
+}
 
 void AdjustTextForCopy(
     int sel_min,

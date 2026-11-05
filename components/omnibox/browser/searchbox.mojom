@@ -115,6 +115,12 @@ struct AutocompleteMatch {
   url.mojom.Url destination_url;
   mojo_base.mojom.String16 inline_autocompletion;
   mojo_base.mojom.String16 fill_into_edit;
+  // Text to show after the input text and `inline_autocompletion` while this
+  // is the default match, already formatted for display (e.g.
+  // " - en.wikipedia.org/wiki/King_Arthur" when rich autocompletion inline
+  // autocompletes the title of that page). Empty if there is none. See
+  // `AutocompleteMatch::additional_text` and `omnibox::FormatAdditionalText()`.
+  mojo_base.mojom.String16 additional_text;
   // The path for the suggestion icon. This is a relative url pointing to a
   // bundled resource and is used directly in CSS to show the icon.
   string icon_path;

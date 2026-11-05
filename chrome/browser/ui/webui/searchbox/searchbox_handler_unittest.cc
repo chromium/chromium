@@ -52,6 +52,7 @@
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/suggest_template_info.mojom.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -1847,6 +1848,49 @@ TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatch_SecondaryTextIsUrl) {
     auto mojom_match = create_mojom_match(match);
     ASSERT_TRUE(mojom_match.has_value());
     EXPECT_FALSE(mojom_match.value()->secondary_text_is_url);
+  }
+}
+
+// The WebUI omnibox shows the additional text after the input text and inline
+// autocompletion, like the native omnibox's additional text label, so it must
+// be formatted the same way.
+TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatch_AdditionalText) {
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+  auto create_mojom_match = [&](const AutocompleteMatch& match) {
+    return handler_->CreateAutocompleteMatch(
+        match, bookmark_model, omnibox::GroupConfigMap(),
+        omnibox_controller_->client()->GetTemplateURLService());
+  };
+
+  // A match rich autocompleting its title, e.g. "king" -> "King Arthur -
+  // Wikipedia", has its URL as additional text.
+  {
+    AutocompleteMatch match;
+    match.destination_url = GURL("https://en.wikipedia.org/wiki/King_Arthur");
+    match.fill_into_edit = u"en.wikipedia.org/wiki/King_Arthur";
+    match.allowed_to_be_default_match = true;
+    match.inline_autocompletion = u" Arthur - Wikipedia";
+    match.additional_text = u"en.wikipedia.org/wiki/King_Arthur";
+    auto mojom_match = create_mojom_match(match);
+    ASSERT_TRUE(mojom_match.has_value());
+    EXPECT_EQ(u" Arthur - Wikipedia",
+              mojom_match.value()->inline_autocompletion);
+    EXPECT_EQ(u" - en.wikipedia.org/wiki/King_Arthur",
+              mojom_match.value()->additional_text);
+    EXPECT_EQ(omnibox::FormatAdditionalText(match.additional_text),
+              mojom_match.value()->additional_text);
+  }
+
+  // Matches without additional text have none.
+  {
+    AutocompleteMatch match;
+    match.destination_url = GURL("https://example.com");
+    match.fill_into_edit = u"example.com";
+    auto mojom_match = create_mojom_match(match);
+    ASSERT_TRUE(mojom_match.has_value());
+    EXPECT_TRUE(mojom_match.value()->additional_text.empty());
   }
 }
 

@@ -24,6 +24,7 @@ export function createAutocompleteMatch(
     destinationUrl: '',
     inlineAutocompletion: '',
     fillIntoEdit: '',
+    additionalText: '',
     iconPath: '',
     iconUrl: '',
     removeButtonA11yLabel: '',

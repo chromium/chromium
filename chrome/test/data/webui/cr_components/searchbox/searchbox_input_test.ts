@@ -899,6 +899,165 @@ suite('SearchboxInputTest', () => {
     assertEquals(null, input.urlEmphasis);
   });
 
+  // Like the native omnibox, the additional text (e.g. the URL of a page whose
+  // title is inline autocompleted) is shown right after the input's text.
+  test('Shows additional text after the text in mirror element', async () => {
+    loadTimeData.overrideValues({reportMetrics: false});
+    input = await createInput({urlEmphasisEnabled: true});
+    input.setInput({
+      text: 'king',
+      inline: ' Arthur - Wikipedia',
+      additionalText: ' - en.wikipedia.org/wiki/King_Arthur',
+    });
+    await input.updateComplete;
+
+    // The additional text isn't part of the input's value.
+    assertEquals('king Arthur - Wikipedia', input.inputElement.value);
+    assertEquals(4, input.inputElement.selectionStart);
+    assertEquals(23, input.inputElement.selectionEnd);
+
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+    assertEquals(
+        'king Arthur - Wikipedia - en.wikipedia.org/wiki/King_Arthur',
+        mirror.textContent);
+    const additionalText = mirror.querySelector<HTMLElement>('#additionalText');
+    assertTrue(!!additionalText);
+    assertEquals(mirror.lastElementChild, additionalText);
+    assertEquals(
+        ' - en.wikipedia.org/wiki/King_Arthur', additionalText.textContent);
+    assertTrue(isVisible(additionalText));
+
+    // It starts where the input's text ends, and is painted in the color of
+    // URLs in the matches.
+    const textSpan = additionalText.previousElementSibling!;
+    assertTrue(
+        Math.abs(
+            textSpan.getBoundingClientRect().right -
+            additionalText.getBoundingClientRect().left) < 1);
+    additionalText.style.setProperty(
+        '--color-omnibox-results-url', 'rgb(1, 2, 3)');
+    assertEquals('rgb(1, 2, 3)', getComputedStyle(additionalText).color);
+    additionalText.style.removeProperty('--color-omnibox-results-url');
+
+    // Typing the next character of the inline autocompletion keeps showing it,
+    // since the input still shows the same match.
+    const keydownEvent = new KeyboardEvent('keydown', {
+      key: ' ',
+      cancelable: true,
+    });
+    input.inputElement.dispatchEvent(keydownEvent);
+    assertTrue(keydownEvent.defaultPrevented);
+    assertEquals('king ', input.lastInput()!.text);
+    assertEquals(
+        ' - en.wikipedia.org/wiki/King_Arthur',
+        mirror.querySelector('#additionalText')?.textContent);
+
+    // Any other update clears it, e.g. when another match is selected.
+    input.setInput({text: 'king arthur legend', inline: ''});
+    await input.updateComplete;
+    assertEquals(null, mirror.querySelector('#additionalText'));
+    assertEquals('king arthur legend', mirror.textContent);
+  });
+
+  test('Clears additional text when the user edits the input', async () => {
+    loadTimeData.overrideValues({reportMetrics: false});
+    input = await createInput({urlEmphasisEnabled: true});
+    input.setInput({
+      text: 'king',
+      inline: ' Arthur - Wikipedia',
+      additionalText: ' - en.wikipedia.org/wiki/King_Arthur',
+    });
+    await input.updateComplete;
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+    assertTrue(!!mirror.querySelector('#additionalText'));
+
+    input.inputElement.value = 'kin';
+    input.inputElement.dispatchEvent(new InputEvent('input'));
+    await input.updateComplete;
+    assertEquals(null, mirror.querySelector('#additionalText'));
+    assertEquals('kin', mirror.textContent);
+  });
+
+  test('clearAdditionalText() clears additional text', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    input.setInput({
+      text: 'king',
+      inline: ' Arthur - Wikipedia',
+      additionalText: ' - en.wikipedia.org/wiki/King_Arthur',
+    });
+    await input.updateComplete;
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+    assertTrue(!!mirror.querySelector('#additionalText'));
+
+    input.clearAdditionalText();
+    assertEquals(null, mirror.querySelector('#additionalText'));
+    assertEquals('king Arthur - Wikipedia', mirror.textContent);
+    // The input itself is unchanged.
+    assertEquals('king Arthur - Wikipedia', input.inputElement.value);
+    assertEquals(' Arthur - Wikipedia', input.lastInput()!.inline);
+  });
+
+  // Like the native omnibox's additional text label, additional text that
+  // doesn't fit after the text is elided with an ellipsis, rather than cut off
+  // (or pushing the text out of view).
+  test('Elides additional text that does not fit', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    input.style.width = '400px';
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+
+    // Where the text is painted without additional text.
+    input.setInput({text: 'king', inline: ' Arthur - Wikipedia'});
+    await input.updateComplete;
+    const textRect = mirror.querySelector('span')!.getBoundingClientRect();
+
+    const additionalText = ' - en.wikipedia.org/wiki/King_Arthur' +
+        '/a/very/long/path'.repeat(10);
+    input.setInput({
+      text: 'king',
+      inline: ' Arthur - Wikipedia',
+      additionalText,
+    });
+    await input.updateComplete;
+
+    // The text is painted exactly where it was, i.e. still over the input's
+    // own (transparent) text, and in full.
+    const mirrorText = mirror.querySelector<HTMLElement>('#mirrorText');
+    assertTrue(!!mirrorText);
+    const span = mirrorText.querySelector('span')!;
+    assertEquals('king Arthur - Wikipedia', mirrorText.textContent);
+    const spanRect = span.getBoundingClientRect();
+    assertTrue(Math.abs(textRect.left - spanRect.left) < 0.5);
+    assertTrue(Math.abs(textRect.top - spanRect.top) < 0.5);
+    assertTrue(Math.abs(textRect.width - spanRect.width) < 0.5);
+    assertTrue(mirrorText.scrollWidth <= mirrorText.clientWidth);
+
+    // The additional text fills the rest of the #mirror's content box, and is
+    // elided with an ellipsis.
+    const additionalTextEl =
+        mirror.querySelector<HTMLElement>('#additionalText');
+    assertTrue(!!additionalTextEl);
+    assertEquals(additionalText, additionalTextEl.textContent);
+    assertEquals('ellipsis', getComputedStyle(additionalTextEl).textOverflow);
+    assertTrue(
+        additionalTextEl.scrollWidth > additionalTextEl.clientWidth,
+        'additional text should be truncated');
+    const mirrorStyle = getComputedStyle(mirror);
+    const mirrorRect = mirror.getBoundingClientRect();
+    const additionalTextRect = additionalTextEl.getBoundingClientRect();
+    assertTrue(Math.abs(spanRect.right - additionalTextRect.left) < 1);
+    assertTrue(
+        Math.abs(
+            mirrorRect.right - parseFloat(mirrorStyle.paddingRight) -
+            additionalTextRect.right) < 1,
+        `additional text ends at ${additionalTextRect.right}px, not at the ` +
+            `end of the #mirror's content box`);
+    assertEquals(0, mirror.scrollLeft);
+  });
+
   test(
       'Does not clear urlEmphasis on setInput if value does not change',
       async () => {

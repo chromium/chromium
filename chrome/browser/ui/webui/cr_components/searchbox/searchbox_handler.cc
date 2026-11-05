@@ -67,6 +67,7 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/browser/suggest_template_info_mojo_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -1096,6 +1097,8 @@ SearchboxHandler::CreateAutocompleteMatch(
   }
   mojom_match->fill_into_edit = match.fill_into_edit;
   mojom_match->inline_autocompletion = match.inline_autocompletion;
+  mojom_match->additional_text =
+      omnibox::FormatAdditionalText(match.additional_text);
   mojom_match->is_search_type = AutocompleteMatch::IsSearchType(match.type);
   mojom_match->type = omnibox::AutocompleteMatchTypeToString(match.type);
   mojom_match->supports_deletion = match.SupportsDeletion();

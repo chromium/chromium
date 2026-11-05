@@ -114,6 +114,14 @@ function assertTextOffsetVisible(
           input.scrollLeft}px to ${input.scrollLeft + visibleWidth}px`);
 }
 
+// Returns where `element` is painted relative to the #mirror `mirror`.
+function getOffsetInMirror(
+    mirror: HTMLElement, element: Element): {x: number, y: number} {
+  const mirrorRect = mirror.getBoundingClientRect();
+  const rect = element.getBoundingClientRect();
+  return {x: rect.left - mirrorRect.left, y: rect.top - mirrorRect.top};
+}
+
 const kDefaultSelection = {
   line: -1,
   state: SelectionLineState.kNormal,
@@ -4057,6 +4065,168 @@ suite('OmniboxPopupSearchboxTest', function() {
        assertEquals(
            'world.com', searchbox.getInputElement().lastInput()?.inline);
      });
+
+ // Like the native omnibox, when the default match inline autocompletes the
+ // title of a page, the input row shows the page's URL after the title, until
+ // the dropdown closes.
+ test('ShowsDefaultMatchAdditionalTextInInputRow', async () => {
+   const additionalText = ' - en.wikipedia.org/wiki/King_Arthur';
+   const mirror =
+       searchbox.$.input.shadowRoot.querySelector<HTMLElement>('#mirror');
+   assertTrue(!!mirror);
+   function getShownAdditionalText(): string|null {
+     return mirror!.querySelector('#additionalText')?.textContent ?? null;
+   }
+
+   for (const virtualFocus of [false, true]) {
+     searchbox.virtualFocusEnabled = virtualFocus;
+     handler.reset();
+
+     searchbox.getInputElement().inputElement.value = 'king';
+     searchbox.lastQueriedInput = 'king';
+     searchbox.activeQueryId = 0;
+     testProxy.page.autocompleteResultChanged(
+         createAutocompleteResultForTesting({
+           queryId: 0,
+           input: 'king',
+           matches: [
+             createSearchMatchForTesting({
+               allowedToBeDefaultMatch: true,
+               isSearchType: false,
+               destinationUrl: 'https://en.wikipedia.org/wiki/King_Arthur',
+               fillIntoEdit: 'en.wikipedia.org/wiki/King_Arthur',
+               inlineAutocompletion: ' Arthur - Wikipedia',
+               additionalText: additionalText,
+             }),
+             createSearchMatchForTesting({
+               fillIntoEdit: 'king',
+             }),
+           ],
+         }));
+     await microtasksFinished();
+
+     assertTrue(searchbox.dropdownIsVisible);
+     const input = searchbox.getInputElement();
+     assertEquals('king Arthur - Wikipedia', input.inputElement.value);
+     assertEquals(additionalText, getShownAdditionalText());
+     assertEquals(
+         'king Arthur - Wikipedia' + additionalText, mirror.textContent);
+     // The text is laid out next to the additional text (see
+     // searchbox_input.css), but must stay where the input's own text is.
+     const textOffset =
+         getOffsetInMirror(mirror, mirror.querySelector('#mirrorText span')!);
+
+     // Selecting another match shows its text without the additional text.
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       bubbles: true,
+       cancelable: true,
+       key: 'ArrowDown',
+     }));
+     await microtasksFinished();
+     assertEquals('king', input.inputElement.value);
+     assertEquals(null, getShownAdditionalText());
+
+     // Selecting the default match again shows it again.
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       bubbles: true,
+       cancelable: true,
+       key: 'ArrowUp',
+     }));
+     await microtasksFinished();
+     assertEquals('king Arthur - Wikipedia', input.inputElement.value);
+     assertEquals(additionalText, getShownAdditionalText());
+
+     // Reverting the temporary text of another match with Escape restores
+     // the default match, along with its additional text.
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       bubbles: true,
+       cancelable: true,
+       key: 'ArrowDown',
+     }));
+     await microtasksFinished();
+     assertEquals(null, getShownAdditionalText());
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       key: 'Escape',
+       cancelable: true,
+     }));
+     await microtasksFinished();
+     assertEquals(
+         OmniboxEscapeAction.kRevertTemporaryText,
+         handler.getArgs('logEscapeAction')[0]);
+     assertEquals('king Arthur - Wikipedia', input.inputElement.value);
+     assertEquals(additionalText, getShownAdditionalText());
+
+     // Closing the dropdown, e.g. when the omnibox loses focus, clears it,
+     // since that can change the default match.
+     callbackRouter.setFocus(
+         false, /*queryZps=*/ false, /*selectAll=*/ false,
+         /*showFullUrl=*/ false);
+     await microtasksFinished();
+     assertFalse(searchbox.dropdownIsVisible);
+     assertEquals('king Arthur - Wikipedia', input.inputElement.value);
+     assertEquals(null, getShownAdditionalText());
+     assertEquals('king Arthur - Wikipedia', mirror.textContent);
+     const clearedTextOffset =
+         getOffsetInMirror(mirror, mirror.querySelector('span')!);
+     assertTrue(Math.abs(textOffset.x - clearedTextOffset.x) < 0.5);
+     assertTrue(Math.abs(textOffset.y - clearedTextOffset.y) < 0.5);
+   }
+ });
+
+ // Like the native omnibox's additional text label, the additional text is
+ // elided with an ellipsis if it doesn't fit in the input row.
+ test('ElidesDefaultMatchAdditionalTextThatDoesNotFit', async () => {
+   const additionalText = ' - en.wikipedia.org/wiki/King_Arthur' +
+       '/a/very/long/path'.repeat(20);
+   searchbox.getInputElement().inputElement.value = 'king';
+   searchbox.lastQueriedInput = 'king';
+   searchbox.activeQueryId = 0;
+   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: 'king',
+     matches: [
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         isSearchType: false,
+         destinationUrl: 'https://en.wikipedia.org/wiki/King_Arthur',
+         fillIntoEdit: 'en.wikipedia.org/wiki/King_Arthur',
+         inlineAutocompletion: ' Arthur - Wikipedia',
+         additionalText: additionalText,
+       }),
+     ],
+   }));
+   await microtasksFinished();
+
+   const input = searchbox.$.input.inputElement;
+   assertEquals('king Arthur - Wikipedia', input.value);
+   const mirror = $$<HTMLElement>(searchbox.$.input, '#mirror');
+   assertTrue(!!mirror);
+   const additionalTextEl =
+       $$<HTMLElement>(searchbox.$.input, '#additionalText');
+   assertTrue(!!additionalTextEl);
+   assertTrue(isVisible(additionalTextEl));
+   assertEquals(additionalText, additionalTextEl.textContent);
+
+   // The text is shown in full, and the additional text is elided to end
+   // where the input's text area ends.
+   const mirrorText = $$<HTMLElement>(searchbox.$.input, '#mirrorText');
+   assertTrue(!!mirrorText);
+   assertTrue(mirrorText.scrollWidth <= mirrorText.clientWidth);
+   assertEquals('ellipsis', getComputedStyle(additionalTextEl).textOverflow);
+   assertTrue(
+       additionalTextEl.scrollWidth > additionalTextEl.clientWidth,
+       'additional text should be truncated');
+   const inputStyle = getComputedStyle(input);
+   const textAreaRight = input.getBoundingClientRect().right -
+       parseFloat(inputStyle.paddingRight) -
+       parseFloat(inputStyle.borderRightWidth);
+   assertTrue(
+       Math.abs(
+           additionalTextEl.getBoundingClientRect().right - textAreaRight) < 1,
+       `additional text ends at ${
+           additionalTextEl.getBoundingClientRect().right}px, not at the ` +
+           `end of the input's text area at ${textAreaRight}px`);
+ });
 
  suite('ContextEntrypoint', () => {
    test('CurrentTabChipShown', async () => {
