@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_OZONE_LAYOUT_STUB_STUB_KEYBOARD_LAYOUT_ENGINE_H_
 #define UI_EVENTS_OZONE_LAYOUT_STUB_STUB_KEYBOARD_LAYOUT_ENGINE_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -34,8 +35,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) StubKeyboardLayoutEngine
   void SetCurrentLayoutByName(
       const std::string& layout_name,
       base::OnceCallback<void(bool success)> callback) override;
-  bool SetCurrentLayoutFromBuffer(const char* keymap_string,
-                                  size_t size) override;
+  bool SetCurrentLayoutFromBuffer(std::string_view keymap_string) override;
   bool UsesISOLevel5Shift() const override;
   bool UsesAltGr() const override;
   bool Lookup(DomCode dom_code,

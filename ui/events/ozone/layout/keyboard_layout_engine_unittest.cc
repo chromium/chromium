@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +25,7 @@ namespace ui {
 namespace {
 
 // Hardcoded US layout for standalone testing of XkbKeyboardLayoutEngine.
-const char* kUsLayoutXkbKeymap =
+constexpr std::string_view kUsLayoutXkbKeymap =
     "xkb_keymap{"
     "xkb_keycodes \"evdev_aliases(qwerty)\"{minimum=8;maximum=255;"
     "<ESC>=9;<AE01>=10;<AE02>=11;<AE03>=12;<AE04>=13;<AE05>=14;"
@@ -225,8 +227,7 @@ TEST(LayoutEngineTest, Lookup) {
     XkbEvdevCodes xkb_evdev_code_converter;
     auto xkb_engine =
         std::make_unique<XkbKeyboardLayoutEngine>(xkb_evdev_code_converter);
-    xkb_engine->SetCurrentLayoutFromBuffer(kUsLayoutXkbKeymap,
-                                           strlen(kUsLayoutXkbKeymap));
+    xkb_engine->SetCurrentLayoutFromBuffer(kUsLayoutXkbKeymap);
     TestLookup("XkbKeyboardLayoutEngine", xkb_engine.get());
   }
 }

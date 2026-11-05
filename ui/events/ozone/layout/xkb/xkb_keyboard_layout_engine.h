@@ -45,8 +45,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
       base::OnceCallback<void(bool success)> callback) override;
   // Required by Ozone/Wayland (at least) for non ChromeOS builds. See
   // http://xkbcommon.org/doc/current/md_doc_quick-guide.html for further info.
-  bool SetCurrentLayoutFromBuffer(const char* keymap_string,
-                                  size_t size) override;
+  bool SetCurrentLayoutFromBuffer(std::string_view keymap_string) override;
 
   bool UsesISOLevel5Shift() const override;
   bool UsesAltGr() const override;

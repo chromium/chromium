@@ -20,8 +20,8 @@ void NoKeyboardLayoutEngine::SetCurrentLayoutByName(
   std::move(callback).Run(/*success=*/false);
 }
 
-bool NoKeyboardLayoutEngine::SetCurrentLayoutFromBuffer(const char* keymap_str,
-                                                        size_t size) {
+bool NoKeyboardLayoutEngine::SetCurrentLayoutFromBuffer(
+    std::string_view keymap_string) {
   return false;
 }
 

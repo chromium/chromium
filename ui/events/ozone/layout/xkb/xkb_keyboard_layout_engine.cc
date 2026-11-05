@@ -883,11 +883,10 @@ void XkbKeyboardLayoutEngine::SetInitCallbackForTest(
 }
 
 bool XkbKeyboardLayoutEngine::SetCurrentLayoutFromBuffer(
-    const char* keymap_string,
-    size_t size) {
+    std::string_view keymap_string) {
   xkb_keymap* keymap = xkb_keymap_new_from_buffer(
-      xkb_context_.get(), keymap_string, size, XKB_KEYMAP_FORMAT_TEXT_V1,
-      XKB_KEYMAP_COMPILE_NO_FLAGS);
+      xkb_context_.get(), keymap_string.data(), keymap_string.size(),
+      XKB_KEYMAP_FORMAT_TEXT_V1, XKB_KEYMAP_COMPILE_NO_FLAGS);
   if (!keymap)
     return false;
 

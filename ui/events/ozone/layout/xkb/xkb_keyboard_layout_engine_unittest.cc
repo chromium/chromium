@@ -9,7 +9,6 @@
 #include <xkbcommon/xkbcommon-names.h>
 
 #include <array>
-#include <cstring>
 #include <string_view>
 #include <tuple>
 
@@ -177,8 +176,7 @@ void SetLayoutFromName(XkbKeyboardLayoutEngine& layout_engine,
   std::unique_ptr<char, base::FreeDeleter> keymap_string(
       xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
   ASSERT_TRUE(keymap_string);
-  ASSERT_TRUE(layout_engine.SetCurrentLayoutFromBuffer(
-      keymap_string.get(), std::strlen(keymap_string.get())));
+  ASSERT_TRUE(layout_engine.SetCurrentLayoutFromBuffer(keymap_string.get()));
 }
 
 }  // anonymous namespace

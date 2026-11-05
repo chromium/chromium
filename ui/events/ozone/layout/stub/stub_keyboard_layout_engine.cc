@@ -32,8 +32,7 @@ void StubKeyboardLayoutEngine::SetCurrentLayoutByName(
 }
 
 bool StubKeyboardLayoutEngine::SetCurrentLayoutFromBuffer(
-    const char* keymap_str,
-    size_t size) {
+    std::string_view keymap_string) {
   return false;
 }
 

@@ -9,14 +9,17 @@
 #include <sys/mman.h>
 
 #include <cstddef>
-#include <cstring>
+#include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_view_util.h"
 #include "base/unguessable_token.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/base_event_utils.h"
@@ -259,9 +262,12 @@ void WaylandKeyboard::OnKeymap(void* data,
     return;
   }
 
-  const char* keymap_string = static_cast<const char*>(keymap);
-  if (!self->layout_engine_->SetCurrentLayoutFromBuffer(
-          keymap_string, UNSAFE_TODO(strnlen(keymap_string, size)))) {
+  // SAFETY: mmap() above succeeded in mapping `size` bytes at `keymap`.
+  std::string_view keymap_string = base::as_string_view(
+      UNSAFE_BUFFERS(base::span(static_cast<const char*>(keymap), size)));
+  // The keymap may be NUL-terminated before `size`.
+  keymap_string = keymap_string.substr(0, keymap_string.find('\0'));
+  if (!self->layout_engine_->SetCurrentLayoutFromBuffer(keymap_string)) {
     DLOG(ERROR) << "Failed to set XKB keymap.";
   }
   munmap(keymap, size);
