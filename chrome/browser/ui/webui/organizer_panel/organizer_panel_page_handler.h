@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class OrganizerPanelController;
+class PrefService;
 class Profile;
 
 namespace content {
@@ -49,14 +50,13 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
   void SetSectionShowAll(const std::string& section_id, bool show_all) override;
 
  private:
-  organizer_panel::mojom::SectionStatePtr GetSectionStateForId(
-      const std::string& section_id) const;
   void OnBrowserWindowInterfaceChanged();
   void OnVerticalTabStripModeChanged(
       tabs::VerticalTabStripStateController* controller);
   void OnSectionsStateChanged();
 
   void UpdateInTrayView(OrganizerPanelController* controller);
+  PrefService& GetPrefs() const;
 
   mojo::Receiver<organizer_panel::mojom::PageHandler> receiver_;
   mojo::Remote<organizer_panel::mojom::Page> page_;
