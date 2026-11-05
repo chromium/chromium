@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/dawn/include/dawn/wire/client/webgpu_cpp.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/gpu_fence.h"
@@ -159,9 +160,9 @@ std::string SharedImageExportResult::ToDebugString() const {
   return base::JoinString(token_strings, ",");
 }
 
-ClientSharedImage::ScopedMapping::ScopedMapping(const gfx::Size& size,
-                                                viz::SharedImageFormat format)
-    : size_(size), format_(format) {}
+ClientSharedImage::ScopedMapping::ScopedMapping(
+    const SharedImageMetadata& metadata)
+    : metadata_(metadata) {}
 
 ClientSharedImage::ScopedMapping::~ScopedMapping() {
   if (buffer_) {
@@ -173,9 +174,10 @@ base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
     const uint32_t plane_index) {
   CHECK(buffer_);
 
-  size_t height_in_pixels = format_.GetPlaneSize(plane_index, Size()).height();
+  size_t height_in_pixels =
+      metadata_.format.GetPlaneSize(plane_index, Size()).height();
   size_t row_size_in_bytes = viz::SharedMemoryRowSizeForSharedImageFormat(
-                                 format_, plane_index, Size().width())
+                                 metadata_.format, plane_index, Size().width())
                                  .value();
 
   CHECK(height_in_pixels);
@@ -210,7 +212,7 @@ size_t ClientSharedImage::ScopedMapping::Stride(const uint32_t plane_index) {
 }
 
 gfx::Size ClientSharedImage::ScopedMapping::Size() {
-  return size_;
+  return metadata_.size;
 }
 
 bool ClientSharedImage::ScopedMapping::IsSharedMemory() {
@@ -307,8 +309,7 @@ std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(SharedImageMetadata metadata,
                                          MappableBuffer* mappable_buffer,
                                          bool is_already_mapped) {
-  auto scoped_mapping =
-      base::WrapUnique(new ScopedMapping(metadata.size, metadata.format));
+  auto scoped_mapping = base::WrapUnique(new ScopedMapping(metadata));
   if (!scoped_mapping->Init(mappable_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
@@ -353,8 +354,13 @@ void ClientSharedImage::ScopedMapping::FinishCreateAsync(
 
 SkPixmap ClientSharedImage::ScopedMapping::GetSkPixmapForPlane(
     const uint32_t plane_index,
-    SkImageInfo sk_image_info) {
-  return SkPixmap(sk_image_info, GetMemoryForPlane(plane_index).data(),
+    std::optional<SkImageInfo> sk_image_info_override) {
+  auto info = sk_image_info_override.value_or(SkImageInfo::Make(
+      SkISize::Make(metadata_.size.width(), metadata_.size.height()),
+      viz::ToClosestSkColorType(metadata_.format), metadata_.alpha_type,
+      metadata_.color_space.ToSkColorSpace()));
+
+  return SkPixmap(info, GetMemoryForPlane(plane_index).data(),
                   Stride(plane_index));
 }
 

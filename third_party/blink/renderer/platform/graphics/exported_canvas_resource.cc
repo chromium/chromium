@@ -196,8 +196,6 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
             owning_thread_task_runner_, std::move(release_callback));
     return image;
   } else {
-    CanvasResourceSharedImage* resource_si =
-        static_cast<CanvasResourceSharedImage*>(resource_.get());
     if (!accelerated_raster_) {
       // Construct an SkImage that references the shared memory buffer.
       auto mapping = shared_image_->Map();
@@ -206,8 +204,8 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
         return nullptr;
       }
 
-      auto sk_image = SkImages::RasterFromPixmapCopy(
-          mapping->GetSkPixmapForPlane(0, resource_si->CreateSkImageInfo()));
+      auto sk_image =
+          SkImages::RasterFromPixmapCopy(mapping->GetSkPixmapForPlane(0));
 
       // Unmap the underlying buffer.
       mapping.reset();
