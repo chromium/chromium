@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -17,10 +16,6 @@ class GURL;
 
 namespace actions {
 class ActionItem;
-}
-
-namespace content {
-class WebContents;
 }
 
 namespace tabs {
@@ -36,8 +31,8 @@ class WalletReminderNoticeBubbleController
  public:
   DECLARE_USER_DATA(WalletReminderNoticeBubbleController);
 
-  WalletReminderNoticeBubbleController(tabs::TabInterface& tab_interface,
-                                       content::WebContents* web_contents);
+  explicit WalletReminderNoticeBubbleController(
+      tabs::TabInterface* tab_interface);
   WalletReminderNoticeBubbleController(
       const WalletReminderNoticeBubbleController&) = delete;
   WalletReminderNoticeBubbleController& operator=(
@@ -72,8 +67,6 @@ class WalletReminderNoticeBubbleController
 
  private:
   actions::ActionItem* GetActionItem();
-
-  const raw_ref<tabs::TabInterface> tab_interface_;
 
   ui::ScopedUnownedUserData<WalletReminderNoticeBubbleController>
       scoped_unowned_user_data_;

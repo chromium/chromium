@@ -37,12 +37,14 @@ class WalletReminderNoticeUiDelegateDesktopTest
 
     // The controllers attach themselves to the TabInterface via
     // UnownedUserData.
+    ON_CALL(mock_tab_interface_, GetContents())
+        .WillByDefault(testing::Return(web_contents()));
     ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(tab_unowned_user_data_host_));
 
     // Instantiate controllers. In production these are owned by TabFeatures.
     bubble_controller_ = std::make_unique<WalletReminderNoticeBubbleController>(
-        mock_tab_interface_, web_contents());
+        &mock_tab_interface_);
     mock_page_action_controller_ =
         std::make_unique<page_actions::MockPageActionController>();
     page_action_controller_ =

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
@@ -27,12 +28,11 @@ namespace autofill {
 DEFINE_USER_DATA(WalletReminderNoticeBubbleController);
 
 WalletReminderNoticeBubbleController::WalletReminderNoticeBubbleController(
-    tabs::TabInterface& tab_interface,
-    content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
-      tab_interface_(tab_interface),
-      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
-}
+    tabs::TabInterface* tab_interface)
+    : AutofillBubbleControllerBase(tab_interface),
+      scoped_unowned_user_data_(
+          CHECK_DEREF(tab_interface).GetUnownedUserDataHost(),
+          *this) {}
 
 WalletReminderNoticeBubbleController::~WalletReminderNoticeBubbleController() {
   if (IsShowingBubble()) {
@@ -93,7 +93,7 @@ void WalletReminderNoticeBubbleController::OnAcceptButton() {
   logged_accept_button_clicked_ = true;
 
   if (WalletReminderNoticePageActionController* page_action_controller =
-          WalletReminderNoticePageActionController::From(*tab_interface_)) {
+          WalletReminderNoticePageActionController::From(*GetTabInterface())) {
     page_action_controller->Hide();
   }
 }
@@ -132,7 +132,8 @@ WalletReminderNoticeBubbleController::GetBubbleControllerBaseWeakPtr() {
 }
 
 void WalletReminderNoticeBubbleController::DoShowBubble() {
-  BrowserWindowInterface* browser = tab_interface_->GetBrowserWindowInterface();
+  BrowserWindowInterface* browser =
+      GetTabInterface()->GetBrowserWindowInterface();
   if (!browser) {
     return;
   }
@@ -154,7 +155,7 @@ void WalletReminderNoticeBubbleController::DoShowBubble() {
 
 actions::ActionItem* WalletReminderNoticeBubbleController::GetActionItem() {
   BrowserWindowInterface* browser_window =
-      tab_interface_->GetBrowserWindowInterface();
+      GetTabInterface()->GetBrowserWindowInterface();
   if (!browser_window) {
     return nullptr;
   }

@@ -49,6 +49,8 @@ class WalletReminderNoticeBubbleControllerTest
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("about:blank"));
 
+    ON_CALL(mock_tab_interface_, GetContents())
+        .WillByDefault(testing::Return(web_contents()));
     ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(tab_unowned_user_data_host_));
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
@@ -66,7 +68,7 @@ class WalletReminderNoticeBubbleControllerTest
             mock_tab_interface_, mock_page_action_controller_);
 
     controller_ = std::make_unique<WalletReminderNoticeBubbleController>(
-        mock_tab_interface_, web_contents());
+        &mock_tab_interface_);
   }
 
   void TearDown() override {

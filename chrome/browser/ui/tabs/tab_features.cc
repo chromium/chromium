@@ -810,7 +810,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     wallet_reminder_notice_bubble_controller_ =
         GetUserDataFactory()
             .CreateInstance<autofill::WalletReminderNoticeBubbleController>(
-                tab, tab, tab.GetContents());
+                tab, &tab);
   }
 
   gmail_otp_opt_in_bubble_controller_ =
@@ -1757,7 +1757,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     wallet_reminder_notice_bubble_controller_ =
         GetUserDataFactory()
             .CreateInstance<autofill::WalletReminderNoticeBubbleController>(
-                *tab, *tab, new_contents);
+                *tab, tab);
   }
 
   if (gmail_otp_opt_in_bubble_controller_) {
