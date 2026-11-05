@@ -31,6 +31,13 @@
   -webkit-user-drag: none;
 }
 
+/* Fill the viewport before the first resize. A prewarmed page loads with no
+ * size, and would otherwise measure the canvas at its default size. */
+:host(:not([is-resized])) #selectionOverlay {
+  height: 100%;
+  width: 100%;
+}
+
 :host([is-initial-size]) #backgroundImageCanvas {
   animation:
     initial-blur-animation 700ms cubic-bezier(0.2, 0, 0, 1),
@@ -174,6 +181,21 @@
 }
 
 :host([disable-multi-select]) #cursor {
+  visibility: hidden;
+}
+
+/* Until the screenshot is shown, the user sees the live page through the
+ * transparent overlay and input is ignored. A prewarmed overlay is on screen
+ * while the screenshot is still being captured, so keep the normal cursor and
+ * draw nothing over the page until the screenshot is shown.
+ */
+:host(:not([is-screenshot-rendered])) #selectionOverlay {
+  cursor: default;
+}
+
+:host(:not([is-screenshot-rendered])) #cursor,
+:host(:not([is-screenshot-rendered])) #initialFlashScrim,
+:host(:not([is-screenshot-rendered])) #selectionElements {
   visibility: hidden;
 }
 

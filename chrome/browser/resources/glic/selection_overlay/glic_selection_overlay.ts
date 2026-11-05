@@ -330,6 +330,13 @@ export class GlicSelectionOverlayElement extends
     }
   }
 
+  // A prewarmed overlay is on screen while the screenshot is still being
+  // captured. Until it is shown, ignore input so a click on the live page can't
+  // draw a region or dismiss the overlay.
+  protected override shouldIgnoreEvent(event: PointerEvent): boolean {
+    return !this.isScreenshotRendered || super.shouldIgnoreEvent(event);
+  }
+
   // Repositions the prompt when its size changes, e.g. when a card is added
   // or its content grows, so it doesn't overflow the viewport.
   private floatingPromptResizeObserver_ = new ResizeObserver(() => {

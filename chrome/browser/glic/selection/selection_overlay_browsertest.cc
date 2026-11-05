@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/glic/selection/explain_suggestion.h"
 #include "chrome/browser/glic/selection/explain_suggestion_fre.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -37,6 +39,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/mojom/echo.test-mojom.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
@@ -50,22 +53,32 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -2126,6 +2139,317 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   ASSERT_TRUE(controller->GetOverlayViewForTesting());
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
   EXPECT_TRUE(controller->GetLensOverlayBlurLayerDelegateForTesting());
+}
+
+// The page handler factory serves one request per page; another request is a
+// bad message instead of a second binding.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
+                       SecondCreatePageHandlerIsBadMessage) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for kOverlay"));
+  auto* untrusted_ui = controller->GetOverlayWebViewForTesting()
+                           ->GetWebContents()
+                           ->GetWebUI()
+                           ->GetController()
+                           ->GetAs<SelectionOverlayUntrustedUI>();
+  ASSERT_TRUE(untrusted_ui);
+
+  mojo::Remote<selection::SelectionOverlayPageHandlerFactory> factory;
+  untrusted_ui->BindInterface(factory.BindNewPipeAndPassReceiver());
+  mojo::Remote<selection::SelectionOverlayPageHandler> handler;
+  mojo::PendingReceiver<selection::SelectionOverlayPage> page;
+  mojo::test::BadMessageObserver bad_message_observer;
+  factory->CreatePageHandler(handler.BindNewPipeAndPassReceiver(),
+                             page.InitWithNewPipeAndPassRemote());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "CreatePageHandler called more than once");
+}
+
+// A handler request that can't bind and isn't from the prewarmed overlay is a
+// bad message instead of being held. Reloading the overlay mid-session makes a
+// new page ask for a handler while the session can't take it.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
+                       UnexpectedCreatePageHandlerIsBadMessage) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for kOverlay"));
+
+  content::WebContents* overlay_contents =
+      controller->GetOverlayWebViewForTesting()->GetWebContents();
+  content::RenderProcessHostBadMojoMessageWaiter bad_message_waiter(
+      overlay_contents->GetPrimaryMainFrame()->GetProcess());
+  overlay_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                           /*check_for_repost=*/false);
+  EXPECT_EQ(bad_message_waiter.Wait(),
+            "Received bad user message: CreatePageHandler called when the "
+            "overlay cannot bind");
+}
+
+class SelectionOverlayPrewarmBrowserTest : public GlicBrowserTest {
+ public:
+  SelectionOverlayPrewarmBrowserTest() {
+    scoped_feature_list_.InitFromCommandLine(
+        "GlicCaptureRegion,GlicSelectionOverlayPrompt,"
+        "StaticSelectionSuggestions,GlicSelectionOverlayHoverPrewarm",
+        "");
+  }
+
+ protected:
+  // Prewarms the overlay and returns its WebContents, caught as it is created.
+  base::WeakPtr<content::WebContents> Prewarm(
+      SelectionOverlayController* controller,
+      const selection::InteractionOptionsPtr& options) {
+    base::WeakPtr<content::WebContents> prewarmed;
+    base::CallbackListSubscription subscription =
+        content::RegisterWebContentsCreationCallback(
+            base::BindLambdaForTesting([&](content::WebContents* contents) {
+              prewarmed = contents->GetWeakPtr();
+            }));
+    controller->MaybePrewarmOverlay(options.Clone());
+    return prewarmed;
+  }
+
+  // Prewarms the overlay and waits until its page is loaded.
+  base::WeakPtr<content::WebContents> PrewarmAndWait(
+      SelectionOverlayController* controller,
+      const selection::InteractionOptionsPtr& options) {
+    base::WeakPtr<content::WebContents> contents = Prewarm(controller, options);
+    if (!contents || !content::WaitForLoadStop(contents.get())) {
+      return nullptr;
+    }
+    return contents;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
+                       AdoptsPrewarmedOverlayAndCancelsOnTabSwitch) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  auto options = selection::InteractionOptions::New(
+      /*hide_handles=*/true, /*disable_multi_select=*/true,
+      /*skip_intro_animation=*/true);
+
+  // Switching tabs while idle drops the unused prewarm.
+  controller->MaybePrewarmOverlay(options.Clone());
+  ASSERT_TRUE(controller->GetPrewarmInteractionOptions());
+  CreateAndActivateTab(GetSimpleTestUrl());
+  EXPECT_FALSE(controller->GetPrewarmInteractionOptions());
+
+  GetTabListInterface()->ActivateTab(tab->GetHandle());
+  base::WeakPtr<content::WebContents> prewarmed =
+      PrewarmAndWait(controller, options);
+  ASSERT_TRUE(prewarmed);
+  // The prewarmed page's handler request waits for a session.
+  auto* untrusted_ui = prewarmed->GetWebUI()
+                           ->GetController()
+                           ->GetAs<SelectionOverlayUntrustedUI>();
+  ASSERT_TRUE(untrusted_ui);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return untrusted_ui->HasPendingPageHandlerForTesting(); }));
+
+  gfx::Rect bounds = tab->GetContents()->GetViewBounds();
+  bounds.Inset(20);
+  controller->ShowWithSelection(tab->GetContents()->GetPrimaryMainFrame(),
+                                bounds, std::move(options),
+                                ::selection::EntryPoint::kInlineCue);
+  // The session shows the prewarmed WebContents instead of a new one.
+  EXPECT_FALSE(controller->GetPrewarmInteractionOptions());
+  ASSERT_TRUE(prewarmed);
+  ASSERT_EQ(controller->GetOverlayWebViewForTesting()->GetWebContents(),
+            prewarmed.get());
+
+  // Like the adopted page, ask for suggestions before the redacted screenshot
+  // is here. They must wait for it instead of being requested early.
+  TestSuggestedActionsListener listener;
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !listener.actions().empty(); }));
+  EXPECT_EQ(listener.actions()[0]->title, "Ask Gemini");
+
+  // The adopted page binds its waiting handler and the overlay initializes.
+  ASSERT_OK(
+      RunUntilEqual([&]() { return controller->state(); },
+                    SelectionOverlayController::State::kOverlay,
+                    "Timeout waiting for adopted overlay to reach kOverlay"));
+  EXPECT_FALSE(untrusted_ui->HasPendingPageHandlerForTesting());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+}
+
+// The adopted page can bind while its tab is in the background; the overlay
+// must show when the tab comes back.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
+                       ShowsAdoptedOverlayAfterTabSwitch) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  auto options = selection::InteractionOptions::New(
+      /*hide_handles=*/true, /*disable_multi_select=*/true,
+      /*skip_intro_animation=*/true);
+  base::WeakPtr<content::WebContents> prewarmed =
+      PrewarmAndWait(controller, options);
+  ASSERT_TRUE(prewarmed);
+
+  gfx::Rect bounds = tab->GetContents()->GetViewBounds();
+  bounds.Inset(20);
+  controller->ShowWithSelection(tab->GetContents()->GetPrimaryMainFrame(),
+                                bounds, std::move(options),
+                                ::selection::EntryPoint::kInlineCue);
+  ASSERT_EQ(controller->GetOverlayWebViewForTesting()->GetWebContents(),
+            prewarmed.get());
+
+  CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_EQ(controller->state(),
+            SelectionOverlayController::State::kBackground);
+
+  GetTabListInterface()->ActivateTab(tab->GetHandle());
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for overlay to return to kOverlay"));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  // Initialization that landed while backgrounded still set up the blur.
+  EXPECT_TRUE(controller->GetLensOverlayBlurLayerDelegateForTesting());
+}
+
+// Esc closes an adopted overlay that is shown while the screenshot is still
+// being captured.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
+                       EscClosesAdoptedOverlayWhileStarting) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  auto options = selection::InteractionOptions::New(
+      /*hide_handles=*/true, /*disable_multi_select=*/true,
+      /*skip_intro_animation=*/true);
+  base::WeakPtr<content::WebContents> prewarmed =
+      PrewarmAndWait(controller, options);
+  ASSERT_TRUE(prewarmed);
+  std::optional<SelectionOverlayController::CloseReason> close_reason;
+  base::CallbackListSubscription closed_subscription =
+      controller->RegisterOverlayClosedCallback(base::BindLambdaForTesting(
+          [&](SelectionOverlayController::CloseReason reason) {
+            close_reason = reason;
+          }));
+
+  gfx::Rect bounds = tab->GetContents()->GetViewBounds();
+  bounds.Inset(20);
+  controller->ShowWithSelection(tab->GetContents()->GetPrimaryMainFrame(),
+                                bounds, std::move(options),
+                                ::selection::EntryPoint::kInlineCue);
+  ASSERT_EQ(controller->state(),
+            SelectionOverlayController::State::kStartingWebUI);
+
+  // The overlay handles Esc before its renderer sees the key.
+  input::NativeWebKeyboardEvent escape(blink::WebInputEvent::Type::kRawKeyDown,
+                                       blink::WebInputEvent::kNoModifiers,
+                                       base::TimeTicks::Now());
+  escape.windows_key_code = ui::VKEY_ESCAPE;
+  EXPECT_EQ(
+      prewarmed->GetDelegate()->PreHandleKeyboardEvent(prewarmed.get(), escape),
+      content::KeyboardEventProcessingResult::HANDLED);
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+  EXPECT_EQ(close_reason,
+            SelectionOverlayController::CloseReason::kEscapeKeyPress);
+}
+
+// Closing drops an unused prewarm too, e.g. when the session fails to start.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest, CloseDropsPrewarm) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->MaybePrewarmOverlay(selection::InteractionOptions::New(
+      /*hide_handles=*/true, /*disable_multi_select=*/true,
+      /*skip_intro_animation=*/true));
+  ASSERT_TRUE(controller->GetPrewarmInteractionOptions());
+
+  controller->Close();
+  EXPECT_FALSE(controller->GetPrewarmInteractionOptions());
+}
+
+// A prewarm for other interaction options is dropped, and the session loads a
+// new overlay instead.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
+                       DropsPrewarmWithOtherOptions) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  base::WeakPtr<content::WebContents> prewarmed = PrewarmAndWait(
+      controller, selection::InteractionOptions::New(
+                      /*hide_handles=*/true, /*disable_multi_select=*/true,
+                      /*skip_intro_animation=*/true));
+  ASSERT_TRUE(prewarmed);
+
+  gfx::Rect bounds = tab->GetContents()->GetViewBounds();
+  bounds.Inset(20);
+  controller->ShowWithSelection(
+      tab->GetContents()->GetPrimaryMainFrame(), bounds,
+      selection::InteractionOptions::New(/*hide_handles=*/false,
+                                         /*disable_multi_select=*/true,
+                                         /*skip_intro_animation=*/true),
+      ::selection::EntryPoint::kInlineCue);
+  EXPECT_FALSE(prewarmed);
+  EXPECT_FALSE(controller->GetPrewarmInteractionOptions());
+
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for overlay to reach kOverlay"));
+  EXPECT_TRUE(controller->GetOverlayWebViewForTesting()->GetWebContents());
+}
+
+// A prewarm adopted before its page loads binds the page's handler as soon as
+// it asks, without holding it.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
+                       AdoptsPrewarmBeforeItsPageBinds) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  auto options = selection::InteractionOptions::New(
+      /*hide_handles=*/true, /*disable_multi_select=*/true,
+      /*skip_intro_animation=*/true);
+  base::WeakPtr<content::WebContents> prewarmed = Prewarm(controller, options);
+  ASSERT_TRUE(prewarmed);
+
+  // In the same task, so the page can't have asked for its handler yet.
+  gfx::Rect bounds = tab->GetContents()->GetViewBounds();
+  bounds.Inset(20);
+  controller->ShowWithSelection(tab->GetContents()->GetPrimaryMainFrame(),
+                                bounds, std::move(options),
+                                ::selection::EntryPoint::kInlineCue);
+  ASSERT_TRUE(prewarmed);
+  ASSERT_EQ(controller->GetOverlayWebViewForTesting()->GetWebContents(),
+            prewarmed.get());
+
+  ASSERT_OK(
+      RunUntilEqual([&]() { return controller->state(); },
+                    SelectionOverlayController::State::kOverlay,
+                    "Timeout waiting for adopted overlay to reach kOverlay"));
+  auto* untrusted_ui = prewarmed->GetWebUI()
+                           ->GetController()
+                           ->GetAs<SelectionOverlayUntrustedUI>();
+  ASSERT_TRUE(untrusted_ui);
+  EXPECT_FALSE(untrusted_ui->HasPendingPageHandlerForTesting());
 }
 
 }  // namespace glic

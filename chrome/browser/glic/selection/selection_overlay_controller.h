@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
+#include "chrome/browser/glic/selection/selection_overlay_prewarmer.h"
 #include "chrome/browser/selection/feedback_zip_builder.h"
 #include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/mojom/action.mojom-forward.h"
@@ -122,6 +123,17 @@ class SelectionOverlayController
                          ::selection::EntryPoint entry_point);
   void Close(CloseReason reason = CloseReason::kOther);
 
+  // Starts loading the overlay WebUI while idle, so a following
+  // `ShowWithSelection()` with the same options can show it without waiting
+  // for the WebUI to boot.
+  void MaybePrewarmOverlay(
+      selection::InteractionOptionsPtr interaction_options);
+  selection::InteractionOptionsPtr GetPrewarmInteractionOptions() const;
+  bool CanBindOverlay(content::WebContents* overlay_contents);
+  // Whether `overlay_contents` is the prewarmed overlay's, whose page handler
+  // is bound once a session adopts it.
+  bool IsPrewarmedOverlay(content::WebContents* overlay_contents) const;
+
   using OverlayClosedCallback = base::OnceCallback<void(CloseReason)>;
   base::CallbackListSubscription RegisterOverlayClosedCallback(
       OverlayClosedCallback callback);
@@ -143,6 +155,7 @@ class SelectionOverlayController
                            content::WebContents* new_contents);
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
+  void WillDeactivate(tabs::TabInterface* tab);
   void TabDeactivated(tabs::TabInterface* tab);
   void OnFocusedTabChanged(const FocusedTabData& tab_data);
   // This is the same event that drives `OnFocusedTabChanged()`, but it also
@@ -179,6 +192,8 @@ class SelectionOverlayController
   void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // OverlayBaseController overrides:
+  std::unique_ptr<content::WebContents> TakePrewarmedOverlayWebContents()
+      override;
   void CloseUI() override;
   void RequestSyncClose(DismissalSource dismissal_source) override;
   void StartScreenshotFlow() override;
@@ -272,6 +287,11 @@ class SelectionOverlayController
     uint64_t generation = 0;
   };
 
+  // Shows a usable prewarmed overlay while the screenshot is captured, instead
+  // of loading a new one once the screenshot is here. Drops it otherwise.
+  void MaybeAdoptPrewarmedOverlay();
+  // Binds the page handler that the adopted prewarmed page asked for.
+  void BindPendingPageHandler();
   void Reset();
   void OnTextSurroundingSelectionAvailable(
       const base::UnguessableToken& region_id,
@@ -374,6 +394,12 @@ class SelectionOverlayController
   };
   // Never null.
   std::unique_ptr<Session> session_ = std::make_unique<Session>(this);
+
+  SelectionOverlayPrewarmer prewarmer_;
+  // Whether the shown overlay's page has bound its handler. Unlike `session_`,
+  // this survives the `Reset()` after a page disconnect, so a reloaded page
+  // can't bind to a session whose screenshot callbacks were dropped.
+  bool overlay_page_bound_ = false;
 
   base::OnceCallbackList<void(CloseReason)> overlay_closed_callbacks_;
 

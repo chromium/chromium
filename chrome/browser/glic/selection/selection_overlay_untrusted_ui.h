@@ -46,6 +46,14 @@ class SelectionOverlayUntrustedUI
       mojo::PendingReceiver<selection::SelectionOverlayPageHandlerFactory>
           receiver);
 
+  // Binds the page handler that the page requested before the controller
+  // could accept it.
+  void BindPendingPageHandler();
+
+  bool HasPendingPageHandlerForTesting() const {
+    return pending_handler_receiver_.is_valid();
+  }
+
   static constexpr std::string_view GetWebUIName() {
     return "GlicSelectionOverlayUntrusted";
   }
@@ -60,6 +68,12 @@ class SelectionOverlayUntrustedUI
 
   mojo::Receiver<selection::SelectionOverlayPageHandlerFactory>
       selection_page_factory_receiver_{this};
+
+  // Set while the page's handler request waits for the controller.
+  mojo::PendingReceiver<selection::SelectionOverlayPageHandler>
+      pending_handler_receiver_;
+  mojo::PendingRemote<selection::SelectionOverlayPage> pending_page_;
+  bool page_handler_requested_ = false;
 
   base::WeakPtrFactory<SelectionOverlayUntrustedUI> weak_factory_{this};
 

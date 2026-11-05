@@ -55,6 +55,48 @@ suite('GlicSelectionOverlay', () => {
     await overlay.updateComplete;
   });
 
+  // Input before the screenshot is shown is ignored, so a click can't draw a
+  // region or, as here, dismiss the overlay.
+  test('IgnoresClicksUntilScreenshotIsRendered', async () => {
+    overlay.disableMultiSelect = true;
+    await overlay.updateComplete;
+    function click() {
+      const init = {
+        bubbles: true,
+        composed: true,
+        isPrimary: true,
+        button: 0,
+        clientX: 10,
+        clientY: 10,
+      };
+      overlay.dispatchEvent(new PointerEvent('pointerdown', init));
+      document.dispatchEvent(new PointerEvent('pointerup', init));
+    }
+
+    click();
+    assertEquals(0, handler.getCallCount('dismissOverlay'));
+
+    overlay.isScreenshotRendered = true;
+    await overlay.updateComplete;
+    click();
+    assertEquals(1, handler.getCallCount('dismissOverlay'));
+  });
+
+  // A prewarmed overlay is on screen while the screenshot is still being
+  // captured, so it draws nothing over the page until the screenshot is shown.
+  test('HidesOverlayElementsUntilScreenshotIsRendered', async () => {
+    const flashScrim = overlay.$.initialFlashScrim;
+    const selectionElements =
+        overlay.shadowRoot.querySelector<HTMLElement>('#selectionElements')!;
+    assertEquals('hidden', getComputedStyle(flashScrim).visibility);
+    assertEquals('hidden', getComputedStyle(selectionElements).visibility);
+
+    overlay.isScreenshotRendered = true;
+    await overlay.updateComplete;
+    assertEquals('visible', getComputedStyle(flashScrim).visibility);
+    assertEquals('visible', getComputedStyle(selectionElements).visibility);
+  });
+
   test('ClickingSearchboxPillFocusesPromptInput', () => {
     const pill =
         overlay.shadowRoot.querySelector<HTMLElement>('.searchbox-pill')!;

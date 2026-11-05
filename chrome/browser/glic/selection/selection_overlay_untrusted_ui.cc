@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
@@ -156,8 +157,44 @@ SelectionOverlayUntrustedUI::GetSelectionOverlayController() {
 void SelectionOverlayUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<selection::SelectionOverlayPageHandler> receiver,
     mojo::PendingRemote<selection::SelectionOverlayPage> page) {
+  if (page_handler_requested_) {
+    selection_page_factory_receiver_.ReportBadMessage(
+        "CreatePageHandler called more than once");
+    return;
+  }
+  page_handler_requested_ = true;
   SelectionOverlayController& controller = GetSelectionOverlayController();
-  controller.BindOverlay(std::move(receiver), std::move(page));
+  content::WebContents* contents = web_ui()->GetWebContents();
+  if (controller.CanBindOverlay(contents)) {
+    controller.BindOverlay(std::move(receiver), std::move(page));
+    return;
+  }
+  // Only a prewarmed overlay may wait. The controller binds it once a session
+  // adopts it; otherwise the endpoints are dropped with this WebUI.
+  if (!controller.IsPrewarmedOverlay(contents)) {
+    selection_page_factory_receiver_.ReportBadMessage(
+        "CreatePageHandler called when the overlay cannot bind");
+    return;
+  }
+  pending_handler_receiver_ = std::move(receiver);
+  // Apply the expected session's interaction options right away, as a
+  // session does on bind, so the page doesn't render (and animate) its
+  // default state while it waits.
+  mojo::Remote<selection::SelectionOverlayPage> page_remote(std::move(page));
+  if (auto options = controller.GetPrewarmInteractionOptions()) {
+    page_remote->SetInteractionOptions(std::move(options));
+  }
+  pending_page_ = page_remote.Unbind();
+}
+
+void SelectionOverlayUntrustedUI::BindPendingPageHandler() {
+  if (!pending_handler_receiver_.is_valid()) {
+    return;
+  }
+  SelectionOverlayController& controller = GetSelectionOverlayController();
+  CHECK(controller.CanBindOverlay(web_ui()->GetWebContents()));
+  controller.BindOverlay(std::move(pending_handler_receiver_),
+                         std::move(pending_page_));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SelectionOverlayUntrustedUI)

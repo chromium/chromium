@@ -29,6 +29,7 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
+#include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -55,6 +56,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -101,6 +103,11 @@ namespace {
 // the selection overlay. https://crbug.com/512915349
 BASE_FEATURE(kGlicSelectionOverlayFullSizeScreenshot,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Loads the overlay WebUI while the selection chip is hovered, so a click can
+// show it without waiting for the WebUI to boot.
+BASE_FEATURE(kGlicSelectionOverlayHoverPrewarm,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStaticSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -275,6 +282,11 @@ SelectionOverlayController::SelectionOverlayController(
                           weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
       &SelectionOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
+  // Unlike the session's active-tab subscription, this also fires while idle,
+  // so an unused prewarm is only kept for the active tab.
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
+      base::BindRepeating(&SelectionOverlayController::WillDeactivate,
+                          weak_factory_.GetWeakPtr())));
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
   CHECK(service);
   tab_subscriptions_.push_back(
@@ -288,7 +300,7 @@ SelectionOverlayController::SelectionOverlayController(
   tab_strip_model->AddObserver(this);
   SetOnEscCallback(base::BindRepeating(
       [](base::WeakPtr<SelectionOverlayController> controller) {
-        if (controller && controller->state() == State::kOverlay) {
+        if (controller && controller->IsOverlayShowing()) {
           controller->Close(CloseReason::kEscapeKeyPress);
           return true;
         }
@@ -317,6 +329,12 @@ void SelectionOverlayController::WillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
   CloseUI();
+}
+
+void SelectionOverlayController::WillDeactivate(tabs::TabInterface* tab) {
+  if (state() == State::kOff) {
+    prewarmer_.Cancel();
+  }
 }
 
 void SelectionOverlayController::ObserveActiveTabChanges() {
@@ -462,6 +480,79 @@ std::vector<int> SelectionOverlayController::GetPolylineCounts() const {
   return polyline_counts;
 }
 
+void SelectionOverlayController::MaybePrewarmOverlay(
+    selection::InteractionOptionsPtr interaction_options) {
+  if (!base::FeatureList::IsEnabled(kGlicSelectionOverlayHoverPrewarm) ||
+      state() != State::kOff || !tab_->IsActivated() || !CanStartSession()) {
+    return;
+  }
+  if (prewarmer_.IsUsable(interaction_options)) {
+    prewarmer_.Extend();
+    return;
+  }
+  views::View* host_view = GetHostView();
+  if (!host_view || !host_view->GetWidget()) {
+    return;
+  }
+  prewarmer_.Start(CreateOverlayWebContents(), *host_view->GetWidget(),
+                   std::move(interaction_options));
+}
+
+selection::InteractionOptionsPtr
+SelectionOverlayController::GetPrewarmInteractionOptions() const {
+  return prewarmer_.GetInteractionOptions();
+}
+
+bool SelectionOverlayController::CanBindOverlay(
+    content::WebContents* overlay_contents) {
+  views::WebView* active_web_view = GetOverlayWebView();
+  return !overlay_page_bound_ &&
+         (state() == State::kStartingWebUI || state() == State::kBackground) &&
+         active_web_view &&
+         active_web_view->GetWebContents() == overlay_contents;
+}
+
+bool SelectionOverlayController::IsPrewarmedOverlay(
+    content::WebContents* overlay_contents) const {
+  return prewarmer_.Contains(overlay_contents);
+}
+
+std::unique_ptr<content::WebContents>
+SelectionOverlayController::TakePrewarmedOverlayWebContents() {
+  if (!prewarmer_.IsUsable(session_->interaction_options)) {
+    prewarmer_.Cancel();
+    return nullptr;
+  }
+  return prewarmer_.Take();
+}
+
+void SelectionOverlayController::MaybeAdoptPrewarmedOverlay() {
+  if (state() != State::kScreenshot) {
+    return;
+  }
+  if (!prewarmer_.IsUsable(session_->interaction_options)) {
+    prewarmer_.Cancel();
+    return;
+  }
+  MaybeStartOverlayWebUI();
+  BindPendingPageHandler();
+}
+
+void SelectionOverlayController::BindPendingPageHandler() {
+  views::WebView* web_view = GetOverlayWebView();
+  if (!web_view || !web_view->GetWebContents()) {
+    return;
+  }
+  content::WebUI* web_ui = web_view->GetWebContents()->GetWebUI();
+  if (!web_ui || !web_ui->GetController()) {
+    return;
+  }
+  if (auto* untrusted_ui =
+          web_ui->GetController()->GetAs<SelectionOverlayUntrustedUI>()) {
+    untrusted_ui->BindPendingPageHandler();
+  }
+}
+
 void SelectionOverlayController::BindOverlay(
     mojo::PendingReceiver<selection::SelectionOverlayPageHandler> receiver,
     mojo::PendingRemote<selection::SelectionOverlayPage> page) {
@@ -469,10 +560,12 @@ void SelectionOverlayController::BindOverlay(
   CHECK(state() == State::kStartingWebUI || state() == State::kBackground)
       << base::ToString(state());
 
+  overlay_page_bound_ = true;
   session_->receiver.Bind(std::move(receiver));
   session_->receiver.set_disconnect_handler(base::BindOnce(
       &SelectionOverlayController::Reset, session_weak_factory_.GetWeakPtr()));
   session_->page.Bind(std::move(page));
+  session_->page->SetInteractionOptions(session_->interaction_options.Clone());
 
   if (views::WebView* web_view = GetOverlayWebView()) {
     session_->overlay_web_view_focus_subscription =
@@ -671,6 +764,7 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
     PostHandSessionToPanel();
   }
   ShowModalUI();
+  MaybeAdoptPrewarmedOverlay();
 }
 
 // TODO(b/556786015): After requirement is finalized, reconsider if we should
@@ -791,9 +885,11 @@ void SelectionOverlayController::OnSplitTabChanged(
 }
 
 void SelectionOverlayController::CloseUI() {
+  prewarmer_.Cancel();
   if (state() == State::kOff) {
     return;
   }
+  overlay_page_bound_ = false;
   const bool had_focus =
       (overlay_web_view_ && overlay_web_view_->HasFocus()) ||
       (preselection_widget_ && preselection_widget_->IsActive());
@@ -833,7 +929,6 @@ void SelectionOverlayController::InitializeOverlay() {
   InitializeOverlayImpl();
 
   CHECK(session_->page);
-  session_->page->SetInteractionOptions(session_->interaction_options.Clone());
   session_->page->SetSidePanelOpen(IsSidePanelOpen());
   session_->page->ScreenshotReceived(session_->initial_rgb_screenshot);
 
