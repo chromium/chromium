@@ -14489,11 +14489,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMiddleClickAutoscrollDescription, kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kMiddleClickAutoscroll)},
 #endif  // BUILDFLAG(IS_LINUX)
-        // Add new entries above this line.
-        // NOTE: Adding a new flag requires adding a corresponding entry to enum
-        // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-        // Histograms" in tools/metrics/histograms/README.md (run the
-        // AboutFlagsHistogramTest unit test to verify this process).
+
+    {"change-password-tool", flag_descriptions::kChangePasswordToolName,
+     flag_descriptions::kChangePasswordToolDescription, kOsAll,
+     FEATURE_VALUE_TYPE(password_manager::features::kChangePasswordTool)},
+    // Add new entries above this line.
+    // NOTE: Adding a new flag requires adding a corresponding entry to enum
+    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+    // Histograms" in tools/metrics/histograms/README.md (run the
+    // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

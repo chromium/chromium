@@ -425,6 +425,11 @@ inline constexpr char kCanvasDrawElementDescription[] =
     "drawing HTML content into a canvas. "
     "See: https://github.com/WICG/html-in-canvas";
 
+inline constexpr char kChangePasswordToolName[] = "Change Password Tool";
+inline constexpr char kChangePasswordToolDescription[] =
+    "Enables the actor change password tool for filling and submitting change "
+    "password forms.";
+
 inline constexpr char kChildProcessSecurityPolicyRustName[] =
     "Rust-based ChildProcessSecurityPolicy";
 inline constexpr char kChildProcessSecurityPolicyRustDescription[] =

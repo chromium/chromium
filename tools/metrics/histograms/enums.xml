@@ -11614,6 +11614,7 @@ from previous Chrome versions.
   <int value="-1021707835" label="ResetAudioSelectionImprovementPref:enabled"/>
   <int value="-1021296874" label="EnableOidcProfileRemoteCommands:enabled"/>
   <int value="-1021097344" label="PolicyAtomicGroup:disabled"/>
+  <int value="-1021075455" label="ChangePasswordTool:disabled"/>
   <int value="-1021038914" label="CrostiniImeSupport:enabled"/>
   <int value="-1020450980" label="gesture-deletion"/>
   <int value="-1020437363" label="LightweightReactions:disabled"/>
@@ -15912,6 +15913,7 @@ from previous Chrome versions.
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
   <int value="269249648" label="StartSurfaceSpareTab:disabled"/>
+  <int value="269327449" label="ChangePasswordTool:enabled"/>
   <int value="269631838" label="BorealisLinuxMode:disabled"/>
   <int value="269855165" label="UseWritePixelsYUV:enabled"/>
   <int value="270038252" label="SignInProfileCreationEnterprise:disabled"/>
