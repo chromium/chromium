@@ -142,6 +142,13 @@ BASE_DECLARE_FEATURE(kClientSideDetectionImageEmbeddingMatch);
 extern const base::FeatureParam<bool>
     kCsdImageEmbeddingMatchWithIntelligentScan;
 
+// Delays and retries KEYBOARD_LOCK_REQUESTED image embedding when the blurred
+// viewport image is uniform (e.g. blank white or black).
+BASE_DECLARE_FEATURE(kClientSideDetectionKeyboardLockUniformPageDelay);
+extern const base::FeatureParam<int> kCsdKeyboardLockUniformPageDelayDurationMs;
+extern const base::FeatureParam<int> kCsdKeyboardLockUniformPageMaxRetries;
+extern const base::FeatureParam<int> kCsdKeyboardLockUniformPageMaxColorRange;
+
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the

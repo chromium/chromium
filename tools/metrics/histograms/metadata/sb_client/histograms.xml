@@ -989,6 +989,42 @@ useful for Chirp alerts (go/crca-alerts). -->
       variants="ClientSideDetectionIntelligentScanRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.KeyboardLock.IsFinalImageUniform"
+    enum="Boolean" expires_after="2027-04-30">
+  <owner>tiffanysong@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the final blurred viewport image in
+    PhishingImageEmbeddingDone for a KEYBOARD_LOCK_REQUESTED trigger was uniform
+    (e.g. blank white or black). Recorded once when the uniform-image retry loop
+    finishes (either because the image became non-uniform or because the maximum
+    retry count was reached).
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.KeyboardLock.IsInitialImageUniform"
+    enum="Boolean" expires_after="2027-04-30">
+  <owner>tiffanysong@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the initial blurred viewport image in
+    PhishingImageEmbeddingDone for a KEYBOARD_LOCK_REQUESTED trigger was uniform
+    (e.g. blank white or black). Recorded on the first uniformity check before
+    any retry delay.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.KeyboardLock.UniformImageRetryCount"
+    units="count" expires_after="2027-04-30">
+  <owner>tiffanysong@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of delayed MaybeStartImageEmbedding retries performed for
+    a KEYBOARD_LOCK_REQUESTED trigger when the blurred image was uniform (0 if
+    the initial image was already non-uniform).
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan"
     enum="BooleanEnabled" expires_after="2027-03-21">
   <owner>nwokedi@chromium.org</owner>

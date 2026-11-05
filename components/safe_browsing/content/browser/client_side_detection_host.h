@@ -249,6 +249,7 @@ class ClientSideDetectionHost
   friend class ClientSideDetectionHostClipboardDataTest;
   friend class ClientSideDetectionHostGeminiAntiscamProtectionTest;
   friend class ClientSideDetectionHostPriorityTest;
+  friend class ClientSideDetectionHostKeyboardLockUniformImageDelayTest;
   friend class ClientSideDetectionHostPrerenderBrowserTest;
   friend class ClientSideDetectionHostPrerenderBrowserTest_Screenshot;
   class ShouldClassifyUrlRequest;
