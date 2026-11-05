@@ -52,6 +52,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwDarkMode;
+import org.chromium.android_webview.AwLayoutSizer;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwViewAndroidDelegate;
@@ -2124,6 +2125,68 @@ public class AwContentsTest extends AwParameterizedTest {
                 mActivityTestRule.reparentAwContents(oldView, android.R.style.Theme_Black);
 
         Assert.assertNotNull(newView);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testAdoptPreservesSizeUntilLaidOut() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        List<Pair<Integer, Integer>> sizes = new ArrayList<>();
+        AwTestContainerView oldView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        mContentsClient,
+                        false,
+                        new TestDependencyFactory() {
+                            @Override
+                            public AwLayoutSizer createLayoutSizer() {
+                                return new AwLayoutSizer() {
+                                    @Override
+                                    public void onSizeChanged(int w, int h, int ow, int oh) {
+                                        super.onSizeChanged(w, h, ow, oh);
+                                        sizes.add(Pair.create(w, h));
+                                    }
+                                };
+                            }
+                        });
+        CriteriaHelper.pollUiThread(oldView::isLaidOut);
+        ThreadUtils.runOnUiThreadBlocking(sizes::clear);
+
+        // Reparenting adopts into a newly created 0x0 container before adding it to the new
+        // Activity; this must not send an intermediate 0x0 size update.
+        AwTestContainerView newView = mActivityTestRule.reparentAwContents(oldView);
+        CriteriaHelper.pollUiThread(newView::isLaidOut);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Expected no zero sizes, got " + sizes,
+                            sizes.stream().noneMatch(s -> s.first == 0 || s.second == 0));
+                    Assert.assertEquals(
+                            Pair.create(newView.getWidth(), newView.getHeight()),
+                            sizes.get(sizes.size() - 1));
+                });
+
+        // Adopting into an unattached 0x0 container (e.g. WebContent#detach) keeps the current
+        // size, whereas adopting into a laid-out container (e.g. headless) applies its size
+        // immediately.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sizes.clear();
+                    ((ViewGroup) newView.getParent()).removeView(newView);
+                    FrameLayout detachedView =
+                            new FrameLayout(ContextUtils.getApplicationContext());
+                    newView.getAwContents()
+                            .adopt(detachedView, newView.getInternalAccessDelegate());
+                    Assert.assertTrue(sizes.isEmpty());
+
+                    FrameLayout laidOutView = new FrameLayout(ContextUtils.getApplicationContext());
+                    laidOutView.measure(
+                            View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY));
+                    laidOutView.layout(0, 0, 300, 200);
+                    newView.getAwContents().adopt(laidOutView, newView.getInternalAccessDelegate());
+                    Assert.assertEquals(List.of(Pair.create(300, 200)), sizes);
+                });
     }
 
     /**

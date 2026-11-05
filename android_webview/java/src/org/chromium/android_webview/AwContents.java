@@ -686,9 +686,12 @@ public class AwContents implements SmartClipProvider {
                     new NullAwViewMethods(
                             AwContents.this, mCurrentInternalAccessAdapter, mContainerView);
 
-            // Associate this AwContents with the FullScreenView.
+            // Associate this AwContents with the FullScreenView. Skip passing size of
+            // FullScreenView down: FullScreenView is newly created and detached so has initial size
+            // 0x0 before layout. Avoid this temporary resize to 0x0 which can cause flickers and
+            // sometimes layout problems in the web page.
             setInternalAccessAdapter(mFullScreenView.getInternalAccessAdapter());
-            setContainerView(mFullScreenView);
+            setContainerView(mFullScreenView, /* keepCurrentSize= */ true);
         }
 
         private void exitFullScreen() {
@@ -706,7 +709,7 @@ public class AwContents implements SmartClipProvider {
                             mFullScreenView));
             mCurrentAwViewMethods = mPrimaryAwViewMethods;
             setInternalAccessAdapter(mPrimaryInternalAccessAdapter);
-            setContainerView(mPrimaryContainerView);
+            setContainerView(mPrimaryContainerView, /* keepCurrentSize= */ false);
 
             // Return focus to the WebView.
             if (mWasContainerViewFocused) {
@@ -1241,7 +1244,7 @@ public class AwContents implements SmartClipProvider {
             setNewAwContents(
                     AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));
 
-            setContainerView(containerView);
+            setContainerView(containerView, /* keepCurrentSize= */ false);
         }
 
         // Drain any scheduled prefetch requests that may have happened during this constructor's
@@ -1473,7 +1476,17 @@ public class AwContents implements SmartClipProvider {
         setInternalAccessAdapter(internalAccessAdapter);
         mPrimaryContainerView = newContainerView;
         mDisplayCutoutController.unregisterContainerView(mContainerView);
-        setContainerView(newContainerView);
+
+        // A new container is created detached, so it is still 0x0 unless it has been laid out.
+        // Keep the page at its current size until the new container is laid out and passes its real
+        // size down through onSizeChanged(). If we don't do this, we accidentally trigger a
+        // relayout.
+        boolean keepCurrentSize =
+                !newContainerView.isLaidOut()
+                        && newContainerView.getWidth() == 0
+                        && newContainerView.getHeight() == 0;
+        setContainerView(newContainerView, keepCurrentSize);
+
         mDisplayCutoutController.registerContainerView(newContainerView);
     }
 
@@ -1482,7 +1495,11 @@ public class AwContents implements SmartClipProvider {
                 "Android.WebView.WebContent.AdoptResult", result, AdoptResult.COUNT);
     }
 
-    private void setContainerView(ViewGroup newContainerView) {
+    /**
+     * @param keepCurrentSize Whether to keep the current size instead of passing down the size of
+     *     {@code newContainerView}, which hasn't been laid out yet.
+     */
+    private void setContainerView(ViewGroup newContainerView, boolean keepCurrentSize) {
         boolean isSwappingView = mContainerView != null && mContainerView != newContainerView;
 
         if (isSwappingView) {
@@ -1522,10 +1539,7 @@ public class AwContents implements SmartClipProvider {
             mPrimaryAwViewMethods.onDetachedFromWindow();
         }
 
-        // Skip passing size of FullScreenView down. FullScreenView is newly created and detached
-        // so has initial size 0x0 before layout. Avoid this temporary resize to 0x0 which can
-        // cause flickers and sometimes layout problems in the web page.
-        if ((mContainerView instanceof FullScreenView)) {
+        if (keepCurrentSize) {
             assert !containerViewAttached;
         } else {
             mPrimaryAwViewMethods.onSizeChanged(
