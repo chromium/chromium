@@ -38,7 +38,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/sync/base/features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
@@ -141,8 +140,7 @@ std::u16string GetMessageBodyForSecondaryAccountErrors() {
 bool IsNewSignInNonSyncingUser(
     const signin::IdentityManager* identity_manager) {
   return identity_manager &&
-         !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-         syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
+         !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 std::u16string GetMessageBodyForDeviceAccountErrors(

@@ -6,9 +6,7 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -75,29 +73,12 @@ TEST_F(SyncErrorNotifierTest, NoNotificationWhenNoPassphrase) {
 
 TEST_F(SyncErrorNotifierTest,
        NotificationShownWhenSyncFeatureDisabledViaDashboard) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
   service_.SetSignedIn(signin::ConsentLevel::kSignin);
   service_.GetUserSettings()->SetSyncFeatureDisabledViaDashboard();
   service_.SetInitialSyncFeatureSetupComplete(true);
 
   error_notifier_->OnStateChanged(&service_);
   ExpectNotificationShown(true);
-}
-
-TEST_F(SyncErrorNotifierTest,
-       NoNotificationWhenSyncFeatureDisabledViaDashboardWithoutFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  service_.SetSignedIn(signin::ConsentLevel::kSignin);
-  service_.GetUserSettings()->SetSyncFeatureDisabledViaDashboard();
-  service_.SetInitialSyncFeatureSetupComplete(true);
-
-  error_notifier_->OnStateChanged(&service_);
-  ExpectNotificationShown(false);
 }
 
 TEST_F(SyncErrorNotifierTest, NotificationShownWhenBrowserSyncEnabled) {
@@ -121,23 +102,7 @@ TEST_F(SyncErrorNotifierTest, NotificationShownOnce) {
 }
 
 TEST_F(SyncErrorNotifierTest,
-       NotificationClickRedirectsToSyncSetupWithoutReplaceSyncWithSignin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  service_.GetUserSettings()->SetPassphraseRequired();
-  service_.SetInitialSyncFeatureSetupComplete(true);
-
-  EXPECT_EQ(SyncErrorNotifier::GetDestinationSubpage(&service_), "syncSetup");
-}
-
-TEST_F(
-    SyncErrorNotifierTest,
-    NotificationClickRedirectsToAccountSettingsWhenFlagEnabledAndNoSyncConsent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
+       NotificationClickRedirectsToAccountSettingsWhenNoSyncConsent) {
   // Consent level kSignin (means HasSyncConsent is false).
   service_.SetSignedIn(signin::ConsentLevel::kSignin);
   service_.GetUserSettings()->SetPassphraseRequired();
@@ -147,10 +112,7 @@ TEST_F(
 }
 
 TEST_F(SyncErrorNotifierTest,
-       NotificationClickRedirectsToSyncSetupWhenFlagEnabledAndHasSyncConsent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
+       NotificationClickRedirectsToSyncSetupWhenHasSyncConsent) {
   // Consent level kSync (means HasSyncConsent is true).
   service_.SetSignedIn(signin::ConsentLevel::kSync);
   service_.GetUserSettings()->SetPassphraseRequired();

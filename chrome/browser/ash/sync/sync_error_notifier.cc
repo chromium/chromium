@@ -19,7 +19,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/trusted_vault/trusted_vault_client.h"
@@ -43,8 +42,7 @@ struct BubbleViewParameters {
 };
 
 bool IsNewSignInNonSyncingUser(const syncer::SyncService* sync_service) {
-  return sync_service && !sync_service->HasSyncConsent() &&
-         syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
+  return sync_service && !sync_service->HasSyncConsent();
 }
 
 bool ShouldShowSyncDisabledViaDashboardError(
