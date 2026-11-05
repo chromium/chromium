@@ -12,6 +12,7 @@
 
 #include "base/containers/map_util.h"
 #include "base/environment.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -32,6 +33,7 @@ namespace dbus_xdg {
 
 namespace {
 
+constexpr char kProcDir[] = "/proc";
 constexpr char kVersionProperty[] = "version";
 
 class PortalRegistrar {
@@ -41,6 +43,7 @@ class PortalRegistrar {
 
   void Request(dbus::Bus* bus,
                std::string_view interface_name,
+               const base::FilePath& proc_dir,
                PortalSetupCallback callback) {
     bus->AssertOnOriginThread();
 
@@ -69,8 +72,9 @@ class PortalRegistrar {
         state_ = PortalRegistrarState::kInitializing;
         bus_ = bus;
         internal::SetSystemdScopeUnitNameForXdgPortal(
-            bus, base::BindOnce(&PortalRegistrar::OnSystemdUnitNameSet,
-                                weak_ptr_factory_.GetWeakPtr()));
+            bus, proc_dir,
+            base::BindOnce(&PortalRegistrar::OnSystemdUnitNameSet,
+                           weak_ptr_factory_.GetWeakPtr()));
         return;
       case PortalRegistrarState::kInitializing:
         CHECK_EQ(bus_.get(), bus);
@@ -260,7 +264,16 @@ PortalRegistrar* GetPortalRegistrar() {
 void RequestXdgDesktopPortal(dbus::Bus* bus,
                              std::string_view interface_name,
                              PortalSetupCallback callback) {
-  GetPortalRegistrar()->Request(bus, interface_name, std::move(callback));
+  GetPortalRegistrar()->Request(bus, interface_name, base::FilePath(kProcDir),
+                                std::move(callback));
+}
+
+void RequestXdgDesktopPortalForTesting(dbus::Bus* bus,
+                                       std::string_view interface_name,
+                                       const base::FilePath& proc_dir,
+                                       PortalSetupCallback callback) {
+  GetPortalRegistrar()->Request(bus, interface_name, proc_dir,
+                                std::move(callback));
 }
 
 void SetPortalStateForTesting(PortalRegistrarState state) {

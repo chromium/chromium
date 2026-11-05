@@ -11,6 +11,10 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace dbus {
 class Bus;
 }
@@ -40,6 +44,14 @@ COMPONENT_EXPORT(COMPONENTS_DBUS)
 void RequestXdgDesktopPortal(dbus::Bus* bus,
                              std::string_view interface_name,
                              PortalSetupCallback callback);
+
+// Same as RequestXdgDesktopPortal(), but scans `proc_dir` instead of "/proc"
+// when migrating child processes into the systemd scope.
+COMPONENT_EXPORT(COMPONENTS_DBUS)
+void RequestXdgDesktopPortalForTesting(dbus::Bus* bus,
+                                       std::string_view interface_name,
+                                       const base::FilePath& proc_dir,
+                                       PortalSetupCallback callback);
 
 // Resets the portal setup state to `state` and clears cached interface
 // versions. When `state` is `kSuccess`, every interface reports version

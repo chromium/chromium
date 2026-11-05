@@ -14,6 +14,7 @@ inline constexpr char kInterfaceSystemdManager[] =
 inline constexpr char kInterfaceSystemdUnit[] = "org.freedesktop.systemd1.Unit";
 inline constexpr char kMethodStartTransientUnit[] = "StartTransientUnit";
 inline constexpr char kMethodGetUnit[] = "GetUnit";
+inline constexpr char kMethodAttachProcessesToUnit[] = "AttachProcessesToUnit";
 inline constexpr char kSystemdActiveStateProp[] = "ActiveState";
 inline constexpr char kSystemdStateActive[] = "active";
 inline constexpr char kSystemdStateInactive[] = "inactive";

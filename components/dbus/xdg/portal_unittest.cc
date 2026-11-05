@@ -11,13 +11,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/dbus/xdg/portal_constants.h"
-#include "components/dbus/xdg/systemd.h"
 #include "components/dbus/xdg/systemd_constants.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -51,7 +51,11 @@ class RequestXdgDesktopPortalTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  // Declared before `task_environment_` so ThreadPool tasks finish before the
+  // temp directory is deleted.
+  base::ScopedTempDir proc_dir_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<dbus::MockBus> bus_;
 };
 
@@ -150,6 +154,8 @@ TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessNoSystemd) {
 }
 
 TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessWithSystemd) {
+  ASSERT_TRUE(proc_dir_.CreateUniqueTempDir());
+
   // Mocks for SetSystemdScopeUnitNameForXdgPortal
   auto mock_dbus_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus_.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
@@ -205,6 +211,9 @@ TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessWithSystemd) {
           dbus::MessageWriter writer(response.get());
           writer.AppendObjectPath(dbus::ObjectPath(kFakeUnitPath));
           std::move(callback).Run(response.get());
+        } else {
+          ADD_FAILURE() << "Unexpected method " << method_call->GetMember();
+          std::move(callback).Run(nullptr);
         }
       });
 
@@ -273,8 +282,8 @@ TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessWithSystemd) {
 
   uint32_t version = 0;
   base::RunLoop run_loop;
-  RequestXdgDesktopPortal(
-      bus_.get(), kFileChooserInterfaceName,
+  RequestXdgDesktopPortalForTesting(
+      bus_.get(), kFileChooserInterfaceName, proc_dir_.GetPath(),
       base::BindOnce(
           [](uint32_t* out, base::OnceClosure quit_closure, uint32_t res) {
             *out = res;
@@ -284,6 +293,8 @@ TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessWithSystemd) {
 
   run_loop.Run();
   EXPECT_EQ(version, 3u);
+  // Flush the async /proc scan posted when the unit became active.
+  task_environment_.FastForwardUntilNoTasksRemain();
 }
 
 TEST_F(RequestXdgDesktopPortalTest,
