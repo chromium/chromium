@@ -4,9 +4,16 @@
 
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/heuristic_source.h"
@@ -76,66 +83,43 @@ PatternFile GetPatternFile() {
 #endif
 }
 
-RationalizationRule CreateTestRule() {
-  return RationalizationRuleBuilder()
-      .SetRuleName("Fix colonia as address-line2 in MX")
-      .SetEnvironmentCondition(
-          EnvironmentConditionBuilder()
-              .SetCountryList({GeoIpCountryCode("MX")})
-              .SetFeature(&kTestFeatureForFormStructureRationalizationEngine)
-              .Build())
-      .SetTriggerField(FieldCondition{
-          .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2},
-          .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
-      })
-      .SetOtherFieldConditions({
+constexpr RationalizationRule CreateTestRule() {
+  static constexpr std::string_view kCountries[] = {"MX"};
+  static constexpr FieldCondition kOtherConditions[] = {
+      {
+          .location = FieldLocation::kLastClassifiedPredecessor,
+          .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
+      },
+  };
+  static constexpr SetTypeAction kActions[] = {
+      {
+          .target = FieldLocation::kLastClassifiedPredecessor,
+          .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+      },
+      {
+          .target = FieldLocation::kTriggerField,
+          .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
+      },
+  };
+  return RationalizationRule{
+      .rule_name = "Fix colonia as address-line2 in MX",
+      .environment_condition =
+          {
+              .country_list = kCountries,
+              .is_feature_enabled =
+                  [] {
+                    return base::FeatureList::IsEnabled(
+                        kTestFeatureForFormStructureRationalizationEngine);
+                  },
+          },
+      .trigger_field =
           FieldCondition{
-              .location = FieldLocation::kLastClassifiedPredecessor,
-              .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
+              .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2},
+              .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
           },
-      })
-      .SetActions({
-          SetTypeAction{
-              .target = FieldLocation::kLastClassifiedPredecessor,
-              .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
-          },
-          SetTypeAction{
-              .target = FieldLocation::kTriggerField,
-              .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY,
-          },
-      })
-      .Build();
-}
-
-TEST(FormStructureRationalizationEngine, TestBuilder) {
-  RationalizationRule rule = CreateTestRule();
-
-  EXPECT_EQ(rule.rule_name, "Fix colonia as address-line2 in MX");
-
-  ASSERT_TRUE(rule.environment_condition.has_value());
-  EXPECT_EQ(rule.environment_condition->feature,
-            &kTestFeatureForFormStructureRationalizationEngine);
-  EXPECT_THAT(rule.environment_condition->country_list,
-              ElementsAre(GeoIpCountryCode("MX")));
-
-  EXPECT_EQ(rule.trigger_field.location, FieldLocation::kTriggerField);
-  EXPECT_EQ(rule.trigger_field.possible_overall_types,
-            FieldTypeSet{ADDRESS_HOME_LINE2});
-  EXPECT_EQ(rule.trigger_field.regex_reference_match,
-            "ADDRESS_HOME_DEPENDENT_LOCALITY");
-
-  EXPECT_THAT(rule.other_field_conditions,
-              ElementsAre(FieldCondition{
-                  .location = FieldLocation::kLastClassifiedPredecessor,
-                  .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}}));
-
-  EXPECT_THAT(
-      rule.actions,
-      ElementsAre(
-          SetTypeAction{.target = FieldLocation::kLastClassifiedPredecessor,
-                        .set_overall_type = ADDRESS_HOME_STREET_ADDRESS},
-          SetTypeAction{.target = FieldLocation::kTriggerField,
-                        .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY}));
+      .other_field_conditions = kOtherConditions,
+      .actions = kActions,
+  };
 }
 
 // Verifies that the client country is correctly handled by
@@ -156,19 +140,19 @@ TEST(FormStructureRationalizationEngine,
                             LanguageCode("en"), GetPatternFile(),
                             /*active_features=*/{}, /*log_manager=*/nullptr);
 
-  EnvironmentCondition no_country_required =
-      EnvironmentConditionBuilder().Build();
+  constexpr EnvironmentCondition no_country_required{};
   EXPECT_TRUE(IsEnvironmentConditionFulfilled(kMXContext, no_country_required));
 
-  EnvironmentCondition specific_country_required =
-      EnvironmentConditionBuilder().SetCountryList({kMX}).Build();
+  static constexpr std::string_view kSpecificCountry[] = {"MX"};
+  constexpr EnvironmentCondition specific_country_required{
+      .country_list = kSpecificCountry};
   EXPECT_TRUE(
       IsEnvironmentConditionFulfilled(kMXContext, specific_country_required));
   EXPECT_FALSE(
       IsEnvironmentConditionFulfilled(kBRContext, specific_country_required));
 
-  EnvironmentCondition one_of_many =
-      EnvironmentConditionBuilder().SetCountryList({kBR, kMX}).Build();
+  static constexpr std::string_view kManyCountries[] = {"BR", "MX"};
+  constexpr EnvironmentCondition one_of_many{.country_list = kManyCountries};
   EXPECT_TRUE(IsEnvironmentConditionFulfilled(kBRContext, one_of_many));
   EXPECT_TRUE(IsEnvironmentConditionFulfilled(kMXContext, one_of_many));
   EXPECT_FALSE(IsEnvironmentConditionFulfilled(kUSContext, one_of_many));
@@ -183,12 +167,14 @@ TEST(FormStructureRationalizationEngine,
                             LanguageCode("es"), GetPatternFile(),
                             /*active_features=*/{}, /*log_manager=*/nullptr);
 
-  EnvironmentCondition no_experiment_required =
-      EnvironmentConditionBuilder().Build();
-  EnvironmentCondition experiment_required =
-      EnvironmentConditionBuilder()
-          .SetFeature(&kTestFeatureForFormStructureRationalizationEngine)
-          .Build();
+  constexpr EnvironmentCondition no_experiment_required{};
+  constexpr EnvironmentCondition experiment_required{
+      .is_feature_enabled =
+          [] {
+            return base::FeatureList::IsEnabled(
+                kTestFeatureForFormStructureRationalizationEngine);
+          },
+  };
 
   {
     base::test::ScopedFeatureList enable_feature(
