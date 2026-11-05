@@ -506,6 +506,29 @@ export enum SuggestionsFromGeminiAction {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionsFromGeminiAction)
 
 /**
+ * Funnel events for fetching and displaying the Google Wallet public pass
+ * legal disclosure notice in settings.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the AutofillAiWalletNoticeFunnelEvents enum in
+ * histograms/metadata/autofill/enums.xml.
+ */
+// LINT.IfChange(AutofillAiWalletNoticeFunnelEvents)
+export enum AutofillAiWalletNoticeFunnelEvents {
+  FETCHING_UPSERT_DETAILS = 0,
+  UPSERT_DETAILS_FETCH_SUCCESS = 1,
+  UPSERT_DETAILS_FETCH_ERROR = 2,
+  LEGAL_MESSAGE_SHOWN = 3,
+  LINK_CLICKED = 4,
+  ENTITY_SAVED = 5,
+  ENTITY_NOT_SAVED = 6,
+  COUNT = 7,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiWalletNoticeFunnelEvents)
+
+/**
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  *
@@ -752,6 +775,13 @@ export interface MetricsBrowserProxy {
    */
   recordYourSavedInfoRelatedServiceClick(service: YourSavedInfoRelatedService):
       void;
+
+  /**
+   * Records a funnel event for the Google Wallet public pass legal disclosure
+   * notice in settings.
+   */
+  recordWalletNoticeSettingsFunnelEvent(
+      event: AutofillAiWalletNoticeFunnelEvents): void;
 }
 
 export const SAFETY_HUB_SUGGESTIONS_MAX_VALUE = 98;
@@ -1061,6 +1091,15 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       };
       this.recordAction(actionMap[action]);
     }
+  }
+
+  recordWalletNoticeSettingsFunnelEvent(
+      event: AutofillAiWalletNoticeFunnelEvents) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Autofill.Ai.WalletNotice.Settings.Funnel',
+      event,
+      AutofillAiWalletNoticeFunnelEvents.COUNT,
+    ]);
   }
 
   static getInstance(): MetricsBrowserProxy {

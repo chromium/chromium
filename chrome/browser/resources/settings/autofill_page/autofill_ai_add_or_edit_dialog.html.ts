@@ -175,7 +175,7 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
       ` : ''}
     `)}
     <div id="footer" ?hidden="${this.shouldHideFooterText_()}"
-        .innerHTML="${this.footerText_}">
+        @click="${this.onFooterClick_}" .innerHTML="${this.footerText_}">
     </div>
   </div>
   <div slot="button-container">

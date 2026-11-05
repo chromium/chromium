@@ -748,7 +748,7 @@ Called by update_autofill_enums.py.-->
   <int value="6" label="Entity not saved"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h:AutofillAiWalletNoticeFunnelEvents) -->
+<!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h:AutofillAiWalletNoticeFunnelEvents, /chrome/browser/resources/settings/metrics_browser_proxy.ts:AutofillAiWalletNoticeFunnelEvents) -->
 
 <enum name="AutofillAlternativeNameFieldValueCharacterSet">
   <int value="0" label="Katakana"/>

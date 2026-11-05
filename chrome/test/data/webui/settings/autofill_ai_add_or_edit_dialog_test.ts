@@ -6,12 +6,13 @@
 import 'chrome://settings/lazy_load.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
+import {AutofillAiWalletNoticeFunnelEvents, loadTimeData, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 import type {CrButtonElement, CrInputElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {EntityDataManagerProxyImpl, EntityTypeName} from 'chrome://settings/lazy_load.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
@@ -1202,6 +1203,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
 suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
   let dialog: SettingsAutofillAiAddOrEditDialogElement;
   let entityDataManager: TestEntityDataManagerProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
   let vehicleEntity: chrome.autofillPrivate.EntityInstance;
   const mockUpsertPassDetails: chrome.autofillPrivate.UpsertPassDetails = {
     legalMessageLines: [
@@ -1229,6 +1231,8 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     vehicleEntity = {
       type: {
@@ -1550,5 +1554,182 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         const dialogConfirmedEvent = await dialogConfirmedPromise;
         assertTrue(dialogConfirmedEvent.detail.storedInWallet!);
         assertEquals(undefined, dialogConfirmedEvent.detail.contextToken);
+      });
+
+  test(
+      'Vehicle_WithUpsertPassDetails_RecordsFunnelMetricsOnShowLinkClickAndSave',
+      async function() {
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        dialog.upsertPassDetails = mockUpsertPassDetails;
+        document.body.appendChild(dialog);
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
+
+        assertEquals(
+            AutofillAiWalletNoticeFunnelEvents.LEGAL_MESSAGE_SHOWN,
+            await metricsBrowserProxy.whenCalled(
+                'recordWalletNoticeSettingsFunnelEvent'));
+        metricsBrowserProxy.resetResolver(
+            'recordWalletNoticeSettingsFunnelEvent');
+
+        const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
+        assertTrue(!!footer);
+        const links = footer.querySelectorAll<HTMLAnchorElement>('a');
+        assertEquals(3, links.length);
+
+        // Clicking the static "manage your info" link should not record
+        // LINK_CLICKED.
+        links[0]!.addEventListener('click', e => e.preventDefault());
+        links[0]!.click();
+        assertEquals(
+            0,
+            metricsBrowserProxy.getCallCount(
+                'recordWalletNoticeSettingsFunnelEvent'));
+
+        // Clicking a legal message link should record LINK_CLICKED.
+        links[1]!.addEventListener('click', e => e.preventDefault());
+        links[1]!.click();
+        assertEquals(
+            AutofillAiWalletNoticeFunnelEvents.LINK_CLICKED,
+            await metricsBrowserProxy.whenCalled(
+                'recordWalletNoticeSettingsFunnelEvent'));
+        metricsBrowserProxy.resetResolver(
+            'recordWalletNoticeSettingsFunnelEvent');
+
+        // Saving the entity should record ENTITY_SAVED.
+        const saveButton =
+            dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!saveButton);
+        const dialogConfirmedPromise =
+            eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+                'autofill-ai-add-or-edit-done', dialog);
+        saveButton.click();
+        await dialogConfirmedPromise;
+
+        assertEquals(
+            AutofillAiWalletNoticeFunnelEvents.ENTITY_SAVED,
+            await metricsBrowserProxy.whenCalled(
+                'recordWalletNoticeSettingsFunnelEvent'));
+      });
+
+  test(
+      'Vehicle_WithUpsertPassDetails_RecordsEntityNotSavedOnCancel',
+      async function() {
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        dialog.upsertPassDetails = mockUpsertPassDetails;
+        document.body.appendChild(dialog);
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
+
+        assertEquals(
+            AutofillAiWalletNoticeFunnelEvents.LEGAL_MESSAGE_SHOWN,
+            await metricsBrowserProxy.whenCalled(
+                'recordWalletNoticeSettingsFunnelEvent'));
+        metricsBrowserProxy.resetResolver(
+            'recordWalletNoticeSettingsFunnelEvent');
+
+        const cancelButton =
+            dialog.shadowRoot.querySelector<HTMLElement>('.cancel-button');
+        assertTrue(!!cancelButton);
+        const dialogCancelledPromise =
+            eventToPromise('cancel', dialog.$.dialog);
+        cancelButton.click();
+        await dialogCancelledPromise;
+
+        assertEquals(
+            AutofillAiWalletNoticeFunnelEvents.ENTITY_NOT_SAVED,
+            await metricsBrowserProxy.whenCalled(
+                'recordWalletNoticeSettingsFunnelEvent'));
+      });
+
+  test(
+      'Vehicle_WithoutUpsertPassDetails_DoesNotRecordFunnelMetrics',
+      async function() {
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        dialog.upsertPassDetails = null;
+        document.body.appendChild(dialog);
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
+
+        assertEquals(
+            0,
+            metricsBrowserProxy.getCallCount(
+                'recordWalletNoticeSettingsFunnelEvent'));
+
+        const cancelButton =
+            dialog.shadowRoot.querySelector<HTMLElement>('.cancel-button');
+        assertTrue(!!cancelButton);
+        const dialogCancelledPromise =
+            eventToPromise('cancel', dialog.$.dialog);
+        cancelButton.click();
+        await dialogCancelledPromise;
+
+        assertEquals(
+            0,
+            metricsBrowserProxy.getCallCount(
+                'recordWalletNoticeSettingsFunnelEvent'));
+      });
+
+  test(
+      'Vehicle_WithEmptyLegalMessageText_DoesNotRecordFunnelMetrics',
+      async function() {
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        dialog.upsertPassDetails = {
+          contextToken: 'token',
+          legalMessageLines: [{text: '', links: []}],
+        };
+        document.body.appendChild(dialog);
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
+
+        assertEquals(null, dialog.shadowRoot.querySelector('#legal-message'));
+        assertEquals(
+            0,
+            metricsBrowserProxy.getCallCount(
+                'recordWalletNoticeSettingsFunnelEvent'));
+      });
+
+  test(
+      'Vehicle_ExistingEntityWithUpsertPassDetails_DoesNotRecordFunnelMetrics',
+      async function() {
+        entityDataManager.setGetDetailsForUpsertPassResponse(
+            mockUpsertPassDetails);
+        const existingVehicle = structuredClone(vehicleEntity);
+        existingVehicle.guid = 'existing-guid-123';
+        dialog.entityInstance = existingVehicle;
+        document.body.appendChild(dialog);
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
+
+        assertEquals(null, dialog.shadowRoot.querySelector('#legal-message'));
+        assertEquals(
+            0,
+            metricsBrowserProxy.getCallCount(
+                'recordWalletNoticeSettingsFunnelEvent'));
       });
 });

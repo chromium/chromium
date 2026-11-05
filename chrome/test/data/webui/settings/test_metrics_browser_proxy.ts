@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {SuggestionsFromGeminiAction, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
-import type {AiPageComposeInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces, SettingsSearchExitReasonDesktop} from 'chrome://settings/settings.js';
+import type {AiPageComposeInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillAiWalletNoticeFunnelEvents, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces, SettingsSearchExitReasonDesktop} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -47,6 +47,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordYourSavedInfoRelatedServiceClick',
       'recordSuggestionsFromGeminiEntryPointClick',
       'recordSuggestionsFromGeminiAction',
+      'recordWalletNoticeSettingsFunnelEvent',
     ]);
   }
 
@@ -245,5 +246,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       };
       this.recordAction(actionMap[action]);
     }
+  }
+
+  recordWalletNoticeSettingsFunnelEvent(
+      event: AutofillAiWalletNoticeFunnelEvents) {
+    this.methodCalled('recordWalletNoticeSettingsFunnelEvent', event);
   }
 }

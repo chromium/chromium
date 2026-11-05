@@ -20,6 +20,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {AutofillAiWalletNoticeFunnelEvents, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
 import {getCss} from './autofill_ai_add_or_edit_dialog.css.js';
 import {getHtml} from './autofill_ai_add_or_edit_dialog.html.js';
@@ -182,6 +184,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       EntityDataManagerProxyImpl.getInstance();
   private countryDetailManager_: CountryDetailManagerProxy =
       CountryDetailManagerProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -466,6 +470,18 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         chrome.autofillPrivate.EntityPassType.PUBLIC_PASS;
   }
 
+  private hasLegalMessage_(): boolean {
+    return Boolean(this.shadowRoot.querySelector('#legal-message'));
+  }
+
+  protected onFooterClick_(e: Event): void {
+    const target = e.target as HTMLElement;
+    if (target.closest('#legal-message a')) {
+      this.metricsBrowserProxy_.recordWalletNoticeSettingsFunnelEvent(
+          AutofillAiWalletNoticeFunnelEvents.LINK_CLICKED);
+    }
+  }
+
   // When saving a Wallet private pass a consent is recorded that includes the
   // notice string. Ensure that the correct string ID is referenced in the
   // backend code.
@@ -514,8 +530,12 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       const legalMessage = this.formatLegalMessageLines_(
           this.upsertPassDetails.legalMessageLines);
       if (legalMessage) {
+        this.metricsBrowserProxy_.recordWalletNoticeSettingsFunnelEvent(
+            AutofillAiWalletNoticeFunnelEvents.LEGAL_MESSAGE_SHOWN);
         return sanitizeInnerHtml(
-            `<div>${walletNotice.toString()}</div><div>${legalMessage}</div>`);
+            `<div>${walletNotice.toString()}</div>` +
+                `<div id="legal-message">${legalMessage}</div>`,
+            {attrs: ['id']});
       }
     }
 
@@ -745,6 +765,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   protected onDialogCancel_(e: Event): void {
     if (this.saveInProgress_) {
       e.preventDefault();
+      return;
+    }
+    if (this.hasLegalMessage_()) {
+      this.metricsBrowserProxy_.recordWalletNoticeSettingsFunnelEvent(
+          AutofillAiWalletNoticeFunnelEvents.ENTITY_NOT_SAVED);
     }
   }
 
@@ -789,6 +814,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         this.saveInProgress_ = false;
         return;
       }
+    }
+
+    if (this.hasLegalMessage_()) {
+      this.metricsBrowserProxy_.recordWalletNoticeSettingsFunnelEvent(
+          AutofillAiWalletNoticeFunnelEvents.ENTITY_SAVED);
     }
 
     this.fire('autofill-ai-add-or-edit-done', entityToSave);
