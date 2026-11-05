@@ -64,33 +64,17 @@ class BrowserActuatorMessageHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
-    // Install the mock before the profile exists: KeyedServices created with
-    // the profile (such as ActorKeyedService) look up TransportService at
-    // construction and again at shutdown, and must see the same instance.
-    profile_ =
-        TestingProfile::Builder()
-            .AddTestingFactory(
-                browser_actuator::transport::TransportServiceFactory::
-                    GetInstance(),
-                base::BindRepeating([](content::BrowserContext* context)
-                                        -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<
-                      browser_actuator::transport::MockTransportService>();
-                }))
-            .Build();
     mock_service_ =
-        static_cast<browser_actuator::transport::MockTransportService*>(
-            browser_actuator::transport::TransportServiceFactory::GetForProfile(
-                profile_.get()));
-
-    handler_ = std::make_unique<BrowserActuatorMessageHandler>(profile_.get());
+        std::make_unique<browser_actuator::transport::MockTransportService>();
+    handler_ =
+        std::make_unique<BrowserActuatorMessageHandler>(mock_service_.get());
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<browser_actuator::transport::MockTransportService> mock_service_;
+  std::unique_ptr<browser_actuator::transport::MockTransportService>
+      mock_service_;
   std::unique_ptr<BrowserActuatorMessageHandler> handler_;
 };
 
@@ -386,7 +370,9 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
     identity_adaptor_->identity_test_env()->SetAutomaticIssueOfAccessTokens(
         true);
 
-    handler_ = std::make_unique<BrowserActuatorMessageHandler>(profile_.get());
+    handler_ = std::make_unique<BrowserActuatorMessageHandler>(
+        browser_actuator::transport::TransportServiceFactory::GetForProfile(
+            profile_.get()));
     handler_registry_.SetSharingHandler(
         components_sharing_message::SharingMessage::kActuatorDownstreamMessage,
         handler_.get());

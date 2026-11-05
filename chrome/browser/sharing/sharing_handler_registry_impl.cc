@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/browser_actuator/browser_actuator_message_handler.h"
@@ -110,9 +111,14 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
 
   std::set<components_sharing_message::SharingMessage::PayloadCase>
       browser_actuator_payloads = GetBrowserActuatorPayloads();
-  if (!browser_actuator_payloads.empty()) {
-    AddSharingHandler(std::make_unique<BrowserActuatorMessageHandler>(profile),
-                      browser_actuator_payloads);
+  if (!browser_actuator_payloads.empty() && profile) {
+    if (browser_actuator::transport::TransportService* transport_service =
+            browser_actuator::transport::TransportServiceFactory::GetForProfile(
+                profile)) {
+      AddSharingHandler(
+          std::make_unique<BrowserActuatorMessageHandler>(transport_service),
+          browser_actuator_payloads);
+    }
   }
 }
 

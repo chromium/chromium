@@ -11,6 +11,7 @@
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -101,6 +102,8 @@ SharingServiceFactory::SharingServiceFactory()
   DependsOn(SharingMessageBridgeFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(GmailOtpBackendFactory::GetInstance());
+  DependsOn(
+      browser_actuator::transport::TransportServiceFactory::GetInstance());
 }
 
 SharingServiceFactory::~SharingServiceFactory() = default;

@@ -12,8 +12,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
+#include "base/memory/raw_ref.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport/common.h"
@@ -38,8 +37,11 @@ bool IsStartSessionCommand(
 
 }  // namespace
 
-BrowserActuatorMessageHandler::BrowserActuatorMessageHandler(Profile* profile)
-    : profile_(profile) {}
+BrowserActuatorMessageHandler::BrowserActuatorMessageHandler(
+    browser_actuator::transport::TransportService* transport_service)
+    : transport_service_(
+          raw_ref<browser_actuator::transport::TransportService>::from_ptr(
+              transport_service)) {}
 
 BrowserActuatorMessageHandler::~BrowserActuatorMessageHandler() = default;
 
@@ -54,17 +56,9 @@ void BrowserActuatorMessageHandler::OnMessage(
       const browser_actuator::ActuatorDownstreamMessage& bundled_message =
           message.actuator_downstream_message();
       const std::string& session_id = bundled_message.session_id();
-      if (session_id.empty() || !profile_) {
-        // TODO(crbug.com/538161953): Handle invalid/empty session_id or null
-        // profile (e.g. via UMA metrics).
-        break;
-      }
-      browser_actuator::transport::TransportService* transport_service =
-          browser_actuator::transport::TransportServiceFactory::GetForProfile(
-              profile_);
-      if (!transport_service) {
-        // TODO(crbug.com/538161953): Record UMA metrics when service is
-        // unavailable.
+      if (session_id.empty()) {
+        // TODO(crbug.com/538161953): Handle invalid/empty session_id (e.g. via
+        // UMA metrics).
         break;
       }
       for (const auto& typed_payload : bundled_message.typed_payloads()) {
@@ -91,8 +85,8 @@ void BrowserActuatorMessageHandler::OnMessage(
         // bundled initial payloads a second time.
         browser_actuator::transport::TransportSession* session =
             IsStartSessionCommand(*payload_type, payload_bytes)
-                ? transport_service->CreateSession(session_id)
-                : transport_service->GetSession(session_id);
+                ? transport_service_->CreateSession(session_id)
+                : transport_service_->GetSession(session_id);
         if (!session) {
           break;
         }

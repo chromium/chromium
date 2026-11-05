@@ -39,6 +39,7 @@ source_set("impl") {
   deps = [
     ":sharing",
     "//chrome/browser/autofill",
+    "//chrome/browser/browser_actuator/transport",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",

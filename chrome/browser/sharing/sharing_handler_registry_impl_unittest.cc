@@ -137,8 +137,28 @@ TEST_F(SharingHandlerRegistryImplTest,
        BrowserActuatorDownstreamMessage_AddedWhenFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(browser_actuator::kBrowserActuator);
-  auto handler_registry = CreateHandlerRegistry();
+  TestingProfile profile;
+  std::unique_ptr<SharingHandlerRegistryImpl> handler_registry =
+      CreateHandlerRegistry(&profile);
   EXPECT_TRUE(handler_registry->GetSharingHandler(
+      components_sharing_message::SharingMessage::kActuatorDownstreamMessage));
+}
+
+TEST_F(SharingHandlerRegistryImplTest,
+       BrowserActuatorDownstreamMessage_NotAddedWhenProfileNullOrOffTheRecord) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(browser_actuator::kBrowserActuator);
+  std::unique_ptr<SharingHandlerRegistryImpl> null_profile_registry =
+      CreateHandlerRegistry(/*profile=*/nullptr);
+  EXPECT_FALSE(null_profile_registry->GetSharingHandler(
+      components_sharing_message::SharingMessage::kActuatorDownstreamMessage));
+
+  TestingProfile profile;
+  Profile* otr_profile =
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  std::unique_ptr<SharingHandlerRegistryImpl> otr_registry =
+      CreateHandlerRegistry(otr_profile);
+  EXPECT_FALSE(otr_registry->GetSharingHandler(
       components_sharing_message::SharingMessage::kActuatorDownstreamMessage));
 }
 
@@ -146,7 +166,8 @@ TEST_F(SharingHandlerRegistryImplTest,
        BrowserActuatorDownstreamMessage_NotAddedWhenFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(browser_actuator::kBrowserActuator);
-  auto handler_registry = CreateHandlerRegistry();
+  std::unique_ptr<SharingHandlerRegistryImpl> handler_registry =
+      CreateHandlerRegistry();
   EXPECT_FALSE(handler_registry->GetSharingHandler(
       components_sharing_message::SharingMessage::kActuatorDownstreamMessage));
 }
