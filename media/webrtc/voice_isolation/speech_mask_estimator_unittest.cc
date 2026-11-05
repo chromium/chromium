@@ -238,7 +238,8 @@ TEST(SpeechMaskEstimatorTest, OverlapAddAttenuatesInconsistentNeighboringDfts) {
 
   for (size_t call = 0; call < kNumCalls; ++call) {
     // Keep the first DFT. The second one stays zero.
-    denoised_dfts.first(kDftSize).copy_from(input_dfts[call].first(kDftSize));
+    denoised_dfts.first(kDftSize).copy_from_nonoverlapping(
+        input_dfts[call].first(kDftSize));
     estimator.Estimate(input_dfts[call], denoised_dfts);
     // The first DFT of call 0 spans half a DFT of silence before the cosines.
     if (call < kFirstCheckedCall) {

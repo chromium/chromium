@@ -23,6 +23,7 @@ void PassthroughVoiceIsolation::ProcessAudio(base::span<const float> input,
            << input.size();
   CHECK_EQ(input.size(), frame_size_);
   CHECK_EQ(output.size(), frame_size_);
+  // Use copy_from() as callers may process in place.
   output.copy_from(input);
 }
 

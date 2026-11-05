@@ -1729,7 +1729,7 @@ TEST_F(AudioProcessorHandlerTest,
   EXPECT_CALL(deliver_callback_, Run(_, _, _))
       .WillRepeatedly([&](const media::AudioBus& bus, base::TimeTicks,
                           const media::AudioGlitchInfo&) {
-        base::span(delivered).copy_from(bus.channel(0));
+        base::span(delivered).copy_from_nonoverlapping(bus.channel(0));
       });
 
   // First active frame (OFF -> ON edge).
@@ -1809,7 +1809,7 @@ TEST_F(AudioProcessorHandlerTest,
       .WillRepeatedly([&](const media::AudioBus& bus, base::TimeTicks,
                           const media::AudioGlitchInfo&) {
         delivered_bus = &bus;
-        base::span(delivered).copy_from(bus.channel(0));
+        base::span(delivered).copy_from_nonoverlapping(bus.channel(0));
       });
 
   // Reach steady-state active processing (first frame is the OFF -> ON fade).
@@ -1885,7 +1885,7 @@ TEST_F(AudioProcessorHandlerTest,
   EXPECT_CALL(deliver_callback_, Run(_, _, _))
       .WillRepeatedly([&](const media::AudioBus& bus, base::TimeTicks,
                           const media::AudioGlitchInfo&) {
-        base::span(delivered).copy_from(bus.channel(0));
+        base::span(delivered).copy_from_nonoverlapping(bus.channel(0));
       });
 
   // Reach steady-state active processing.

@@ -859,9 +859,10 @@ TEST(TfLiteVoiceIsolation, SpeechMaskIgnoresDereverberatedOutput) {
         MakeTestInput(voice_isolation->FrameSize(), frame);
     const std::vector<float> mix = reference.ProcessAudio(input);
 
-    base::span(reference_dfts).copy_from(reference.denoising_only());
+    base::span(reference_dfts)
+        .copy_from_nonoverlapping(reference.denoising_only());
     denoising_only_estimator.Estimate(input, reference_dfts);
-    base::span(reference_dfts).copy_from(mix);
+    base::span(reference_dfts).copy_from_nonoverlapping(mix);
     mix_estimator.Estimate(input, reference_dfts);
 
     voice_isolation->ProcessAudio(input, output);

@@ -435,7 +435,7 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
         input_tensor_span_.subspan(i * kExpectedFftSize, kExpectedFftSize - 2);
     CHECK_EQ(input_slice.size(), tensor_slice.size());
 
-    tensor_slice.copy_from(input_slice);
+    tensor_slice.copy_from_nonoverlapping(input_slice);
 
     input_tensor_span_[(i + 1) * kExpectedFftSize - 2] = 0.0f;
     input_tensor_span_[(i + 1) * kExpectedFftSize - 1] = 0.0f;
@@ -447,7 +447,7 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
     CHECK_EQ(interpreter_->Invoke(), kTfLiteOk);
     RecordInferenceExecutionTime(inference_timer.Elapsed());
   }
-  base::span(temp_output_).copy_from(output_tensor_span_);
+  base::span(temp_output_).copy_from_nonoverlapping(output_tensor_span_);
 
   for (size_t k = 0; k < temp_output_.size(); ++k) {
     temp_output_[k] -= bias_[k];
