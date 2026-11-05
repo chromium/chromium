@@ -6,11 +6,20 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
+WebTransportError* WebTransportError::Create(
+    const String& message,
+    const WebTransportErrorOptions* options) {
+  return MakeGarbageCollected<WebTransportError>(
+      PassKey(), options->streamErrorCode(), message,
+      options->source().AsEnum());
+}
 
 WebTransportError* WebTransportError::Create(
     const WebTransportErrorInit* init) {
@@ -23,13 +32,26 @@ WebTransportError* WebTransportError::Create(
       V8WebTransportErrorSource::Enum::kStream);
 }
 
+WebTransportError* WebTransportError::Create(const WebTransportErrorInit* init,
+                                             const ScriptValue&
+                                             /*legacy_ignored*/) {
+  return Create(init);
+}
+
+WebTransportError* WebTransportError::Create(
+    std::optional<uint32_t> stream_error_code,
+    String message,
+    V8WebTransportErrorSource::Enum source) {
+  return MakeGarbageCollected<WebTransportError>(PassKey(), stream_error_code,
+                                                 std::move(message), source);
+}
+
 v8::Local<v8::Value> WebTransportError::Create(
     v8::Isolate* isolate,
     std::optional<uint32_t> stream_error_code,
     String message,
     V8WebTransportErrorSource::Enum source) {
-  auto* dom_exception = MakeGarbageCollected<WebTransportError>(
-      PassKey(), stream_error_code, std::move(message), source);
+  auto* dom_exception = Create(stream_error_code, std::move(message), source);
   return V8ThrowDOMException::AttachStackProperty(isolate, dom_exception);
 }
 

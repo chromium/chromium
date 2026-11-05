@@ -42,7 +42,7 @@ class MockClient : public GarbageCollected<MockClient>,
  public:
   MOCK_METHOD0(SendFin, void());
   MOCK_METHOD0(ForgetStream, void());
-  MOCK_METHOD1(Reset, void(uint8_t));
+  MOCK_METHOD1(Reset, void(uint32_t));
 };
 
 // The purpose of this class is to ensure that the data pipe is reset before the
@@ -431,12 +431,12 @@ TEST(OutgoingStreamTest, AbortWithWebTransportErrorWithCode) {
   auto* outgoing_stream = stream_creator.Create(scope);
 
   testing::InSequence s;
-  EXPECT_CALL(stream_creator.GetMockClient(), Reset(8));
+  EXPECT_CALL(stream_creator.GetMockClient(), Reset(70000));
   EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 
   v8::Local<v8::Value> error =
       WebTransportError::Create(isolate,
-                                /*stream_error_code=*/8, "foobar",
+                                /*stream_error_code=*/70000, "foobar",
                                 V8WebTransportErrorSource::Enum::kStream);
 
   auto* writer =

@@ -13,9 +13,11 @@ enum WebTransportErrorSource {
 // https://w3c.github.io/webtransport/#webtransporterror
 [
     Exposed=(Window,Worker),
+    Serializable,
     SecureContext
 ] interface WebTransportError : DOMException {
-  constructor(optional WebTransportErrorInit init = {});
+  constructor(optional DOMString message = "", optional WebTransportErrorOptions options = {});
+  [MeasureAs=WebTransportErrorLegacyConstructor] constructor(WebTransportErrorInit init, optional any legacyIgnored);
 
   readonly attribute unsigned long? streamErrorCode;
   readonly attribute WebTransportErrorSource source;

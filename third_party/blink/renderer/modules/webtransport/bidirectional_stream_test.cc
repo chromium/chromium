@@ -168,14 +168,14 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
   }
 
   void AbortStream(uint32_t stream_id,
-                   uint8_t code,
+                   uint32_t code,
                    AbortStreamCallback callback) override {
     EXPECT_EQ(stream_id, kDefaultStreamId);
     was_abort_stream_called_ = true;
     std::move(callback).Run(nullptr);
   }
 
-  void StopSending(uint32_t stream_id, uint8_t code) override {
+  void StopSending(uint32_t stream_id, uint32_t code) override {
     // TODO(ricea): Record that this was called when a test needs it.
   }
 

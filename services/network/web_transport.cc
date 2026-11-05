@@ -244,7 +244,7 @@ class WebTransport::Stream final {
     }
   }
 
-  std::optional<net::WebTransportSendStreamStats> Abort(uint8_t code) {
+  std::optional<net::WebTransportSendStreamStats> Abort(uint32_t code) {
     if (!outgoing_) {
       return std::nullopt;
     }
@@ -257,7 +257,7 @@ class WebTransport::Stream final {
     return stats;
   }
 
-  void StopSending(uint8_t code) {
+  void StopSending(uint32_t code) {
     if (!incoming_) {
       return;
     }
@@ -1102,7 +1102,7 @@ void WebTransport::SendFin(uint32_t stream) {
 }
 
 void WebTransport::AbortStream(uint32_t stream,
-                               uint8_t code,
+                               uint32_t code,
                                AbortStreamCallback callback) {
   auto it = streams_.find(stream);
   if (it == streams_.end()) {
@@ -1112,7 +1112,7 @@ void WebTransport::AbortStream(uint32_t stream,
   std::move(callback).Run(it->second->Abort(code));
 }
 
-void WebTransport::StopSending(uint32_t stream, uint8_t code) {
+void WebTransport::StopSending(uint32_t stream, uint32_t code) {
   auto it = streams_.find(stream);
   if (it != streams_.end()) {
     it->second->StopSending(code);

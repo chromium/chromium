@@ -55,7 +55,7 @@ class IncomingStream::UnderlyingByteSource final
   }
 
   ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override {
-    uint8_t code = 0;
+    uint32_t code = 0;
     WebTransportError* exception =
         V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
     if (exception) {
@@ -80,7 +80,7 @@ class IncomingStream::UnderlyingByteSource final
 
 IncomingStream::IncomingStream(
     ScriptState* script_state,
-    base::OnceCallback<void(std::optional<uint8_t>, bool)> on_abort,
+    base::OnceCallback<void(std::optional<uint32_t>, bool)> on_abort,
     mojo::ScopedDataPipeConsumerHandle handle)
     : script_state_(script_state),
       on_abort_(std::move(on_abort)),
@@ -315,7 +315,7 @@ void IncomingStream::ErrorStreamAbortAndReset(ScriptValue exception) {
   AbortAndReset(std::nullopt);
 }
 
-void IncomingStream::AbortAndReset(std::optional<uint8_t> code) {
+void IncomingStream::AbortAndReset(std::optional<uint32_t> code) {
   DVLOG(1) << "IncomingStream::AbortAndReset() this=" << this;
 
   state_ = State::kAborted;

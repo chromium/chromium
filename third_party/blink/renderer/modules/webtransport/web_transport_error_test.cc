@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_init.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_options.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -16,7 +18,8 @@ namespace blink {
 
 TEST(WebTransportErrorTest, DefaultConstruct) {
   test::TaskEnvironment task_environment;
-  auto* error = WebTransportError::Create(WebTransportErrorInit::Create());
+  auto* error = WebTransportError::Create(g_empty_string,
+                                          WebTransportErrorOptions::Create());
 
   EXPECT_EQ(error->code(), 0);
   EXPECT_EQ(error->streamErrorCode(), std::nullopt);
@@ -26,21 +29,54 @@ TEST(WebTransportErrorTest, DefaultConstruct) {
 
 TEST(WebTransportErrorTest, ConstructWithStreamErrorCode) {
   test::TaskEnvironment task_environment;
+  auto* options = WebTransportErrorOptions::Create();
+  options->setStreamErrorCode(70000);
+  auto* error = WebTransportError::Create(g_empty_string, options);
+
+  ASSERT_TRUE(error->streamErrorCode().has_value());
+  EXPECT_EQ(error->streamErrorCode().value(), 70000u);
+}
+
+TEST(WebTransportErrorTest, ConstructWithMessageAndSource) {
+  test::TaskEnvironment task_environment;
+  auto* options = WebTransportErrorOptions::Create();
+  options->setSource(
+      V8WebTransportErrorSource(V8WebTransportErrorSource::Enum::kSession));
+  auto* error = WebTransportError::Create("wow", options);
+
+  EXPECT_EQ(error->message(), "wow");
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kSession);
+}
+
+TEST(WebTransportErrorTest, LegacyConstruct) {
+  test::TaskEnvironment task_environment;
   auto* init = WebTransportErrorInit::Create();
+  init->setMessage("legacy");
   init->setStreamErrorCode(11);
   auto* error = WebTransportError::Create(init);
 
-  ASSERT_TRUE(error->streamErrorCode().has_value());
-  EXPECT_EQ(error->streamErrorCode().value(), 11u);
+  EXPECT_EQ(error->message(), "legacy");
+  EXPECT_EQ(error->streamErrorCode(), 11u);
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kStream);
 }
 
-TEST(WebTransportErrorTest, ConstructWithMessage) {
+TEST(WebTransportErrorTest, LegacyConstructIgnoresTrailingArguments) {
   test::TaskEnvironment task_environment;
-  auto* init = WebTransportErrorInit::Create();
-  init->setMessage("wow");
-  auto* error = WebTransportError::Create(init);
+  V8TestingScope scope(KURL("https://secure.context/"));
 
-  EXPECT_EQ(error->message(), "wow");
+  v8::Local<v8::Value> value =
+      ClassicScript::CreateUnspecifiedScript(
+          "new WebTransportError("
+          "{message: 'legacy', streamErrorCode: 19}, undefined)")
+          ->RunScriptAndReturnValue(&scope.GetWindow())
+          .GetSuccessValueOrEmpty();
+  WebTransportError* error =
+      V8WebTransportError::ToWrappable(scope.GetIsolate(), value);
+
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->message(), "legacy");
+  EXPECT_EQ(error->streamErrorCode(), 19u);
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kStream);
 }
 
 TEST(WebTransportErrorTest, InternalCreate) {

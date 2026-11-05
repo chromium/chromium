@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_serializer_for_modules.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -43,6 +45,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cryptokey_cryptokeypair.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_datagrams_writable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -74,6 +77,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_datagrams_writable.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
@@ -128,7 +132,7 @@ WebTransportDatagramsWritable* CreateWebTransportDatagramsWritable(
   return stream;
 }
 
-v8::Local<v8::Value> RoundTripForModules(
+scoped_refptr<SerializedScriptValue> SerializeForModules(
     v8::Local<v8::Value> value,
     V8TestingScope& scope,
     Transferables* transferables = nullptr) {
@@ -142,11 +146,33 @@ v8::Local<v8::Value> RoundTripForModules(
           .Serialize(value, exception_state);
   DCHECK_EQ(!serialized_script_value, exception_state.HadException());
   EXPECT_TRUE(serialized_script_value);
+  return serialized_script_value;
+}
+
+v8::Local<v8::Value> RoundTripForModules(
+    v8::Local<v8::Value> value,
+    V8TestingScope& scope,
+    Transferables* transferables = nullptr) {
+  scoped_refptr<SerializedScriptValue> serialized_script_value =
+      SerializeForModules(value, scope, transferables);
   if (!serialized_script_value)
     return v8::Local<v8::Value>();
-  return V8ScriptValueDeserializerForModules(script_state,
+  return V8ScriptValueDeserializerForModules(scope.GetScriptState(),
                                              serialized_script_value)
       .Deserialize();
+}
+
+WebTransportError* RoundTripWebTransportError(
+    std::optional<uint32_t> stream_error_code,
+    const String& message,
+    V8WebTransportErrorSource::Enum source,
+    V8TestingScope& scope) {
+  ScriptState* script_state = scope.GetScriptState();
+  auto* error = WebTransportError::Create(stream_error_code, message, source);
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<WebTransportError>::ToV8(script_state, error);
+  return V8WebTransportError::ToWrappable(scope.GetIsolate(),
+                                          RoundTripForModules(wrapper, scope));
 }
 
 // Checks for a DOM exception, including a rethrown one.
@@ -191,6 +217,155 @@ TEST(V8ScriptValueSerializerForModulesTest,
   EXPECT_TRUE(V8WritableStream::ToWrappable(scope.GetIsolate(), result));
   EXPECT_FALSE(
       V8WebTransportDatagramsWritable::ToWrappable(scope.GetIsolate(), result));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripWebTransportError) {
+  test::TaskEnvironment task_environment;
+  ScopedWebTransportErrorSerializationForTest scoped_feature(true);
+  V8TestingScope scope(KURL("https://secure.context/"));
+
+  WebTransportError* cloned = RoundTripWebTransportError(
+      70000, "boom", V8WebTransportErrorSource::Enum::kSession, scope);
+
+  ASSERT_TRUE(cloned);
+  EXPECT_EQ(cloned->name(), "WebTransportError");
+  EXPECT_EQ(cloned->message(), "boom");
+  EXPECT_EQ(cloned->source(), V8WebTransportErrorSource::Enum::kSession);
+  EXPECT_EQ(cloned->streamErrorCode(), 70000u);
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     RoundTripWebTransportErrorDistinguishesZeroFromNull) {
+  test::TaskEnvironment task_environment;
+  ScopedWebTransportErrorSerializationForTest scoped_feature(true);
+  V8TestingScope scope(KURL("https://secure.context/"));
+
+  WebTransportError* null_code = RoundTripWebTransportError(
+      std::nullopt, g_empty_string, V8WebTransportErrorSource::Enum::kStream,
+      scope);
+  ASSERT_TRUE(null_code);
+  EXPECT_EQ(null_code->streamErrorCode(), std::nullopt);
+
+  WebTransportError* zero_code = RoundTripWebTransportError(
+      0, g_empty_string, V8WebTransportErrorSource::Enum::kStream, scope);
+  ASSERT_TRUE(zero_code);
+  EXPECT_EQ(zero_code->streamErrorCode(), 0u);
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     RoundTripWebTransportErrorPreservesUnicode) {
+  test::TaskEnvironment task_environment;
+  ScopedWebTransportErrorSerializationForTest scoped_feature(true);
+  V8TestingScope scope(KURL("https://secure.context/"));
+  const String message(Vector<UChar>{0x00E9, 0xD83D, 0xDE80});
+
+  WebTransportError* cloned = RoundTripWebTransportError(
+      1, message, V8WebTransportErrorSource::Enum::kStream, scope);
+  ASSERT_TRUE(cloned);
+  EXPECT_EQ(cloned->message(), message);
+}
+
+static const uint8_t kWebTransportErrorEncoded[] = {
+    0xff, 0x15, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1a,
+    0x00, 0x00, 0x00, 0x06, 0xff, 0x10, 0x5c, 0x50, 0x01, 0x01, 0x78,
+    0x00, 0x01, 0x01, 0x07, 0xa0, 0x00, 0x00, 0x00, 0x01, 0x50};
+
+static const uint8_t kWebTransportErrorPayload[] = {0x50, 0x01, 0x01, 0x78,
+                                                    0x00, 0x01, 0x01, 0x07};
+
+TEST(V8ScriptValueSerializerForModulesTest, WebTransportErrorWireFormat) {
+  test::TaskEnvironment task_environment;
+  ScopedWebTransportErrorSerializationForTest scoped_feature(true);
+  V8TestingScope scope(KURL("https://secure.context/"));
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* error = WebTransportError::Create(
+      7, "x", V8WebTransportErrorSource::Enum::kSession);
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<WebTransportError>::ToV8(script_state, error);
+  scoped_refptr<SerializedScriptValue> serialized =
+      V8ScriptValueSerializerForModules(script_state, {})
+          .Serialize(wrapper, scope.GetExceptionState());
+
+  ASSERT_TRUE(serialized);
+  base::span<const uint8_t> wire_data = serialized->GetWireData();
+  auto tag = std::ranges::find(wire_data, kWebTransportErrorTag);
+  ASSERT_NE(tag, wire_data.end());
+  const size_t tag_offset =
+      static_cast<size_t>(std::distance(wire_data.begin(), tag));
+  ASSERT_GE(wire_data.size() - tag_offset,
+            std::size(kWebTransportErrorPayload));
+  EXPECT_THAT(
+      wire_data.subspan(tag_offset, std::size(kWebTransportErrorPayload)),
+      ElementsAreArray(kWebTransportErrorPayload));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     WebTransportErrorSerializationCanBeDisabled) {
+  test::TaskEnvironment task_environment;
+  ScopedWebTransportErrorSerializationForTest scoped_feature(false);
+  V8TestingScope scope(KURL("https://secure.context/"));
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* error = WebTransportError::Create(
+      7, "x", V8WebTransportErrorSource::Enum::kSession);
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<WebTransportError>::ToV8(script_state, error);
+  scoped_refptr<SerializedScriptValue> serialized =
+      V8ScriptValueSerializerForModules(script_state, {})
+          .Serialize(wrapper, scope.GetExceptionState());
+
+  EXPECT_FALSE(serialized);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, DecodeWebTransportError) {
+  test::TaskEnvironment task_environment;
+  ScopedWebTransportErrorSerializationForTest scoped_feature(false);
+  V8TestingScope scope(KURL("https://secure.context/"));
+  scoped_refptr<SerializedScriptValue> input =
+      SerializedValue(ToVector(kWebTransportErrorEncoded));
+
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializerForModules(scope.GetScriptState(), input)
+          .Deserialize();
+  WebTransportError* error =
+      V8WebTransportError::ToWrappable(scope.GetIsolate(), result);
+
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->message(), "x");
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kSession);
+  EXPECT_EQ(error->streamErrorCode(), 7u);
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, DecodeInvalidWebTransportError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope(KURL("https://secure.context/"));
+
+  auto expect_invalid = [&](Vector<uint8_t> encoded) {
+    scoped_refptr<SerializedScriptValue> input =
+        SerializedValue(std::move(encoded));
+    v8::Local<v8::Value> result =
+        V8ScriptValueDeserializerForModules(scope.GetScriptState(), input)
+            .Deserialize();
+    EXPECT_TRUE(result->IsNull());
+  };
+
+  Vector<uint8_t> unsupported_version = ToVector(kWebTransportErrorEncoded);
+  unsupported_version[19] = 2;
+  expect_invalid(std::move(unsupported_version));
+
+  Vector<uint8_t> invalid_source = ToVector(kWebTransportErrorEncoded);
+  invalid_source[23] = 2;
+  expect_invalid(std::move(invalid_source));
+
+  Vector<uint8_t> invalid_code_presence = ToVector(kWebTransportErrorEncoded);
+  invalid_code_presence[24] = 2;
+  expect_invalid(std::move(invalid_code_presence));
+
+  Vector<uint8_t> truncated = ToVector(kWebTransportErrorEncoded);
+  truncated.resize(25);
+  expect_invalid(std::move(truncated));
 }
 
 static const char kEcdsaPrivateKey[] =

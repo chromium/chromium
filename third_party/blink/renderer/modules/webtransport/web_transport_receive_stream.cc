@@ -31,7 +31,7 @@ namespace {
 // longer exists — so we return early instead of dereferencing nullptr.
 void ForgetStream(WebTransport* transport,
                   uint32_t stream_id,
-                  std::optional<uint8_t> stop_sending_code,
+                  std::optional<uint32_t> stop_sending_code,
                   bool has_received_close) {
   if (!transport) {
     return;

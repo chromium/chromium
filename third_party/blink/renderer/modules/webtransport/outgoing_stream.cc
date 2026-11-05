@@ -130,7 +130,7 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
              << outgoing_stream_;
     DCHECK(!reason.IsEmpty());
 
-    uint8_t code = 0;
+    uint32_t code = 0;
     WebTransportError* exception = V8WebTransportError::ToWrappable(
         script_state->GetIsolate(), reason.V8Value());
     if (exception) {

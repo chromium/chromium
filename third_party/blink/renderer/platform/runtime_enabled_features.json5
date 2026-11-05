@@ -7822,6 +7822,10 @@
       status: "stable",
     },
     {
+      name: "WebTransportErrorSerialization",
+      status: "stable",
+    },
+    {
       name: "WebTransportExportKeyingMaterial",
       status: "stable",
     },

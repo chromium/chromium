@@ -47,7 +47,7 @@ class MODULES_EXPORT IncomingStream final
   // OnIncomingStreamClosed() was called before the stream was aborted.
   IncomingStream(
       ScriptState*,
-      base::OnceCallback<void(std::optional<uint8_t>, bool)> on_abort,
+      base::OnceCallback<void(std::optional<uint32_t>, bool)> on_abort,
       mojo::ScopedDataPipeConsumerHandle);
   ~IncomingStream();
 
@@ -121,7 +121,7 @@ class MODULES_EXPORT IncomingStream final
   void ErrorStreamAbortAndReset(ScriptValue exception);
 
   // Resets the |data_pipe_|.
-  void AbortAndReset(std::optional<uint8_t> code);
+  void AbortAndReset(std::optional<uint32_t> code);
 
   // Resets |data_pipe_| and clears the watchers.
   // If the pipe is open it will be closed as a side-effect.
@@ -132,7 +132,7 @@ class MODULES_EXPORT IncomingStream final
 
   const Member<ScriptState> script_state_;
 
-  base::OnceCallback<void(std::optional<uint8_t>, bool)> on_abort_;
+  base::OnceCallback<void(std::optional<uint32_t>, bool)> on_abort_;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
 

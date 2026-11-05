@@ -318,11 +318,11 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
 
   void SendFin(uint32_t stream_id) override {}
   void AbortStream(uint32_t stream_id,
-                   uint8_t code,
+                   uint32_t code,
                    AbortStreamCallback callback) override {
     std::move(callback).Run(std::move(abort_stream_stats_));
   }
-  void StopSending(uint32_t stream_id, uint8_t code) override {}
+  void StopSending(uint32_t stream_id, uint32_t code) override {}
 
   void SetAbortStreamStats(
       network::mojom::blink::WebTransportSendStreamStatsPtr stats) {

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 
+#include <limits>
+
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
@@ -32,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
@@ -59,6 +62,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 
 namespace blink {
 
@@ -76,6 +80,31 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
     return nullptr;
   }
   switch (tag) {
+    case kWebTransportErrorTag: {
+      uint32_t version;
+      String message;
+      String stack_unused;
+      uint32_t raw_source;
+      uint32_t has_stream_error_code;
+      uint32_t stream_error_code;
+      if (!ReadUint32(&version) || version != kWebTransportErrorFormatVersion ||
+          !ReadUTF8String(&message) || !ReadUTF8String(&stack_unused) ||
+          !ReadUint32(&raw_source) ||
+          raw_source >
+              static_cast<uint32_t>(WebTransportErrorSourceTag::kSession) ||
+          !ReadUint32(&has_stream_error_code) || has_stream_error_code > 1 ||
+          !ReadUint32(&stream_error_code)) {
+        return nullptr;
+      }
+      const auto source = raw_source == static_cast<uint32_t>(
+                                            WebTransportErrorSourceTag::kStream)
+                              ? V8WebTransportErrorSource::Enum::kStream
+                              : V8WebTransportErrorSource::Enum::kSession;
+      return WebTransportError::Create(
+          has_stream_error_code ? std::make_optional(stream_error_code)
+                                : std::nullopt,
+          message, source);
+    }
     case kCryptoKeyTag:
       return ReadCryptoKey();
     case kDOMFileSystemTag: {
@@ -769,6 +798,8 @@ bool V8ScriptValueDeserializerForModules::ExecutionContextExposesInterface(
     return true;
   }
   switch (interface_tag) {
+    case kWebTransportErrorTag:
+      return V8WebTransportError::IsExposed(execution_context);
     case kCryptoKeyTag:
       return V8CryptoKey::IsExposed(execution_context);
     case kDOMFileSystemTag:

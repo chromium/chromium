@@ -18,7 +18,7 @@ namespace {
 
 void ForgetStream(WebTransport* transport,
                   uint32_t stream_id,
-                  std::optional<uint8_t> stop_sending_code,
+                  std::optional<uint32_t> stop_sending_code,
                   bool has_received_close) {
   if (stop_sending_code) {
     transport->StopSending(stream_id, *stop_sending_code);

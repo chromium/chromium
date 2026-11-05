@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_datagrams_writable.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -187,6 +188,32 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
 bool V8ScriptValueSerializerForModules::WriteDOMObject(
     ScriptWrappable* wrappable,
     ExceptionState& exception_state) {
+  ScriptWrappable::TypeDispatcher dispatcher(wrappable);
+  // WebTransportError derives from DOMException, so handle it before the core
+  // serializer can discard its WebTransport-specific fields.
+  if (auto* error = dispatcher.ToMostDerived<WebTransportError>();
+      error &&
+      RuntimeEnabledFeatures::WebTransportErrorSerializationEnabled()) {
+    WriteAndRequireInterfaceTag(kWebTransportErrorTag);
+    WriteUint32(kWebTransportErrorFormatVersion);
+    WriteUTF8String(error->message());
+    // Reserve the stack field in version 1 to match other DOMException-derived
+    // formats. Stack serialization is intentionally not supported yet.
+    WriteUTF8String(String());
+    switch (error->source().AsEnum()) {
+      case V8WebTransportErrorSource::Enum::kStream:
+        WriteUint32(static_cast<uint32_t>(WebTransportErrorSourceTag::kStream));
+        break;
+      case V8WebTransportErrorSource::Enum::kSession:
+        WriteUint32(
+            static_cast<uint32_t>(WebTransportErrorSourceTag::kSession));
+        break;
+    }
+    WriteUint32(error->streamErrorCode().has_value() ? 1 : 0);
+    WriteUint32(error->streamErrorCode().value_or(0));
+    return true;
+  }
+
   // Give the core/ implementation a chance to try first.
   // If it didn't recognize the kind of wrapper, try the modules types.
   if (V8ScriptValueSerializer::WriteDOMObject(wrappable, exception_state))
@@ -194,7 +221,6 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
   if (exception_state.HadException())
     return false;
 
-  ScriptWrappable::TypeDispatcher dispatcher(wrappable);
   if (auto* stream = dispatcher.ToMostDerived<WebTransportReceiveStream>()) {
     // Preserve legacy transfer behavior until subclass transfer is supported.
     // The destination receives a plain ReadableStream.

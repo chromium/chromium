@@ -51,7 +51,7 @@ class MODULES_EXPORT OutgoingStream final
     virtual void ForgetStream() = 0;
 
     // Send RESET_STREAM with `code`. This does not imply ForgetStream().
-    virtual void Reset(uint8_t code) = 0;
+    virtual void Reset(uint32_t code) = 0;
   };
 
   enum class State {

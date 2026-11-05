@@ -30,7 +30,7 @@ class OutgoingStreamClient final
 
   void ForgetStream() override { transport_->ForgetOutgoingStream(stream_id_); }
 
-  void Reset(uint8_t code) override {
+  void Reset(uint32_t code) override {
     transport_->ResetStream(stream_id_, code);
   }
 

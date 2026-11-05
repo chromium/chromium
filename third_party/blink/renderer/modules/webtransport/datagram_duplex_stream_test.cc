@@ -91,12 +91,12 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
   void SendFin(uint32_t stream_id) override {}
 
   void AbortStream(uint32_t stream_id,
-                   uint8_t code,
+                   uint32_t code,
                    AbortStreamCallback callback) override {
     std::move(callback).Run(nullptr);
   }
 
-  void StopSending(uint32_t stream_id, uint8_t code) override {}
+  void StopSending(uint32_t stream_id, uint32_t code) override {}
 
   void SetStreamPriority(
       uint32_t stream_id,

@@ -19,7 +19,9 @@
 
 namespace blink {
 
+class ScriptValue;
 class WebTransportErrorInit;
+class WebTransportErrorOptions;
 
 // https://w3c.github.io/webtransport/#web-transport-error-interface
 class MODULES_EXPORT WebTransportError : public DOMException {
@@ -28,8 +30,15 @@ class MODULES_EXPORT WebTransportError : public DOMException {
  public:
   using PassKey = base::PassKey<WebTransportError>;
 
-  // Constructor exposed to script. Called by the V8 bindings.
+  // Constructors exposed to script. Called by the V8 bindings.
+  static WebTransportError* Create(const String& message,
+                                   const WebTransportErrorOptions*);
   static WebTransportError* Create(const WebTransportErrorInit*);
+  static WebTransportError* Create(const WebTransportErrorInit*,
+                                   const ScriptValue& /*legacy_ignored*/);
+  static WebTransportError* Create(std::optional<uint32_t> stream_error_code,
+                                   String message,
+                                   V8WebTransportErrorSource::Enum source);
 
   // For creating a WebTransportError from C++. Typically this will be
   // immediately passed to ScriptPromiseResolverBase::Reject.
