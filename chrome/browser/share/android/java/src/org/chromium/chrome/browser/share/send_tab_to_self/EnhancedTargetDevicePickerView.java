@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetListViewBase;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.ItemDividerBase;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -33,6 +34,9 @@ import java.util.Set;
 /** View for the Send Tab To Self Enhanced Bottom Sheet. */
 @NullMarked
 class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     /** Item types used in the list. */
     @interface ItemType {
         int DEVICE = 0;
@@ -87,6 +91,11 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
                                 }
                             });
         }
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override

@@ -163,6 +163,11 @@ public class BottomSheetListViewBaseUnitTest {
         public @StringRes int getSheetClosedAccessibilityStringId() {
             return android.R.string.ok;
         }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return new BottomSheetType.Builder().build();
+        }
     }
 
     private TestBottomSheetListView mListViewBase;
@@ -451,6 +456,11 @@ public class BottomSheetListViewBaseUnitTest {
         @Override
         public @StringRes int getSheetClosedAccessibilityStringId() {
             return android.R.string.ok;
+        }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return new BottomSheetType.Builder().build();
         }
     }
 

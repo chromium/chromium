@@ -638,6 +638,9 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     }
 
     @Override
+    public abstract BottomSheetType getSheetType();
+
+    @Override
     public int getPriority() {
         return BottomSheetContent.ContentPriority.HIGH;
     }
