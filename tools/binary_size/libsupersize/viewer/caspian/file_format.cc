@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <vector>
 
 #include "third_party/jsoncpp/source/include/json/json.h"
@@ -531,9 +532,11 @@ void ParseDiffSizeInfo(char* file,
     rest += added_sources_len;
   }
 
-  ParseSizeInfo(rest, before_len, before);
-  rest += before_len;
-  ParseSizeInfo(rest, after_len, after);
+  std::thread before_thread([rest, before_len, before]() {
+    ParseSizeInfo(rest, before_len, before);
+  });
+  ParseSizeInfo(rest + before_len, after_len, after);
+  before_thread.join();
 }
 
 }  // namespace caspian

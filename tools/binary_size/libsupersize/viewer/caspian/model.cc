@@ -8,7 +8,6 @@
 #include <cassert>
 #include <iostream>
 #include <list>
-#include <map>
 #include <sstream>
 #include <tuple>
 
@@ -19,7 +18,18 @@ namespace caspian {
 
 namespace {
 constexpr const char kNoPath[] = "(No path)";
+constexpr size_t kNoArenaSlot = static_cast<size_t>(-1);
+constinit thread_local size_t g_thread_arena_slot = kNoArenaSlot;
 }  // namespace
+
+ScopedOwnedStringsArena::ScopedOwnedStringsArena(size_t slot)
+    : prev_slot_(g_thread_arena_slot) {
+  g_thread_arena_slot = slot;
+}
+
+ScopedOwnedStringsArena::~ScopedOwnedStringsArena() {
+  g_thread_arena_slot = prev_slot_;
+}
 
 Container::Container(const std::string& name_in) : name(name_in) {}
 Container::~Container() = default;
@@ -59,14 +69,14 @@ void Symbol::DeriveNames() const {
   } else if (IsStringLiteral()) {
     template_name_ = full_name_;
     name_ = full_name_;
-  } else if (IsDex()) {
+  } else if (IsDex() || IsNative()) {
+    std::deque<std::string>* owned_strings =
+        g_thread_arena_slot < size_info_->thread_owned_strings.size()
+            ? &size_info_->thread_owned_strings[g_thread_arena_slot]
+            : &size_info_->owned_strings;
     std::tuple<std::string_view, std::string_view, std::string_view>
-        parsed_names = ParseJava(full_name_, &size_info_->owned_strings);
-    template_name_ = std::get<1>(parsed_names);
-    name_ = std::get<2>(parsed_names);
-  } else if (IsNative()) {
-    std::tuple<std::string_view, std::string_view, std::string_view>
-        parsed_names = ParseCpp(full_name_, &size_info_->owned_strings);
+        parsed_names = IsDex() ? ParseJava(full_name_, owned_strings)
+                               : ParseCpp(full_name_, owned_strings);
     template_name_ = std::get<1>(parsed_names);
     name_ = std::get<2>(parsed_names);
   } else {
@@ -329,53 +339,62 @@ BaseSizeInfo::BaseSizeInfo(const BaseSizeInfo&) = default;
 BaseSizeInfo::~BaseSizeInfo() = default;
 
 SectionId BaseSizeInfo::ShortSectionName(const char* section_name) {
-  static std::map<const char*, SectionId>* short_section_name_cache =
-      new std::map<const char*, SectionId>();
-  SectionId& ret = (*short_section_name_cache)[section_name];
-  if (ret == SectionId::kNone) {
-    if (!strcmp(section_name, ".text")) {
-      ret = SectionId::kText;
-    } else if (!strcmp(section_name, ".dex")) {
-      ret = SectionId::kDex;
-    } else if (!strcmp(section_name, ".dex.method")) {
-      ret = SectionId::kDexMethod;
-    } else if (!strcmp(section_name, ".native")) {
-      // For simplicity, merge .native into .rodata.
-      // This contains things like ** section .shstrtab.
-      ret = SectionId::kRoData;
-    } else if (!strcmp(section_name, ".other")) {
-      ret = SectionId::kOther;
-    } else if (!strcmp(section_name, ".rodata")) {
-      ret = SectionId::kRoData;
-    } else if (!strcmp(section_name, ".data")) {
-      ret = SectionId::kData;
-    } else if (!strcmp(section_name, ".tdata")) {
-      ret = SectionId::kData;
-    } else if (!strcmp(section_name, ".data.rel.ro")) {
-      ret = SectionId::kDataRelRo;
-    } else if (!strcmp(section_name, ".bss")) {
-      ret = SectionId::kBss;
-    } else if (!strcmp(section_name, ".bss.rel.ro")) {
-      ret = SectionId::kBss;
-    } else if (!strcmp(section_name, ".part.end")) {
-      ret = SectionId::kBss;
-    } else if (!strcmp(section_name, ".relro_padding")) {
-      ret = SectionId::kBss;
-    } else if (!strcmp(section_name, ".tbss")) {
-      ret = SectionId::kBss;
-    } else if (!strcmp(section_name, ".pak.nontranslated")) {
-      ret = SectionId::kPakNontranslated;
-    } else if (!strcmp(section_name, ".pak.translations")) {
-      ret = SectionId::kPakTranslations;
-    } else if (!strcmp(section_name, ".arsc")) {
-      ret = SectionId::kArsc;
-    } else {
-      std::cerr << "Attributing unrecognized section name to .other: "
-                << section_name << std::endl;
-      ret = SectionId::kOther;
-    }
+  if (!strcmp(section_name, ".text")) {
+    return SectionId::kText;
   }
-  return ret;
+  if (!strcmp(section_name, ".dex")) {
+    return SectionId::kDex;
+  }
+  if (!strcmp(section_name, ".dex.method")) {
+    return SectionId::kDexMethod;
+  }
+  if (!strcmp(section_name, ".native")) {
+    // For simplicity, merge .native into .rodata.
+    // This contains things like ** section .shstrtab.
+    return SectionId::kRoData;
+  }
+  if (!strcmp(section_name, ".other")) {
+    return SectionId::kOther;
+  }
+  if (!strcmp(section_name, ".rodata")) {
+    return SectionId::kRoData;
+  }
+  if (!strcmp(section_name, ".data")) {
+    return SectionId::kData;
+  }
+  if (!strcmp(section_name, ".tdata")) {
+    return SectionId::kData;
+  }
+  if (!strcmp(section_name, ".data.rel.ro")) {
+    return SectionId::kDataRelRo;
+  }
+  if (!strcmp(section_name, ".bss")) {
+    return SectionId::kBss;
+  }
+  if (!strcmp(section_name, ".bss.rel.ro")) {
+    return SectionId::kBss;
+  }
+  if (!strcmp(section_name, ".part.end")) {
+    return SectionId::kBss;
+  }
+  if (!strcmp(section_name, ".relro_padding")) {
+    return SectionId::kBss;
+  }
+  if (!strcmp(section_name, ".tbss")) {
+    return SectionId::kBss;
+  }
+  if (!strcmp(section_name, ".pak.nontranslated")) {
+    return SectionId::kPakNontranslated;
+  }
+  if (!strcmp(section_name, ".pak.translations")) {
+    return SectionId::kPakTranslations;
+  }
+  if (!strcmp(section_name, ".arsc")) {
+    return SectionId::kArsc;
+  }
+  std::cerr << "Attributing unrecognized section name to .other: "
+            << section_name << std::endl;
+  return SectionId::kOther;
 }
 
 SizeInfo::SizeInfo() = default;

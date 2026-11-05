@@ -50,6 +50,9 @@ def _CheckFirebaseCLI():
 def _FirebaseInitProjectDir(project_dir):
   """Create a firebase.json file that is needed for deployment."""
   static_dir = project_dir / 'public'
+  # Document-Isolation-Policy enables SharedArrayBuffer (needed for WASM
+  # threads) without Cross-Origin-Opener-Policy, which would break the OAuth
+  # sign-in popup.
   project_dir.joinpath('firebase.json').write_text(f"""\
 {{
   "hosting": {{
@@ -61,6 +64,15 @@ def _FirebaseInitProjectDir(project_dir):
       "**/.*"
     ],
     "headers": [
+      {{
+        "source": "**",
+        "headers": [
+          {{
+            "key": "Document-Isolation-Policy",
+            "value": "isolate-and-credentialless"
+          }}
+        ]
+      }},
       {{
         "source": "/sw.js",
         "headers": [

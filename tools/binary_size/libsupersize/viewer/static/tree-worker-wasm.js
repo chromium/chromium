@@ -6,6 +6,10 @@
 
 importScripts('./auth-consts.js');
 importScripts('./shared.js');
+// @ts-ignore
+self.Module = {
+  mainScriptUrlOrBlob: './caspian_web.js'
+};
 importScripts('./caspian_web.js');
 
 /** @type {Promise} */
@@ -101,6 +105,8 @@ function parseGoogleCloudStorageUrl(url) {
 /** @param {Uint8Array} buf */
 function mallocBuffer(buf) {
   var dataPtr = Module._malloc(buf.byteLength);
+  // Refresh Module.HEAPU8 in case _malloc grew the SharedArrayBuffer.
+  Module.UTF8ToString(dataPtr, 0);
   var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, buf.byteLength);
   dataHeap.set(new Uint8Array(buf));
   return dataHeap;

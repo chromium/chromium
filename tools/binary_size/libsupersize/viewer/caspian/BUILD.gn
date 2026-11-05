@@ -79,6 +79,12 @@ if (enable_caspian) {
       # enable the diagnostic by removing this line.
       configs += [ "//build/config/compiler:no_exit_time_destructors" ]
       ldflags = [
+        "-pthread",
+        "-Wno-pthreads-mem-growth",
+        "-s",
+        "MALLOC=mimalloc",
+        "-s",
+        "PTHREAD_POOL_SIZE=8",
         "-s",
         "EXPORTED_FUNCTIONS=['_BuildTree','_GetMetadata','_LoadBeforeSizeFile','_LoadSizeFile','_Open','_QueryAncestryById','_QueryProperty','_free','_malloc']",
         "-s",

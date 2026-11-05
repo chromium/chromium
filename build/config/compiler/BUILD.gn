@@ -745,6 +745,9 @@ config("compiler") {
   }
 
   if (is_wasm) {
+    # WASM targets that link with -pthread (shared memory) require that every
+    # object file be compiled with atomics and bulk-memory enabled.
+    cflags += [ "-pthread" ]
     ldflags += [
       "-s",
       "ALLOW_MEMORY_GROWTH=1",

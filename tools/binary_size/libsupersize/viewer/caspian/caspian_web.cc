@@ -13,6 +13,8 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <thread>
+#include <vector>
 
 #include "third_party/jsoncpp/source/include/json/json.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -62,6 +64,16 @@ std::vector<std::string> removed_sources;
 std::vector<std::string> added_sources;
 std::unique_ptr<DeltaSizeInfo> diff_info;
 std::unique_ptr<TreeBuilder> builder;
+
+// Parses |info| in the background so that it overlaps with parsing
+// |before_info|. Caspian does not depend on //base, so std::thread is used.
+std::thread after_parse_thread;
+
+void EnsureAfterLoaded() {
+  if (after_parse_thread.joinable()) {
+    after_parse_thread.join();
+  }
+}
 
 std::unique_ptr<Json::StreamWriter> writer;
 
@@ -115,6 +127,7 @@ bool IsMultiContainer() {
 }
 
 void ClearInfoAndBuilderObjects() {
+  EnsureAfterLoaded();
   builder.reset(nullptr);
   diff_info.reset(nullptr);
   before_info.reset(nullptr);
@@ -138,7 +151,12 @@ void LoadSizeFile(char* compressed, size_t size) {
         Diff(before_info.get(), info.get(), &removed_sources, &added_sources)));
   } else {
     info = std::make_unique<SizeInfo>();
-    ParseSizeInfo(compressed, size, info.get());
+    // Copy |compressed|, since the caller frees it once LoadSizeFile() returns.
+    after_parse_thread =
+        std::thread([buf = std::vector<char>(compressed, compressed + size),
+                     target = info.get()]() {
+          ParseSizeInfo(buf.data(), buf.size(), target);
+        });
   }
 }
 
@@ -147,6 +165,7 @@ void LoadBeforeSizeFile(const char* compressed, size_t size) {
   // was called immediately before.
   before_info = std::make_unique<SizeInfo>();
   ParseSizeInfo(compressed, size, before_info.get());
+  EnsureAfterLoaded();
 }
 
 // Updates |builder| with provided filters and constructs the new tree.
@@ -161,6 +180,7 @@ bool BuildTree(bool method_count_mode,
                int match_flag,
                bool non_overhead,
                bool disassembly_mode) {
+  EnsureAfterLoaded();
   std::vector<TreeBuilder::FilterFunc> filters;
 
   const bool diff_mode = info && before_info;
@@ -297,6 +317,7 @@ const char* Open(const char* path) {
 
 // Returns a JSON string representing the metadata.
 const char* GetMetadata() {
+  EnsureAfterLoaded();
   static std::string cached_result;
   Json::Value v;
   v["size_file"] = info->fields;
@@ -309,6 +330,7 @@ const char* GetMetadata() {
 
 // Returns global properties.
 const char* QueryProperty(const char* key) {
+  EnsureAfterLoaded();
   if (!strcmp(key, "isMultiContainer")) {
     return IsMultiContainer() ? "true" : "false";
   }

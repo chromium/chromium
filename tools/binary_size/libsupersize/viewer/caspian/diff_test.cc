@@ -462,5 +462,54 @@ TEST_F(DiffTest, TestManySymbolsRehash) {
   EXPECT_EQ(1600, SumOfSymbolSizes(diff));
 }
 
+TEST_F(DiffTest, TestManySymbolsDeriveNamesOnThreads) {
+  // Enough symbols to diff on multiple threads, with names left for
+  // Symbol::DeriveNames() so that they match only in pass 3 (Name()). Data
+  // races are only detected when run under TSan.
+  constexpr int kNumSymbols = 600;
+  auto make_size_info = [](const char* params) {
+    auto info = std::make_unique<SizeInfo>();
+    info->containers.emplace_back("");
+    for (int i = 0; i < kNumSymbols; ++i) {
+      bool is_java = i % 2 == 0;
+      std::string path = "path/" + base::NumberToString(i % 20) + ".o";
+      std::string name = (is_java ? "com.Foo#bar" : "ns::Func") +
+                         base::NumberToString(i) + params;
+      info->owned_strings.push_back(path);
+      const char* path_ptr = info->owned_strings.back().c_str();
+      info->owned_strings.push_back(name);
+      Symbol sym;
+      sym.full_name_ = info->owned_strings.back();
+      sym.section_id_ = is_java ? SectionId::kDexMethod : SectionId::kText;
+      sym.size_ = 10 + i;
+      sym.object_path_ = path_ptr;
+      sym.container_ = &info->containers[0];
+      sym.size_info_ = info.get();
+      info->raw_symbols.push_back(sym);
+    }
+    return info;
+  };
+  std::unique_ptr<SizeInfo> before = make_size_info("(int)");
+  std::unique_ptr<SizeInfo> after = make_size_info("(bool)");
+
+  DeltaSizeInfo diff =
+      Diff(before.get(), after.get(), &removed_sources_, &added_sources_);
+  DeltaSizeInfo::Results expected_counts{kNumSymbols, 0, 0, 0};
+  EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
+
+  // Derived names must be owned by the SizeInfo of their symbol.
+  auto count_strings = [](const SizeInfo& info) {
+    size_t ret = 0;
+    for (const auto& arena : info.thread_owned_strings) {
+      ret += arena.size();
+    }
+    return ret;
+  };
+  EXPECT_GT(count_strings(*before), 0u);
+  EXPECT_GT(count_strings(*after), 0u);
+  EXPECT_EQ("ns::Func1", before->raw_symbols[1].Name());
+  EXPECT_EQ("ns::Func1", after->raw_symbols[1].Name());
+}
+
 }  // namespace
 }  // namespace caspian

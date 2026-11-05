@@ -291,7 +291,26 @@ struct BaseSizeInfo {
 
   Json::Value fields;
   std::deque<std::string> owned_strings;
+  // Per-thread alternatives to |owned_strings|, used by Symbol::DeriveNames()
+  // while a ScopedOwnedStringsArena is active (|owned_strings| is not
+  // thread-safe).
+  mutable std::deque<std::deque<std::string>> thread_owned_strings;
   SectionId ShortSectionName(const char* section_name);
+};
+
+// While in scope, Symbol::DeriveNames() on the current thread stores derived
+// names in |size_info_->thread_owned_strings[slot]| rather than in
+// |size_info_->owned_strings|. This lets multiple threads derive names
+// concurrently, as long as each uses a distinct |slot|.
+class ScopedOwnedStringsArena {
+ public:
+  explicit ScopedOwnedStringsArena(size_t slot);
+  ~ScopedOwnedStringsArena();
+  ScopedOwnedStringsArena(const ScopedOwnedStringsArena&) = delete;
+  ScopedOwnedStringsArena& operator=(const ScopedOwnedStringsArena&) = delete;
+
+ private:
+  size_t prev_slot_;
 };
 
 struct SizeInfo : BaseSizeInfo {

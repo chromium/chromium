@@ -5,12 +5,15 @@
 #include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <deque>
+#include <functional>
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -22,6 +25,9 @@ namespace {
 // because it fails a pass precondition like IsNameUnique(), or because its
 // scope has no unmatched symbols on the opposite side).
 constexpr uint32_t kInvalidScopeId = ~0u;
+constexpr size_t kNumShards = 8;
+// Avoid thread-pool dispatch overhead on small inputs (e.g. unit tests).
+constexpr size_t kMinSymbolsForThreads = 1024;
 
 // Hash table key for a single matching pass in MatchSymbols().
 // Rather than storing and hashing (SectionId, container_name, path) strings on
@@ -172,6 +178,9 @@ class DiffHelper {
     after_scopes_ = intern(after);
   }
 
+  // Shares the interned scope tables of |root| for use on a worker thread.
+  explicit DiffHelper(const DiffHelper* root) : root_(root) {}
+
   // Looks up the precomputed scope_id for |sym|. Every Symbol passed to
   // MatchSymbols() or Diff() lives in either |before->raw_symbols| or
   // |after->raw_symbols|. Using unsigned uintptr_t subtraction checks whether
@@ -180,11 +189,11 @@ class DiffHelper {
   // O(1) without storing a scope field on Symbol.
   uint32_t RawScopeId(const caspian::Symbol& sym) const {
     uintptr_t offset = reinterpret_cast<uintptr_t>(&sym) -
-                       reinterpret_cast<uintptr_t>(before_base_);
-    if (offset < before_scopes_.size() * sizeof(caspian::Symbol)) {
-      return before_scopes_[&sym - before_base_];
+                       reinterpret_cast<uintptr_t>(root_->before_base_);
+    if (offset < root_->before_scopes_.size() * sizeof(caspian::Symbol)) {
+      return root_->before_scopes_[&sym - root_->before_base_];
     }
-    return after_scopes_[&sym - after_base_];
+    return root_->after_scopes_[&sym - root_->after_base_];
   }
 
   // Recomputes which scope_ids still have unmatched symbols in both |before|
@@ -194,7 +203,7 @@ class DiffHelper {
   void UpdateActiveScopes(
       const std::vector<const caspian::Symbol*>& unmatched_before,
       const std::vector<const caspian::Symbol*>& unmatched_after) {
-    scope_mask_.assign(scope_ids_.size(), 0);
+    scope_mask_.assign(root_->scope_ids_.size(), 0);
     for (const caspian::Symbol* sym : unmatched_after) {
       scope_mask_[RawScopeId(*sym)] |= 1;
     }
@@ -329,11 +338,12 @@ class DiffHelper {
         .first->second;
   }
 
+  const DiffHelper* root_ = this;
   // Base pointers of |before->raw_symbols| and |after->raw_symbols|, used by
   // RawScopeId() to compute a symbol's index in |before_scopes_| or
   // |after_scopes_|.
-  const caspian::Symbol* before_base_;
-  const caspian::Symbol* after_base_;
+  const caspian::Symbol* before_base_ = nullptr;
+  const caspian::Symbol* after_base_ = nullptr;
   // Maps (path, container_name, section_id) -> dense scope_id.
   absl::flat_hash_map<
       std::tuple<std::string_view, std::string_view, caspian::SectionId>,
@@ -365,38 +375,102 @@ DeltaSizeInfo Diff(const SizeInfo* before,
   ret.delta_symbols.reserve(static_cast<size_t>(
       std::max(before->raw_symbols.size(), after->raw_symbols.size()) * 1.2));
 
-  std::vector<const Symbol*> unmatched_before;
-  unmatched_before.reserve(before->raw_symbols.size());
-  for (const Symbol& sym : before->raw_symbols) {
-    unmatched_before.push_back(&sym);
-  }
-
-  std::vector<const Symbol*> unmatched_after;
-  unmatched_after.reserve(after->raw_symbols.size());
-  for (const Symbol& sym : after->raw_symbols) {
-    unmatched_after.push_back(&sym);
-  }
-
-  // Attempt several rounds to use increasingly loose matching on unmatched
-  // symbols.  Any symbols still unmatched are tried in the next round.
-  int step = 0;
-  DiffHelper helper(before, after);
-  absl::flat_hash_map<SectionId, float> padding_by_section_name;
-  auto run_pass = [&](auto key_func) {
-    if (step < 3) {
-      helper.UpdateActiveScopes(unmatched_before, unmatched_after);
-    }
-    int n_matched_symbols =
-        MatchSymbols(key_func, &ret.delta_symbols, &unmatched_before,
-                     &unmatched_after, &padding_by_section_name, is_sparse);
-    std::cout << "Matched " << n_matched_symbols << " symbols in matching pass "
-              << ++step << std::endl;
-    helper.ClearStrings();
+  // Passes 1-3 only match symbols with identical scope_id, so partition
+  // symbols by (scope_id % kNumShards) and run passes 1-3 per shard.
+  struct DiffShard {
+    std::vector<const Symbol*> unmatched_before;
+    std::vector<const Symbol*> unmatched_after;
+    std::array<std::vector<DeltaSymbol>, 3> pass_deltas;
+    absl::flat_hash_map<SectionId, float> padding_by_section_name;
   };
-  run_pass(helper.SectionAndFullNameAndPathAndSize());
-  run_pass(helper.SectionAndFullNameAndPath());
-  run_pass(helper.SectionAndNameAndPath());
-  run_pass(helper.SectionAndFullName());
+  DiffHelper helper(before, after);
+  std::array<DiffShard, kNumShards> shards;
+  for (const Symbol& sym : before->raw_symbols) {
+    shards[helper.RawScopeId(sym) % kNumShards].unmatched_before.push_back(
+        &sym);
+  }
+  for (const Symbol& sym : after->raw_symbols) {
+    shards[helper.RawScopeId(sym) % kNumShards].unmatched_after.push_back(&sym);
+  }
+
+  for (const SizeInfo* info : {before, after}) {
+    info->thread_owned_strings.resize(kNumShards);
+  }
+
+  auto run_shard = [&](size_t s) {
+    ScopedOwnedStringsArena arena(s);
+    DiffShard& shard = shards[s];
+    DiffHelper shard_helper(&helper);
+    auto run_pass = [&](auto key_func, size_t pass) {
+      shard_helper.UpdateActiveScopes(shard.unmatched_before,
+                                      shard.unmatched_after);
+      MatchSymbols(key_func, &shard.pass_deltas[pass], &shard.unmatched_before,
+                   &shard.unmatched_after, &shard.padding_by_section_name,
+                   is_sparse);
+      shard_helper.ClearStrings();
+    };
+    run_pass(shard_helper.SectionAndFullNameAndPathAndSize(), 0);
+    run_pass(shard_helper.SectionAndFullNameAndPath(), 1);
+    run_pass(shard_helper.SectionAndNameAndPath(), 2);
+  };
+
+  if (before->raw_symbols.size() + after->raw_symbols.size() >=
+      kMinSymbolsForThreads) {
+    std::array<std::thread, kNumShards - 1> threads;
+    for (size_t s = 1; s < kNumShards; ++s) {
+      threads[s - 1] = std::thread(run_shard, s);
+    }
+    run_shard(0);
+    for (std::thread& t : threads) {
+      t.join();
+    }
+  } else {
+    for (size_t s = 0; s < kNumShards; ++s) {
+      run_shard(s);
+    }
+  }
+
+  // Merge per-shard results back into single-threaded (raw_symbols) order.
+  auto append_sorted = [](auto&& get_vec, auto* out, auto proj) {
+    size_t start = out->size();
+    for (size_t s = 0; s < kNumShards; ++s) {
+      auto& v = get_vec(s);
+      out->insert(out->end(), v.begin(), v.end());
+    }
+    std::sort(out->begin() + start, out->end(),
+              [&](const auto& a, const auto& b) { return proj(a) < proj(b); });
+  };
+
+  int step = 0;
+  for (size_t p = 0; p < 3; ++p) {
+    size_t before_count = ret.delta_symbols.size();
+    append_sorted([&](size_t s) -> auto& { return shards[s].pass_deltas[p]; },
+                  &ret.delta_symbols,
+                  [](const DeltaSymbol& d) { return d.After(); });
+    std::cout << "Matched " << (ret.delta_symbols.size() - before_count)
+              << " symbols in matching pass " << ++step << std::endl;
+  }
+
+  std::vector<const Symbol*> unmatched_before;
+  append_sorted([&](size_t s) -> auto& { return shards[s].unmatched_before; },
+                &unmatched_before, std::identity{});
+  std::vector<const Symbol*> unmatched_after;
+  append_sorted([&](size_t s) -> auto& { return shards[s].unmatched_after; },
+                &unmatched_after, std::identity{});
+
+  absl::flat_hash_map<SectionId, float> padding_by_section_name;
+  for (const DiffShard& shard : shards) {
+    for (const auto& [sec, pad] : shard.padding_by_section_name) {
+      padding_by_section_name[sec] += pad;
+    }
+  }
+
+  // Pass 4 matches across paths on the remaining unmatched symbols.
+  int n_matched_symbols = MatchSymbols(
+      helper.SectionAndFullName(), &ret.delta_symbols, &unmatched_before,
+      &unmatched_after, &padding_by_section_name, is_sparse);
+  std::cout << "Matched " << n_matched_symbols << " symbols in matching pass "
+            << ++step << std::endl;
 
   const size_t num_padding_symbols = std::ranges::count_if(
       padding_by_section_name,
