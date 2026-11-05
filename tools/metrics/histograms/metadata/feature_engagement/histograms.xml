@@ -390,8 +390,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSBWGPromo" summary="shows users a promo for BWG"/>
   <variant name="IPH_iOSChoiceScreenFeature"
       summary="(obsolete) showing the Choice screen on iOS"/>
-  <variant name="IPH_iOSContextualPanelPriceInsights"
-      summary="contextual panel price insights IPH impression tracking"/>
   <variant name="IPH_iOSContextualPanelSampleModel"
       summary="contextual panel sample model IPH impression tracking"/>
   <variant name="IPH_iOSDefaultBrowserBadgeEligibility"

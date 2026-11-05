@@ -298,15 +298,6 @@ extern const char kDefaultBrowserPromoTriggerCriteriaConditionsMet[];
 // sample model info.
 extern const char kIOSContextualPanelSampleModelEntrypointUsed[];
 
-// The user has tapped the contextual panel entrypoint when it was branded with
-// price insights infoblock.
-extern const char kIOSContextualPanelPriceInsightsEntrypointUsed[];
-
-// The user has explicitly dismissed the Price Insights branded Contextual Panel
-// entrypoint in-product help.
-extern const char
-    kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[];
-
 // The user has tapped the Home customization menu's entrypoint.
 extern const char kHomeCustomizationMenuUsed[];
 

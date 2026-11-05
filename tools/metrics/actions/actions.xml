@@ -580,8 +580,6 @@ should be able to be added at any place in this file.
   <variant name="_IOSBWGPromoFeature" summary="For IOSBWGPromoFeature feature"/>
   <variant name="_iOSChoiceScreen"
       summary="(obsolete) For iOSChoiceScreen feature"/>
-  <variant name="_iOSContextualPanelPriceInsights"
-      summary="For iOSContextualPanelPriceInsights feature"/>
   <variant name="_iOSContextualPanelSampleModel"
       summary="For iOSContextualPanelSampleModel feature"/>
   <variant name="_iOSDefaultBrowserBadgeEligibility"

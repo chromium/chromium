@@ -916,9 +916,6 @@ BASE_FEATURE(kIPHiOSSavedTabGroupClosed,
 BASE_FEATURE(kIPHiOSContextualPanelSampleModelFeature,
              "IPH_iOSContextualPanelSampleModel",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSContextualPanelPriceInsightsFeature,
-             "IPH_iOSContextualPanelPriceInsights",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHHomeCustomizationMenuFeature,
              "IPH_HomeCustomizationMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -158,10 +158,6 @@ const char kTailoredDefaultBrowserPromosGroupTrigger[] =
     "tailored_default_browser_promos_group_trigger";
 const char kIOSContextualPanelSampleModelEntrypointUsed[] =
     "ios_contextual_panel_sample_model_entrypoint_used";
-const char kIOSContextualPanelPriceInsightsEntrypointUsed[] =
-    "ios_contextual_panel_price_insights_entrypoint_used";
-const char kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[] =
-    "ios_contextual_panel_price_insights_entrypoint_explicitly_dismissed";
 const char kHomeCustomizationMenuUsed[] = "home_customization_menu_used";
 const char kHomeBackgroundCustomizationMenuUsed[] =
     "home_customization_background_menu_used";

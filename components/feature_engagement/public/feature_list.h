@@ -357,8 +357,6 @@ DEFINE_VARIATION_PARAM(kIPHiOSSavedTabGroupClosed,
                        "IPH_iOSSavedTabGroupClosed");
 DEFINE_VARIATION_PARAM(kIPHiOSContextualPanelSampleModelFeature,
                        "IPH_iOSContextualPanelSampleModel");
-DEFINE_VARIATION_PARAM(kIPHiOSContextualPanelPriceInsightsFeature,
-                       "IPH_iOSContextualPanelPriceInsights");
 DEFINE_VARIATION_PARAM(kIPHHomeCustomizationMenuFeature,
                        "IPH_HomeCustomizationMenu");
 DEFINE_VARIATION_PARAM(kIPHiOSSharedTabGroupForeground,
@@ -823,7 +821,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSBackendPromoFeature),
         VARIATION_ENTRY(kIPHiOSBackgroundNewBadge),
         VARIATION_ENTRY(kIPHiOSBottomOmniboxFeature),
-        VARIATION_ENTRY(kIPHiOSContextualPanelPriceInsightsFeature),
         VARIATION_ENTRY(kIPHiOSContextualPanelSampleModelFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserBannerPromoFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature),
