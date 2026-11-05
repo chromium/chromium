@@ -94,12 +94,6 @@ viewer-toolbar {
   width: 100%;
 }
 
-viewer-ink-host {
-  height: 100%;
-  position: absolute;
-  width: 100%;
-}
-
 #container {
   display: flex;
   flex: 1;

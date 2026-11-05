@@ -9,7 +9,6 @@ html {
 
 body {
   background-color: rgb(40, 40, 40);
-  color: var(--primary-text-color);
   line-height: 154%;
   margin: 0;
 }

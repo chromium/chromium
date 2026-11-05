@@ -51,7 +51,6 @@
 }
 
 #expand {
-  --cr-icon-button-fill-color: var(--primary-text-color);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: var(--expand-button-size);
   left: 0;

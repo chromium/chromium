@@ -37,10 +37,6 @@
   white-space: nowrap;
 }
 
-#actionMenuTrigger {
-  margin-inline-end: 6px;
-}
-
 #start {
   align-items: center;
   display: flex;
@@ -153,7 +149,6 @@ cr-progress,
 }
 
 cr-progress,
-:host([loading_]) #menuButton,
 :host([loading_]) #center,
 :host([loading_]) #end {
   opacity: 0;
@@ -162,7 +157,6 @@ cr-progress,
 }
 
 :host([loading_]) cr-progress,
-#menuButton,
 #center,
 #end {
   opacity: 1;
