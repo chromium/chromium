@@ -95,13 +95,15 @@ class ElementTracker::ElementData {
 
   void NotifyElementShown(
       const raw_ptr<TrackedElement, CtnExperimental>& element) {
-    DCHECK(element);
-    DCHECK_EQ(identifier(), Unwrap(element->identifier()));
+    CHECK(element, base::NotFatalUntil::M163);
+    CHECK_EQ(identifier(), Unwrap(element->identifier()),
+             base::NotFatalUntil::M163);
     // Zero context data is the "all contexts" entry and doesn't actually store
     // new elements, just calls callbacks.
     if (context()) {
-      DCHECK_EQ(static_cast<intptr_t>(context()),
-                static_cast<intptr_t>(element->context()));
+      CHECK_EQ(static_cast<intptr_t>(context()),
+               static_cast<intptr_t>(element->context()),
+               base::NotFatalUntil::M163);
 #if DCHECK_IS_ON()
       const auto existing = std::ranges::find_if(
           elements_, [secondary_id = element->GetSecondaryIdentifier()](
@@ -114,7 +116,7 @@ class ElementTracker::ElementData {
 #endif
       const auto it = elements_.insert(elements_.end(), element);
       const bool success = element_lookup_.emplace(element, it).second;
-      DCHECK(success);
+      CHECK(success, base::NotFatalUntil::M163);
     }
     shown_callbacks_.Notify(element);
   }
@@ -122,7 +124,8 @@ class ElementTracker::ElementData {
   void NotifyElementActivated(
       const raw_ptr<TrackedElement, CtnExperimental>& element) {
     // Note: "All contexts" does not require the element to be present here.
-    DCHECK(!context_ || element_lookup_.contains(element));
+    CHECK(!context_ || element_lookup_.contains(element),
+          base::NotFatalUntil::M163);
     activated_callbacks_.Notify(element);
   }
 
@@ -191,14 +194,14 @@ class ElementTracker::GarbageCollector {
 
  private:
   void AddCandidate(ElementData* data) {
-    DCHECK_GE(frame_count_, 0);
+    CHECK_GE(frame_count_, 0, base::NotFatalUntil::M163);
     candidates_.insert(data);
   }
 
   void IncrementFrameCount() { ++frame_count_; }
 
   void DecrementFrameCount() {
-    DCHECK_GE(frame_count_, 0);
+    CHECK_GE(frame_count_, 0, base::NotFatalUntil::M163);
     if (--frame_count_ > 0)
       return;
 
@@ -206,7 +209,7 @@ class ElementTracker::GarbageCollector {
       if (data->empty()) {
         const auto result = tracker_->element_data_.erase(
             LookupKey(data->identifier(), data->context()));
-        DCHECK(result);
+        CHECK(result, base::NotFatalUntil::M163);
       }
     }
     candidates_.clear();
@@ -262,7 +265,7 @@ TrackedElement* ElementTracker::GetUniqueElement(ElementIdentifier id,
   const auto it = element_data_.find(LookupKey(Unwrap(id), context));
   if (it == element_data_.end() || it->second.num_elements() == 0)
     return nullptr;
-  DCHECK_EQ(1U, it->second.num_elements());
+  CHECK_EQ(1U, it->second.num_elements(), base::NotFatalUntil::M163);
   return it->second.elements().front();
 }
 
@@ -346,8 +349,8 @@ ElementTracker::Subscription ElementTracker::AddElementShownCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
-  DCHECK(id);
-  DCHECK(context);
+  CHECK(id, base::NotFatalUntil::M163);
+  CHECK(context, base::NotFatalUntil::M163);
   return GetOrAddElementData(Unwrap(id), context)
       ->AddElementShownCallback(callback);
 }
@@ -355,7 +358,7 @@ ElementTracker::Subscription ElementTracker::AddElementShownCallback(
 ElementTracker::Subscription
 ElementTracker::AddElementShownInAnyContextCallback(ElementIdentifier id,
                                                     Callback callback) {
-  DCHECK(id);
+  CHECK(id, base::NotFatalUntil::M163);
   return GetOrAddElementData(Unwrap(id), ElementContext())
       ->AddElementShownCallback(callback);
 }
@@ -364,8 +367,8 @@ ElementTracker::Subscription ElementTracker::AddElementActivatedCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
-  DCHECK(id);
-  DCHECK(context);
+  CHECK(id, base::NotFatalUntil::M163);
+  CHECK(context, base::NotFatalUntil::M163);
   return GetOrAddElementData(Unwrap(id), context)
       ->AddElementActivatedCallback(callback);
 }
@@ -373,7 +376,7 @@ ElementTracker::Subscription ElementTracker::AddElementActivatedCallback(
 ElementTracker::Subscription
 ElementTracker::AddElementActivatedInAnyContextCallback(ElementIdentifier id,
                                                         Callback callback) {
-  DCHECK(id);
+  CHECK(id, base::NotFatalUntil::M163);
   return GetOrAddElementData(Unwrap(id), ElementContext())
       ->AddElementActivatedCallback(callback);
 }
@@ -382,8 +385,8 @@ ElementTracker::Subscription ElementTracker::AddElementHiddenCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
-  DCHECK(id);
-  DCHECK(context);
+  CHECK(id, base::NotFatalUntil::M163);
+  CHECK(context, base::NotFatalUntil::M163);
   return GetOrAddElementData(Unwrap(id), context)
       ->AddElementHiddenCallback(callback);
 }
@@ -391,7 +394,7 @@ ElementTracker::Subscription ElementTracker::AddElementHiddenCallback(
 ElementTracker::Subscription
 ElementTracker::AddElementHiddenInAnyContextCallback(ElementIdentifier id,
                                                      Callback callback) {
-  DCHECK(id);
+  CHECK(id, base::NotFatalUntil::M163);
   return GetOrAddElementData(Unwrap(id), ElementContext())
       ->AddElementHiddenCallback(callback);
 }
@@ -400,8 +403,8 @@ ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
     CustomElementEventType event_type,
     ElementContext context,
     Callback callback) {
-  DCHECK(event_type);
-  DCHECK(context);
+  CHECK(event_type, base::NotFatalUntil::M163);
+  CHECK(context, base::NotFatalUntil::M163);
   // Because custom event callbacks are indexed by event type (and because we
   // use the same underlying type for both element ids and custom events), we
   // can store both in the same lookup table.
@@ -412,7 +415,7 @@ ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
 ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
     CustomElementEventType event_type,
     Callback callback) {
-  DCHECK(event_type);
+  CHECK(event_type, base::NotFatalUntil::M163);
   // Because custom event callbacks are indexed by event type (and because we
   // use the same underlying type for both element ids and custom events), we
   // can store both in the same lookup table.
@@ -425,8 +428,8 @@ ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
-  DCHECK(event_type);
-  DCHECK(context);
+  CHECK(event_type, base::NotFatalUntil::M163);
+  CHECK(context, base::NotFatalUntil::M163);
   // Because custom event callbacks are indexed by event type (and because we
   // use the same underlying type for both element ids and custom events), we
   // can store both in the same lookup table.
@@ -438,7 +441,7 @@ ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
     CustomElementEventType event_type,
     ElementIdentifier id,
     Callback callback) {
-  DCHECK(event_type);
+  CHECK(event_type, base::NotFatalUntil::M163);
   // Because custom event callbacks are indexed by event type (and because we
   // use the same underlying type for both element ids and custom events), we
   // can store both in the same lookup table.
@@ -460,7 +463,7 @@ void ElementTracker::NotifyElementShown(TrackedElement* element) {
   GarbageCollector::Frame gc_frame(gc_.get());
   ElementData* const element_data =
       GetOrAddElementData(Unwrap(element->identifier()), element->context());
-  DCHECK(!element_data->HasElement(element));
+  CHECK(!element_data->HasElement(element), base::NotFatalUntil::M163);
   element_data->NotifyElementShown(safe_element);
 
   // Do "all contexts" notification:
@@ -537,11 +540,10 @@ void ElementTracker::NotifyCustomEvent(TrackedElement* element,
 
   // We'd like to verify that this element is valid, but don't need to expend
   // the effort on an extra lookup if we're not doing checks.
-#if DCHECK_IS_ON()
   const auto entry = element_data_.find(
       LookupKey(Unwrap(element->identifier()), element->context()));
-  DCHECK(entry != element_data_.end() && entry->second.HasElement(element));
-#endif
+  CHECK(entry != element_data_.end() && entry->second.HasElement(element),
+        base::NotFatalUntil::M163);
 
   notification_elements_.push_back(element);
   auto& safe_element = notification_elements_.back();

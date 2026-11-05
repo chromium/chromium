@@ -436,8 +436,9 @@ bool XOSExchangeDataProvider::HasCustomFormat(
 void XOSExchangeDataProvider::SetFileContents(
     const base::FilePath& filename,
     base::span<const uint8_t> file_contents) {
-  DCHECK(!filename.empty());
-  DCHECK(!format_map().contains(x11::GetAtom(kMimeTypeMozillaUrl)));
+  CHECK(!filename.empty(), base::NotFatalUntil::M163);
+  CHECK(!format_map().contains(x11::GetAtom(kMimeTypeMozillaUrl)),
+        base::NotFatalUntil::M163);
   set_file_contents_name(filename);
   // Direct save handling is a complicated juggling affair between this class,
   // SelectionFormat, and XDragDropClient. The general idea behind

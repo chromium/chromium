@@ -29,7 +29,7 @@ x11::Future<x11::GetPropertyReply> GetWorkspace() {
 
 X11WorkspaceHandler::X11WorkspaceHandler(Delegate* delegate)
     : x_root_window_(ui::GetX11RootWindow()), delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
   auto* connection = x11::Connection::Get();
   connection->AddEventObserver(this);
 
@@ -62,8 +62,9 @@ void X11WorkspaceHandler::OnWorkspaceResponse(
   if (!response || response->format != 32 || response->value_len < 1) {
     return;
   }
-  DCHECK_EQ(response->bytes_after, 0U);
-  DCHECK_EQ(response->type, static_cast<x11::Atom>(x11::Atom::CARDINAL));
+  CHECK_EQ(response->bytes_after, 0U, base::NotFatalUntil::M163);
+  CHECK_EQ(response->type, static_cast<x11::Atom>(x11::Atom::CARDINAL),
+           base::NotFatalUntil::M163);
 
   uint32_t workspace;
   UNSAFE_TODO(memcpy(&workspace, response->value->bytes(), 4));

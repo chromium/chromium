@@ -18,17 +18,17 @@ XUserInputMonitor::XUserInputMonitor(
     : io_task_runner_(io_task_runner) {}
 
 XUserInputMonitor::~XUserInputMonitor() {
-  DCHECK(!connection_);
+  CHECK(!connection_, base::NotFatalUntil::M163);
 }
 
 void XUserInputMonitor::WillDestroyCurrentMessageLoop() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  CHECK(io_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   StopMonitor();
 }
 
 void XUserInputMonitor::OnEvent(const x11::Event& event) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  DCHECK(write_key_press_callback_);
+  CHECK(io_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
+  CHECK(write_key_press_callback_, base::NotFatalUntil::M163);
 
   auto* raw = event.As<x11::Input::RawDeviceEvent>();
   if (!raw || (raw->opcode != x11::Input::RawDeviceEvent::RawKeyPress &&
@@ -57,7 +57,7 @@ uint32_t XUserInputMonitor::GetKeyPressCount() const {
 }
 
 void XUserInputMonitor::StartMonitor(WriteKeyPressCallback& callback) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  CHECK(io_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   write_key_press_callback_ = callback;
 
   if (!connection_) {
@@ -112,7 +112,7 @@ void XUserInputMonitor::StartMonitorWithMapping(
 }
 
 void XUserInputMonitor::StopMonitor() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  CHECK(io_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
 
   watch_controller_.reset();
   connection_.reset();
@@ -123,7 +123,7 @@ void XUserInputMonitor::StopMonitor() {
 }
 
 void XUserInputMonitor::OnConnectionData() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  CHECK(io_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M163);
   connection_->DispatchAll();
 }
 

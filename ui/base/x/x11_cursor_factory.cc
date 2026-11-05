@@ -72,7 +72,7 @@ scoped_refptr<PlatformCursor> X11CursorFactory::CreateAnimatedCursor(
 void X11CursorFactory::ObserveThemeChanges() {
 #if BUILDFLAG(IS_LINUX)
   auto* linux_ui = LinuxUi::instance();
-  DCHECK(linux_ui);
+  CHECK(linux_ui, base::NotFatalUntil::M163);
   cursor_theme_observation_.Observe(linux_ui);
 #endif
 }

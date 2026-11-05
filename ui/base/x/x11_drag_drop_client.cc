@@ -203,7 +203,7 @@ XDragDropClient* XDragDropClient::GetForWindow(x11::Window window) {
 XDragDropClient::XDragDropClient(XDragDropClient::Delegate* delegate,
                                  x11::Window xwindow)
     : delegate_(delegate), xwindow_(xwindow) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 
   // Mark that we are aware of drag and drop concepts.
   uint32_t xdnd_version = kMaxXdndVersion;
@@ -338,7 +338,8 @@ void XDragDropClient::OnXdndEnter(const x11::ClientMessageEvent& event) {
   ResetDragContext();
   auto* source_client =
       GetForWindow(static_cast<x11::Window>(event.data.data32[0]));
-  DCHECK(!source_client || source_client->source_provider_);
+  CHECK(!source_client || source_client->source_provider_,
+        base::NotFatalUntil::M163);
   target_current_context_ = std::make_unique<XDragContext>(
       xwindow_, event,
       (source_client ? source_client->source_provider_->GetFormatMap()

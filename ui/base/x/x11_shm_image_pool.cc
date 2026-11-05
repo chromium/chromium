@@ -197,7 +197,7 @@ bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
       // the process dies.
       shmctl(state.shmid, IPC_RMID, nullptr);
 #endif
-      DCHECK(!state.shmem_attached_to_server);
+      CHECK(!state.shmem_attached_to_server, base::NotFatalUntil::M163);
       auto shmseg = connection_->GenerateId<x11::Shm::Seg>();
       auto req = connection_->shm().Attach({
           .shmseg = shmseg,
@@ -257,7 +257,7 @@ x11::Shm::Seg XShmImagePool::CurrentSegment() {
 void XShmImagePool::SwapBuffers(
     base::OnceCallback<void(const gfx::Size&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(enable_multibuffering_);
+  CHECK(enable_multibuffering_, base::NotFatalUntil::M163);
 
   swap_closures_.emplace_back();
   SwapClosure& swap_closure = swap_closures_.back();
@@ -270,8 +270,8 @@ void XShmImagePool::SwapBuffers(
 void XShmImagePool::DispatchShmCompletionEvent(
     x11::Shm::CompletionEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(event.offset, 0UL);
-  DCHECK(enable_multibuffering_);
+  CHECK_EQ(event.offset, 0UL, base::NotFatalUntil::M163);
+  CHECK(enable_multibuffering_, base::NotFatalUntil::M163);
 
   for (auto it = swap_closures_.begin(); it != swap_closures_.end(); ++it) {
     if (event.shmseg == it->shmseg) {
@@ -284,7 +284,7 @@ void XShmImagePool::DispatchShmCompletionEvent(
 
 void XShmImagePool::OnEvent(const x11::Event& xev) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(enable_multibuffering_);
+  CHECK(enable_multibuffering_, base::NotFatalUntil::M163);
 
   auto* completion = xev.As<x11::Shm::CompletionEvent>();
   if (completion && completion->drawable.value == drawable_.value)

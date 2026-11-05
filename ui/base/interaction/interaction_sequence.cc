@@ -192,14 +192,14 @@ InteractionSequence::Builder::~Builder() = default;
 
 InteractionSequence::Builder& InteractionSequence::Builder::SetAbortedCallback(
     AbortedCallback callback) {
-  DCHECK(!configuration_->aborted_callback);
+  CHECK(!configuration_->aborted_callback, base::NotFatalUntil::M163);
   configuration_->aborted_callback = std::move(callback);
   return *this;
 }
 
 InteractionSequence::Builder&
 InteractionSequence::Builder::SetCompletedCallback(CompletedCallback callback) {
-  DCHECK(!configuration_->completed_callback);
+  CHECK(!configuration_->completed_callback, base::NotFatalUntil::M163);
   configuration_->completed_callback = std::move(callback);
   return *this;
 }
@@ -218,8 +218,8 @@ InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
       << " Only the initial step of a sequence may have a pre-set element.";
   DCHECK(!step->transition_only_on_event || !step->element)
       << " Pre-set element precludes transition_only_on_event.";
-  DCHECK_NE(step->type == StepType::kSubsequence,
-            step->subsequence_data.empty());
+  CHECK_NE(step->type == StepType::kSubsequence, step->subsequence_data.empty(),
+           base::NotFatalUntil::M163);
 
   // Set reasonable defaults for must_be_visible based on step type and
   // parameters.
@@ -318,7 +318,7 @@ void InteractionSequence::Builder::PopulateSubsequenceStepStacks() {
 }
 
 std::unique_ptr<InteractionSequence> InteractionSequence::Builder::Build() {
-  DCHECK(!configuration_->steps.empty());
+  CHECK(!configuration_->steps.empty(), base::NotFatalUntil::M163);
   PopulateSubsequenceStepStacks();
   DCHECK(configuration_->context)
       << "If no view is provided, Builder::SetContext() must be called.";
@@ -339,7 +339,7 @@ std::unique_ptr<InteractionSequence>
 InteractionSequence::Builder::BuildSubsequence(
     const Configuration* reference_config,
     const Step* reference_step) {
-  DCHECK(!configuration_->steps.empty());
+  CHECK(!configuration_->steps.empty(), base::NotFatalUntil::M163);
   // Configure defaults for the final step.
   SetDefaultMustRemainVisibleValue(configuration_->steps.back().get(), nullptr);
   DCHECK(configuration_->context)
@@ -366,7 +366,7 @@ InteractionSequence::StepBuilder::~StepBuilder() = default;
 
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetElement(
     ElementSpecifier element_spec) {
-  DCHECK(element_spec);
+  CHECK(element_spec, base::NotFatalUntil::M163);
   step_->id = element_spec.identifier();
   step_->element_name = element_spec.name();
   return *this;
@@ -374,7 +374,7 @@ InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetElement(
 
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetElementID(ElementIdentifier element_id) {
-  DCHECK(element_id);
+  CHECK(element_id, base::NotFatalUntil::M163);
   step_->id = element_id;
   return *this;
 }
@@ -388,7 +388,7 @@ InteractionSequence::StepBuilder::SetElementName(std::string_view name) {
 
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
     StepContext context) & {
-  DCHECK(context != StepContext(ElementContext()));
+  CHECK(context != StepContext(ElementContext()), base::NotFatalUntil::M163);
   step_->context = context;
   if (const ContextMode* mode = std::get_if<ContextMode>(&context)) {
     step_->in_any_context = *mode == ContextMode::kAny;
@@ -589,8 +589,9 @@ InteractionSequence::InteractionSequence(
     : configuration_(std::move(configuration)) {
   TrackedElement* const first_element = next_step()->element;
   if (first_element) {
-    DCHECK(first_element->identifier() == next_step()->id);
-    DCHECK(first_element->context() == context());
+    CHECK(first_element->identifier() == next_step()->id,
+          base::NotFatalUntil::M163);
+    CHECK(first_element->context() == context(), base::NotFatalUntil::M163);
     next_step()->subscription =
         ElementTracker::GetElementTracker()->AddElementHiddenCallback(
             first_element->identifier(), first_element->context(),
@@ -633,7 +634,7 @@ InteractionSequence::~InteractionSequence() {
 
 void InteractionSequence::Start() {
   // Ensure we're not already started.
-  DCHECK_EQ(State::kNotStarted, state_);
+  CHECK_EQ(State::kNotStarted, state_, base::NotFatalUntil::M163);
   state_ = State::kIdle;
   if (missing_first_element_) {
     Abort(AbortedReason::kElementHiddenBeforeSequenceStart);
@@ -690,9 +691,10 @@ InteractionSequence::SeizeStepTransitionControl() {
 
 void InteractionSequence::NameElement(TrackedElement* element,
                                       std::string_view name) {
-  DCHECK(!name.empty());
+  CHECK(!name.empty(), base::NotFatalUntil::M163);
   named_elements_[std::string(name)] = SafeElementReference(element);
-  DCHECK(!current_step_ || current_step_->element_name != name);
+  CHECK(!current_step_ || current_step_->element_name != name,
+        base::NotFatalUntil::M163);
   // When possible, preload ids for named elements so we can report a more
   // correct identifier on abort.
   for (const auto& step : configuration_->steps) {
@@ -803,8 +805,8 @@ void InteractionSequence::OnElementShown(TrackedElement* element) {
   // null.
   if (!element)
     return;
-  DCHECK_EQ(StepType::kShown, next_step()->type);
-  DCHECK(element->identifier() == next_step()->id);
+  CHECK_EQ(StepType::kShown, next_step()->type, base::NotFatalUntil::M163);
+  CHECK(element->identifier() == next_step()->id, base::NotFatalUntil::M163);
   // Note that we don't need to look for a named element here, as any named
   // element referenced in a kShown step must already exist, and therefore we
   // should have already transitioned or failed.
@@ -816,14 +818,15 @@ void InteractionSequence::OnElementActivated(TrackedElement* element) {
   // null.
   if (!element)
     return;
-  DCHECK_EQ(StepType::kActivated, next_step()->type);
-  DCHECK(element->identifier() == next_step()->id);
+  CHECK_EQ(StepType::kActivated, next_step()->type, base::NotFatalUntil::M163);
+  CHECK(element->identifier() == next_step()->id, base::NotFatalUntil::M163);
   if (MatchesNameIfSpecified(element, next_step()->element_name))
     StartStepTransition(element);
 }
 
 void InteractionSequence::OnCustomEvent(TrackedElement* element) {
-  DCHECK_EQ(StepType::kCustomEvent, next_step()->type);
+  CHECK_EQ(StepType::kCustomEvent, next_step()->type,
+           base::NotFatalUntil::M163);
   if (next_step()->id && next_step()->id != element->identifier())
     return;
   if (MatchesNameIfSpecified(element, next_step()->element_name))
@@ -832,7 +835,7 @@ void InteractionSequence::OnCustomEvent(TrackedElement* element) {
 
 void InteractionSequence::OnElementHidden(TrackedElement* element) {
   if (state_ == State::kNotStarted) {
-    DCHECK_EQ(next_step()->element, element);
+    CHECK_EQ(next_step()->element, element, base::NotFatalUntil::M163);
     missing_first_element_ = true;
     next_step()->subscription = ElementTracker::Subscription();
     next_step()->element = nullptr;
@@ -913,7 +916,7 @@ void InteractionSequence::OnTriggerDuringStepTransition(
           // but not if there is an element that's different than the one we
           // care about.
           auto* const named = GetNamedElement(next->element_name);
-          DCHECK(!named || named == element);
+          CHECK(!named || named == element, base::NotFatalUntil::M163);
         }
       } else {
         // This will fail if the element has gone away.
@@ -1129,7 +1132,7 @@ void InteractionSequence::StartStepTransition(TrackedElement* element) {
   auto* const tracker = ElementTracker::GetElementTracker();
 
   // This block is non-re-entrant.
-  DCHECK_EQ(State::kIdle, state_);
+  CHECK_EQ(State::kIdle, state_, base::NotFatalUntil::M163);
   state_ = State::kInEndCallback;
 
   // End the current step.
@@ -1150,7 +1153,8 @@ void InteractionSequence::StartStepTransition(TrackedElement* element) {
   current_step_ = std::move(configuration_->steps.front());
   configuration_->steps.pop_front();
   ++active_step_index_;
-  DCHECK(!current_step_->element || current_step_->element == element);
+  CHECK(!current_step_->element || current_step_->element == element,
+        base::NotFatalUntil::M163);
   current_step_->element =
       current_step_->type == StepType::kHidden ? nullptr : element;
   if (element) {
@@ -1206,7 +1210,7 @@ void InteractionSequence::StartStepTransition(TrackedElement* element) {
 
 void InteractionSequence::CompleteStepTransition() {
   // This block is non-re-entrant.
-  DCHECK_EQ(State::kWaitingForStartCallback, state_);
+  CHECK_EQ(State::kWaitingForStartCallback, state_, base::NotFatalUntil::M163);
 
   // There are a number of callbacks during this method that could potentially
   // result in this InteractionSequence being destructed, so maintain a weak
@@ -1304,7 +1308,8 @@ void InteractionSequence::StageNextStep() {
     // We should have set the ID on this step when the element was named; the
     // element may have gone away but shouldn't differ in ID from what we
     // previously recorded.
-    DCHECK(!next_element || next->id == next_element->identifier());
+    CHECK(!next_element || next->id == next_element->identifier(),
+          base::NotFatalUntil::M163);
   } else {
     const ElementContext ctx = UpdateNextStepContext(current_step_.get());
     next_element =
@@ -1332,7 +1337,8 @@ void InteractionSequence::StageNextStep() {
   if (auto* context_ptr = std::get_if<ElementContext>(&next->context)) {
     context = *context_ptr;
   } else {
-    DCHECK(StepContext(ContextMode::kAny) == next->context);
+    CHECK(StepContext(ContextMode::kAny) == next->context,
+          base::NotFatalUntil::M163);
   }
 
   switch (next->type) {
@@ -1348,7 +1354,7 @@ void InteractionSequence::StageNextStep() {
       } else if (next_element && !next->transition_only_on_event) {
         StartStepTransition(next_element);
       } else {
-        DCHECK(!next->uses_named_element());
+        CHECK(!next->uses_named_element(), base::NotFatalUntil::M163);
         auto callback = base::BindRepeating(
             &InteractionSequence::OnElementShown, base::Unretained(this));
         next->subscription =
@@ -1364,7 +1370,8 @@ void InteractionSequence::StageNextStep() {
         trigger_during_callback_ = false;
         StartStepTransition(nullptr);
       } else {
-        DCHECK(next_element || !next->uses_named_element());
+        CHECK(next_element || !next->uses_named_element(),
+              base::NotFatalUntil::M163);
         auto callback = base::BindRepeating(
             &InteractionSequence::OnElementHidden, base::Unretained(this));
         next->subscription =
@@ -1379,7 +1386,8 @@ void InteractionSequence::StageNextStep() {
         trigger_during_callback_ = false;
         StartStepTransition(next_element);
       } else {
-        DCHECK(next_element || !next->uses_named_element());
+        CHECK(next_element || !next->uses_named_element(),
+              base::NotFatalUntil::M163);
         auto callback = base::BindRepeating(
             &InteractionSequence::OnElementActivated, base::Unretained(this));
         next->subscription =
@@ -1391,7 +1399,7 @@ void InteractionSequence::StageNextStep() {
         // the event and when the activation would actually come in (which
         // could be never). In this case, we should abort.
         if (next_step()->must_be_visible.value()) {
-          DCHECK(next->id);
+          CHECK(next->id, base::NotFatalUntil::M163);
           auto cb = base::BindRepeating(
               &InteractionSequence::OnElementHiddenWaitingForEvent,
               base::Unretained(this));
@@ -1407,7 +1415,8 @@ void InteractionSequence::StageNextStep() {
         trigger_during_callback_ = false;
         StartStepTransition(next_element);
       } else {
-        DCHECK(next_element || !next->uses_named_element());
+        CHECK(next_element || !next->uses_named_element(),
+              base::NotFatalUntil::M163);
         auto callback = base::BindRepeating(&InteractionSequence::OnCustomEvent,
                                             base::Unretained(this));
         next->subscription =
@@ -1419,7 +1428,7 @@ void InteractionSequence::StageNextStep() {
         // the event and when the custom event would actually come in (which
         // could be never). In this case, we should abort.
         if (next_step()->must_be_visible.value()) {
-          DCHECK(next->id);
+          CHECK(next->id, base::NotFatalUntil::M163);
           auto cb = base::BindRepeating(
               &InteractionSequence::OnElementHiddenWaitingForEvent,
               base::Unretained(this));
@@ -1496,7 +1505,7 @@ void InteractionSequence::StageNextStep() {
 }
 
 void InteractionSequence::Abort(AbortedReason reason) {
-  DCHECK_NE(State::kNotStarted, state_);
+  CHECK_NE(State::kNotStarted, state_, base::NotFatalUntil::M163);
   next_step_hidden_subscription_ = ElementTracker::Subscription();
 
   AbortedData aborted_data = BuildAbortedData(reason);
@@ -1538,7 +1547,7 @@ bool InteractionSequence::MatchesNameIfSpecified(
     return true;
 
   const TrackedElement* const expected = GetNamedElement(name);
-  DCHECK(expected);
+  CHECK(expected, base::NotFatalUntil::M163);
   return element == expected;
 }
 

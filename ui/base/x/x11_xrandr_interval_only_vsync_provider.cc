@@ -24,7 +24,7 @@ bool IsXrandrAvailable() {
 class XRandrHelper : public x11::EventObserver {
  public:
   XRandrHelper() {
-    DCHECK(IsXrandrAvailable());
+    CHECK(IsXrandrAvailable(), base::NotFatalUntil::M163);
     auto* connection = x11::Connection::Get();
     auto root_window = connection->default_screen().root;
     auto& randr = connection->randr();

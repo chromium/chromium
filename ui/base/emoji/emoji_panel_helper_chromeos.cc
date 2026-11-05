@@ -31,7 +31,7 @@ bool IsEmojiPanelSupported() {
 }
 
 void ShowEmojiPanel() {
-  DCHECK(GetShowEmojiKeyboardCallback());
+  CHECK(GetShowEmojiKeyboardCallback(), base::NotFatalUntil::M163);
   GetShowEmojiKeyboardCallback().Run(
       EmojiPickerCategory::kEmojis,
       EmojiPickerFocusBehavior::kOnlyShowWhenFocused,
@@ -41,12 +41,12 @@ void ShowEmojiPanel() {
 void ShowEmojiPanelInSpecificMode(EmojiPickerCategory category,
                                   EmojiPickerFocusBehavior focus_behavior,
                                   const std::string& initial_query) {
-  DCHECK(GetShowEmojiKeyboardCallback());
+  CHECK(GetShowEmojiKeyboardCallback(), base::NotFatalUntil::M163);
   GetShowEmojiKeyboardCallback().Run(category, focus_behavior, initial_query);
 }
 
 void ShowTabletModeEmojiPanel() {
-  DCHECK(GetTabletModeShowEmojiKeyboardCallback());
+  CHECK(GetTabletModeShowEmojiKeyboardCallback(), base::NotFatalUntil::M163);
   GetTabletModeShowEmojiKeyboardCallback().Run();
 }
 

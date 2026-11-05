@@ -51,7 +51,7 @@ static_assert(kSelectionOwnerTimerPeriod <= kIncrementalTransferTimeout,
 size_t GetMaxIncrementalTransferSize() {
   ssize_t size = x11::Connection::Get()->MaxRequestSizeInBytes();
   // Conservatively subtract 100 bytes for the GetProperty request, padding etc.
-  DCHECK_GT(size, 100);
+  CHECK_GT(size, 100, base::NotFatalUntil::M163);
   return std::min<size_t>(size - 100, 0x100000);
 }
 

@@ -130,10 +130,11 @@ void DrawPixmap(x11::Connection* connection,
   SkPixmap pixmap(image_info, vec.data(), row_bytes);
   skia_pixmap.readPixels(pixmap, src_x, src_y);
 
-  DCHECK_GT(connection->MaxRequestSizeInBytes(), kPutImageExtraSize);
+  CHECK_GT(connection->MaxRequestSizeInBytes(), kPutImageExtraSize,
+           base::NotFatalUntil::M163);
   int rows_per_request =
       (connection->MaxRequestSizeInBytes() - kPutImageExtraSize) / row_bytes;
-  DCHECK_GT(rows_per_request, 1);
+  CHECK_GT(rows_per_request, 1, base::NotFatalUntil::M163);
   for (int row = 0; row < height; row += rows_per_request) {
     size_t n_rows = std::min<size_t>(rows_per_request, height - row);
     auto data = base::MakeRefCounted<base::RefCountedStaticMemory>(
@@ -172,9 +173,10 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
 
   const auto* motion = x11_event.As<x11::MotionNotifyEvent>();
   const auto* device = x11_event.As<x11::Input::DeviceEvent>();
-  DCHECK(motion || device);
-  DCHECK(!device || device->opcode == x11::Input::DeviceEvent::Motion ||
-         device->opcode == x11::Input::DeviceEvent::TouchUpdate);
+  CHECK(motion || device, base::NotFatalUntil::M163);
+  CHECK(!device || device->opcode == x11::Input::DeviceEvent::Motion ||
+            device->opcode == x11::Input::DeviceEvent::TouchUpdate,
+        base::NotFatalUntil::M163);
 
   conn->ReadResponses();
   for (auto& event : conn->events()) {

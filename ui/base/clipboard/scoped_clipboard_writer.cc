@@ -34,7 +34,8 @@ ScopedClipboardWriter::ScopedClipboardWriter(
 
 ScopedClipboardWriter::~ScopedClipboardWriter() {
   static constexpr size_t kMaxRepresentations = 1 << 12;
-  DCHECK(platform_representations_.size() < kMaxRepresentations);
+  CHECK(platform_representations_.size() < kMaxRepresentations,
+        base::NotFatalUntil::M163);
   // If the metadata format type is not empty then create a JSON payload and
   // write to the clipboard.
   if (!registered_formats_.empty()) {

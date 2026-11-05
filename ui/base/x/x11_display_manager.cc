@@ -55,7 +55,7 @@ bool XDisplayManager::IsXrandrAvailable() const {
 }
 
 const display::Display& XDisplayManager::GetPrimaryDisplay() const {
-  DCHECK(!displays_.empty());
+  CHECK(!displays_.empty(), base::NotFatalUntil::M163);
   return displays_[primary_display_index_];
 }
 

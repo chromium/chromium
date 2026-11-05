@@ -15,9 +15,11 @@ namespace ui {
 bool PageTransitionCoreTypeIs(PageTransition lhs,
                               PageTransition rhs) {
   // Expect the rhs to have no qualifiers.
-  DCHECK(IsValidPageTransitionType(std::to_underlying(rhs)));
+  CHECK(IsValidPageTransitionType(std::to_underlying(rhs)),
+        base::NotFatalUntil::M163);
   const auto rhs_core = PageTransitionStripQualifier(rhs);
-  DCHECK(PageTransitionTypeIncludingQualifiersIs(rhs, rhs_core));
+  CHECK(PageTransitionTypeIncludingQualifiersIs(rhs, rhs_core),
+        base::NotFatalUntil::M163);
   return PageTransitionTypeIncludingQualifiersIs(
       PageTransitionStripQualifier(lhs), rhs_core);
 }

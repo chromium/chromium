@@ -84,7 +84,7 @@ bool X11WholeScreenMoveLoop::CanDispatchEvent(const ui::PlatformEvent& event) {
 }
 
 uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
 
   // This method processes all events while the move loop is active.
   if (!in_move_loop_) {
@@ -159,7 +159,9 @@ bool X11WholeScreenMoveLoop::RunMoveLoop(
     scoped_refptr<ui::X11Cursor> old_cursor,
     scoped_refptr<ui::X11Cursor> new_cursor,
     base::OnceClosure started_callback) {
-  DCHECK(!in_move_loop_);  // Can only handle one nested loop at a time.
+  CHECK(
+      !in_move_loop_,
+      base::NotFatalUntil::M163);  // Can only handle one nested loop at a time.
 
   // Query the mouse cursor prior to the move loop starting so that it can be
   // restored when the move loop finishes.

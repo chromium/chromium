@@ -295,7 +295,7 @@ std::vector<display::Display> GetFallbackDisplayList(
 
   if (!display::Display::HasForceDeviceScaleFactor() &&
       display::IsDisplaySizeValid(physical_size)) {
-    DCHECK_LE(1.0f, scale);
+    CHECK_LE(1.0f, scale, base::NotFatalUntil::M163);
     gfx_display.set_size_in_pixels(bounds_in_pixels.size());
     gfx_display.SetScale(scale);
     auto bounds_dip = gfx::ScaleToEnclosingRect(bounds_in_pixels, 1.0f / scale);
@@ -320,12 +320,13 @@ std::vector<display::Display> GetFallbackDisplayList(
 std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     const display::DisplayConfig& display_config,
     size_t* primary_display_index_out) {
-  DCHECK(primary_display_index_out);
+  CHECK(primary_display_index_out, base::NotFatalUntil::M163);
   auto* command_line = base::CommandLine::ForCurrentProcess();
   const float primary_scale = display_config.primary_scale;
 
   auto* connection = x11::Connection::Get();
-  DCHECK(connection->randr_version() >= kMinVersionXrandr);
+  CHECK(connection->randr_version() >= kMinVersionXrandr,
+        base::NotFatalUntil::M163);
   auto& randr = connection->randr();
   auto x_root_window = ui::GetX11RootWindow();
   std::vector<display::Display> displays;

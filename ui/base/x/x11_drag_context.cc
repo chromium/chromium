@@ -100,7 +100,7 @@ void XDragContext::OnXdndPositionMessage(XDragDropClient* client,
                                          x11::Window source_window,
                                          x11::Time time_stamp,
                                          const gfx::Point& screen_point) {
-  DCHECK_EQ(source_window_, source_window);
+  CHECK_EQ(source_window_, source_window, base::NotFatalUntil::M163);
   suggested_action_ = suggested_action;
 
   if (!unfetched_targets_.empty()) {
@@ -119,9 +119,9 @@ void XDragContext::OnXdndPositionMessage(XDragDropClient* client,
 }
 
 void XDragContext::RequestNextTarget() {
-  DCHECK(!unfetched_targets_.empty());
-  DCHECK(drag_drop_client_);
-  DCHECK(waiting_to_handle_position_);
+  CHECK(!unfetched_targets_.empty(), base::NotFatalUntil::M163);
+  CHECK(drag_drop_client_, base::NotFatalUntil::M163);
+  CHECK(waiting_to_handle_position_, base::NotFatalUntil::M163);
 
   x11::Atom target = unfetched_targets_.back();
   unfetched_targets_.pop_back();
@@ -137,7 +137,7 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
     // via XConvertSelection().
     return;
   }
-  DCHECK(drag_drop_client_);
+  CHECK(drag_drop_client_, base::NotFatalUntil::M163);
 
   DVLOG(1) << "SelectionNotify, format " << static_cast<uint32_t>(event.target);
 
@@ -145,7 +145,8 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
   auto target = static_cast<x11::Atom>(event.target);
 
   if (event.property != x11::Atom::None) {
-    DCHECK_EQ(property, x11::GetAtom(kChromiumDragReciever));
+    CHECK_EQ(property, x11::GetAtom(kChromiumDragReciever),
+             base::NotFatalUntil::M163);
 
     scoped_refptr<base::RefCountedMemory> data;
     x11::Atom type = x11::Atom::None;

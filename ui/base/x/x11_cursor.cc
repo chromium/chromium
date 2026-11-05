@@ -30,7 +30,7 @@ void X11Cursor::OnCursorLoaded(Callback callback) {
 }
 
 void X11Cursor::SetCursor(x11::Cursor cursor) {
-  DCHECK(!loaded_);
+  CHECK(!loaded_, base::NotFatalUntil::M163);
   loaded_ = true;
   xcursor_ = cursor;
   for (auto& callback : callbacks_)

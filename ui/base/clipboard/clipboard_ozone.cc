@@ -137,7 +137,7 @@ class ClipboardOzone::AsyncClipboardOzone {
  public:
   explicit AsyncClipboardOzone(PlatformClipboard* platform_clipboard)
       : platform_clipboard_(platform_clipboard), weak_factory_(this) {
-    DCHECK(platform_clipboard_);
+    CHECK(platform_clipboard_, base::NotFatalUntil::M163);
 
     // Set a callback to listen to requests to increase the clipboard sequence
     // number.
@@ -177,7 +177,7 @@ class ClipboardOzone::AsyncClipboardOzone {
     auto wrapped_data =
         base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
     for (const auto& mime_type : mime_types) {
-      DCHECK_EQ(data_to_offer_.count(mime_type), 0U);
+      CHECK_EQ(data_to_offer_.count(mime_type), 0U, base::NotFatalUntil::M163);
       data_to_offer_[mime_type] = wrapped_data;
     }
   }
@@ -269,8 +269,9 @@ class ClipboardOzone::AsyncClipboardOzone {
   }
 
   void OnClipboardDataChanged(ClipboardBuffer buffer) {
-    DCHECK(buffer == ClipboardBuffer::kCopyPaste ||
-           platform_clipboard_->IsSelectionBufferAvailable());
+    CHECK(buffer == ClipboardBuffer::kCopyPaste ||
+              platform_clipboard_->IsSelectionBufferAvailable(),
+          base::NotFatalUntil::M163);
     if (buffer == ClipboardBuffer::kCopyPaste) {
       clipboard_sequence_number_ = ClipboardSequenceNumberToken();
       // Only notify clipboard observers for regular clipboard changes,
@@ -358,7 +359,7 @@ void ClipboardOzone::GetAllAvailableFormats(
     const std::optional<DataTransferEndpoint>& data_dst,
     base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
     const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   async_clipboard_ozone_->ReadSourceAsync(
       buffer, base::BindOnce(&ClipboardOzone::OnGetAllAvailableFormats,
@@ -417,7 +418,7 @@ void ClipboardOzone::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAvailableTypesCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   async_clipboard_ozone_->GetAvailableMimeTypesAsync(
       buffer, base::BindOnce(&ClipboardOzone::OnReadAvailableTypes,
@@ -513,7 +514,7 @@ void ClipboardOzone::ReadText(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadTextCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   ReadAsync(buffer, kMimeTypePlainText, data_dst, ClipboardFormatMetric::kText,
             std::move(callback),
             [](ReadTextCallback callback, const PlatformClipboard::Data& data) {
@@ -529,7 +530,7 @@ void ClipboardOzone::ReadAsciiText(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAsciiTextCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   ReadAsync(
       buffer, kMimeTypePlainText, data_dst, ClipboardFormatMetric::kText,
       std::move(callback),
@@ -543,7 +544,7 @@ void ClipboardOzone::ReadHTML(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadHtmlCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   ReadAsync(buffer, kMimeTypeHtml, data_dst, ClipboardFormatMetric::kHtml,
             std::move(callback),
             [](ReadHtmlCallback callback, const PlatformClipboard::Data& data) {
@@ -563,7 +564,7 @@ void ClipboardOzone::ReadSvg(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadSvgCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   ReadAsync(buffer, kMimeTypeSvg, data_dst, ClipboardFormatMetric::kSvg,
             std::move(callback),
             [](ReadSvgCallback callback, const PlatformClipboard::Data& data) {
@@ -579,7 +580,7 @@ void ClipboardOzone::ReadRTF(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadRTFCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   ReadAsync(buffer, kMimeTypeRtf, data_dst, ClipboardFormatMetric::kRtf,
             std::move(callback),
             [](ReadRTFCallback callback, const PlatformClipboard::Data& data) {
@@ -592,7 +593,7 @@ void ClipboardOzone::ReadPng(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadPngCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   ReadAsync(buffer, kMimeTypePng, data_dst, ClipboardFormatMetric::kPng,
             std::move(callback),
             [](ReadPngCallback callback, const PlatformClipboard::Data& data) {
@@ -606,7 +607,7 @@ void ClipboardOzone::ReadDataTransferCustomData(
     const std::u16string& type,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadDataTransferCustomDataCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   ReadAsync(buffer, kMimeTypeDataTransferCustomData, data_dst,
             ClipboardFormatMetric::kCustomData, std::move(callback),
@@ -628,7 +629,7 @@ void ClipboardOzone::ReadFilenames(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadFilenamesCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   ReadAsync(
       buffer, kMimeTypeUriList, data_dst, ClipboardFormatMetric::kFilenames,
       std::move(callback),
@@ -642,7 +643,7 @@ void ClipboardOzone::ReadFilenames(
 void ClipboardOzone::ReadURL(
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadUrlCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   NOTIMPLEMENTED();
   std::move(callback).Run(ClipboardUrlInfo());
 }
@@ -651,7 +652,7 @@ void ClipboardOzone::ReadData(
     const ClipboardFormatType& format,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadDataCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   ReadAsync(ClipboardBuffer::kCopyPaste, format.GetName(), data_dst,
             ClipboardFormatMetric::kData, std::move(callback),
             [](ReadDataCallback callback, const PlatformClipboard::Data& data) {
@@ -694,7 +695,7 @@ void ClipboardOzone::WritePortableAndPlatformRepresentations(
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   async_clipboard_ozone_->PrepareForWriting();
   DispatchPlatformRepresentations(std::move(platform_representations));

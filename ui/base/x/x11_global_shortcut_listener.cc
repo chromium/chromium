@@ -53,8 +53,8 @@ XGlobalShortcutListener::~XGlobalShortcutListener() {
 }
 
 void XGlobalShortcutListener::StartListening() {
-  DCHECK(!is_listening_);  // Don't start twice.
-  DCHECK(!registered_combinations_.empty());
+  CHECK(!is_listening_, base::NotFatalUntil::M163);  // Don't start twice.
+  CHECK(!registered_combinations_.empty(), base::NotFatalUntil::M163);
 
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
 
@@ -62,8 +62,10 @@ void XGlobalShortcutListener::StartListening() {
 }
 
 void XGlobalShortcutListener::StopListening() {
-  DCHECK(is_listening_);  // No point if we are not already listening.
-  DCHECK(registered_combinations_.empty());
+  CHECK(
+      is_listening_,
+      base::NotFatalUntil::M163);  // No point if we are not already listening.
+  CHECK(registered_combinations_.empty(), base::NotFatalUntil::M163);
 
   PlatformEventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 
@@ -130,7 +132,7 @@ void XGlobalShortcutListener::UnregisterAccelerator(KeyboardCode key_code,
 }
 
 void XGlobalShortcutListener::OnKeyPressEvent(const KeyEvent& event) {
-  DCHECK_EQ(event.type(), EventType::kKeyPressed);
+  CHECK_EQ(event.type(), EventType::kKeyPressed, base::NotFatalUntil::M163);
 
   const KeyboardCode key_code = event.key_code();
   const bool is_alt_down = event.flags() & EF_ALT_DOWN;

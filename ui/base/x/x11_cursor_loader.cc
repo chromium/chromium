@@ -126,7 +126,7 @@ x11::Render::PictFormat GetRenderARGBFormat(
 }
 
 std::vector<std::string> GetBaseThemes(const base::FilePath& abspath) {
-  DCHECK(abspath.IsAbsolute());
+  CHECK(abspath.IsAbsolute(), base::NotFatalUntil::M163);
   constexpr const char kKeyInherits[] = "Inherits";
   std::string contents;
   base::ReadFileToString(abspath, &contents);
@@ -580,7 +580,7 @@ bool XCursorLoader::SupportsCreateAnimCursor() const {
 void XCursorLoader::OnPropertyChanged(x11::Atom property,
                                       const x11::GetPropertyResponse& value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(property, x11::Atom::RESOURCE_MANAGER);
+  CHECK_EQ(property, x11::Atom::RESOURCE_MANAGER, base::NotFatalUntil::M163);
 
   rm_xcursor_theme_ = "";
   rm_xcursor_size_ = 0;

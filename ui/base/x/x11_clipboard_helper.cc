@@ -161,7 +161,7 @@ XClipboardHelper::XClipboardHelper(
           std::make_unique<SelectionRequester>(x_window_, this)),
       clipboard_owner_(connection_.get(), x_window_, x11::GetAtom(kClipboard)),
       primary_owner_(connection_.get(), x_window_, x11::Atom::PRIMARY) {
-  DCHECK(selection_requester_);
+  CHECK(selection_requester_, base::NotFatalUntil::M163);
 
   connection_->SetStringProperty(x_window_, x11::Atom::WM_NAME,
                                  x11::Atom::STRING, "Chromium clipboard");
@@ -463,7 +463,8 @@ bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
     } else {
       // We should not get requests for the CLIPBOARD_MANAGER selection
       // because we never take ownership of it.
-      DCHECK_EQ(GetCopyPasteSelection(), request->selection);
+      CHECK_EQ(GetCopyPasteSelection(), request->selection,
+               base::NotFatalUntil::M163);
       clipboard_owner_.OnSelectionRequest(*request);
     }
   } else if (auto* notify = xev.As<x11::SelectionNotifyEvent>()) {
@@ -481,7 +482,8 @@ bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
     } else {
       // We should not get requests for the CLIPBOARD_MANAGER selection
       // because we never take ownership of it.
-      DCHECK_EQ(GetCopyPasteSelection(), clear->selection);
+      CHECK_EQ(GetCopyPasteSelection(), clear->selection,
+               base::NotFatalUntil::M163);
       clipboard_owner_.OnSelectionClear(*clear);
     }
   } else if (auto* prop = xev.As<x11::PropertyNotifyEvent>()) {
@@ -531,7 +533,7 @@ const SelectionFormatMap& XClipboardHelper::LookupStorageForAtom(
     return primary_owner_.selection_format_map();
   }
 
-  DCHECK_EQ(GetCopyPasteSelection(), atom);
+  CHECK_EQ(GetCopyPasteSelection(), atom, base::NotFatalUntil::M163);
   return clipboard_owner_.selection_format_map();
 }
 

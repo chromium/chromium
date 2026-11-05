@@ -132,9 +132,9 @@ void OverlayScrollbarAnimatorMac::DidScroll() {
   }
 
   // This is an initial scroll causing the thumb to appear.
-  DCHECK_EQ(thumb_width_, thumb_width_unexpanded_);
-  DCHECK_EQ(thumb_alpha_, 0.f);
-  DCHECK(!fade_in_track_animation_);
+  CHECK_EQ(thumb_width_, thumb_width_unexpanded_, base::NotFatalUntil::M163);
+  CHECK_EQ(thumb_alpha_, 0.f, base::NotFatalUntil::M163);
+  CHECK(!fade_in_track_animation_, base::NotFatalUntil::M163);
   thumb_width_ = thumb_width_unexpanded_;
   thumb_alpha_ = 1;
   client_->SetThumbNeedsDisplay();
@@ -168,8 +168,8 @@ void OverlayScrollbarAnimatorMac::FadeOutScrollbarIfNeeded() {
 }
 
 void OverlayScrollbarAnimatorMac::ExpandThumbAnimationStart() {
-  DCHECK(!expand_thumb_animation_);
-  DCHECK_NE(thumb_width_, thumb_width_expanded_);
+  CHECK(!expand_thumb_animation_, base::NotFatalUntil::M163);
+  CHECK_NE(thumb_width_, thumb_width_expanded_, base::NotFatalUntil::M163);
   expand_thumb_animation_ = std::make_unique<ScrollbarAnimationTimerMac>(
       base::BindRepeating(
           &OverlayScrollbarAnimatorMac::ExpandThumbAnimationTicked,
@@ -189,8 +189,8 @@ void OverlayScrollbarAnimatorMac::ExpandThumbAnimationTicked(double progress) {
 }
 
 void OverlayScrollbarAnimatorMac::FadeInTrackAnimationStart() {
-  DCHECK(!fade_in_track_animation_);
-  DCHECK(!fade_out_animation_);
+  CHECK(!fade_in_track_animation_, base::NotFatalUntil::M163);
+  CHECK(!fade_out_animation_, base::NotFatalUntil::M163);
   fade_in_track_animation_ = std::make_unique<ScrollbarAnimationTimerMac>(
       base::BindRepeating(
           &OverlayScrollbarAnimatorMac::FadeInTrackAnimationTicked,
@@ -202,7 +202,7 @@ void OverlayScrollbarAnimatorMac::FadeInTrackAnimationStart() {
 
 void OverlayScrollbarAnimatorMac::FadeInTrackAnimationTicked(double progress) {
   // Fade-in and fade-out are mutually exclusive.
-  DCHECK(!fade_out_animation_);
+  CHECK(!fade_out_animation_, base::NotFatalUntil::M163);
 
   track_alpha_ = progress;
   client_->SetTrackNeedsDisplay();
@@ -248,7 +248,7 @@ void OverlayScrollbarAnimatorMac::FadeOutAnimationStart() {
 }
 
 void OverlayScrollbarAnimatorMac::FadeOutAnimationTicked(double progress) {
-  DCHECK(!fade_in_track_animation_);
+  CHECK(!fade_in_track_animation_, base::NotFatalUntil::M163);
 
   // Fade out the thumb.
   thumb_alpha_ = 1 - progress;
@@ -266,8 +266,8 @@ void OverlayScrollbarAnimatorMac::FadeOutAnimationTicked(double progress) {
     fade_out_animation_.reset();
 
     thumb_width_ = thumb_width_unexpanded_;
-    DCHECK_EQ(thumb_alpha_, 0.f);
-    DCHECK_EQ(track_alpha_, 0.f);
+    CHECK_EQ(thumb_alpha_, 0.f, base::NotFatalUntil::M163);
+    CHECK_EQ(track_alpha_, 0.f, base::NotFatalUntil::M163);
 
     // Mark that the scrollbars were hidden.
     client_->SetHidden(true);
@@ -275,7 +275,7 @@ void OverlayScrollbarAnimatorMac::FadeOutAnimationTicked(double progress) {
 }
 
 void OverlayScrollbarAnimatorMac::FadeOutAnimationCancel() {
-  DCHECK(fade_out_animation_);
+  CHECK(fade_out_animation_, base::NotFatalUntil::M163);
   fade_out_animation_.reset();
   thumb_alpha_ = 1;
   client_->SetThumbNeedsDisplay();
