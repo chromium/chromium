@@ -62,3 +62,14 @@ OmniboxPopupWebUIPool::TakeIdleWebUIContents(
   }
   return nullptr;
 }
+
+void OmniboxPopupWebUIPool::DropOtherIdleWebUIContents(
+    const OmniboxPopupPresenterBase& presenter) {
+  for (OmniboxPopupPresenterBase* other : presenters_) {
+    if (other != &presenter && IsSameKind(*other, presenter) &&
+        other->CanReleaseWebUIContents()) {
+      // Destroys the released WebContents.
+      other->ReleaseWebUIContents();
+    }
+  }
+}

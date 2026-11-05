@@ -332,7 +332,8 @@ void OmniboxPopupPresenterBase::Hide() {
     // If external code already hid the widget (e.g. ash on a user switch), then
     // we need to destroy the widget to prevent the external code from
     // re-showing the widget.
-    const bool hidden_externally = is_open_ && !widget_->IsVisible();
+    const bool was_open = is_open_;
+    const bool hidden_externally = was_open && !widget_->IsVisible();
     is_open_ = false;
     widget_->Hide();
     if (auto* content = GetWebUIContent()) {
@@ -356,6 +357,10 @@ void OmniboxPopupPresenterBase::Hide() {
       // OS) and re-enter the popup state teardown already in progress.
       base::AutoReset<bool> destroying(&is_destroying_widget_, true);
       ReleaseWidget();
+    }
+
+    if (was_open && pool_client_) {
+      pool_client_->OnPopupHidden();
     }
   }
 }

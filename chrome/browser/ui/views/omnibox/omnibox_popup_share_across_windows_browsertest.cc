@@ -6,6 +6,8 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
@@ -118,6 +120,14 @@ class OmniboxPopupShareAcrossWindowsBrowserTest : public InProcessBrowserTest {
     CHECK(contents);
     WaitForPopupPage(contents);
     return contents;
+  }
+
+  // Runs the tasks posted so far.
+  static void FlushPostedTasks() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   static std::string GetPageResultInput(content::WebContents* contents) {
@@ -236,6 +246,29 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   WaitForPopupPage(new_contents);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return GetPageResultInput(new_contents) == "baz"; }));
+}
+
+// Hiding a popup destroys the idle copy that another window created while
+// that popup was busy, and keeps a copy that is still shown.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       HidingPopupDropsOtherIdleCopies) {
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  content::WebContents* contents = OpenLoadedPopup(browser());
+  content::WebContents* other_contents = OpenLoadedPopup(other_browser);
+  ASSERT_NE(other_contents, contents);
+
+  // The first window's popup is still shown, so it stays.
+  ClosePopup(other_browser);
+  FlushPostedTasks();
+  EXPECT_EQ(GetPopupContents(browser()), contents);
+  EXPECT_EQ(GetPopupContents(other_browser), other_contents);
+
+  // Now the other window's copy is idle and goes away.
+  ClosePopup(browser());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !GetPresenter(other_browser)->GetWebUIContent(); }));
+  EXPECT_EQ(GetPopupContents(browser()), contents);
 }
 
 // Tests sharing when windows prewarm their popup, as in

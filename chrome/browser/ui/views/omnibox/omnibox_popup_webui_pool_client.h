@@ -44,12 +44,22 @@ class OmniboxPopupWebUIPoolClient {
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>>
   TakeIdleWebUIContents();
 
+  // Called after the presenter hid its shown popup. Destroys the idle popups
+  // of the same kind in the profile's other windows, keeping this one, so that
+  // copies that other windows created while this popup was busy do not stay
+  // around.
+  void OnPopupHidden();
+
  private:
+  void DropOtherIdleWebUIContents();
+
   const raw_ref<OmniboxPopupPresenterBase> presenter_;
 
   // The pool outlives the presenter in practice, since browser windows keep
   // their profile alive; the weak pointer makes the order not matter.
   base::WeakPtr<OmniboxPopupWebUIPool> pool_;
+
+  base::WeakPtrFactory<OmniboxPopupWebUIPoolClient> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_WEBUI_POOL_CLIENT_H_

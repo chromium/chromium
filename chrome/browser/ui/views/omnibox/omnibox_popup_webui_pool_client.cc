@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool.h"
@@ -54,4 +56,19 @@ bool OmniboxPopupWebUIPoolClient::HasSharedWebUIContent() const {
 std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>>
 OmniboxPopupWebUIPoolClient::TakeIdleWebUIContents() {
   return pool_ ? pool_->TakeIdleWebUIContents(*presenter_) : nullptr;
+}
+
+void OmniboxPopupWebUIPoolClient::OnPopupHidden() {
+  // Posted so that other windows' popups are not destroyed from inside the
+  // hide, which can run from a widget activation change.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OmniboxPopupWebUIPoolClient::DropOtherIdleWebUIContents,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void OmniboxPopupWebUIPoolClient::DropOtherIdleWebUIContents() {
+  if (pool_ && presenter_->GetWebUIContent()) {
+    pool_->DropOtherIdleWebUIContents(*presenter_);
+  }
 }

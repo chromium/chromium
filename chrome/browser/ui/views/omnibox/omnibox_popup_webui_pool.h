@@ -45,6 +45,10 @@ class OmniboxPopupWebUIPool : public KeyedService {
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> TakeIdleWebUIContents(
       const OmniboxPopupPresenterBase& presenter);
 
+  // Destroys the idle popups of the same kind as `presenter` in other browser
+  // windows.
+  void DropOtherIdleWebUIContents(const OmniboxPopupPresenterBase& presenter);
+
  private:
   std::vector<raw_ptr<OmniboxPopupPresenterBase>> presenters_;
   base::WeakPtrFactory<OmniboxPopupWebUIPool> weak_factory_{this};
