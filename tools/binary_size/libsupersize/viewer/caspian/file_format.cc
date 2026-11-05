@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <charconv>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -19,6 +20,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "third_party/jsoncpp/source/include/json/json.h"
@@ -72,29 +74,39 @@ std::vector<const char*> ReadValuesFromLine(char** rest,
   std::vector<const char*> ret;
   char* rest_of_line = strsep(rest, "\n");
   // Check for empty line (otherwise "" is added).
-  if (!*rest_of_line)
+  if (!*rest_of_line) {
     return ret;
+  }
   while (true) {
     char* token = strsep(&rest_of_line, delimiter);
-    if (!token)
+    if (!token) {
       break;
+    }
     ret.push_back(token);
   }
   return ret;
 }
 
-template <typename T>
-std::vector<T> ReadIntList(char** rest,
-                           const char* delim,
-                           int n,
-                           bool stored_as_delta) {
-  char* rest_of_line = strsep(rest, "\n");
+// Similar to strsep(rest, "\n"), but returns a sized string_view without
+// calling strlen().
+std::string_view ReadLine(char** rest) {
+  char* start = strsep(rest, "\n");
+  if (!start) {
+    return {};
+  }
+  return *rest ? std::string_view(start, *rest - start - 1)
+               : std::string_view(start);
+}
 
-  std::vector<T> result;
-  result.resize(n);
+template <typename T>
+std::vector<T> ReadIntList(char** rest, int n, bool stored_as_delta) {
+  std::string_view line = ReadLine(rest);
+  const char* p = line.data();
+  const char* end = p + line.size();
+
+  std::vector<T> result(n);
   for (int i = 0; i < n; i++) {
-    char* token = strsep(&rest_of_line, delim);
-    result[i] = std::strtol(token, nullptr, 10);
+    p = std::from_chars(p, end, result[i]).ptr + 1;
   }
 
   if (stored_as_delta)
@@ -110,7 +122,7 @@ std::vector<std::vector<T>> ReadIntListForEachSection(
   std::vector<std::vector<T>> ret;
   ret.reserve(symbol_counts.size());
   for (int nsymbols : symbol_counts) {
-    ret.push_back(ReadIntList<T>(rest, " ", nsymbols, stored_as_delta));
+    ret.push_back(ReadIntList<T>(rest, nsymbols, stored_as_delta));
   }
   return ret;
 }
@@ -322,8 +334,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
   }
 
   // Symbol counts for each section.
-  std::vector<int> symbol_counts =
-      ReadIntList<int>(&rest, "\t", n_segments, false);
+  std::vector<int> symbol_counts = ReadIntList<int>(&rest, n_segments, false);
   std::cout << "Symbol counts:" << std::endl;
   int total_symbols =
       std::accumulate(symbol_counts.begin(), symbol_counts.end(), 0);
@@ -379,9 +390,13 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
 
       int32_t flags = 0;
       int32_t num_aliases = 0;
-      line = strsep(&rest, "\n");
-      if (*line) {
-        new_sym.full_name_ = strsep(&line, "\t");
+      std::string_view sym_line = ReadLine(&rest);
+      if (!sym_line.empty()) {
+        size_t tab_idx = sym_line.find('\t');
+        new_sym.full_name_ = sym_line.substr(0, tab_idx);
+        line = (tab_idx != std::string_view::npos)
+                   ? const_cast<char*>(sym_line.data() + tab_idx + 1)
+                   : nullptr;
         char* first = nullptr;
         char* second = nullptr;
         if (line) {
@@ -426,6 +441,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
       if (num_aliases) {
         assert(alias_counter == 0);
         info->alias_groups.emplace_back();
+        info->alias_groups.back().reserve(num_aliases);
         alias_counter = num_aliases;
       }
       if (alias_counter > 0) {

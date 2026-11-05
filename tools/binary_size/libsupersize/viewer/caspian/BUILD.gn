@@ -42,6 +42,7 @@ source_set("caspian-lib") {
 test("caspian_unittests") {
   sources = [
     "diff_test.cc",
+    "file_format_test.cc",
     "function_signature_test.cc",
     "grouped_path_test.cc",
     "lens_test.cc",
@@ -55,6 +56,7 @@ test("caspian_unittests") {
     "//testing/gtest:gtest_main",
     "//third_party/abseil-cpp:test_support",
     "//third_party/re2",
+    "//third_party/zlib/google:compression_utils_portable",
   ]
 }
 
