@@ -47,6 +47,7 @@ constexpr net::NetworkTrafficAnnotationTag
         "information. See ClientIncidentReport in 'https://cs.chromium.org/"
         "chromium/src/components/safe_browsing/csd.proto' for more details."
       destination: GOOGLE_OWNED_SERVICE
+      legacy_api_url: "https://sb-ssl.google.com/safebrowsing/clientreport/incident"
     }
     policy {
       cookies_allowed: YES
