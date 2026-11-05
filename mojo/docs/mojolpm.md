@@ -98,7 +98,7 @@ preferred if you use this same structure and simply add the appropriate Actions
 for your fuzzer. This will allow more code-reuse between fuzzers, and also
 allow corpus-merging between related fuzzers.
 
-```
+```protobuf
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -182,7 +182,7 @@ common code used to share the basics of a browser-process like environment
 between fuzzers. New fuzzers in other areas of the codebase may need to build
 something similar.
 
-```
+```python
 mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   sources = [
     "code_cache_host_mojolpm_fuzzer.cc"
@@ -230,9 +230,7 @@ arguments:
 # DCHECKS are really useful when getting your fuzzer up and running correctly,
 # but will often get in the way when running actual fuzzing, so we will disable
 # this later.
-# TODO(crbug.com/476159166): currently broken; fix the ability to run mojolpm
-# fuzzers with DCHECK and re-enable this recommendation.
-# dcheck_always_on = true
+dcheck_always_on = true
 
 # Without this flag, our fuzzer target won't exist.
 enable_mojom_fuzzer = true
@@ -287,7 +285,7 @@ likely that we want to be able to have multiple `CodeCacheHostImpl`'s with
 different render_process_ids and different backing origins, so we need to modify
 our proto file to reflect this:
 
-```
+```protobuf
 message NewCodeCacheHost {
   enum OriginId {
     ORIGIN_A = 0;
@@ -438,9 +436,9 @@ the rough structure of the presentation service fuzzer")
 
 Make a corpus directory and fire up your shiny new fuzzer!
 
-```
- ~/chromium/src% export ASAN_OPTIONS=detect_odr_violation=0,handle_abort=1,handle_sigtrap=1,handle_sigill=1
- ~/chromium/src% out/Default/code_cache_host_mojolpm_fuzzer /dev/shm/corpus
+```console
+chromium/src$ export ASAN_OPTIONS=detect_odr_violation=0,handle_abort=1,handle_sigtrap=1,handle_sigill=1
+chromium/src$ out/Default/code_cache_host_mojolpm_fuzzer /dev/shm/corpus
 INFO: Seed: 3273881842
 INFO: Loaded 1 modules   (1121912 inline 8-bit counters): 1121912 [0x559151a1aea8, 0x559151b2cd20),
 INFO: Loaded 1 PC tables (1121912 PCs): 1121912 [0x559151b2cd20,0x559152c4b4a0),
@@ -591,9 +589,12 @@ use_remoteexec = true
 use_libfuzzer = true
 ```
 
+```console
+chromium/src$ vpython3 tools/code_coverage/coverage.py code_cache_host_mojolpm_fuzzer -b out/Coverage -o ManualReport -c "out/Coverage/code_cache_host_mojolpm_fuzzer -ignore_timeouts=1 -timeout=4 -runs=0 /dev/shm/corpus" -f content --coverage-tools-dir third_party/llvm-build/Release+Asserts/bin
 ```
-python tools/code_coverage/coverage.py code_cache_host_mojolpm_fuzzer -b out/Coverage -o ManualReport -c "out/Coverage/code_cache_host_mojolpm_fuzzer -ignore_timeouts=1 -timeout=4 -runs=0 /dev/shm/corpus" -f content
-```
+
+> **Note**: If `third_party/llvm-build/Release+Asserts/bin` is missing, run the
+> following from the `src` directory: `vpython3 tools/clang/scripts/update.py`
 
 With the `CodeCacheHost`, looking at the coverage after a few hours we could see
 that there's definitely some room for improvement:
@@ -623,7 +624,7 @@ painful for us, and letting us store our corpus in-tree in a readable format.
 So, we'll create a new folder to hold this seed corpus, and craft our first
 file:
 
-```
+```protobuf
 actions {
   new_code_cache_host {
     id: 1
@@ -664,7 +665,7 @@ sequence_indexes: 0
 We can then add some new entries to our build target to have the corpus
 converted to binary proto directly during build.
 
-```
+```python
   testcase_proto_kind = "content.fuzzing.code_cache_host.proto.Testcase"
 
   seed_corpus_sources = [
@@ -676,10 +677,10 @@ If we now run a new coverage report using this single file seed corpus:
 (note that the binary corpus files will be output in your output directory, in
 this case code_cache_host_mojolpm_fuzzer_seed_corpus.zip):
 
-```
-autoninja -C out/Coverage chrome
-rm -rf /tmp/corpus; mkdir /tmp/corpus; unzip out/Coverage/code_cache_host_mojolpm_fuzzer_seed_corpus.zip -d /tmp/corpus
-python tools/code_coverage/coverage.py code_cache_host_mojolpm_fuzzer -b out/Coverage -o ManualReport -c "out/Coverage/code_cache_host_mojolpm_fuzzer -ignore_timeouts=1 -timeout=4 -runs=0 /tmp/corpus" -f content
+```console
+chromium/src$ autoninja -C out/Coverage chrome
+chromium/src$ rm -rf /tmp/corpus; mkdir /tmp/corpus; unzip out/Coverage/code_cache_host_mojolpm_fuzzer_seed_corpus.zip -d /tmp/corpus
+chromium/src$ vpython3 tools/code_coverage/coverage.py code_cache_host_mojolpm_fuzzer -b out/Coverage -o ManualReport -c "out/Coverage/code_cache_host_mojolpm_fuzzer -ignore_timeouts=1 -timeout=4 -runs=0 /tmp/corpus" -f content --coverage-tools-dir third_party/llvm-build/Release+Asserts/bin
 ```
 
 We can see that we're now getting some more coverage:
