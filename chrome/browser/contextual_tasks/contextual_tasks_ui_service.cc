@@ -3883,6 +3883,10 @@ void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
   if (!panel_was_closed) {
     if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
       ShowAndRecordErrorPage(web_ui_interface->GetPageRemote(), source);
+    } else if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+      controller->OnTaskChanged(web_contents, task_id);
+      controller->SetErrorPageVisible(true);
+      RecordErrorPageShown(source);
     }
   }
 }
@@ -3899,6 +3903,9 @@ bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
     return false;
   }
   RecordErrorPageShown(*it->second.pending_error_page_source);
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    it->second.pending_error_page_source.reset();
+  }
   return true;
 }
 
