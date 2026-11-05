@@ -1232,13 +1232,12 @@ TEST_F(GeminiActuationHandlerTest,
   action.SerializeToString(&serialized);
   NSData* data = [NSData dataWithBytes:serialized.data()
                                 length:serialized.size()];
-  GeminiActuationRequest* request = [[GeminiActuationRequest alloc]
-               initWithActionProtos:@[ data ]
-                         taskUpdate:@"Update"
-                        yieldAction:nil
-      addedWritableMainframeOrigins:@[
-        @"https://granted.com/path", @"not a url", @"about:blank"
-      ]];
+  GeminiActuationRequest* request =
+      [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
+                                                taskUpdate:@"Update"
+                                               yieldAction:nil];
+  request.addedWritableMainframeOrigins =
+      @[ @"https://granted.com/path", @"not a url", @"about:blank" ];
 
   base::test::TestFuture<GeminiActuationResponse*> future;
   [handler dispatchActuationRequest:request

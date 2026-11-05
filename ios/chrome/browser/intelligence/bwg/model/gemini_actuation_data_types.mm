@@ -35,26 +35,14 @@ NSData* SerializeProtoToNSData(const ProtoMessage& message) {
 
 - (instancetype)initWithActionProtos:(NSArray<NSData*>*)actionProtos
                           taskUpdate:(NSString*)taskUpdate
-                         yieldAction:(GeminiYieldAction*)yieldAction
-       addedWritableMainframeOrigins:
-           (NSArray<NSString*>*)addedWritableMainframeOrigins {
+                         yieldAction:(GeminiYieldAction*)yieldAction {
   self = [super init];
   if (self) {
     _actionProtos = [actionProtos copy];
     _taskUpdate = [taskUpdate copy];
     _yieldAction = yieldAction;
-    _addedWritableMainframeOrigins = [addedWritableMainframeOrigins copy];
   }
   return self;
-}
-
-- (instancetype)initWithActionProtos:(NSArray<NSData*>*)actionProtos
-                          taskUpdate:(NSString*)taskUpdate
-                         yieldAction:(GeminiYieldAction*)yieldAction {
-  return [self initWithActionProtos:actionProtos
-                         taskUpdate:taskUpdate
-                        yieldAction:yieldAction
-      addedWritableMainframeOrigins:nil];
 }
 
 @end
