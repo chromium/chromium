@@ -247,7 +247,8 @@ public class HintTextUpdaterUnitTest {
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
 
         String searchEngineHint = "Search Google or type URL";
-        String aiModeHint = "Ask anything";
+        String aiModeToolHint = "AI Mode Tool Hint";
+        String clientAiModeHint = "Ask anything";
         String imageGenHint = "Image Gen Tool Hint";
         String deepSearchHint = "Deep Search Tool Hint";
         String canvasHint = "Canvas Tool Hint";
@@ -260,7 +261,7 @@ public class HintTextUpdaterUnitTest {
         ToolConfig aiModeConfig =
                 ToolConfig.newBuilder()
                         .setToolValue(ToolMode.TOOL_MODE_UNSPECIFIED)
-                        .setHintText(aiModeHint)
+                        .setHintText(aiModeToolHint)
                         .build();
         ToolConfig imageGenConfig =
                 ToolConfig.newBuilder()
@@ -305,13 +306,13 @@ public class HintTextUpdaterUnitTest {
 
         clearInvocations(mUpdateHintTextCallback);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        verify(mUpdateHintTextCallback).onResult(eq(aiModeHint));
+        verify(mUpdateHintTextCallback).onResult(eq(aiModeToolHint));
 
         clearInvocations(mUpdateHintTextCallback);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
         when(mFuseboxSessionState.getComposeboxQueryControllerBridge()).thenReturn(null);
         mUpdater.onTitleChanged();
-        verify(mUpdateHintTextCallback).onResult(eq(searchEngineHint));
+        verify(mUpdateHintTextCallback).onResult(eq(clientAiModeHint));
         when(mFuseboxSessionState.getComposeboxQueryControllerBridge())
                 .thenReturn(mComposeboxQueryControllerBridge);
 
@@ -319,7 +320,7 @@ public class HintTextUpdaterUnitTest {
         InputState emptyHintState = new InputStateBuilder().withHintText("").build();
         mInputStateSupplier.set(emptyHintState);
         mUpdater.onTitleChanged();
-        verify(mUpdateHintTextCallback).onResult(eq(searchEngineHint));
+        verify(mUpdateHintTextCallback).onResult(eq(clientAiModeHint));
     }
 
     @Test
@@ -454,7 +455,11 @@ public class HintTextUpdaterUnitTest {
 
         clearInvocations(mUpdateHintTextCallback);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
-        verify(mUpdateHintTextCallback).onResult(eq("Describe your image"));
+        verify(mUpdateHintTextCallback).onResult(eq("Ask anything"));
+
+        clearInvocations(mUpdateHintTextCallback);
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+        verify(mUpdateHintTextCallback).onResult(eq("Ask anything"));
     }
 
     @Test

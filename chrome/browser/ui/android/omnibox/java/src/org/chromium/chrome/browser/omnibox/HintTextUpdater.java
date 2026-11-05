@@ -269,7 +269,12 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return inputStateHint;
         }
 
-        return getSearchEngineHintText(searchEngineService, searchEngineName);
+        if (mCurrentInput != null && ToolModeUtils.isAimRequest(mCurrentInput.getRequestType())) {
+            return mResourceProvider.getString(R.string.omnibox_ai_mode_scope_placeholder_text);
+        }
+
+        return mResourceProvider.getString(
+                searchEngineService.getOmniboxHintStringRes(), searchEngineName);
     }
 
     /**
@@ -313,22 +318,6 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         }
 
         return TextUtils.isEmpty(inputState.hintText) ? null : inputState.hintText;
-    }
-
-    private String getSearchEngineHintText(
-            SearchEngineService searchEngineService, String searchEngineName) {
-        if (mCurrentInput != null) {
-            switch (mCurrentInput.getRequestType()) {
-                case AutocompleteRequestType.AI_MODE:
-                    return mResourceProvider.getString(
-                            R.string.omnibox_ai_mode_scope_placeholder_text, searchEngineName);
-                case AutocompleteRequestType.IMAGE_GENERATION:
-                    return mResourceProvider.getString(
-                            R.string.omnibox_empty_hint_for_image_generation, searchEngineName);
-            }
-        }
-        return mResourceProvider.getString(
-                searchEngineService.getOmniboxHintStringRes(), searchEngineName);
     }
 
     private boolean useAimActivationOrEmptyHint() {
