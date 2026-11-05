@@ -5,6 +5,7 @@
 #include "ui/android/modal_dialog_manager_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/ModalDialogManagerBridge_jni.h"
@@ -50,15 +51,9 @@ void ModalDialogManagerBridge::DismissDialog(
 // `ui/android/ui_android_jni_headers/ModalDialogManagerBridge_jni.h`
 // implementations.
 
-static int64_t JNI_ModalDialogManagerBridge_Create(
-    JNIEnv* env,
+static auto JNI_ModalDialogManagerBridge_Create(
     const jni_zero::JavaRef<jobject>& manager) {
-  return reinterpret_cast<intptr_t>(new ModalDialogManagerBridge(manager));
-}
-
-static void JNI_ModalDialogManagerBridge_Destroy(JNIEnv* env,
-                                                 int64_t mNativeBridgePtr) {
-  delete reinterpret_cast<ModalDialogManagerBridge*>(mNativeBridgePtr);
+  return jni_zero::MakeUnique<ModalDialogManagerBridge>(manager);
 }
 
 }  // namespace ui

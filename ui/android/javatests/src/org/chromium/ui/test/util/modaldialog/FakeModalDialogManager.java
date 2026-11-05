@@ -60,6 +60,12 @@ public class FakeModalDialogManager extends ModalDialogManager {
     }
 
     @Override
+    @CalledByNativeForTesting
+    public void destroy() {
+        super.destroy();
+    }
+
+    @Override
     public void showDialog(PropertyModel model, int dialogType) {
         mShownDialogModel = model;
     }

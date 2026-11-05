@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/display_android_manager.h"
+#include "ui/android/modal_dialog_manager_bridge.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android_compositor.h"
@@ -309,9 +310,7 @@ ProgressBarConfig WindowAndroid::GetProgressBarConfig() {
 }
 
 ModalDialogManagerBridge* WindowAndroid::GetModalDialogManagerBridge() {
-  JNIEnv* env = AttachCurrentThread();
-  return reinterpret_cast<ModalDialogManagerBridge*>(
-      java_window_->getNativeModalDialogManagerBridge(env));
+  return java_window_->getNativeModalDialogManagerBridge(AttachCurrentThread());
 }
 
 void WindowAndroid::SetModalDialogManagerForTesting(

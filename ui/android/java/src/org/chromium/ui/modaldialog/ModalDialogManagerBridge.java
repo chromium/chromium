@@ -6,6 +6,10 @@ package org.chromium.ui.modaldialog;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -15,34 +19,32 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 @JNINamespace("ui")
 @NullMarked
 public class ModalDialogManagerBridge {
+    @JniType("::ui::ModalDialogManagerBridge")
+    public interface NativeModalDialogManagerBridge extends JniTypeToken {}
 
     private final ModalDialogManager mModalDialogManager;
-    private long mNativePtr;
+    private final JniUniquePtr<NativeModalDialogManagerBridge> mNativePtr;
 
     public ModalDialogManagerBridge(ModalDialogManager manager) {
         mModalDialogManager = manager;
         mNativePtr = ModalDialogManagerBridgeJni.get().create(this);
     }
 
-    public long getNativePtr() {
+    public JniPtr<NativeModalDialogManagerBridge> getNativePtr() {
         return mNativePtr;
     }
 
     public void destroyNative() {
-        assert mNativePtr != 0;
-        ModalDialogManagerBridgeJni.get().destroy(mNativePtr);
-        mNativePtr = 0;
+        mNativePtr.destroy();
     }
 
     @CalledByNative
     private int suspendModalDialogs(@ModalDialogType int dialogType) {
-        assert mNativePtr != 0;
         return mModalDialogManager.suspendType(dialogType);
     }
 
     @CalledByNative
     private void resumeModalDialogs(@ModalDialogType int dialogType, int token) {
-        assert mNativePtr != 0;
         mModalDialogManager.resumeType(dialogType, token);
     }
 
@@ -59,8 +61,6 @@ public class ModalDialogManagerBridge {
 
     @NativeMethods
     interface Natives {
-        long create(ModalDialogManagerBridge manager);
-
-        void destroy(long mNativePtr);
+        JniUniquePtr<NativeModalDialogManagerBridge> create(ModalDialogManagerBridge manager);
     }
 }

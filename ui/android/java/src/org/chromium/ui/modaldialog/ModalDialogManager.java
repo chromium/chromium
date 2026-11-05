@@ -12,6 +12,8 @@ import android.view.View;
 import androidx.activity.ComponentDialog;
 import androidx.annotation.IntDef;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
@@ -21,6 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.UiSwitches;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modaldialog.ModalDialogManagerBridge.NativeModalDialogManagerBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
@@ -652,9 +655,9 @@ public class ModalDialogManager {
         assumeNonNull(mTokenHolders.get(dialogType)).releaseToken(token);
     }
 
-    public long getOrCreateNativeBridge() {
+    public @Nullable JniPtr<NativeModalDialogManagerBridge> getOrCreateNativeBridge() {
         // Prevents the bridge gets recreated after `destroy()` is called.
-        if (mDestroyed) return 0;
+        if (mDestroyed) return null;
 
         if (mModalDialogManagerBridge == null) {
             mModalDialogManagerBridge = new ModalDialogManagerBridge(this);

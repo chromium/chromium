@@ -22,14 +22,17 @@ std::unique_ptr<FakeModalDialogManagerBridge>
 FakeModalDialogManagerBridge::CreateForTab(WindowAndroid* window,
                                            bool use_empty_java_presenter) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto fake_manager = base::WrapUnique(new FakeModalDialogManagerBridge(
-      Java_FakeModalDialogManager_createForTab(env, use_empty_java_presenter),
-      window));
-  window->SetModalDialogManagerForTesting(fake_manager->j_fake_manager_);
+  base::android::ScopedJavaLocalRef<jobject> j_fake_manager =
+      Java_FakeModalDialogManager_createForTab(env, use_empty_java_presenter);
+  auto fake_manager = base::WrapUnique(
+      new FakeModalDialogManagerBridge(j_fake_manager, window));
+  window->SetModalDialogManagerForTesting(std::move(j_fake_manager));
   return fake_manager;
 }
 
 FakeModalDialogManagerBridge::~FakeModalDialogManagerBridge() {
+  Java_FakeModalDialogManager_destroy(base::android::AttachCurrentThread(),
+                                      j_fake_manager_);
   window_->SetModalDialogManagerForTesting(
       base::android::ScopedJavaLocalRef<jobject>());
 }
@@ -140,7 +143,7 @@ void FakeModalDialogManagerBridge::DismissAllDialogs(int dismissal_cause) {
 
 // private.
 FakeModalDialogManagerBridge::FakeModalDialogManagerBridge(
-    base::android::ScopedJavaLocalRef<jobject> j_fake_manager,
+    const base::android::JavaRef<jobject>& j_fake_manager,
     WindowAndroid* window)
     : j_fake_manager_(j_fake_manager), window_(window) {}
 

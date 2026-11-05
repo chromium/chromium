@@ -55,10 +55,10 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
 
  private:
   FakeModalDialogManagerBridge(
-      base::android::ScopedJavaLocalRef<jobject> j_fake_manager_,
+      const base::android::JavaRef<jobject>& j_fake_manager,
       WindowAndroid* window);
 
-  const base::android::ScopedJavaLocalRef<jobject> j_fake_manager_;
+  const base::android::ScopedJavaGlobalRef<jobject> j_fake_manager_;
   const raw_ptr<WindowAndroid> window_;
 };
 
