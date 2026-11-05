@@ -102,16 +102,15 @@ class GeminiTabHelperTest : public PlatformTest {
     web_state_->WasShown();
     GeminiTabHelper::CreateForWebState(web_state_.get(),
                                        &fake_page_context_wrapper_factory_);
-    tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
 
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
-    tab_helper_->SetGeminiHandler(mock_gemini_handler_);
+    tab_helper()->SetGeminiHandler(mock_gemini_handler_);
     mock_location_bar_badge_handler_ =
         OCMProtocolMock(@protocol(LocationBarBadgeCommands));
-    tab_helper_->SetLocationBarBadgeCommandsHandler(
+    tab_helper()->SetLocationBarBadgeCommandsHandler(
         mock_location_bar_badge_handler_);
     mock_help_handler_ = OCMProtocolMock(@protocol(HelpCommands));
-    tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+    tab_helper()->SetHelpCommandsHandler(mock_help_handler_);
   }
 
   void TearDown() override {
@@ -131,7 +130,10 @@ class GeminiTabHelperTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   FakePageContextWrapperFactory fake_page_context_wrapper_factory_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  raw_ptr<GeminiTabHelper, DanglingUntriaged> tab_helper_;
+
+  GeminiTabHelper* tab_helper() {
+    return GeminiTabHelper::FromWebState(web_state_.get());
+  }
 
   // Mock BWG handler.
   id mock_gemini_handler_;
@@ -209,11 +211,11 @@ class GeminiTabHelperTest : public PlatformTest {
   void SimulateGeminiEligibilityDecisionReceived(
       const GURL& url,
       const optimization_guide::OptimizationMetadata& metadata) {
-    tab_helper_->current_url_ = url;
+    tab_helper()->current_url_ = url;
     bool user_enabled = profile_->GetPrefs()->GetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
     if (user_enabled) {
-      tab_helper_->OnGeminiEligibilityDecision(
+      tab_helper()->OnGeminiEligibilityDecision(
           url, /*was_proactive_fetch_used=*/true,
           optimization_guide::OptimizationGuideDecision::kTrue, metadata);
     } else {
@@ -222,7 +224,7 @@ class GeminiTabHelperTest : public PlatformTest {
           decisions;
       decisions[optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS] = {
           optimization_guide::OptimizationGuideDecision::kTrue, metadata};
-      tab_helper_->OnGeminiEligibilityOnDemandDecision(url, decisions);
+      tab_helper()->OnGeminiEligibilityOnDemandDecision(url, decisions);
     }
   }
 
@@ -246,7 +248,7 @@ TEST_F(GeminiTabHelperTest, TestContextualChipCommandSent) {
       std::make_unique<web::FakeNavigationContext>();
   context->SetHasCommitted(true);
   context->SetUrl(url);
-  tab_helper_->DidFinishNavigation(web_state_.get(), context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
   EXPECT_OCMOCK_VERIFY(mock_location_bar_badge_handler_);
 }
 
@@ -265,7 +267,7 @@ TEST_F(GeminiTabHelperTest, TestContextualChipCommandNotSentWhenHidden) {
       std::make_unique<web::FakeNavigationContext>();
   context->SetHasCommitted(true);
   context->SetUrl(url);
-  tab_helper_->DidFinishNavigation(web_state_.get(), context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
   EXPECT_OCMOCK_VERIFY(mock_location_bar_badge_handler_);
 }
 
@@ -275,7 +277,7 @@ TEST_F(GeminiTabHelperTest, TestIsLastInteractionUrlDifferent_SameURL) {
   GURL url("https://www.chromium.org");
   web_state_->SetCurrentURL(url);
   CreateOrUpdateSessionInStorage("server_id");
-  ASSERT_FALSE(tab_helper_->IsLastInteractionUrlDifferent());
+  ASSERT_FALSE(tab_helper()->IsLastInteractionUrlDifferent());
 }
 
 TEST_F(GeminiTabHelperTest, TestIsLastInteractionUrlDifferent_DifferentURL) {
@@ -287,7 +289,7 @@ TEST_F(GeminiTabHelperTest, TestIsLastInteractionUrlDifferent_DifferentURL) {
 
   GURL url2("https://www.google.com");
   web_state_->SetCurrentURL(url2);
-  ASSERT_TRUE(tab_helper_->IsLastInteractionUrlDifferent());
+  ASSERT_TRUE(tab_helper()->IsLastInteractionUrlDifferent());
 }
 
 TEST_F(GeminiTabHelperTest,
@@ -298,7 +300,7 @@ TEST_F(GeminiTabHelperTest,
   GURL url("https://www.chromium.org");
   web_state_->SetCurrentURL(url);
   CreateOrUpdateSessionInStorage("server_id");
-  ASSERT_FALSE(tab_helper_->IsLastInteractionUrlDifferent());
+  ASSERT_FALSE(tab_helper()->IsLastInteractionUrlDifferent());
 }
 
 TEST_F(GeminiTabHelperTest,
@@ -312,16 +314,16 @@ TEST_F(GeminiTabHelperTest,
 
   GURL url2("https://www.google.com");
   web_state_->SetCurrentURL(url2);
-  ASSERT_TRUE(tab_helper_->IsLastInteractionUrlDifferent());
+  ASSERT_TRUE(tab_helper()->IsLastInteractionUrlDifferent());
 }
 
 // TODO(crbug.com/430313339): Add a test for the last interaction case.
 TEST_F(GeminiTabHelperTest, TestShouldShowSuggestionChips) {
   web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
-  ASSERT_FALSE(tab_helper_->ShouldShowSuggestionChips());
+  ASSERT_FALSE(tab_helper()->ShouldShowSuggestionChips());
 
   web_state_->SetCurrentURL(GURL("https://www.not-google.com"));
-  ASSERT_TRUE(tab_helper_->ShouldShowSuggestionChips());
+  ASSERT_TRUE(tab_helper()->ShouldShowSuggestionChips());
 }
 
 TEST_F(GeminiTabHelperTest, TestDidStartNavigation_ShowsImageRemixTooltip) {
@@ -333,11 +335,10 @@ TEST_F(GeminiTabHelperTest, TestDidStartNavigation_ShowsImageRemixTooltip) {
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  tab_helper_->SetGeminiHandler(mock_gemini_handler_);
-  tab_helper_->SetLocationBarBadgeCommandsHandler(
+  tab_helper()->SetGeminiHandler(mock_gemini_handler_);
+  tab_helper()->SetLocationBarBadgeCommandsHandler(
       mock_location_bar_badge_handler_);
-  tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+  tab_helper()->SetHelpCommandsHandler(mock_help_handler_);
   web_state_->SetCurrentURL(GURL("https://www.chromium.org"));
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(false);
@@ -368,11 +369,10 @@ TEST_F(GeminiTabHelperTest,
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  tab_helper_->SetGeminiHandler(mock_gemini_handler_);
-  tab_helper_->SetLocationBarBadgeCommandsHandler(
+  tab_helper()->SetGeminiHandler(mock_gemini_handler_);
+  tab_helper()->SetLocationBarBadgeCommandsHandler(
       mock_location_bar_badge_handler_);
-  tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+  tab_helper()->SetHelpCommandsHandler(mock_help_handler_);
   web_state_->SetCurrentURL(GURL("https://www.chromium.org"));
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(false);
@@ -403,8 +403,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+  tab_helper()->SetHelpCommandsHandler(mock_help_handler_);
   web_state_->SetCurrentURL(GURL("https://www.chromium.org"));
   web_state_->SetContentsMimeType("text/html");
 
@@ -419,7 +418,7 @@ TEST_F(GeminiTabHelperTest,
 
   // The decision arrives but the UI is not ready. IPH should not be shown.
   id early_mock_help_handler = OCMProtocolMock(@protocol(HelpCommands));
-  tab_helper_->SetHelpCommandsHandler(early_mock_help_handler);
+  tab_helper()->SetHelpCommandsHandler(early_mock_help_handler);
   OCMReject([early_mock_help_handler
       presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix]);
   AddZeroStateSuggestionsHint(web_state_->GetVisibleURL(), true);
@@ -432,15 +431,15 @@ TEST_F(GeminiTabHelperTest,
   EXPECT_OCMOCK_VERIFY(early_mock_help_handler);
 
   // Now, the page finishes loading. The IPH should be triggered!
-  tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+  tab_helper()->SetHelpCommandsHandler(mock_help_handler_);
   OCMExpect([mock_help_handler_
       presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix]);
   web_state_->SetLoading(false);
   auto navigation_context = std::make_unique<web::FakeNavigationContext>();
   navigation_context->SetUrl(web_state_->GetVisibleURL());
   navigation_context->SetHasCommitted(true);
-  tab_helper_->PageLoaded(web_state_.get(),
-                          web::PageLoadCompletionStatus::SUCCESS);
+  tab_helper()->PageLoaded(web_state_.get(),
+                           web::PageLoadCompletionStatus::SUCCESS);
   FlushTaskRunner();
 
   EXPECT_OCMOCK_VERIFY(mock_help_handler_);
@@ -467,7 +466,6 @@ TEST_F(GeminiTabHelperTest,
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
 
   ASSERT_EQ(gemini::GetConversationId(profile_->GetPrefs()).value(), server_id);
 }
@@ -476,7 +474,7 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext) {
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
 
-  tab_helper_->GeneratePageContext(base::DoNothing());
+  tab_helper()->GeneratePageContext(base::DoNothing());
 
   FakePageContextWrapper* wrapper =
       fake_page_context_wrapper_factory_.last_wrapper();
@@ -493,7 +491,7 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext_Pdf) {
   web_state_->SetCurrentURL(GURL("https://example.com/test.pdf"));
   web_state_->SetContentsMimeType("application/pdf");
 
-  tab_helper_->GeneratePageContext(base::DoNothing());
+  tab_helper()->GeneratePageContext(base::DoNothing());
 
   FakePageContextWrapper* wrapper =
       fake_page_context_wrapper_factory_.last_wrapper();
@@ -509,14 +507,14 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext_WaitsForLoad) {
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
-  tab_helper_->GeneratePageContext(base::DoNothing());
+  tab_helper()->GeneratePageContext(base::DoNothing());
 
   // Should NOT be called immediately.
   EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
 
   // Now simulate page load finish.
-  tab_helper_->PageLoaded(web_state_.get(),
-                          web::PageLoadCompletionStatus::SUCCESS);
+  tab_helper()->PageLoaded(web_state_.get(),
+                           web::PageLoadCompletionStatus::SUCCESS);
 
   FakePageContextWrapper* wrapper =
       fake_page_context_wrapper_factory_.last_wrapper();
@@ -537,11 +535,10 @@ TEST_F(
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  tab_helper_->SetGeminiHandler(mock_gemini_handler_);
-  tab_helper_->SetLocationBarBadgeCommandsHandler(
+  tab_helper()->SetGeminiHandler(mock_gemini_handler_);
+  tab_helper()->SetLocationBarBadgeCommandsHandler(
       mock_location_bar_badge_handler_);
-  tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+  tab_helper()->SetHelpCommandsHandler(mock_help_handler_);
   web_state_->SetCurrentURL(GURL("https://www.chromium.org"));
   web_state_->SetContentsMimeType("text/html");
 
@@ -561,7 +558,7 @@ TEST_F(
 
   auto navigation_context = std::make_unique<web::FakeNavigationContext>();
   navigation_context->SetUrl(web_state_->GetVisibleURL());
-  tab_helper_->DidStartNavigation(web_state_.get(), navigation_context.get());
+  tab_helper()->DidStartNavigation(web_state_.get(), navigation_context.get());
 
   EXPECT_OCMOCK_VERIFY(mock_help_handler_);
 }
@@ -571,13 +568,13 @@ TEST_F(GeminiTabHelperTest, TestForcePageContextGeneration) {
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
-  tab_helper_->GeneratePageContext(base::DoNothing());
+  tab_helper()->GeneratePageContext(base::DoNothing());
 
   // Should NOT be called immediately.
   EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
 
   // Force generation.
-  tab_helper_->ForcePageContextGeneration();
+  tab_helper()->ForcePageContextGeneration();
 
   ASSERT_NE(nil, fake_page_context_wrapper_factory_.last_wrapper());
   EXPECT_TRUE(fake_page_context_wrapper_factory_.last_wrapper().populateCalled);
@@ -588,7 +585,7 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext_Timeout) {
   web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
-  tab_helper_->GeneratePageContext(base::DoNothing());
+  tab_helper()->GeneratePageContext(base::DoNothing());
 
   // Should NOT be called immediately.
   EXPECT_EQ(nil, fake_page_context_wrapper_factory_.last_wrapper());
@@ -607,8 +604,7 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_WhenUserIsEligible) {
   web_state_->SetCurrentURL(GURL("https://www.google.com"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is not available for a web state when the user is not
@@ -619,8 +615,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetBrowserState(profile_.get());
   web_state_->WasShown();
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is not available for a web state when the web state is off
@@ -631,8 +626,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetBrowserState(profile_->GetOffTheRecordProfile());
   web_state_->WasShown();
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini availability handles protected URLs.
@@ -641,17 +635,16 @@ TEST_F(GeminiTabHelperTest, IsContextualEntryPointAllowed_ProtectedURL) {
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
 
   // Contextual entry points are allowed on an unprotected URL.
   ios::provider::SetMockProtectedUrl(false);
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
-  EXPECT_TRUE(tab_helper_->IsContextualEntryPointAllowed());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsContextualEntryPointAllowed());
 
   // Contextual entry points are blocked on a protected URL.
   ios::provider::SetMockProtectedUrl(true);
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
-  EXPECT_FALSE(tab_helper_->IsContextualEntryPointAllowed());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsContextualEntryPointAllowed());
 }
 
 // Tests that Gemini is not available for a web state when the URL is an AIM
@@ -667,8 +660,7 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsAimUrl) {
       GURL("https://www.google.com/search?q=test&udm=50"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for a web state when the URL is the Google
@@ -684,8 +676,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetCurrentURL(GURL("https://www.google.com"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for a web state when the URL is a Google
@@ -701,8 +692,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for a web state when the URL is not a Google
@@ -715,8 +705,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetCurrentURL(GURL("https://www.example.com"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for a web state when the URL is a PDF.
@@ -729,8 +718,7 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsPdf) {
   web_state_->SetCurrentURL(GURL("https://www.example.com/test.pdf"));
   web_state_->SetContentsMimeType("application/pdf");
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for a web state when the URL is a PDF and
@@ -746,8 +734,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetCurrentURL(GURL("https://www.example.com/test.pdf"));
   web_state_->SetContentsMimeType("application/pdf");
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests `IsGeminiAvailableForWebState` under default configuration (no flags).
@@ -756,23 +743,23 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_DefaultConfig) {
 
   // Valid HTTPS URL should be available.
   web_state_->SetCurrentURL(GURL("https://www.example.com"));
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 
   // Valid HTTP URL should be available.
   web_state_->SetCurrentURL(GURL("http://www.example.com"));
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 
   // Invalid scheme (chrome) should not be available.
   web_state_->SetCurrentURL(GURL("chrome://settings"));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 
   // Invalid scheme (about) should not be available.
   web_state_->SetCurrentURL(GURL("about:blank"));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 
   // NTP should not be available.
   web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests `IsGeminiAvailableForWebState` under Copresence configuration with SRP
@@ -787,24 +774,24 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_Copresence) {
 
   // Valid HTTPS URL should be available.
   web_state_->SetCurrentURL(GURL("https://www.example.com"));
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 
   // NTP should not be available.
   web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 
   // AIM URL should not be available.
   web_state_->SetCurrentURL(
       GURL("https://www.google.com/search?q=test&udm=50"));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 
   // SRP URL (Google Home Page) should be available.
   web_state_->SetCurrentURL(GURL("https://www.google.com"));
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 
   // SRP URL (Google Search) should be available.
   web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for the NTP when the ChromeNextIa feature
@@ -818,8 +805,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetBrowserState(profile_.get());
   web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is not available for the NTP when the ChromeNextIa feature
@@ -833,21 +819,20 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetBrowserState(profile_.get());
   web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_FALSE(tab_helper()->IsGeminiAvailableForWebState());
 }
 
 // Tests that `GetCurrentPageType` correctly categorizes NTP URLs.
 TEST_F(GeminiTabHelperTest, GetCurrentPageType_Ntp) {
   web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
-  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+  EXPECT_EQ(tab_helper()->GetCurrentPageType(),
             IOSGeminiInvocationPageType::kNewTabPage);
 }
 
 // Tests that `GetCurrentPageType` correctly categorizes Chrome internal URLs.
 TEST_F(GeminiTabHelperTest, GetCurrentPageType_ChromeInternal) {
   web_state_->SetCurrentURL(GURL("chrome://settings"));
-  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+  EXPECT_EQ(tab_helper()->GetCurrentPageType(),
             IOSGeminiInvocationPageType::kChromeInternalOther);
 }
 
@@ -857,7 +842,7 @@ TEST_F(GeminiTabHelperTest, GetCurrentPageType_Pdf) {
                                  /*disabled_features=*/{});
   web_state_->SetCurrentURL(GURL("https://www.example.com/test.pdf"));
   web_state_->SetContentsMimeType("application/pdf");
-  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+  EXPECT_EQ(tab_helper()->GetCurrentPageType(),
             IOSGeminiInvocationPageType::kPdfDocument);
 }
 
@@ -865,7 +850,7 @@ TEST_F(GeminiTabHelperTest, GetCurrentPageType_Pdf) {
 TEST_F(GeminiTabHelperTest, GetCurrentPageType_ExtractableWebPage_Html) {
   web_state_->SetCurrentURL(GURL("https://www.example.com"));
   web_state_->SetContentsMimeType("text/html");
-  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+  EXPECT_EQ(tab_helper()->GetCurrentPageType(),
             IOSGeminiInvocationPageType::kExtractableWebPage);
 }
 
@@ -873,7 +858,7 @@ TEST_F(GeminiTabHelperTest, GetCurrentPageType_ExtractableWebPage_Html) {
 TEST_F(GeminiTabHelperTest, GetCurrentPageType_ExtractableWebPage_Image) {
   web_state_->SetCurrentURL(GURL("https://www.example.com/image.png"));
   web_state_->SetContentsMimeType("image/png");
-  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+  EXPECT_EQ(tab_helper()->GetCurrentPageType(),
             IOSGeminiInvocationPageType::kExtractableWebPage);
 }
 
@@ -882,7 +867,7 @@ TEST_F(GeminiTabHelperTest, GetCurrentPageType_ExtractableWebPage_Image) {
 TEST_F(GeminiTabHelperTest, GetCurrentPageType_Other) {
   web_state_->SetCurrentURL(GURL("https://www.example.com/file.bin"));
   web_state_->SetContentsMimeType("application/octet-stream");
-  EXPECT_EQ(tab_helper_->GetCurrentPageType(),
+  EXPECT_EQ(tab_helper()->GetCurrentPageType(),
             IOSGeminiInvocationPageType::kOtherNonExtractable);
 }
 
@@ -891,13 +876,12 @@ TEST_F(GeminiTabHelperTest, GetPartialPageContext_Ntp) {
   web_state_->SetBrowserState(profile_.get());
   web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
   GeminiTabHelper::CreateForWebState(web_state_.get());
-  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
 
   struct TestResult {
     GeminiPageContext* context = nil;
   };
   TestResult result;
-  tab_helper_->GeneratePageContext(base::BindRepeating(
+  tab_helper()->GeneratePageContext(base::BindRepeating(
       [](TestResult* tr, GeminiPageContext* response) {
         tr->context = response;
       },
