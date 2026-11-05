@@ -62,10 +62,14 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
     : public UnexportableKeyService {
  public:
   // `task_manager` must outlive `UnexportableKeyServiceImpl`.
+  // When the service creates its spare signing key pool, it also creates a
+  // spare attestation key pool if `enable_spare_attestation_key_pool` is true.
+  // Only DBSC single sign-on requests attestation keys.
   explicit UnexportableKeyServiceImpl(
       UnexportableKeyTaskManager& task_manager,
       BackgroundTaskOrigin task_origin,
-      crypto::UnexportableKeyProvider::Config config);
+      crypto::UnexportableKeyProvider::Config config,
+      bool enable_spare_attestation_key_pool = false);
 
   ~UnexportableKeyServiceImpl() override;
 
