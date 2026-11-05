@@ -21,11 +21,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/tab_cdp_actor_tracker.h"
@@ -52,6 +54,18 @@ namespace {
 
 using ::chrome::cros::reporting::proto::EventInitiatorInfo;
 using ::chrome::cros::reporting::proto::ExternalProcessInfo;
+
+void RecordDeferredHoldTime(base::TimeDelta duration) {
+  base::UmaHistogramCustomTimes(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime",
+      duration, base::Milliseconds(1), base::Milliseconds(1000), 50);
+}
+
+void RecordProcessTreeWalkLatency(base::TimeDelta duration) {
+  base::UmaHistogramCustomTimes(
+      "Enterprise.CdpAttribution.ProcessTreeWalk.Latency", duration,
+      base::Milliseconds(1), base::Milliseconds(500), 50);
+}
 
 base::ProcessId GetLeafPidFromTree(const ProcessTree& tree) {
   if (tree.process_nodes.empty()) {
@@ -213,6 +227,7 @@ std::optional<EventInitiatorInfo> CdpActorSessionTracker::GetEventInitiatorInfo(
       !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
     return std::nullopt;
   }
+  const base::TimeTicks build_start = base::TimeTicks::Now();
   web_contents = web_contents->GetOutermostWebContents();
   std::optional<EventInitiatorInfo> info =
       TabCdpActorTracker::GetEventInitiatorInfo(web_contents);
@@ -221,6 +236,36 @@ std::optional<EventInitiatorInfo> CdpActorSessionTracker::GetEventInitiatorInfo(
   }
   if (!IsEligibleBrowserContext(web_contents->GetBrowserContext())) {
     return std::nullopt;
+  }
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+  base::UmaHistogramCustomTimes(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency",
+      now - build_start, base::Milliseconds(1), base::Milliseconds(100), 50);
+
+  if (TabCdpActorTracker* tab_tracker =
+          TabCdpActorTracker::FromWebContents(web_contents)) {
+    const auto& external_actors = tab_tracker->buffer().external_actors();
+    if (!external_actors.empty()) {
+      base::UmaHistogramExactLinear(
+          "Enterprise.CdpAttribution.ActorCollisionCount",
+          info->external_process_info().external_processes_size(),
+          /*exclusive_max=*/10);
+      const bool has_empty_tree = std::ranges::any_of(
+          info->external_process_info().external_processes(),
+          [](const auto& process) { return process.process_nodes().empty(); });
+      base::UmaHistogramBoolean(
+          "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree",
+          has_empty_tree);
+      for (const auto& entry : external_actors) {
+        if (!entry.IsAttached() && entry.detached_at.has_value()) {
+          base::UmaHistogramCustomTimes(
+              "Enterprise.CdpAttribution.PostDetachEventDelay",
+              now - *entry.detached_at, base::Milliseconds(1),
+              base::Seconds(60), 50);
+        }
+      }
+    }
   }
   return info;
 }
@@ -437,6 +482,7 @@ void CdpActorSessionTracker::ActivateExternalSession(
   ProcessTreeCacheEntry& entry =
       is_websocket ? websocket_cache_[*tracked.remote_endpoint] : pipe_cache_;
   if (entry.cached_tree.has_value()) {
+    RecordDeferredHoldTime(base::TimeDelta());
     const ProcessTree& tree = *entry.cached_tree;
     tracked.resolved_leaf_pid = GetLeafPidFromTree(tree);
     TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
@@ -449,7 +495,8 @@ void CdpActorSessionTracker::ActivateExternalSession(
   TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
       ->buffer()
       .OnExternalActorAttached(transport_type, tracked.remote_endpoint);
-  entry.waiting_tabs.push_back(web_contents->GetWeakPtr());
+  entry.waiting_tabs.emplace_back(web_contents->GetWeakPtr(),
+                                  base::TimeTicks::Now());
   StartExtraction(tracked.remote_endpoint);
 }
 
@@ -484,7 +531,18 @@ void CdpActorSessionTracker::StartExtraction(
           : base::OnceCallback<ProcessTree()>(pipe_extractor_);
 
   extraction_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, std::move(extractor_task),
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceCallback<ProcessTree()> extractor) {
+            const base::TimeTicks walk_start = base::TimeTicks::Now();
+            ProcessTree tree = std::move(extractor).Run();
+            RecordProcessTreeWalkLatency(base::TimeTicks::Now() - walk_start);
+            base::UmaHistogramBoolean(
+                "Enterprise.CdpAttribution.ProcessTreeWalk.IsEmpty",
+                tree.process_nodes.empty());
+            return tree;
+          },
+          std::move(extractor_task)),
       base::BindOnce(&CdpActorSessionTracker::OnExtractionCompleted,
                      weak_factory_.GetWeakPtr(), std::move(remote_endpoint)));
 }
@@ -513,9 +571,10 @@ void CdpActorSessionTracker::OnExtractionCompleted(
 
   entry->extraction_in_flight = false;
   entry->cached_tree = tree;
-  std::vector<base::WeakPtr<content::WebContents>> waiting_tabs =
-      std::move(entry->waiting_tabs);
+  std::vector<WaitingTab> waiting_tabs = std::move(entry->waiting_tabs);
   entry->waiting_tabs.clear();
+
+  const base::TimeTicks now = base::TimeTicks::Now();
 
   const SessionCategory expected_category =
       remote_endpoint.has_value() ? SessionCategory::kExternalWebSocket
@@ -543,8 +602,9 @@ void CdpActorSessionTracker::OnExtractionCompleted(
     }
   }
 
-  for (const auto& weak_tab : waiting_tabs) {
+  for (const auto& [weak_tab, deferred_since] : waiting_tabs) {
     if (content::WebContents* web_contents = weak_tab.get()) {
+      RecordDeferredHoldTime(now - deferred_since);
       if (updated_tabs.insert(web_contents).second) {
         if (auto* tab_tracker =
                 TabCdpActorTracker::FromWebContents(web_contents)) {

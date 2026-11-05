@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -16,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/process_extractor.h"
 #include "net/base/ip_endpoint.h"
@@ -143,6 +145,9 @@ class CdpActorSessionTracker {
     base::ProcessId resolved_leaf_pid = base::kNullProcessId;
   };
 
+  using WaitingTab =
+      std::pair<base::WeakPtr<content::WebContents>, base::TimeTicks>;
+
   struct ProcessTreeCacheEntry {
     ProcessTreeCacheEntry();
     ProcessTreeCacheEntry(const ProcessTreeCacheEntry&) = delete;
@@ -153,7 +158,7 @@ class CdpActorSessionTracker {
 
     std::optional<ProcessTree> cached_tree;
     bool extraction_in_flight = false;
-    std::vector<base::WeakPtr<content::WebContents>> waiting_tabs;
+    std::vector<WaitingTab> waiting_tabs;
   };
 
   void ActivateExternalSession(TrackedChannel& tracked,

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -966,6 +967,167 @@ TEST_F(CdpActorSessionTrackerTest,
             8700);
 
   tracker_->OnClientDetached(&ws_channel);
+}
+
+TEST_F(CdpActorSessionTrackerTest,
+       RecordsUmaHistogramsForWalksCollisionsAndPostDetachLookups) {
+  base::HistogramTester histograms;
+  auto manual_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  bool return_empty_ws_tree = false;
+  tracker_->SetExtractorsForTesting(
+      base::BindLambdaForTesting([&]() {
+        ++pipe_extractor_calls_;
+        task_environment()->AdvanceClock(base::Milliseconds(15));
+        ProcessTree tree;
+        tree.process_nodes.emplace_back(
+            /*process_id=*/7001, /*parent_process_id=*/100, "/usr/bin/node",
+            "--pipe-runner");
+        return tree;
+      }),
+      base::BindLambdaForTesting([&](const net::IPEndPoint& endpoint) {
+        ++websocket_extractor_calls_;
+        task_environment()->AdvanceClock(base::Milliseconds(30));
+        ProcessTree tree;
+        if (!return_empty_ws_tree) {
+          tree.process_nodes.emplace_back(
+              /*process_id=*/8000 + endpoint.port(),
+              /*parent_process_id=*/100, "/usr/bin/python3", "--ws-runner");
+        }
+        return tree;
+      }),
+      manual_runner);
+
+  auto tab_host =
+      base::MakeRefCounted<FakeDevToolsAgentHost>(web_contents(), profile());
+
+  // 1. Attach a Pipe actor, query `EventInitiatorInfo` while the walk is still
+  // in flight (`HasEmptyProcessTree` = true), advance mock queue time by 10ms,
+  // and run the 15ms walk task (`ProcessTreeWalk.Latency` = 15ms excluding
+  // queue time; `DeferredHoldTime` = 25ms total).
+  const PeerMetadata pipe_meta = {.transport_type =
+                                      PeerMetadata::TransportType::kPipe};
+  FakeDevToolsAgentHostClient pipe_client("Pipe", pipe_meta);
+  FakeDevToolsChannel pipe_channel(tab_host.get(), &pipe_client);
+  tracker_->OnClientAttached(&pipe_channel);
+  tracker_->OnCommandHandled(&pipe_channel);
+
+  std::optional<EventInitiatorInfo> inflight_info =
+      CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
+  ASSERT_TRUE(inflight_info.has_value());
+  histograms.ExpectUniqueSample(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree", true,
+      1);
+
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+
+  histograms.ExpectUniqueTimeSample(
+      "Enterprise.CdpAttribution.ProcessTreeWalk.Latency",
+      base::Milliseconds(15), 1);
+  histograms.ExpectUniqueSample(
+      "Enterprise.CdpAttribution.ProcessTreeWalk.IsEmpty", false, 1);
+  histograms.ExpectUniqueTimeSample(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime",
+      base::Milliseconds(25), 1);
+
+  // 2. Attach a second Pipe session that hits the cache immediately (0ms hold
+  // time) without spawning a new process tree walk.
+  FakeDevToolsAgentHostClient pipe_child_client("DevTools", pipe_meta);
+  FakeDevToolsChannel pipe_child_channel(tab_host.get(), &pipe_child_client);
+  tracker_->OnClientAttached(&pipe_child_channel);
+  tracker_->OnCommandHandled(&pipe_child_channel);
+
+  histograms.ExpectTotalCount(
+      "Enterprise.CdpAttribution.ProcessTreeWalk.Latency", 1);
+  histograms.ExpectTotalCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime", 2);
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime", 0, 1);
+
+  // 3. Attach a concurrent WebSocket actor on the same tab (2 external actors)
+  // after 10ms queue wait + 30ms walk execution.
+  const net::IPEndPoint ws_ep = MakeLoopbackEndpoint(3100);
+  const PeerMetadata ws_meta = {
+      .transport_type = PeerMetadata::TransportType::kWebSocket,
+      .peer_address = ws_ep};
+  FakeDevToolsAgentHostClient ws_client("RemoteDebugger", ws_meta);
+  FakeDevToolsChannel ws_channel(tab_host.get(), &ws_client);
+  tracker_->OnClientAttached(&ws_channel);
+  tracker_->OnCommandHandled(&ws_channel);
+
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+
+  histograms.ExpectTotalCount(
+      "Enterprise.CdpAttribution.ProcessTreeWalk.Latency", 2);
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.ProcessTreeWalk.Latency", 30, 1);
+  histograms.ExpectUniqueSample(
+      "Enterprise.CdpAttribution.ProcessTreeWalk.IsEmpty", false, 2);
+  histograms.ExpectTotalCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime", 3);
+
+  // Querying `EventInitiatorInfo` with 2 resolved active external actors
+  // records `BuildLatency`, `ActorCollisionCount` (sample = 2), and
+  // `HasEmptyProcessTree` (false), with no `PostDetachEventDelay` while both
+  // actors remain attached.
+  std::optional<EventInitiatorInfo> active_info =
+      CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
+  ASSERT_TRUE(active_info.has_value());
+  histograms.ExpectTotalCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency", 2);
+  histograms.ExpectBucketCount("Enterprise.CdpAttribution.ActorCollisionCount",
+                               2, 1);
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree",
+      false, 1);
+  histograms.ExpectTotalCount("Enterprise.CdpAttribution.PostDetachEventDelay",
+                              0);
+
+  // 4. Detach the WebSocket actor, advance mock time by 5 seconds (within the
+  // post-detach retention window), and query `EventInitiatorInfo` again.
+  tracker_->OnClientDetached(&ws_channel);
+  task_environment()->FastForwardBy(base::Seconds(5));
+
+  std::optional<EventInitiatorInfo> post_detach_info =
+      CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
+  ASSERT_TRUE(post_detach_info.has_value());
+  histograms.ExpectTotalCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency", 3);
+  histograms.ExpectBucketCount("Enterprise.CdpAttribution.ActorCollisionCount",
+                               2, 2);
+  histograms.ExpectUniqueTimeSample(
+      "Enterprise.CdpAttribution.PostDetachEventDelay", base::Seconds(5), 1);
+
+  // 5. Attach a WebSocket actor whose walk returns an empty ProcessTree and
+  // verify `ProcessTreeWalk.IsEmpty` (true) and `HasEmptyProcessTree` (true).
+  return_empty_ws_tree = true;
+  const net::IPEndPoint empty_ws_ep = MakeLoopbackEndpoint(3200);
+  const PeerMetadata empty_ws_meta = {
+      .transport_type = PeerMetadata::TransportType::kWebSocket,
+      .peer_address = empty_ws_ep};
+  FakeDevToolsAgentHostClient empty_ws_client("RemoteDebugger", empty_ws_meta);
+  FakeDevToolsChannel empty_ws_channel(tab_host.get(), &empty_ws_client);
+  tracker_->OnClientAttached(&empty_ws_channel);
+  tracker_->OnCommandHandled(&empty_ws_channel);
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.ProcessTreeWalk.IsEmpty", true, 1);
+  ASSERT_TRUE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                  .has_value());
+  histograms.ExpectBucketCount(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree", true,
+      2);
+
+  tracker_->OnClientDetached(&empty_ws_channel);
+  tracker_->OnClientDetached(&pipe_child_channel);
+  tracker_->OnClientDetached(&pipe_channel);
 }
 
 }  // namespace

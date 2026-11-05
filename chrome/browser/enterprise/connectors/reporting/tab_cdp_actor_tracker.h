@@ -123,6 +123,10 @@ class CdpActorBuffer {
   // Prunes expired entries and returns the current external actor entries.
   const std::vector<ExternalActorEntry>& GetExternalActorsForTesting();
 
+  const std::vector<ExternalActorEntry>& external_actors() const {
+    return external_actors_;
+  }
+
  private:
   // Prunes detached entries whose age exceeds the post-detach TTL.
   void PruneExpiredEntries(base::TimeTicks now);
