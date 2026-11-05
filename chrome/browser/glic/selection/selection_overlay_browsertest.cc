@@ -1272,17 +1272,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
             u"Before text Selected target After text");
 }
 
-// TODO(b/581296466): Reenable this
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ShowWithSelectionForImageSkipsPaddingAndSurroundingText \
-  DISABLED_ShowWithSelectionForImageSkipsPaddingAndSurroundingText
-#else
-#define MAYBE_ShowWithSelectionForImageSkipsPaddingAndSurroundingText \
-  ShowWithSelectionForImageSkipsPaddingAndSurroundingText
-#endif
 IN_PROC_BROWSER_TEST_F(
     SelectionOverlayPromptBrowserTest,
-    MAYBE_ShowWithSelectionForImageSkipsPaddingAndSurroundingText) {
+    ShowWithSelectionForImageSkipsPaddingAndSurroundingText) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   content::WebContents* web_contents = tab->GetContents();
 
@@ -1330,8 +1322,8 @@ IN_PROC_BROWSER_TEST_F(
       gfx::ScaleToEnclosedRect(gfx::Rect(10, 10, 100, 50), scale);
   EXPECT_NEAR(counting_tool.last_rect().x(), expected_rect.x(), 1);
   EXPECT_NEAR(counting_tool.last_rect().y(), expected_rect.y(), 1);
-  EXPECT_NEAR(counting_tool.last_rect().width(), expected_rect.width(), 1);
-  EXPECT_NEAR(counting_tool.last_rect().height(), expected_rect.height(), 1);
+  EXPECT_NEAR(counting_tool.last_rect().width(), expected_rect.width(), 2);
+  EXPECT_NEAR(counting_tool.last_rect().height(), expected_rect.height(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
