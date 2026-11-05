@@ -127,10 +127,8 @@ BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);
 // leak dialog.
 BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
 
-#if BUILDFLAG(IS_ANDROID)
 // Enables OTP phishing checks.
 BASE_DECLARE_FEATURE(kOtpPhishGuard);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // PasswordManagerClient::IsFillingEnabled returns `false` for opaque origins.
 // Intended as a kill-switch.

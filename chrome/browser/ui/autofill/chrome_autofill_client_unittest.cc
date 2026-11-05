@@ -1447,6 +1447,19 @@ TEST_F(ChromeAutofillClientTest,
   EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
 }
 
+TEST_F(ChromeAutofillClientTest, GetOtpPhishGuardDelegate_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kOtpPhishGuard);
+  EXPECT_NE(client()->GetOtpPhishGuardDelegate(), nullptr);
+}
+
+TEST_F(ChromeAutofillClientTest, GetOtpPhishGuardDelegate_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kOtpPhishGuard);
+  EXPECT_EQ(client()->GetOtpPhishGuardDelegate(), nullptr);
+}
+
 class ChromeAutofillClientReauthAvailabilityTest : public testing::Test {
  protected:
   using CheckerFactory =

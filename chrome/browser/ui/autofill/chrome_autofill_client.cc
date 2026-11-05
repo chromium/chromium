@@ -1621,12 +1621,10 @@ OtpMetricsTracker* ChromeAutofillClient::GetOtpMetricsTracker() {
 }
 
 OtpPhishGuardDelegate* ChromeAutofillClient::GetOtpPhishGuardDelegate() {
-#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           password_manager::features::kOtpPhishGuard)) {
     return otp_phish_guard_delegate_.get();
   }
-#endif  // BUILDFLAG(IS_ANDROID)
   return nullptr;
 }
 
