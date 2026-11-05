@@ -261,6 +261,8 @@ extern const base::FeatureParam<int> kGlicShowNotTellTutorialsArm;
 
 BASE_DECLARE_FEATURE(kGlicActivityHub);
 
+BASE_DECLARE_FEATURE(kGlicWhatsNewLuminous);
+
 BASE_DECLARE_FEATURE(kGlicInvokeErrorRecoveryFixes);
 }  // namespace features
 
