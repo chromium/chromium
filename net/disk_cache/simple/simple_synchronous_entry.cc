@@ -2029,6 +2029,21 @@ bool SimpleSynchronousEntry::ScanSparseFile(CacheFile* sparse_file,
     return false;
   }
 
+  size_t expected_header_size = GetHeaderSize(header.key_length);
+  if (expected_header_size > static_cast<size_t>(sparse_file->GetLength())) {
+    return false;
+  }
+
+  std::vector<char> key_data(header.key_length);
+  if (!sparse_file->ReadAndCheck(sizeof(header),
+                                 base::as_writable_byte_span(key_data))) {
+    return false;
+  }
+
+  if (key_.has_value() && *key_ != base::as_string_view(key_data)) {
+    return false;
+  }
+
   sparse_ranges_.clear();
 
   uint64_t range_header_offset = sizeof(header) + key_->size();

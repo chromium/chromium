@@ -5070,6 +5070,74 @@ TEST_F(DiskCacheEntryTest, SimpleCacheSparseErrorHandling) {
   EXPECT_FALSE(base::PathExists(path_s));
 }
 
+// Defense in depth for http://crbug.com/577260644
+TEST_F(DiskCacheEntryTest, SimpleCacheSparseKeyValidate) {
+  enum class Failure { kWrongKey, kHeaderSizeCorrupt, kFileToShort };
+
+  SetBackendToTest(BackendToTest::kSimple);
+  InitCache();
+
+  std::string key("a key");
+
+  disk_cache::SimpleFileTracker::EntryFileKey num_key(
+      disk_cache::simple_util::GetEntryHashKey(key));
+  base::FilePath path_0 = cache_path_.AppendASCII(
+      disk_cache::simple_util::GetFilenameFromEntryFileKeyAndFileIndex(num_key,
+                                                                       0));
+  base::FilePath path_s = cache_path_.AppendASCII(
+      disk_cache::simple_util::GetSparseFilenameFromEntryFileKey(num_key));
+
+  for (auto failure : {Failure::kWrongKey, Failure::kHeaderSizeCorrupt,
+                       Failure::kFileToShort}) {
+    disk_cache::Entry* entry = nullptr;
+    ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+
+    const int kSize = 1024;
+    auto buffer = CacheTestCreateAndFillBuffer(kSize, false);
+
+    EXPECT_EQ(kSize, WriteSparseData(entry, 0, buffer.get(), kSize));
+    entry->Close();
+
+    disk_cache::FlushCacheThreadForTesting();
+    EXPECT_TRUE(base::PathExists(path_0));
+    EXPECT_TRUE(base::PathExists(path_s));
+
+    base::File file_s(path_s, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                  base::File::FLAG_WRITE);
+    switch (failure) {
+      case Failure::kWrongKey: {
+        // Corrupt the key in the sparse file, trying to simulate a scenario
+        // where a mismatched one somehow ended up there. The key starts just
+        // right after the SimpleFileHeader.
+        ASSERT_TRUE(file_s.WriteAndCheck(sizeof(disk_cache::SimpleFileHeader),
+                                         base::byte_span_from_cstring("b")));
+        break;
+      }
+
+      case Failure::kHeaderSizeCorrupt: {
+        uint32_t bad_len = 0xF0000000;
+        ASSERT_TRUE(file_s.WriteAndCheck(
+            offsetof(disk_cache::SimpleFileHeader, key_length),
+            base::byte_span_from_ref(bad_len)));
+        break;
+      }
+
+      case Failure::kFileToShort: {
+        file_s.SetLength(sizeof(disk_cache::SimpleFileHeader) + key.size() - 1);
+        break;
+      }
+    };
+
+    file_s.Close();
+
+    // Try to re-open, it should fail since the header is messed up.
+    ASSERT_EQ(OpenEntry(key, &entry), net::ERR_FAILED);
+    // ...and files should be deleted.
+    EXPECT_FALSE(base::PathExists(path_0));
+    EXPECT_FALSE(base::PathExists(path_s));
+  }
+}
+
 TEST_F(DiskCacheEntryTest, SimpleCacheCreateCollision) {
   // These two keys collide; this test is that we properly handled creation
   // of both.
