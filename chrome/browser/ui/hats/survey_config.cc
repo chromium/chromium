@@ -931,6 +931,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "FedCM UI mode",
           // Whether the FedCM interaction was a sign-in or sign-up.
           "FedCM interaction type",
+          // Number of accounts offered to the user. Due to privacy
+          // constraints, counts are only accurately recorded until 5 ("5+"
+          // for higher values).
+          "Number of accounts shown",
           // eTLD+1 of the origin of the primary main frame where the survey
           // was triggered.
           "Origin of the website (eTLD+1)",

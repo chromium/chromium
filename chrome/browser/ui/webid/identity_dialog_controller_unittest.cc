@@ -1339,6 +1339,7 @@ TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Accept) {
           SurveyStringData{
               {"FedCM UI mode", "passive"},
               {"FedCM interaction type", "sign-in"},
+              {"Number of accounts shown", "1"},
               {"Origin of the website (eTLD+1)", "google.com"},
           },
           _, _, _, _, _));
@@ -1395,6 +1396,7 @@ TEST_F(IdentityDialogControllerTest,
           SurveyStringData{
               {"FedCM UI mode", "active"},
               {"FedCM interaction type", "sign-up"},
+              {"Number of accounts shown", "1"},
               {"Origin of the website (eTLD+1)", "google.com"},
           },
           _, _, _, _, _));
@@ -1435,6 +1437,7 @@ TEST_F(IdentityDialogControllerTest,
           SurveyStringData{
               {"FedCM UI mode", "passive"},
               {"FedCM interaction type", "sign-in"},
+              {"Number of accounts shown", "1"},
               {"Origin of the website (eTLD+1)", "google.com"},
           },
           _, _, _, _, _));
@@ -1481,6 +1484,7 @@ TEST_F(IdentityDialogControllerTest,
           SurveyStringData{
               {"FedCM UI mode", "active"},
               {"FedCM interaction type", "sign-in"},
+              {"Number of accounts shown", "1"},
               {"Origin of the website (eTLD+1)", "google.com"},
           },
           _, _, _, _, _));
@@ -1517,6 +1521,7 @@ TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Dismiss) {
           SurveyStringData{
               {"FedCM UI mode", "passive"},
               {"FedCM interaction type", "sign-in"},
+              {"Number of accounts shown", "2"},
               {"Origin of the website (eTLD+1)", "google.com"},
           },
           _, _, _, _, _));
@@ -1552,6 +1557,7 @@ TEST_F(IdentityDialogControllerTest,
           SurveyStringData{
               {"FedCM UI mode", "passive"},
               {"FedCM interaction type", "sign-in"},
+              {"Number of accounts shown", "1"},
               {"Origin of the website (eTLD+1)", "google.com"},
           },
           _, _, _, _, _));
@@ -1586,6 +1592,69 @@ TEST_F(IdentityDialogControllerTest,
           SurveyStringData{
               {"FedCM UI mode", "passive"},
               {"FedCM interaction type", "sign-up"},
+              {"Number of accounts shown", "1"},
+              {"Origin of the website (eTLD+1)", "google.com"},
+          },
+          _, _, _, _, _));
+  controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
+}
+
+// Tests that the HaT survey PSDs cap the number of accounts shown at "5+".
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_Dismiss_AccountsCountCap) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
+                     CreateAccounts(6));
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
+          web_contents(), 0, _,
+          SurveyStringData{
+              {"FedCM UI mode", "passive"},
+              {"FedCM interaction type", "sign-in"},
+              {"Number of accounts shown", "5+"},
+              {"Origin of the website (eTLD+1)", "google.com"},
+          },
+          _, _, _, _, _));
+  controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
+}
+
+// Tests that the survey PSD specifies "0" when no accounts are shown.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_Dismiss_NoAccounts) {
+  base::test::ScopedFeatureList feature_list{
+      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
+                     /*accounts=*/std::vector<IdentityRequestAccountPtr>{});
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
+          web_contents(), 0, _,
+          SurveyStringData{
+              {"FedCM UI mode", "passive"},
+              {"FedCM interaction type", "sign-up"},
+              {"Number of accounts shown", "0"},
               {"Origin of the website (eTLD+1)", "google.com"},
           },
           _, _, _, _, _));

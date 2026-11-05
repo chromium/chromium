@@ -35,6 +35,7 @@ source_set("webid") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/hats",
     "//chrome/browser/webid",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common:features",
     "//components/favicon/content",
     "//components/favicon/core",

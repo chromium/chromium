@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <utility>
 
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/identity_provider_permission_request.h"
+#include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
@@ -76,7 +78,8 @@ void MaybeTriggerPersonalizationAndTrustHatsSurvey(
     content::WebContents* web_contents,
     const std::string& trigger,
     blink::mojom::RpMode rp_mode,
-    content::IdentityRequestAccount::LoginState login_state) {
+    content::IdentityRequestAccount::LoginState login_state,
+    size_t num_accounts_shown) {
   if (!web_contents ||
       !base::FeatureList::IsEnabled(
           autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey)) {
@@ -90,6 +93,9 @@ void MaybeTriggerPersonalizationAndTrustHatsSurvey(
     return;
   }
 
+  // Prevent identification of the user or visited website by recording
+  // (potentially unique) high account counts as "5+".
+  constexpr int kMaxRecordedAccountsCount = 5;
   SurveyStringData survey_data{
       {"FedCM UI mode",
        rp_mode == blink::mojom::RpMode::kActive ? "active" : "passive"},
@@ -97,6 +103,9 @@ void MaybeTriggerPersonalizationAndTrustHatsSurvey(
        login_state == content::IdentityRequestAccount::LoginState::kSignIn
            ? "sign-in"
            : "sign-up"},
+      {"Number of accounts shown",
+       autofill::FormatCountForHats(num_accounts_shown,
+                                    kMaxRecordedAccountsCount)},
       {"Origin of the website (eTLD+1)",
        net::registry_controlled_domains::GetDomainAndRegistry(
            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
@@ -347,9 +356,14 @@ bool IdentityDialogController::ShowAccountsDialog(
     if (on_account_selection_) {
       // `OnAccountSelected()` may be called synchronously from `Show()`, e.g.
       // after the IdP login pop-up. Only set this estimate if
-      // `OnAccountSelected()`, which sets `login_state_` to a more accurate
+      // `OnAccountSelected()`, which sets the login state to a more accurate
       // value, was not yet executed.
-      login_state_ = EstimateLoginStateForHats(accounts);
+      chooser_survey_data_ = {
+          .login_state = EstimateLoginStateForHats(accounts),
+          .num_accounts_shown = accounts.size(),
+      };
+    } else if (chooser_survey_data_) {
+      chooser_survey_data_->num_accounts_shown = accounts.size();
     }
     DidInvokeShowUi();
     return true;
@@ -593,7 +607,11 @@ void IdentityDialogController::OnAccountSelected(
   }
   CHECK(on_account_selection_);
 
-  login_state_ = login_state;
+  if (chooser_survey_data_) {
+    chooser_survey_data_->login_state = login_state;
+  } else {
+    chooser_survey_data_ = {.login_state = login_state};
+  }
   CollectTrainingData(UserAction::kSuccess);
 
   // We only allow dismiss after account selection on active modes and not on
@@ -621,21 +639,22 @@ void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
     if (dismiss_reason == DismissReason::kCloseButton ||
         dismiss_reason == DismissReason::kSwipe) {
       CollectTrainingData(UserAction::kClosed);
-      if (on_account_selection_ && login_state_.has_value()) {
+      if (on_account_selection_ && chooser_survey_data_) {
         // Only trigger if the user dismissed the account selection dialog
         // without selecting an account (excludes error/failure dialogs and
         // post-selection cancellation in active mode).
         MaybeTriggerPersonalizationAndTrustHatsSurvey(
             web_contents(),
             kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
-            rp_mode_, *login_state_);
+            rp_mode_, chooser_survey_data_->login_state,
+            chooser_survey_data_->num_accounts_shown);
       }
     } else {
       CollectTrainingData(UserAction::kIgnored);
     }
   }
 
-  login_state_.reset();
+  chooser_survey_data_.reset();
   is_auto_reauthn_ = false;
   on_account_selection_.Reset();
   on_native_result_.Reset();
@@ -671,20 +690,23 @@ void IdentityDialogController::OnFedCmFederatedLogin(bool success) {
       MaybeTriggerPersonalizationAndTrustHatsSurvey(
           web_contents(),
           kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAutoReauthn,
-          rp_mode_, content::IdentityRequestAccount::LoginState::kSignIn);
-    } else if (did_show_ui_ && login_state_.has_value()) {
+          rp_mode_, content::IdentityRequestAccount::LoginState::kSignIn,
+          /*num_accounts_shown=*/1);
+    } else if (did_show_ui_ && chooser_survey_data_) {
       // Trigger the explicit acceptance survey only if an account was
       // explicitly selected in the account selection dialog. If the dialog was
-      // closed before completion, `login_state_` was reset in `OnDismiss()`.
+      // closed before completion, `chooser_survey_data_` was reset in
+      // `OnDismiss()`.
       MaybeTriggerPersonalizationAndTrustHatsSurvey(
           web_contents(),
           kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
-          rp_mode_, *login_state_);
+          rp_mode_, chooser_survey_data_->login_state,
+          chooser_survey_data_->num_accounts_shown);
     }
   }
 
   // Clear transient flow state once the login event has been handled.
-  login_state_.reset();
+  chooser_survey_data_.reset();
   is_auto_reauthn_ = false;
 }
 
