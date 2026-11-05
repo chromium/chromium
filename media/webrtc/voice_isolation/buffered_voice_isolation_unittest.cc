@@ -160,7 +160,8 @@ TEST(BufferedVoiceIsolationTest, StreamingAddsOneExternalFrameOfLatency) {
 }
 
 // Checks that `input` and `output` may refer to the same buffer, as used by
-// VoiceIsolation for mono audio processed in place.
+// VoiceIsolation for multi-channel audio after downmixing into the first
+// output channel.
 TEST(BufferedVoiceIsolationTest,
      InPlaceProcessingAddsOneExternalFrameOfLatency) {
   std::unique_ptr<BufferedVoiceIsolation> buffered = CreateWithPassthrough();

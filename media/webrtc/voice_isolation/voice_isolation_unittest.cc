@@ -328,7 +328,8 @@ TEST(VoiceIsolationTest, KeepsHighBandWithStatelessModel) {
       input_bus->channel(0).begin(), input_bus->channel(0).end(),
       input_bus->channel(0).begin(), 0.0f);
 
-  // Let the FIFOs, the STFT and the speech mask reach steady state.
+  // Let BufferedVoiceIsolation, the STFT and the speech mask reach steady
+  // state.
   constexpr int kNumWarmUpFrames = 5;
   for (int frame = 0; frame < kNumWarmUpFrames; ++frame) {
     voice_isolation->ProcessAudio(*input_bus, *output_bus);

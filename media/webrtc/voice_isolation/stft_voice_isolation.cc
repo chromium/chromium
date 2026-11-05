@@ -141,8 +141,10 @@ void WindowedFft::ForwardTransform(base::span<const float> input_audio,
   auto forward_buffer_second_half =
       base::span(forward_buffer_).subspan(fft_size_ / 2);
 
-  // First half: apply second half of the window and put in first half of
-  // internal FFT input. Then do FFT, put in first half of internal input.
+  // First hop: apply the second half of the window to the first half of the
+  // input audio and store it in the second half of `forward_buffer_` (whose
+  // first half holds the windowed second half of the previous call's input).
+  // Then run the forward FFT and write into the first half of `output_dfts`.
   media::transform(input_audio_first_half, window_second_half,
                    forward_buffer_second_half, apply_window);
 
@@ -152,8 +154,8 @@ void WindowedFft::ForwardTransform(base::span<const float> input_audio,
 
   output_dfts_first_half.copy_from_nonoverlapping(temp_buffer_);
 
-  // Second half: apply full window to all input and use the full internal
-  // buffer. The do FFT, put in second half of internal input.
+  // Second hop: apply the full window to `input_audio` in `forward_buffer_`,
+  // then run the forward FFT and write into the second half of `output_dfts`.
   media::transform(input_audio, fft_window_, forward_buffer_, apply_window);
   pffft_transform_ordered(fft_state_.get(), forward_buffer_.data(),
                           temp_buffer_.data(), fft_workplace_.data(),
@@ -195,8 +197,9 @@ void WindowedFft::InverseTransform(base::span<const float> input_dfts,
   // Copy output from last call into output audio.
   output_audio_first_half.copy_from_nonoverlapping(inverse_buffer_);
 
-  // We first compute the first inverse FFT, apply the second half of the window
-  // and accumulate into first half of the output audio.
+  // First hop: compute the first inverse FFT, accumulate the windowed first
+  // half into the first half of `output_audio`, and write the windowed second
+  // half into the second half of `output_audio`.
   pffft_transform_ordered(fft_state_.get(), input_first_dft.data(),
                           temp_buffer_.data(), fft_workplace_.data(),
                           PFFFT_BACKWARD);
@@ -206,6 +209,8 @@ void WindowedFft::InverseTransform(base::span<const float> input_dfts,
   media::transform(temp_second_half, window_second_half,
                    output_audio_second_half, apply_window);
 
+  // Second hop: compute the second inverse FFT and accumulate the windowed
+  // first half into the second half of `output_audio`.
   pffft_transform_ordered(fft_state_.get(), input_second_dft.data(),
                           temp_buffer_.data(), fft_workplace_.data(),
                           PFFFT_BACKWARD);

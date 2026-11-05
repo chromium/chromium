@@ -209,9 +209,9 @@ class VoiceIsolationHandler {
   std::atomic<bool> bypass_voice_isolation_{true};
 
   // Tracks whether voice isolation was bypassed on the previous captured audio
-  // frame to detect OFF -> ON transitions (fade to silence while priming) and
-  // ON -> OFF transitions (crossfade to microphone and clear internal
-  // buffers). Only used in ProcessCapturedAudioInternal().
+  // frame to detect OFF -> ON transitions (crossfade from microphone to
+  // processed audio) and ON -> OFF transitions (crossfade to microphone and
+  // clear internal buffers). Only used in ProcessCapturedAudioInternal().
   bool was_previously_bypassed_ = true;
 
   // Last delivered capture timestamp. While voice isolation is active,

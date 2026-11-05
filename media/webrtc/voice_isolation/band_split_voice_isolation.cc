@@ -160,7 +160,7 @@ std::array<float, BandSplitVoiceIsolation::kNumDfts> ComputeHighBandGains(
         full_band_dfts.subspan(dft * kFullBandSize, /*count=*/kFullBandSize));
 
     // `first_energy` is always >= 0. The strict `>` guarantees energy is always
-    // bigger than zero and and avoids division by zero in the first branch.
+    // bigger than zero and avoids division by zero in the first branch.
     gains[dft] = energy > first_energy
                      ? gains[0] * std::sqrt(first_energy / energy)
                      : gains[0];

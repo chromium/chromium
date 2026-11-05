@@ -149,12 +149,10 @@ TEST(StftVoiceIsolationTest, ProcessAudioLoopback) {
   std::vector<float> input(frame_size, 0.0f);
   std::vector<float> output(frame_size, 0.0f);
 
-  // Send a sine wave.
-  // We need to send enough frames to flush the overlap-add delay.
-  // Delay is usually one hop (frame_size).
-  // So Output[N] depends on Input[N] and Input[N-1] (due to window overlap).
-  // Actually, wait. algorithmic delay of fft_size / 2.
-  // So first frame output will be fade-in.
+  // Send a sine wave across multiple frames. The STFT has an algorithmic delay
+  // of one hop (`fft_size / 2` samples, i.e. half of `frame_size`), so the
+  // first half of the first output frame is faded in from the initial zero
+  // buffer.
 
   constexpr int kNumFrames = 10;
   std::vector<float> full_input;

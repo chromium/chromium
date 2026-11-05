@@ -532,19 +532,10 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulationWithFifo) {
   media::AudioGlitchInfo glitch_info2{.duration = base::Milliseconds(5),
                                       .count = 1};
 
-  // We push two frames into the FIFO. They will be processed sequentially by
-  // the FIFO thread. The first frame has glitch_info1, the second has
-  // glitch_info2. Wait, because we are pushing two frames before running the
-  // loop, they might get processed in one or two callbacks depending on timing.
-  // But since they are processed sequentially, let's check how the FIFO thread
-  // processes them: For each frame popped from FIFO, it calls
-  // ProcessCapturedAudioInternal, which adds the glitch to the accumulator,
-  // then calls audio_processor_->ProcessCapturedAudio, which runs
-  // OnAudioProcessorOutput, which gets the accumulated glitch info and resets
-  // the accumulator. So they are processed as two separate output frames, each
-  // with their own glitch! Wait! If they are two separate frames, then
-  // `deliver_callback_` will be called TWICE! The first call gets glitch_info1,
-  // and the second gets glitch_info2! Let's verify this behavior:
+  // Each frame popped from `processing_fifo_` runs
+  // ProcessCapturedAudioInternal(), which adds the frame's glitch info to the
+  // accumulator and then calls OnAudioProcessorOutput(), delivering the
+  // accumulated glitch info and resetting the accumulator for the next frame.
   base::RunLoop run_loop1;
   EXPECT_CALL(deliver_callback_, Run(_, _, glitch_info1)).WillOnce([&]() {
     run_loop1.Quit();
