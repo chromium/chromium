@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -71,6 +72,7 @@ public class SignInPreference extends Preference
     private boolean mShowAlertIcon;
     // Whether the icon is the account's avatar, rather than the signed-out or managed icon.
     private boolean mIconIsAvatar;
+    private @Nullable String mContentDescription;
 
     private Profile mProfile;
     private PrefService mPrefService;
@@ -196,6 +198,7 @@ public class SignInPreference extends Preference
     }
 
     private void setupSigninDisabledByPolicy() {
+        setRowContentDescription(null);
         setFragment(null);
         setTitle(R.string.signin_settings_title);
         setSummary(R.string.settings_signin_disabled_by_administrator);
@@ -211,10 +214,12 @@ public class SignInPreference extends Preference
     }
 
     private void setupSigninDisallowed() {
+        setRowContentDescription(null);
         mWasGenericSigninPromoDisplayed = false;
     }
 
     private void setupGenericPromo() {
+        setRowContentDescription(null);
         setTitle(R.string.signin_settings_title);
         setSummary(R.string.signin_settings_subtitle);
 
@@ -271,10 +276,18 @@ public class SignInPreference extends Preference
         assert isSignedIn(mProfile);
         DisplayableProfileData profileData = mProfileDataCache.getById(accountId);
         final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress();
-        setSummary(canShowEmailAddress ? profileData.getAccountEmail() : "");
-        setTitle(
-                SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
-                        profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
+        String summary = canShowEmailAddress ? profileData.getAccountEmail() : "";
+        // Never null: falls back to the email or to a default name.
+        String title =
+                assumeNonNull(
+                        SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
+                                profileData,
+                                getContext(),
+                                SyncSettingsUtils.TitlePreference.FULL_NAME));
+        setSummary(summary);
+        setTitle(title);
+        setRowContentDescription(
+                profileData.hasAiTierRing() ? getDescriptionWithMembership(title, summary) : null);
         setFragment(ManageSyncSettings.class.getName());
         mIconIsAvatar = true;
         setIcon(profileData.getImage());
@@ -282,6 +295,29 @@ public class SignInPreference extends Preference
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;
+    }
+
+    /**
+     * Returns what screen readers read for the row with the AI tier ring: the title, the summary if
+     * any, and the membership, as for the New Tab Page's identity disc.
+     */
+    private String getDescriptionWithMembership(String title, String summary) {
+        // Without a full name, the title is the email too, which is read only once.
+        if (summary.isEmpty() || TextUtils.equals(title, summary)) {
+            return getContext()
+                    .getString(
+                            R.string.settings_account_row_description_single_line_with_membership,
+                            title);
+        }
+        return getContext()
+                .getString(
+                        R.string.settings_account_row_description_with_membership, title, summary);
+    }
+
+    private void setRowContentDescription(@Nullable String contentDescription) {
+        if (TextUtils.equals(mContentDescription, contentDescription)) return;
+        mContentDescription = contentDescription;
+        notifyChanged();
     }
 
     private boolean hasSyncError() {
@@ -324,6 +360,7 @@ public class SignInPreference extends Preference
 
         ImageView alertIcon = (ImageView) holder.findViewById(R.id.alert_icon);
         alertIcon.setVisibility(mShowAlertIcon ? View.VISIBLE : View.GONE);
+        holder.itemView.setContentDescription(mContentDescription);
 
         // TODO(crbug.com/576944682): Remove the non-ring path once EnableAiSubscriptionAvatarRing
         // and AiSubscriptionAvatarRingFollowup are cleaned up.

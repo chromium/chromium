@@ -19,6 +19,7 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -630,6 +631,42 @@ public class MainSettingsFragmentTest {
         startSettings();
 
         Assert.assertTrue(signinRowHasAiTierRing(accountInfo));
+        // Screen readers also read the membership.
+        String description =
+                mMainSettings.getString(
+                        R.string.settings_account_row_description_with_membership,
+                        TestAccounts.ACCOUNT1.getFullName(),
+                        TestAccounts.ACCOUNT1.getEmail());
+        onView(withContentDescription(description)).check(matches(isDisplayed()));
+    }
+
+    // Tests that screen readers read the email only once for an account without a name, whose
+    // account row shows the email as both its title and summary.
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING,
+        SigninFeatures.AI_SUBSCRIPTION_AVATAR_RING_FOLLOWUP
+    })
+    // Avoids UserActionableError.NEEDS_UPM_BACKEND_UPGRADE, which would hide the ring.
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @RequiresRestart(
+            "SigninManagerImpl only observes the AccountManagerFacade installed for the first test"
+                    + " of a batched process, so accounts added later are never seeded into native")
+    public void testSigninRowDescriptionReadsEmailOnceWithoutName() {
+        setEligibleAiSubscriptionTier();
+        AccountInfo accountInfo = TestAccounts.TEST_ACCOUNT_NO_NAME;
+        mSyncTestRule.getSigninTestRule().addAccountThenSignin(accountInfo);
+        startSettings();
+
+        CriteriaHelper.pollInstrumentationThread(() -> signinRowHasAiTierRing(accountInfo));
+        onView(
+                        withContentDescription(
+                                mMainSettings.getString(
+                                        R.string
+                                                .settings_account_row_description_single_line_with_membership,
+                                        accountInfo.getEmail())))
+                .check(matches(isDisplayed()));
     }
 
     // Tests that the account row shows no AI tier ring while it shows an identity error.
@@ -658,6 +695,13 @@ public class MainSettingsFragmentTest {
 
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(matches(isDisplayed()));
         Assert.assertFalse(signinRowHasAiTierRing(accountInfo));
+        // Without the ring, screen readers read the title and summary, without the membership.
+        String description =
+                mMainSettings.getString(
+                        R.string.settings_account_row_description_with_membership,
+                        TestAccounts.ACCOUNT1.getFullName(),
+                        TestAccounts.ACCOUNT1.getEmail());
+        onView(withContentDescription(description)).check(doesNotExist());
     }
 
     // Tests that the account row shows the AI tier ring again after the identity error is fixed on
