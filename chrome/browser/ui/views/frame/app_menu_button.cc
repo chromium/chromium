@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/actions/command_action_updater.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -81,8 +82,9 @@ void AppMenuButton::CloseMenu() {
   if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
     if (action_menu_) {
       action_menu_->CloseMenu();
+      base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+          FROM_HERE, std::move(action_menu_));
     }
-    action_menu_.reset();
   } else {
     if (menu_) {
       menu_->CloseMenu();

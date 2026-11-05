@@ -38,11 +38,16 @@ class AppMenuSearchController {
    public:
     virtual ~Delegate() = default;
 
-    // Shows `results` in place of the rows below the search bar.
-    virtual void ShowSearchResults(actions::ActionItem* results) = 0;
+    // Shows `results` in place of the rows below the search bar, keeping
+    // `old_results` alive while the menu tree is updated.
+    virtual void ShowSearchResults(
+        actions::ActionItem* results,
+        std::unique_ptr<actions::ActionItem> old_results) = 0;
 
-    // Restores the normal menu rows below the search bar.
-    virtual void RestoreMenu() = 0;
+    // Restores the normal menu rows below the search bar, keeping `old_results`
+    // alive while the menu tree is updated.
+    virtual void RestoreMenu(
+        std::unique_ptr<actions::ActionItem> old_results) = 0;
   };
 
   // `search_bar` and `delegate` must outlive this controller.

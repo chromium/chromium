@@ -5,12 +5,16 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -136,6 +140,7 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -2782,6 +2787,109 @@ TEST_F(ActionAppMenuWithSearchTest,
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest, CloseMenuDuringLiveRebuildIsDeferred) {
+  struct CloseOnRowAdded : views::ViewObserver {
+    CloseOnRowAdded(views::View* submenu,
+                    std::unique_ptr<ActionAppMenu>* menu,
+                    const bool* closed_flag,
+                    base::OnceClosure quit_loop)
+        : menu(menu),
+          closed_flag(closed_flag),
+          quit_loop(std::move(quit_loop)) {
+      observation.Observe(submenu);
+    }
+    void OnChildViewAdded(views::View* observed_view,
+                          views::View* child) override {
+      if (!triggered) {
+        triggered = true;
+        observation.Reset();
+        (*menu)->CloseMenu();
+        auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
+        task_runner->DeleteSoon(FROM_HERE, std::move(*menu));
+        task_runner->PostTask(FROM_HERE, std::move(quit_loop));
+        EXPECT_EQ(*menu, nullptr);
+        EXPECT_FALSE(*closed_flag);
+      }
+    }
+    void OnViewIsDeleting(views::View* observed_view) override {
+      observation.Reset();
+    }
+    raw_ptr<std::unique_ptr<ActionAppMenu>> menu;
+    raw_ptr<const bool> closed_flag;
+    base::OnceClosure quit_loop;
+    bool triggered = false;
+    base::ScopedObservation<views::View, views::ViewObserver> observation{this};
+  };
+
+  // Closing and scheduling deletion inside ShowSearchResults() on keystroke.
+  {
+    widget_->Show();
+    base::MockCallback<base::RepeatingClosure> on_menu_closed;
+    auto menu = std::make_unique<ActionAppMenu>(&mock_window_interface_,
+                                                on_menu_closed.Get());
+    menu->RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+    ASSERT_TRUE(menu->IsShowing());
+
+    views::MenuItemView* root = menu->root_menu_item_for_testing();
+    views::MenuController* controller = root->GetMenuController();
+    ASSERT_NE(controller, nullptr);
+    AppMenuSearchBarView* search_bar = menu->search_bar_for_testing();
+    search_bar->SetText(u"Newx");
+    GetSearchField(search_bar)->RequestFocus();
+    ASSERT_TRUE(controller->HasFocusedTextfield());
+
+    base::RunLoop run_loop;
+    bool closed_callback_ran = false;
+    EXPECT_CALL(on_menu_closed, Run()).Times(1).WillOnce([&] {
+      closed_callback_ran = true;
+    });
+    CloseOnRowAdded close_observer(root->GetSubmenu(), &menu,
+                                   &closed_callback_ran,
+                                   run_loop.QuitClosure());
+
+    ui::KeyEvent back_event(ui::EventType::kKeyPressed, ui::VKEY_BACK,
+                            ui::EF_NONE);
+    controller->OnWillDispatchKeyEvent(&back_event);
+    EXPECT_EQ(search_bar->GetText(), u"New");
+
+    EXPECT_EQ(menu, nullptr);
+    EXPECT_TRUE(close_observer.triggered);
+    EXPECT_TRUE(closed_callback_ran);
+    run_loop.Run();
+  }
+
+  // Closing and scheduling deletion inside RestoreMenu() without MenuController
+  // initially on the stack.
+  {
+    base::MockCallback<base::RepeatingClosure> on_menu_closed;
+    auto menu = std::make_unique<ActionAppMenu>(&mock_window_interface_,
+                                                on_menu_closed.Get());
+    menu->RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+    ASSERT_TRUE(menu->IsShowing());
+
+    views::MenuItemView* root = menu->root_menu_item_for_testing();
+    AppMenuSearchBarView* search_bar = menu->search_bar_for_testing();
+    search_bar->SetText(u"Downloads");
+
+    base::RunLoop run_loop;
+    bool closed_callback_ran = false;
+    EXPECT_CALL(on_menu_closed, Run()).Times(1).WillOnce([&] {
+      closed_callback_ran = true;
+    });
+    CloseOnRowAdded close_observer(root->GetSubmenu(), &menu,
+                                   &closed_callback_ran,
+                                   run_loop.QuitClosure());
+
+    views::test::ButtonTestApi(GetBackButton(search_bar))
+        .NotifyDefaultMouseClick();
+
+    EXPECT_EQ(menu, nullptr);
+    EXPECT_TRUE(close_observer.triggered);
+    EXPECT_TRUE(closed_callback_ran);
+    run_loop.Run();
+  }
 }
 
 TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {

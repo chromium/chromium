@@ -167,9 +167,11 @@ void AppMenuSearchController::OnQueryChanged() {
     return;
   }
 
-  delegate_->ShowSearchResults(results.get());
+  actions::ActionItem* results_ptr = results.get();
+  std::unique_ptr<actions::ActionItem> old_results = std::move(search_results_);
   search_results_ = std::move(results);
   search_bar_->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
+  delegate_->ShowSearchResults(results_ptr, std::move(old_results));
 }
 
 void AppMenuSearchController::OnBackPressed() {
@@ -177,9 +179,9 @@ void AppMenuSearchController::OnBackPressed() {
     return;
   }
 
-  delegate_->RestoreMenu();
-  search_results_.reset();
+  std::unique_ptr<actions::ActionItem> old_results = std::move(search_results_);
   search_bar_->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kSearch);
+  delegate_->RestoreMenu(std::move(old_results));
 }
 
 void AppMenuSearchController::FlattenHierarchyRecursive(
