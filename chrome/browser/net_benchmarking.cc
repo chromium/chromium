@@ -41,11 +41,11 @@ NetBenchmarking::NetBenchmarking(
     content::ChildProcessId render_process_id)
     : loading_predictor_(std::move(loading_predictor)),
       render_process_id_(render_process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
 NetBenchmarking::~NetBenchmarking() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
 // static
@@ -53,7 +53,7 @@ void NetBenchmarking::Create(
     base::WeakPtr<predictors::LoadingPredictor> loading_predictor,
     content::ChildProcessId render_process_id,
     mojo::PendingReceiver<chrome::mojom::NetBenchmarking> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<NetBenchmarking>(std::move(loading_predictor),
                                         render_process_id),
@@ -68,7 +68,7 @@ bool NetBenchmarking::CheckBenchmarkingEnabled() {
 }
 
 void NetBenchmarking::ClearCache(ClearCacheCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   auto* network_context = GetNetworkContext(render_process_id_);
   CHECK(network_context);
   network_context->ClearHttpCache(base::Time(), base::Time(), nullptr,
@@ -77,7 +77,7 @@ void NetBenchmarking::ClearCache(ClearCacheCallback callback) {
 
 void NetBenchmarking::ClearHostResolverCache(
     ClearHostResolverCacheCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   auto* network_context = GetNetworkContext(render_process_id_);
   CHECK(network_context);
   network_context->ClearHostCache(nullptr, std::move(callback));
@@ -85,7 +85,7 @@ void NetBenchmarking::ClearHostResolverCache(
 
 void NetBenchmarking::CloseCurrentConnections(
     CloseCurrentConnectionsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   auto* network_context = GetNetworkContext(render_process_id_);
   CHECK(network_context);
   network_context->CloseAllConnections(std::move(callback));
@@ -93,7 +93,7 @@ void NetBenchmarking::CloseCurrentConnections(
 
 void NetBenchmarking::ClearPredictorCache(
     ClearPredictorCacheCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   if (loading_predictor_) {
     loading_predictor_->resource_prefetch_predictor()->DeleteAllUrls();
   }

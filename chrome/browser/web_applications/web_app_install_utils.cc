@@ -490,6 +490,12 @@ void RecordDownloadedIconsHttpResultsCodeClass(
   for (const auto& url_and_http_status_code : icons_http_results) {
     int http_status_code = url_and_http_status_code.second;
     if (http_status_code != 0) {
+      // CHECK-exclusion: http_status_code originates from remote HTTP server
+      // responses when downloading web app icons. Using CHECK_LE(100,
+      // http_status_code, base::NotFatalUntil::M163) and CHECK_GT(600,
+      // http_status_code, base::NotFatalUntil::M163) validates untrusted
+      // website data using CHECK, allowing external web servers returning
+      // non-standard status codes to crash the browser process.
       DCHECK_LE(100, http_status_code);
       DCHECK_GT(600, http_status_code);
       base::UmaHistogramExactLinear(histogram_name.data(),

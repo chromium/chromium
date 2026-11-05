@@ -26,8 +26,8 @@ void PrefetchOriginDecider::RegisterPrefs(PrefRegistrySimple* registry) {
 PrefetchOriginDecider::PrefetchOriginDecider(PrefService* pref_service,
                                              base::Clock* clock)
     : pref_service_(pref_service), clock_(clock) {
-  DCHECK(pref_service);
-  DCHECK(clock);
+  CHECK(pref_service, base::NotFatalUntil::M163);
+  CHECK(clock, base::NotFatalUntil::M163);
 
   LoadFromPrefs();
   if (ClearPastEntries()) {

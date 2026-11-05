@@ -57,7 +57,7 @@ SiteData::SiteData(const SiteData& other) = default;
 SiteData::~SiteData() = default;
 
 void SiteDetails::CollectSiteInfo(content::Page& page, SiteData* site_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   page.GetMainDocument().ForEachRenderFrameHost(
       [site_data](RenderFrameHost* frame) {
@@ -70,7 +70,8 @@ void SiteDetails::CollectSiteInfo(content::Page& page, SiteData* site_data) {
             &site_data->browsing_instances[primary];
 
         // Ensure that we add the frame's SiteInstance to |site_instances|.
-        DCHECK(frame->GetSiteInstance()->IsRelatedSiteInstance(primary));
+        CHECK(frame->GetSiteInstance()->IsRelatedSiteInstance(primary),
+              base::NotFatalUntil::M163);
 
         browsing_instance->site_instances.insert(frame->GetSiteInstance());
         browsing_instance->proxy_count += frame->GetProxyCount();
@@ -96,7 +97,7 @@ int SiteDetails::EstimateOriginAgentClusterOverhead(const SiteData& site_data) {
     return 0;
   }
 
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   int oac_overhead = 0;
   // We only want to call GetOacOverhead() once per BrowsingInstance, so only

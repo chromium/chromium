@@ -93,6 +93,8 @@ bool ParseCommandLine(const COPYDATASTRUCT* cds,
   }
 
   // We split the string into 4 parts on NULLs.
+  // CHECK-exclusion: `cds` is received via WM_COPYDATA IPC from external
+  // processes on the desktop. So DCHECK() is preferred.
   DCHECK(cds->lpData);
   const std::wstring msg(static_cast<wchar_t*>(cds->lpData),
                          cds->cbData / sizeof(wchar_t));
@@ -182,7 +184,7 @@ bool DisplayShouldKillMessageBox() {
 void TerminateProcessWithHistograms(const base::Process& process,
                                     int exit_code) {
   TRACE_EVENT0("startup", "ProcessSingleton:TerminateProcessWithHistograms");
-  DCHECK(process.IsValid());
+  CHECK(process.IsValid(), base::NotFatalUntil::M163);
   base::TimeTicks start_time = base::TimeTicks::Now();
   bool result = (::TerminateProcess(process.Handle(), exit_code) != FALSE);
   if (result) {
@@ -434,7 +436,7 @@ ProcessSingleton::NotifyOtherProcessOrCreate() {
       // Nothing more to do.
       return result;
     }
-    DCHECK_EQ(PROCESS_NONE, result);
+    CHECK_EQ(PROCESS_NONE, result, base::NotFatalUntil::M163);
     // The process could not be notified for some reason, or it was hung and
     // terminated. Retry once if this is the first time; otherwise, fall through
     // to report that the process must exit because the profile is in use.

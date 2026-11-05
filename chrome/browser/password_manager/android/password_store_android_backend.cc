@@ -1056,7 +1056,7 @@ PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
 
 void PasswordStoreAndroidBackend::OnForegroundSessionStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  DCHECK(stored_passwords_changed_);
+  CHECK(stored_passwords_changed_, base::NotFatalUntil::M163);
 
   // Clear outdated pending tasks before the store queues a new request.
   ClearZombieTasks();

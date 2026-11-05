@@ -809,7 +809,7 @@ void ChromePasswordManagerClient::GeneratePassword(
 void ChromePasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<PasswordForm>> local_forms,
     const url::Origin& origin) {
-  DCHECK(!local_forms.empty());
+  CHECK(!local_forms.empty(), base::NotFatalUntil::M163);
   helper_.NotifyUserAutoSignin();
 #if BUILDFLAG(IS_ANDROID)
   ShowAutoSigninPrompt(web_contents(), local_forms[0]->username_value);
@@ -1084,7 +1084,7 @@ ChromePasswordManagerClient::GetPasswordChangeService() const {
 }
 
 bool ChromePasswordManagerClient::WasLastNavigationHTTPError() const {
-  DCHECK(web_contents());
+  CHECK(web_contents(), base::NotFatalUntil::M163);
 
   std::unique_ptr<password_manager::BrowserSavePasswordProgressLogger> logger;
   autofill::LogManager* log_manager = GetOrCreateLogManager();
@@ -1181,7 +1181,7 @@ const GURL& ChromePasswordManagerClient::GetLastCommittedURL() const {
 }
 
 url::Origin ChromePasswordManagerClient::GetLastCommittedOrigin() const {
-  DCHECK(web_contents());
+  CHECK(web_contents(), base::NotFatalUntil::M163);
   return web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 }
 const password_manager::CredentialsFilter*
@@ -2276,7 +2276,7 @@ void ChromePasswordManagerClient::GenerationResultAvailable(
 #if BUILDFLAG(IS_ANDROID)
   PasswordGenerationController* password_generation_controller =
       PasswordGenerationController::GetIfExisting(web_contents());
-  DCHECK(password_generation_controller);
+  CHECK(password_generation_controller, base::NotFatalUntil::M163);
 
   password_generation_controller->ShowManualGenerationDialog(driver.get(),
                                                              ui_data.value());

@@ -61,7 +61,7 @@ SharingHubAction& SharingHubAction::operator=(SharingHubAction&& src) = default;
 
 SharingHubModel::SharingHubModel(content::BrowserContext* context)
     : context_(context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   PopulateFirstPartyActions();
 }
 

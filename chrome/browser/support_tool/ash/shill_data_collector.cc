@@ -275,7 +275,7 @@ void ShillDataCollector::AddIPConfig(const std::string& device_path,
     ip_configs =
         device.Set(shill::kIPConfigsProperty, base::DictValue())->GetIfDict();
   }
-  DCHECK(ip_configs);
+  CHECK(ip_configs, base::NotFatalUntil::M163);
   ip_configs->Set(ip_config_path, ExpandProperties(ip_config_path, properties));
 }
 

@@ -130,7 +130,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
           device.FindInt(kPrefProductIdKey);
       int vendor_id = vendor_id_optional.value_or(-1);
       int product_id = product_id_optional.value_or(-1);
-      DCHECK(vendor_id != -1 || product_id == -1);
+      CHECK(vendor_id != -1 || product_id == -1, base::NotFatalUntil::M163);
 
       auto key = std::make_pair(vendor_id, product_id);
       usb_device_ids_to_urls_[key].insert(parsed_set.begin(), parsed_set.end());

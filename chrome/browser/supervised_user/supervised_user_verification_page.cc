@@ -180,7 +180,14 @@ void SupervisedUserVerificationPage::CommandReceived(
   }
   int cmd = 0;
   bool retval = base::StringToInt(command, &cmd);
-  DCHECK(retval);
+  // This CHECK() is safe because if `base::StringToInt()` fails, it will return
+  // 0. 0 is valid command, i.e. `security_interstitials::CMD_DONT_PROCEED`.
+  // Since the `switch` causes NOTREACHED() when `cmd` is
+  // `security_interstitials::CMD_DONT_PROCEED`, this process will crash.
+  // However if the `StringToInt()` fails, we should not use a valid command
+  // value. We cannot find whether the `command` is CMD_DONT_PROCEED or just an
+  // invalid string.
+  CHECK(retval, base::NotFatalUntil::M163);
 
   switch (cmd) {
     case security_interstitials::CMD_OPEN_LOGIN: {

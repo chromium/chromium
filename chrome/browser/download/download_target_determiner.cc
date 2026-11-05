@@ -279,7 +279,7 @@ void DownloadTargetDeterminer::DoLoop() {
 
 DownloadTargetDeterminer::Result
 DownloadTargetDeterminer::DoCheckSupervisedUserUrlFilter() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   next_state_ = STATE_GENERATE_TARGET_PATH;
 
   if (!GetProfile()->IsChild() ||
@@ -313,9 +313,10 @@ DownloadTargetDeterminer::DoCheckSupervisedUserUrlFilter() {
 
 void DownloadTargetDeterminer::CheckSupervisedUserDownloadUrlDone(
     supervised_user::WebFilteringResult result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(next_state_ == STATE_CHECK_SUPERVISED_USER_URL_FILTER ||
-         next_state_ == STATE_GENERATE_TARGET_PATH);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
+  CHECK(next_state_ == STATE_CHECK_SUPERVISED_USER_URL_FILTER ||
+            next_state_ == STATE_GENERATE_TARGET_PATH,
+        base::NotFatalUntil::M163);
 
   if (result.IsBlocked()) {
     RecordDownloadCancelReason(DownloadCancelReason::kSupervisedUserBlocked);

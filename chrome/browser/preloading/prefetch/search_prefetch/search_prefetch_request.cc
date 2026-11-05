@@ -500,7 +500,7 @@ SearchPrefetchRequest::TakeSearchPrefetchURLLoader() {
   TRACE_EVENT0("loading", "SearchPrefetchRequest::TakeSearchPrefetchURLLoader");
   MaybeRecordTraceFromSearchPrefetchRequestStartToNavigationIntercepted(
       this, time_start_prefetch_request_);
-  DCHECK(streaming_url_loader_);
+  CHECK(streaming_url_loader_, base::NotFatalUntil::M163);
   // This method should be called upon serving, so the service does not want to
   // keep the request.
   streaming_url_loader_->ClearOwnerPointer();
@@ -510,7 +510,7 @@ SearchPrefetchRequest::TakeSearchPrefetchURLLoader() {
 
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchRequest::CreateResponseReader() {
-  DCHECK(streaming_url_loader_);
+  CHECK(streaming_url_loader_, base::NotFatalUntil::M163);
   if (!servable_response_code_received_) {
     // It is not expected to reach here, as DSE prerender should only be
     // triggered after `this` received servable response. But other triggers may

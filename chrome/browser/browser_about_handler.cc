@@ -47,8 +47,9 @@ bool HandleChromeAboutAndChromeSyncRewrite(
   // or
   // 2) blocked (by content::RenderProcessHostImpl::FilterURL applied to
   //    renderer-initiated navigations)
-  DCHECK(url->IsAboutBlank() || url->IsAboutSrcdoc() ||
-         !url->SchemeIs(url::kAboutScheme));
+  CHECK(url->IsAboutBlank() || url->IsAboutSrcdoc() ||
+            !url->SchemeIs(url::kAboutScheme),
+        base::NotFatalUntil::M163);
 
   // Only handle chrome: URLs.
   if (!url->SchemeIs(content::kChromeUIScheme)) {

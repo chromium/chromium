@@ -135,7 +135,7 @@ bool GlicInvokeOptions::RequiresPromptClipboardPolicyCheck() const {
   if (!prompt_policy.has_value()) {
     return false;
   }
-  DCHECK(!prompts.empty());
+  CHECK(!prompts.empty(), base::NotFatalUntil::M163);
   return prompt_policy->policy_check == PolicyCheck::kClipboard &&
          !prompts.empty();
 }

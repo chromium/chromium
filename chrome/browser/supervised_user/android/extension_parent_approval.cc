@@ -67,7 +67,7 @@ static void JNI_ExtensionParentApproval_OnCompletion(JNIEnv* env,
   // Check that we have a callback stored from the extension approval request
   // and call it.
   auto* cb = GetOnApprovalCallback();
-  DCHECK(!cb->is_null());
+  CHECK(!cb->is_null(), base::NotFatalUntil::M163);
   extensions::SupervisedExtensionApprovalResult result_enum =
       static_cast<extensions::SupervisedExtensionApprovalResult>(result_value);
   std::move(*cb).Run(result_enum);

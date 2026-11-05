@@ -310,7 +310,8 @@ void GlicInvokeHandler::Invoke() {
       options_.RequiresContextClipboardPolicyCheck();
   const bool prompt_policy_check =
       options_.RequiresPromptClipboardPolicyCheck();
-  DCHECK(!(context_policy_check && prompt_policy_check));
+  CHECK(!(context_policy_check && prompt_policy_check),
+        base::NotFatalUntil::M163);
   const bool needs_clipboard_policy_check =
       context_policy_check || prompt_policy_check;
 

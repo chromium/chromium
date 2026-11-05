@@ -57,7 +57,7 @@ void GeneratedIconFixCommand::StartWithLock(
     return;
   }
 
-  // DCHECK instead of CHECK to avoid crashing at start up.
+  // CHECK-exclusion: DCHECK instead of CHECK to avoid crashing at start up.
   DCHECK(generated_icon_fix_util::HasRemainingAttempts(*app));
 
   {

@@ -23,18 +23,20 @@ std::string& SearchTermsDataAndroid::GetSearchClient() {
 
 std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
-  DCHECK(!content::BrowserThread::IsThreadInitialized(
-             content::BrowserThread::UI) ||
-         content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::IsThreadInitialized(
+            content::BrowserThread::UI) ||
+            content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M163);
   // Android doesn't use the rlz library.  Instead, it manages the rlz string
   // on its own.
   return SearchTermsDataAndroid::GetRlzParameterValue();
 }
 
 std::string UIThreadSearchTermsData::GetSearchClient() const {
-  DCHECK(!content::BrowserThread::IsThreadInitialized(
-             content::BrowserThread::UI) ||
-         content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::IsThreadInitialized(
+            content::BrowserThread::UI) ||
+            content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M163);
   return SearchTermsDataAndroid::GetSearchClient();
 }
 

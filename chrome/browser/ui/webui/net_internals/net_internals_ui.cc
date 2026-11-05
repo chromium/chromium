@@ -313,7 +313,7 @@ void NetInternalsMessageHandler::OnClearBadProxies(
 void NetInternalsMessageHandler::OnGetProxySettings(
     const base::ListValue& list) {
   const std::string* callback_id = list[0].GetIfString();
-  DCHECK(callback_id);
+  CHECK(callback_id, base::NotFatalUntil::M163);
 
   AllowJavascript();
   GetNetworkContext()->GetProxySettings(

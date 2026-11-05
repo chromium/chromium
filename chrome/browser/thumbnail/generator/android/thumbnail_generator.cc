@@ -33,7 +33,7 @@ void ForwardJavaCallback(const ScopedJavaGlobalRef<jobject>& java_delegate,
                          int icon_size,
                          const ScopedJavaGlobalRef<jobject>& callback,
                          SkBitmap thumbnail) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ThumbnailGenerator_onThumbnailRetrieved(env, java_delegate, content_id,
                                                icon_size, thumbnail, callback);
@@ -41,7 +41,7 @@ void ForwardJavaCallback(const ScopedJavaGlobalRef<jobject>& java_delegate,
 
 void OnThumbnailScaled(base::OnceCallback<void(SkBitmap)> java_callback,
                        SkBitmap scaled_thumbnail) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   std::move(java_callback).Run(std::move(scaled_thumbnail));
 }
 
@@ -49,17 +49,17 @@ void OnThumbnailScaled(base::OnceCallback<void(SkBitmap)> java_callback,
 
 ThumbnailGenerator::ThumbnailGenerator(const JavaRef<jobject>& jobj)
     : java_delegate_(jobj) {
-  DCHECK(!jobj.is_null());
+  CHECK(!jobj.is_null(), base::NotFatalUntil::M163);
 }
 
 ThumbnailGenerator::~ThumbnailGenerator() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
 void ThumbnailGenerator::OnImageThumbnailRetrieved(
     base::OnceCallback<void(SkBitmap)> java_callback,
     const SkBitmap& thumbnail) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // Send the bitmap back to Java-land.
   std::move(java_callback).Run(std::move(thumbnail));
@@ -72,7 +72,7 @@ void ThumbnailGenerator::OnVideoThumbnailRetrieved(
     bool success,
     chrome::mojom::MediaMetadataPtr media_metadata,
     SkBitmap thumbnail) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // Scale the bitmap before sending back to Java.
   ScaleDownBitmap(icon_size, std::move(thumbnail),
@@ -93,7 +93,7 @@ void ThumbnailGenerator::RetrieveThumbnail(const JavaRef<jstring>& jcontent_id,
                                            const std::string& mime_type,
                                            int32_t icon_size,
                                            const JavaRef<jobject>& callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe(file_path_str);
 

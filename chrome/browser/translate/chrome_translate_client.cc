@@ -288,7 +288,7 @@ ChromeTranslateClient::CreateTranslatePrefs(PrefService* prefs) {
 
   // We need to obtain the country here, since it comes from VariationsService.
   // components/ does not have access to that.
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M163);
   variations::VariationsService* variations_service =
       g_browser_process->variations_service();
   if (variations_service) {
@@ -322,8 +322,8 @@ void ChromeTranslateClient::GetTranslateLanguages(
     std::string* source,
     std::string* target,
     bool for_display) {
-  DCHECK(source != nullptr);
-  DCHECK(target != nullptr);
+  CHECK(source != nullptr, base::NotFatalUntil::M163);
+  CHECK(target != nullptr, base::NotFatalUntil::M163);
 
   *source = translate::TranslateDownloadManager::GetLanguageCode(
       GetLanguageState().source_language());
@@ -366,7 +366,8 @@ bool ChromeTranslateClient::ShowTranslateUI(
 // Translate uses a bubble UI on desktop and the Message UI on Android (here)
 // and iOS (in ios/chrome/browser/translate/chrome_ios_translate_client.mm).
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK(!TranslateService::IsTranslateBubbleEnabled());
+  CHECK(!TranslateService::IsTranslateBubbleEnabled(),
+        base::NotFatalUntil::M163);
   // Message UI.
   translate::TranslationType translate_type =
       GetLanguageState().translation_type();
@@ -397,7 +398,8 @@ bool ChromeTranslateClient::ShowTranslateUI(
   }
   translate_manager_->GetActiveTranslateMetricsLogger()->LogUIChange(true);
 #else
-  DCHECK(TranslateService::IsTranslateBubbleEnabled());
+  CHECK(TranslateService::IsTranslateBubbleEnabled(),
+        base::NotFatalUntil::M163);
   // Bubble UI.
   if (step == translate::TRANSLATE_STEP_BEFORE_TRANSLATE &&
       translate_manager_->ShouldSuppressBubbleUI(target_language)) {
@@ -421,7 +423,7 @@ translate::TranslateDriver* ChromeTranslateClient::GetTranslateDriver() {
 }
 
 PrefService* ChromeTranslateClient::GetPrefs() {
-  DCHECK(web_contents());
+  CHECK(web_contents(), base::NotFatalUntil::M163);
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return profile->GetPrefs();
@@ -434,7 +436,7 @@ ChromeTranslateClient::GetTranslatePrefs() {
 
 language::AcceptLanguagesService*
 ChromeTranslateClient::GetAcceptLanguagesService() {
-  DCHECK(web_contents());
+  CHECK(web_contents(), base::NotFatalUntil::M163);
   return GetAcceptLanguagesService(web_contents()->GetBrowserContext());
 }
 
@@ -574,7 +576,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
-  DCHECK(translate_manager_);
+  CHECK(translate_manager_, base::NotFatalUntil::M163);
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           web_contents());

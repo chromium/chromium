@@ -138,8 +138,8 @@ void ChromeProcessSingleton::InitializeFeatures() {
 // static
 void ChromeProcessSingleton::CreateInstance(
     const base::FilePath& user_data_dir) {
-  DCHECK(!g_chrome_process_singleton_);
-  DCHECK(!user_data_dir.empty());
+  CHECK(!g_chrome_process_singleton_, base::NotFatalUntil::M163);
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M163);
   g_chrome_process_singleton_ = new ChromeProcessSingleton(user_data_dir);
 }
 
@@ -166,6 +166,6 @@ bool ChromeProcessSingleton::IsSingletonInstance() {
 bool ChromeProcessSingleton::NotificationCallback(
     base::CommandLine command_line,
     const base::FilePath& current_directory) {
-  DCHECK(notification_callback_);
+  CHECK(notification_callback_, base::NotFatalUntil::M163);
   return notification_callback_.Run(std::move(command_line), current_directory);
 }

@@ -122,7 +122,7 @@ void ThumbnailMediaParserImpl::OnMediaMetadataParsed(
     return;
   }
   metadata_ = std::move(metadata);
-  DCHECK(metadata_);
+  CHECK(metadata_, base::NotFatalUntil::M163);
   RecordMediaMetadataEvent(MediaMetadataEvent::kMetadataComplete);
 
   // For audio file, we only need metadata and poster.
@@ -132,8 +132,9 @@ void ThumbnailMediaParserImpl::OnMediaMetadataParsed(
     return;
   }
 
-  DCHECK(base::StartsWith(mime_type_, "video/",
-                          base::CompareCase::INSENSITIVE_ASCII));
+  CHECK(base::StartsWith(mime_type_, "video/",
+                         base::CompareCase::INSENSITIVE_ASCII),
+        base::NotFatalUntil::M163);
 
   // Start to retrieve video thumbnail.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -210,7 +211,7 @@ void ThumbnailMediaParserImpl::DecodeVideoFrame() {
       /*dst_video_decoder=*/{});
 
   // Build and config the decoder.
-  DCHECK(gpu_factories_);
+  CHECK(gpu_factories_, base::NotFatalUntil::M163);
   auto mojo_decoder = std::make_unique<media::MojoVideoDecoder>(
       base::SingleThreadTaskRunner::GetCurrentDefault(), gpu_factories_.get(),
       this, std::move(video_decoder_remote),
@@ -233,7 +234,7 @@ void ThumbnailMediaParserImpl::OnVideoFrameDecoded(
     return;
   }
 
-  DCHECK(frame->HasSharedImage());
+  CHECK(frame->HasSharedImage(), base::NotFatalUntil::M163);
   decode_done_ = true;
 
   RenderVideoFrame(std::move(frame));
@@ -290,8 +291,8 @@ void ThumbnailMediaParserImpl::OnMediaDataReady(
 }
 
 void ThumbnailMediaParserImpl::NotifyComplete(SkBitmap bitmap) {
-  DCHECK(metadata_);
-  DCHECK(parse_complete_cb_);
+  CHECK(metadata_, base::NotFatalUntil::M163);
+  CHECK(parse_complete_cb_, base::NotFatalUntil::M163);
   RecordMediaParserEvent(MediaParserEvent::kSuccess);
   if (parse_complete_cb_) {
     std::move(parse_complete_cb_)
@@ -300,7 +301,7 @@ void ThumbnailMediaParserImpl::NotifyComplete(SkBitmap bitmap) {
 }
 
 void ThumbnailMediaParserImpl::OnError(MediaParserEvent event) {
-  DCHECK(parse_complete_cb_);
+  CHECK(parse_complete_cb_, base::NotFatalUntil::M163);
   RecordMediaParserEvent(MediaParserEvent::kFailure);
   RecordMediaParserEvent(event);
   if (parse_complete_cb_) {

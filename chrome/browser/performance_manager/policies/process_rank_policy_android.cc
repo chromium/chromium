@@ -163,7 +163,7 @@ void ProcessRankPolicyAndroid::OnGuestViewAssociated(
 }
 
 void ProcessRankPolicyAndroid::OnPassedToGraph(Graph* graph) {
-  DCHECK(graph->HasOnlySystemNode());
+  CHECK(graph->HasOnlySystemNode(), base::NotFatalUntil::M163);
   graph->AddPageNodeObserver(this);
 }
 

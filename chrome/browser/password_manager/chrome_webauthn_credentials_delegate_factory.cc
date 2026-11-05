@@ -33,8 +33,9 @@ ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
 ChromeWebAuthnCredentialsDelegate*
 ChromeWebAuthnCredentialsDelegateFactory::GetDelegateForFrame(
     content::RenderFrameHost* frame_host) {
-  DCHECK_EQ(web_contents(),
-            content::WebContents::FromRenderFrameHost(frame_host));
+  CHECK_EQ(web_contents(),
+           content::WebContents::FromRenderFrameHost(frame_host),
+           base::NotFatalUntil::M163);
 
   // A RenderFrameHost without a live RenderFrame will never call
   // RenderFrameDeleted(), which would leave the new delegate in the map for

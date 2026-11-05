@@ -26,13 +26,15 @@
 using content::BrowserThread;
 
 UIThreadSearchTermsData::UIThreadSearchTermsData() {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+            BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M163);
 }
 
 std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-      BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+            BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M163);
   GURL base_url(google_util::CommandLineGoogleBaseURL());
   if (base_url.is_valid())
     return base_url.spec();
@@ -41,8 +43,9 @@ std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
 }
 
 std::string UIThreadSearchTermsData::GoogleBaseSuggestURLValue() const {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+            BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M163);
   GURL base_url(google_util::CommandLineGoogleBaseSuggestionURL());
   if (base_url.is_valid()) {
     return ConvertBaseURLToSuggestURL(base_url);
@@ -52,8 +55,9 @@ std::string UIThreadSearchTermsData::GoogleBaseSuggestURLValue() const {
 }
 
 std::string UIThreadSearchTermsData::GetApplicationLocale() const {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-      BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+            BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M163);
   return g_browser_process->GetApplicationLocale();
 }
 
@@ -61,8 +65,9 @@ std::string UIThreadSearchTermsData::GetApplicationLocale() const {
 #if !BUILDFLAG(IS_ANDROID)
 std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-      BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+            BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M163);
   std::u16string rlz_string;
 #if BUILDFLAG(ENABLE_RLZ)
   // For organic brandcodes do not use rlz at all. Empty brandcode usually
@@ -85,8 +90,9 @@ std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
 // search client string.  There is already a unit test in place for Android
 // called TemplateURLTest::SearchClient.
 std::string UIThreadSearchTermsData::GetSearchClient() const {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-      BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+            BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M163);
   return std::string();
 }
 #endif

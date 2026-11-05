@@ -13,7 +13,8 @@
 namespace {
 
 SkBitmap ScaleDownBitmapOnIOThread(int icon_size, SkBitmap bitmap) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M163);
 
   if (bitmap.drawsNothing())
     return bitmap;
@@ -37,8 +38,9 @@ SkBitmap ScaleDownBitmapOnIOThread(int icon_size, SkBitmap bitmap) {
 void ScaleDownBitmap(int icon_size,
                      const SkBitmap& bitmap,
                      base::OnceCallback<void(SkBitmap)> callback) {
-  DCHECK(callback);
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(callback, base::NotFatalUntil::M163);
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M163);
 
   // Scale down bitmap on another thread.
   base::ThreadPool::PostTaskAndReplyWithResult(

@@ -44,7 +44,7 @@ network::mojom::NetworkContext* GetNetworkContext(Profile* profile) {
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M163);
 
   affiliations::AffiliationService* affiliation_service = nullptr;
 #if !BUILDFLAG(IS_ANDROID)

@@ -56,15 +56,15 @@ ImageThumbnailRequest::ImageThumbnailRequest(
     int icon_size,
     base::OnceCallback<void(const SkBitmap&)> callback)
     : icon_size_(icon_size), callback_(std::move(callback)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
 ImageThumbnailRequest::~ImageThumbnailRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
 void ImageThumbnailRequest::Start(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&LoadImageData, path),
@@ -73,20 +73,20 @@ void ImageThumbnailRequest::Start(const base::FilePath& path) {
 }
 
 void ImageThumbnailRequest::OnImageDecoded(const SkBitmap& decoded_image) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   ScaleDownBitmap(icon_size_, decoded_image,
                   base::BindOnce(&ImageThumbnailRequest::FinishRequest,
                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ImageThumbnailRequest::OnDecodeImageFailed() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   LOG(ERROR) << "Failed to decode image.";
   FinishRequest(SkBitmap());
 }
 
 void ImageThumbnailRequest::OnLoadComplete(std::vector<uint8_t> data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (data.empty()) {
     FinishRequest(SkBitmap());
     return;
@@ -96,7 +96,7 @@ void ImageThumbnailRequest::OnLoadComplete(std::vector<uint8_t> data) {
 }
 
 void ImageThumbnailRequest::FinishRequest(SkBitmap thumbnail) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), std::move(thumbnail)));
   delete this;

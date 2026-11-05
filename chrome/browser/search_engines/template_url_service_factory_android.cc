@@ -13,7 +13,7 @@
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_TemplateUrlServiceFactory_GetTemplateUrlService(JNIEnv* env,
                                                     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
   return TemplateURLServiceFactory::GetForProfile(profile)->GetJavaObject();
 }
 

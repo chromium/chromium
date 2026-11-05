@@ -35,7 +35,7 @@ void ChromeTemplateURLServiceClient::Shutdown() {
 }
 
 void ChromeTemplateURLServiceClient::SetOwner(TemplateURLService* owner) {
-  DCHECK(!owner_);
+  CHECK(!owner_, base::NotFatalUntil::M163);
   owner_ = owner;
 }
 
@@ -66,7 +66,7 @@ void ChromeTemplateURLServiceClient::AddKeywordGeneratedVisit(const GURL& url) {
 void ChromeTemplateURLServiceClient::OnURLVisited(
     history::HistoryService* history_service,
     const history::VisitedURLInfo& visited_url_info) {
-  DCHECK_EQ(history_service_, history_service);
+  CHECK_EQ(history_service_, history_service, base::NotFatalUntil::M163);
   if (!owner_)
     return;
   // Filter out 404 visits to prevent them from informing search

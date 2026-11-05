@@ -15,7 +15,7 @@ gfx::NativeWindow GetTopLevel(gfx::NativeView view) {
 }
 
 gfx::NativeView GetViewForWindow(gfx::NativeWindow window) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   return window;
 }
 

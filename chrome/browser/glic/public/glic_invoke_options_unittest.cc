@@ -57,7 +57,8 @@ TEST(GlicInvokeOptionsTest, RequiresPromptClipboardPolicyCheck) {
   EXPECT_FALSE(options.RequiresPromptClipboardPolicyCheck());
 
   options.prompts.clear();
-  EXPECT_DCHECK_DEATH(options.RequiresPromptClipboardPolicyCheck());
+  EXPECT_CHECK_DEATH(options.RequiresPromptClipboardPolicyCheck(),
+                     base::NotFatalUntil::M163);
 }
 
 }  // namespace

@@ -39,7 +39,7 @@ bool WorkspacePathRevealDisabledForTest() {
 }
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
-  DCHECK([NSThread isMainThread]);
+  CHECK([NSThread isMainThread], base::NotFatalUntil::M163);
 
   // The Finder creates a new window on each `full_path` reveal. Skip
   // revealing the path during testing to avoid an avalanche of new
@@ -54,7 +54,7 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
 }
 
 void OpenFileOnMainThread(const base::FilePath& full_path) {
-  DCHECK([NSThread isMainThread]);
+  CHECK([NSThread isMainThread], base::NotFatalUntil::M163);
   NSURL* url = base::apple::FilePathToNSURL(full_path);
   if (!url)
     return;
@@ -92,7 +92,7 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 }  // namespace internal
 
 void OpenExternal(const GURL& url) {
-  DCHECK([NSThread isMainThread]);
+  CHECK([NSThread isMainThread], base::NotFatalUntil::M163);
   if (!internal::AreShellOperationsAllowed()) {
     return;
   }
@@ -120,8 +120,8 @@ gfx::NativeWindow GetTopLevel(gfx::NativeView view) {
 
 gfx::NativeView GetViewForWindow(gfx::NativeWindow native_window) {
   NSWindow* window = native_window.GetNativeNSWindow();
-  DCHECK(window);
-  DCHECK([window contentView]);
+  CHECK(window, base::NotFatalUntil::M163);
+  CHECK([window contentView], base::NotFatalUntil::M163);
   return gfx::NativeView([window contentView]);
 }
 

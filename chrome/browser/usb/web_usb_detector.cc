@@ -206,10 +206,10 @@ void WebUsbDetector::Initialize() {
     content::GetDeviceService().BindUsbDeviceManager(
         device_manager_.BindNewPipeAndPassReceiver());
   }
-  DCHECK(device_manager_);
+  CHECK(device_manager_, base::NotFatalUntil::M163);
 
   // Listen for added/removed device events.
-  DCHECK(!client_receiver_.is_bound());
+  CHECK(!client_receiver_.is_bound(), base::NotFatalUntil::M163);
   device_manager_->SetClient(client_receiver_.BindNewEndpointAndPassRemote());
 }
 
@@ -289,8 +289,8 @@ void WebUsbDetector::OnDeviceRemoved(
 
 void WebUsbDetector::SetDeviceManagerForTesting(
     mojo::PendingRemote<device::mojom::UsbDeviceManager> fake_device_manager) {
-  DCHECK(!device_manager_);
-  DCHECK(!client_receiver_.is_bound());
-  DCHECK(fake_device_manager);
+  CHECK(!device_manager_, base::NotFatalUntil::M163);
+  CHECK(!client_receiver_.is_bound(), base::NotFatalUntil::M163);
+  CHECK(fake_device_manager, base::NotFatalUntil::M163);
   device_manager_.Bind(std::move(fake_device_manager));
 }

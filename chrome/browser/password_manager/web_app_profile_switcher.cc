@@ -146,7 +146,7 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(
 
   const web_app::WebApp* web_app =
       active_profile_provider->registrar_unsafe().GetAppById(app_id_);
-  DCHECK(web_app);
+  CHECK(web_app, base::NotFatalUntil::M163);
   auto install_info = MakeInstallInfoFromApp(*web_app);
   install_info->icon_bitmaps = std::move(icon_bitmaps.manifest_icons);
   install_info->trusted_icon_bitmaps = std::move(icon_bitmaps.trusted_icons);

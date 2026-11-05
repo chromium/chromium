@@ -157,7 +157,7 @@ void MaybeCreateExtensionWebRequestReporterForRenderer(
     int process_id,
     mojo::PendingReceiver<safe_browsing::mojom::ExtensionWebRequestReporter>
         receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   content::RenderProcessHost* render_process_host =
       content::RenderProcessHost::FromID(process_id);
@@ -176,7 +176,7 @@ void MaybeCreateExtensionWebRequestReporterForRenderer(
 void BindBadgeServiceForServiceWorker(
     const content::ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   content::RenderProcessHost* render_process_host =
       content::RenderProcessHost::FromID(info.process_id);

@@ -84,7 +84,7 @@ void WorkingSetTrimmerPolicy::SetLastTrimTime(const ProcessNode* process_node,
 
 void WorkingSetTrimmerPolicy::TrimWorkingSet(const ProcessNode* process_node) {
   auto* trimmer = mechanism::WorkingSetTrimmer::GetInstance();
-  DCHECK(trimmer);
+  CHECK(trimmer, base::NotFatalUntil::M163);
 
   if (process_node->GetProcess().IsValid()) {
     SetLastTrimTimeNow(process_node);

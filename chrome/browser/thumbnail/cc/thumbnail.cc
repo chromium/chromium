@@ -56,7 +56,7 @@ Thumbnail::~Thumbnail() {
 }
 
 void Thumbnail::SetBitmap(const SkBitmap& bitmap) {
-  DCHECK(!bitmap.empty());
+  CHECK(!bitmap.empty(), base::NotFatalUntil::M163);
   retrieved_ = false;
   ClearUIResourceId();
   scaled_content_size_ =
@@ -68,8 +68,8 @@ void Thumbnail::SetBitmap(const SkBitmap& bitmap) {
 
 void Thumbnail::SetCompressedBitmap(sk_sp<SkPixelRef> compressed_bitmap,
                                     const gfx::Size& content_size) {
-  DCHECK(compressed_bitmap);
-  DCHECK(!content_size.IsEmpty());
+  CHECK(compressed_bitmap, base::NotFatalUntil::M163);
+  CHECK(!content_size.IsEmpty(), base::NotFatalUntil::M163);
   retrieved_ = false;
   ClearUIResourceId();
   gfx::Size data_size(compressed_bitmap->width(), compressed_bitmap->height());
@@ -80,7 +80,7 @@ void Thumbnail::SetCompressedBitmap(sk_sp<SkPixelRef> compressed_bitmap,
 }
 
 void Thumbnail::CreateUIResource() {
-  DCHECK(ui_resource_provider_);
+  CHECK(ui_resource_provider_, base::NotFatalUntil::M163);
   if (!ui_resource_id_) {
     ui_resource_id_ = ui_resource_provider_->CreateUIResource(this);
   }

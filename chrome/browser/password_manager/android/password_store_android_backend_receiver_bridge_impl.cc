@@ -39,7 +39,12 @@ std::vector<StoredCredential> CreateStoredCredentialsVector(
         base::android::AttachCurrentThread());
     bool parsing_succeeds =
         list_passwords_result.ParseFromArray(view.data(), view.size());
-    CHECK(parsing_succeeds, base::NotFatalUntil::M161);
+    // CHECK-exclusion: `passwords` is serialized protobuf data retrieved from
+    // an external credential backend (GMS Core) via JNI. Corrupt, outdated, or
+    // malformed bytes from external storage/IPC should be handled gracefully
+    // through normal control flow rather than crashing the browser process via
+    // `CHECK`.
+    DCHECK(parsing_succeeds);
   }
   return StoredCredentialVectorFromListResult(list_passwords_result,
                                               is_account_store);
@@ -86,7 +91,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithLogins(
     int32_t job_id,
     const base::android::JavaRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  CHECK(consumer_, base::NotFatalUntil::M161);
+  CHECK(consumer_, base::NotFatalUntil::M163);
   consumer_->OnCompleteWithLogins(
       JobId(job_id), CreateStoredCredentialsVector<ListPasswordsResult>(
                          passwords, is_account_store_));
@@ -97,7 +102,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithBrandedLogins(
     int32_t job_id,
     const base::android::JavaRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  CHECK(consumer_, base::NotFatalUntil::M161);
+  CHECK(consumer_, base::NotFatalUntil::M163);
   consumer_->OnCompleteWithLogins(
       JobId(job_id),
       CreateStoredCredentialsVector<ListPasswordsWithUiInfoResult>(
@@ -125,7 +130,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnError(
     bool has_connection_result,
     int32_t connection_result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  CHECK(consumer_, base::NotFatalUntil::M161);
+  CHECK(consumer_, base::NotFatalUntil::M163);
   // Posting the tasks to the same sequence prevents that synchronous responses
   // try to finish tasks before their registration was completed.
   AndroidBackendError error{static_cast<AndroidBackendErrorType>(error_type)};
@@ -149,7 +154,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnLoginChanged(
     JNIEnv* env,
     int32_t job_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  CHECK(consumer_, base::NotFatalUntil::M161);
+  CHECK(consumer_, base::NotFatalUntil::M163);
   // Notifying that a login changed without providing a changelist prompts the
   // caller to explicitly check the remaining logins.
   consumer_->OnLoginsChanged(JobId(job_id), std::nullopt);

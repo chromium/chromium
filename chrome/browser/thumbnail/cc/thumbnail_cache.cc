@@ -89,7 +89,7 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
       ui_resource_provider_(nullptr),
       save_jpeg_thumbnails_(save_jpeg_thumbnails),
       read_in_progress_(false) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   ScheduleRecordCacheMetrics(base::Minutes(1));
 }
 
@@ -497,7 +497,7 @@ void ThumbnailCache::SetCaptureMinRequestTimeForTesting(int timeMs) {
 }
 
 void ThumbnailCache::InvalidateCachedThumbnail(Thumbnail* thumbnail) {
-  DCHECK(thumbnail);
+  CHECK(thumbnail, base::NotFatalUntil::M163);
   TabId tab_id = thumbnail->tab_id();
   cc::UIResourceId uid = thumbnail->ui_resource_id();
 

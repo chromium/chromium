@@ -38,7 +38,7 @@ NoStatePrefetchContents* ChromeNoStatePrefetchContentsDelegate::FromWebContents(
 
 void ChromeNoStatePrefetchContentsDelegate::OnNoStatePrefetchContentsCreated(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
   InitializePageLoadMetricsForWebContents(web_contents);
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::GetViewType(web_contents) ==
@@ -56,7 +56,7 @@ void ChromeNoStatePrefetchContentsDelegate::OnNoStatePrefetchContentsCreated(
 
 void ChromeNoStatePrefetchContentsDelegate::ReleaseNoStatePrefetchContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
 
   // Clear the task manager tag we added earlier to our
   // WebContents since it's no longer a NoStatePrefetch contents.

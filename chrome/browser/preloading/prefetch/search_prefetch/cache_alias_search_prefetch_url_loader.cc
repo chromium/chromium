@@ -59,7 +59,7 @@ CacheAliasSearchPrefetchURLLoader::~CacheAliasSearchPrefetchURLLoader() {
 SearchPrefetchURLLoader::RequestHandler
 CacheAliasSearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
     std::unique_ptr<CacheAliasSearchPrefetchURLLoader> loader) {
-  DCHECK(loader);
+  CHECK(loader, base::NotFatalUntil::M163);
   loader->RecordInterceptionTime();
   base::WeakPtr<CacheAliasSearchPrefetchURLLoader> weak_ptr_loader =
       loader->weak_factory_.GetWeakPtr();
@@ -77,7 +77,7 @@ void CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient(
       std::make_unique<network::ResourceRequest>(resource_request);
 
   // Bind to the content/ navigation code.
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M163);
 
   // At this point, we are bound to the mojo receiver, so we can release
   // |loader|, which points to |this|.
@@ -152,7 +152,7 @@ void CacheAliasSearchPrefetchURLLoader::RestartDirect(
 
 void CacheAliasSearchPrefetchURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  DCHECK(forwarding_client_);
+  CHECK(forwarding_client_, base::NotFatalUntil::M163);
   forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
 }
 
@@ -160,7 +160,7 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
-  DCHECK(forwarding_client_);
+  CHECK(forwarding_client_, base::NotFatalUntil::M163);
   if (can_fallback_) {
     if (!head->headers) {
       RestartDirect(FallbackReason::kNoResponseHeaders);
@@ -193,7 +193,7 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
 void CacheAliasSearchPrefetchURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
-  DCHECK(forwarding_client_);
+  CHECK(forwarding_client_, base::NotFatalUntil::M163);
   if (can_fallback_) {
     RestartDirect(FallbackReason::kRedirectResponse);
     return;
@@ -212,7 +212,7 @@ void CacheAliasSearchPrefetchURLLoader::OnUploadProgress(
 
 void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
-  DCHECK(forwarding_client_);
+  CHECK(forwarding_client_, base::NotFatalUntil::M163);
   network::RecordOnTransferSizeUpdatedUMA(
       network::OnTransferSizeUpdatedFrom::kCacheAliasSearchPrefetchURLLoader);
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
@@ -227,7 +227,7 @@ void CacheAliasSearchPrefetchURLLoader::OnComplete(
     RestartDirect(FallbackReason::kErrorOnComplete);
     return;
   }
-  DCHECK(forwarding_client_);
+  CHECK(forwarding_client_, base::NotFatalUntil::M163);
   can_fallback_ = false;
   forwarding_client_->OnComplete(status);
   OnForwardingComplete();

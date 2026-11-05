@@ -159,11 +159,13 @@ StatusTrayWin::Window::Window(StatusTrayWin* tray)
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
 
 StatusTrayWin::Window::~Window() {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
 }
 
 void StatusTrayWin::Window::Detach() {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   message_window_->Detach();
 }
 

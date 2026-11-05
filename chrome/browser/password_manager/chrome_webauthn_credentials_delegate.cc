@@ -83,7 +83,7 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
   // for where these are encoded.
   std::optional<std::vector<uint8_t>> selected_credential_id =
       base::Base64Decode(backend_id);
-  DCHECK(selected_credential_id);
+  CHECK(selected_credential_id, base::NotFatalUntil::M163);
 
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run();

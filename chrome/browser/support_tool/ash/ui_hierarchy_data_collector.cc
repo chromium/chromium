@@ -115,7 +115,7 @@ void UiHierarchyDataCollector::CollectDataAndDetectPII(
   InsertIntoPIIMap(ui_hierarchy_data.window_titles);
   data_ = std::move(ui_hierarchy_data.data);
   // `data_` can't be empty.
-  DCHECK(!data_.empty());
+  CHECK(!data_.empty(), base::NotFatalUntil::M163);
   std::move(on_data_collected_callback).Run(/*error=*/std::nullopt);
 }
 

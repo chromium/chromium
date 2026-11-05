@@ -76,7 +76,7 @@ static void JNI_WebsiteParentApproval_OnCompletion(JNIEnv* env,
   // Check that we have a callback stored from the local approval request and
   // call it.
   auto* cb = GetOnCompletionCallback();
-  DCHECK(!cb->is_null());
+  CHECK(!cb->is_null(), base::NotFatalUntil::M163);
   AndroidLocalWebApprovalFlowOutcome flow_outcome_enum =
       static_cast<AndroidLocalWebApprovalFlowOutcome>(flow_outcome_value);
   std::move(*cb).Run(flow_outcome_enum);

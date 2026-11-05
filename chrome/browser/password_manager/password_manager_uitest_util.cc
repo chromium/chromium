@@ -63,7 +63,7 @@ void ObservingAutofillClient::WaitForAutofillPopup() {
   base::RunLoop run_loop;
   run_loop_ = &run_loop;
   run_loop.Run();
-  DCHECK(!run_loop_);
+  ASSERT_FALSE(run_loop_);
 }
 
 autofill::AutofillClient::SuggestionUiSessionId

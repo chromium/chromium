@@ -24,7 +24,7 @@ void OnMediaParsed(ThumbnailMediaParser*,
                    chrome::mojom::MediaMetadataPtr metadata,
                    SkBitmap thumbnail_bitmap) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  DCHECK(metadata);
+  CHECK(metadata, base::NotFatalUntil::M163);
 
   jni_zero::ScopedJavaLocalRef<jobject> media_data;
   if (success) {

@@ -190,6 +190,10 @@ void WebAppIconDownloader::DidDownloadFavicon(
                            http_status_code);
 
   if (http_status_code != 0) {
+    // CHECK-exclusion: `http_status_code` is returned by a remote web server
+    // over the network when fetching web app icons or favicons. The network
+    // stack permits non-standard or out-of-range HTTP response codes (outside
+    // [100, 600)).
     DCHECK_LE(100, http_status_code);
     DCHECK_GT(600, http_status_code);
     icons_http_results_[icon_urls_with_sizes] = http_status_code;

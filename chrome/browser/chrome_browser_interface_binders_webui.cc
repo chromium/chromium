@@ -168,7 +168,7 @@ void BindTrackedElementHandlerRestricted(
     return;
   }
   auto* controller = web_ui->GetController();
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M163);
 
   const bool is_allowed =
 #if BUILDFLAG(ENABLE_WEBUI_HISTORY)

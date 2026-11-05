@@ -70,7 +70,7 @@ GURL GetPreloadURLFromMatch(
   search_terms_args.prefetch_param = prefetch_param;
   const TemplateURL* default_provider =
       template_url_service.GetDefaultSearchProvider();
-  DCHECK(default_provider);
+  CHECK(default_provider, base::NotFatalUntil::M163);
   GURL prefetch_url = GURL(default_provider->url_ref().ReplaceSearchTerms(
       search_terms_args, template_url_service.search_terms_data(), nullptr));
   return prefetch_url;
@@ -310,7 +310,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // It is possible that the current page doesn't exist. Don't create
   // PreloadingAttempt in that case.
   content::PreloadingAttempt* attempt = nullptr;
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
   content::PreloadingURLMatchCallback same_url_matcher =
       base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
                           web_contents->GetBrowserContext());
@@ -416,7 +416,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
           base::BindOnce(&SearchPrefetchService::ReportFetchResult,
                          base::Unretained(this)));
 
-  DCHECK(prefetch_request);
+  CHECK(prefetch_request, base::NotFatalUntil::M163);
   if (!prefetch_request->StartPrefetchRequest(profile_, *web_contents)) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kThrottled;
     // We don't consider Throttled as an ineligibility reason is because we
@@ -477,6 +477,7 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
     const GURL& canonical_search_url,
     const GURL& navigation_url) {
   auto request_it = prefetches_.find(canonical_search_url);
+  // TODO(crbug.com/40214220): CHECK-exclusion: see the comment below.
   DCHECK(request_it != prefetches_.end());
   if (request_it == prefetches_.end()) {
     // TODO(crbug.com/40214220): It should be rare but the request can be
@@ -498,8 +499,8 @@ SearchPrefetchService::MaybeCreateResponseReaderForPrerender(
   if (iter == prefetches_.end()) {
     return {};
   }
-  DCHECK_NE(iter->second.request->current_status(),
-            SearchPrefetchStatus::kRequestFailed);
+  CHECK_NE(iter->second.request->current_status(),
+           SearchPrefetchStatus::kRequestFailed, base::NotFatalUntil::M163);
   return iter->second.request->CreateResponseReader();
 }
 
@@ -532,7 +533,8 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
   auto iter =
       RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
   if (iter == prefetches_.end()) {
-    DCHECK_NE(recorder.reason_, SearchPrefetchServingReason::kServed);
+    CHECK_NE(recorder.reason_, SearchPrefetchServingReason::kServed,
+             base::NotFatalUntil::M163);
     return {};
   }
 
@@ -629,7 +631,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
                                             const AutocompleteResult& result) {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  DCHECK(template_url_service);
+  CHECK(template_url_service, base::NotFatalUntil::M163);
   auto* default_search = template_url_service->GetDefaultSearchProvider();
   if (!default_search)
     return;
@@ -835,7 +837,7 @@ bool SearchPrefetchService::OnNavigationLikely(
 void SearchPrefetchService::OnTemplateURLServiceChanged() {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  DCHECK(template_url_service);
+  CHECK(template_url_service, base::NotFatalUntil::M163);
 
   std::optional<TemplateURLData> template_url_service_data;
 
@@ -1031,7 +1033,7 @@ void SearchPrefetchService::ObserveTemplateURLService(
 
     const TemplateURL* default_provider =
         template_url_service->GetDefaultSearchProvider();
-    DCHECK(default_provider);
+    CHECK(default_provider, base::NotFatalUntil::M163);
     template_url_service_data_ = default_provider->data();
   }
 }
@@ -1041,7 +1043,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
     content::WebContents* web_contents,
     TemplateURLService* template_url_service,
     const GURL& canonical_search_url) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
   GURL prefetch_url =
       GetPrefetchUrlFromMatch(*match.search_terms_args, *template_url_service,
                               /*is_navigation_likely=*/false);
@@ -1073,7 +1075,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
 
   PrerenderManager::CreateForWebContents(web_contents);
   auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-  DCHECK(prerender_manager);
+  CHECK(prerender_manager, base::NotFatalUntil::M163);
 
   // Prerender URL need not contain the prefetch information to help servers to
   // recognize prefetch traffic, because it should not send network requests.

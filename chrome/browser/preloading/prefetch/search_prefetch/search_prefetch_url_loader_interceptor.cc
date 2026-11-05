@@ -128,7 +128,7 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
     return handler;
   }
 
-  DCHECK(is_primary_main_frame_navigation);
+  CHECK(is_primary_main_frame_navigation, base::NotFatalUntil::M163);
   auto handler =
       service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
   if (handler) {

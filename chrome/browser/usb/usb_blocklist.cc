@@ -137,8 +137,9 @@ void UsbBlocklist::ResetToDefaultValuesForTest() {
 }
 
 UsbBlocklist::UsbBlocklist() {
-  DCHECK(std::is_sorted(std::begin(kStaticEntries), std::end(kStaticEntries),
-                        CompareEntry));
+  CHECK(std::is_sorted(std::begin(kStaticEntries), std::end(kStaticEntries),
+                       CompareEntry),
+        base::NotFatalUntil::M163);
   PopulateWithServerProvidedValues();
 }
 

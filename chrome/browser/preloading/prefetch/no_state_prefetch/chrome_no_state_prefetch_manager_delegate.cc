@@ -24,13 +24,13 @@ ChromeNoStatePrefetchManagerDelegate::ChromeNoStatePrefetchManagerDelegate(
 
 scoped_refptr<content_settings::CookieSettings>
 ChromeNoStatePrefetchManagerDelegate::GetCookieSettings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   return CookieSettingsFactory::GetForProfile(profile_);
 }
 
 void ChromeNoStatePrefetchManagerDelegate::MaybePreconnect(const GURL& url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (!base::FeatureList::IsEnabled(features::kPrerenderFallbackToPreconnect)) {
     return;

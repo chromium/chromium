@@ -36,7 +36,7 @@ namespace {
 std::pair<std::unique_ptr<system_logs::SystemLogsResponse>, PIIMap> DetectPII(
     std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
-  DCHECK(system_logs_response);
+  CHECK(system_logs_response, base::NotFatalUntil::M163);
   redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   PIIMap detected_pii;
   // Detect PII in all entries in `system_logs_response` and add the detected
@@ -57,7 +57,7 @@ std::unique_ptr<system_logs::SystemLogsResponse> RedactAndKeepSelectedPII(
     const std::set<redaction::PIIType>& pii_types_to_keep,
     std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
-  DCHECK(system_logs_response);
+  CHECK(system_logs_response, base::NotFatalUntil::M163);
   redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   for (auto& entry : *system_logs_response) {
     (*system_logs_response)[entry.first] =
@@ -73,7 +73,7 @@ std::unique_ptr<system_logs::SystemLogsResponse> RedactAndKeepSelectedPII(
 bool WriteOutputFiles(
     std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response,
     base::FilePath target_directory) {
-  DCHECK(system_logs_response);
+  CHECK(system_logs_response, base::NotFatalUntil::M163);
   bool success = true;
   for (auto& entry : *system_logs_response) {
     if (!base::WriteFile(target_directory.AppendASCII(entry.first)

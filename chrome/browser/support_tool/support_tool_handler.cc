@@ -107,7 +107,7 @@ const base::Time& SupportToolHandler::GetDataCollectionTimestamp() {
 void SupportToolHandler::AddDataCollector(
     std::unique_ptr<DataCollector> collector) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(collector);
+  CHECK(collector, base::NotFatalUntil::M163);
   data_collectors_.emplace_back(std::move(collector));
 }
 
@@ -120,8 +120,8 @@ SupportToolHandler::GetDataCollectorsForTesting() {
 void SupportToolHandler::CollectSupportData(
     SupportToolDataCollectedCallback on_data_collection_done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!on_data_collection_done_callback.is_null());
-  DCHECK(!data_collectors_.empty());
+  CHECK(!on_data_collection_done_callback.is_null(), base::NotFatalUntil::M163);
+  CHECK(!data_collectors_.empty(), base::NotFatalUntil::M163);
 
   on_data_collection_done_callback_ =
       std::move(on_data_collection_done_callback);
