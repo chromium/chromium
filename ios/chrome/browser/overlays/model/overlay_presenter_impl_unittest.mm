@@ -638,7 +638,8 @@ TEST_F(OverlayPresenterImplTest,
       inserted_cancel_handler.get();
   EXPECT_CALL(observer(), WillShowOverlay(&presenter(), request,
                                           /*initial_presentation=*/true));
-  queue->AddRequest(std::move(inserted_request));
+  queue->AddRequest(std::move(inserted_request),
+                    std::move(inserted_cancel_handler));
 
   // Disable dismissal callbacks in the fake context and cancel the request.
   presentation_context().SetDismissalCallbacksEnabled(false);
