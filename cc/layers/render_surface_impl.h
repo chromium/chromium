@@ -230,8 +230,6 @@ class CC_EXPORT RenderSurfaceImpl {
   LayerImpl* BackdropMaskLayer() const;
   gfx::Transform SurfaceScale() const;
 
-  bool TrilinearFiltering() const;
-
   bool HasCopyRequest() const;
 
   // The capture identifier for this render surface and its originating effect

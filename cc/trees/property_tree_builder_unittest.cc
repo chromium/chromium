@@ -722,42 +722,6 @@ TEST_F(PropertyTreeBuilderTest, PropertyTreesRebuildWithOpacityChanges) {
   EXPECT_EQ(child->effect_tree_index(), root->effect_tree_index());
 }
 
-TEST_F(PropertyTreeBuilderTest, RenderSurfaceListForTrilinearFiltering) {
-  auto root = Layer::Create();
-  host()->SetRootLayer(root);
-  auto parent = Layer::Create();
-  root->AddChild(parent);
-  auto child1 = Layer::Create();
-  parent->AddChild(child1);
-  auto child2 = Layer::Create();
-  parent->AddChild(child2);
-
-  gfx::Transform scale_matrix;
-  scale_matrix.Scale(.25f, .25f);
-
-  root->SetBounds(gfx::Size(200, 200));
-  parent->SetTransform(scale_matrix);
-  parent->SetTrilinearFiltering(true);
-  child1->SetBounds(gfx::Size(50, 50));
-  child1->SetIsDrawable(true);
-  child1->SetForceRenderSurfaceForTesting(true);
-  child2->SetPosition(gfx::PointF(50, 50));
-  child2->SetBounds(gfx::Size(50, 50));
-  child2->SetIsDrawable(true);
-  child2->SetForceRenderSurfaceForTesting(true);
-
-  CommitAndActivate();
-
-  ASSERT_TRUE(GetRenderSurfaceImpl(parent));
-  EXPECT_EQ(2, GetRenderSurfaceImpl(parent)->num_contributors());
-  EXPECT_EQ(4U, GetRenderSurfaceList().size());
-
-  // The rectangle enclosing child1 and child2 (0,0 100x100), scaled by the
-  // scale matrix to (0,0 25x25).
-  EXPECT_EQ(gfx::RectF(0, 0, 25, 25),
-            GetRenderSurfaceImpl(parent)->DrawableContentRect());
-}
-
 TEST_F(PropertyTreeBuilderTest, GradientMask) {
   auto root = Layer::Create();
   host()->SetRootLayer(root);

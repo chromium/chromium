@@ -149,10 +149,6 @@ std::optional<SkPath> RenderSurfaceImpl::BackdropFilterBounds() const {
   return OwningEffectNode()->backdrop_filter_bounds;
 }
 
-bool RenderSurfaceImpl::TrilinearFiltering() const {
-  return OwningEffectNode()->trilinear_filtering;
-}
-
 bool RenderSurfaceImpl::HasCopyRequest() const {
   return OwningEffectNode()->has_copy_request;
 }
@@ -541,7 +537,6 @@ RenderSurfaceImpl::CreateRenderPassCommon(viz::CompositorRenderPassId id,
   damage_rect.Intersect(output_rect);
   pass->SetNew(id, output_rect, damage_rect,
                draw_properties_.screen_space_transform);
-  pass->generate_mipmap = TrilinearFiltering();
   // The subtree size may be slightly larger than our content rect during
   // some animations, so we clamp it here.
   pass->subtree_size = SubtreeSize();

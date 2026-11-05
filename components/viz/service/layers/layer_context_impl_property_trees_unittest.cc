@@ -1860,37 +1860,6 @@ class LayerContextImplUpdateDisplayTreeEffectNodeWithBoolParamTest
       public ::testing::WithParamInterface<bool> {};
 
 TEST_P(LayerContextImplUpdateDisplayTreeEffectNodeWithBoolParamTest,
-       TrilinearFiltering) {
-  const bool trilinear_filtering = GetParam();
-  auto update = CreateDefaultUpdate();
-  auto node_update = CreateDefaultSecondaryRootEffectNode();
-  if (trilinear_filtering) {
-    node_update->trilinear_filtering = trilinear_filtering;
-  }
-  update->effect_nodes.push_back(std::move(node_update));
-
-  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  ASSERT_TRUE(result.has_value());
-
-  cc::EffectNode* node_impl =
-      GetEffectNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
-  ASSERT_TRUE(node_impl);
-  EXPECT_EQ(node_impl->trilinear_filtering, trilinear_filtering);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    TrilinearFiltering,
-    LayerContextImplUpdateDisplayTreeEffectNodeWithBoolParamTest,
-    ::testing::Bool(),
-    [](const testing::TestParamInfo<
-        LayerContextImplUpdateDisplayTreeEffectNodeWithBoolParamTest::
-            ParamType>& info) {
-      std::stringstream name;
-      name << (info.param ? "True" : "False");
-      return name.str();
-    });
-
-TEST_P(LayerContextImplUpdateDisplayTreeEffectNodeWithBoolParamTest,
        SubtreeHidden) {
   const bool subtree_hidden = GetParam();
   auto update = CreateDefaultUpdate();

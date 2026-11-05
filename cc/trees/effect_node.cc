@@ -71,8 +71,6 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
       return "clip axis alignment";
     case RenderSurfaceReason::kMask:
       return "mask";
-    case RenderSurfaceReason::kTrilinearFiltering:
-      return "trilinear filtering";
     case RenderSurfaceReason::kCache:
       return "cache";
     case RenderSurfaceReason::kCopyRequest:
@@ -136,7 +134,6 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("hidden_by_backface_visibility",
                     hidden_by_backface_visibility);
   value->SetBoolean("double_sided", double_sided);
-  value->SetBoolean("trilinear_filtering", trilinear_filtering);
   value->SetBoolean("is_drawn", is_drawn);
   value->SetBoolean("only_draws_visible_content", only_draws_visible_content);
   value->SetBoolean("subtree_hidden", subtree_hidden);

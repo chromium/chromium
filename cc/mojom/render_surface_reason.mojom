@@ -25,7 +25,6 @@ enum RenderSurfaceReason {
   kClipPath,
   kClipAxisAlignment,
   kMask,
-  kTrilinearFiltering,
   kCache,
   kCopyRequest,
   kMirrored,

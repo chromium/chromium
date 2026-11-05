@@ -47,8 +47,6 @@ struct EnumTraits<cc::mojom::RenderSurfaceReason, cc::RenderSurfaceReason> {
         return cc::mojom::RenderSurfaceReason::kClipAxisAlignment;
       case cc::RenderSurfaceReason::kMask:
         return cc::mojom::RenderSurfaceReason::kMask;
-      case cc::RenderSurfaceReason::kTrilinearFiltering:
-        return cc::mojom::RenderSurfaceReason::kTrilinearFiltering;
       case cc::RenderSurfaceReason::kCache:
         return cc::mojom::RenderSurfaceReason::kCache;
       case cc::RenderSurfaceReason::kCopyRequest:
@@ -107,8 +105,6 @@ struct EnumTraits<cc::mojom::RenderSurfaceReason, cc::RenderSurfaceReason> {
         return cc::RenderSurfaceReason::kClipAxisAlignment;
       case cc::mojom::RenderSurfaceReason::kMask:
         return cc::RenderSurfaceReason::kMask;
-      case cc::mojom::RenderSurfaceReason::kTrilinearFiltering:
-        return cc::RenderSurfaceReason::kTrilinearFiltering;
       case cc::mojom::RenderSurfaceReason::kCache:
         return cc::RenderSurfaceReason::kCache;
       case cc::mojom::RenderSurfaceReason::kCopyRequest:

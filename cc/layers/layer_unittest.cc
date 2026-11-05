@@ -437,26 +437,6 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       child2->PushPropertiesTo(child2_impl.get(), *commit_state);
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state));
 
-  EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit(_)).Times(1);
-  EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetTrilinearFiltering(true));
-  layer_tree_host_->VerifyAndClearExpectations();
-
-  EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET_IN_COMMIT(
-      top->PushPropertiesTo(top_impl.get(), *commit_state);
-      child->PushPropertiesTo(child_impl.get(), *commit_state);
-      child2->PushPropertiesTo(child2_impl.get(), *commit_state);
-      grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state));
-
-  EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit(_)).Times(1);
-  EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetTrilinearFiltering(false));
-  layer_tree_host_->VerifyAndClearExpectations();
-
-  EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET_IN_COMMIT(
-      top->PushPropertiesTo(top_impl.get(), *commit_state);
-      child->PushPropertiesTo(child_impl.get(), *commit_state);
-      child2->PushPropertiesTo(child2_impl.get(), *commit_state);
-      grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state));
-
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit(_)).Times(2);
   top->SetRoundedCorner({1, 2, 3, 4});
   EXECUTE_AND_VERIFY_SUBTREE_CHANGED(top->SetIsFastRoundedCorner(true));

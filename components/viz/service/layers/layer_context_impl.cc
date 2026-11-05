@@ -436,7 +436,6 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
 
   node.cache_render_surface = wire.cache_render_surface;
   node.double_sided = wire.double_sided;
-  node.trilinear_filtering = wire.trilinear_filtering;
   node.subtree_hidden = wire.subtree_hidden;
   node.has_potential_filter_animation = wire.has_potential_filter_animation;
   node.has_potential_backdrop_filter_animation =

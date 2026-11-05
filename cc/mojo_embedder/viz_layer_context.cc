@@ -205,7 +205,6 @@ void ComputePropertyTreeNodeUpdate(
       old_node->hidden_by_backface_visibility ==
           new_node.hidden_by_backface_visibility &&
       old_node->double_sided == new_node.double_sided &&
-      old_node->trilinear_filtering == new_node.trilinear_filtering &&
       old_node->is_drawn == new_node.is_drawn &&
       old_node->only_draws_visible_content ==
           new_node.only_draws_visible_content &&
@@ -284,7 +283,6 @@ void ComputePropertyTreeNodeUpdate(
 
   wire->cache_render_surface = new_node.cache_render_surface;
   wire->double_sided = new_node.double_sided;
-  wire->trilinear_filtering = new_node.trilinear_filtering;
   wire->subtree_hidden = new_node.subtree_hidden;
   wire->has_potential_filter_animation =
       new_node.has_potential_filter_animation;

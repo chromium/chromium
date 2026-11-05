@@ -549,7 +549,6 @@ struct EffectNode {
   // Whether the contents should continue to be visible when rotated such that
   // its back face is facing toward the camera. It's true by default.
   bool double_sided;
-  bool trilinear_filtering;
 
   // TODO(crbug.com/40461368): Delete this after implementation of
   // SetHideLayerAndSubtree is cleaned up.

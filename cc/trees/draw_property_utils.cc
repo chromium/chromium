@@ -1484,7 +1484,6 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
 bool NodeMayContainBackdropBlurFilter(const EffectNode& node) {
   switch (node.render_surface_reason) {
     case RenderSurfaceReason::kMask:
-    case RenderSurfaceReason::kTrilinearFiltering:
     case RenderSurfaceReason::kFilter:
     case RenderSurfaceReason::kBackdropFilter:
       return true;

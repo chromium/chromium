@@ -50,7 +50,6 @@ enum class RenderSurfaceReason : uint8_t {
   kClipPath,
   kClipAxisAlignment,
   kMask,
-  kTrilinearFiltering,
   kCache,
   kCopyRequest,
   kMirrored,
@@ -151,7 +150,6 @@ struct CC_EXPORT EffectNode {
   // Whether the contents should continue to be visible when rotated such that
   // its back face is facing toward the camera. It's true by default.
   bool double_sided : 1 = true;
-  bool trilinear_filtering : 1 = false;
 
   // Whether the node will be drawn, as determined by the parent node, non-zero
   // opacity, or having copy requests causing a draw to be required.

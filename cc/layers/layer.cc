@@ -1703,19 +1703,6 @@ void Layer::OnTransformAnimated(const gfx::Transform& transform) {
   EnsureLayerTreeInputs().transform = transform;
 }
 
-void Layer::SetTrilinearFiltering(bool trilinear_filtering) {
-  auto& inputs = EnsureLayerTreeInputs();
-  if (inputs.trilinear_filtering == trilinear_filtering)
-    return;
-  inputs.trilinear_filtering = trilinear_filtering;
-  // When true, makes a RenderSurface which makes an effect node.
-  SetPropertyTreesNeedRebuild();
-  // Adding a RenderSurface may change how things in the subtree appear, since
-  // it flattens transforms.
-  SetSubtreePropertyChanged();
-  SetNeedsCommit();
-}
-
 void Layer::IncrementMirrorCount() {
   SetMirrorCount(mirror_count() + 1);
 }

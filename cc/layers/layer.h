@@ -708,18 +708,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   ElementId element_id() const { return inputs_.Read(*this).element_id; }
 
   // For layer tree mode only.
-  // Sets or gets if trilinear filtering should be used to scaling the contents
-  // of this layer and its subtree. When set the layer and its subtree will be
-  // composited together as a single unit, mip maps will be generated of the
-  // subtree together, and trilinear filtering applied when supported, if
-  // scaling during composite of the content from this layer and its subtree
-  // into the target.
-  void SetTrilinearFiltering(bool trilinear_filtering);
-  bool trilinear_filtering() const {
-    return layer_tree_inputs() && layer_tree_inputs()->trilinear_filtering;
-  }
-
-  // For layer tree mode only.
   // Increments/decrements/gets number of layers mirroring this layer.
   void IncrementMirrorCount();
   void DecrementMirrorCount();
@@ -1131,8 +1119,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     // If set, disables this layer's rounded corner from triggering a render
     // surface on itself if possible.
     bool is_fast_rounded_corner : 1 = false;
-
-    bool trilinear_filtering : 1 = false;
 
     bool hide_layer_and_subtree : 1 = false;
 
