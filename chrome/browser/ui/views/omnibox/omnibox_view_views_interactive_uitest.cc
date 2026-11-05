@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <atomic>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -1549,6 +1550,7 @@ class OmniboxViewViewsHintTextLimitingBrowserTest
  public:
   OmniboxViewViewsHintTextLimitingBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(lens::features::kLensOverlay);
+    SetMockTime(base::subtle::TimeNowIgnoringOverride());
   }
 
  protected:
@@ -1566,7 +1568,10 @@ class OmniboxViewViewsHintTextLimitingBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  inline static base::Time fake_time_;
+  inline static std::atomic<base::Time> fake_time_;
+  base::subtle::ScopedTimeClockOverrides time_override_{
+      &GetMockTime, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr};
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
@@ -1577,11 +1582,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
                        HintTextPrefsIncrementOnFirstImpression) {
-  SetMockTime(base::Time::Now());
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &GetMockTime, /* time_ticks_override */ nullptr,
-      /* thread_ticks_override */ nullptr);
-
   FocusAndPaint();
 
   EXPECT_EQ(prefs()->GetInteger(omnibox::kAimHintTotalImpressions), 1);
@@ -1592,11 +1592,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
                        HintTextPrefsIncrementOnSecondImpressionSameDay) {
-  SetMockTime(base::Time::Now());
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &GetMockTime, /* time_ticks_override */ nullptr,
-      /* thread_ticks_override */ nullptr);
-
   // First impression.
   FocusAndPaint();
 
@@ -1611,12 +1606,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
                        HintTextPrefsResetDailyCountOnNewDay) {
-  // Set the initial time and install the override.
-  SetMockTime(base::Time::Now());
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &GetMockTime, /* time_ticks_override */ nullptr,
-      /* thread_ticks_override */ nullptr);
-
   // First impression on the initial day.
   FocusAndPaint();
   const int initial_day = (GetMockTime() - base::Time::UnixEpoch()).InDays();
@@ -1642,11 +1631,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
                        HintTextPrefsRespectDailyLimit) {
-  SetMockTime(base::Time::Now());
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &GetMockTime, /* time_ticks_override */ nullptr,
-      /* thread_ticks_override */ nullptr);
-
   // Three impressions to hit the daily limit of 3.
   FocusAndPaint();
   ClickBrowserWindowCenter();
@@ -1665,11 +1649,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsHintTextLimitingBrowserTest,
                        HintTextPrefsRespectTotalLimit) {
-  SetMockTime(base::Time::Now());
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &GetMockTime, /* time_ticks_override */ nullptr,
-      /* thread_ticks_override */ nullptr);
-
   // Hit the total limit.
   prefs()->SetInteger(omnibox::kAimHintTotalImpressions, 15);
 
