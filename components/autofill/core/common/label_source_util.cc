@@ -38,6 +38,8 @@ std::string LabelSourceToString(FormFieldData::LabelSource label_source) {
       return "ForName";
     case FormFieldData::LabelSource::kOverlayingLabel:
       return "OverlayingLabel";
+    case FormFieldData::LabelSource::kCustomFormControlScript:
+      return "CustomFormControlScript";
   }
 }
 
@@ -45,6 +47,7 @@ bool IsLabelHigherQualityThanPlaceholder(
     FormFieldData::LabelSource label_source) {
   switch (label_source) {
     case FormFieldData::LabelSource::kCombined:
+    case FormFieldData::LabelSource::kCustomFormControlScript:
     case FormFieldData::LabelSource::kForId:
     case FormFieldData::LabelSource::kForName:
     case FormFieldData::LabelSource::kLabelTag:

@@ -110,6 +110,8 @@ TEST_F(CustomFormControlUtilTest, CustomFormControlToFormField) {
   EXPECT_FALSE(field.should_autocomplete());
   EXPECT_FALSE(field.bounds().IsEmpty());
   EXPECT_EQ(field.label(), u"Country");
+  EXPECT_EQ(field.label_source(),
+            FormFieldData::LabelSource::kCustomFormControlScript);
   EXPECT_EQ(field.value(), u"CH");
   EXPECT_EQ(field.selected_option_text(), u"Switzerland");
 }

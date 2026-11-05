@@ -5105,6 +5105,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="LabelSource">
     <variant name="AriaLabel"/>
     <variant name="Combined"/>
+    <variant name="CustomFormControlScript"/>
     <variant name="DdTag"/>
     <variant name="DefaultSelectText"/>
     <variant name="DivTable"/>

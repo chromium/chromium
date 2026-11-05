@@ -74,7 +74,8 @@ FormFieldData CustomFormControlToFormField(const CustomFormControl& control) {
   // TODO(crbug.com/581337039): Consider running label inference as a fallback.
   if (control.label) {
     field.set_label(control.label->substr(0, kMaxStringLength));
-    // TODO(crbug.com/581337039): Add a label source kCustomFormControlScript.
+    field.set_label_source(
+        FormFieldData::LabelSource::kCustomFormControlScript);
   }
 
   field.set_id_attribute(element.GetIdAttribute().Utf16());
