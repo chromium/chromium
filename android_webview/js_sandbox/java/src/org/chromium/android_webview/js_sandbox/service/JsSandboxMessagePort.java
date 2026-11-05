@@ -8,25 +8,33 @@ import androidx.javascriptengine.common.MessagePortInternal;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import javax.annotation.concurrent.GuardedBy;
 
 @JNINamespace("android_webview")
 @NullMarked
 public class JsSandboxMessagePort {
+    @JniType("android_webview::JsSandboxMessagePort")
+    interface NativeJsSandboxMessagePort extends JniTypeToken {}
+
     private final Object mLock = new Object();
     private final MessagePortInternal mMessagePortInternal;
 
     @GuardedBy("mLock")
-    private long mNativeJsSandboxMessagePort;
+    private @Nullable JniRawPtr<NativeJsSandboxMessagePort> mNativeJsSandboxMessagePort;
 
     @CalledByNative
-    public static JsSandboxMessagePort create(
-            MessagePortInternal messagePortInternal, long nativeSandboxMessagePort) {
+    static JsSandboxMessagePort create(
+            MessagePortInternal messagePortInternal,
+            JniRawPtr<NativeJsSandboxMessagePort> nativeSandboxMessagePort) {
         JsSandboxMessagePort jsSandboxMessagePort =
                 new JsSandboxMessagePort(messagePortInternal, nativeSandboxMessagePort);
         // Setup the client after construction to avoid undefined behavior from leaking `this` to
@@ -37,7 +45,8 @@ public class JsSandboxMessagePort {
     }
 
     private JsSandboxMessagePort(
-            MessagePortInternal messagePortInternal, long nativeJsSandboxMessagePort) {
+            MessagePortInternal messagePortInternal,
+            JniRawPtr<NativeJsSandboxMessagePort> nativeJsSandboxMessagePort) {
         mMessagePortInternal = messagePortInternal;
         synchronized (mLock) {
             mNativeJsSandboxMessagePort = nativeJsSandboxMessagePort;
@@ -57,7 +66,7 @@ public class JsSandboxMessagePort {
                         // of a best-effort estimate than a concrete value.
                         long size = (long) string.length() * Character.BYTES;
                         synchronized (mLock) {
-                            if (mNativeJsSandboxMessagePort == 0) {
+                            if (mNativeJsSandboxMessagePort == null) {
                                 return;
                             }
                             if (!JsSandboxMessagePortJni.get()
@@ -73,7 +82,7 @@ public class JsSandboxMessagePort {
                     public void onArrayBuffer(byte[] arrayBuffer) {
                         long size = arrayBuffer.length;
                         synchronized (mLock) {
-                            if (mNativeJsSandboxMessagePort == 0) {
+                            if (mNativeJsSandboxMessagePort == null) {
                                 return;
                             }
                             if (!JsSandboxMessagePortJni.get()
@@ -104,18 +113,24 @@ public class JsSandboxMessagePort {
     @CalledByNative
     void close() {
         synchronized (mLock) {
-            mNativeJsSandboxMessagePort = 0;
+            if (mNativeJsSandboxMessagePort != null) {
+                mNativeJsSandboxMessagePort.release();
+                mNativeJsSandboxMessagePort = null;
+            }
         }
         mMessagePortInternal.close();
     }
 
     @NativeMethods
-    public interface Natives {
+    interface Natives {
         void handleString(
-                long nativeJsSandboxMessagePort, @JniType("std::string") String string, long size);
+                JniPtr<NativeJsSandboxMessagePort> self,
+                @JniType("std::string") String string,
+                long size);
 
-        void handleArrayBuffer(long nativeJsSandboxMessagePort, byte[] arrayBuffer, long size);
+        void handleArrayBuffer(
+                JniPtr<NativeJsSandboxMessagePort> self, byte[] arrayBuffer, long size);
 
-        boolean tryAllocateMemoryBudget(long nativeJsSandboxMessagePort, long size);
+        boolean tryAllocateMemoryBudget(JniPtr<NativeJsSandboxMessagePort> self, long size);
     }
 }

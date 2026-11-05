@@ -27,6 +27,7 @@
 #include "gin/function_template.h"
 #include "gin/object_template_builder.h"
 #include "gin/public/context_holder.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-cppgc.h"
@@ -88,9 +89,8 @@ JsSandboxMessagePort::JsSandboxMessagePort(
     const base::android::JavaRef<jobject>& j_message_port)
     : js_sandbox_isolate_(js_sandbox_isolate) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  intptr_t native_js_sandbox_message_port = reinterpret_cast<intptr_t>(this);
   j_js_sandbox_message_port_ = Java_JsSandboxMessagePort_create(
-      env, j_message_port, native_js_sandbox_message_port);
+      env, j_message_port, jni_zero::MakeRaw(this));
 }
 
 JsSandboxMessagePort::~JsSandboxMessagePort() {
