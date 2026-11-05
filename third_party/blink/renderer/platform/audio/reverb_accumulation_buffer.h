@@ -65,8 +65,6 @@ class ReverbAccumulationBuffer final {
 
   void UpdateReadIndex(uint32_t* read_index, uint32_t number_of_frames) const;
 
-  void Reset();
-
  private:
   AudioFloatArray buffer_;
   uint32_t read_index_ = 0;

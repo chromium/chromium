@@ -143,14 +143,6 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
       destination_channel->MutableSpan().first(frames_to_process));
 }
 
-void ReverbConvolver::Reset() {
-  for (auto& stage : stages_) {
-    stage->Reset();
-  }
-
-  accumulation_buffer_.Reset();
-}
-
 size_t ReverbConvolver::LatencyFrames() const {
   return 0;
 }

@@ -37,7 +37,6 @@ namespace blink {
 class AudioContext;
 class AudioNodeOptions;
 class ExceptionState;
-class MediaStreamAudioDestinationHandler;
 
 // MediaStreamAudioDestinationNode is an AudioNode that represents an endpoint
 // in the Web Audio graph and also functions as an audio stream source for
@@ -68,8 +67,6 @@ class MODULES_EXPORT MediaStreamAudioDestinationNode final
   void ReportWillBeDestroyed() final;
 
  private:
-  MediaStreamAudioDestinationHandler& GetOwnHandler() const;
-
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
   void SendLogMessage(const String& function_name, const String& message);
 

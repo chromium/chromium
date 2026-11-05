@@ -53,7 +53,6 @@ class MEDIA_EXPORT PictureInPictureEventsInfo {
   using AutoPipReasonCallback = base::RepeatingCallback<AutoPipReason(void)>;
 
   static std::string AutoPipReasonToString(AutoPipReason auto_pip_reason);
-  static std::string AutoPipInfoToString(AutoPipInfo auto_pip_info);
 };
 }  // namespace media
 

@@ -33,8 +33,6 @@ class MockLog : public media::mojom::AudioLog {
     return remote;
   }
 
-  void CloseBinding() { receiver_.reset(); }
-
   MOCK_METHOD2(OnCreated,
                void(const media::AudioParameters& params,
                     const std::string& device_id));

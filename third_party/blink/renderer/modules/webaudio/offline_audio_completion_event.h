@@ -39,13 +39,11 @@ class OfflineAudioCompletionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static OfflineAudioCompletionEvent* Create();
   static OfflineAudioCompletionEvent* Create(AudioBuffer* rendered_buffer);
   static OfflineAudioCompletionEvent* Create(
       const AtomicString& type,
       const OfflineAudioCompletionEventInit*);
 
-  OfflineAudioCompletionEvent();
   explicit OfflineAudioCompletionEvent(AudioBuffer* rendered_buffer);
   explicit OfflineAudioCompletionEvent(const AtomicString& type,
                                        const OfflineAudioCompletionEventInit*);

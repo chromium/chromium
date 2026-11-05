@@ -1606,10 +1606,6 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
   }  // while (num_frames_in_next_packet > 0)
 }
 
-void WASAPIAudioInputStream::HandleError(HRESULT err) {
-  NOTREACHED() << "Error code: " << err;
-}
-
 HRESULT WASAPIAudioInputStream::SetCaptureDevice() {
   DCHECK(!is_process_loopback_capture_);
   DCHECK_EQ(OPEN_RESULT_OK, open_result_);

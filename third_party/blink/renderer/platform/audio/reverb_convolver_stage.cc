@@ -224,16 +224,4 @@ void ReverbConvolverStage::Process(base::span<const float> source) {
   frames_processed_ += frames_to_process;
 }
 
-void ReverbConvolverStage::Reset() {
-  if (!direct_mode_) {
-    fft_convolver_->Reset();
-  } else {
-    direct_convolver_->Reset();
-  }
-  pre_delay_buffer_.Zero();
-  accumulation_read_index_ = 0;
-  pre_read_write_index_ = 0;
-  frames_processed_ = 0;
-}
-
 }  // namespace blink

@@ -74,12 +74,9 @@ class PLATFORM_EXPORT DynamicsCompressor final {
   float ParameterValue(unsigned parameter_id) const;
 
   float SampleRate() const;
-  float Nyquist() const;
 
   double TailTime() const;
   double LatencyTime() const;
-
-  bool RequiresTailProcessing() const;
 
  private:
   void InitializeParameters();

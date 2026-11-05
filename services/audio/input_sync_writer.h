@@ -63,8 +63,6 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // called more than once.
   base::UnsafeSharedMemoryRegion TakeSharedMemoryRegion();
 
-  size_t shared_memory_segment_count() const { return audio_buses_.size(); }
-
   // InputController::SyncWriter implementation.
   void Write(const media::AudioBus* data,
              double volume,

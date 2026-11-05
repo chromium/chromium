@@ -411,10 +411,6 @@ float DynamicsCompressor::SampleRate() const {
   return sample_rate_;
 }
 
-float DynamicsCompressor::Nyquist() const {
-  return sample_rate_ / 2;
-}
-
 double DynamicsCompressor::TailTime() const {
   // The reduction value of the compressor is computed from the gain
   // using an exponential filter with a time constant of
@@ -429,11 +425,6 @@ double DynamicsCompressor::TailTime() const {
 
 double DynamicsCompressor::LatencyTime() const {
   return last_pre_delay_frames_ / static_cast<double>(SampleRate());
-}
-
-bool DynamicsCompressor::RequiresTailProcessing() const {
-  // Always return true even if the tail time and latency might both be zero.
-  return true;
 }
 
 void DynamicsCompressor::InitializeParameters() {

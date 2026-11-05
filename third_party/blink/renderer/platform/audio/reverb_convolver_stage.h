@@ -74,8 +74,6 @@ class ReverbConvolverStage final {
   // buffer size (stage_offset).
   void Process(base::span<const float> source);
 
-  void Reset();
-
  private:
   ReverbConvolverStage(ReverbAccumulationBuffer* accumulation_buffer,
                        bool direct_mode);

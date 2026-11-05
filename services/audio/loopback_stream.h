@@ -77,11 +77,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream {
 
   ~LoopbackStream() final;
 
-  bool is_recording() const {
-    return loopback_signal_forwarder_ &&
-           loopback_signal_forwarder_->is_started();
-  }
-
   // media::mojom::AudioInputStream implementation.
   void Record() final;
   void SetVolume(double volume) final;
@@ -126,10 +121,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream {
     bool is_started() const {
       DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
       return !!timer_;
-    }
-
-    const media::AudioParameters& output_params() const {
-      return output_params_;
     }
 
     // This may be called at any time, before or after Start(), to change the

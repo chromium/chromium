@@ -192,8 +192,6 @@ class InputController final {
 
   ~InputController();
 
-  media::AudioInputStream* stream_for_testing() { return stream_; }
-
   static std::unique_ptr<InputController> Create(
       media::AudioManager* audio_manager,
       EventHandler* event_handler,

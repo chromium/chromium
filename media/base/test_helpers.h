@@ -72,8 +72,6 @@ class WaitableMessageLoopEvent {
   // Fails the test if the timeout is reached.
   void RunAndWaitForStatus(PipelineStatus expected);
 
-  bool is_signaled() const { return signaled_; }
-
  private:
   void OnCallback(PipelineStatus status);
   void OnTimeout();
@@ -141,13 +139,8 @@ class TestAudioConfig {
   static AudioDecoderConfig Normal();
   static AudioDecoderConfig NormalEncrypted();
 
-  // Returns configurations that have a higher sample rate than Normal()
-  static AudioDecoderConfig HighSampleRate();
-  static AudioDecoderConfig HighSampleRateEncrypted();
-
-  // Returns coded sample rate for Normal and HighSampleRate config.
+  // Returns coded sample rate for Normal config.
   static int NormalSampleRateValue();
-  static int HighSampleRateValue();
 };
 
 // Provides pre-canned AudioParameters objects.

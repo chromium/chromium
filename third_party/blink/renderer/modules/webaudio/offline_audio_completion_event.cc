@@ -29,10 +29,6 @@
 
 namespace blink {
 
-OfflineAudioCompletionEvent* OfflineAudioCompletionEvent::Create() {
-  return MakeGarbageCollected<OfflineAudioCompletionEvent>();
-}
-
 OfflineAudioCompletionEvent* OfflineAudioCompletionEvent::Create(
     AudioBuffer* rendered_buffer) {
   return MakeGarbageCollected<OfflineAudioCompletionEvent>(rendered_buffer);
@@ -44,8 +40,6 @@ OfflineAudioCompletionEvent* OfflineAudioCompletionEvent::Create(
   return MakeGarbageCollected<OfflineAudioCompletionEvent>(event_type,
                                                            event_init);
 }
-
-OfflineAudioCompletionEvent::OfflineAudioCompletionEvent() = default;
 
 OfflineAudioCompletionEvent::OfflineAudioCompletionEvent(
     AudioBuffer* rendered_buffer)

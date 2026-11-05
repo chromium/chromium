@@ -30,10 +30,6 @@
 
 namespace blink {
 
-AudioProcessingEvent* AudioProcessingEvent::Create() {
-  return MakeGarbageCollected<AudioProcessingEvent>();
-}
-
 AudioProcessingEvent* AudioProcessingEvent::Create(AudioBuffer* input_buffer,
                                                    AudioBuffer* output_buffer,
                                                    double playback_time) {
@@ -46,8 +42,6 @@ AudioProcessingEvent* AudioProcessingEvent::Create(
     const AudioProcessingEventInit* initializer) {
   return MakeGarbageCollected<AudioProcessingEvent>(type, initializer);
 }
-
-AudioProcessingEvent::AudioProcessingEvent() = default;
 
 AudioProcessingEvent::AudioProcessingEvent(AudioBuffer* input_buffer,
                                            AudioBuffer* output_buffer,

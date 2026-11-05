@@ -61,8 +61,6 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
     render_cb_ = std::move(render_cb);
   }
 
-  void set_clockless(bool clockless) { clockless_ = clockless; }
-
  private:
   // Task that periodically calls Render() to consume video data.
   void CallRender();

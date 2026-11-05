@@ -495,21 +495,6 @@ void KeySystemsImpl::AddMimeTypeCodecMaskForTesting(
   RegisterMimeType(mime_type, static_cast<EmeCodec>(codecs_mask));
 }
 
-void KeySystemsImpl::ResetForTesting() {
-  weak_factory_.InvalidateWeakPtrs();
-  has_updated_ = false;
-  DCHECK(pending_callbacks_.empty())
-      << "Should have no update callbacks for a clean test.";
-  pending_key_systems_.clear();
-  key_system_info_vector_.clear();
-  mime_type_to_codecs_map_.clear();
-  codec_map_for_testing_.clear();
-  audio_codec_mask_ = EME_CODEC_AUDIO_ALL;
-  video_codec_mask_ = EME_CODEC_VIDEO_ALL;
-
-  Initialize();
-}
-
 std::string KeySystemsImpl::GetBaseKeySystemName(
     const std::string& key_system) const {
   DCHECK(thread_checker_.CalledOnValidThread());

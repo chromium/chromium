@@ -60,7 +60,6 @@ class PLATFORM_EXPORT Reverb final {
   void Process(const AudioBus* source_bus,
                AudioBus* destination_bus,
                uint32_t frames_to_process);
-  void Reset();
 
   size_t ImpulseResponseLength() const { return impulse_response_length_; }
   size_t LatencyFrames() const;

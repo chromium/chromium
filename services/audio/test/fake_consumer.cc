@@ -71,22 +71,6 @@ bool FakeConsumer::IsSilentInRange(int channel,
                      [&value](float f) { return f == value; });
 }
 
-int FakeConsumer::FindEndOfSilence(int channel, int begin_frame) const {
-  CHECK_LT(channel, static_cast<int>(recorded_channel_data_.size()));
-  CHECK_GE(begin_frame, 0);
-  const std::vector<float>& samples = recorded_channel_data_[channel];
-
-  if (static_cast<int>(samples.size()) <= begin_frame) {
-    return begin_frame;
-  }
-  const float value = samples[begin_frame];
-  const float* at =
-      std::find_if_not(UNSAFE_TODO(samples.data() + begin_frame + 1),
-                       UNSAFE_TODO(samples.data() + GetRecordedFrameCount()),
-                       [&value](float f) { return f == value; });
-  return at - samples.data();
-}
-
 double FakeConsumer::ComputeAmplitudeAt(int channel,
                                         double frequency,
                                         int end_frame) const {

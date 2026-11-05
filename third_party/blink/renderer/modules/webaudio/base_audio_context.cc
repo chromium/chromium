@@ -961,14 +961,6 @@ void BaseAudioContext::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
 
-const SecurityOrigin* BaseAudioContext::GetSecurityOrigin() const {
-  if (GetExecutionContext()) {
-    return GetExecutionContext()->GetSecurityOrigin();
-  }
-
-  return nullptr;
-}
-
 AudioWorklet* BaseAudioContext::audioWorklet() const {
   return audio_worklet_.Get();
 }

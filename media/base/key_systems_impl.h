@@ -79,7 +79,6 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
                               uint32_t mask);
   void AddMimeTypeCodecMaskForTesting(const std::string& mime_type,
                                       uint32_t mask);
-  void ResetForTesting();
 
  private:
   using MimeTypeToCodecsMap = absl::flat_hash_map<std::string, SupportedCodecs>;

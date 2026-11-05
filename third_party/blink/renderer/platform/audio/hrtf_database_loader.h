@@ -61,10 +61,6 @@ class PLATFORM_EXPORT HRTFDatabaseLoader final
   // Both constructor and destructor must be called from the main thread.
   ~HRTFDatabaseLoader();
 
-  // Returns true once the default database has been completely loaded.  This
-  // must be called from the audio thread.
-  bool IsLoaded() { return Database(); }
-
   // May be called from both main and audio thread, and also can be called more
   // than once.
   void WaitForLoaderThreadCompletion();

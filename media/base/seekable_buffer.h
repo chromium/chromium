@@ -65,7 +65,7 @@ class MEDIA_EXPORT SeekableBuffer {
   // Reads from the current read position into `data`, up to the size of `data`.
   // Returns the number of bytes read. The current read position will advance by
   // the amount of bytes read. If reading caused backward_bytes() to exceed
-  // backward_capacity(), an eviction of the backward buffer will be done
+  // `backward_capacity`, an eviction of the backward buffer will be done
   // internally.
   size_t Read(base::span<uint8_t> data);
 
@@ -98,7 +98,7 @@ class MEDIA_EXPORT SeekableBuffer {
   // forward_bytes() when seeking forward and backward_bytes() when seeking
   // backward, the seek operation will fail and return value will be false.
   // If the seek operation fails, the current read position will not be updated.
-  // If a forward seeking caused backward_bytes() to exceed backward_capacity(),
+  // If a forward seeking caused backward_bytes() to exceed `backward_capacity`,
   // this method call will cause an eviction of the backward buffer.
   bool Seek(ptrdiff_t offset);
 
@@ -114,18 +114,9 @@ class MEDIA_EXPORT SeekableBuffer {
     forward_capacity_ = new_forward_capacity;
   }
 
-  // Sets the backward_capacity to `new_backward_capacity` bytes.
-  void set_backward_capacity(size_t new_backward_capacity) {
-    backward_capacity_ = new_backward_capacity;
-  }
-
   // Returns the maximum number of bytes that should be kept in the forward
   // direction.
   size_t forward_capacity() const { return forward_capacity_; }
-
-  // Returns the maximum number of bytes that should be kept in the backward
-  // direction.
-  size_t backward_capacity() const { return backward_capacity_; }
 
   // Returns the timestamp associated with the current read position. The value
   // is defined as the timestamp of the current buffer plus the fraction of

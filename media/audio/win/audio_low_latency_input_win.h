@@ -162,8 +162,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   bool IsMuted() override;
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
-  bool started() const { return started_; }
-
   void SendLogMessage(std::string message);
 
   // Overrides the function pointer used to activate an IAudioClient during
@@ -202,9 +200,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   // Pulls capture data from the endpoint device and pushes it to the sink.
   void PullCaptureDataAndPushToSink();
-
-  // Issues the OnError() callback to the |sink_|.
-  void HandleError(HRESULT err);
 
   // The Open() method is divided into these sub methods.
   HRESULT SetCaptureDevice();

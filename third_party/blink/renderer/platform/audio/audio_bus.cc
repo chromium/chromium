@@ -255,13 +255,6 @@ float AudioBus::MaxAbsValue() const {
   return max;
 }
 
-void AudioBus::Normalize() {
-  float max = MaxAbsValue();
-  if (max) {
-    Scale(1.0f / max);
-  }
-}
-
 void AudioBus::Scale(float scale) {
   for (AudioChannel& channel : channels_) {
     channel.Scale(scale);

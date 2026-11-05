@@ -651,24 +651,8 @@ AudioDecoderConfig TestAudioConfig::NormalEncrypted() {
                             EmptyExtraData(), EncryptionScheme::kCenc);
 }
 
-AudioDecoderConfig TestAudioConfig::HighSampleRate() {
-  return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                            kStereoConfig, HighSampleRateValue(),
-                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
-}
-
-AudioDecoderConfig TestAudioConfig::HighSampleRateEncrypted() {
-  return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                            kStereoConfig, HighSampleRateValue(),
-                            EmptyExtraData(), EncryptionScheme::kCenc);
-}
-
 int TestAudioConfig::NormalSampleRateValue() {
   return 44100;
-}
-
-int TestAudioConfig::HighSampleRateValue() {
-  return 192000;
 }
 
 // static

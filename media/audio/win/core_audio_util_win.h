@@ -81,10 +81,6 @@ class MEDIA_EXPORT CoreAudioUtil {
   // Example: double s = RefererenceTimeToTimeDelta(t).InMillisecondsF();
   static base::TimeDelta ReferenceTimeToTimeDelta(REFERENCE_TIME time);
 
-  // Returns AUDCLNT_SHAREMODE_EXCLUSIVE if --enable-exclusive-mode is used
-  // as command-line flag and AUDCLNT_SHAREMODE_SHARED otherwise (default).
-  static AUDCLNT_SHAREMODE GetShareMode();
-
   // The Windows Multimedia Device (MMDevice) API enables audio clients to
   // discover audio endpoint devices and determine their capabilities.
 

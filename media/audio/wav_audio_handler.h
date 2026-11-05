@@ -56,7 +56,6 @@ class MEDIA_EXPORT WavAudioHandler : public AudioHandler {
 
   // Accessors.
   base::span<const uint8_t> data() const { return original_data_; }
-  AudioFormat audio_format() const { return audio_format_; }
 
   int total_frames_for_testing() const {
     return static_cast<int>(total_frames_);

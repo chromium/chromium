@@ -39,7 +39,6 @@ class AudioProcessingEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AudioProcessingEvent* Create();
   static AudioProcessingEvent* Create(AudioBuffer* input_buffer,
                                       AudioBuffer* output_buffer,
                                       double playback_time);
@@ -47,7 +46,6 @@ class AudioProcessingEvent final : public Event {
   static AudioProcessingEvent* Create(const AtomicString& type,
                                       const AudioProcessingEventInit*);
 
-  AudioProcessingEvent();
   AudioProcessingEvent(AudioBuffer* input_buffer,
                        AudioBuffer* output_buffer,
                        double playback_time);

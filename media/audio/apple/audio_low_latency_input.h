@@ -108,7 +108,6 @@ class MEDIA_EXPORT AUAudioInputStream
   size_t requested_buffer_size() const {
     return input_params_.frames_per_buffer();
   }
-  AudioUnit audio_unit() const { return audio_unit_; }
 
   static bool IsEchoCancellationSupported(AudioDeviceID audio_device_id,
                                           const AudioParameters& params);

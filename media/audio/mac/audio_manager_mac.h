@@ -149,22 +149,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   enum { kStartDelayInSecsForPowerEvents = 5 };
   bool ShouldDeferStreamStart() const override;
 
-  // True if the device is on battery power.
-  bool IsOnBatteryPower() const;
-
-  // Number of times the device has resumed from power suspension.
-  size_t GetNumberOfResumeNotifications() const;
-
-  // True if the device is suspending.
-  bool IsSuspending() const;
-
-  // Number of constructed output and input streams.
-  size_t output_streams() const { return output_streams_.size(); }
-  size_t low_latency_input_streams() const {
-    return low_latency_input_streams_.size();
-  }
-  size_t basic_input_streams() const { return basic_input_streams_.size(); }
-
   // Manage device capabilities for ambient noise reduction. These functionality
   // currently implemented on the Mac platform.
   bool DeviceSupportsAmbientNoiseReduction(AudioDeviceID device_id) override;

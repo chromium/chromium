@@ -107,9 +107,6 @@ class AUHALStream : public AudioOutputStream {
 
   AudioDeviceID device_id() const { return device_; }
   size_t requested_buffer_size() const { return params_.frames_per_buffer(); }
-  AudioUnit audio_unit() const {
-    return audio_unit_ ? audio_unit_->audio_unit() : nullptr;
-  }
 
  private:
   // AUHAL callback.

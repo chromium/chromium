@@ -740,13 +740,6 @@ base::TimeDelta CoreAudioUtil::ReferenceTimeToTimeDelta(REFERENCE_TIME time) {
   return base::Microseconds(0.1 * time + 0.5);
 }
 
-AUDCLNT_SHAREMODE CoreAudioUtil::GetShareMode() {
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(switches::kEnableExclusiveAudio))
-    return AUDCLNT_SHAREMODE_EXCLUSIVE;
-  return AUDCLNT_SHAREMODE_SHARED;
-}
-
 int CoreAudioUtil::NumberOfActiveDevices(EDataFlow data_flow) {
   // Create the IMMDeviceEnumerator interface.
   ComPtr<IMMDeviceEnumerator> device_enumerator = CreateDeviceEnumerator();

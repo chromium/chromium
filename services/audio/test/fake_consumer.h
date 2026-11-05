@@ -41,11 +41,6 @@ class FakeConsumer {
   bool IsSilent(int channel) const;
   bool IsSilentInRange(int channel, int begin_frame, int end_frame) const;
 
-  // Returns the position at which silence in the recording ends, at or after
-  // |begin_frame|. If the entire recording after the given position is silent,
-  // this will return GetRecordedFrameCount().
-  int FindEndOfSilence(int channel, int begin_frame) const;
-
   // Returns the amplitude of the given |frequency| in the given |channel| just
   // before the given |end_frame| position.
   double ComputeAmplitudeAt(int channel, double frequency, int end_frame) const;

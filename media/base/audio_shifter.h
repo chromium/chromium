@@ -59,9 +59,6 @@ class MEDIA_EXPORT AudioShifter {
                int channels);
   ~AudioShifter();
 
-  int sample_rate() const { return rate_; }
-  int channels() const { return channels_; }
-
   // Push Audio into the shifter. All inputs must have the same number of
   // channels, but bus size can vary. The playout time can be noisy and
   // does not have to line up perfectly with the number of samples pushed

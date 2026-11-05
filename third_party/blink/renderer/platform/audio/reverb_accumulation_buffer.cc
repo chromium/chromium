@@ -111,9 +111,4 @@ uint32_t ReverbAccumulationBuffer::Accumulate(base::span<const float> source,
   return base::checked_cast<uint32_t>(write_index);
 }
 
-void ReverbAccumulationBuffer::Reset() {
-  buffer_.Zero();
-  read_index_ = 0;
-}
-
 }  // namespace blink

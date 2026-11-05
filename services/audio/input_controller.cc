@@ -245,8 +245,6 @@ class InputController::StatsReporter {
         glitch_info.ToString().c_str(), glitch_percentage * 100));
   }
 
-  AECType GetAecType() const { return aec_type_; }
-
   const char* GetAECTypeAsString() const {
     switch (aec_type_) {
       case AECType::kNoAudioServiceAEC:

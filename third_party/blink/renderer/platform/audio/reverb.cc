@@ -287,12 +287,6 @@ void Reverb::Process(const AudioBus* source_bus,
   }
 }
 
-void Reverb::Reset() {
-  for (auto& convolver : convolvers_) {
-    convolver->Reset();
-  }
-}
-
 size_t Reverb::LatencyFrames() const {
   return !convolvers_.empty() ? convolvers_.front()->LatencyFrames() : 0;
 }

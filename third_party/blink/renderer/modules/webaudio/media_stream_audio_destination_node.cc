@@ -159,11 +159,6 @@ void MediaStreamAudioDestinationNode::ReportWillBeDestroyed() {
   GraphTracer().WillDestroyAudioNode(this);
 }
 
-MediaStreamAudioDestinationHandler&
-MediaStreamAudioDestinationNode::GetOwnHandler() const {
-  return static_cast<MediaStreamAudioDestinationHandler&>(Handler());
-}
-
 void MediaStreamAudioDestinationNode::SendLogMessage(
     const String& function_name,
     const String& message) {

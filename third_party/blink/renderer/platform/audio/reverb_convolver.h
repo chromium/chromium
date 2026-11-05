@@ -65,7 +65,6 @@ class PLATFORM_EXPORT ReverbConvolver final {
   void Process(const AudioChannel* source_channel,
                AudioChannel* destination_channel,
                uint32_t frames_to_process);
-  void Reset();
 
   size_t LatencyFrames() const;
 
