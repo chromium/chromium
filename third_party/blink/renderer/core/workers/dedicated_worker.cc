@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
+#include "third_party/blink/renderer/core/workers/outside_settings_csp_violation_reporter.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -546,6 +547,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->GetUserAgentMetadata(), CreateWebWorkerFetchContext(),
       mojo::Clone(
           execution_context->GetContentSecurityPolicy()->GetParsedPolicies()),
+      OutsideSettingsCSPViolationReporter::BindNewRemote(*execution_context),
       network::mojom::ReferrerPolicy::kDefault,
       execution_context->GetSecurityOrigin(),
       execution_context->IsSecureContext(), execution_context->GetHttpsState(),

@@ -27,6 +27,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr>
         outside_content_security_policies,
+    mojo::PendingRemote<mojom::blink::OutsideContextCSPViolationReporter>
+        outside_settings_reporter,
     network::mojom::ReferrerPolicy referrer_policy,
     const SecurityOrigin* starter_origin,
     bool starter_secure_context,
@@ -69,6 +71,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       web_worker_fetch_context(std::move(web_worker_fetch_context)),
       outside_content_security_policies(
           std::move(outside_content_security_policies)),
+      outside_settings_reporter(std::move(outside_settings_reporter)),
       referrer_policy(referrer_policy),
       starter_origin(starter_origin ? starter_origin->IsolatedCopy() : nullptr),
       origin_to_use(std::move(origin_to_use)),
@@ -137,6 +140,7 @@ GlobalScopeCreationParams::CreateForWorkerForTesting(
       "fake user agent", UserAgentMetadata(),
       base::MakeRefCounted<EmptyWebWorkerFetchContext>(),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      /*outside_settings_reporter=*/mojo::NullRemote(),
       network::mojom::ReferrerPolicy::kDefault, starter_origin,
       /*starter_secure_context=*/false, CalculateHttpsState(starter_origin),
       MakeGarbageCollected<WorkerClients>(),

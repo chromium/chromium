@@ -1376,8 +1376,52 @@ void ContentSecurityPolicy::ReportViolation(
     std::optional<base::UnguessableToken> issue_id,
     const String& eval_hash,
     const String& url_hash) {
+  LogToConsoleAndReportViolation(
+      effective_type, /*console_message=*/String(), blocked_url,
+      report_endpoints, use_reporting_api, header, header_type, violation_type,
+      source_location, context_frame, element, source, source_prefix, issue_id,
+      eval_hash, url_hash);
+}
+
+void ContentSecurityPolicy::LogToConsoleAndReportViolation(
+    CSPDirectiveName effective_type,
+    const String& console_message,
+    const KURL& blocked_url,
+    const Vector<String>& report_endpoints,
+    bool use_reporting_api,
+    const String& header,
+    ContentSecurityPolicyType header_type,
+    ContentSecurityPolicyViolationType violation_type,
+    SourceLocation* source_location,
+    LocalFrame* context_frame,
+    Element* element,
+    const String& source,
+    const String& source_prefix,
+    std::optional<base::UnguessableToken> issue_id,
+    const String& eval_hash,
+    const String& url_hash) {
   CHECK(violation_type == kURLViolation || blocked_url.IsEmpty() ||
         violation_type == kSRIViolation);
+
+  if (delegate_ &&
+      delegate_->ReportViolationOnOutsideSettingsIfNeeded(
+          effective_type, console_message, blocked_url, report_endpoints,
+          use_reporting_api, header, header_type, source_location)) {
+    return;
+  }
+
+  if (!console_message.empty()) {
+    auto level = header_type == ContentSecurityPolicyType::kReport
+                     ? mojom::blink::ConsoleMessageLevel::kInfo
+                     : mojom::blink::ConsoleMessageLevel::kError;
+    LogToConsole(source_location
+                     ? MakeGarbageCollected<ConsoleMessage>(
+                           mojom::blink::ConsoleMessageSource::kSecurity, level,
+                           console_message, source_location)
+                     : MakeGarbageCollected<ConsoleMessage>(
+                           mojom::blink::ConsoleMessageSource::kSecurity, level,
+                           console_message));
+  }
 
   // TODO(crbug.com/1279745): Remove/clarify what this block is about.
   if (!delegate_ && !context_frame) {

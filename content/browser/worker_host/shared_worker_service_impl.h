@@ -23,6 +23,7 @@
 #include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
+#include "third_party/blink/public/mojom/security_context/outside_context_csp_violation_reporter.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
@@ -144,16 +145,21 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
           content_security_policies,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
+      mojo::PendingRemote<blink::mojom::OutsideContextCSPViolationReporter>
+          outside_settings_reporter,
       const std::string& storage_domain,
       const blink::MessagePortChannel& message_port,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       const std::optional<blink::StorageKey>& storage_key_override);
 
-  void StartWorker(base::WeakPtr<SharedWorkerHost> host,
-                   const blink::MessagePortChannel& message_port,
-                   blink::mojom::FetchClientSettingsObjectPtr
-                       outside_fetch_client_settings_object,
-                   std::optional<WorkerScriptFetcherResult> result);
+  void StartWorker(
+      base::WeakPtr<SharedWorkerHost> host,
+      const blink::MessagePortChannel& message_port,
+      blink::mojom::FetchClientSettingsObjectPtr
+          outside_fetch_client_settings_object,
+      mojo::PendingRemote<blink::mojom::OutsideContextCSPViolationReporter>
+          outside_settings_reporter,
+      std::optional<WorkerScriptFetcherResult> result);
 
   // Returns nullptr if there is no such host.
   SharedWorkerHost* FindMatchingSharedWorkerHost(

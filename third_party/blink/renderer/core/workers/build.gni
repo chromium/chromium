@@ -24,6 +24,8 @@ blink_core_sources_workers = [
   "installed_scripts_manager.h",
   "main_thread_worklet_reporting_proxy.cc",
   "main_thread_worklet_reporting_proxy.h",
+  "outside_settings_csp_violation_reporter.cc",
+  "outside_settings_csp_violation_reporter.h",
   "parent_execution_context_task_runners.cc",
   "parent_execution_context_task_runners.h",
   "shared_worker.cc",

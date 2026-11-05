@@ -29,7 +29,6 @@ class WaitableEvent;
 
 namespace blink {
 
-class CrossThreadSecurityPolicyViolationEventInit;
 class ExecutionContext;
 struct GlobalScopeCreationParams;
 
@@ -65,9 +64,6 @@ class CORE_EXPORT ThreadedMessagingProxyBase
                             mojom::ConsoleMessageLevel,
                             const String& message,
                             const CrossThreadSourceLocation&);
-
-  void DispatchCSPViolationEvent(
-      const CrossThreadSecurityPolicyViolationEventInit&);
 
   virtual void WorkerThreadTerminated();
 

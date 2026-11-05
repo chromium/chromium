@@ -7,6 +7,7 @@ module blink.mojom;
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
+import "third_party/blink/public/mojom/security_context/outside_context_csp_violation_reporter.mojom";
 import "third_party/blink/public/mojom/worker/worker_options.mojom";
 import "url/mojom/url.mojom";
 
@@ -30,6 +31,16 @@ struct SharedWorkerInfo {
   WorkerOptions options;
   array<network.mojom.ContentSecurityPolicy> content_security_policies;
   FetchClientSettingsObject outside_fetch_client_settings_object;
+
+  // Reports the violations that the worker detects while fetching with
+  // outside_fetch_client_settings_object to the context that created the
+  // worker. See OutsideContextCSPViolationReporter. The browser forwards it to
+  // the worker only when this connection creates a new worker, so that only
+  // the creator receives the violations. Null if the reporter is not
+  // available.
+  pending_remote<OutsideContextCSPViolationReporter>?
+      outside_settings_reporter;
+
   SharedWorkerSameSiteCookies same_site_cookies = SharedWorkerSameSiteCookies.kNone;
 
   // Indicates if SharedWorker should extend its lifetime on all clients

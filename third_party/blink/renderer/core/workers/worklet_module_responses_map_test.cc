@@ -59,6 +59,7 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
         url_, mojom::blink::ScriptType::kModule, "GlobalScopeName", "UserAgent",
         UserAgentMetadata(), nullptr /* web_worker_fetch_context */,
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        /*outside_settings_reporter=*/mojo::NullRemote(),
         network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
         true /* is_secure_context */, HttpsState::kModern,
         nullptr /* worker_clients */, nullptr /* content_settings_client */,

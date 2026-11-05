@@ -23,6 +23,7 @@
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
+#include "third_party/blink/public/mojom/security_context/outside_context_csp_violation_reporter.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
@@ -134,9 +135,9 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       ToWebContentSecurityPolicies(info->content_security_policies),
       FetchClientSettingsObjectFromMojomToWeb(
           info->outside_fetch_client_settings_object),
-      devtools_worker_token, std::move(content_settings),
-      std::move(browser_interface_broker), pause_on_start,
-      std::move(worker_main_script_load_params),
+      std::move(info->outside_settings_reporter), devtools_worker_token,
+      std::move(content_settings), std::move(browser_interface_broker),
+      pause_on_start, std::move(worker_main_script_load_params),
       ToWebPolicyContainer(std::move(policy_container)),
       std::move(web_worker_fetch_context), std::move(host), this, ukm_source_id,
       require_cross_site_request_for_cookies,

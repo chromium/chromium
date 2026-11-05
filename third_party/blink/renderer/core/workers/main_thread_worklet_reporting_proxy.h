@@ -13,7 +13,6 @@
 namespace blink {
 
 class ExecutionContext;
-class SecurityPolicyViolationEventInit;
 
 class CORE_EXPORT MainThreadWorkletReportingProxy
     : public WorkerReportingProxy {
@@ -24,8 +23,6 @@ class CORE_EXPORT MainThreadWorkletReportingProxy
   // Implements WorkerReportingProxy.
   void CountFeature(WebFeature) override;
   void CountWebDXFeature(mojom::blink::WebDXFeature) override;
-  void DispatchCSPViolationEvent(
-      const SecurityPolicyViolationEventInit&) override;
   void DidTerminateWorkerThread() override;
 
  private:

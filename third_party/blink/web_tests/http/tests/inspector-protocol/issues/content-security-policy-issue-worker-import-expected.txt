@@ -1,0 +1,16 @@
+Verifies that CSP issue is created on the page for a module worker's import blocked by the page's policy.
+
+Inspector issue: {
+    issue : {
+        code : ContentSecurityPolicyIssue
+        details : {
+            contentSecurityPolicyIssueDetails : {
+                blockedURL : https://thirdparty.test/inspector-protocol/resources/to-be-blocked.js
+                contentSecurityPolicyViolationType : kURLViolation
+                isReportOnly : false
+                violatedDirective : worker-src
+            }
+        }
+    }
+}
+

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
+#include "third_party/blink/renderer/core/workers/outside_settings_csp_violation_reporter.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
@@ -43,6 +44,7 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       frame_client->UserAgent(), frame_client->UserAgentMetadata(),
       frame_client->CreateWorkletFetchContext(),
       mojo::Clone(window->GetContentSecurityPolicy()->GetParsedPolicies()),
+      OutsideSettingsCSPViolationReporter::BindNewRemote(*window),
       window->GetReferrerPolicy(), window->GetSecurityOrigin(),
       window->IsSecureContext(), window->GetHttpsState(),
       nullptr /* worker_clients */,

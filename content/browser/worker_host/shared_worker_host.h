@@ -48,6 +48,7 @@
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-forward.h"
+#include "third_party/blink/public/mojom/security_context/outside_context_csp_violation_reporter.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker.mojom.h"
@@ -113,16 +114,23 @@ class CONTENT_EXPORT SharedWorkerHost
   // worker main script by the browser process, sent to the renderer process,
   // and then used to load the script.
   //
+  // |outside_settings_reporter| is sent to the renderer process to report the
+  // violation that the worker detects while fetching with the outside settings
+  // object to the context that created the worker.
+  //
   // |client| is used to determine the IP address space of the worker if the
   // script is fetched from a URL with a special scheme known only to the
   // embedder.
   //
   // `result` contains the worker main script fetch result.
-  void Start(mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory,
-             blink::mojom::FetchClientSettingsObjectPtr
-                 outside_fetch_client_settings_object,
-             ContentBrowserClient* client,
-             WorkerScriptFetcherResult result);
+  void Start(
+      mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory,
+      blink::mojom::FetchClientSettingsObjectPtr
+          outside_fetch_client_settings_object,
+      mojo::PendingRemote<blink::mojom::OutsideContextCSPViolationReporter>
+          outside_settings_reporter,
+      ContentBrowserClient* client,
+      WorkerScriptFetcherResult result);
 
   void AllowFileSystem(const GURL& url,
                        base::OnceCallback<void(bool)> callback);

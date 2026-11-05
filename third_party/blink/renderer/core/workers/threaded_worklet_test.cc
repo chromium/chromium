@@ -212,6 +212,7 @@ class ThreadedWorkletMessagingProxyForTest
             mojo::Clone(GetExecutionContext()
                             ->GetContentSecurityPolicy()
                             ->GetParsedPolicies()),
+            /*outside_settings_reporter=*/mojo::NullRemote(),
             GetExecutionContext()->GetReferrerPolicy(),
             GetExecutionContext()->GetSecurityOrigin(),
             GetExecutionContext()->IsSecureContext(),

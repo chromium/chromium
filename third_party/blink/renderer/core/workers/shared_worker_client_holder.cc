@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/workers/outside_settings_csp_violation_reporter.h"
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -125,6 +126,8 @@ void SharedWorkerClientHolder::Connect(
               .Clone(),
           KURL(outside_fetch_client_settings_object->GetOutgoingReferrer()),
           insecure_requests_policy),
+      OutsideSettingsCSPViolationReporter::BindNewRemote(
+          *worker->GetExecutionContext()),
       same_site_cookies, extended_lifetime, permissions_policy);
 
   const HeapMojoRemote<mojom::blink::SharedWorkerConnector>& connector =

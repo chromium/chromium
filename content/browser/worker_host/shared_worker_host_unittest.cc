@@ -186,7 +186,7 @@ class SharedWorkerHostTest : public testing::Test {
             }(),
             /*outgoing_referrer=*/GURL(),
             blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
-        &client,
+        /*outside_settings_reporter=*/mojo::NullRemote(), &client,
         WorkerScriptFetcherResult(std::move(subresource_loader_factories),
                                   std::move(main_script_load_params),
                                   std::move(policies), final_response_url));

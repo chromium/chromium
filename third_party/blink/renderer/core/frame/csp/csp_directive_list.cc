@@ -145,17 +145,12 @@ void ReportViolation(
                   ? " The policy is report-only, so the violation has been "
                     "logged but no further action has been taken."
                   : " The action has been blocked."});
-  auto error_level = CSPDirectiveListIsReportOnly(csp)
-                         ? mojom::blink::ConsoleMessageLevel::kInfo
-                         : mojom::blink::ConsoleMessageLevel::kError;
-  policy->LogToConsole(MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kSecurity, error_level, message));
-  policy->ReportViolation(effective_type, blocked_url, csp.report_endpoints,
-                          csp.use_reporting_api, csp.header->header_value,
-                          csp.header->type, violation_type,
-                          /*source_location=*/nullptr,
-                          /*context_frame=*/nullptr, /*element=*/nullptr,
-                          sample, sample_prefix, issue_id, eval_hash, url_hash);
+  policy->LogToConsoleAndReportViolation(
+      effective_type, message, blocked_url, csp.report_endpoints,
+      csp.use_reporting_api, csp.header->header_value, csp.header->type,
+      violation_type, /*source_location=*/nullptr, /*context_frame=*/nullptr,
+      /*element=*/nullptr, sample, sample_prefix, issue_id, eval_hash,
+      url_hash);
 }
 
 void ReportViolationWithLocation(
@@ -175,18 +170,12 @@ void ReportViolationWithLocation(
                     "logged but no further action has been taken."
                   : " The action has been blocked."});
 
-  auto error_level = CSPDirectiveListIsReportOnly(csp)
-                         ? mojom::blink::ConsoleMessageLevel::kInfo
-                         : mojom::blink::ConsoleMessageLevel::kError;
   SourceLocation* source_location =
       CaptureSourceLocation(context_url, context_position.line_.OneBasedInt(),
                             context_position.column_.OneBasedInt());
-  policy->LogToConsole(MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kSecurity, error_level, message,
-      source_location));
-  policy->ReportViolation(
-      effective_type, blocked_url, csp.report_endpoints, csp.use_reporting_api,
-      csp.header->header_value, csp.header->type,
+  policy->LogToConsoleAndReportViolation(
+      effective_type, message, blocked_url, csp.report_endpoints,
+      csp.use_reporting_api, csp.header->header_value, csp.header->type,
       ContentSecurityPolicyViolationType::kInlineViolation, source_location,
       /*context_frame=*/nullptr, element, source);
 }

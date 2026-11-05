@@ -388,7 +388,8 @@ void SharedWorkerServiceImpl::ConnectToWorker(
       info->permissions_policy);
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
-      std::move(info->outside_fetch_client_settings_object), partition_domain,
+      std::move(info->outside_fetch_client_settings_object),
+      std::move(info->outside_settings_reporter), partition_domain,
       message_port, std::move(blob_url_loader_factory), storage_key_override);
   if (!host) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
@@ -474,6 +475,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
         content_security_policies,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
+    mojo::PendingRemote<blink::mojom::OutsideContextCSPViolationReporter>
+        outside_settings_reporter,
     const std::string& storage_domain,
     const blink::MessagePortChannel& message_port,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -615,7 +618,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       creator.GetNetworkRestrictionsID(), host->creator_policies().Clone(),
       base::BindOnce(&SharedWorkerServiceImpl::StartWorker,
                      weak_factory_.GetWeakPtr(), weak_host, message_port,
-                     std::move(cloned_outside_fetch_client_settings_object)));
+                     std::move(cloned_outside_fetch_client_settings_object),
+                     std::move(outside_settings_reporter)));
 
   // Ensures that WorkerScriptFetcher::CreateAndStart() doesn't synchronously
   // destroy the SharedWorkerHost.
@@ -629,6 +633,8 @@ void SharedWorkerServiceImpl::StartWorker(
     const blink::MessagePortChannel& message_port,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
+    mojo::PendingRemote<blink::mojom::OutsideContextCSPViolationReporter>
+        outside_settings_reporter,
     std::optional<WorkerScriptFetcherResult> result) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
@@ -684,6 +690,7 @@ void SharedWorkerServiceImpl::StartWorker(
   const GURL final_response_url = result->final_response_url;
   host->Start(std::move(factory),
               std::move(outside_fetch_client_settings_object),
+              std::move(outside_settings_reporter),
               GetContentClient()->browser(), std::move(*result));
   for (Observer& observer : observers_) {
     observer.OnFinalResponseURLDetermined(host->token(), final_response_url);

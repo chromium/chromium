@@ -85,6 +85,7 @@ void ConnectToSharedWorkerWithContextType(
             return policies;
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      /*outside_settings_reporter=*/mojo::NullRemote(),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
       /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
@@ -1894,6 +1895,7 @@ TEST_F(SharedWorkerServiceImplTest, ExtensionCrossOriginSameOriginCheck) {
             return policies;
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      /*outside_settings_reporter=*/mojo::NullRemote(),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
       /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
@@ -1953,6 +1955,7 @@ TEST_F(SharedWorkerServiceImplTest, IwaCrossOriginSameOriginCheck) {
             return policies;
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      /*outside_settings_reporter=*/mojo::NullRemote(),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
       /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
@@ -2010,6 +2013,7 @@ TEST_F(SharedWorkerServiceImplTest, ExtensionSameOriginCheckFlagOff) {
             return policies;
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      /*outside_settings_reporter=*/mojo::NullRemote(),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
       /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
@@ -2148,6 +2152,7 @@ TEST_F(SharedWorkerServiceImplTest, CanAccessDataForOriginDenied) {
             return policies;
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      /*outside_settings_reporter=*/mojo::NullRemote(),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
       /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
@@ -2213,6 +2218,7 @@ TEST_F(SharedWorkerServiceImplTest,
                     }(),
                     GURL(),
                     blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+                /*outside_settings_reporter=*/mojo::NullRemote(),
                 blink::mojom::SharedWorkerSameSiteCookies::kAll,
                 /*extended_lifetime=*/false, worker_policy));
 
@@ -2344,6 +2350,7 @@ TEST_F(SharedWorkerServiceImplTest,
         blink::mojom::FetchClientSettingsObject::New(
             std::move(policies), GURL(),
             blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+        /*outside_settings_reporter=*/mojo::NullRemote(),
         blink::mojom::SharedWorkerSameSiteCookies::kAll,
         /*extended_lifetime=*/false, policy);
   };

@@ -959,6 +959,8 @@ WorkerGlobalScope::WorkerGlobalScope(
 
   SetOutsideContentSecurityPolicies(
       std::move(creation_params->outside_content_security_policies));
+  SetOutsideSettingsReporter(
+      std::move(creation_params->outside_settings_reporter));
   SetWorkerSettings(std::move(creation_params->worker_settings));
 
   // TODO(sammc): Require a valid |creation_params->browser_interface_broker|

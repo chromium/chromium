@@ -227,6 +227,7 @@ mojom("mojom_platform") {
     "scroll/scroll_into_view_params.mojom",
     "scroll/scrollbar_mode.mojom",
     "security_context/insecure_request_policy.mojom",
+    "security_context/outside_context_csp_violation_reporter.mojom",
     "selection_menu/selection_menu_behavior.mojom",
     "sensor/web_sensor_provider.mojom",
     "serial/serial.mojom",

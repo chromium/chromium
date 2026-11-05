@@ -35,6 +35,7 @@ CreateAnimationAndPaintWorkletThread(
           window->UserAgent(), window->GetFrame()->Loader().UserAgentMetadata(),
           nullptr /* web_worker_fetch_context */,
           Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+          /*outside_settings_reporter=*/mojo::NullRemote(),
           window->GetReferrerPolicy(), window->GetSecurityOrigin(),
           window->IsSecureContext(), window->GetHttpsState(), clients,
           nullptr /* content_settings_client */,

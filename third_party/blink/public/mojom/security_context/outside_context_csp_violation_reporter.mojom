@@ -1,0 +1,25 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/content_security_policy.mojom";
+
+// Reports Content Security Policy violations of the context when they are
+// detected outside of the context.
+//
+// A worker or a worklet reports the violations it detects while fetching with
+// its outside settings object (e.g. while fetching its module graph) to the
+// context that created it. The outside settings object belongs to that
+// context, so the violations are reported there:
+// https://w3c.github.io/webappsec-csp/#create-violation-for-request
+// The remote is passed to the worker or the worklet on its creation, and the
+// receiver is bound in the context that created it.
+interface OutsideContextCSPViolationReporter {
+  // Reports a CSP violation on the context that holds the Content Security
+  // Policy. Runs the violation reporting steps on the context: logging the
+  // console message, dispatching the securitypolicyviolation event, sending
+  // the violation report and adding the inspector issue.
+  ReportCSPViolation(network.mojom.CSPViolation violation);
+};

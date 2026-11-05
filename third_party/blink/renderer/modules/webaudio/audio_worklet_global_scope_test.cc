@@ -118,6 +118,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
             window->GetFrame()->Loader().UserAgentMetadata(),
             nullptr /* web_worker_fetch_context */,
             Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+            /*outside_settings_reporter=*/mojo::NullRemote(),
             window->GetReferrerPolicy(), window->GetSecurityOrigin(),
             window->IsSecureContext(), window->GetHttpsState(),
             nullptr /* worker_clients */, nullptr /* content_settings_client */,

@@ -266,6 +266,8 @@ void SharedWorkerHost::Start(
     mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
+    mojo::PendingRemote<blink::mojom::OutsideContextCSPViolationReporter>
+        outside_settings_reporter,
     ContentBrowserClient* client,
     WorkerScriptFetcherResult result) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
@@ -382,8 +384,8 @@ void SharedWorkerHost::Start(
       instance_.url(), std::move(options),
       mojo::Clone(content_security_policies_),
       std::move(outside_fetch_client_settings_object),
-      instance_.same_site_cookies(), instance_.extended_lifetime(),
-      instance_.permissions_policy()));
+      std::move(outside_settings_reporter), instance_.same_site_cookies(),
+      instance_.extended_lifetime(), instance_.permissions_policy()));
 
   auto renderer_preferences = blink::RendererPreferences();
   UpdateRendererPreferencesForWorkerHelper(

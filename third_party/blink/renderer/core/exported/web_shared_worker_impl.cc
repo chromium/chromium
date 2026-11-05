@@ -219,6 +219,9 @@ void WebSharedWorkerImpl::StartWorkerContext(
     const UserAgentMetadata& ua_metadata,
     const std::vector<WebContentSecurityPolicy>& content_security_policies,
     const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
+    CrossVariantMojoRemote<
+        mojom::blink::OutsideContextCSPViolationReporterInterfaceBase>
+        outside_settings_reporter,
     const base::UnguessableToken& devtools_worker_token,
     CrossVariantMojoRemote<
         mojom::blink::WorkerContentSettingsProxyInterfaceBase> content_settings,
@@ -277,6 +280,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
       script_request_url, script_type, name, user_agent, ua_metadata,
       std::move(web_worker_fetch_context),
       ToVector(content_security_policies, FromWebContentSecurityPolicy),
+      std::move(outside_settings_reporter),
       outside_settings_object->GetReferrerPolicy(),
       outside_settings_object->GetSecurityOrigin(),
       is_constructor_secure_context, outside_settings_object->GetHttpsState(),
@@ -384,6 +388,9 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
     const UserAgentMetadata& ua_metadata,
     const std::vector<WebContentSecurityPolicy>& content_security_policies,
     const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
+    CrossVariantMojoRemote<
+        mojom::blink::OutsideContextCSPViolationReporterInterfaceBase>
+        outside_settings_reporter,
     const base::UnguessableToken& devtools_worker_token,
     CrossVariantMojoRemote<
         mojom::blink::WorkerContentSettingsProxyInterfaceBase> content_settings,
@@ -410,7 +417,8 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
       script_request_url, script_type, credentials_mode, name,
       constructor_origin, origin_from_browser, is_constructor_secure_context,
       user_agent, ua_metadata, content_security_policies,
-      outside_fetch_client_settings_object, devtools_worker_token,
+      outside_fetch_client_settings_object,
+      std::move(outside_settings_reporter), devtools_worker_token,
       std::move(content_settings), std::move(browser_interface_broker),
       pause_worker_context_on_start, std::move(worker_main_script_load_params),
       std::move(policy_container), std::move(web_worker_fetch_context),

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
+#include "third_party/blink/renderer/core/workers/outside_settings_csp_violation_reporter.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
@@ -84,6 +85,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
         /*web_worker_fetch_context=*/nullptr,
         /*outside_content_security_policies=*/
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        /*outside_settings_reporter=*/mojo::NullRemote(),
         /*referrer_policy=*/network::mojom::ReferrerPolicy::kDefault,
         client_provided_global_scope_creation_params->starter_origin.get(),
         starter_secure_context,
@@ -135,9 +137,10 @@ void ThreadedWorkletMessagingProxy::Initialize(
           window->Url(), mojom::blink::ScriptType::kModule, global_scope_name,
           frame_client->UserAgent(), frame_client->UserAgentMetadata(),
           frame_client->CreateWorkletFetchContext(),
-          mojo::Clone(csp->GetParsedPolicies()), window->GetReferrerPolicy(),
-          window->GetSecurityOrigin(), window->IsSecureContext(),
-          window->GetHttpsState(), worker_clients,
+          mojo::Clone(csp->GetParsedPolicies()),
+          OutsideSettingsCSPViolationReporter::BindNewRemote(*window),
+          window->GetReferrerPolicy(), window->GetSecurityOrigin(),
+          window->IsSecureContext(), window->GetHttpsState(), worker_clients,
           frame_client->CreateWorkerContentSettingsClient(),
           OriginTrialContext::GetInheritedTrialFeatures(window).get(),
           base::UnguessableToken::Create(),

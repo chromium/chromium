@@ -38,8 +38,6 @@ class SharedWorkerReportingProxy final
                             mojom::ConsoleMessageLevel,
                             const String& message,
                             const SourceLocation*) override;
-  void DispatchCSPViolationEvent(
-      const SecurityPolicyViolationEventInit&) override;
   void DidFailToFetchClassicScript() override;
   void DidFailToFetchModuleScript() override;
   void DidEvaluateTopLevelScript(

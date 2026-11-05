@@ -45,6 +45,7 @@
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-shared.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/security_context/outside_context_csp_violation_reporter.mojom-shared.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_host.mojom-shared.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -85,6 +86,9 @@ class BLINK_EXPORT WebSharedWorker {
       const UserAgentMetadata& ua_metadata,
       const std::vector<WebContentSecurityPolicy>& content_security_policies,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
+      CrossVariantMojoRemote<
+          mojom::OutsideContextCSPViolationReporterInterfaceBase>
+          outside_settings_reporter,
       const base::UnguessableToken& devtools_worker_token,
       CrossVariantMojoRemote<mojom::WorkerContentSettingsProxyInterfaceBase>
           content_settings,

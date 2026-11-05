@@ -801,17 +801,16 @@ void LocalFrameMojoHandler::AdvanceFocusForIME(
 
 void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(
     network::mojom::blink::CSPViolationPtr violation) {
+  // Reports the violation that the frame host detected for this frame
+  // (e.g. form-action, frame-ancestors, and frame-src).
+  // TODO(crbug.com/40612680): Share the reporting steps with
+  // OutsideSettingsCSPViolationReporter::ReportCSPViolation() as both
+  // methods report a violation detected outside of the context that
+  // holds the policy.
   auto* source_location = MakeGarbageCollected<SourceLocation>(
       violation->source_location->url, String(),
       violation->source_location->line, violation->source_location->column,
       nullptr);
-
-  frame_->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kSecurity,
-      violation->type == network::mojom::ContentSecurityPolicyType::kReport
-          ? mojom::blink::ConsoleMessageLevel::kInfo
-          : mojom::blink::ConsoleMessageLevel::kError,
-      violation->console_message, source_location));
 
   auto directive_type =
       ContentSecurityPolicy::GetDirectiveType(violation->effective_directive);
@@ -820,9 +819,10 @@ void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(
           ? frame_
           : nullptr;
 
-  DomWindow()->GetContentSecurityPolicy()->ReportViolation(
-      directive_type, violation->blocked_url, violation->report_endpoints,
-      violation->use_reporting_api, violation->header, violation->type,
+  DomWindow()->GetContentSecurityPolicy()->LogToConsoleAndReportViolation(
+      directive_type, violation->console_message, violation->blocked_url,
+      violation->report_endpoints, violation->use_reporting_api,
+      violation->header, violation->type,
       ContentSecurityPolicyViolationType::kURLViolation, source_location,
       context_frame, /*element=*/nullptr);
 }

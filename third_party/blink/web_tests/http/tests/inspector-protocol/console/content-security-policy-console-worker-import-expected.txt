@@ -1,0 +1,6 @@
+Verifies where the console message is logged for a module worker's import blocked by the page's policy.
+
+log target: creator
+entry.level: error
+entry.text: Creating a worker from 'https://thirdparty.test/inspector-protocol/resources/to-be-blocked.js' violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'". Note that 'worker-src' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+

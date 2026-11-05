@@ -133,6 +133,8 @@ WorkletGlobalScope::WorkletGlobalScope(
 
   SetOutsideContentSecurityPolicies(
       mojo::Clone(creation_params->outside_content_security_policies));
+  SetOutsideSettingsReporter(
+      std::move(creation_params->outside_settings_reporter));
 
   // https://drafts.css-houdini.org/worklets/#creating-a-workletglobalscope
   // Step 6: "Invoke the initialize a global object's CSP list algorithm given

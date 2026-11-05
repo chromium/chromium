@@ -14,6 +14,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
+#include "third_party/blink/public/mojom/security_context/outside_context_csp_violation_reporter.mojom-blink.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -169,6 +171,20 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   WorkerReportingProxy& ReportingProxy() { return *reporting_proxy_; }
 
+  // Reports the CSP violation detected while fetching with the outside settings
+  // object on the context that created this worker or worklet and returns true,
+  // if the reporter is available. Otherwise returns false. See
+  // ContentSecurityPolicyDelegate::ReportViolationOnOutsideSettingsIfNeeded().
+  bool ReportViolationOnOutsideSettingsIfNeeded(
+      CSPDirectiveName effective_type,
+      const String& console_message,
+      const KURL& blocked_url,
+      const Vector<String>& report_endpoints,
+      bool use_reporting_api,
+      const String& header,
+      network::mojom::ContentSecurityPolicyType header_type,
+      const SourceLocation* source_location);
+
   void Trace(Visitor*) const override;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
@@ -213,6 +229,13 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // fetch.
   void SetOutsideContentSecurityPolicies(
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>);
+
+  // Sets the reporter for the violations that this worker or worklet detects
+  // while fetching with the outside settings object. The reporter is bound in
+  // the context that created this worker or worklet. See
+  // mojom::blink::OutsideContextCSPViolationReporter.
+  void SetOutsideSettingsReporter(
+      mojo::PendingRemote<mojom::blink::OutsideContextCSPViolationReporter>);
 
   // Initializes inside's CSP used for subresource fetch etc.
   void InitContentSecurityPolicyFromVector(
@@ -291,6 +314,9 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // outsideSettings-FetchClientSettingsObject.
   Vector<network::mojom::blink::ContentSecurityPolicyPtr>
       outside_content_security_policies_;
+
+  HeapMojoRemote<mojom::blink::OutsideContextCSPViolationReporter>
+      outside_settings_reporter_;
 
   const raw_ref<WorkerReportingProxy, UnprotectedInRelease | DanglingUntriaged>
       reporting_proxy_;
