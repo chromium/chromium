@@ -384,7 +384,9 @@ public class BasicSuggestionProcessorUnitTest {
                         Map.entry(IconType.TAB, R.drawable.tab),
                         Map.entry(IconType.PHOTO_SPARK, R.drawable.ic_photo_spark_24dp),
                         Map.entry(IconType.BOLT, R.drawable.bolt_24dp),
-                        Map.entry(IconType.IMAGE_CREATE, R.drawable.image_create_24dp));
+                        Map.entry(IconType.IMAGE_CREATE, R.drawable.image_create_24dp),
+                        Map.entry(
+                                IconType.PROMPT_SUGGESTION, R.drawable.ic_prompt_suggestion_24dp));
 
         for (@IconType int iconType = IconType.MIN_VALUE;
                 iconType <= IconType.MAX_VALUE;

@@ -98,6 +98,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolPlusCircleFill,
   SymbolPopupBadgeMinus,
   SymbolPrivacy,
+  SymbolPromptSuggestion,
   SymbolReadingList,
   SymbolRecentTabs,
   SymbolSafetyCheck,

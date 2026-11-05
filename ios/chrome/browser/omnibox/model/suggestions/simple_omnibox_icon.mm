@@ -63,6 +63,7 @@
     case OmniboxSuggestionIconType::kSearchTrend:
     case OmniboxSuggestionIconType::kSearchWithSparkle:
     case OmniboxSuggestionIconType::kNotesSpark:
+    case OmniboxSuggestionIconType::kPromptSuggestion:
       return NO;
     case OmniboxSuggestionIconType::kCalculator:
     case OmniboxSuggestionIconType::kConversion:

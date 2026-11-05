@@ -163,6 +163,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"popup_badge_minus", SymbolType::kCustom};
     case SymbolPrivacy:
       return {@"checkerboard_shield", SymbolType::kCustom};
+    case SymbolPromptSuggestion:
+      return {@"prompt_suggestion", SymbolType::kCustom};
     case SymbolReadingList:
       return {@"square_bullet_square", SymbolType::kCustom};
     case SymbolRecentTabs:

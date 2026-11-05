@@ -93,6 +93,7 @@ enum IconType {
   kPhotoSpark = 16,
   kBolt = 17,
   kImageCreate = 18,
+  kPromptSuggestion = 19,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
 

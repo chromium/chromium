@@ -213,6 +213,8 @@ constexpr char kPageIconResourceName[] =
     "//resources/cr_components/searchbox/icons/page_cr23.svg";
 constexpr char kPedalsIconResourceName[] =
     "//resources/cr_components/searchbox/icons/chrome_product_cr23.svg";
+constexpr char kPromptSuggestionIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/prompt_suggestion.svg";
 constexpr char kSearchIconResourceName[] =
     "//resources/cr_components/searchbox/icons/search_cr23.svg";
 constexpr char kSearchOldIconResourceName[] =
@@ -749,6 +751,8 @@ std::string SearchboxHandler::VectorIconToResourceName(
                                ? omnibox::kChromeProductIcon.name
                                : omnibox::kProductChromeRefreshOldIcon.name)) {
     resource_name = kPedalsIconResourceName;
+  } else if (icon.name == omnibox::kPromptSuggestionIcon.name) {
+    resource_name = kPromptSuggestionIconResourceName;
   } else if (icon.name == omnibox::kReplyRotated180CustomIcon.name) {
     resource_name = searchbox_internal::kReplyRotated180IconResourceName;
   } else if (icon.name == (features::IsRoundedIconsEnabled()
@@ -852,6 +856,7 @@ std::string SearchboxHandler::VectorIconToResourceName(
         base::MakeFixedFlatSet<std::string_view>({
             kDriveLogoIconResourceName,
             kEnterpriseIconResourceName,
+            kPromptSuggestionIconResourceName,
             searchbox_internal::kReplyRotated180IconResourceName,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             kGoogleAgentspaceMonochromeLogoIcon,

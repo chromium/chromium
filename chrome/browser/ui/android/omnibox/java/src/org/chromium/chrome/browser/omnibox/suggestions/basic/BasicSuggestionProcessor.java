@@ -142,6 +142,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             case IconType.IMAGE_CREATE:
                 return R.drawable.image_create_24dp;
 
+            case IconType.PROMPT_SUGGESTION:
+                return R.drawable.ic_prompt_suggestion_24dp;
+
             default: // Icon type is specified, but not recognized
                 assert false : "Unrecognized IconType: " + iconType;
                 return 0;

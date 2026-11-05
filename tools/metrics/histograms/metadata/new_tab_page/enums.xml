@@ -48,6 +48,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Photo Spark"/>
   <int value="17" label="Bolt"/>
   <int value="18" label="Image Create"/>
+  <int value="19" label="Prompt Suggestion"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/browser/suggest_template_info.mojom:IconType) -->

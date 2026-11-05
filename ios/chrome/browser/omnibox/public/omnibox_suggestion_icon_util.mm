@@ -56,6 +56,9 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
     case OmniboxSuggestionIconType::kNotesSpark:
       symbol = SymbolLineThreeSpark;
       break;
+    case OmniboxSuggestionIconType::kPromptSuggestion:
+      symbol = SymbolPromptSuggestion;
+      break;
     case OmniboxSuggestionIconType::kCount:
       NOTREACHED();
   }

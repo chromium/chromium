@@ -113,7 +113,7 @@ GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
     omnibox::SuggestTemplateInfo::IconType type) {
   // Update this assertion and the switch below whenever values are added.
   static_assert(omnibox::SuggestTemplateInfo::IconType_MAX ==
-                omnibox::SuggestTemplateInfo::IMAGE_CREATE);
+                omnibox::SuggestTemplateInfo::PROMPT_SUGGESTION);
   switch (type) {
     case omnibox::SuggestTemplateInfo_IconType_HISTORY:
       return OmniboxSuggestionIconType::kSearchHistory;
@@ -121,6 +121,8 @@ GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
       return OmniboxSuggestionIconType::kSearch;
     case omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE:
       return OmniboxSuggestionIconType::kSearchWithSparkle;
+    case omnibox::SuggestTemplateInfo_IconType_PROMPT_SUGGESTION:
+      return OmniboxSuggestionIconType::kPromptSuggestion;
     case omnibox::SuggestTemplateInfo_IconType_TRENDING:
       return OmniboxSuggestionIconType::kSearchTrend;
     case omnibox::SuggestTemplateInfo_IconType_SUB_ARROW_RIGHT:

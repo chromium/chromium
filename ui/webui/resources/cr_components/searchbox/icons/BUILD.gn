@@ -70,6 +70,7 @@ generate_grd("build_grdp") {
     "page_cr23.svg",
     "page_cr23_old.svg",
     "page_spark.svg",
+    "prompt_suggestion.svg",
     "reply_rotated180.svg",
     "screenshot_entire_screen.svg",
     "screenshot_region.svg",

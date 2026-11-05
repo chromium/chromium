@@ -122,6 +122,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/plus_circle_fill.symbolset/plus.circle.fill.cr.svg",
     "Assets.xcassets/popup_badge_minus.symbolset/Contents.json",
     "Assets.xcassets/popup_badge_minus.symbolset/popup.badge.minus.cr.svg",
+    "Assets.xcassets/prompt_suggestion.symbolset/Contents.json",
+    "Assets.xcassets/prompt_suggestion.symbolset/prompt.suggestion.cr.svg",
     "Assets.xcassets/shared_drives.symbolset/Contents.json",
     "Assets.xcassets/shared_drives.symbolset/shared.drives.cr.svg",
     "Assets.xcassets/shield.symbolset/Contents.json",

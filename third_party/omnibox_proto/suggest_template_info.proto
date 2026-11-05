@@ -41,7 +41,7 @@ message SuggestTemplateInfo {
   // The style of the suggestion.
   optional StandardSuggestStyle style = 1;
 
-  // Next ID: 19
+  // Next ID: 20
   enum IconType {
     // Unspecified.
     ICON_TYPE_UNSPECIFIED = 0;
@@ -94,6 +94,9 @@ message SuggestTemplateInfo {
     // Image create icon, used for create image suggestions.
     // Icon: Luminous Symbols:image_create
     IMAGE_CREATE = 18;
+    // Prompt suggestion icon, used for prompt suggestions.
+    // Icon: Google Symbols:prompt_suggestion
+    PROMPT_SUGGESTION = 19;
   }
 
   // The icon type of the suggestion, this is typically the icon in front of

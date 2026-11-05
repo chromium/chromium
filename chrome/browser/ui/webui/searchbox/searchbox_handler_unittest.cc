@@ -1646,6 +1646,27 @@ TEST_F(
             searchbox_internal::kReplyRotated180IconResourceName);
 }
 
+TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatch_PromptSuggestionIcon) {
+  AutocompleteMatch match;
+  match.destination_url = GURL("https://example.com");
+  omnibox::SuggestTemplateInfo suggest_template;
+  suggest_template.set_type_icon(
+      omnibox::SuggestTemplateInfo::PROMPT_SUGGESTION);
+  match.suggest_template = suggest_template;
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+
+  auto mojom_match = handler_->CreateAutocompleteMatch(
+      match, bookmark_model, omnibox::GroupConfigMap(),
+      omnibox_controller_->client()->GetTemplateURLService());
+
+  ASSERT_TRUE(mojom_match.has_value());
+  EXPECT_EQ(mojom_match.value()->icon_path,
+            "//resources/cr_components/searchbox/icons/prompt_suggestion.svg");
+}
+
 TEST_F(WebuiOmniboxHandlerTest,
        CreateAutocompleteMatch_SidePanelDescriptionIcon) {
   base::test::ScopedFeatureList feature_list;

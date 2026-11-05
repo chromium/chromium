@@ -438,6 +438,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_ink_pen_24dp.xml",
     "java/res/drawable/ic_keyboard_tab.xml",
     "java/res/drawable/ic_photo_spark_24dp.xml",
+    "java/res/drawable/ic_prompt_suggestion_24dp.xml",
     "java/res/drawable/ic_school_24dp.xml",
     "java/res/drawable/ic_search_24dp_rtl.xml",
     "java/res/drawable/inset_navattach_item_background.xml",
