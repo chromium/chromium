@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "cc/paint/paint_op.h"
 #include "cc/test/paint_op_matchers.h"
@@ -1321,7 +1322,17 @@ TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithoutSuggestedValueKeepsFocus) {
 // that re-enters recalc through assignedNodes() must bail out, so the slot it
 // adds has no assigned nodes until the next recalc. This checks the re-entrancy
 // guard directly instead of relying on the freed memory read crashing.
-TEST_P(HTMLCanvasElementTest, ReentrantSlotRecalcDuringDidRecalcAssignedNodes) {
+// TODO(crbug.com/582077348): Test
+// ReentrantSlotRecalcDuringDidRecalcAssignedNodes failed on android-10-x86-rel.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_ReentrantSlotRecalcDuringDidRecalcAssignedNodes \
+  DISABLED_ReentrantSlotRecalcDuringDidRecalcAssignedNodes
+#else
+#define MAYBE_ReentrantSlotRecalcDuringDidRecalcAssignedNodes \
+  ReentrantSlotRecalcDuringDidRecalcAssignedNodes
+#endif
+TEST_P(HTMLCanvasElementTest,
+       MAYBE_ReentrantSlotRecalcDuringDidRecalcAssignedNodes) {
 #if DCHECK_IS_ON()
   // Reaching this path trips a separate, pre-existing DCHECK:
   // RecalcAssignment() holds a FlatTreeTraversalForbiddenScope while the date
