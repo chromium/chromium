@@ -330,10 +330,15 @@ ResultCode InterceptionManager::PatchNtdll(bool hot_patch_needed) {
     ADD_NT_INTERCEPTION(NtUnmapViewOfSection, UNMAP_VIEW_OF_SECTION_ID, 12);
   }
 
-  // Reserve a full 64k memory range in the child process.
+  // Reserve a full 64k memory range in the child process. Allocation failures
+  // below should fail the launch, letting the broker terminate the suspended
+  // child instead of crashing the browser under memory pressure.
   HANDLE child = child_->Process();
   BYTE* thunk_base = reinterpret_cast<BYTE*>(::VirtualAllocEx(
       child, nullptr, kAllocGranularity, MEM_RESERVE, PAGE_NOACCESS));
+  if (!thunk_base) {
+    return SBOX_ERROR_CANNOT_SETUP_INTERCEPTION_THUNK;
+  }
 
   // Find an aligned, random location within the reserved range.
   size_t thunk_bytes =
@@ -349,7 +354,9 @@ ResultCode InterceptionManager::PatchNtdll(bool hot_patch_needed) {
   thunk_base = reinterpret_cast<BYTE*>(
       ::VirtualAllocEx(child, thunk_base, thunk_bytes_padded, MEM_COMMIT,
                        PAGE_EXECUTE_READWRITE));
-  CHECK(thunk_base);  // If this fails we'd crash anyway on an invalid access.
+  if (!thunk_base) {
+    return SBOX_ERROR_CANNOT_SETUP_INTERCEPTION_THUNK;
+  }
   DllInterceptionData* thunks = reinterpret_cast<DllInterceptionData*>(
       UNSAFE_TODO(thunk_base + thunk_offset));
 
