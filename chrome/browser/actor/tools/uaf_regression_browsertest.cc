@@ -285,5 +285,49 @@ IN_PROC_BROWSER_TEST_F(ActorUafRegressionScriptToolBrowserTest,
   ASSERT_TRUE(result.Wait());
 }
 
+class ActorUafRegressionTypeToolCancelBrowserTest
+    : public ActorUafRegressionBrowserTest {
+ public:
+  ActorUafRegressionTypeToolCancelBrowserTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        kActorClickDelay, {{kActorClickDelayParam.name, "10s"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Regression test for UAF in TypeTool::Cancel.
+// See crbug.com/581490460.
+IN_PROC_BROWSER_TEST_F(ActorUafRegressionTypeToolCancelBrowserTest,
+                       TypeToolCancel_HandlesSynchronousFrameDetachment) {
+  SetupAbaFrames("/actor/type_tool_cancel_uaf_inner.html");
+  RenderFrameHost* inner_rfh = GetInnerRfh();
+  ASSERT_TRUE(inner_rfh);
+
+  const int32_t target_id = GetDOMNodeId(*inner_rfh, "#target").value();
+
+  content::DOMMessageQueue message_queue(web_contents());
+  std::unique_ptr<ToolRequest> action = MakeTypeRequest(
+      *inner_rfh, target_id, "hello", /*follow_by_enter=*/false);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"mousedown\"", message);
+
+  // Cancelling while the focusing click is in progress synchronously dispatches
+  // `mouseup` via ClickDispatcher::Cancel(), whose handler detaches the
+  // local-root frame owning TypeTool while TypeTool::Cancel() is on the stack.
+  actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
+
+  // This should not crash the renderer.
+  ASSERT_TRUE(result.Wait());
+  EXPECT_EQ(true, content::EvalJs(main_frame(),
+                                  "document.getElementById('mid') === null"));
+  EXPECT_TRUE(main_frame()->IsRenderFrameLive());
+}
+
 }  // namespace
 }  // namespace actor

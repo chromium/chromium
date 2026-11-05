@@ -477,8 +477,7 @@ void TypeTool::Cancel() {
     if (weak_this) {
       click_dispatcher_.reset();
     }
-  }
-  if (key_dispatcher_) {
+  } else if (key_dispatcher_) {
     key_dispatcher_->Cancel();
     if (weak_this) {
       key_dispatcher_.reset();
