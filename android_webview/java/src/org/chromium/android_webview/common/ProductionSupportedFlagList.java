@@ -1547,6 +1547,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "YieldToLooperPeriodically",
                 "When enabled, periodically yield to Android Looper in MessagePumpAndroid."),
+        Flag.baseFeature(
+                NetFeatures.QUIC_ENABLE_PORT_MIGRATION,
+                "Controls whether QUIC sessions are allowed to migrate to a different port when"
+                        + " the current path is degrading."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
