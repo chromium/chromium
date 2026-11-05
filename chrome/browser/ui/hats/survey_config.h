@@ -218,6 +218,9 @@ inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted[] =
         "autofill-personalization-and-trust-fedcm-accepted";
 inline constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAutoReauthn[] =
+        "autofill-personalization-and-trust-fedcm-auto-reauthn";
+inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed[] =
         "autofill-personalization-and-trust-fedcm-dismissed";
 inline constexpr char kHatsSurveyTriggerPermissionsPrompt[] =

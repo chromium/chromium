@@ -466,8 +466,12 @@ bool IdentityDialogController::ShowLoadingDialog(
   // Because the loading dialog is not interactable, we do not count it for
   // did_show_ui_, as it is not useful for IDPs in calculating a click-through
   // rate.
-  return account_view_->ShowLoadingDialog(rp_data, idp_for_display, rp_context,
-                                          rp_mode);
+  if (account_view_->ShowLoadingDialog(rp_data, idp_for_display, rp_context,
+                                       rp_mode)) {
+    did_show_loading_ui_ = true;
+    return true;
+  }
+  return false;
 }
 
 bool IdentityDialogController::ShowVerifyingDialog(
@@ -479,6 +483,8 @@ bool IdentityDialogController::ShowVerifyingDialog(
     AccountsDisplayedCallback accounts_displayed_callback) {
   on_accounts_displayed_ = std::move(accounts_displayed_callback);
   rp_mode_ = rp_mode;
+  is_auto_reauthn_ =
+      (sign_in_mode == content::IdentityRequestAccount::SignInMode::kAuto);
 
   // If the dialog is triggered in active mode and the FedCM UI should not be
   // shown, early return as if successful so the flow continues.
@@ -630,6 +636,7 @@ void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
   }
 
   login_state_.reset();
+  is_auto_reauthn_ = false;
   on_account_selection_.Reset();
   on_native_result_.Reset();
   std::move(on_dismiss_).Run(dismiss_reason);
@@ -655,15 +662,30 @@ content::WebContents* IdentityDialogController::GetWebContents() {
 }
 
 void IdentityDialogController::OnFedCmFederatedLogin(bool success) {
-  if (success && login_state_.has_value()) {
-    // `login_state_` is only populated when the account selection dialog was
-    // shown to the user (excludes flows like auto-reauthn or actor login).
-    MaybeTriggerPersonalizationAndTrustHatsSurvey(
-        web_contents(),
-        kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
-        rp_mode_, *login_state_);
+  if (success) {
+    // Only trigger surveys if login succeeded and UI was displayed to the user
+    // (excluding headless/silent flows).
+    if (is_auto_reauthn_ && (did_show_ui_ || did_show_loading_ui_)) {
+      // Trigger the auto-reauthn survey when the flow completed automatically
+      // after presenting the verifying UI or active-mode loading UI.
+      MaybeTriggerPersonalizationAndTrustHatsSurvey(
+          web_contents(),
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAutoReauthn,
+          rp_mode_, content::IdentityRequestAccount::LoginState::kSignIn);
+    } else if (did_show_ui_ && login_state_.has_value()) {
+      // Trigger the explicit acceptance survey only if an account was
+      // explicitly selected in the account selection dialog. If the dialog was
+      // closed before completion, `login_state_` was reset in `OnDismiss()`.
+      MaybeTriggerPersonalizationAndTrustHatsSurvey(
+          web_contents(),
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
+          rp_mode_, *login_state_);
+    }
   }
+
+  // Clear transient flow state once the login event has been handled.
   login_state_.reset();
+  is_auto_reauthn_ = false;
 }
 
 void IdentityDialogController::ShowUrl(LinkType type, const GURL& url) {

@@ -229,11 +229,16 @@ class IdentityDialogController
   // Whether we show any FedCM UI or not. Excludes the loading dialog since that
   // one is not something that modifies user state or is actionable by the user.
   bool did_show_ui_ = false;
+  // Whether the loading dialog was shown to the user.
+  bool did_show_loading_ui_ = false;
   // Login state of the current account selection flow, used for HaTS surveys.
   // This is an estimate until an account is selected and is `std::nullopt` when
   // there was no account chooser (auto reauthn, actor login, autofill without
   // the modal, native app UI).
   std::optional<content::IdentityRequestAccount::LoginState> login_state_;
+  // Whether the user experienced auto-reauthn (verifying dialog in passive
+  // mode or loading dialog in active mode), used for HaTS surveys.
+  bool is_auto_reauthn_ = false;
   std::optional<content::IdentityRequestDialogController::PassiveDialogVolume>
       passive_dialog_volume_;
   GetPassiveDialogVolumeCallback passive_dialog_volume_callback_;

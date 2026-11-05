@@ -935,9 +935,18 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           // was triggered.
           "Origin of the website (eTLD+1)",
       };
+  // TODO(crbug.com/581806866): Explicitly specify `presupplied_trigger_id` for
+  // all personalization and trust FedCM surveys since they share the same
+  // feature flag, but require different trigger IDs.
   survey_configs.emplace_back(
       &::autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      autofill_personalization_and_trust_fedcm_product_specific_data);
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey,
+      kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAutoReauthn,
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       autofill_personalization_and_trust_fedcm_product_specific_data);
