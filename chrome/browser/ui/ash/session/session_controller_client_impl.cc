@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -44,6 +43,7 @@
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_type.h"
@@ -107,8 +107,10 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
   session->user_info.should_display_managed_ui =
       profile && ShouldDisplayManagedUi(profile);
   session->user_info.is_new_profile = profile->IsNewProfile();
-  session->user_info.is_managed =
-      profile->GetProfilePolicyConnector()->IsManaged();
+  // The user's policy status is known once its Profile has been added, which
+  // happened before the session started. If it isn't, report the user as
+  // unmanaged, matching ProfileUserManagerController's default.
+  session->user_info.is_managed = user.is_managed().value_or(false);
 
   session->user_info.avatar.image = user.GetImage();
   if (session->user_info.avatar.image.isNull()) {
