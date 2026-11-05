@@ -4,6 +4,7 @@
 
 #include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
 
+#include <algorithm>
 #include <cmath>
 #include <deque>
 #include <functional>
@@ -204,6 +205,10 @@ DeltaSizeInfo Diff(const SizeInfo* before,
                    const std::vector<std::string>* added_sources) {
   DeltaSizeInfo ret(before, after, removed_sources, added_sources);
   bool is_sparse = before->IsSparse() && after->IsSparse();
+  // Over-allocate the expected size by 20% to hopefully make the second reserve
+  // a no-op and avoid a second reallocation.
+  ret.delta_symbols.reserve(static_cast<size_t>(
+      std::max(before->raw_symbols.size(), after->raw_symbols.size()) * 1.2));
 
   std::vector<const Symbol*> unmatched_before;
   unmatched_before.reserve(before->raw_symbols.size());
@@ -235,6 +240,11 @@ DeltaSizeInfo Diff(const SizeInfo* before,
     helper.ClearStrings();
   }
 
+  const size_t num_padding_symbols = std::ranges::count_if(
+      padding_by_section_name,
+      [](const auto& pair) { return pair.second != 0.0f; });
+  ret.delta_symbols.reserve(ret.delta_symbols.size() + unmatched_after.size() +
+                            unmatched_before.size() + num_padding_symbols);
   // Add removals or deletions for any unmatched symbols.
   for (const Symbol* after_sym : unmatched_after) {
     ret.delta_symbols.push_back(DeltaSymbol(nullptr, after_sym));
