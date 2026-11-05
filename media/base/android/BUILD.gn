@@ -50,8 +50,6 @@ if (is_android) {
       "media_drm_storage_bridge.h",
       "media_format_color_space.cc",
       "media_format_color_space.h",
-      "media_server_crash_listener.cc",
-      "media_server_crash_listener.h",
     ]
     configs += [ "//media:subcomponent_config" ]
     public_deps = [ ":media_jni_headers" ]
@@ -127,7 +125,6 @@ if (is_android) {
       "java/src/org/chromium/media/MediaCodecUtil.java",
       "java/src/org/chromium/media/MediaDrmBridge.java",
       "java/src/org/chromium/media/MediaDrmStorageBridge.java",
-      "java/src/org/chromium/media/MediaServerCrashListener.java",
       "java/src/org/chromium/media/VideoAcceleratorUtil.java",
     ]
 
@@ -154,15 +151,10 @@ if (is_android) {
     class_name = "org.chromium.media.MediaFeatures"
   }
 
-  android_resources("media_java_resources") {
-    sources = [ "java/res/raw/empty.wav" ]
-  }
-
   android_library("media_java") {
     visibility = [ "//*" ]
     deps = [
       ":display_java",
-      ":media_java_resources",
       "//base:base_java",
       "//build/android:build_java",
       "//third_party/android_deps:guava_android_java",
@@ -177,7 +169,6 @@ if (is_android) {
       ":media_jni_headers",
       "//media/base:java_enums",
     ]
-    resources_package = "org.chromium.media"
     sources = [
       "java/src/org/chromium/media/AudioDeviceListener.java",
       "java/src/org/chromium/media/AudioManagerAndroid.java",
@@ -195,7 +186,6 @@ if (is_android) {
       "java/src/org/chromium/media/MediaDrmSessionManager.java",
       "java/src/org/chromium/media/MediaDrmStorageBridge.java",
       "java/src/org/chromium/media/MediaFormatBuilder.java",
-      "java/src/org/chromium/media/MediaServerCrashListener.java",
       "java/src/org/chromium/media/MicrophoneMuteStateListener.java",
       "java/src/org/chromium/media/ScoStateListener.java",
       "java/src/org/chromium/media/ScreenResolutionUtil.java",
