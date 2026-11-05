@@ -520,7 +520,9 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       std::unique_ptr<manta::proto::Response> response,
       manta::MantaStatus status) {
     CHECK(pending_fetch_wallpaper_callback_, base::NotFatalUntil::M160);
-    CHECK(fetch_wallpaper_timer_.IsRunning(), base::NotFatalUntil::M160);
+    // TODO(crbug.com/579173332): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(fetch_wallpaper_timer_.IsRunning());
 
     fetch_wallpaper_timer_.Stop();
 
