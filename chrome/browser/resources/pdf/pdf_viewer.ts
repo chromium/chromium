@@ -2064,11 +2064,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     return this.canSerializeDocument_ && !this.hadPassword_;
   }
 
-  /** @return Whether the PDF contents are rotated. */
-  protected isRotated_(): boolean {
-    return this.clockwiseRotations_ !== 0;
-  }
-
   // <if expr="enable_pdf_ink2">
   protected isTextboxActive_(): boolean {
     return this.textboxState_ !== TextBoxState.INACTIVE;

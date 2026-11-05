@@ -846,29 +846,6 @@ export class Viewport {
                                                              pageAtY;
   }
 
-  /** @return Whether |point| (in screen coordinates) is inside a page. */
-  isPointInsidePage(point: Point): boolean {
-    const zoom = this.getZoom();
-    const size = this.size;
-    const position = this.position;
-    // getPageAtY_() always returns a value in range of pageDimensions_.
-    const page = this.getPageAtY_((position.y + point.y) / zoom);
-    const pageWidth = this.pageDimensions_[page]!.width * zoom;
-    const documentWidth = this.getDocumentDimensions().width * zoom;
-
-    const outerWidth = Math.max(size.width, documentWidth);
-
-    if (pageWidth >= outerWidth) {
-      return true;
-    }
-
-    const x = point.x + position.x;
-
-    const minX = (outerWidth - pageWidth) / 2;
-    const maxX = outerWidth - minX;
-    return x >= minX && x <= maxX;
-  }
-
   /**
    * @return The page at |point|, or -1 if there is no page at |point|.
    */

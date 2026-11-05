@@ -95,8 +95,6 @@ export class ViewerToolbarElement extends CrLitElement {
       },
 
       pageNo: {type: Number},
-
-      rotated: {type: Boolean},
       strings: {type: Object},
       viewportZoom: {type: Number},
       zoomBounds: {type: Object},
@@ -145,7 +143,6 @@ export class ViewerToolbarElement extends CrLitElement {
   accessor formFieldFocus: FormFieldFocusType = FormFieldFocusType.NONE;
   accessor loadProgress: number = 0;
   accessor pageNo: number = 0;
-  accessor rotated: boolean = false;
   accessor strings: LoadTimeDataRaw|undefined;
   accessor viewportZoom: number = 0;
   accessor zoomBounds: {min: number, max: number} = {min: 0, max: 0};

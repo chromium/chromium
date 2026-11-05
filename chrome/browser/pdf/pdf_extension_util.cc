@@ -171,7 +171,6 @@ base::DictValue GetPdfViewerStrings() {
       {"annotationPen", IDS_PDF_ANNOTATION_PEN},
       {"annotationRedo", IDS_PDF_ANNOTATION_REDO},
       {"annotationUndo", IDS_PDF_ANNOTATION_UNDO},
-      {"cancelButton", IDS_CANCEL},
       {"ink2AnnotationRedone", IDS_PDF_INK2_ANNOTATION_REDONE},
       {"ink2AnnotationUndone", IDS_PDF_INK2_ANNOTATION_UNDONE},
       {"ink2BrushColorBlue1", IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_1},
@@ -265,12 +264,6 @@ base::DictValue GetPdfViewerStrings() {
 
   dict.Set("glicSummarize",
            l10n_util::GetStringUTF16(GetGlicSummarizeButtonLabelId()));
-
-#if BUILDFLAG(ENABLE_PDF_INK2)
-  std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
-  std::erase(edit_string, '&');
-  dict.Set("editButton", edit_string);
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &dict);
