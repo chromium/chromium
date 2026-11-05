@@ -85,12 +85,14 @@ source_set("unit_tests") {
   sources = [ "level_up_mediator_unittest.mm" ]
   deps = [
     ":coordinator",
+    ":view_models",
     "//base",
     "//base/test:test_support",
     "//components/prefs",
     "//ios/chrome/browser/level_up/model",
     "//ios/chrome/browser/level_up/model:metrics",
     "//ios/chrome/browser/level_up/model:task_info",
+    "//ios/chrome/browser/level_up/ui",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",

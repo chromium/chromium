@@ -164,6 +164,8 @@
   _prefObserverBridge.reset();
   _levelUpServiceObserverBridge.reset();
   _prefChangeRegistrar.Reset();
+  _recommendedTasks = nil;
+  _categories = nil;
   _authService = nullptr;
   _identityManager = nullptr;
   _levelUpService = nullptr;
