@@ -46,21 +46,6 @@
 
 namespace gcm {
 
-// It is okay to append to the enum if these states grow. DO NOT reorder,
-// renumber or otherwise reuse existing values.
-// Do not assign an explicit value to REGISTRATION_CACHE_STATUS_COUNT, as
-// this lets the compiler keep it up to date.
-enum class RegistrationCacheStatus {
-  REGISTRATION_NOT_FOUND = 0,
-  REGISTRATION_FOUND_AND_FRESH = 1,
-  REGISTRATION_FOUND_BUT_STALE = 2,
-  REGISTRATION_FOUND_BUT_SENDERS_DONT_MATCH = 3,
-  // NOTE: always keep this entry at the end. Add new value only immediately
-  // above this line. Make sure to update the corresponding histogram enum
-  // accordingly.
-  REGISTRATION_CACHE_STATUS_COUNT
-};
-
 namespace {
 
 // Indicates a message type of the received message.
@@ -160,12 +145,6 @@ bool InstanceIDUsesSubtypeForAppId(const std::string& app_id) {
 }
 
 }  // namespace
-
-void RecordRegistrationRequestToUMA(gcm::RegistrationCacheStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "GCM.RegistrationCacheStatus", status,
-      RegistrationCacheStatus::REGISTRATION_CACHE_STATUS_COUNT);
-}
 
 GCMClientImpl::GCMClientImpl(
     std::unique_ptr<fcm::FcmInternalsBuilder> internals_builder)
@@ -680,8 +659,6 @@ void GCMClientImpl::Register(
           cached_gcm_registration_info->sender_ids) {
         matched = false;
         // Senders IDs don't match existing registration.
-        RecordRegistrationRequestToUMA(
-            RegistrationCacheStatus::REGISTRATION_FOUND_BUT_SENDERS_DONT_MATCH);
       }
     }
 
@@ -693,19 +670,9 @@ void GCMClientImpl::Register(
         // Token is fresh. Use cached registration.
         delegate_->OnRegisterFinished(registration_info,
                                       registrations_iter->second, SUCCESS);
-        RecordRegistrationRequestToUMA(
-            RegistrationCacheStatus::REGISTRATION_FOUND_AND_FRESH);
         return;
-      } else {
-        // Token is stale.
-        RecordRegistrationRequestToUMA(
-            RegistrationCacheStatus::REGISTRATION_FOUND_BUT_STALE);
       }
     }
-  } else {
-    // New Registration request (no existing registration)
-    RecordRegistrationRequestToUMA(
-        RegistrationCacheStatus::REGISTRATION_NOT_FOUND);
   }
 
   std::unique_ptr<RegistrationRequest::CustomRequestHandler> request_handler;

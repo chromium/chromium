@@ -4604,13 +4604,6 @@ shown properly on the user-facing crash UI.
   <int value="12" label="Failure (invalid public key format)"/>
 </enum>
 
-<enum name="GCMRegistrationCacheStatus">
-  <int value="0" label="Registration not found"/>
-  <int value="1" label="Registration found; Token fresh"/>
-  <int value="2" label="Registration found; Token stale"/>
-  <int value="3" label="Registration found but senders don't match"/>
-</enum>
-
 <enum name="GCMRegistrationRequestStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Invalid parameters"/>
