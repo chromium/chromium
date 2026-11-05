@@ -99,7 +99,9 @@ SkBitmap WebImage::FromData(const WebData& data,
 
 SkBitmap WebImage::DecodeSVG(const WebData& data,
                              const gfx::Size& desired_size) {
-  scoped_refptr<SVGImage> svg_image = SVGImage::Create(nullptr);
+  scoped_refptr<SVGImage> svg_image =
+      SVGImage::Create(/*observer=*/nullptr, /*is_multipart=*/false,
+                       /*is_cors_same_origin=*/true);
   const bool data_complete = true;
   Image::SizeAvailability size_available =
       svg_image->SetData(data, data_complete);

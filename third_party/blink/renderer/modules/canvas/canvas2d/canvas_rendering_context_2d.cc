@@ -723,8 +723,12 @@ bool CanvasRenderingContext2D::CanCreateBacking() {
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage() {
   if (IsHibernating()) {
-    return UnacceleratedStaticBitmapImage::Create(
+    auto image = UnacceleratedStaticBitmapImage::Create(
         GetHibernationHandler()->GetImage());
+    if (image) {
+      image->SetOriginClean(OriginClean());
+    }
+    return image;
   }
 
   return PaintRenderingResultsToSnapshot(kBackBuffer);

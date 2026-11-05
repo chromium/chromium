@@ -197,6 +197,9 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
             shared_image_, sync_token_, kPremul_SkAlphaType, hdr_metadata_,
             context_provider_wrapper_, owning_thread_ref_,
             owning_thread_task_runner_, std::move(release_callback));
+    if (image) {
+      image->SetOriginClean(OriginClean());
+    }
     return image;
   } else {
     if (!accelerated_raster_) {
@@ -248,6 +251,9 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
         owning_thread_task_runner_, std::move(release_callback));
 
     DCHECK(image);
+    if (image) {
+      image->SetOriginClean(OriginClean());
+    }
     return image;
   }
 }

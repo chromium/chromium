@@ -87,10 +87,10 @@ int GetRepetitionCountWithPolicyOverride(
 
 }  // namespace
 
-BitmapImage::BitmapImage(ImageObserver* observer, bool is_multipart)
-    : Image(observer, is_multipart),
-      animation_policy_(
-          mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed),
+BitmapImage::BitmapImage(ImageObserver* observer,
+                         bool is_multipart,
+                         bool is_cors_same_origin)
+    : Image(observer, is_multipart, is_cors_same_origin),
       all_data_received_(false),
       have_size_(false),
       preferred_size_is_transposed_(false),

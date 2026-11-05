@@ -345,7 +345,9 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   DarkModeImageCache* GetDarkModeImageCache();
 
  protected:
-  Image(ImageObserver* = nullptr, bool is_multipart = false);
+  Image(ImageObserver* observer, bool is_multipart, bool is_cors_same_origin);
+
+  bool IsCorsSameOrigin() const { return is_cors_same_origin_; }
 
   virtual void DrawPattern(GraphicsContext&,
                            const cc::PaintFlags&,
@@ -374,6 +376,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   WeakPersistent<ImageObserver> image_observer_;
   PaintImage::Id stable_image_id_;
   const bool is_multipart_;
+  const bool is_cors_same_origin_;
   std::unique_ptr<DarkModeImageCache> dark_mode_image_cache_;
 };
 

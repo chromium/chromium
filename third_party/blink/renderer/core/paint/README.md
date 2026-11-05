@@ -594,6 +594,14 @@ information.
         sensitive information (such as cross-origin iframe/image data, visited
         links, spelling markers, or system themes) is exposed during canvas
         drawing or invalidations.
+*   **Cross-origin defense-in-depth**: To guard against cross-origin image pixel
+    leaks even if `PaintFlag::kReadBackAllowedRendering` is bypassed (e.g., due
+    to a stale `Element::IsInCanvasSubtree()` bit), non-CORS-same-origin images,
+    cross-origin SVG images and masks, CSS Paint API images, and tainted
+    canvases mark their painted output with a read-back disallowed bit that
+    propagates through paint operations. `GetCanvasDrawablePaintRecord` omits
+    any read-back disallowed content before returning the recording to canvas
+    drawing APIs.
 *   **Non-drawable subtrees**: In `PaintLayerPainter::Paint`, self-painting
     layers inside a canvas subtree that are not in a `[drawable]` subtree
     (`!Effect().Unalias().IsInDrawableCanvasSubtree()`) skip painting their own

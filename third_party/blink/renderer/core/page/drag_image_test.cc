@@ -85,9 +85,17 @@ class TestImage : public Image {
   }
 
  private:
-  explicit TestImage(sk_sp<SkImage> image) : image_(image) {}
+  explicit TestImage(sk_sp<SkImage> image)
+      : Image(/*observer=*/nullptr,
+              /*is_multipart=*/false,
+              /*is_cors_same_origin=*/true),
+        image_(image) {}
 
-  explicit TestImage(gfx::Size size) : image_(nullptr) {
+  explicit TestImage(gfx::Size size)
+      : Image(/*observer=*/nullptr,
+              /*is_multipart=*/false,
+              /*is_cors_same_origin=*/true),
+        image_(nullptr) {
     sk_sp<SkSurface> surface = CreateSkSurface(size);
     if (!surface)
       return;

@@ -5430,6 +5430,12 @@
       status: "stable",
     },
     {
+      // Defense-in-depth mitigation that strips read-back disallowed (e.g.,
+      // cross-origin) content when drawing elements with html-in-canvas.
+      name: "ReadBackDisallowedMitigation",
+      status: "stable",
+    },
+    {
       // getType() on a ClipboardItem triggers the
       // clipboard read operation, implementing lazy loading for clipboard data.
       // Chrome status entry - https://chromestatus.com/feature/5203433409871872

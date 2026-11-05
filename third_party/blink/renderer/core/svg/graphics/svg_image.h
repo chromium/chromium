@@ -105,8 +105,16 @@ class SVGImageViewInfo final : public GarbageCollected<SVGImageViewInfo> {
 class CORE_EXPORT SVGImage final : public Image {
  public:
   static scoped_refptr<SVGImage> Create(ImageObserver* observer,
-                                        bool is_multipart = false) {
-    return base::AdoptRef(new SVGImage(observer, is_multipart));
+                                        bool is_multipart,
+                                        bool is_cors_same_origin) {
+    return base::AdoptRef(
+        new SVGImage(observer, is_multipart, is_cors_same_origin));
+  }
+
+  static scoped_refptr<SVGImage> CreateForTesting(
+      ImageObserver* observer = nullptr) {
+    return Create(observer, /*is_multipart=*/false,
+                  /*is_cors_same_origin=*/true);
   }
 
   static bool IsInSVGImage(const Node*);
@@ -170,7 +178,7 @@ class CORE_EXPORT SVGImage final : public Image {
   // the the Image interface.
   friend class SVGImageForContainer;
 
-  SVGImage(ImageObserver*, bool is_multipart);
+  SVGImage(ImageObserver*, bool is_multipart, bool is_cors_same_origin);
   ~SVGImage() override;
 
   // Parse and create an SVGImageViewInfo from the provided fragment string.

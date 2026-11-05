@@ -68,18 +68,22 @@
 
 namespace blink {
 
-Image::Image(ImageObserver* observer, bool is_multipart)
+Image::Image(ImageObserver* observer,
+             bool is_multipart,
+             bool is_cors_same_origin)
     : image_observer_disabled_(false),
       image_observer_(observer),
       stable_image_id_(PaintImage::GetNextId()),
-      is_multipart_(is_multipart) {}
+      is_multipart_(is_multipart),
+      is_cors_same_origin_(is_cors_same_origin) {}
 
 Image::~Image() = default;
 
 Image* Image::NullImage() {
   DCHECK(IsMainThread());
   static const base::NoDestructor<scoped_refptr<Image>> null_image(
-      BitmapImage::Create());
+      BitmapImage::Create(/*observer=*/nullptr, /*is_multipart=*/false,
+                          /*is_cors_same_origin=*/true));
   return null_image->get();
 }
 
@@ -110,7 +114,9 @@ scoped_refptr<Image> Image::LoadPlatformResource(
   if (resource.IsEmpty())
     return Image::NullImage();
 
-  scoped_refptr<Image> image = BitmapImage::Create();
+  scoped_refptr<Image> image =
+      BitmapImage::Create(/*observer=*/nullptr, /*is_multipart=*/false,
+                          /*is_cors_same_origin=*/true);
   image->SetData(resource, true);
   return image;
 }
@@ -362,7 +368,9 @@ PaintImageBuilder Image::CreatePaintImageBuilder(
                                         : PaintImage::AnimationType::kStatic;
   auto builder = PaintImageBuilder::WithDefault();
   builder.set_id(paint_id.value_or(stable_image_id_));
-  builder.set_animation_type(animation_type).set_is_multipart(is_multipart_);
+  builder.set_animation_type(animation_type)
+      .set_is_multipart(is_multipart_)
+      .set_is_read_back_disallowed(!IsCorsSameOrigin());
 
   return builder;
 }

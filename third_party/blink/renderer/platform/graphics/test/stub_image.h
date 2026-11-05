@@ -11,7 +11,10 @@ namespace blink {
 
 class StubImage : public Image {
  public:
-  StubImage() = default;
+  StubImage()
+      : Image(/*observer=*/nullptr,
+              /*is_multipart=*/false,
+              /*is_cors_same_origin=*/true) {}
 
   bool IsOpaque() override { return false; }
   gfx::Size SizeWithConfig(SizeConfig) const override {

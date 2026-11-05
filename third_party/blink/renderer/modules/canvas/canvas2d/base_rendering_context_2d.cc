@@ -887,7 +887,12 @@ BaseRenderingContext2D::UnacceleratedSnapshot() {
             .TakePaintImage();
   }
   DCHECK(!paint_image.IsTextureBacked());
-  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image));
+  auto snapshot =
+      UnacceleratedStaticBitmapImage::Create(std::move(paint_image));
+  if (snapshot) {
+    snapshot->SetOriginClean(OriginClean());
+  }
+  return snapshot;
 }
 
 scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
@@ -945,6 +950,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
 
     DCHECK(cached_snapshot_);
     DCHECK(!current_resource_has_write_access_);
+    cached_snapshot_->SetOriginClean(OriginClean());
     return cached_snapshot_;
   }
   if (!IsBackingValid()) {
@@ -1018,11 +1024,13 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
 scoped_refptr<ExportedCanvasResource>
 BaseRenderingContext2D::CreateExportedResource(
     scoped_refptr<CanvasResourceSharedImage> resource) {
-  return base::MakeRefCounted<ExportedCanvasResource>(
+  auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
       resource, resource->GetSharedImage(), resource->sync_token(),
       viz::TransferableResource::ResourceSource::kCanvas,
       color_params_.GetGfxHdrMetadata(), context_provider_wrapper_,
       shared_image_provider_->IsAccelerated());
+  exported_resource->SetOriginClean(OriginClean());
+  return exported_resource;
 }
 
 scoped_refptr<ExportedCanvasResource>
@@ -2484,6 +2492,9 @@ void BaseRenderingContext2D::DrawElementInternal(
                                         "No cached paint record for element.");
     }
     return;
+  }
+  if (RuntimeEnabledFeatures::ReadBackDisallowedMitigationEnabled()) {
+    CHECK(!drawable_paint_record->record.has_read_back_disallowed_content());
   }
 
   float dpr = drawable_paint_record->paint_state.effective_zoom;

@@ -88,8 +88,10 @@ void SVGImageViewInfo::Trace(Visitor* visitor) const {
   visitor->Trace(link_parameters_);
 }
 
-SVGImage::SVGImage(ImageObserver* observer, bool is_multipart)
-    : Image(observer, is_multipart),
+SVGImage::SVGImage(ImageObserver* observer,
+                   bool is_multipart,
+                   bool is_cors_same_origin)
+    : Image(observer, is_multipart, is_cors_same_origin),
       // TODO(chikamune): use an existing AgentGroupScheduler
       // SVG will be shared via MemoryCache (which is renderer process
       // global cache) across multiple AgentSchedulingGroups. That's
@@ -507,7 +509,11 @@ std::optional<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
     UpdateCachedAnimationState();
   }
 
-  return view->GetPaintRecord(cull_rect);
+  PaintRecord record = view->GetPaintRecord(cull_rect);
+  if (!IsCorsSameOrigin()) {
+    record.SetIsReadBackDisallowed();
+  }
+  return record;
 }
 
 static bool DrawNeedsLayer(const cc::PaintFlags& flags) {

@@ -251,15 +251,19 @@ ContentLayerClientImpl::GetCanvasDrawablePaintRecord() const {
   if (!canvas_drawable_paint_state_) {
     return std::nullopt;
   }
+  const bool strip_read_back_disallowed_ops =
+      RuntimeEnabledFeatures::ReadBackDisallowedMitigationEnabled();
   gfx::Vector2dF offset = cc_picture_layer_->offset_to_transform_parent() -
                           canvas_drawable_paint_state_->reference_box_offset;
   cc::PaintRecord record;
   if (offset.IsZero()) {
-    record = cc_display_item_list_->paint_op_buffer().DeepCopyAsRecord();
+    record = cc_display_item_list_->paint_op_buffer().DeepCopyAsRecord(
+        strip_read_back_disallowed_ops);
   } else {
     auto result = sk_make_sp<cc::PaintOpBuffer>();
     result->push<cc::TranslateOp>(offset.x(), offset.y());
-    *result += cc_display_item_list_->paint_op_buffer();
+    result->Append(cc_display_item_list_->paint_op_buffer(),
+                   strip_read_back_disallowed_ops);
     record = result->ReleaseAsRecord();
   }
   return CanvasDrawablePaintRecord{*canvas_drawable_paint_state_,

@@ -183,7 +183,7 @@ class BitmapImageTest : public testing::Test {
 
   void CreateImage() {
     image_observer_ = MakeGarbageCollected<FakeImageObserver>();
-    image_ = BitmapImage::Create(image_observer_.Get());
+    image_ = BitmapImage::CreateForTesting(image_observer_.Get());
   }
 
   void LoadImage(const char* file_name) {
@@ -222,7 +222,7 @@ class BitmapImageTest : public testing::Test {
     if (!image_data)
       return SkBitmap();
 
-    auto image = BitmapImage::Create();
+    auto image = BitmapImage::CreateForTesting();
     image->SetData(image_data, true);
     auto paint_image = image->PaintImageForCurrentFrame();
     CHECK(paint_image);
@@ -437,7 +437,7 @@ TEST_F(BitmapImageTest, isAllDataReceived) {
       SharedBuffer::Create(ReadFile("green.jpg"));
   ASSERT_TRUE(image_data.get());
 
-  scoped_refptr<BitmapImage> image = BitmapImage::Create();
+  scoped_refptr<BitmapImage> image = BitmapImage::CreateForTesting();
   EXPECT_FALSE(image->IsAllDataReceived());
 
   image->SetData(image_data, false);

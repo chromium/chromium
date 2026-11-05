@@ -120,7 +120,10 @@ SVGImageForContainer::SVGImageForContainer(SVGImage& image,
                                            const gfx::SizeF& container_size,
                                            float zoom,
                                            const SVGImageViewInfo* viewinfo)
-    : image_(&image),
+    : Image(/*observer=*/nullptr,
+            /*is_multipart=*/false,
+            image.IsCorsSameOrigin()),
+      image_(&image),
       viewinfo_(viewinfo),
       container_size_(container_size),
       zoom_(zoom) {}

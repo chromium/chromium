@@ -406,10 +406,11 @@ scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
     device_pixel_ratio_header_value_ = 1.0;
     has_device_pixel_ratio_header_value_ = false;
   }
+  const bool is_cors_same_origin = response.IsCorsSameOrigin();
   if (response.MimeType() == "image/svg+xml") {
-    return SVGImage::Create(this, is_multipart);
+    return SVGImage::Create(this, is_multipart, is_cors_same_origin);
   }
-  return BitmapImage::Create(this, is_multipart);
+  return BitmapImage::Create(this, is_multipart, is_cors_same_origin);
 }
 
 void ImageResourceContent::ClearImage() {

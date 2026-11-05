@@ -29,7 +29,14 @@ class PLATFORM_EXPORT PaintGeneratedImage : public GeneratedImage {
                 const ImageDrawOptions&) final;
 
   PaintGeneratedImage(PaintRecord record, const gfx::SizeF& size)
-      : GeneratedImage(size), record_(std::move(record)) {}
+      : GeneratedImage(size), record_(std::move(record)) {
+    // Used by main-thread CSS Paint API (`PaintWorklet::Paint`). Matching
+    // `CSSPaintValue::IsCorsSameOrigin()` (https://crbug.com/513107673), this
+    // conservatively disallows read-back for all CSS Paint API output even
+    // though read-back only strictly needs to be blocked when `record_`
+    // painted cross-origin content.
+    record_.SetIsReadBackDisallowed();
+  }
 
   PaintRecord record_;
 };

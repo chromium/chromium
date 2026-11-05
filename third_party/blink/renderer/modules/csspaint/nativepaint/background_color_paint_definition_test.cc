@@ -60,7 +60,7 @@ class FakeBackgroundColorPaintImageGenerator
     if (!npw_data || !npw_data->GetAnimationCurve()) {
       return nullptr;
     }
-    return BitmapImage::Create();
+    return BitmapImage::CreateForTesting();
   }
 
   Animation* GetAnimationIfCompositable(const Element* element) override {

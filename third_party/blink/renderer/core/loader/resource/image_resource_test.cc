@@ -148,7 +148,7 @@ class ImageResourceTest : public testing::Test,
 // just the first kJpegImageSubrangeWithDimensionsLength bytes. If this test
 // fails, then the test data here probably needs to be updated.
 TEST_F(ImageResourceTest, DimensionsDecodableFromPartialTestImage) {
-  scoped_refptr<Image> image = BitmapImage::Create();
+  scoped_refptr<Image> image = BitmapImage::CreateForTesting();
   EXPECT_EQ(
       Image::kSizeAvailable,
       image->SetData(SharedBuffer::Create(

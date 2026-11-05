@@ -74,7 +74,11 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
   // FIXME: Implement this to be less conservative.
   bool IsOpaque() override { return false; }
 
-  GeneratedImage(const gfx::SizeF& size) : size_(size) {}
+  explicit GeneratedImage(const gfx::SizeF& size)
+      : Image(/*observer=*/nullptr,
+              /*is_multipart=*/false,
+              /*is_cors_same_origin=*/true),
+        size_(size) {}
 
   // Implementation hook for `CreateShader()`. Is passed a source rectangle
   // (see `CreateShader()` above) that should be painted onto the provided

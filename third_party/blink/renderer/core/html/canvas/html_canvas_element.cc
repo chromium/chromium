@@ -1298,6 +1298,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
     if (!image_for_printing)
       return;
+    image_for_printing->SetOriginClean(OriginClean());
     context.DrawImage(*image_for_printing, Image::kSyncDecode,
                       ImageAutoDarkMode::Disabled(), ReportPaintTiming::kReport,
                       gfx::RectF(ToPixelSnappedRect(r)));
@@ -1336,11 +1337,15 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
         RenderingContext()->GetLastRecording();
     if (last_recording.has_value() &&
         filter_quality_ != cc::PaintFlags::FilterQuality::kNone) {
+      cc::PaintRecord record = *last_recording;
+      if (!OriginClean()) {
+        record.SetIsReadBackDisallowed();
+      }
       context.Canvas()->save();
       context.Canvas()->translate(r.X(), r.Y());
       context.Canvas()->scale(r.Width() / Size().width(),
                               r.Height() / Size().height());
-      context.Canvas()->drawPicture(*last_recording);
+      context.Canvas()->drawPicture(std::move(record));
       context.Canvas()->restore();
       UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
       return;
@@ -1361,6 +1366,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
 
     // GraphicsContext cannot handle gpu resource serialization.
     snapshot = snapshot->MakeUnaccelerated();
+    snapshot->SetOriginClean(OriginClean());
     DCHECK(!snapshot->IsTextureBacked());
     context.DrawImage(*snapshot, Image::kSyncDecode,
                       ImageAutoDarkMode::Disabled(), ReportPaintTiming::kReport,

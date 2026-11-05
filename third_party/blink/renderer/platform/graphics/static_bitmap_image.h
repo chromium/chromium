@@ -36,7 +36,11 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
       const gfx::HDRMetadata&,
       ImageOrientation = ImageOrientationEnum::kDefault);
 
-  StaticBitmapImage(ImageOrientation orientation) : orientation_(orientation) {}
+  explicit StaticBitmapImage(ImageOrientation orientation)
+      : Image(/*observer=*/nullptr,
+              /*is_multipart=*/false,
+              /*is_cors_same_origin=*/true),
+        orientation_(orientation) {}
 
   bool IsStaticBitmapImage() const override { return true; }
 

@@ -122,17 +122,21 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
     SkScalar mask_buffer_size =
         mask_bounds_rounded.width() * mask_bounds_rounded.height();
     if (mask_buffer_size < kMaxMaskBufferSize && mask_buffer_size > 0.0f) {
+      const bool is_read_back_disallowed =
+          mask_record.has_read_back_disallowed_content();
       bitmap.allocPixels(SkImageInfo::MakeN32Premul(
           mask_bounds_rounded.width(), mask_bounds_rounded.height()));
       SkiaPaintCanvas canvas(bitmap);
       canvas.clear(SkColors::kTransparent);
       canvas.translate(-mask_record_bounds.x(), -mask_record_bounds.y());
       canvas.drawPicture(std::move(mask_record));
-      PaintImage image = PaintImageBuilder::WithDefault()
-                             .set_id(PaintImage::GetNextId())
-                             .set_image(SkImages::RasterFromBitmap(bitmap),
-                                        PaintImage::GetNextContentId())
-                             .TakePaintImage();
+      PaintImage image =
+          PaintImageBuilder::WithDefault()
+              .set_id(PaintImage::GetNextId())
+              .set_image(SkImages::RasterFromBitmap(bitmap),
+                         PaintImage::GetNextContentId())
+              .set_is_read_back_disallowed(is_read_back_disallowed)
+              .TakePaintImage();
 
       // SkXfermodeImageFilter can choose an excessively large size if the
       // mask is smaller than the filtered contents (due to overflow).

@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -293,6 +294,9 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
                                         "No cached paint record for element.");
     }
     return nullptr;
+  }
+  if (RuntimeEnabledFeatures::ReadBackDisallowedMitigationEnabled()) {
+    CHECK(!drawable_paint_record->record.has_read_back_disallowed_content());
   }
 
   // Element size in physical coordinates.

@@ -292,6 +292,9 @@ void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
       MaskToContentTransform(*masker, reference_box, zoom);
   SubtreeContentTransformScope content_transform_scope(content_transformation);
   PaintRecord record = masker->CreatePaintRecord(paint_flags);
+  if (!mask_source.IsCorsSameOrigin()) {
+    record.SetIsReadBackDisallowed();
+  }
 
   context.Clip(masker->ResourceBoundingBox(reference_box, zoom));
 

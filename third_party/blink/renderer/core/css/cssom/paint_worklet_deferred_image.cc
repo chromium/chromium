@@ -24,9 +24,15 @@ PaintWorkletDeferredImage::PaintWorkletDeferredImage(
     scoped_refptr<PaintWorkletInput> input,
     const gfx::SizeF& size)
     : GeneratedImage(size) {
+  // We should never have a `PaintWorkletDeferredImage` in html-in-canvas
+  // (compositing is disabled for native paint animations, CSS Paint API images
+  // are suppressed by `kReadBackAllowedRendering`, and `CanvasImageProvider`
+  // cannot rasterize `DeferredPaintRecord`s). Pessimistically mark these images
+  // as read-back disallowed.
   image_ = PaintImageBuilder::WithDefault()
                .set_deferred_paint_record(std::move(input))
                .set_id(paint_image_id())
+               .set_is_read_back_disallowed(true)
                .TakePaintImage();
 }
 

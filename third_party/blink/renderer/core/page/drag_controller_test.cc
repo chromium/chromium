@@ -135,7 +135,7 @@ class DragControllerTest : public RenderingTest {
     EXPECT_TRUE(image_file);
     scoped_refptr<SharedBuffer> image_data =
         SharedBuffer::Create(std::move(*image_file));
-    scoped_refptr<BitmapImage> bitmap_image = BitmapImage::Create();
+    scoped_refptr<BitmapImage> bitmap_image = BitmapImage::CreateForTesting();
     bitmap_image->SetData(image_data, true);
     EXPECT_GT(bitmap_image->Size().Area64(), int64_t{1500} * 1500);
 

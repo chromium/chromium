@@ -2505,7 +2505,9 @@ CanvasPattern* Canvas2DRecorderContext::createPattern(
           "Source image is in the 'broken' state.");
       return nullptr;
     case kInvalidSourceImageStatus:
-      image_for_rendering = BitmapImage::Create();
+      image_for_rendering =
+          BitmapImage::Create(/*observer=*/nullptr, /*is_multipart=*/false,
+                              !WouldTaintCanvasOrigin(image_source));
       break;
     case kIncompleteSourceImageStatus:
       return nullptr;

@@ -103,6 +103,9 @@ UnacceleratedStaticBitmapImage::UnacceleratedStaticBitmapImage(
     ImageOrientation orientation)
     : StaticBitmapImage(orientation), paint_image_(std::move(image)) {
   DCHECK(paint_image_);
+  if (paint_image_.is_read_back_disallowed()) {
+    SetOriginClean(false);
+  }
 }
 
 UnacceleratedStaticBitmapImage::~UnacceleratedStaticBitmapImage() {
@@ -136,6 +139,12 @@ void UnacceleratedStaticBitmapImage::Draw(
 }
 
 PaintImage UnacceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
+  if (paint_image_ && !OriginClean() &&
+      !paint_image_.is_read_back_disallowed()) {
+    return PaintImageBuilder::WithCopy(paint_image_)
+        .set_is_read_back_disallowed(true)
+        .TakePaintImage();
+  }
   return paint_image_;
 }
 

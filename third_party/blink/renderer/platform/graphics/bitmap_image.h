@@ -56,9 +56,17 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   friend class GraphicsContext;
 
  public:
-  static scoped_refptr<BitmapImage> Create(ImageObserver* observer = nullptr,
-                                           bool is_multipart = false) {
-    return base::AdoptRef(new BitmapImage(observer, is_multipart));
+  static scoped_refptr<BitmapImage> Create(ImageObserver* observer,
+                                           bool is_multipart,
+                                           bool is_cors_same_origin) {
+    return base::AdoptRef(
+        new BitmapImage(observer, is_multipart, is_cors_same_origin));
+  }
+
+  static scoped_refptr<BitmapImage> CreateForTesting(
+      ImageObserver* observer = nullptr) {
+    return Create(observer, /*is_multipart=*/false,
+                  /*is_cors_same_origin=*/true);
   }
 
   ~BitmapImage() override;
@@ -131,7 +139,9 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
     kCertain     // The repetition count is known to be correct.
   };
 
-  BitmapImage(ImageObserver* = nullptr, bool is_multi_part = false);
+  BitmapImage(ImageObserver* observer,
+              bool is_multi_part,
+              bool is_cors_same_origin);
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,

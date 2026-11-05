@@ -126,7 +126,9 @@ ImageResource* CreateResourceForTransparentPlaceholderImage(
       GetDataForTransparentPlaceholderImageIndex(index);
   CHECK(data->size());
 
-  scoped_refptr<Image> image = BitmapImage::Create();
+  scoped_refptr<Image> image =
+      BitmapImage::Create(/*observer=*/nullptr, /*is_multipart=*/false,
+                          /*is_cors_same_origin=*/true);
   image->SetData(data, true);
   auto* image_content = ImageResourceContent::CreateLoaded(image);
   auto* resource =

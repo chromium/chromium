@@ -3032,7 +3032,7 @@ class ScopedBackgroundColorPaintImageGenerator {
                                const Node* node) override {
       LayoutObject* layout_object = node->GetLayoutObject();
       layout_object->GetMutableForPainting().FirstFragment().EnsureId();
-      return BitmapImage::Create();
+      return BitmapImage::CreateForTesting();
     }
 
     Animation* GetAnimationIfCompositable(const Element* element) override {
@@ -3073,7 +3073,7 @@ class ScopedClipPathPaintImageGenerator {
                                const Node& node) override {
       LayoutObject* layout_object = node.GetLayoutObject();
       layout_object->GetMutableForPainting().FirstFragment().EnsureId();
-      return BitmapImage::Create();
+      return BitmapImage::CreateForTesting();
     }
 
     Animation* GetAnimationIfCompositable(const Element* element) override {

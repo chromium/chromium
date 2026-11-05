@@ -70,6 +70,11 @@ void FindCustomDataPlaceholders(
       FindCustomDataPlaceholders(
           static_cast<const cc::DrawRecordOp&>(op).record.buffer(), callback,
           replacements);
+    } else if (op.GetType() == cc::PaintOpType::kDrawScrollingContents) {
+      FindCustomDataPlaceholders(
+          static_cast<const cc::DrawScrollingContentsOp&>(op)
+              .display_item_list->paint_op_buffer(),
+          callback, replacements);
     }
   }
 }
@@ -144,14 +149,19 @@ PaintArtifactCompositor::GetCanvasDrawablePaintRecord(
   if (!drawable_record) {
     return std::nullopt;
   }
+  const bool strip_read_back_disallowed_ops =
+      RuntimeEnabledFeatures::ReadBackDisallowedMitigationEnabled();
   if (get_canvas_snapshot_callback_) {
     base::flat_map<uint32_t, cc::PaintRecord> replacements;
     FindCustomDataPlaceholders(drawable_record->record.buffer(),
                                get_canvas_snapshot_callback_, replacements);
     if (!replacements.empty()) {
-      drawable_record->record =
-          drawable_record->record.ReplaceCustomData(replacements);
+      drawable_record->record = drawable_record->record.ReplaceCustomData(
+          replacements, strip_read_back_disallowed_ops);
     }
+  }
+  if (strip_read_back_disallowed_ops) {
+    CHECK(!drawable_record->record.has_read_back_disallowed_content());
   }
   return drawable_record;
 }

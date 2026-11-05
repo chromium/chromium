@@ -78,7 +78,7 @@ class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
 
   void Load(base::span<const char> data, bool should_pause) {
     observer_ = MakeGarbageCollected<PauseControlImageObserver>(should_pause);
-    image_ = SVGImage::Create(observer_);
+    image_ = SVGImage::CreateForTesting(observer_);
     image_->SetData(SharedBuffer::Create(data), true);
     test::RunPendingTasks();
   }
@@ -91,7 +91,7 @@ class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
         SharedBuffer::Create(std::move(*data));
 
     observer_ = MakeGarbageCollected<PauseControlImageObserver>(true);
-    image_ = SVGImage::Create(observer_);
+    image_ = SVGImage::CreateForTesting(observer_);
     image_->SetData(image_data, true);
     test::RunPendingTasks();
   }

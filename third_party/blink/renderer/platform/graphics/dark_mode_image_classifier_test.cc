@@ -53,7 +53,7 @@ class DarkModeImageClassifierTest : public testing::Test {
     scoped_refptr<SharedBuffer> image_data =
         SharedBuffer::Create(std::move(*data));
 
-    scoped_refptr<BitmapImage> image = BitmapImage::Create();
+    scoped_refptr<BitmapImage> image = BitmapImage::CreateForTesting();
     image->SetData(image_data, true);
     return image;
   }

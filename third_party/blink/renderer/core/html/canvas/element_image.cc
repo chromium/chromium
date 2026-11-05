@@ -7,10 +7,17 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
 namespace blink {
 
 ElementImage::ElementImage(std::unique_ptr<CanvasDrawablePaintRecord> record)
-    : record_(std::move(record)) {}
+    : record_(std::move(record)) {
+  if (RuntimeEnabledFeatures::ReadBackDisallowedMitigationEnabled()) {
+    CHECK(!record_ || !record_->record.has_read_back_disallowed_content());
+  }
+}
 
 void ElementImage::close() {
   record_.reset();

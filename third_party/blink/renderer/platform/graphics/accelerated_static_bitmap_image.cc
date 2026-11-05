@@ -294,8 +294,12 @@ AcceleratedStaticBitmapImage::~AcceleratedStaticBitmapImage() {
 scoped_refptr<StaticBitmapImage>
 AcceleratedStaticBitmapImage::MakeUnaccelerated() {
   CreateImageFromMailboxIfNeeded();
-  return UnacceleratedStaticBitmapImage::Create(
+  auto result = UnacceleratedStaticBitmapImage::Create(
       PaintImageForCurrentFrame().GetSwSkImage(), orientation_, hdr_metadata_);
+  if (result) {
+    result->SetOriginClean(OriginClean());
+  }
+  return result;
 }
 
 bool AcceleratedStaticBitmapImage::CopyToTexture(
@@ -361,6 +365,7 @@ PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
       .set_texture_backing(texture_backing_, paint_image_content_id_)
       .set_completion_state(PaintImage::CompletionState::kDone)
       .set_hdr_metadata(hdr_metadata_)
+      .set_is_read_back_disallowed(!OriginClean())
       .TakePaintImage();
 }
 
