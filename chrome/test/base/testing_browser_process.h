@@ -227,6 +227,9 @@ class TestingBrowserProcess
   void SetProfileManager(std::unique_ptr<ProfileManager> profile_manager);
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
   void SetVariationsService(variations::VariationsService* variations_service);
+  // `startup_data` is not owned and must be reset with nullptr before it is
+  // destroyed.
+  void SetStartupData(StartupData* startup_data);
   void SetWebRtcLogUploader(std::unique_ptr<WebRtcLogUploader> uploader);
   void SetRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
@@ -298,6 +301,7 @@ class TestingBrowserProcess
       test_network_quality_tracker_;
   raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
   raw_ptr<variations::VariationsService> variations_service_ = nullptr;
+  raw_ptr<StartupData> startup_data_ = nullptr;
 
   // The `ProfileManager` is here as part of the `BrowserProcess` API. It is
   // typically created during initialization of the `TestingProfileManager`, but

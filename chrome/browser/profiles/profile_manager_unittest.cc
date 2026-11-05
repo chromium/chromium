@@ -47,6 +47,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -71,7 +72,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/startup_data.h"
+#else
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #else
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -1455,6 +1458,95 @@ TEST_F(ProfileManagerTest, GetLastUsedProfileAllowedByPolicy) {
   EXPECT_TRUE(
       profile_manager->GetLastUsedProfileAllowedByPolicy()->IsOffTheRecord());
 }
+
+TEST_F(ProfileManagerTest, SetProfileAsLastUsedRecordsProfileWhenUnset) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile = profile_manager->GetProfile(
+      temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile));
+  ASSERT_TRUE(profile);
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_FALSE(local_state->HasPrefPath(prefs::kProfileLastUsed));
+
+  profile_manager->SetProfileAsLastUsed(profile);
+
+  EXPECT_EQ(chrome::kInitialProfile,
+            local_state->GetString(prefs::kProfileLastUsed));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ProfileManagerTest, SetProfileAsLastUsedOverwritesStaleLastUsedProfile) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidMultiprofileStartupData);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile = profile_manager->GetProfile(
+      temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile));
+  ASSERT_TRUE(profile);
+  PrefService* local_state = g_browser_process->local_state();
+  // A last used profile that no longer exists, e.g. because it was deleted.
+  // GetLastUsedProfileBaseName() already falls back to the initial profile.
+  local_state->SetString(prefs::kProfileLastUsed, "Profile 2");
+
+  profile_manager->SetProfileAsLastUsed(profile);
+
+  EXPECT_EQ(chrome::kInitialProfile,
+            local_state->GetString(prefs::kProfileLastUsed));
+}
+
+class ProfileManagerAndroidStartupDataTest : public ProfileManagerTest {
+ protected:
+  void SetUp() override {
+    ProfileManagerTest::SetUp();
+    TestingBrowserProcess::GetGlobal()->SetStartupData(&startup_data_);
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->SetStartupData(nullptr);
+    ProfileManagerTest::TearDown();
+  }
+
+  void TestCreateInitialProfileImpl(bool startup_data_enabled);
+
+  StartupData startup_data_;
+};
+
+TEST_F(ProfileManagerAndroidStartupDataTest,
+       CreateInitialProfileOpensStartupDataProfile) {
+  TestCreateInitialProfileImpl(/*startup_data_enabled=*/true);
+}
+
+TEST_F(ProfileManagerAndroidStartupDataTest,
+       CreateInitialProfileIgnoresStartupDataProfileWhenDisabled) {
+  TestCreateInitialProfileImpl(/*startup_data_enabled=*/false);
+}
+
+TEST_F(ProfileManagerAndroidStartupDataTest,
+       InitialProfileDirIsDefaultBeforeStartupDataPicksProfile) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidMultiprofileStartupData);
+
+  EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
+            ProfileManager::GetInitialProfileDir());
+}
+
+void ProfileManagerAndroidStartupDataTest::TestCreateInitialProfileImpl(
+    bool startup_data_enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kAndroidMultiprofileStartupData,
+                                    startup_data_enabled);
+  base::FilePath startup_profile_path =
+      temp_dir_.GetPath().AppendASCII("Profile 1");
+  startup_data_.SetProfilePathForTesting(startup_profile_path);
+
+  Profile* profile = ProfileManager::CreateInitialProfile();
+
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(startup_data_enabled
+                ? startup_profile_path
+                : temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile),
+            profile->GetPath());
+  EXPECT_EQ(profile, ProfileManager::GetActiveUserProfile());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // There's no Browser object on Android and there's no multi-profiles on Chrome.
