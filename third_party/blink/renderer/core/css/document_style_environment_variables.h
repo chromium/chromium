@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -15,6 +17,7 @@ namespace blink {
 
 class Document;
 class FeatureContext;
+class LinkParameterList;
 
 // DocumentStyleEnvironmentVariables is bound 1:1 to a document and provides
 // document level invalidation logic.
@@ -26,10 +29,7 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
   DocumentStyleEnvironmentVariables(StyleEnvironmentVariables& parent,
                                     Document& document);
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(document_);
-    StyleEnvironmentVariables::Trace(visitor);
-  }
+  void Trace(Visitor*) const override;
 
   // Resolve the variable |name| and return the data. This will also cause
   // future changes to this variable to invalidate the associated document's
@@ -47,6 +47,10 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
   CSSVariableData* ResolveVariable(const AtomicString& name,
                                    Vector<unsigned> indices) override;
 
+  // Applies the supplied list, replacing any previously applied parameters.
+  // A null or empty list clears all link parameters.
+  void ApplyLinkParameters(const LinkParameterList* link_parameter_list);
+
   const FeatureContext* GetFeatureContext() const override;
 
  protected:
@@ -58,6 +62,8 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
   // Record variable usage using |UseCounter|.
   void RecordVariableUsage(const AtomicString& name);
 
+  HeapHashMap<AtomicString, Member<CSSVariableData>> link_parameter_map_;
+  WeakMember<const LinkParameterList> link_parameter_list_;
   HashSet<AtomicString> seen_variables_;
   Member<Document> document_;
 };

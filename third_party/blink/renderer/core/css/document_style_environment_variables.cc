@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -11,10 +12,18 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/style/link_parameter_list.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
+
+void DocumentStyleEnvironmentVariables::Trace(Visitor* visitor) const {
+  visitor->Trace(link_parameter_map_);
+  visitor->Trace(link_parameter_list_);
+  visitor->Trace(document_);
+  StyleEnvironmentVariables::Trace(visitor);
+}
 
 CSSVariableData* DocumentStyleEnvironmentVariables::ResolveVariable(
     const AtomicString& name,
@@ -38,6 +47,53 @@ CSSVariableData* DocumentStyleEnvironmentVariables::ResolveVariable(
     const AtomicString& name,
     Vector<unsigned> indices) {
   return ResolveVariable(name, std::move(indices), true /* record_metrics */);
+}
+
+void DocumentStyleEnvironmentVariables::ApplyLinkParameters(
+    const LinkParameterList* link_parameter_list) {
+  using LinkParameterMap = HeapHashMap<AtomicString, Member<CSSVariableData>>;
+
+  // A null list is a no-op only when no link parameters are currently applied.
+  if (!link_parameter_list && link_parameter_map_.empty()) {
+    return;
+  }
+  // LinkParameterList contents are immutable, so reapplying the same live list
+  // is a no-op.
+  if (link_parameter_list && link_parameter_list == link_parameter_list_) {
+    return;
+  }
+
+  LinkParameterMap new_link_parameter_map;
+  if (link_parameter_list) {
+    // Later entries override earlier entries with the same name.
+    for (const LinkParameterList::Parameter& parameter :
+         link_parameter_list->Parameters()) {
+      new_link_parameter_map.Set(parameter.Name(), parameter.Value());
+    }
+  }
+
+  // Remove missing parameters and update changed values.
+  for (const LinkParameterMap::ValueType& link_parameter_entry :
+       link_parameter_map_) {
+    LinkParameterMap::iterator new_link_parameter_it =
+        new_link_parameter_map.find(link_parameter_entry.key);
+    if (new_link_parameter_it == new_link_parameter_map.end()) {
+      RemoveVariable(link_parameter_entry.key);
+    } else if (!base::ValuesEquivalent(link_parameter_entry.value,
+                                       new_link_parameter_it->value)) {
+      SetVariable(link_parameter_entry.key, new_link_parameter_it->value);
+    }
+  }
+  // Add parameters that were not previously applied.
+  for (const LinkParameterMap::ValueType& new_link_parameter_entry :
+       new_link_parameter_map) {
+    if (!link_parameter_map_.Contains(new_link_parameter_entry.key)) {
+      SetVariable(new_link_parameter_entry.key, new_link_parameter_entry.value);
+    }
+  }
+
+  link_parameter_map_ = std::move(new_link_parameter_map);
+  link_parameter_list_ = link_parameter_list;
 }
 
 void DocumentStyleEnvironmentVariables::InvalidateVariable(

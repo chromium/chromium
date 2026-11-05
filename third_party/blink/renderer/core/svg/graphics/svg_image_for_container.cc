@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
+#include "third_party/blink/renderer/core/style/link_parameter_list.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -45,6 +46,26 @@ const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(SVGImage& image,
 
 const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(
     SVGImage& image,
+    const KURL& url,
+    const LinkParameterList* link_parameter_list) {
+  const SVGImageViewInfo* view_info = CreateViewInfo(image, url);
+  if (!link_parameter_list || link_parameter_list->IsEmpty()) {
+    return view_info;
+  }
+  // CreateViewInfo() returns nullptr when the SVG has no root. We don't need
+  // to create parameter-only view info for that unusable image.
+  if (!image.RootElement()) {
+    return nullptr;
+  }
+
+  const SVGViewSpec* view_spec = view_info ? view_info->ViewSpec() : nullptr;
+  Element* target = view_info ? view_info->Target() : nullptr;
+  return MakeGarbageCollected<SVGImageViewInfo>(view_spec, target,
+                                                link_parameter_list);
+}
+
+const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(
+    SVGImage& image,
     const Element& element) {
   KURL url = element.GetDocument().CompleteURL(element.ImageSourceURL());
   return CreateViewInfo(image, url);
@@ -56,6 +77,17 @@ const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(SVGImage& image,
     return CreateViewInfo(image, *element);
   }
   return nullptr;
+}
+
+const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(
+    SVGImage& image,
+    const Node* node,
+    const LinkParameterList* link_parameter_list) {
+  KURL url;
+  if (auto* element = DynamicTo<Element>(node)) {
+    url = element->GetDocument().CompleteURL(element->ImageSourceURL());
+  }
+  return CreateViewInfo(image, url, link_parameter_list);
 }
 
 std::optional<NaturalSizingInfo> SVGImageForContainer::GetNaturalDimensions(

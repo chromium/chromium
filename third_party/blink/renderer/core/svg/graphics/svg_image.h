@@ -34,6 +34,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/link_parameter_list.h"
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -67,16 +68,27 @@ struct NaturalSizingInfo;
 class SVGImageViewInfo final : public GarbageCollected<SVGImageViewInfo> {
  public:
   SVGImageViewInfo(const SVGViewSpec* view_spec, Element* target)
-      : view_spec_(view_spec), target_(target) {}
+      : SVGImageViewInfo(view_spec, target, nullptr) {}
+  SVGImageViewInfo(const SVGViewSpec* view_spec,
+                   Element* target,
+                   const LinkParameterList* link_parameters)
+      : view_spec_(view_spec),
+        target_(target),
+        link_parameters_(link_parameters) {}
 
   const SVGViewSpec* ViewSpec() const { return view_spec_; }
   Element* Target() const { return target_; }
+
+  const LinkParameterList* GetLinkParameters() const {
+    return link_parameters_.Get();
+  }
 
   void Trace(Visitor*) const;
 
  private:
   Member<const SVGViewSpec> view_spec_;
   Member<Element> target_;
+  Member<const LinkParameterList> link_parameters_;
 };
 
 // SVGImage does not use Skia to draw images (as BitmapImage does) but instead
@@ -165,7 +177,7 @@ class CORE_EXPORT SVGImage final : public Image {
   // Returns nullptr if no valid view specifier is found.
   const SVGImageViewInfo* CreateViewInfo(const String& fragment) const;
 
-  // Apply a view specifier.
+  // Apply a view specifier and link parameters.
   void ApplyViewInfo(const SVGImageViewInfo*);
 
   // Get the intrinsic dimensions (width, height and aspect ratio) from this

@@ -31,6 +31,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -83,6 +85,7 @@ bool HasSmilAnimations(const Document& document) {
 void SVGImageViewInfo::Trace(Visitor* visitor) const {
   visitor->Trace(view_spec_);
   visitor->Trace(target_);
+  visitor->Trace(link_parameters_);
 }
 
 SVGImage::SVGImage(ImageObserver* observer, bool is_multipart)
@@ -233,6 +236,15 @@ void SVGImage::ApplyViewInfo(const SVGImageViewInfo* viewinfo) {
   root_element->GetDocument().SetCSSTarget(target);
   const SVGViewSpec* viewspec = viewinfo ? viewinfo->ViewSpec() : nullptr;
   root_element->SetViewSpec(viewspec);
+
+  if (RuntimeEnabledFeatures::CSSLinkParametersPropertyEnabled()) {
+    DocumentStyleEnvironmentVariables& env_vars =
+        root_element->GetDocument()
+            .GetStyleEngine()
+            .EnsureEnvironmentVariables();
+    env_vars.ApplyLinkParameters(viewinfo ? viewinfo->GetLinkParameters()
+                                          : nullptr);
+  }
 }
 
 std::optional<NaturalSizingInfo> SVGImage::GetNaturalDimensions(

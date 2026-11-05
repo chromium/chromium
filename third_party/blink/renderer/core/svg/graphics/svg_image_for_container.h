@@ -38,6 +38,7 @@ namespace blink {
 
 class Element;
 class KURL;
+class LinkParameterList;
 class Node;
 
 // SVGImageForContainer contains a reference to an SVGImage and includes context
@@ -94,6 +95,10 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
   // Create view info for an SVGImage with a URL. The same as calling the above
   // with the URL's fragment identifier.
   static const SVGImageViewInfo* CreateViewInfo(SVGImage&, const KURL&);
+  // Same as above, but also includes link parameters in the view info.
+  static const SVGImageViewInfo* CreateViewInfo(SVGImage&,
+                                                const KURL&,
+                                                const LinkParameterList*);
 
   // Create view info for an SVGImage with an Element as the context. Will use
   // `Element::ImageSourceURL()` resolved against the Element's Document.
@@ -102,6 +107,11 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
   // Create view info for an SVGImage with a Node as the context. Essentially a
   // convenience wrapper for `MakeWithElement()`.
   static const SVGImageViewInfo* CreateViewInfo(SVGImage&, const Node*);
+  // Same as above, but also includes link parameters in the view info.
+  static const SVGImageViewInfo* CreateViewInfo(
+      SVGImage&,
+      const Node*,
+      const LinkParameterList* link_parameter_list);
 
   // Get the natural dimensions for the SVGImage with the view info
   // applied. Returns false if the SVGImage lacks a document element, otherwise

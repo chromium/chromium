@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace blink {
@@ -227,8 +228,13 @@ scoped_refptr<Image> LayoutImageResource::GetImage(
   auto preferred_color_scheme = layout_object_->GetDocument()
                                     .GetStyleEngine()
                                     .ResolveColorSchemeForEmbedding(&style);
+  const LinkParameterList* link_parameter_list =
+      RuntimeEnabledFeatures::CSSLinkParametersPropertyEnabled()
+          ? style.LinkParameters()
+          : nullptr;
   const SVGImageViewInfo* view_info = SVGImageForContainer::CreateViewInfo(
-      *svg_image, layout_object_->GetNode());
+      *svg_image, layout_object_->GetNode(), link_parameter_list);
+
   return SVGImageForContainer::Create(*svg_image, container_size,
                                       style.EffectiveZoom(), view_info,
                                       preferred_color_scheme);

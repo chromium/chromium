@@ -155,6 +155,7 @@ class CORE_EXPORT StyleEnvironmentVariables
 
   // Tokenize |value| and set it, invalidating dependents along the way.
   void SetVariable(const AtomicString& name, const String& value);
+  void SetVariable(const AtomicString& name, CSSVariableData* value);
   void SetVariable(const AtomicString& name,
                    unsigned first_dimension,
                    unsigned second_dimension,

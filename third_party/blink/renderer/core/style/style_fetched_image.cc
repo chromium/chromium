@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -237,8 +238,13 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
   if (!svg_image) {
     return image;
   }
-  const SVGImageViewInfo* view_info =
-      SVGImageForContainer::CreateViewInfo(*svg_image, url_);
+  const LinkParameterList* link_parameter_list =
+      RuntimeEnabledFeatures::CSSLinkParametersPropertyEnabled()
+          ? style.LinkParameters()
+          : nullptr;
+  const SVGImageViewInfo* view_info = SVGImageForContainer::CreateViewInfo(
+      *svg_image, url_, link_parameter_list);
+
   return SVGImageForContainer::Create(
       *svg_image, target_size, style.EffectiveZoom(), view_info,
       node.GetDocument().GetStyleEngine().ResolveColorSchemeForEmbedding(
