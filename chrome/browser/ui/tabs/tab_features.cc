@@ -786,8 +786,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab, *page_action_controller_);
     omnibox_autofill_bubble_controller_ =
         GetUserDataFactory()
-            .CreateInstance<autofill::OmniboxAutofillBubbleController>(
-                tab, tab, tab.GetContents());
+            .CreateInstance<autofill::OmniboxAutofillBubbleController>(tab,
+                                                                       &tab);
   }
 
   if (page_action_controller_->ActionExists(
@@ -1736,8 +1736,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     omnibox_autofill_bubble_controller_.reset();
     omnibox_autofill_bubble_controller_ =
         GetUserDataFactory()
-            .CreateInstance<autofill::OmniboxAutofillBubbleController>(
-                *tab, *tab, new_contents);
+            .CreateInstance<autofill::OmniboxAutofillBubbleController>(*tab,
+                                                                       tab);
   }
 
   if (payments_churned_users_bubble_controller_) {

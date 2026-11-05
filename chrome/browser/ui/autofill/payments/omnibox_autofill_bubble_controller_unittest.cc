@@ -55,11 +55,13 @@ class OmniboxAutofillBubbleControllerTest
 
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
         .WillByDefault(testing::Return(nullptr));
+    ON_CALL(mock_tab_interface_, GetContents())
+        .WillByDefault(testing::Return(web_contents()));
     ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(tab_unowned_user_data_host_));
 
-    controller_ = std::make_unique<OmniboxAutofillBubbleController>(
-        mock_tab_interface_, web_contents());
+    controller_ =
+        std::make_unique<OmniboxAutofillBubbleController>(&mock_tab_interface_);
   }
 
   void TearDown() override {

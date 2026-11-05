@@ -17,10 +17,6 @@ namespace actions {
 class ActionItem;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace tabs {
 class TabInterface;
 }
@@ -38,8 +34,7 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
  public:
   DECLARE_USER_DATA(OmniboxAutofillBubbleController);
 
-  explicit OmniboxAutofillBubbleController(tabs::TabInterface& tab_interface,
-                                           content::WebContents* web_contents);
+  explicit OmniboxAutofillBubbleController(tabs::TabInterface* tab_interface);
   OmniboxAutofillBubbleController(const OmniboxAutofillBubbleController&) =
       delete;
   OmniboxAutofillBubbleController& operator=(
@@ -86,8 +81,6 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
 
  private:
   actions::ActionItem* GetActionItem();
-
-  const raw_ref<tabs::TabInterface> tab_interface_;
 
   ui::ScopedUnownedUserData<OmniboxAutofillBubbleController>
       scoped_unowned_user_data_;
