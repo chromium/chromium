@@ -47,7 +47,7 @@ void RTCLoggingDispatcherImpl::StartDiagnosticLogging(
     const base::flat_map<std::string, std::string>& metadata,
     StartDiagnosticLoggingCallback callback) {
   if (!base::FeatureList::IsEnabled(blink::features::kRTCDiagnosticLogging)) {
-    ReportBadMessageAndDeleteThis("RTCDiagnosticLogging feature not enabled");
+    std::move(callback).Run();
     return;
   }
 
@@ -62,7 +62,7 @@ void RTCLoggingDispatcherImpl::FinishDiagnosticLogging(
     const base::flat_map<std::string, std::string>& metadata,
     FinishDiagnosticLoggingCallback callback) {
   if (!base::FeatureList::IsEnabled(blink::features::kRTCDiagnosticLogging)) {
-    ReportBadMessageAndDeleteThis("RTCDiagnosticLogging feature not enabled");
+    std::move(callback).Run();
     return;
   }
 
@@ -76,7 +76,7 @@ void RTCLoggingDispatcherImpl::FinishDiagnosticLogging(
 void RTCLoggingDispatcherImpl::CancelDiagnosticLogging(
     CancelDiagnosticLoggingCallback callback) {
   if (!base::FeatureList::IsEnabled(blink::features::kRTCDiagnosticLogging)) {
-    ReportBadMessageAndDeleteThis("RTCDiagnosticLogging feature not enabled");
+    std::move(callback).Run();
     return;
   }
 

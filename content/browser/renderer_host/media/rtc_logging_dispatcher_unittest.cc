@@ -122,31 +122,37 @@ TEST_F(RTCLoggingDispatcherImplTest, FeatureDisabledStart) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(blink::features::kRTCDiagnosticLogging);
 
-  mojo::test::BadMessageObserver bad_message_observer;
+  EXPECT_CALL(mock_client_, StartRtcDiagnosticLogging(_, _, _, _, _)).Times(0);
+
+  base::test::TestFuture<void> future;
   remote_->StartDiagnosticLogging(base::Uuid::GenerateRandomV4(), true, {},
-                                  base::DoNothing());
-  EXPECT_EQ("RTCDiagnosticLogging feature not enabled",
-            bad_message_observer.WaitForBadMessage());
+                                  future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(remote_.is_connected());
 }
 
 TEST_F(RTCLoggingDispatcherImplTest, FeatureDisabledFinish) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(blink::features::kRTCDiagnosticLogging);
 
-  mojo::test::BadMessageObserver bad_message_observer;
-  remote_->FinishDiagnosticLogging({}, base::DoNothing());
-  EXPECT_EQ("RTCDiagnosticLogging feature not enabled",
-            bad_message_observer.WaitForBadMessage());
+  EXPECT_CALL(mock_client_, FinishRtcDiagnosticLogging(_, _, _)).Times(0);
+
+  base::test::TestFuture<void> future;
+  remote_->FinishDiagnosticLogging({}, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(remote_.is_connected());
 }
 
 TEST_F(RTCLoggingDispatcherImplTest, FeatureDisabledCancel) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(blink::features::kRTCDiagnosticLogging);
 
-  mojo::test::BadMessageObserver bad_message_observer;
-  remote_->CancelDiagnosticLogging(base::DoNothing());
-  EXPECT_EQ("RTCDiagnosticLogging feature not enabled",
-            bad_message_observer.WaitForBadMessage());
+  EXPECT_CALL(mock_client_, CancelRtcDiagnosticLogging(_, _)).Times(0);
+
+  base::test::TestFuture<void> future;
+  remote_->CancelDiagnosticLogging(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(remote_.is_connected());
 }
 
 TEST_F(RTCLoggingDispatcherImplTest, InvalidSessionId) {
