@@ -1299,7 +1299,8 @@ class FullWebUIOmniboxInteractiveTest
         kInputIconShowsDefaultSearchProviderIcon);
     const std::string expected_icon =
         base::GetQuotedJSONString(GetDefaultSearchProviderIcon(
-            TemplateURLServiceFactory::GetForProfile(browser()->GetProfile())));
+            TemplateURLServiceFactory::GetForProfile(browser()->GetProfile()),
+            /*is_dark_mode=*/false));
     StateChange state_change;
     state_change.event = kInputIconShowsDefaultSearchProviderIcon;
     state_change.where = kWebUIInputIcon;

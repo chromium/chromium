@@ -15,6 +15,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -38,6 +39,8 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 
 OmniboxPopupHandler::OmniboxPopupHandler(
     mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver,
@@ -322,7 +325,8 @@ void OmniboxPopupHandler::OnTemplateURLServiceShuttingDown() {
 }
 
 std::string GetDefaultSearchProviderIcon(
-    const TemplateURLService* template_url_service) {
+    const TemplateURLService* template_url_service,
+    bool is_dark_mode) {
   std::string default_icon_path =
       features::IsRoundedIconsEnabled()
           ? "//resources/cr_components/searchbox/icons/search_cr23.svg"
@@ -333,8 +337,14 @@ std::string GetDefaultSearchProviderIcon(
     is_google = search::DefaultSearchProviderIsGoogle(template_url_service);
 #endif
     if (is_google) {
+      // In dark mode, match steady-state omnibox
+      // (`OmniboxEditModel::GetSuperGIcon()`) by using the monochrome Super G
+      // icon rather than the 4-color gradient icon.
       default_icon_path =
-          "//resources/cr_components/searchbox/icons/google_g_gradient.svg";
+          is_dark_mode
+              ? "//resources/cr_components/searchbox/icons/google_g_cr23.svg"
+              : "//resources/cr_components/searchbox/icons/"
+                "google_g_gradient.svg";
     } else if (const auto* default_provider =
                    template_url_service->GetDefaultSearchProvider();
                default_provider &&
@@ -353,8 +363,12 @@ void OmniboxPopupHandler::NotifyDefaultSearchProviderChanged() {
   if (!page_.is_bound()) {
     return;
   }
+  const bool is_dark_mode =
+      web_contents_ &&
+      color_utils::IsDark(web_contents_->GetColorProvider().GetColor(
+          kColorOmniboxIconBackground));
   page_->SetDefaultSearchProvider(GetDefaultSearchProviderIcon(
-      template_url_service_observation_.GetSource()));
+      template_url_service_observation_.GetSource(), is_dark_mode));
 }
 
 void OmniboxPopupHandler::LogEscapeAction(

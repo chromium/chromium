@@ -19,6 +19,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -68,7 +69,8 @@ class OmniboxPopupUI : public TopChromeWebUIController,
                        public omnibox_popup_aim::mojom::PageHandlerFactory,
                        public composebox::mojom::PageHandlerFactory,
                        public searchbox::mojom::PageHandlerFactory,
-                       public help_bubble::mojom::HelpBubbleHandlerFactory {
+                       public help_bubble::mojom::HelpBubbleHandlerFactory,
+                       public content::WebContentsObserver {
  public:
   explicit OmniboxPopupUI(content::WebUI* web_ui);
   OmniboxPopupUI(const OmniboxPopupUI&) = delete;
@@ -81,6 +83,9 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   void PopulateLocalResourceLoaderConfig(
       blink::mojom::LocalResourceLoaderConfig* config,
       const url::Origin& requesting_origin) override;
+
+  // content::WebContentsObserver:
+  void OnColorProviderChanged() override;
 
   // Returns the loadTimeData values that depend on `profile`, the profile of
   // the window that shows the popup. They are in the WebUIDataSource, or passed

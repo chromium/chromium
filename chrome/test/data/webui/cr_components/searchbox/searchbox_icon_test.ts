@@ -441,6 +441,39 @@ suite('CrComponentsSearchboxIconTest', () => {
           assertTrue(isVisible(faviconImage));
         });
 
+    test(
+        'renders monochrome Google G mask when defaultIcon is google_g_cr23',
+        async () => {
+          const googleGCr23 =
+              '//resources/cr_components/searchbox/icons/google_g_cr23.svg';
+          icon.defaultIcon = googleGCr23;
+          await microtasksFinished();
+
+          assertFalse(isVisible(icon.$.faviconImage));
+          assertTrue(isVisible(icon.$.icon));
+          assertEquals(icon.maskImage, `url(${googleGCr23})`);
+        });
+
+    test(
+        'renders monochrome Google G mask for search match when ' +
+            'defaultIcon is google_g_cr23',
+        async () => {
+          const googleGCr23 =
+              '//resources/cr_components/searchbox/icons/google_g_cr23.svg';
+          icon.defaultIcon = googleGCr23;
+          const match = createAutocompleteMatch();
+          match.isSearchType = true;
+          match.type = 'search-what-you-typed';
+          match.iconPath = 'search_cr23.svg';
+          icon.match = match;
+
+          await microtasksFinished();
+
+          assertFalse(isVisible(icon.$.faviconImage));
+          assertTrue(isVisible(icon.$.icon));
+          assertEquals(icon.maskImage, `url(${googleGCr23})`);
+        });
+
     for (const isTopChromeSearchbox of [true, false]) {
       const suffix = ` w/ isTopChromeSearchbox=${isTopChromeSearchbox}`;
 

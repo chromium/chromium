@@ -9,7 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
@@ -29,6 +31,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace {
@@ -161,6 +164,34 @@ TEST_F(OmniboxPopupHandlerTest, SyncsDefaultSearchProvider) {
   EXPECT_CALL(page_, SetDefaultSearchProvider(testing::_));
   handler_->RequestInputState();
   page_.FlushForTesting();
+
+  EXPECT_CALL(page_, SetDefaultSearchProvider(testing::_));
+  handler_->NotifyDefaultSearchProviderChanged();
+  page_.FlushForTesting();
+}
+
+TEST_F(OmniboxPopupHandlerTest, GetDefaultSearchProviderIcon) {
+  const std::string search_loupe =
+      features::IsRoundedIconsEnabled()
+          ? "//resources/cr_components/searchbox/icons/search_cr23.svg"
+          : "//resources/cr_components/searchbox/icons/search_cr23_old.svg";
+  EXPECT_EQ(GetDefaultSearchProviderIcon(nullptr, /*is_dark_mode=*/false),
+            search_loupe);
+  EXPECT_EQ(GetDefaultSearchProviderIcon(nullptr, /*is_dark_mode=*/true),
+            search_loupe);
+
+  auto* turl_service = TemplateURLServiceFactory::GetForProfile(profile());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_EQ(GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/false),
+            "//resources/cr_components/searchbox/icons/google_g_gradient.svg");
+  EXPECT_EQ(GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/true),
+            "//resources/cr_components/searchbox/icons/google_g_cr23.svg");
+#else
+  EXPECT_EQ(GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/false),
+            search_loupe);
+  EXPECT_EQ(GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/true),
+            search_loupe);
+#endif
 }
 
 TEST_F(OmniboxPopupHandlerTest, OnSelectionChanged) {

@@ -354,6 +354,23 @@ export class SearchboxIconElement extends CrLitElement {
     return `${this.faviconImage_} 1x, ${url2x.toString()} 2x`;
   }
 
+  /**
+   * Returns true if this icon should display the DSE icon (rather than a page
+   * favicon, navigation match favicon, or fallback icon).
+   */
+  private shouldShowDseIcon_(): boolean {
+    // Only the searchbox input displays the DSE icon, not dropdown suggestion
+    // rows or keyword mode.
+    if (!this.inSearchbox || this.inKeywordMode) {
+      return false;
+    }
+
+    // Display the DSE icon for empty input (no match selected and not focused
+    // on an existing page URL), or when typing/selecting a search query.
+    return (!this.match && !this.pageUrl) ||
+        (!!this.match && this.match.isSearchType);
+  }
+
   private computeFaviconImage_(): string {
     if (this.inSearchbox && this.inKeywordMode) {
       return '';
@@ -384,8 +401,9 @@ export class SearchboxIconElement extends CrLitElement {
       return this.computeFaviconUrl_(/* scaleFactor= */ 1);
     }
 
-    if (THEMED_ICONS.has(this.defaultIcon) ||
-        THEMED_ICONS.has(this.defaultIcon.replace('_old.svg', '.svg')) ||
+    if ((this.shouldShowDseIcon_() &&
+         (THEMED_ICONS.has(this.defaultIcon) ||
+          THEMED_ICONS.has(this.defaultIcon.replace('_old.svg', '.svg')))) ||
         (this.inSearchbox && isFaviconUrl(this.defaultIcon))) {
       // Colored icons (Google G, DSE favicons) must render as an <img>; a CSS
       // mask would strip their colors.
@@ -423,6 +441,15 @@ export class SearchboxIconElement extends CrLitElement {
     if (this.isLensSearchbox_ && this.inSearchbox) {
       return this.defaultIcon;
     }
+
+    // In dark mode WebUI Omnibox with Google as the DSE, display the
+    // monochrome Google G icon instead of the search loupe icon.
+    if (this.shouldShowDseIcon_() &&
+        this.defaultIcon ===
+            '//resources/cr_components/searchbox/icons/google_g_cr23.svg') {
+      return this.defaultIcon;
+    }
+
     // Enterprise search aggregator people, top-chrome searchbox (WebUI
     // Omnibox), and suggestions whose secondary text isn't placed below the
     // primary text should show icon even in searchbox.

@@ -24,10 +24,11 @@ class WebContents;
 
 class OmniboxController;
 
-// Returns the WebUI resource path or favicon URL for the default search
-// provider.
+// Returns the WebUI resource path or favicon URL for the DSE. In dark mode,
+// Google DSE uses the monochrome Super G icon.
 std::string GetDefaultSearchProviderIcon(
-    const TemplateURLService* template_url_service);
+    const TemplateURLService* template_url_service,
+    bool is_dark_mode);
 
 class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
                             public TemplateURLServiceObserver {
@@ -114,14 +115,15 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
+  // Notifies the WebUI of the current DSE icon.
+  void NotifyDefaultSearchProviderChanged();
+
   const gfx::Range& latest_selection() const { return latest_selection_; }
   bool show_full_url() const { return show_full_url_; }
   bool can_undo() const { return can_undo_; }
   bool can_redo() const { return can_redo_; }
 
  private:
-  void NotifyDefaultSearchProviderChanged();
-
   mojo::Receiver<omnibox_popup::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup::mojom::Page> page_;
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;

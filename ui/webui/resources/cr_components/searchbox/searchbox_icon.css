@@ -111,6 +111,18 @@
   width: var(--cr-searchbox-icon-size-in-searchbox);
 }
 
+/* In dark mode, TopChrome searchbox uses a monochrome Google G mask colored
+   white. */
+:host([in-searchbox][mask-image*='google_g_cr23.svg']) #icon {
+  background-color: var(--color-searchbox-google-g-background, #fff);
+}
+
+@media (forced-colors: active) {
+  :host([in-searchbox][mask-image*='google_g_cr23.svg']) #icon {
+    background-color: ButtonText;
+  }
+}
+
 :host([in-searchbox][favicon-image_*='//resources/cr_components/omnibox/icons/google_g.svg']) #faviconImage {
   width: 24px;
   height: 24px;

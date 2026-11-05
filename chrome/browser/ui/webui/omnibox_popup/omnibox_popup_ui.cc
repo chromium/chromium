@@ -143,6 +143,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui,
                                /*enable_chrome_send=*/true,
                                /*enable_chrome_histograms=*/true),
+      content::WebContentsObserver(web_ui->GetWebContents()),
       profile_(Profile::FromWebUI(web_ui)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUIOmniboxPopupHost);
@@ -349,9 +350,13 @@ base::DictValue OmniboxPopupUI::GetProfileLoadTimeData(Profile* profile) {
 
   PopulateAiModeButtonUiConfig(dict, profile);
 
+  // We lack `WebContents` `ColorProvider` context to fetch theme from.
+  // Default to light mode; `OmniboxPopupHandler` will push the correct themed
+  // icon upon connection.
   dict.Set("searchboxDefaultIcon",
            GetDefaultSearchProviderIcon(
-               TemplateURLServiceFactory::GetForProfile(profile)));
+               TemplateURLServiceFactory::GetForProfile(profile),
+               /*is_dark_mode=*/false));
   // The popup chip UI entrypoint is enabled by the AskG experiment
   // (kAskGShowChip).
   dict.Set("composeboxShowChip",
@@ -393,6 +398,12 @@ void OmniboxPopupUI::PopulateLocalResourceLoaderConfig(
   }
   theme_colors_manager->PopulateLocalResourceLoaderConfig(
       config, requesting_origin, web_ui()->GetWebContents());
+}
+
+void OmniboxPopupUI::OnColorProviderChanged() {
+  if (popup_handler_) {
+    popup_handler_->NotifyDefaultSearchProviderChanged();
+  }
 }
 
 void OmniboxPopupUI::BindInterface(
