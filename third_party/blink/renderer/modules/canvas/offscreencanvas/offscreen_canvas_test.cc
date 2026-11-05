@@ -271,14 +271,14 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
 
   const bool context_alpha = GetParam().alpha;
 
-  auto canvas_resource = CanvasResourceSharedImage::CreateForTesting(
+  auto resource = CanvasResourceSharedImage::CreateForTesting(
       offscreen_canvas().Size(), viz::SinglePlaneFormat::kBGRA_8888,
       kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
       gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
       /*is_software=*/true,
       /*is_accelerated=*/false, /*provider=*/nullptr,
       /*context_provider_wrapper=*/nullptr, shared_image_interface_provider());
-  EXPECT_TRUE(!!canvas_resource);
+  EXPECT_TRUE(!!resource);
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrame_(_))
@@ -297,8 +297,10 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
                       context_alpha);
           }));
 
-  offscreen_canvas().PushFrame(
-      base::MakeRefCounted<ExportedCanvasResource>(std::move(canvas_resource)));
+  offscreen_canvas().PushFrame(base::MakeRefCounted<ExportedCanvasResource>(
+      resource, resource->GetSharedImage(), resource->sync_token(),
+      resource->GetTransferableResourceSource(), resource->GetHdrMetadata(),
+      resource->context_provider_wrapper_, resource->UsesAcceleratedRaster()));
   platform->RunUntilIdle();
 }
 

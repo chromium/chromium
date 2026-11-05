@@ -21,7 +21,14 @@ class PLATFORM_EXPORT ExportedCanvasResource
     : public ThreadSafeRefCounted<ExportedCanvasResource> {
  public:
   explicit ExportedCanvasResource(
-      scoped_refptr<CanvasResourceSharedImage> resource);
+      scoped_refptr<CanvasResourceSharedImage> resource,
+      scoped_refptr<gpu::ClientSharedImage> client_si,
+      const gpu::SyncToken& sync_token,
+      viz::TransferableResource::ResourceSource resource_source,
+      const gfx::HDRMetadata& hdr_metadata,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper> provider,
+      bool accelerated_raster);
+
   explicit ExportedCanvasResource(
       scoped_refptr<gpu::ClientSharedImage> client_si,
       const gpu::SyncToken& sync_token,

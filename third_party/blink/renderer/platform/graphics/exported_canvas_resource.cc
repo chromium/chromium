@@ -116,23 +116,26 @@ ExportedCanvasResource::ExportedCanvasResource(
 }
 
 ExportedCanvasResource::ExportedCanvasResource(
-    scoped_refptr<CanvasResourceSharedImage> resource)
+    scoped_refptr<CanvasResourceSharedImage> resource,
+    scoped_refptr<gpu::ClientSharedImage> client_si,
+    const gpu::SyncToken& sync_token,
+    viz::TransferableResource::ResourceSource resource_source,
+    const gfx::HDRMetadata& hdr_metadata,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> provider,
+    bool accelerated_raster)
     : resource_(std::move(resource)),
       owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
-      shared_image_(resource_->GetSharedImage()),
-      sync_token_(resource_->sync_token()),
-      hdr_metadata_(resource_->GetHdrMetadata()),
-      resource_source_(resource_->GetTransferableResourceSource()),
-      accelerated_raster_(resource_->UsesAcceleratedRaster()),
+      shared_image_(std::move(client_si)),
+      sync_token_(sync_token),
+      hdr_metadata_(hdr_metadata),
+      resource_source_(resource_source),
+      accelerated_raster_(accelerated_raster),
+      context_provider_wrapper_(provider),
       use_legacy_external_canvas_resource_bitmap_path_(false) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
-
-  context_provider_wrapper_ =
-      static_cast<CanvasResourceSharedImage*>(resource_.get())
-          ->context_provider_wrapper_;
 }
 
 ExportedCanvasResource::~ExportedCanvasResource() {

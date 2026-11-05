@@ -523,7 +523,10 @@ void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
 scoped_refptr<ExportedCanvasResource>
 CanvasNon2DResourceProvider::CreateExportedResource(
     scoped_refptr<CanvasResourceSharedImage> resource) {
-  return base::MakeRefCounted<ExportedCanvasResource>(std::move(resource));
+  return base::MakeRefCounted<ExportedCanvasResource>(
+      resource, resource->GetSharedImage(), resource->sync_token(),
+      resource->GetTransferableResourceSource(), resource->GetHdrMetadata(),
+      resource->context_provider_wrapper_, resource->UsesAcceleratedRaster());
 }
 
 scoped_refptr<ExportedCanvasResource>

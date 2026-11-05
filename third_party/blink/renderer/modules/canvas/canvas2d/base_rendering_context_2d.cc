@@ -1018,7 +1018,10 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
 scoped_refptr<ExportedCanvasResource>
 BaseRenderingContext2D::CreateExportedResource(
     scoped_refptr<CanvasResourceSharedImage> resource) {
-  return base::MakeRefCounted<ExportedCanvasResource>(std::move(resource));
+  return base::MakeRefCounted<ExportedCanvasResource>(
+      resource, resource->GetSharedImage(), resource->sync_token(),
+      resource->GetTransferableResourceSource(), resource->GetHdrMetadata(),
+      resource->context_provider_wrapper_, resource->UsesAcceleratedRaster());
 }
 
 scoped_refptr<ExportedCanvasResource>
