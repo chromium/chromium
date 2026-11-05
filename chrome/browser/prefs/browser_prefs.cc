@@ -1217,6 +1217,12 @@ inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
 inline constexpr char kGlicPromotionSourceCohort[] =
     "glic.promotion_source_cohort";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 11/2026.
+inline constexpr char kSuggestedContentEnabled[] =
+    "settings.suggested_content_enabled";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1748,6 +1754,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kFingerprintUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(kShowArcSettingsOnSessionStart, false);
+  // Deprecated 11/2026.
+  registry->RegisterBooleanPref(kSuggestedContentEnabled, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 11/2026.
@@ -3229,6 +3237,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kPinUnlockFeatureNotificationShown);
   profile_prefs->ClearPref(kFingerprintUnlockFeatureNotificationShown);
   profile_prefs->ClearPref(kShowArcSettingsOnSessionStart);
+  // Added 11/2026.
+  profile_prefs->ClearPref(kSuggestedContentEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 11/2026.

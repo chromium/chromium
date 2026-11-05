@@ -512,7 +512,7 @@ chromium-metrics-reviews@google.com.
   <int value="100090" label="ProjectorViewerOnboardingShowCount"/>
   <int value="100091" label="ShelfAlignment"/>
   <int value="100092" label="ShelfAutoHideBehavior"/>
-  <int value="100093" label="SuggestedContentEnabled"/>
+  <int value="100093" label="(obsolete) SuggestedContentEnabled"/>
   <int value="100094" label="SyncableWallpaperInfo"/>
   <int value="100095" label="TapDraggingEnabled"/>
   <int value="100096" label="TapToClickEnabled"/>

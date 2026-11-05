@@ -419,11 +419,6 @@ inline constexpr char kLoginDisplayPasswordButtonEnabled[] =
 inline constexpr char kLoginExtensionApiCanLockManagedGuestSession[] =
     "extensions_api.login.can_lock_managed_guest_session";
 
-// Boolean pref indicating whether the user has enabled Suggested Content in
-// OS settings > Privacy > "Suggest new content to explore".
-inline constexpr char kSuggestedContentEnabled[] =
-    "settings.suggested_content_enabled";
-
 // Boolean value indicating the user has hidden the launcher continue section
 // (usually because they want more visual space available for apps).
 inline constexpr char kLauncherContinueSectionHidden[] =

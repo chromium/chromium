@@ -552,10 +552,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kLoginDisplayPasswordButtonEnabled,
                                 true);
 
-  registry->RegisterBooleanPref(
-      prefs::kSuggestedContentEnabled, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-
   registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
 
   registry->RegisterBooleanPref(
