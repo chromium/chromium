@@ -108,8 +108,8 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       /*intelligent_scan_delegate=*/nullptr,
       // iOS doesn't support referrer chains yet.
       /*network_context_getter=*/base::NullCallback(),
-      // iOS doesn't support extensions.
-      /*get_extension_initiator_callback=*/base::NullCallback());
+      // iOS doesn't support extension or CDP actor attribution.
+      /*get_event_initiator_callback=*/base::NullCallback());
 }
 
 }  // namespace safe_browsing

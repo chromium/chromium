@@ -185,7 +185,10 @@ source_set("unit_tests") {
   ]
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
-    deps += [ "//extensions:test_support" ]
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//extensions:test_support",
+    ]
   }
 }
 

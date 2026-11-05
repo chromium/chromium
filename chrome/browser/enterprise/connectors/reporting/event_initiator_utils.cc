@@ -11,10 +11,14 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/version.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -111,6 +115,46 @@ void PopulateInstalledExtensionInfo(content::BrowserContext* browser_context,
   extension_info.set_is_from_store(extension->from_webstore());
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+bool CanIncludeDeviceInfoForUrlLookup(
+    content::BrowserContext* browser_context) {
+  if (!browser_context ||
+      !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
+    return false;
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto* connectors =
+      ConnectorsServiceFactory::GetForBrowserContext(browser_context);
+  if (!connectors || !connectors->GetDMTokenForRealTimeUrlCheck().has_value()) {
+    return false;
+  }
+  std::optional<policy::PolicyScope> url_scope =
+      connectors->GetRealtimeUrlCheckScope();
+  return url_scope.has_value() &&
+         IncludeDeviceInfo(profile, *url_scope == policy::POLICY_SCOPE_USER);
+}
+
+std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfoImpl(
+    content::WebContents* web_contents,
+    bool include_device_info) {
+  if (!web_contents) {
+    return std::nullopt;
+  }
+
+  if (std::optional<ExtensionInfo> extension_info =
+          GetActiveExtensionInitiatorInfo(web_contents)) {
+    EventInitiatorInfo initiator;
+    *initiator.mutable_chrome_extension() = std::move(*extension_info);
+    return initiator;
+  }
+
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  if (include_device_info) {
+    return CdpActorSessionTracker::GetEventInitiatorInfo(web_contents);
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  return std::nullopt;
+}
 
 }  // namespace
 
@@ -222,23 +266,8 @@ std::optional<ExtensionInfo> GetActiveExtensionInitiatorInfo(
 std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
     content::WebContents* web_contents) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!web_contents) {
-    return std::nullopt;
-  }
-
-  if (std::optional<ExtensionInfo> extension_info =
-          GetActiveExtensionInitiatorInfo(web_contents)) {
-    EventInitiatorInfo initiator;
-    *initiator.mutable_chrome_extension() = std::move(*extension_info);
-    return initiator;
-  }
-
-#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
-  return CdpActorSessionTracker::GetEventInitiatorInfo(web_contents);
-#else
-  return std::nullopt;
-#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  return GetActiveEventInitiatorInfoImpl(web_contents,
+                                         /*include_device_info=*/true);
 }
 
 std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
@@ -246,9 +275,14 @@ std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
     SessionID tab_id) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if ((!base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution) &&
-       !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) ||
-      !browser_context || !tab_id.is_valid()) {
+  if (!browser_context || !tab_id.is_valid()) {
+    return std::nullopt;
+  }
+
+  const bool include_device_info =
+      CanIncludeDeviceInfoForUrlLookup(browser_context);
+  if (!base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution) &&
+      !include_device_info) {
     return std::nullopt;
   }
 
@@ -259,7 +293,7 @@ std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
                                                 &web_contents)) {
     return std::nullopt;
   }
-  return GetActiveEventInitiatorInfo(web_contents);
+  return GetActiveEventInitiatorInfoImpl(web_contents, include_device_info);
 #else
   return std::nullopt;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

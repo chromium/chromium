@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/base64url.h"
@@ -20,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
@@ -694,8 +696,8 @@ RealTimeUrlLookupServiceBase::MaybeGetLlamaForcedTriggerCapability() const {
   return capability;
 }
 
-std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
-RealTimeUrlLookupServiceBase::GetExtensionInitiator(SessionID tab_id) const {
+std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
+RealTimeUrlLookupServiceBase::GetEventInitiator(SessionID tab_id) const {
   return std::nullopt;
 }
 
@@ -746,12 +748,12 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
         std::move(content_area_account_email));
   }
 
-  // Left unset when no initiator is known so the server can tell "unknown"
-  // from "not an extension".
-  if (std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
-          extension_initiator = GetExtensionInitiator(tab_id)) {
-    *request->mutable_initiator()->mutable_chrome_extension() =
-        std::move(*extension_initiator);
+  // Left unset when no initiator is known so the server can distinguish
+  // "no actor / human" from an explicit actor. Resolved synchronously so
+  // main-frame navigations incur zero additional latency.
+  if (std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
+          initiator = GetEventInitiator(tab_id)) {
+    *request->mutable_initiator() = std::move(*initiator);
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();

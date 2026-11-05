@@ -59,6 +59,8 @@ static_library("enterprise_url_lookup_service") {
     "chrome_enterprise_url_lookup_service.h",
   ]
 
+  public_deps = [ "//components/enterprise/common/proto:browser_events_proto" ]
+
   deps = [
     ":policy_engine",
     ":url_lookup_service_base",
@@ -89,6 +91,8 @@ static_library("url_lookup_service_base") {
     "url_lookup_service_base.cc",
     "url_lookup_service_base.h",
   ]
+
+  public_deps = [ "//components/enterprise/common/proto:browser_events_proto" ]
 
   deps = [
     "//base",

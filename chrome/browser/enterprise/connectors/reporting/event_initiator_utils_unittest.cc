@@ -13,13 +13,18 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
+#include "chrome/browser/extensions/test_standalone_window_controller.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -563,6 +568,75 @@ TEST_F(EventInitiatorUtilsTest,
   ASSERT_TRUE(initiator->has_chrome_extension());
   EXPECT_FALSE(initiator->has_external_process_info());
   EXPECT_EQ(kExtensionId, initiator->chrome_extension().id());
+}
+
+TEST_F(EventInitiatorUtilsTest,
+       EventInitiatorTabIdGatesCdpOnUrlLookupDeviceInfoEligibility) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEnterpriseExtensionActorAttribution,
+                            kEventReportingCdpAttribution},
+      /*disabled_features=*/{});
+
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents,
+                                                   base::NullCallback());
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+  extensions::TestStandaloneWindowController window_controller(
+      /*base_window=*/nullptr, &profile_, SessionID::NewUnique(), web_contents);
+
+  ProcessTree tree;
+  tree.process_nodes.emplace_back(/*process_id=*/4242,
+                                  /*parent_process_id=*/100, "/usr/bin/node",
+                                  "/tmp/agent.js");
+  TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
+      ->buffer()
+      .OnExternalActorAttached(
+          ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+          net::IPEndPoint(net::IPAddress::IPv4Localhost(), 51234),
+          std::move(tree));
+
+  // Without real-time URL check enabled, device-level CDP attribution is not
+  // returned for the tab ID overload.
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(&profile_, tab_id).has_value());
+
+  // User-scoped real-time URL check on an unaffiliated profile does not allow
+  // device info, so CDP attribution is suppressed while extension attribution
+  // is still returned when an extension actor is active.
+  profile_.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
+                                  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  profile_.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                  policy::POLICY_SCOPE_USER);
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(&profile_, tab_id).has_value());
+
+  InstallExtension(ManifestLocation::kInternal,
+                   extensions::Extension::FROM_WEBSTORE);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Page.navigate");
+  std::optional<EventInitiatorInfo> ext_initiator =
+      GetActiveEventInitiatorInfo(&profile_, tab_id);
+  ASSERT_TRUE(ext_initiator.has_value());
+  EXPECT_TRUE(ext_initiator->has_chrome_extension());
+  EXPECT_FALSE(ext_initiator->has_external_process_info());
+  EXPECT_EQ(kExtensionId, ext_initiator->chrome_extension().id());
+
+  // Clear the active extension actor and switch real-time URL check to machine
+  // scope; device-level CDP attribution is now included.
+  web_contents->RemoveUserData(ExtensionActorTracker::UserDataKey());
+  profile_.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                  policy::POLICY_SCOPE_MACHINE);
+  std::optional<EventInitiatorInfo> cdp_initiator =
+      GetActiveEventInitiatorInfo(&profile_, tab_id);
+  ASSERT_TRUE(cdp_initiator.has_value());
+  EXPECT_FALSE(cdp_initiator->has_chrome_extension());
+  ASSERT_TRUE(cdp_initiator->has_external_process_info());
+  ASSERT_EQ(1,
+            cdp_initiator->external_process_info().external_processes_size());
+  EXPECT_EQ(4242, cdp_initiator->external_process_info()
+                      .external_processes(0)
+                      .process_nodes(0)
+                      .process_id());
 }
 #endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 

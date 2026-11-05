@@ -63,6 +63,7 @@ static_library("safe_browsing") {
     "//components/enterprise",
     "//components/enterprise/buildflags",
     "//components/enterprise/common:strings",
+    "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/keyed_service/content",
     "//components/language/core/browser",
@@ -870,7 +871,10 @@ source_set("unit_tests") {
         "realtime/chrome_enterprise_url_lookup_service_factory_unittest.cc",
         "realtime/chrome_enterprise_url_lookup_service_unittest.cc",
       ]
-      deps += [ "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service" ]
+      deps += [
+        "//components/enterprise/common/proto:browser_events_proto",
+        "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service",
+      ]
     }
   }
 

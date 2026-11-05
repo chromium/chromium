@@ -4,7 +4,9 @@
 
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 
+#include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
@@ -12,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -103,7 +106,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
         IntelligentScanDelegate* intelligent_scan_delegate,
         base::RepeatingCallback<network::mojom::NetworkContext*()>
             network_context_getter,
-        GetExtensionInitiatorCallback get_extension_initiator_callback)
+        GetEventInitiatorCallback get_event_initiator_callback)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
                                    get_user_population_callback,
@@ -125,8 +128,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
           get_content_area_account_email_callback),
       is_profile_affiliated_callback_(is_profile_affiliated_callback),
       is_command_line_switch_supported_(is_command_line_switch_supported),
-      get_extension_initiator_callback_(
-          std::move(get_extension_initiator_callback)) {}
+      get_event_initiator_callback_(std::move(get_event_initiator_callback)) {}
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ~ChromeEnterpriseRealTimeUrlLookupService() = default;
@@ -346,13 +348,13 @@ ChromeEnterpriseRealTimeUrlLookupService::GetContentAreaAccountEmail(
   return get_content_area_account_email_callback_.Run(tab_url);
 }
 
-std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
-ChromeEnterpriseRealTimeUrlLookupService::GetExtensionInitiator(
+std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
+ChromeEnterpriseRealTimeUrlLookupService::GetEventInitiator(
     SessionID tab_id) const {
-  if (!get_extension_initiator_callback_ || !tab_id.is_valid()) {
+  if (!get_event_initiator_callback_ || !tab_id.is_valid()) {
     return std::nullopt;
   }
-  return get_extension_initiator_callback_.Run(tab_id);
+  return get_event_initiator_callback_.Run(tab_id);
 }
 
 }  // namespace safe_browsing

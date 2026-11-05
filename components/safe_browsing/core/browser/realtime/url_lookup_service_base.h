@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
@@ -379,13 +380,14 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const internal::ReferringAppInfo& referring_app_info,
       RTLookupRequest& request) {}
 
-  // Returns the Chrome extension that initiated the navigation in the tab
-  // identified by `tab_id`, if Chrome can determine one. The base
-  // implementation returns `std::nullopt`; the enterprise service overrides it
-  // so the server can attribute the reporting events it generates for the
-  // request. Called on the UI thread.
-  virtual std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
-  GetExtensionInitiator(SessionID tab_id) const;
+  // Returns the initiator (e.g. Chrome extension or CDP automation actor)
+  // driving the navigation in the tab identified by `tab_id`, if Chrome can
+  // determine one synchronously. The base implementation returns
+  // `std::nullopt`; the enterprise service overrides it so the server can
+  // attribute the reporting events it generates for the request. Called on the
+  // UI thread.
+  virtual std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
+  GetEventInitiator(SessionID tab_id) const;
 
   // Get a resource request with URL, load_flags and method set.
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();

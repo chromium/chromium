@@ -72,8 +72,11 @@ GetActiveEventInitiatorInfo(content::WebContents* web_contents);
 
 // Same as above for the tab identified by `tab_id` in `browser_context`, for
 // callers that only know a tab's `SessionID` (e.g. the real-time URL lookup
-// service). Returns `std::nullopt` if `browser_context` is null, no such tab
-// exists, or no actor is currently attributed.
+// service). Device-level CDP attribution (`ExternalProcessInfo` /
+// `BrowserFeatureInfo`) is included only when `browser_context`'s real-time URL
+// lookup policy scope allows device info; otherwise only extension attribution
+// is returned. Returns `std::nullopt` if `browser_context` is null, no such tab
+// exists, or no eligible actor is currently attributed.
 //
 // Must be called on the UI thread.
 std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
