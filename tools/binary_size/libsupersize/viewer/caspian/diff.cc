@@ -7,9 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <deque>
-#include <functional>
 #include <iostream>
-#include <list>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -68,21 +66,34 @@ std::string_view GetIdPath(const caspian::Symbol& sym) {
                                                  : sym.ObjectPath();
 }
 
+struct MatchBucket {
+  int32_t head = -1;
+  int32_t tail = -1;
+};
+
+template <typename KeyFunc>
 int MatchSymbols(
-    std::function<SymbolMatchIndex(const caspian::Symbol&)> key_func,
+    KeyFunc key_func,
     std::vector<caspian::DeltaSymbol>* delta_symbols,
     std::vector<const caspian::Symbol*>* unmatched_before,
     std::vector<const caspian::Symbol*>* unmatched_after,
     absl::flat_hash_map<caspian::SectionId, float>* padding_by_section_name,
     bool is_sparse) {
   int n_matched_symbols = 0;
-  absl::flat_hash_map<SymbolMatchIndex,
-                      std::list<std::reference_wrapper<const caspian::Symbol*>>>
-      before_symbols_by_key;
-  for (const caspian::Symbol*& before_sym : *unmatched_before) {
+  const int32_t n_before = static_cast<int32_t>(unmatched_before->size());
+  std::vector<int32_t> next_in_bucket(n_before, -1);
+  absl::flat_hash_map<SymbolMatchIndex, MatchBucket> before_symbols_by_key;
+  before_symbols_by_key.reserve(n_before);
+  for (int32_t i = 0; i < n_before; ++i) {
+    const caspian::Symbol* before_sym = (*unmatched_before)[i];
     SymbolMatchIndex key = key_func(*before_sym);
     if (key) {
-      before_symbols_by_key[key].emplace_back(before_sym);
+      auto [it, inserted] =
+          before_symbols_by_key.try_emplace(key, MatchBucket{i, i});
+      if (!inserted) {
+        next_in_bucket[it->second.tail] = i;
+        it->second.tail = i;
+      }
     }
   }
 
@@ -90,9 +101,10 @@ int MatchSymbols(
     SymbolMatchIndex key = key_func(*after_sym);
     if (key) {
       auto found = before_symbols_by_key.find(key);
-      if (found != before_symbols_by_key.end() && found->second.size()) {
-        const caspian::Symbol*& before_sym = found->second.front().get();
-        found->second.pop_front();
+      if (found != before_symbols_by_key.end() && found->second.head != -1) {
+        const int32_t idx = found->second.head;
+        found->second.head = next_in_bucket[idx];
+        const caspian::Symbol*& before_sym = (*unmatched_before)[idx];
         // Padding tracked in aggregate, except for padding-only symbols. Skip
         // if |is_sparse|, since padding symbols would have been created when
         // sparse symbols were created by SuperSize-save-diff.
@@ -100,8 +112,7 @@ int MatchSymbols(
           (*padding_by_section_name)[before_sym->section_id_] +=
               after_sym->PaddingPss() - before_sym->PaddingPss();
         }
-        caspian::DeltaSymbol delta_sym(before_sym, after_sym);
-        delta_symbols->push_back(delta_sym);
+        delta_symbols->emplace_back(before_sym, after_sym);
         // Null associated pointers in |unmatched_before|, |unmatched_after|.
         before_sym = nullptr;
         after_sym = nullptr;
@@ -142,9 +153,7 @@ class DiffHelper {
     return in;
   }
 
-  using MatchFunc = std::function<SymbolMatchIndex(const caspian::Symbol&)>;
-
-  MatchFunc SectionAndFullNameAndPathAndSize() {
+  auto SectionAndFullNameAndPathAndSize() {
     return [](const caspian::Symbol& sym) {
       return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
                               sym.full_name_, GetIdPath(sym),
@@ -152,7 +161,7 @@ class DiffHelper {
     };
   }
 
-  MatchFunc SectionAndFullNameAndPath() {
+  auto SectionAndFullNameAndPath() {
     return [this](const caspian::Symbol& sym) {
       return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
                               StripNumbers(sym.full_name_), GetIdPath(sym), 0);
@@ -160,7 +169,7 @@ class DiffHelper {
   }
 
   // Allows signature changes (uses |Name()| rather than |FullName()|)
-  MatchFunc SectionAndNameAndPath() {
+  auto SectionAndNameAndPath() {
     return [this](const caspian::Symbol& sym) {
       std::string_view name = sym.Name();
       if (!name.empty() && name[0] == '*') {
@@ -172,7 +181,7 @@ class DiffHelper {
   }
 
   // Match on full name, but without path (to account for file moves)
-  MatchFunc SectionAndFullName() {
+  auto SectionAndFullName() {
     return [](const caspian::Symbol& sym) {
       // For string literals that contain a prefix of the string in the name,
       // allow matching up via name + size.
@@ -226,19 +235,19 @@ DeltaSizeInfo Diff(const SizeInfo* before,
   // symbols.  Any symbols still unmatched are tried in the next round.
   int step = 0;
   DiffHelper helper;
-  std::vector<DiffHelper::MatchFunc> key_funcs = {
-      helper.SectionAndFullNameAndPathAndSize(),
-      helper.SectionAndFullNameAndPath(), helper.SectionAndNameAndPath(),
-      helper.SectionAndFullName()};
   absl::flat_hash_map<SectionId, float> padding_by_section_name;
-  for (const auto& key_function : key_funcs) {
+  auto run_pass = [&](auto key_func) {
     int n_matched_symbols =
-        MatchSymbols(key_function, &ret.delta_symbols, &unmatched_before,
+        MatchSymbols(key_func, &ret.delta_symbols, &unmatched_before,
                      &unmatched_after, &padding_by_section_name, is_sparse);
     std::cout << "Matched " << n_matched_symbols << " symbols in matching pass "
               << ++step << std::endl;
     helper.ClearStrings();
-  }
+  };
+  run_pass(helper.SectionAndFullNameAndPathAndSize());
+  run_pass(helper.SectionAndFullNameAndPath());
+  run_pass(helper.SectionAndNameAndPath());
+  run_pass(helper.SectionAndFullName());
 
   const size_t num_padding_symbols = std::ranges::count_if(
       padding_by_section_name,

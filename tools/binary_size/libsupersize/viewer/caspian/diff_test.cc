@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <deque>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -259,6 +260,47 @@ TEST_F(DiffTest, TestNumberNormalization) {
   DeltaSizeInfo::Results expected_counts{10, 0, 0, 0};
   EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
   EXPECT_EQ(0, SumOfSymbolSizes(diff));
+}
+
+TEST_F(DiffTest, TestDuplicateKeysMatchInOrder) {
+  // Three "before" symbols and four "after" symbols share the same key once
+  // numbers are stripped (pass 2). They should be paired in order, and the
+  // extra "after" symbol should be reported as added.
+  const char* kBeforeNames[] = {".L__unnamed_1", ".L__unnamed_2",
+                                ".L__unnamed_3"};
+  const int32_t kBeforeSizes[] = {11, 12, 13};
+  const char* kAfterNames[] = {".L__unnamed_4", ".L__unnamed_5",
+                               ".L__unnamed_6", ".L__unnamed_7"};
+  const int32_t kAfterSizes[] = {100, 200, 300, 400};
+  for (size_t i = 0; i < std::size(kBeforeNames); ++i) {
+    size_info1_->raw_symbols.push_back(
+        MakeSymbol(SectionId::kText, kBeforeSizes[i], "c", kBeforeNames[i]));
+  }
+  for (size_t i = 0; i < std::size(kAfterNames); ++i) {
+    size_info2_->raw_symbols.push_back(
+        MakeSymbol(SectionId::kText, kAfterSizes[i], "c", kAfterNames[i]));
+  }
+
+  DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
+                            &removed_sources_, &added_sources_);
+
+  DeltaSizeInfo::Results expected_counts{6, 3, 1, 0};
+  EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
+  int checked_pairs = 0;
+  for (const DeltaSymbol& sym : diff.delta_symbols) {
+    const BaseSymbol* before_sym = sym.Before();
+    const BaseSymbol* after_sym = sym.After();
+    if (!after_sym || after_sym->ObjectPath() != std::string_view("c")) {
+      continue;
+    }
+    if (!before_sym) {
+      EXPECT_EQ(400, after_sym->Size());
+      continue;
+    }
+    EXPECT_EQ(after_sym->Size(), (before_sym->Size() - 10) * 100);
+    checked_pairs++;
+  }
+  EXPECT_EQ(3, checked_pairs);
 }
 
 TEST_F(DiffTest, TestChangedParams) {
