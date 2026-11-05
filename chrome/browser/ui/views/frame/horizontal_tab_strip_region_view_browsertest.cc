@@ -6,11 +6,14 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -294,4 +297,76 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
   EXPECT_LT(tab_strip()->width(), tab_strip_region_view()->width());
   EXPECT_FALSE(
       tab_strip()->tab_at(tab_strip()->GetModelCount() - 1)->GetVisible());
+}
+
+class HorizontalTabStripRegionViewNewTest : public InProcessBrowserTest {
+ public:
+  HorizontalTabStripRegionViewNewTest()
+      : glic_test_env_({}, GetEnabledFeatures(), GetDisabledFeatures()) {}
+  HorizontalTabStripRegionViewNewTest(
+      const HorizontalTabStripRegionViewNewTest&) = delete;
+  HorizontalTabStripRegionViewNewTest& operator=(
+      const HorizontalTabStripRegionViewNewTest&) = delete;
+  ~HorizontalTabStripRegionViewNewTest() override = default;
+
+ protected:
+  HorizontalTabStripRegionViewNew* tab_strip_region_view() {
+    return views::AsViewClass<HorizontalTabStripRegionViewNew>(
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  }
+
+  views::View* tab_strip_action_container() {
+    return BrowserElementsViews::From(browser())->GetViewAs<views::View>(
+        kTabStripActionContainerElementId);
+  }
+
+  views::View* reserved_grab_handle_space() {
+    return BrowserElementsViews::From(browser())->GetViewAs<views::View>(
+        kTabStripFrameGrabHandleElementId);
+  }
+
+ private:
+  static std::vector<base::test::FeatureRef> GetEnabledFeatures() {
+    std::vector<base::test::FeatureRef> enabled =
+        glic::GetDefaultEnabledGlicTestFeatures();
+    enabled.push_back(tabs::kTabStripUnification);
+    return enabled;
+  }
+
+  static std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    std::vector<base::test::FeatureRef> disabled =
+        glic::GetDefaultDisabledGlicTestFeatures();
+    disabled.push_back(features::kGlicHorizontalTabToolbarButton);
+    return disabled;
+  }
+
+  glic::GlicTestEnvironment glic_test_env_;
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewTest,
+                       TabStripActionContainerIsNotInWindowCaption) {
+  RunScheduledLayouts();
+  HorizontalTabStripRegionViewNew* const region_view = tab_strip_region_view();
+  views::View* const action_container = tab_strip_action_container();
+  views::View* const grab_handle = reserved_grab_handle_space();
+  ASSERT_NE(region_view, nullptr);
+  ASSERT_NE(action_container, nullptr);
+  ASSERT_NE(grab_handle, nullptr);
+  ASSERT_TRUE(action_container->GetVisible());
+  ASSERT_FALSE(action_container->bounds().IsEmpty());
+  gfx::Point action_container_center =
+      action_container->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToTarget(action_container, region_view,
+                                    &action_container_center);
+  gfx::Point grab_handle_center = grab_handle->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToTarget(grab_handle, region_view,
+                                    &grab_handle_center);
+
+  const bool is_action_container_in_caption =
+      region_view->IsPositionInWindowCaption(action_container_center);
+  const bool is_grab_handle_in_caption =
+      region_view->IsPositionInWindowCaption(grab_handle_center);
+
+  EXPECT_FALSE(is_action_container_in_caption);
+  EXPECT_TRUE(is_grab_handle_in_caption);
 }

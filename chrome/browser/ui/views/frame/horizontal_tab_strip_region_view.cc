@@ -789,6 +789,11 @@ bool HorizontalTabStripRegionViewNew::IsPositionInWindowCaption(
   if (combo_button_ && IsHitInView(combo_button_, point)) {
     return false;
   }
+  if (tab_strip_action_container_ &&
+      tab_strip_action_container_->GetVisible() &&
+      IsHitInView(tab_strip_action_container_, point)) {
+    return false;
+  }
   if (tab_strip_view() && IsHitInView(tab_strip_view(), point)) {
     gfx::Point point_in_tab_strip = point;
     views::View::ConvertPointToTarget(this, tab_strip_view(),
