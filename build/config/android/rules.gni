@@ -1402,7 +1402,9 @@ if (!is_robolectric && enable_java_templates) {
       if (_enable_resources) {
         deps += [ ":$_apkbuilder_target_name" ]
       }
-      data_deps = []
+
+      # To run the java_binary() wrapper script.
+      data_deps = [ "//third_party/jdk:java_data" ]
       if (defined(invoker.shared_libraries)) {
         data_deps += invoker.shared_libraries
       }
@@ -5016,6 +5018,9 @@ if (!is_robolectric && enable_java_templates) {
       data_deps = [
         "//build/android:apk_operations_py",
         "//build/android:stack_tools",
+
+        # For bundletool.
+        "//third_party/jdk:java_data",
       ]
 
       deps = [ _base_module_build_config_target ]
@@ -5089,6 +5094,9 @@ if (!is_robolectric && enable_java_templates) {
                ]
       outputs = [ _apks_path ]
       data = [ _apks_path ]
+
+      # Devil installs .apks files via bundletool.
+      data_deps = [ "//third_party/jdk:java_data" ]
       args = [
         "--bundle",
         _rebased_bundle_path,

@@ -1568,7 +1568,7 @@ if (enable_java_templates) {
         "--max-heap-size=$_max_heap_size",
       ]
       data = []
-      deps = [ "//third_party/jdk:java_data" ]
+      deps = []
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }
