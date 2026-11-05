@@ -93,7 +93,6 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/android/intents:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/metrics:java",
-    "//chrome/browser/android/metrics:ukm_java_test_support",
     "//chrome/browser/autofill/android:java_resources",
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/back_press/android:java",

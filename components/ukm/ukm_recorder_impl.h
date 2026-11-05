@@ -44,7 +44,6 @@ class UkmRecorderImplTest;
 class UkmRecorderObserver;
 class UkmSource;
 class UkmTestHelper;
-class UkmUtilsForTest;
 
 COMPONENT_EXPORT(UKM_RECORDER) BASE_DECLARE_FEATURE(kUkmSamplingRateFeature);
 
@@ -252,7 +251,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   friend ::metrics::UkmBrowserTestBase;
   friend ::ukm::debug::UkmDebugDataExtractor;
   friend ::ukm::UkmTestHelper;
-  friend ::ukm::UkmUtilsForTest;
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, IsSampledIn);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, PurgeExtensionRecordings);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebApkSourceUrl);

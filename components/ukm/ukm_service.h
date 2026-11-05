@@ -159,7 +159,6 @@ class UkmService : public UkmRecorderImpl {
   friend ::metrics::UkmBrowserTestBase;
   friend ::ukm::UkmTestHelper;
   friend ::ukm::debug::UkmDebugDataExtractor;
-  friend ::ukm::UkmUtilsForTest;
 
   FRIEND_TEST_ALL_PREFIXES(::ChromeMetricsServiceClientTest,
                            TestRegisterUKMProviders);
