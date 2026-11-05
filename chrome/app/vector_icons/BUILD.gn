@@ -376,7 +376,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webauthn/apple_passwords_color_custom.icon",
     "webauthn/apple_passwords_custom.icon",
     "webauthn/camera_old.icon",
-    "webauthn/passkey_aoa_custom.icon",
     "webauthn/passkey_error_bluetooth_custom.icon",
     "webauthn/passkey_error_bluetooth_dark_custom.icon",
     "webauthn/passkey_error_custom.icon",

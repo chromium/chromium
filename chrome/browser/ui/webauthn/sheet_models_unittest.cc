@@ -68,11 +68,11 @@ TEST_F(AuthenticatorSheetBaseTest, IsOtherMechanismButtonVisible) {
     dialog_model->mechanisms.emplace_back(
         Mechanism::Credential(
             {device::AuthenticatorType::kEnclave, {0}, std::nullopt}),
-        u"credential", kPasskeyAoaCustomIcon, base::DoNothing());
+        u"credential", kPasskeyUsbCustomIcon, base::DoNothing());
 
     dialog_model->mechanisms.emplace_back(
         Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
-        u"security key", kPasskeyAoaCustomIcon, base::DoNothing());
+        u"security key", kPasskeyUsbCustomIcon, base::DoNothing());
     EXPECT_TRUE(sheet_model.IsOtherMechanismButtonVisible());
   }
 
@@ -84,7 +84,7 @@ TEST_F(AuthenticatorSheetBaseTest, IsOtherMechanismButtonVisible) {
     dialog_model->mechanisms.emplace_back(
         Mechanism::Credential(
             {device::AuthenticatorType::kEnclave, {0}, std::nullopt}),
-        u"credential", kPasskeyAoaCustomIcon, base::DoNothing());
+        u"credential", kPasskeyUsbCustomIcon, base::DoNothing());
     EXPECT_FALSE(sheet_model.IsOtherMechanismButtonVisible());
   }
 }
@@ -118,7 +118,7 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
       kPasskeyName2, kPasskeyPhoneCustomIcon, base::DoNothing());
   dialog_model->mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
-      u"security key", kPasskeyAoaCustomIcon, base::DoNothing());
+      u"security key", kPasskeyUsbCustomIcon, base::DoNothing());
 
   AuthenticatorMultiSourcePickerSheetModel model(dialog_model.get());
   EXPECT_THAT(model.primary_passkey_indices(), testing::ElementsAre(0, 1));
@@ -138,10 +138,10 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest,
   dialog_model->mechanisms.emplace_back(
       Mechanism::Credential(
           {device::AuthenticatorType::kTouchID, {1}, std::nullopt}),
-      kPasskeyName2, kPasskeyAoaCustomIcon, base::DoNothing());
+      kPasskeyName2, kPasskeyUsbCustomIcon, base::DoNothing());
   dialog_model->mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
-      u"security key", kPasskeyAoaCustomIcon, base::DoNothing());
+      u"security key", kPasskeyUsbCustomIcon, base::DoNothing());
 
   AuthenticatorMultiSourcePickerSheetModel model(dialog_model.get());
   EXPECT_THAT(model.primary_passkey_indices(), testing::ElementsAre(0, 1));
@@ -155,7 +155,7 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, NoDiscoveredPasskeys) {
       /*render_frame_host=*/nullptr);
   dialog_model->mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
-      u"security key", kPasskeyAoaCustomIcon, base::DoNothing());
+      u"security key", kPasskeyUsbCustomIcon, base::DoNothing());
 
   AuthenticatorMultiSourcePickerSheetModel model(dialog_model.get());
   EXPECT_TRUE(model.primary_passkey_indices().empty());
