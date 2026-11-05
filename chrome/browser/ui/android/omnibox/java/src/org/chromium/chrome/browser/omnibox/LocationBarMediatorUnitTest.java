@@ -5413,6 +5413,9 @@ public class LocationBarMediatorUnitTest {
         mMediator.onUrlFocusChange(/* hasFocus= */ false);
 
         assertDraftingNoFocusProperties();
+        verify(mUrlCoordinator)
+                .setUrlBarData(
+                        any(), eq(ScrollType.SCROLL_TO_BEGINNING), eq(TextSelection.SELECT_END));
     }
 
     @Test

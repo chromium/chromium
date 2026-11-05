@@ -958,6 +958,23 @@ public class UrlBarMediatorUnitTest {
         assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
     }
 
+    @Test
+    public void pushTextToModel_draftingNoFocus_scrollToBeginning() {
+        var session = new FuseboxSessionState();
+        var input = session.getAutocompleteInput();
+        doReturn(UrlBarData.forNonUrlText("query")).when(mDelegate).getUrlBarDataForCurrentInput();
+        mMediator.beginInput(session);
+
+        input.setDisplayState(DisplayState.DRAFTING);
+        mMediator.pushTextToModel(/* originChanged= */ false);
+        assertEquals(ScrollType.NO_SCROLL, mModel.get(UrlBarProperties.TEXT_STATE).scrollType);
+
+        input.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        mMediator.pushTextToModel(/* originChanged= */ false);
+        assertEquals(
+                ScrollType.SCROLL_TO_BEGINNING, mModel.get(UrlBarProperties.TEXT_STATE).scrollType);
+    }
+
     private static SpannableStringBuilder spannable(String text) {
         return new SpannableStringBuilder(text);
     }

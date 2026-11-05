@@ -3274,14 +3274,16 @@ public class LocationBarMediator
         mCurrentInput
                 .commitPreviewText()
                 .setSelection(TextSelection.SELECT_END)
-                .setAutocompleteState(AutocompleteState.STANDBY);
-        pushUrlBarDataFromCurrentInput();
+                .setAutocompleteState(AutocompleteState.STANDBY)
+                .setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
+        mUrlCoordinator.setUrlBarData(
+                getUrlBarDataForCurrentInput(mCurrentInput),
+                ScrollType.SCROLL_TO_BEGINNING,
+                mCurrentInput.getSelection());
 
         // TODO(b/550394727): Fix committing preview text on defocus via window change.
         // Clicking another window doesn't seem to commit the preview text. It looks like preview
         // text is null.
-
-        mCurrentInput.setDisplayState(DisplayState.DRAFTING_NO_FOCUS);
 
         // TODO(b/548101684): Figure out why the url text isn't highlighted on refocus if we put
         // this focus clearing in call @see #onDisplayStateChanged(int). First verify the truth of
