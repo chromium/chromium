@@ -27,10 +27,6 @@ class StorageLoadedDataAndroid {
   StorageLoadedDataAndroid(const StorageLoadedDataAndroid&) = delete;
   StorageLoadedDataAndroid& operator=(const StorageLoadedDataAndroid&) = delete;
 
-  // This C++ object is owned by the Java counterpart, and should be destroyed
-  // by it.
-  void Destroy(JNIEnv* env);
-
   void OnTabRejected(JNIEnv* env, int tab_android_id);
 
   StorageLoadedData* GetData() const;

@@ -13,11 +13,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Before;
+import org.jni_zero.JniUniquePtr;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -29,15 +28,6 @@ import org.chromium.chrome.browser.tab.StorageLoadedData.StorageLoadWarning;
 @RunWith(BaseRobolectricTestRunner.class)
 public class StorageLoadedDataUnitTest {
     @Rule public final MockitoRule mMockito = MockitoJUnit.rule();
-
-    private static final long NATIVE_PTR = 12345L;
-
-    @Mock private StorageLoadedData.Natives mStorageLoadedDataJniMock;
-
-    @Before
-    public void setUp() {
-        StorageLoadedDataJni.setInstanceForTesting(mStorageLoadedDataJniMock);
-    }
 
     @Test
     public void testLoadedTabState_Claim() {
@@ -125,7 +115,7 @@ public class StorageLoadedDataUnitTest {
 
         StorageLoadedData storageLoadedData =
                 StorageLoadedData.createData(
-                        NATIVE_PTR,
+                        JniUniquePtr.createForTesting(12345L),
                         new LoadedTabState[] {
                             loadedStateClaimed, loadedStateUnclaimed, loadedStateNullContents
                         },
@@ -149,7 +139,6 @@ public class StorageLoadedDataUnitTest {
         assertTrue(loadedStateNullContents.isClaimedOrDestroyed());
 
         // Native pointer must be destroyed.
-        verify(mStorageLoadedDataJniMock).destroy(NATIVE_PTR);
-        assertEquals(0, storageLoadedData.getNativePtr());
+        assertNull(storageLoadedData.getNativePtr());
     }
 }

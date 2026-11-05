@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/android/restore_entity_tracker_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
@@ -88,16 +89,13 @@ StorageLoadedDataAndroid::StorageLoadedDataAndroid(
   const StorageLoadingContext& context = data_->GetLoadingContext();
 
   j_object_ = Java_StorageLoadedData_createData(
-      env, reinterpret_cast<intptr_t>(this), data_->GetLoadedTabs(),
-      data_->GetLoadedGroups(), data_->GetActiveTabIndex().value_or(-1),
-      context.warnings());
+      env,
+      jni_zero::MakeUnique<StorageLoadedDataAndroid>(base::WrapUnique(this)),
+      data_->GetLoadedTabs(), data_->GetLoadedGroups(),
+      data_->GetActiveTabIndex().value_or(-1), context.warnings());
 }
 
 StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;
-
-void StorageLoadedDataAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void StorageLoadedDataAndroid::OnTabRejected(JNIEnv* env, int tab_android_id) {
   RestoreEntityTrackerAndroid* tracker =
@@ -126,8 +124,7 @@ StorageLoadedDataAndroid* StorageLoadedDataAndroid::FromJavaObject(
   if (!obj) {
     return nullptr;
   }
-  return reinterpret_cast<StorageLoadedDataAndroid*>(
-      Java_StorageLoadedData_getNativePtr(env, obj));
+  return Java_StorageLoadedData_getNativePtr(env, obj);
 }
 
 }  // namespace tabs
