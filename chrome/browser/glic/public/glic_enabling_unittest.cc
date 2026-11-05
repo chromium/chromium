@@ -77,6 +77,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/skills/features.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/service/test_variations_service.h"
@@ -4547,6 +4548,23 @@ TEST_F(GlicEnablingGeicPolicyCountryCheckTest,
 
   EXPECT_FALSE(GlicEnabling::IsEnabledForFirstRunProfile(profile(), "us", "us",
                                                          account_info));
+}
+
+// Gemini Enterprise doesn't support Chrome Skills.
+TEST_F(GlicEnablingGeicPolicyTest, GeicDoesNotSupportSkills) {
+  base::test::ScopedFeatureList feature_list(::features::kSkillsEnabled);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
+  EXPECT_FALSE(
+      GetGlicProviderSpec(profile()).SupportsFeature(GlicFeature::kSkills));
+}
+
+// Consumer Gemini supports Chrome Skills.
+TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest, ConsumerSupportsSkills) {
+  base::test::ScopedFeatureList feature_list(::features::kSkillsEnabled);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
+  EXPECT_TRUE(
+      GetGlicProviderSpec(profile()).SupportsFeature(GlicFeature::kSkills));
 }
 
 // Gemini Enterprise skips the server-side user status check, so it doesn't

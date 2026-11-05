@@ -13,11 +13,13 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -268,6 +270,30 @@ bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
   return profile->GetPrefs()->GetInteger(
              glic::prefs::kGlicAssistantSelection) !=
          std::to_underlying(glic::prefs::AssistantSelection::kConsumer);
+}
+
+GURL GetGeicSkillsUrl(Profile* profile) {
+  GURL url = glic::GetGlicProviderSpec(profile).GetGuestUrl(profile);
+  if (!url.is_valid()) {
+    return GURL();
+  }
+
+  std::string config_id;
+  net::GetValueForKeyInQuery(url, "configId", &config_id);
+  url = net::AppendOrReplaceQueryParameter(url, "configId", std::nullopt);
+  url = net::AppendOrReplaceQueryParameter(url, "location", std::nullopt);
+  url = net::AppendOrReplaceQueryParameter(url, "hl", std::nullopt);
+
+  std::string path =
+      config_id.empty()
+          ? "/r/skills"
+          : base::StrCat({"/home/cid/", config_id, "/r/skills"});
+  GURL::Replacements replacements;
+  replacements.SetPathStr(path);
+  if (url.query().empty()) {
+    replacements.ClearQuery();
+  }
+  return url.ReplaceComponents(replacements);
 }
 
 }  // namespace geic

@@ -10,7 +10,8 @@ import {MAX_NAME_CHAR_COUNT, MAX_PROMPT_CHAR_COUNT, PromptError} from './skills_
 export function getHtml(this: SkillsDialogAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
+${this.shouldShowErrorPage_ ? html`
+  <error-page .errorType="${this.getErrorType_()}"></error-page>` : html`
   <cr-dialog id="dialog" show-on-attach hide-backdrop @close="${this.onClose_}">
     <div slot="title">
       <h1 id="header">${this.dialogTitle_}</h1>

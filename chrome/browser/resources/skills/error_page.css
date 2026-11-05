@@ -60,6 +60,10 @@
   margin-top: 16px;
 }
 
+.body-text a {
+  color: var(--cr-link-color);
+}
+
 .dialog-actions-row {
   display: flex;
   gap: 8px;

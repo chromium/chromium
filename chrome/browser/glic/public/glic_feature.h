@@ -37,8 +37,10 @@ enum class GlicFeature {
   kContextualCueing,
   // Zero-state suggestions shown in the Glic panel.
   kZeroStateSuggestions,
+  // Chrome Skills (chrome://skills and skill invocation from Glic).
+  kSkills,
 
-  kMaxValue = kZeroStateSuggestions,
+  kMaxValue = kSkills,
 };
 
 }  // namespace glic

@@ -118,6 +118,10 @@ export class SkillsAppElement extends CrLitElement {
   }
 
   protected getErrorType_(): ErrorType|null {
+    if (loadTimeData.valueExists('isSkillsSupported') &&
+        !loadTimeData.getBoolean('isSkillsSupported')) {
+      return ErrorType.SKILLS_UNSUPPORTED;
+    }
     if (!loadTimeData.getBoolean('isGlicEnabled')) {
       return ErrorType.GLIC_NOT_ENABLED;
     }

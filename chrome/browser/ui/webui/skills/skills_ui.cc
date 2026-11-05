@@ -8,9 +8,13 @@
 #include "base/command_line.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -43,6 +47,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace skills {
 namespace {
@@ -171,8 +176,23 @@ SkillsUI::SkillsUI(content::WebUI* web_ui)
   source->AddBoolean(
       "isSkillsWebViewV2Enabled",
       base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled));
+  const bool is_skills_supported =
+      glic::GetGlicProviderSpec(profile).SupportsFeature(
+          glic::GlicFeature::kSkills);
+  source->AddBoolean("isSkillsSupported", is_skills_supported);
   source->AddBoolean("isSkillsEnabled",
                      skills::IsSkillsEnabled(profile->GetPrefs()));
+
+  const GURL external_skills_url =
+      is_skills_supported ? GURL() : geic::GetGeicSkillsUrl(profile);
+  source->AddString(
+      "unsupportedErrorPageDescription",
+      external_skills_url.SchemeIs(url::kHttpsScheme)
+          ? l10n_util::GetStringFUTF16(
+                IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_DESCRIPTION,
+                base::UTF8ToUTF16(external_skills_url.spec()))
+          : l10n_util::GetStringUTF16(
+                IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_DESCRIPTION_NO_LINK));
 
   std::string application_locale = g_browser_process->GetApplicationLocale();
   std::string google_locale = google_util::GetGoogleLocale(application_locale);

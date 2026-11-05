@@ -57,6 +57,13 @@
   <message name="IDS_SKILLS_DISABLED_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is disabled by the settings toggle">
     The Skills feature is currently disabled. Update your Chrome Settings to get started.
   </message>
+  <!-- TODO(crbug.com/579058163): Update with the approved final string. -->
+  <message name="IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is not supported for the current profile (e.g. Gemini Enterprise)">
+    Skills in Chrome aren't available for this profile. You can create and manage skills <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>here<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_DESCRIPTION_NO_LINK" desc="Description of the error page that occurs when chrome://skills is not supported for the current profile and no external Skills URL is available">
+    Skills in Chrome aren't available for this profile
+  </message>
   <message name="IDS_SKILLS_REMOTE_AUTHORITY_UNREACHABLE_DESCRIPTION" desc="Description of the error page that occurs when the remote guest skills webview cannot load or be reached.">
     We're having trouble connecting to the server. Please try again later.
   </message>

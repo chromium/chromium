@@ -10,6 +10,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +19,9 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
@@ -25,8 +29,10 @@
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
@@ -34,15 +40,21 @@
 #include "components/skills/internal/skills_service_impl.h"
 #include "components/skills/public/skill_metrics.mojom.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
@@ -85,15 +97,17 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
     identity_test_env_adaptor_->identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
 
-    skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->GetProfile(),
-        base::BindRepeating(&SkillsPageInteractiveUITest::CreateSkillsService,
-                            base::Unretained(this)));
-    skills::SkillsService* skills_service =
-        skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
-    ASSERT_TRUE(skills_service);
-    skills_service->SetServiceStatusForTesting(
-        skills::SkillsService::ServiceStatus::kReady);
+    if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+      skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
+          browser()->GetProfile(),
+          base::BindRepeating(&SkillsPageInteractiveUITest::CreateSkillsService,
+                              base::Unretained(this)));
+      skills::SkillsService* skills_service =
+          skills::SkillsServiceFactory::GetForProfile(browser()->GetProfile());
+      ASSERT_TRUE(skills_service);
+      skills_service->SetServiceStatusForTesting(
+          skills::SkillsService::ServiceStatus::kReady);
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -300,6 +314,109 @@ IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest, DialogZoomModeDisabled) {
         EXPECT_EQ(zoom_controller->zoom_mode(),
                   zoom::ZoomController::ZOOM_MODE_DISABLED);
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest,
+                       ConsumerErrorPageStatesNeverShowUnsupported) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_EQ(glic::GlicProviderLatch::GetProvider(*profile),
+            glic::GlicProvider::kGemini);
+
+  const InteractiveBrowserWindowTestApi::DeepQuery kErrorPageQuery{
+      "skills-app", "error-page"};
+  const InteractiveBrowserWindowTestApi::DeepQuery kErrorTitleQuery{
+      "skills-app", "error-page", "#errorTitle"};
+  const InteractiveBrowserWindowTestApi::DeepQuery kErrorBodyQuery{
+      "skills-app", "error-page", ".body-text"};
+  const InteractiveBrowserWindowTestApi::DeepQuery kDiscoverSkillsPageQuery{
+      "skills-app", "discover-skills-page"};
+
+  // 1. Glic not enabled: shows glic-not-enabled error page.
+  EXPECT_FALSE(skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
+  RunTestSequence(
+      OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)),
+      WaitForElementEvent(
+          kSkillsPageElementId, kErrorPageQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
+      CheckJsResultAt(kSkillsPageElementId, kErrorPageQuery,
+                      "(el) => el.errorType", "glic-not-enabled"),
+      CheckJsResultAt(kSkillsPageElementId, kErrorTitleQuery,
+                      "(el) => el.textContent.trim()",
+                      l10n_util::GetStringUTF8(IDS_SKILLS_ERROR_PAGE_TITLE)),
+      CheckJsResultAt(
+          kSkillsPageElementId, kErrorBodyQuery,
+          "(el) => el.textContent.trim()",
+          l10n_util::GetStringUTF8(IDS_SKILLS_ERROR_PAGE_DESCRIPTION)));
+
+  // 2. Glic enabled, Skills pref disabled: shows skills-disabled error page.
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
+  profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, false);
+  EXPECT_FALSE(skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
+  RunTestSequence(
+      Do([this]() {
+        chrome::Reload(browser(),
+                       ui::mojom::WindowOpenDisposition::kCurrentTab);
+      }),
+      WaitForWebContentsNavigation(kSkillsPageElementId),
+      WaitForElementEvent(
+          kSkillsPageElementId, kErrorPageQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
+      CheckJsResultAt(kSkillsPageElementId, kErrorPageQuery,
+                      "(el) => el.errorType", "skills-disabled"),
+      CheckJsResultAt(kSkillsPageElementId, kErrorTitleQuery,
+                      "(el) => el.textContent.trim()",
+                      l10n_util::GetStringUTF8(IDS_SKILLS_ERROR_PAGE_TITLE)),
+      CheckJsResultAt(
+          kSkillsPageElementId, kErrorBodyQuery,
+          "(el) => el.textContent.trim()",
+          l10n_util::GetStringUTF8(
+              IDS_SKILLS_DISABLED_ERROR_PAGE_DESCRIPTION)));
+
+  // 3. Glic enabled, Skills pref enabled: no error page is shown.
+  profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, true);
+  EXPECT_TRUE(skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
+  EXPECT_NE(skills::SkillsServiceFactory::GetForProfile(profile), nullptr);
+  RunTestSequence(
+      Do([this]() {
+        chrome::Reload(browser(),
+                       ui::mojom::WindowOpenDisposition::kCurrentTab);
+      }),
+      WaitForWebContentsNavigation(kSkillsPageElementId),
+      WaitForElementEvent(
+          kSkillsPageElementId, kDiscoverSkillsPageQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
+      WaitForElementEvent(
+          kSkillsPageElementId, kErrorPageQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kDoesNotExist));
+}
+
+class SkillsPageFeatureDisabledInteractiveUITest
+    : public SkillsPageInteractiveUITest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(features::kSkillsEnabled);
+    InteractiveBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SkillsPageFeatureDisabledInteractiveUITest,
+                       SkillsDisabledAndPageInaccessible) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_EQ(glic::GlicProviderLatch::GetProvider(*profile),
+            glic::GlicProvider::kGemini);
+
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
+  EXPECT_FALSE(skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
+  EXPECT_EQ(skills::SkillsServiceFactory::GetForProfile(profile), nullptr);
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_FALSE(
+      content::NavigateToURL(web_contents, GURL(chrome::kChromeUISkillsURL)));
+  EXPECT_EQ(web_contents->GetWebUI(), nullptr);
+  ASSERT_NE(web_contents->GetController().GetLastCommittedEntry(), nullptr);
+  EXPECT_EQ(web_contents->GetController().GetLastCommittedEntry()->GetPageType(),
+            content::PAGE_TYPE_ERROR);
 }
 
 class SkillsPageScreenshotInteractiveUITest

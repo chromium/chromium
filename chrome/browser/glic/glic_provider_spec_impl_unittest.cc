@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/skills/features.h"
 #include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -145,6 +146,10 @@ TEST(GlicProviderSpecImplTest,
   }
 }
 
+TEST(GlicProviderSpecImplTest, GeminiSkillsFollowsSkillsEnabled) {
+  ExpectGeminiFeatureFollowsFlag(GlicFeature::kSkills,
+                                 ::features::kSkillsEnabled);
+}
 TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
   std::vector<base::test::FeatureRef> enabled_features = {
       features::kGlicLiveMode,
@@ -152,6 +157,7 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
       features::kAutoOpenGlicForPdf,
       features::kGlicSelectionPrompt,
       features::kGlicCaptureRegion,
+      ::features::kSkillsEnabled,
 #if BUILDFLAG(ENABLE_PDF)
       features::kPdfGlicSummarize,
 #endif
@@ -166,6 +172,5 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
     EXPECT_FALSE(spec->SupportsFeature(static_cast<GlicFeature>(i))) << i;
   }
 }
-
 }  // namespace
 }  // namespace glic

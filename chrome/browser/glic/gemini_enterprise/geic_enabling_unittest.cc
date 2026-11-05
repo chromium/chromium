@@ -596,5 +596,36 @@ TEST_F(GeicEnablingTest, CanOptOutOfGeicInSettings) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
+  auto get_skills_url_for_guest_url = [](const std::string& guest_url) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+           {{"enabled", "true"}, {"geic-guest-url", guest_url}}}},
+        {});
+    TestingProfile profile;
+    return GetGeicSkillsUrl(&profile);
+  };
+
+  // Extracts `configId` into `/home/cid/<configId>/r/skills`, strips
+  // `configId`, `location`, and `hl`, and preserves other query parameters.
+  EXPECT_EQ(
+      get_skills_url_for_guest_url(
+          "https://business.gemini.google/side-panel?"
+          "configId=abc123&location=global&hl=en&mods=widget_staging_api_mod"),
+      GURL("https://business.gemini.google/home/cid/abc123/r/skills?"
+           "mods=widget_staging_api_mod"));
+
+  // Falls back to `/r/skills` and clears the query string when `configId` is
+  // absent and no other query parameters remain.
+  EXPECT_EQ(get_skills_url_for_guest_url(
+                "https://business.gemini.google/side-panel?location=us&hl=fr"),
+            GURL("https://business.gemini.google/r/skills"));
+
+  // Returns an empty GURL when the resolved guest URL is empty/invalid.
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ::switches::kGlicGuestURL, "");
+  EXPECT_TRUE(GetGeicSkillsUrl(profile()).is_empty());
+}
 }  // namespace
 }  // namespace geic

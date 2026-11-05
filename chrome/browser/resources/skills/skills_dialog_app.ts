@@ -23,6 +23,7 @@ import { loadTimeData } from 'chrome://resources/js/load_time_data.js';
 import { CrLitElement } from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type { PropertyValues } from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import { ErrorType } from './error_page.js';
 import type { Skill } from './skill.mojom-webui.js';
 import { SkillsDialogType, SkillSource } from './skill.mojom-webui.js';
 import { SkillsPromptRefinementOutcome } from './skill_metrics.mojom-webui.js';
@@ -129,7 +130,17 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor canUndoRefine_: boolean = false;
   protected accessor canRedoRefine_: boolean = false;
   protected accessor shouldShowErrorPage_: boolean =
-    !loadTimeData.getBoolean('isGlicEnabled');
+    !loadTimeData.getBoolean('isGlicEnabled') ||
+    (loadTimeData.valueExists('isSkillsSupported') &&
+     !loadTimeData.getBoolean('isSkillsSupported'));
+
+  protected getErrorType_(): ErrorType {
+    if (loadTimeData.valueExists('isSkillsSupported') &&
+        !loadTimeData.getBoolean('isSkillsSupported')) {
+      return ErrorType.SKILLS_UNSUPPORTED;
+    }
+    return ErrorType.GLIC_NOT_ENABLED;
+  }
   protected accessor signedInEmail_: string = '';
   protected accessor promptError_: PromptError = PromptError.NONE;
   protected accessor isRefineLoading_: boolean = false;

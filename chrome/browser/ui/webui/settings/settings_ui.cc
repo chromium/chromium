@@ -142,7 +142,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/skills/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/base/features.h"
@@ -643,7 +642,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
            glic::GlicFeature::kSelectionInlineCue) &&
            glic_enablement.ShouldShowSettingsPage()},
       {"showSkillsSettingPage",
-       base::FeatureList::IsEnabled(features::kSkillsEnabled)},
+       glic::GetGlicProviderSpec(profile).SupportsFeature(
+           glic::GlicFeature::kSkills)},
       {"showIndigoControl", base::FeatureList::IsEnabled(features::kIndigo)},
       {"showGoogleSearchAiModeWorkspaceControl",
        base::FeatureList::IsEnabled(features::kGoogleSearchAiModeWorkspace)},

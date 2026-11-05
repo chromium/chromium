@@ -8,6 +8,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -69,6 +71,11 @@ GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
 // consumer `GlicProvider::kGemini`.
 bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
                                    const GURL& resolved_guest_url);
+
+// Derives the Gemini Enterprise web app's Skills URL (`/home/cid/<configId>/r/skills`
+// or `/r/skills`) from `profile`'s latched guest URL, or returns an empty
+// GURL() if `profile` has no valid guest URL.
+GURL GetGeicSkillsUrl(Profile* profile);
 
 }  // namespace geic
 

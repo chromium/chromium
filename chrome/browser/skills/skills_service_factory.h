@@ -19,7 +19,8 @@ class SkillsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static SkillsService* GetForProfile(Profile* profile);
 
-  // True if the Skills pref is on and Glic is enabled for `profile`.
+  // True if the Skills pref is on, Glic is enabled for `profile` and the
+  // profile's Glic provider supports Skills (Gemini Enterprise doesn't).
   // chrome://skills checks skills::IsSkillsEnabled() directly; see SkillsUI.
   static bool IsSkillsEnabledForProfile(Profile* profile);
 

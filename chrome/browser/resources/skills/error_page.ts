@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
@@ -20,6 +21,7 @@ import type {BrowserProxy} from './skills.mojom-webui.js';
 export enum ErrorType {
   GLIC_NOT_ENABLED = 'glic-not-enabled',
   SKILLS_DISABLED = 'skills-disabled',
+  SKILLS_UNSUPPORTED = 'skills-unsupported',
   NO_SEARCH_RESULTS = 'no-search-results',
   REMOTE_AUTHORITY_UNREACHABLE = 'remote-authority-unreachable',
 }
@@ -60,7 +62,8 @@ export class ErrorPageElement extends CrLitElement {
     super.connectedCallback();
 
     if (!loadTimeData.getBoolean('isSkillsWebViewV2Enabled') &&
-        (this.isGlicDisabled_() || this.isSkillsDisabled_())) {
+        (this.isGlicDisabled_() || this.isSkillsDisabled_() ||
+         this.isSkillsUnsupported_())) {
       this.getProxy_().handler.recordSkillsManagementAction(
           SkillsManagementPage.kErrorPage, SkillsManagementAction.kPageOpened);
     }
@@ -74,6 +77,10 @@ export class ErrorPageElement extends CrLitElement {
     return this.errorType === ErrorType.SKILLS_DISABLED;
   }
 
+  protected isSkillsUnsupported_(): boolean {
+    return this.errorType === ErrorType.SKILLS_UNSUPPORTED;
+  }
+
   protected isRemoteAuthorityUnreachable_(): boolean {
     return this.errorType === ErrorType.REMOTE_AUTHORITY_UNREACHABLE;
   }
@@ -82,6 +89,7 @@ export class ErrorPageElement extends CrLitElement {
     switch (this.errorType) {
       case ErrorType.GLIC_NOT_ENABLED:
       case ErrorType.SKILLS_DISABLED:
+      case ErrorType.SKILLS_UNSUPPORTED:
       case ErrorType.REMOTE_AUTHORITY_UNREACHABLE:
         return loadTimeData.getString('errorPageTitle');
       case ErrorType.NO_SEARCH_RESULTS:
@@ -91,12 +99,18 @@ export class ErrorPageElement extends CrLitElement {
     }
   }
 
-  protected errorDescription(): string {
+  protected errorDescription(): TrustedHTML {
+    return sanitizeInnerHtml(this.errorDescriptionText_());
+  }
+
+  private errorDescriptionText_(): string {
     switch (this.errorType) {
       case ErrorType.GLIC_NOT_ENABLED:
         return loadTimeData.getString('errorPageDescription');
       case ErrorType.SKILLS_DISABLED:
         return loadTimeData.getString('disabledErrorPageDescription');
+      case ErrorType.SKILLS_UNSUPPORTED:
+        return loadTimeData.getString('unsupportedErrorPageDescription');
       case ErrorType.NO_SEARCH_RESULTS:
         return loadTimeData.getString('noSearchResultsDescription');
       case ErrorType.REMOTE_AUTHORITY_UNREACHABLE:

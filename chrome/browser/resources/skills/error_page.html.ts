@@ -17,11 +17,12 @@ export function getHtml(this: ErrorPageElement) {
   <div id="mainContent">
     <div id="header">
       ${this.isGlicDisabled_() || this.isSkillsDisabled_() ||
+        this.isSkillsUnsupported_() ||
         this.isRemoteAuthorityUnreachable_() ? html`
         <cr-icon icon="cr:error"></cr-icon>` : ''}
       <h1 id="errorTitle" class="headline">${this.errorTitle()}</h1>
     </div>
-    <p class="body-text">${this.errorDescription()}</p>
+    <p class="body-text" .innerHTML="${this.errorDescription()}"></p>
     ${!this.dialog && this.isSkillsDisabled_() ? html`
       <cr-button @click="${this.onGoToSettingsClick_}">
         $i18n{goToSettings}

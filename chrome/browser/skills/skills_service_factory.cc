@@ -10,6 +10,9 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_latch_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,7 +39,9 @@ SkillsService* SkillsServiceFactory::GetForProfile(Profile* profile) {
 // static
 bool SkillsServiceFactory::IsSkillsEnabledForProfile(Profile* profile) {
   return profile && skills::IsSkillsEnabled(profile->GetPrefs()) &&
-         glic::GlicEnabling::IsEnabledForProfile(profile);
+         glic::GlicEnabling::IsEnabledForProfile(profile) &&
+         glic::GetGlicProviderSpec(profile).SupportsFeature(
+             glic::GlicFeature::kSkills);
 }
 
 SkillsServiceFactory* SkillsServiceFactory::GetInstance() {
@@ -51,6 +56,7 @@ SkillsServiceFactory::SkillsServiceFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
+  DependsOn(glic::GlicProviderLatchFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
@@ -61,7 +67,8 @@ std::unique_ptr<KeyedService>
 SkillsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+  if (!glic::GetGlicProviderSpec(profile).SupportsFeature(
+          glic::GlicFeature::kSkills)) {
     return nullptr;
   }
 

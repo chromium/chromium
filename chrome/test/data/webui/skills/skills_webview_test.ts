@@ -23,6 +23,10 @@ suite('SkillsWebviewTest', () => {
     if (!loadTimeData.isInitialized()) {
       loadTimeData.data = {};
     }
+    loadTimeData.overrideValues({
+      isSkillsSupported: true,
+      isSkillsEnabled: true,
+    });
   });
 
   test('SkillsWebview_SavingGeminiQuery', () => {
@@ -164,6 +168,34 @@ suite('SkillsWebviewTest', () => {
     assertTrue(loadingPage.hasAttribute('hidden'));
     assertFalse(errorPage.hasAttribute('hidden'));
     assertEquals(ErrorType.SKILLS_DISABLED, errorPage.errorType);
+    assertEquals('true', webview.getAttribute('hidden'));
+  });
+
+  test('SkillsWebview_Unsupported_ShowsErrorPage', async () => {
+    loadTimeData.overrideValues({
+      devMode: true,
+      isSkillsWebViewV2Enabled: true,
+      isSkillsSupported: false,
+      isSkillsEnabled: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const webview = document.createElement('webview');
+    webview.id = 'webview';
+    const loadingPage = document.createElement('loading-page');
+    loadingPage.id = 'loading-page';
+    const errorPage = document.createElement('error-page');
+    errorPage.id = 'error-page';
+    errorPage.setAttribute('hidden', '');
+    document.body.appendChild(webview);
+    document.body.appendChild(loadingPage);
+    document.body.appendChild(errorPage);
+
+    const webviewApp = new SkillsWebview();
+    await webviewApp.init();
+
+    assertTrue(loadingPage.hasAttribute('hidden'));
+    assertFalse(errorPage.hasAttribute('hidden'));
+    assertEquals(ErrorType.SKILLS_UNSUPPORTED, errorPage.errorType);
     assertEquals('true', webview.getAttribute('hidden'));
   });
 

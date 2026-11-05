@@ -36,6 +36,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/skills/features.h"
 #include "net/base/url_util.h"
 #include "pdf/buildflags.h"
 #include "url/gurl.h"
@@ -181,6 +182,8 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kContextualCueing:
       case GlicFeature::kZeroStateSuggestions:
         return true;
+      case GlicFeature::kSkills:
+        return base::FeatureList::IsEnabled(::features::kSkillsEnabled);
     }
     NOTREACHED();
   }
@@ -251,6 +254,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kFirstRunShowcase:
       case GlicFeature::kContextualCueing:
       case GlicFeature::kZeroStateSuggestions:
+      case GlicFeature::kSkills:
         return false;
     }
     NOTREACHED();

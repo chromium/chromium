@@ -122,6 +122,7 @@ source_set("browser_tests") {
       "skills_dialog_launcher_browsertest.cc",
       "skills_functional_browsertest.cc",
       "skills_functional_browsertest.h",
+      "skills_geic_browsertest.cc",
       "skills_ui_tab_controller_browsertest.cc",
       "skills_ui_window_controller_browsertest.cc",
     ]
@@ -130,6 +131,7 @@ source_set("browser_tests") {
     ":public",
     ":skills",
     ":ui",
+    "//chrome/app:generated_resources",
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/net",
@@ -139,16 +141,20 @@ source_set("browser_tests") {
     "//components/skills/internal",
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
+    "//ui/base",
   ]
   if (!is_android) {
     deps += [
       "//chrome/browser/signin",
+      "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/skills",
+      "//components/policy/core/browser",
+      "//components/policy/core/common:test_support",
       "//components/signin/public/identity_manager:test_support",
     ]
   }
