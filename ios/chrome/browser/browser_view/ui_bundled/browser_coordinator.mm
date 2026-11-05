@@ -261,6 +261,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/view_source/model/view_source_browser_agent.h"
+#import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
@@ -3290,7 +3291,23 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 
 - (void)voiceSearchCoordinator:(ChromeCoordinator*)coordinator
              didRecognizeQuery:(NSString*)query {
-  // TODO(crbug.com/571184218): Load the recognized query.
+  CHECK_EQ(coordinator, _voiceSearchCoordinator);
+  [self stopVoiceSearchCoordinator];
+  if (web::WebState* activeWebState = self.activeWebState) {
+    VoiceSearchNavigationTabHelper::FromWebState(activeWebState)
+        ->WillLoadVoiceSearchResult();
+  }
+  _urlLoadingBrowserAgent->LoadURLForQuery(query);
+}
+
+- (void)voiceSearchCoordinator:(ChromeCoordinator*)coordinator
+        didRequestEditingQuery:(NSString*)query {
+  CHECK_EQ(coordinator, _voiceSearchCoordinator);
+  [self stopVoiceSearchCoordinator];
+  // TODO(crbug.com/571185104): Consider adding a Voice Search
+  // `ComposeboxEntrypoint` to measure the composebox sessions it starts.
+  [self showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
+                           withQuery:query];
 }
 
 - (void)voiceSearchCoordinatorDidFinish:(ChromeCoordinator*)coordinator {

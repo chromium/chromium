@@ -10,16 +10,25 @@
 @class ChromeCoordinator;
 
 // Delegate for the coordinator presenting the Voice Plate, which reports the
-// recognized query and the Voice Plate's dismissal.
+// recognized query, the user's request to edit it, and the end of the session.
+// Callbacks aren't sent once the coordinator is stopped, and the owner may stop
+// it from any callback. Queries are never empty.
 @protocol VoiceSearchCoordinatorDelegate <NSObject>
 
-// Called when `coordinator` recognized `query`. The delegate may stop
-// `coordinator` in response.
+// Called when `coordinator` recognized `query`. The owner is expected to stop
+// `coordinator` and load `query`, marking the resulting navigation, if any, as
+// a Voice Search result.
 - (void)voiceSearchCoordinator:(ChromeCoordinator*)coordinator
              didRecognizeQuery:(NSString*)query;
 
-// Called when the Voice Plate was dismissed. The owner is expected to stop
-// `coordinator`.
+// Called after the Voice Plate was dismissed for the user to edit `query`,
+// instead of `-voiceSearchCoordinatorDidFinish:`. The owner is expected to stop
+// `coordinator` and show `query` for editing.
+- (void)voiceSearchCoordinator:(ChromeCoordinator*)coordinator
+        didRequestEditingQuery:(NSString*)query;
+
+// Called when the Voice Plate should be dismissed without a query. The owner is
+// expected to stop `coordinator`, which dismisses it.
 - (void)voiceSearchCoordinatorDidFinish:(ChromeCoordinator*)coordinator;
 
 @end

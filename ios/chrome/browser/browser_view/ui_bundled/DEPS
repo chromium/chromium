@@ -163,6 +163,7 @@ include_rules = [
   "+ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/view_source/model/view_source_browser_agent.h",
+  "+ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h",
   "+ios/chrome/browser/voice/ui_bundled",
   "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/web_state_list/model",
