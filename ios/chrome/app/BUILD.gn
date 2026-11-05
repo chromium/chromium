@@ -112,6 +112,8 @@ source_set("tasks_handling") {
     "task_request_url_context_private.h",
     "task_request_user_activity.h",
     "task_request_user_activity.mm",
+    "task_request_utils.h",
+    "task_request_utils.mm",
   ]
 
   public_deps = [ ":tasks_handling_header" ]

@@ -13,18 +13,17 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_private.h"
+#import "ios/chrome/app/task_request_utils.h"
 #import "ios/chrome/app/unexpected_mode_toast_util.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
@@ -35,7 +34,6 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -573,24 +571,6 @@ void FocusOmniboxWithBrowser(Browser* browser) {
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
       browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [handler showComposebox];
-}
-
-// Generates a GURL for a given search query using the default search provider.
-GURL GenerateResultGURLFromSearchQuery(NSString* search_query,
-                                       ProfileIOS* profile) {
-  TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForProfile(profile);
-  const TemplateURL* default_url =
-      template_url_service->GetDefaultSearchProvider();
-  if (default_url && !default_url->url().empty() &&
-      default_url->url_ref().IsValid(
-          template_url_service->search_terms_data())) {
-    std::u16string query_string = base::SysNSStringToUTF16(search_query);
-    TemplateURLRef::SearchTermsArgs search_args(query_string);
-    return GURL(default_url->url_ref().ReplaceSearchTerms(
-        search_args, template_url_service->search_terms_data()));
-  }
-  return GURL();
 }
 
 // Callback taking a Browser pointer.
