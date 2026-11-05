@@ -24,3 +24,4 @@ virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reshape.http
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/softsign.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/tan.https.any.html?gpu [ Failure ]
 crbug.com/463763785 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/batch_normalization_constant.https.any.html?gpu [ Failure ]
+crbug.com/578623172 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/is_nan.https.any.html?gpu [ Failure ]

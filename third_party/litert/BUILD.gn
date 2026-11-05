@@ -877,6 +877,8 @@ if (build_with_chromium && build_litert_with_ml_drift) {
       "src/ml_drift_delegate/delegate/composite/fuse_qkv_norm_rope.cc",
       "src/ml_drift_delegate/delegate/composite/fuse_sdpa_transposed_reshape.cc",
       "src/ml_drift_delegate/delegate/composite/fuse_short_conv_step.cc",
+      "src/ml_drift_delegate/delegate/composite/fused_sdpa_cache_update_kernel.cc",
+      "src/ml_drift_delegate/delegate/composite/fused_sdpa_cache_update_parser.cc",
       "src/ml_drift_delegate/delegate/composite/gated_delta_update_kernel.cc",
       "src/ml_drift_delegate/delegate/composite/gated_delta_update_parser.cc",
       "src/ml_drift_delegate/delegate/composite/glu_kernel.cc",
@@ -907,6 +909,7 @@ if (build_with_chromium && build_litert_with_ml_drift) {
     sources = [
       "src/ml_drift_delegate/delegate/composite/ir/add_values_to_cache_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/custom_parsers.cc",
+      "src/ml_drift_delegate/delegate/composite/ir/fused_sdpa_cache_update_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/gated_delta_update_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/glu_parser.cc",
       "src/ml_drift_delegate/delegate/composite/ir/litert_op_selector.cc",

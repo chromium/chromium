@@ -3,18 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//components/optimization_guide/features.gni")
 import("//services/webnn/public/webnn_features.gni")
-
-webnn_use_webgpu_accelerator =
-    build_with_internal_optimization_guide && webnn_use_litert
 
 buildflag_header("buildflags") {
   header = "webnn_buildflags.h"
   flags = [
     "WEBNN_ENABLE_GRAPH_DUMP=$webnn_enable_graph_dump",
     "WEBNN_USE_LITERT=$webnn_use_litert",
-    "WEBNN_USE_WEBGPU_ACCELERATOR=$webnn_use_webgpu_accelerator",
   ]
 }
 
@@ -41,8 +36,6 @@ component("cpp") {
     "webgpu_context_properties.h",
     "webnn_errors.cc",
     "webnn_errors.h",
-    "webnn_sandbox_init.cc",
-    "webnn_sandbox_init.h",
     "webnn_trace.cc",
     "webnn_trace.h",
     "webnn_types.h",
@@ -51,7 +44,6 @@ component("cpp") {
   public_deps = [
     ":buildflags",
     "//base",
-    "//services/webnn/public/mojom:features",
     "//third_party/blink/public/common/tokens:tokens_headers",
   ]
 
