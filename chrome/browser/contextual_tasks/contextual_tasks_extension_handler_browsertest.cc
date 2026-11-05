@@ -6053,7 +6053,7 @@ IN_PROC_BROWSER_TEST_F(
         });
   };
 
-  // 1. Showing the side panel next to `url1` attaches the active tab as pending
+  // Showing the side panel next to `url1` attaches the active tab as pending
   // delayed and mounts `CONTEXT_LIBRARY`.
   base::RunLoop zero_state_loop;
   EXPECT_CALL(mock_panel_page_, OnTabContextUpdated(_, _, _))
@@ -6071,7 +6071,7 @@ IN_PROC_BROWSER_TEST_F(
   mock_panel_page_.FlushForTesting();
   testing::Mock::VerifyAndClearExpectations(&mock_panel_page_);
 
-  // 2. `OnPageChanged(false)` and `OnPageChanged(true)` preserve the implicit
+  // `OnPageChanged(false)` and `OnPageChanged(true)` preserve the implicit
   // active tab context in the side panel.
   SendOnPageChanged(false);
   SendOnPageChanged(true);
@@ -6084,7 +6084,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(user_data->GetAutoSuggestedTabHandle(),
             TabListInterface::From(browser())->GetActiveTab()->GetHandle());
 
-  // 3. Navigating the active tab while in zero state updates the implicit tab.
+  // Navigating the active tab while in zero state updates the implicit tab.
   base::RunLoop nav_loop;
   EXPECT_CALL(mock_panel_page_, OnTabContextUpdated(_, _, _))
       .WillRepeatedly(
@@ -6107,9 +6107,33 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url2);
   EXPECT_EQ(user_data->GetSelectedTabs()[0].title, "Title Of Awesomeness");
 
-  // 4. Navigating to `about:blank` removes the implicit tab and unmounts UI.
+  // Navigating to `about:blank` removes the implicit tab, hides
+  // `TAB_PICKER`, and unmounts `CONTEXT_LIBRARY`.
   base::RunLoop unmount_loop;
-  expect_context_library(false, unmount_loop);
+  EXPECT_CALL(mock_panel_page_, PostSearchMessage(_))
+      .WillOnce([](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_EQ(message->inject_chrome_input().input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER);
+        EXPECT_FALSE(message->inject_chrome_input().is_active());
+      })
+      .WillOnce([](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_EQ(
+            message->inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+        EXPECT_FALSE(message->inject_chrome_input().is_active());
+      })
+      .WillOnce([&unmount_loop](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_EQ(message->on_context_state_changed().context_state(),
+                  lens::ClientToSearchMessage::OnContextStateChanged::
+                      CONTEXT_STATE_NONE);
+        unmount_loop.Quit();
+      });
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   unmount_loop.Run();
   EXPECT_TRUE(user_data->GetSelectedTabs().empty());

@@ -42,6 +42,8 @@ message ClientToSearchMessage {
       CONTEXT_LIBRARY = 2;
       // Lens button / selection active state.
       LENS_BUTTON = 3;
+      // Tab picker / open tabs menu item.
+      TAB_PICKER = 4;
     }
     InputType input_type = 2;
 

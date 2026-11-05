@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -44,8 +45,13 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/range/range.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#endif
 
 namespace contextual_tasks {
 
@@ -142,6 +148,8 @@ class ActiveTaskContextProviderImplTest : public testing::Test {
                                                          tab.get());
 
     ON_CALL(*tab, GetContents()).WillByDefault(Return(web_contents_ptr));
+    ON_CALL(*tab, GetBrowserWindowInterface())
+        .WillByDefault(Return(browser_window_.get()));
 
     tabs::TabInterface* tab_ptr = tab.get();
     tabs_.push_back(std::move(tab));
@@ -783,6 +791,150 @@ TEST_F(ActiveTaskContextProviderImplTest,
     observer.OnTabRemoved(*tab_list_, tab1, TabRemovedReason::kDeleted);
   }
   EXPECT_TRUE(dummy_handle_.GetTabContextState().restored.empty());
+}
+
+TEST_F(ActiveTaskContextProviderImplTest,
+       UpdateTabPickerVisibilityOnTabLifecycleEvents) {
+  EXPECT_CALL(*contextual_tasks_panel_controller_,
+              GetSessionHandleForActiveTabOrPanel())
+      .WillRepeatedly(Return(std::make_pair(std::nullopt, nullptr)));
+
+  // Set up a tab-hosted AIM WebContents (completed handshake) and a non-AIM
+  // tab carrying `ContextualTasksWebContentsUserData` without handshake.
+  tabs::TabInterface* aim_tab = CreateMockTab();
+  content::WebContentsTester::For(aim_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://www.google.com/search?udm=50"));
+  tabs::TabInterface* non_aim_tab = CreateMockTab();
+  content::WebContentsTester::For(non_aim_tab->GetContents())
+      ->NavigateAndCommit(GURL("chrome://newtab"));
+
+  std::vector<tabs::TabInterface*> open_tabs = {aim_tab, non_aim_tab};
+  ON_CALL(*tab_list_, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&open_tabs));
+  ON_CALL(*tab_list_, GetTabCount()).WillByDefault([&]() {
+    return static_cast<int>(open_tabs.size());
+  });
+  ON_CALL(*tab_list_, GetTab(_)).WillByDefault([&](int index) {
+    return open_tabs[index];
+  });
+
+  auto* aim_tab_user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          aim_tab->GetContents());
+  auto* non_aim_user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          non_aim_tab->GetContents());
+
+  std::vector<bool> aim_tab_picker_states;
+  aim_tab_user_data->SetSearchMessageDispatcherForTesting(
+      base::BindLambdaForTesting([&](const lens::ClientToSearchMessage& msg) {
+        if (msg.has_inject_chrome_input() &&
+            msg.inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER) {
+          aim_tab_picker_states.push_back(
+              msg.inject_chrome_input().is_active());
+        }
+      }));
+  std::vector<bool> non_aim_tab_picker_states;
+  non_aim_user_data->SetSearchMessageDispatcherForTesting(
+      base::BindLambdaForTesting([&](const lens::ClientToSearchMessage& msg) {
+        if (msg.has_inject_chrome_input() &&
+            msg.inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER) {
+          non_aim_tab_picker_states.push_back(
+              msg.inject_chrome_input().is_active());
+        }
+      }));
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  webui::SetBrowserWindowInterface(panel_contents.get(), browser_window_.get());
+  auto* panel_user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          panel_contents.get());
+  std::vector<bool> panel_tab_picker_states;
+  panel_user_data->SetSearchMessageDispatcherForTesting(
+      base::BindLambdaForTesting([&](const lens::ClientToSearchMessage& msg) {
+        if (msg.has_inject_chrome_input() &&
+            msg.inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER) {
+          panel_tab_picker_states.push_back(
+              msg.inject_chrome_input().is_active());
+        }
+      }));
+  // Return `panel_contents` in both `GetPanelWebContentsList()` and
+  // `GetActiveWebContents()` to verify deduplication.
+  ON_CALL(*contextual_tasks_panel_controller_, GetPanelWebContentsList())
+      .WillByDefault(
+          Return(std::vector<content::WebContents*>{panel_contents.get()}));
+  ON_CALL(*contextual_tasks_panel_controller_, GetActiveWebContents())
+      .WillByDefault(Return(panel_contents.get()));
+  panel_user_data->OnHandshakeComplete();
+#endif
+
+  aim_tab_user_data->OnHandshakeComplete();
+  EXPECT_TRUE(aim_tab_picker_states.empty());
+
+  // `OnTabAdded` with an eligible tab injects `TAB_PICKER` (`true`).
+  tabs::TabInterface* eligible_tab = CreateMockTab();
+  content::WebContentsTester::For(eligible_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/1"));
+  open_tabs.push_back(eligible_tab);
+  for (auto& observer : tab_list_observers_) {
+    observer.OnTabAdded(*tab_list_, eligible_tab, 2);
+  }
+  EXPECT_THAT(aim_tab_picker_states, testing::ElementsAre(true));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(panel_tab_picker_states, testing::ElementsAre(true));
+#endif
+
+  // Navigating `eligible_tab` to `chrome://newtab` hides `TAB_PICKER`
+  // (`false`).
+  content::WebContentsTester::For(eligible_tab->GetContents())
+      ->NavigateAndCommit(GURL("chrome://newtab"));
+  EXPECT_THAT(aim_tab_picker_states, testing::ElementsAre(true, false));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(panel_tab_picker_states, testing::ElementsAre(true, false));
+#endif
+
+  // `OnWebContentsReplaced` with an eligible WebContents re-injects
+  // `TAB_PICKER` (`true`).
+  content::WebContents* old_contents = eligible_tab->GetContents();
+  std::unique_ptr<content::WebContents> replacement_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  content::WebContents* replacement_ptr = replacement_contents.get();
+  sessions::SessionTabHelper::CreateForWebContents(replacement_ptr,
+                                                   base::NullCallback());
+  content::WebContentsTester::For(replacement_ptr)
+      ->NavigateAndCommit(GURL("https://example.com/replaced"));
+  web_contents_.push_back(std::move(replacement_contents));
+  ON_CALL(*static_cast<tabs::MockTabInterface*>(eligible_tab), GetContents())
+      .WillByDefault(Return(replacement_ptr));
+  for (auto& observer : tab_list_observers_) {
+    observer.OnWebContentsReplaced(*tab_list_, eligible_tab, old_contents,
+                                   replacement_ptr);
+  }
+  EXPECT_THAT(aim_tab_picker_states, testing::ElementsAre(true, false, true));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(panel_tab_picker_states, testing::ElementsAre(true, false, true));
+#endif
+
+  // `OnTabRemoved` hides `TAB_PICKER` (`false`).
+  open_tabs.pop_back();
+  for (auto& observer : tab_list_observers_) {
+    observer.OnTabRemoved(*tab_list_, eligible_tab, TabRemovedReason::kDeleted);
+  }
+  EXPECT_THAT(aim_tab_picker_states,
+              testing::ElementsAre(true, false, true, false));
+  EXPECT_TRUE(non_aim_tab_picker_states.empty());
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(panel_tab_picker_states,
+              testing::ElementsAre(true, false, true, false));
+  webui::SetBrowserWindowInterface(panel_contents.get(), nullptr);
+#endif
 }
 
 }  // namespace contextual_tasks

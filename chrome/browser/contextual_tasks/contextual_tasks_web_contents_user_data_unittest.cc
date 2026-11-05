@@ -1908,4 +1908,107 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_EQ(response.added_contexts(0).request_id().context_id(), 105);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       UpdateTabPickerVisibility_InjectsAndHidesTabPicker) {
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  std::vector<lens::ClientToSearchMessage> tab_picker_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        if (message.has_inject_chrome_input() &&
+            message.inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER) {
+          tab_picker_messages.push_back(message);
+        }
+      }));
+
+  // Pre-handshake calls do not queue or dispatch `TAB_PICKER`, and handshake
+  // with no eligible tabs does not inject `TAB_PICKER`.
+  content::WebContents* other_tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  content::WebContentsTester::For(other_tab_contents)
+      ->NavigateAndCommit(GURL("https://example.com/pre-handshake"));
+  tabs::MockTabInterface mock_other_tab;
+  ON_CALL(mock_other_tab, GetContents())
+      .WillByDefault(testing::Return(other_tab_contents));
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_other_tab};
+  ON_CALL(mock_tab_list, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&all_tabs));
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_TRUE(tab_picker_messages.empty());
+
+  all_tabs.clear();
+  user_data->OnHandshakeComplete();
+  EXPECT_TRUE(tab_picker_messages.empty());
+
+  // An ineligible tab (`chrome://newtab`, an AIM search URL, or an AIM
+  // zero-state URL) or the host WebContents itself does not inject
+  // `TAB_PICKER`.
+  content::WebContentsTester::For(other_tab_contents)
+      ->NavigateAndCommit(GURL("chrome://newtab"));
+  tabs::MockTabInterface mock_self_tab;
+  ON_CALL(mock_self_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents_));
+  all_tabs = {&mock_other_tab, &mock_self_tab};
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_TRUE(tab_picker_messages.empty());
+
+  content::WebContentsTester::For(other_tab_contents)
+      ->NavigateAndCommit(GURL("https://www.google.com/search?udm=50&q=test"));
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_TRUE(tab_picker_messages.empty());
+
+  content::WebContentsTester::For(other_tab_contents)
+      ->NavigateAndCommit(GURL("https://www.google.com/search?udm=50"));
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_TRUE(tab_picker_messages.empty());
+
+  // Navigating `other_tab_contents` to an eligible URL injects `TAB_PICKER`
+  // (`is_active = true`), and redundant calls are deduplicated.
+  content::WebContentsTester::For(other_tab_contents)
+      ->NavigateAndCommit(GURL("https://example.com/page"));
+  user_data->UpdateTabPickerVisibility();
+  ASSERT_EQ(tab_picker_messages.size(), 1u);
+  EXPECT_TRUE(tab_picker_messages.back().inject_chrome_input().is_active());
+
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_EQ(tab_picker_messages.size(), 1u);
+
+  // When no eligible tabs remain, `UpdateTabPickerVisibility()` sends
+  // `INJECT_INPUT` (`is_active = false`) to hide the tab picker.
+  all_tabs.clear();
+  user_data->UpdateTabPickerVisibility();
+  ASSERT_EQ(tab_picker_messages.size(), 2u);
+  EXPECT_FALSE(tab_picker_messages.back().inject_chrome_input().is_active());
+
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_EQ(tab_picker_messages.size(), 2u);
+
+  // Reconnecting a document resets `tab_picker_is_active` and injects
+  // `TAB_PICKER` on handshake when an eligible tab is already open.
+  all_tabs = {&mock_other_tab};
+  tab_picker_messages.clear();
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
+  user_data->OnHandshakeComplete();
+  ASSERT_EQ(tab_picker_messages.size(), 1u);
+  EXPECT_TRUE(tab_picker_messages.back().inject_chrome_input().is_active());
+
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
+}
+#endif
+
 }  // namespace contextual_tasks
