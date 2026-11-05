@@ -1777,12 +1777,8 @@ class OmniboxViewViewsPlaceholderTest : public InProcessBrowserTest {
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
         /*disabled_features=*/
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-        // is enabled and then remove these two Features.
         {contextual_tasks::kContextualTasksRearchitecture,
          contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup,
          // kWebUILocationBar however replaces OmniboxViewViews, so almost
          // all tests here are inherently incompatible with it
          features::kWebUILocationBar});
@@ -1863,9 +1859,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   EXPECT_FALSE(
       omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
 
-  // Verify the placeholder text is set to the default search engine.
-  EXPECT_EQ(u"Search Google or type a URL",
-            omnibox_view()->GetPlaceholderText());
+  // Verify the placeholder text is set to the default search engine. The AIM
+  // variant is used because the mock AIM eligibility service always returns
+  // true for `IsFuseboxEligible()`.
+  EXPECT_EQ(u"Ask Google or type a URL", omnibox_view()->GetPlaceholderText());
   // Verify the display text is empty.
   EXPECT_EQ(u"", omnibox_view()->GetText());
 }
@@ -1886,9 +1883,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   EXPECT_FALSE(
       omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
 
-  // Verify the placeholder text is the default search engine.
-  EXPECT_EQ(u"Search Google or type a URL",
-            omnibox_view()->GetPlaceholderText());
+  // Verify the placeholder text is the default search engine. The AIM variant
+  // is used because the mock AIM eligibility service always returns true for
+  // `IsFuseboxEligible()`.
+  EXPECT_EQ(u"Ask Google or type a URL", omnibox_view()->GetPlaceholderText());
   // Verify the display text is set to the page URL.
   EXPECT_EQ(u"about:blank", omnibox_view()->GetText());
 
@@ -1911,9 +1909,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   EXPECT_FALSE(
       omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
 
-  // Verify the placeholder text is set to the default search engine.
-  EXPECT_EQ(u"Search Google or type a URL",
-            omnibox_view()->GetPlaceholderText());
+  // Verify the placeholder text is set to the default search engine. The AIM
+  // variant is used because the mock AIM eligibility service always returns
+  // true for `IsFuseboxEligible()`.
+  EXPECT_EQ(u"Ask Google or type a URL", omnibox_view()->GetPlaceholderText());
   // Verify the display text is empty.
   EXPECT_EQ(u"", omnibox_view()->GetText());
 
@@ -1934,9 +1933,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   EXPECT_FALSE(
       omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
 
-  // Verify the placeholder text is set to the default search engine.
-  EXPECT_EQ(u"Search Google or type a URL",
-            omnibox_view()->GetPlaceholderText());
+  // Verify the placeholder text is set to the default search engine. The AIM
+  // variant is used because the mock AIM eligibility service always returns
+  // true for `IsFuseboxEligible()`.
+  EXPECT_EQ(u"Ask Google or type a URL", omnibox_view()->GetPlaceholderText());
   // Verify the display text is empty.
   EXPECT_EQ(u"", omnibox_view()->GetText());
 }
