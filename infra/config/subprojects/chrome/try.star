@@ -158,6 +158,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "android-webview-perf-trigger",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-arm64-generic-cfi-thin-lto-chrome",
 )
 
