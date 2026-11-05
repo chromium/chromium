@@ -1783,6 +1783,47 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Memory.Experimental.Mac{MacMemoryActivity}RateKBPerSecond"
+    units="KiB/s" expires_after="2027-10-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The rate of {MacMemoryActivity} on the system, computed from cumulative page
+    counts in host_statistics64() over each 2 minute awake interval. Page counts
+    are scaled to bytes using PAGE_SIZE in base::GetSystemMemoryInfo(), which is
+    16 KiB on Apple Silicon and 4 KiB on Intel (note that x86_64 builds running
+    under Rosetta 2 report a 4 KiB page size).
+
+    Recorded every 2 minutes on macOS starting on the second timer tick (4
+    minutes after browser startup), once an initial baseline snapshot has been
+    captured. Values at or above 10,000,000 KiB/s (~9.5 GiB/s) fall in the
+    overflow bucket.
+  </summary>
+  <token key="MacMemoryActivity">
+    <variant name="Compression"
+        summary="anonymous memory compressed into the kernel compressor
+                 (compressions)"/>
+    <variant name="Decompression"
+        summary="compressed memory unpacked back into RAM on fault
+                 (decompressions)"/>
+    <variant name="PageIn"
+        summary="memory paged in from backing store (pageins)"/>
+    <variant name="PageOut"
+        summary="dirty memory written out to backing store (pageouts)"/>
+    <variant name="Purge"
+        summary="volatile purgeable memory discarded by the kernel without
+                 disk I/O (purges)"/>
+    <variant name="Reactivation"
+        summary="inactive pages rescued back to the active queue before
+                 reclamation (reactivations)"/>
+    <variant name="SwapIn"
+        summary="compressor segments read back from disk swap files (swapins)"/>
+    <variant name="SwapOut"
+        summary="compressor segments flushed out to disk swap files
+                 (swapouts)"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.Experimental.Mac{MacMemoryKind}MemoryMB" units="MB"
     expires_after="2027-10-01">
   <owner>andresrperez@chromium.org</owner>

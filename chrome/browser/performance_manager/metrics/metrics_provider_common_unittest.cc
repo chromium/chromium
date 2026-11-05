@@ -19,6 +19,13 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include <vector>
+
+#include "base/byte_size.h"
+#include "base/process/process_metrics.h"
+#endif
+
 class PerformanceManagerMetricsProviderCommonTest : public testing::Test {
  protected:
   performance_manager::MetricsProviderCommon* provider() {
@@ -120,7 +127,86 @@ TEST_F(PerformanceManagerMetricsProviderCommonTest, MacSystemMemoryMetrics) {
     EXPECT_LE(samples[0].min, 100) << name;
   }
 
+  static constexpr const char* kChurnRateHistograms[] = {
+      "Memory.Experimental.MacCompressionRateKBPerSecond",
+      "Memory.Experimental.MacDecompressionRateKBPerSecond",
+      "Memory.Experimental.MacPageInRateKBPerSecond",
+      "Memory.Experimental.MacPageOutRateKBPerSecond",
+      "Memory.Experimental.MacPurgeRateKBPerSecond",
+      "Memory.Experimental.MacReactivationRateKBPerSecond",
+      "Memory.Experimental.MacSwapInRateKBPerSecond",
+      "Memory.Experimental.MacSwapOutRateKBPerSecond",
+  };
+  // The first tick only captures the baseline counters, so churn rates are not
+  // emitted until the second tick.
+  for (const char* name : kChurnRateHistograms) {
+    tester.ExpectTotalCount(name, 0);
+  }
+
+  task_environment().FastForwardBy(base::Minutes(2));
+  for (const char* name : kSizeHistograms) {
+    tester.ExpectTotalCount(name, 2);
+  }
+  for (const char* name : kChurnRateHistograms) {
+    const std::vector<base::Bucket> samples = tester.GetAllSamples(name);
+    ASSERT_EQ(samples.size(), 1u) << name;
+    EXPECT_GE(samples[0].min, 0) << name;
+  }
+
   // MacSwap{Used,Total}MB are not asserted on: they depend on the vm.swapusage
   // sysctl succeeding.
+}
+
+TEST_F(PerformanceManagerMetricsProviderCommonTest,
+       MacSystemMemoryChurnRateCalculation) {
+  base::SystemMemoryInfo prev;
+  prev.reactivations = base::KiB(100);
+  prev.pageins = base::KiB(100);
+  prev.pageouts = base::KiB(100);
+  prev.purges = base::KiB(100);
+  prev.compressions = base::KiB(100);
+  prev.decompressions = base::KiB(100);
+  prev.swapins = base::KiB(100);
+  prev.swapouts = base::KiB(100);
+
+  base::SystemMemoryInfo cur = prev;
+  cur.reactivations += base::KiB(100);    // 10 KiB/s over 10s
+  cur.pageins += base::KiB(200);          // 20 KiB/s
+  cur.pageouts += base::KiB(400);         // 40 KiB/s
+  cur.purges += base::KiB(800);           // 80 KiB/s
+  cur.compressions += base::KiB(1600);    // 160 KiB/s
+  cur.decompressions += base::KiB(3200);  // 320 KiB/s
+  cur.swapins += base::KiB(6400);         // 640 KiB/s
+  cur.swapouts += base::KiB(12800);       // 1280 KiB/s
+
+  base::HistogramTester tester;
+  // Non-positive elapsed time emits nothing.
+  performance_manager::RecordMacSystemMemoryChurnMetrics(prev, cur,
+                                                         base::TimeDelta());
+  tester.ExpectTotalCount("Memory.Experimental.MacReactivationRateKBPerSecond",
+                          0);
+
+  performance_manager::RecordMacSystemMemoryChurnMetrics(prev, cur,
+                                                         base::Seconds(10));
+  // Reversed snapshots (cur < prev) emit no additional samples.
+  performance_manager::RecordMacSystemMemoryChurnMetrics(cur, prev,
+                                                         base::Seconds(10));
+
+  tester.ExpectUniqueSample(
+      "Memory.Experimental.MacReactivationRateKBPerSecond", 10, 1);
+  tester.ExpectUniqueSample("Memory.Experimental.MacPageInRateKBPerSecond", 20,
+                            1);
+  tester.ExpectUniqueSample("Memory.Experimental.MacPageOutRateKBPerSecond", 40,
+                            1);
+  tester.ExpectUniqueSample("Memory.Experimental.MacPurgeRateKBPerSecond", 80,
+                            1);
+  tester.ExpectUniqueSample("Memory.Experimental.MacCompressionRateKBPerSecond",
+                            160, 1);
+  tester.ExpectUniqueSample(
+      "Memory.Experimental.MacDecompressionRateKBPerSecond", 320, 1);
+  tester.ExpectUniqueSample("Memory.Experimental.MacSwapInRateKBPerSecond", 640,
+                            1);
+  tester.ExpectUniqueSample("Memory.Experimental.MacSwapOutRateKBPerSecond",
+                            1280, 1);
 }
 #endif  // BUILDFLAG(IS_MAC)
