@@ -124,6 +124,10 @@ template("rust_unit_test") {
     metadata = {
       # Consumed by "rust_unit_tests_group" gni template.
       rust_unit_test_executables = [ _crate_name ]
+      if (defined(invoker.aliased_deps) && invoker.aliased_deps != {
+                                           }) {
+        rust_aliased_deps = [ invoker.aliased_deps ]
+      }
     }
 
     # Duplicated from rust_target since we didn't use the rust_executable

@@ -2095,8 +2095,21 @@ def _resolve_dependencies(
                     "crubit_cpp_from_rust",
                 ]:
                     module_target.rustlibs.add(dep_module.name)
+                    for (
+                        alias_name,
+                        aliased_dep_name,
+                    ) in target.aliased_deps.items():
+                        if dep_module.gn_target == aliased_dep_name:
+                            module_target.aliases.add(
+                                f"{dep_module.crate_name}:{alias_name}"
+                            )
             elif dep_module.type == "rust_proc_macro":
                 module_target.proc_macros.add(dep_module.name)
+                for alias_name, aliased_dep_name in target.aliased_deps.items():
+                    if dep_module.gn_target == aliased_dep_name:
+                        module_target.aliases.add(
+                            f"{dep_module.crate_name}:{alias_name}"
+                        )
             elif dep_module.type == "aidl_interface":
                 # See https://cs.android.com/android/platform/superproject/main/+/main:system/tools/aidl/build/aidl_interface_backends.go
                 # for how those modules "-lang-source" is generated.

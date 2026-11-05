@@ -45,13 +45,16 @@ cargo_crate("lib") {
 
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
+    "//third_party/rust/icu4x_data:lib",
     "//third_party/rust/icu_collections/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
-    "//third_party/rust/icu_properties_data/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/zerotrie/v0_2:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
+  aliased_deps = {
+    icu_properties_data = "//third_party/rust/icu4x_data:lib"
+  }
   features = [
     "alloc",
     "compiled_data",

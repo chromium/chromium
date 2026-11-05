@@ -45,9 +45,9 @@ cargo_crate("lib") {
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/either/v1:lib",
+    "//third_party/rust/icu4x_data:lib",
     "//third_party/rust/icu_collections/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
-    "//third_party/rust/icu_locale_data/v2:lib",
     "//third_party/rust/icu_locale_fallback/v2:lib",
     "//third_party/rust/icu_pattern/v0_5:lib",
     "//third_party/rust/icu_provider/v2:lib",
@@ -55,6 +55,9 @@ cargo_crate("lib") {
     "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
+  aliased_deps = {
+    icu_locale_data = "//third_party/rust/icu4x_data:lib"
+  }
   features = [
     "compiled_data",
     "unstable",

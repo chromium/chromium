@@ -213,6 +213,7 @@ class CcTarget(Target):
 
 class RustTarget(Target):
     SUPPORTED_FIELDS = {
+        'aliases',
         'edition',
         'features',
         'cfgs',
@@ -227,6 +228,7 @@ class RustTarget(Target):
 
     def __init__(self, name, parent=None):
         super().__init__(name, parent)
+        self.aliases = set()
         self.edition = ""
         self.features = set()
         self.cfgs = set()
@@ -636,6 +638,7 @@ class JavaModule(Module):
 
 class RustModule(Module):
     SUPPORTED_FIELDS = {
+        'aliases',
         'srcs',
         'min_sdk_version',
         'crate_name',
@@ -655,6 +658,7 @@ class RustModule(Module):
         self, mod_type, name, gn_target, context, is_test=False, role=None
     ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
+        self.aliases = set()
         self.min_sdk_version = None
         self.shared_libs = set()
         self.static_libs = set()
@@ -714,6 +718,7 @@ class CrubitModule(Module):
     bindings for a Rust library (`rust_library`)."""
 
     SUPPORTED_FIELDS = {
+        'aliases',
         'rust_library',
         'crate_name',
         'namespace',
@@ -728,6 +733,7 @@ class CrubitModule(Module):
         self, mod_type, name, gn_target, context, is_test=False, role=None
     ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
+        self.aliases = set()
         self.rust_library = None
         self.crate_name = None
         self.namespace = None

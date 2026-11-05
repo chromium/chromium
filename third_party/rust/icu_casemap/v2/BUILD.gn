@@ -42,7 +42,7 @@ cargo_crate("lib") {
   allow_unsafe = true
 
   deps = [
-    "//third_party/rust/icu_casemap_data/v2:lib",
+    "//third_party/rust/icu4x_data:lib",
     "//third_party/rust/icu_collections/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
     "//third_party/rust/icu_properties/v2:lib",
@@ -51,6 +51,9 @@ cargo_crate("lib") {
     "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
+  aliased_deps = {
+    icu_casemap_data = "//third_party/rust/icu4x_data:lib"
+  }
   features = [ "compiled_data" ]
 
   #####################################################################

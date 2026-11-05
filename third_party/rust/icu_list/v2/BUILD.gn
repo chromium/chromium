@@ -36,13 +36,16 @@ cargo_crate("lib") {
   allow_unsafe = true
 
   deps = [
-    "//third_party/rust/icu_list_data/v2:lib",
+    "//third_party/rust/icu4x_data:lib",
     "//third_party/rust/icu_locale_fallback/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/regex_automata/v0_4:lib",
     "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
+  aliased_deps = {
+    icu_list_data = "//third_party/rust/icu4x_data:lib"
+  }
   features = [ "compiled_data" ]
 
   # Only for usage from third-party crates. Add the crate to

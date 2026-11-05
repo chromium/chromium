@@ -78,13 +78,16 @@ cargo_crate("lib") {
   deps = [
     "//third_party/rust/calendrical_calculations/v0_2:lib",
     "//third_party/rust/displaydoc/v0_2:lib",
-    "//third_party/rust/icu_calendar_data/v2:lib",
+    "//third_party/rust/icu4x_data:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
     "//third_party/rust/icu_locale_fallback/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/tinystr/v0_8:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
+  aliased_deps = {
+    icu_calendar_data = "//third_party/rust/icu4x_data:lib"
+  }
   features = [ "compiled_data" ]
 
   # Only for usage from third-party crates. Add the crate to

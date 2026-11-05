@@ -124,10 +124,10 @@ cargo_crate("lib") {
     "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/either/v1:lib",
     "//third_party/rust/fixed_decimal/v0_7:lib",
+    "//third_party/rust/icu4x_data:lib",
     "//third_party/rust/icu_casemap/v2:lib",
     "//third_party/rust/icu_collections/v2:lib",
     "//third_party/rust/icu_decimal/v2:lib",
-    "//third_party/rust/icu_experimental_data/v0_7:lib",
     "//third_party/rust/icu_list/v2:lib",
     "//third_party/rust/icu_locale/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
@@ -148,6 +148,9 @@ cargo_crate("lib") {
     "//third_party/rust/zerotrie/v0_2:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
+  aliased_deps = {
+    icu_experimental_data = "//third_party/rust/icu4x_data:lib"
+  }
   features = [ "compiled_data" ]
 
   #####################################################################

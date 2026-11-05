@@ -45,11 +45,14 @@ cargo_crate("lib") {
 
   deps = [
     "//third_party/rust/fixed_decimal/v0_7:lib",
+    "//third_party/rust/icu4x_data:lib",
     "//third_party/rust/icu_locale_fallback/v2:lib",
-    "//third_party/rust/icu_plurals_data/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
+  aliased_deps = {
+    icu_plurals_data = "//third_party/rust/icu4x_data:lib"
+  }
   features = [
     "compiled_data",
     "unstable",

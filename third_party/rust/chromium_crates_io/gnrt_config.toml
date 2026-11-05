@@ -455,6 +455,7 @@ extra_kv = { allow_unsafe = true }
 allow_unsafe = true
 
 [crate.icu_calendar_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
@@ -476,6 +477,7 @@ visibility = [
 allow_unsafe = true
 
 [crate.icu_casemap_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
@@ -486,6 +488,7 @@ allow_unsafe = true
 allow_unsafe = false
 
 [crate.icu_decimal_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
@@ -493,6 +496,7 @@ extra_kv = { allow_unsafe = false }
 allow_unsafe = true
 
 [crate.icu_experimental_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 
 [crate.icu_experimental_data.extra_kv]
@@ -502,6 +506,7 @@ allow_unsafe = false
 allow_unsafe = true
 
 [crate.icu_list_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 
 [crate.icu_list_data.extra_kv]
@@ -520,6 +525,7 @@ group = 'safe'
 allow_unsafe = true
 
 [crate.icu_locale_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
@@ -528,6 +534,7 @@ group = 'safe'
 extra_kv = { allow_unsafe = true }
 
 [crate.icu_locale_fallback_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
@@ -538,6 +545,7 @@ group = 'safe'
 allow_unsafe = true
 
 [crate.icu_normalizer_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
@@ -548,6 +556,7 @@ allow_unsafe = true
 allow_unsafe = true
 
 [crate.icu_plurals_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
@@ -555,6 +564,7 @@ extra_kv = { allow_unsafe = false }
 allow_unsafe = false
 
 [crate.icu_properties_data]
+replace_with = "//third_party/rust/icu4x_data:lib"
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 

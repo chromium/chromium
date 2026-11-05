@@ -15,7 +15,10 @@ TEST(RustCcBindingsFromRs, TestI32) {
 TEST(RustCcBindingsFromRs, TestChar) {
   char cpp_char = 'x';
   uint32_t cpp_char_as_int = static_cast<uint32_t>(cpp_char);
-  ::rs::char_ rust_char = rust_lib::get_ascii_char_or_panic(cpp_char_as_int);
+  // Use `auto` because Chromium's Crubit defines `char_` in `::rs`, whereas
+  // AOSP's pinned Crubit (used by Cronet's gn2bp import) still defines it in
+  // `::rs_std`.
+  auto rust_char = rust_lib::get_ascii_char_or_panic(cpp_char_as_int);
   uint32_t rust_char_as_int = static_cast<uint32_t>(rust_char);
   EXPECT_EQ(rust_char_as_int, cpp_char_as_int);
 }

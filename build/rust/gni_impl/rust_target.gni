@@ -596,6 +596,7 @@ template("rust_target") {
                                    "deps",
                                    "features",
                                    "inputs",
+                                   "metadata",
                                    "no_clippy",
                                    "output_name",
                                    "public_deps",
@@ -633,6 +634,18 @@ template("rust_target") {
       configs = _configs
       deps = _rust_deps + _cxx_generated_deps_for_rust
       aliased_deps = _rust_aliased_deps
+      metadata = {
+        if (defined(invoker.metadata)) {
+          forward_variables_from(invoker.metadata, "*")
+        }
+        if (_rust_aliased_deps != {
+            }) {
+          # Used by `//components/cronet/gn2bp` to translate GN `aliased_deps`
+          # into Soong `aliases`, as `gn desc --format=json` does not serialize
+          # `aliased_deps` directly.
+          rust_aliased_deps = [ _rust_aliased_deps ]
+        }
+      }
       public_deps = _rust_public_deps
       if (_main_target_suffix == "") {
         # When these are not provided by a wrapper group target, they are added

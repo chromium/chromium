@@ -312,6 +312,9 @@ class GnParser:
             self.build_file_path = ""
             self.crate_name = None
             self.crate_root = None
+            # Maps crate alias names to their resolved GN target names for
+            # Rust targets with `aliased_deps`.
+            self.aliased_deps = {}
             # Populated for `crubit_cpp_from_rust` targets from their GN
             # metadata (`crate_header`, `crate_namespace`, `rust_target`).
             self.crubit_rust_target = None
@@ -773,6 +776,37 @@ class GnParser:
             target.rust_package_version = _extract_rust_package_version(
                 desc['rustenv']
             )
+            for aliased_deps_scope in metadata.get("rust_aliased_deps", []):
+                for alias_name, dep_label in aliased_deps_scope.items():
+                    if dep_label.startswith(":"):
+                        dep_label = (
+                            f"//{_get_build_path_from_label(target_name)}"
+                            f"{dep_label}"
+                        )
+                    else:
+                        dep_label = gn2bp_common.label_without_toolchain(
+                            dep_label
+                        )
+                        if ":" not in dep_label:
+                            dep_label = (
+                                f"{dep_label}:{dep_label.rsplit('/', 1)[-1]}"
+                            )
+                    if arch == 'host':
+                        dep_label = self._label_with_toolchain(
+                            dep_label, desc["toolchain"]
+                        )
+                    dep_target = self.parse_gn_desc(
+                        gn_desc, dep_label, is_test_target
+                    )
+                    if (
+                        dep_target.type == 'group'
+                        and arch in dep_target.arch
+                        and len(dep_target.arch[arch].direct_deps) == 1
+                    ):
+                        (resolved_dep_name,) = dep_target.arch[arch].direct_deps
+                    else:
+                        resolved_dep_name = dep_target.name
+                    target.aliased_deps[alias_name] = resolved_dep_name
         else:
             raise Exception(
                 f"Encountered GN target with unknown type\nCulprit target: {gn_target_name}\ntype: {target.type}"
