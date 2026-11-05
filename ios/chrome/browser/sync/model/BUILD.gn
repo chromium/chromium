@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
 source_set("model") {
   sources = [
     "enterprise_utils.cc",
@@ -112,6 +114,14 @@ source_set("model") {
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/sync/model/glue",
   ]
+}
+
+optimize_ts("tab_context_decryption_token_js") {
+  visibility = [ ":unit_tests" ]
+
+  sources = [ "resources/tab_context_decryption_token.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
 source_set("device_info_sync_service_factory") {
@@ -234,10 +244,12 @@ source_set("unit_tests") {
     "session_sync_service_factory_unittest.cc",
     "sync_error_browser_agent_unittest.mm",
     "sync_service_factory_unittest.mm",
+    "tab_context_decryption_token_javascript_unittest.mm",
   ]
   deps = [
     ":model",
     ":sync_error_browser_agent",
+    ":tab_context_decryption_token_js",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -269,8 +281,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "WebKit.framework",
   ]
 }
