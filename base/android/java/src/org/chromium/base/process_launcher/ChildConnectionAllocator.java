@@ -52,6 +52,22 @@ public abstract class ChildConnectionAllocator {
     private static final String ZYGOTE_SUFFIX = "0";
     private static final String NON_ZYGOTE_SUFFIX = "1";
 
+    // Use separate bool to track init state rather than null-ness of `sInitialAppInfoSplitNames`
+    // to allow the possibility of ApplicationInfo.splitNames being null.
+    private static boolean sRecordedSplitNames;
+    private static String @Nullable [] sInitialAppInfoSplitNames;
+
+    private static boolean haveSplitsChanged() {
+        String[] currentSplits =
+                ContextUtils.getApplicationContext().getApplicationInfo().splitNames;
+        if (!sRecordedSplitNames) {
+            sRecordedSplitNames = true;
+            sInitialAppInfoSplitNames = currentSplits;
+            return false;
+        }
+        return !Arrays.equals(sInitialAppInfoSplitNames, currentSplits);
+    }
+
     /** Factory interface. Used by tests to specialize created connections. */
     @VisibleForTesting
     public interface ConnectionFactory {
@@ -672,6 +688,12 @@ public abstract class ChildConnectionAllocator {
             ComponentName fallbackServiceName = null;
             if (mFallbackServiceClassName != null) {
                 fallbackServiceName = new ComponentName(mPackageName, mFallbackServiceClassName);
+            }
+            // Workaround OS bug in app zygote after splits are installed, disable zygote for the
+            // rest of this process. See crbug.com/579027312 for details.
+            if (haveSplitsChanged() && fallbackServiceName != null) {
+                serviceName = fallbackServiceName;
+                fallbackServiceName = null;
             }
             String instanceName = Integer.toString(mNextInstance);
             mNextInstance++;
