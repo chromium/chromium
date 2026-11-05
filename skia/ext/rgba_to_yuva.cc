@@ -4,6 +4,7 @@
 
 #include "skia/ext/rgba_to_yuva.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/check_op.h"
@@ -18,8 +19,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 
 namespace skia {
@@ -267,7 +270,7 @@ void BlitRGBAToYUVA(SkImage* src_image,
     // individual planes (which have R and RG pixel formats), ensure that
     // those pixel values are unpremultiplied.
     if (dst_yuva_info.hasAlpha() && dst_yuva_info.numPlanes() > 1 &&
-        !src_image->isOpaque()) {
+        src_image && !src_image->isOpaque()) {
       CHECK_EQ(dst_surfaces[plane]->imageInfo().alphaType(),
                kUnpremul_SkAlphaType);
     }
@@ -292,33 +295,44 @@ void BlitRGBAToYUVA(SkImage* src_image,
     paint.setColorFilter(filter);
 
     auto [ssHoriz, ssVert] = dst_yuva_info.planeSubsamplingFactors(plane);
-    const SkRect plane_dst_rect = SkRect::MakeXYWH(
-        dst_rect.x() / ssHoriz, dst_rect.y() / ssVert,
-        dst_rect.width() / ssHoriz, dst_rect.height() / ssVert);
 
-    if (!src_image) {
-      paint.setColor(SK_ColorBLACK);
-      plane_canvas->drawRect(plane_dst_rect, paint);
-    } else {
-      if (clear_destination && dst_image_rect != dst_rect) {
+    SkAutoCanvasRestore acr(plane_canvas, /*doSave=*/true);
+    if (dst_image_rect != dst_rect) {
+      if (clear_destination) {
         // If we were told to clear the destination prior to blitting and we
         // know the blit won't populate the entire destination image, issue the
         // draw call that fills the destination with black and takes into
         // account the color conversion needed.
         SkPaint clear_paint(paint);
         clear_paint.setColor(SK_ColorBLACK);
-
         plane_canvas->drawPaint(clear_paint);
       }
 
-      SkCanvas::SrcRectConstraint constraint =
-          SkCanvas::kFast_SrcRectConstraint;
-      if (src_rect != SkRect::Make(src_image->bounds())) {
-        constraint = SkCanvas::kStrict_SrcRectConstraint;
-      }
-      plane_canvas->drawImageRect(src_image, src_rect, plane_dst_rect,
-                                  sampling_options, &paint, constraint);
+      const SkIRect plane_clip =
+          SkRect::MakeLTRB(dst_rect.left() / ssHoriz, dst_rect.top() / ssVert,
+                           dst_rect.right() / ssHoriz,
+                           dst_rect.bottom() / ssVert)
+              .roundOut();
+      plane_canvas->clipIRect(plane_clip);
     }
+
+    plane_canvas->scale(1.f / ssHoriz, 1.f / ssVert);
+
+    if (!src_image) {
+      paint.setColor(SK_ColorBLACK);
+    } else {
+      plane_canvas->concat(SkMatrix::RectToRectOrIdentity(src_rect, dst_rect));
+      sk_sp<SkShader> shader = src_image->makeShader(sampling_options);
+      if (src_rect != SkRect::Make(src_image->bounds())) {
+        const SkRect clamp_rect =
+            src_rect.makeInset(std::min(0.5f, src_rect.width() * 0.5f),
+                               std::min(0.5f, src_rect.height() * 0.5f));
+        shader = SkShaders::CoordClamp(std::move(shader), clamp_rect);
+      }
+      paint.setShader(std::move(shader));
+    }
+
+    plane_canvas->drawPaint(paint);
   }
 }
 
