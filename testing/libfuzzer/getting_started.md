@@ -99,6 +99,71 @@ If your component's directory enforces include rules, you must add
 `+third_party/fuzztest` to your local DEPS file so that your C++ files can
 successfully include the FuzzTest headers.
 
+## Seed corpora and dictionaries
+
+For small seed lists or dictionaries, prefer inline literals (such as
+`.WithSeeds({...})` or `fuzztest::String().WithDictionary({...})`), which
+require no file packaging.
+
+To load on-disk seed files (`fuzztest::ReadFilesFromDirectory`) or a dictionary
+(`fuzztest::ReadDictionaryFromFile`), resolve paths from
+`base::DIR_SRC_TEST_DATA_ROOT` inside helper functions:
+
+```c++
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+
+std::vector<std::string> ReadMyDictionary() {
+  return fuzztest::ReadDictionaryFromFile(
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .AppendASCII("my_component/fuzzer.dict")
+          .AsUTF8Unsafe());
+}
+
+std::vector<std::tuple<std::string>> ReadMySeeds() {
+  return fuzztest::ReadFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .AppendASCII("my_component/fuzz_corpus")
+          .AsUTF8Unsafe());
+}
+
+void ParseDoesNotCrash(const std::string& input) {
+  MyApi(input);
+}
+
+FUZZ_TEST(MyApiTest, ParseDoesNotCrash)
+    .WithDomains(fuzztest::String().WithDictionary(ReadMyDictionary))
+    .WithSeeds(ReadMySeeds);
+```
+
+Keep two cross-platform rules in mind:
+
+1. **Pass a function pointer (do not call file readers inline):**
+   `FUZZ_TEST` registration runs during C++ static initialization before
+   `main()`—before the Android test launcher configures
+   `DIR_SRC_TEST_DATA_ROOT`. Passing a function pointer defers file loading
+   until test setup.
+2. **Package files for both Swarming (`data`) and iOS (`bundle_data`):**
+   Add `data = [ "fuzz_corpus/", "fuzzer.dict" ]` to your target in `BUILD.gn`
+   for desktop, Android, and Fuchsia. On **iOS**, `DIR_SRC_TEST_DATA_ROOT`
+   resolves to the `.app` bundle root and GN `data` entries are not copied into
+   `.app` bundles. If your unit test suite runs on iOS (such as
+   `base_unittests`, `net_unittests`, `components_unittests`,
+   `content_unittests`, or `blink_platform_unittests`), also package the files
+   into the bundle:
+   * For single files, add the file to the suite's `bundle_data` (such as
+     `base_unittests_bundle_data`) or a new `bundle_data` target with
+     `outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/{{source_file_part}}" ]`.
+   * For corpus directories in suites with an existing `.globlist` (such as
+     `net/data/test_bundle_data.globlist` or per-component lists in
+     `components/test/BUILD.gn`), add the glob and regenerate its `.filelist`
+     using `build/ios/update_bundle_filelist.py`.
+   * Otherwise, under `if (is_ios)`, import
+     `//build/config/ios/bundle_data_from_filelist.gni`, define a
+     `bundle_data_from_filelist` target and add it to `deps`, and add
+     `presubmit_support.CheckBundleData` in `PRESUBMIT.py`.
+
 ## Run the FuzzTest locally
 
 In a local terminal, build and run your unit tests. If your platform supports

@@ -54,6 +54,14 @@ For complex types:
   }
   ```
 
+For seeds or dictionaries: prefer inline `.WithSeeds({...})` or
+`fuzztest::String().WithDictionary({...})` when small, which need no file
+packaging. If loading on-disk files from `base::DIR_SRC_TEST_DATA_ROOT`
+(`fuzztest::ReadFilesFromDirectory`, `fuzztest::ReadDictionaryFromFile`), pass a
+**function pointer** (e.g. `.WithSeeds(ReadMyCorpus)`)—never an eager call,
+which runs before `main()` and crashes on Android before
+`DIR_SRC_TEST_DATA_ROOT` is configured.
+
 ### 3. Register in BUILD.gn
 
 You **MUST** register the test in the `fuzztests` list (in alphabetical order)
@@ -95,6 +103,13 @@ Find the executable `test()` target that depends on this `source_set()`:
 
 Then, ensure it lists the fuzz test in its `fuzztests` variable (in alphabetical
 order).
+
+If your test reads on-disk seed or dictionary files from
+`DIR_SRC_TEST_DATA_ROOT`, add them to `data = [ ... ]`—and if the enclosing
+`test()` target runs on iOS, also bundle them via `bundle_data` or
+`bundle_data_from_filelist` (GN `data` is not copied into iOS `.app` bundles;
+see **Seed corpora and dictionaries** in
+`testing/libfuzzer/getting_started.md`).
 
 ### 4. Mandatory verification workflow
 
