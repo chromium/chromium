@@ -6,42 +6,36 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "components/origin_matcher/origin_matcher.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/origin_matcher/android/jni/OriginMatcher_jni.h"
 
 namespace origin_matcher {
-namespace {
-OriginMatcher* FromPtr(long ptr) {
-  return reinterpret_cast<OriginMatcher*>(ptr);
-}
-}  // namespace
 
 OriginMatcher ToNativeOriginMatcher(JNIEnv* env,
                                     const jni_zero::JavaRef<jobject>& jobject) {
   // Copy the native origin matcher the java object holds onto.
   // The Java object is expected to clean up its own origin matcher's
   // reference.
-  OriginMatcher origin_matcher = *reinterpret_cast<OriginMatcher*>(
-      Java_OriginMatcher_getNative(env, jobject));
-  return origin_matcher;
+  OriginMatcher* native = Java_OriginMatcher_getNative(env, jobject);
+  CHECK(native);
+  return *native;
 }
 
 static bool JNI_OriginMatcher_Matches(JNIEnv* env,
-                                      int64_t ptr,
+                                      OriginMatcher* matcher,
                                       const url::Origin& origin) {
-  auto* matcher = FromPtr(ptr);
   return matcher->Matches(origin);
 }
 
 static std::vector<std::string> JNI_OriginMatcher_SetRuleList(
     JNIEnv* env,
-    int64_t ptr,
+    OriginMatcher* matcher,
     const std::vector<std::string>& rules) {
-  auto* matcher = FromPtr(ptr);
-
   OriginMatcher new_rules_matcher;
   std::vector<std::string> bad_rules;
 
@@ -58,19 +52,15 @@ static std::vector<std::string> JNI_OriginMatcher_SetRuleList(
   return bad_rules;
 }
 
-static std::vector<std::string> JNI_OriginMatcher_Serialize(JNIEnv* env,
-                                                            int64_t ptr) {
-  auto* matcher = FromPtr(ptr);
+static std::vector<std::string> JNI_OriginMatcher_Serialize(
+    JNIEnv* env,
+    OriginMatcher* matcher) {
   return matcher->Serialize();
 }
 
-static void JNI_OriginMatcher_Destroy(JNIEnv* env, int64_t ptr) {
-  delete FromPtr(ptr);
-}
-
-static int64_t JNI_OriginMatcher_Create(JNIEnv* env) {
-  OriginMatcher* matcher = new OriginMatcher();
-  return reinterpret_cast<intptr_t>(matcher);
+static jni_zero::JniUniquePtr<OriginMatcher> JNI_OriginMatcher_Create(
+    JNIEnv* env) {
+  return jni_zero::MakeUnique<OriginMatcher>();
 }
 }  // namespace origin_matcher
 

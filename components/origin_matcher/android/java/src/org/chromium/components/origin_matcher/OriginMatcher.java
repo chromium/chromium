@@ -8,10 +8,14 @@ import android.net.Uri;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -19,8 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A thread-safe thin Java facing implementation of `origin_matcher.h`. This API sends all the data and
- * origin matching requests over to the native implementation so that we can have a standard
+ * A thread-safe thin Java facing implementation of `origin_matcher.h`. This API sends all the data
+ * and origin matching requests over to the native implementation so that we can have a standard
  * implementation for our origin matching rules.
  *
  * <p>This class owns a native object so it is critical that when you are done using this, it needs
@@ -29,9 +33,12 @@ import java.util.List;
 @NullMarked
 @JNINamespace("origin_matcher")
 public class OriginMatcher {
+    @JniType("::origin_matcher::OriginMatcher")
+    interface NativeOriginMatcher extends JniTypeToken {}
+
     private final Object mLock = new Object();
 
-    private long mNative;
+    private @Nullable JniUniquePtr<NativeOriginMatcher> mNative;
 
     public OriginMatcher() {
         mNative = OriginMatcherJni.get().create();
@@ -73,63 +80,63 @@ public class OriginMatcher {
      * counter part.
      */
     @CalledByNative
-    private long getNative() {
-        return mNative;
+    JniPtr<NativeOriginMatcher> getNative() {
+        synchronized (mLock) {
+            return ensureNativeExists();
+        }
     }
 
-    private void ensureNativeExists() {
-        if (mNative == 0) {
+    private JniUniquePtr<NativeOriginMatcher> ensureNativeExists() {
+        if (mNative == null) {
             throw new IllegalStateException(
                     "OriginMatcher did not have access to native implementation. "
                             + "Ensure you don't call this method after cleanup.");
         }
+        return mNative;
     }
 
     private boolean matchesOriginLocked(Uri origin) {
         synchronized (mLock) {
-            ensureNativeExists();
             return OriginMatcherJni.get()
-                    .matches(mNative, Origin.create(new GURL(origin.toString())));
+                    .matches(ensureNativeExists(), Origin.create(new GURL(origin.toString())));
         }
     }
 
     private String[] setRuleListLocked(final List<String> rules) {
         synchronized (mLock) {
-            ensureNativeExists();
-            return OriginMatcherJni.get().setRuleList(mNative, rules.toArray(new String[] {}));
+            return OriginMatcherJni.get()
+                    .setRuleList(ensureNativeExists(), rules.toArray(new String[] {}));
         }
     }
 
     private String[] serializeLocked() {
         synchronized (mLock) {
-            ensureNativeExists();
-            return OriginMatcherJni.get().serialize(mNative);
+            return OriginMatcherJni.get().serialize(ensureNativeExists());
         }
     }
 
     private void destroyLocked() {
         synchronized (mLock) {
-            ensureNativeExists();
-            OriginMatcherJni.get().destroy(mNative);
-            mNative = 0;
+            ensureNativeExists().destroy();
+            mNative = null;
         }
     }
 
     @NativeMethods
     interface Natives {
-        long create();
+        JniUniquePtr<NativeOriginMatcher> create();
 
         @JniType("bool")
-        boolean matches(long ptr, @JniType("url::Origin") Origin origin);
+        boolean matches(JniPtr<NativeOriginMatcher> ptr, @JniType("url::Origin") Origin origin);
 
         // Returns the list of invalid rules.
         // If there are bad rules, no update is performed
         @JniType("std::vector<std::string>")
-        String[] setRuleList(long ptr, @JniType("std::vector<std::string>") String[] rules);
+        String[] setRuleList(
+                JniPtr<NativeOriginMatcher> ptr,
+                @JniType("std::vector<std::string>") String[] rules);
 
         @JniType("std::vector<std::string>")
-        String[] serialize(long ptr);
-
-        void destroy(long ptr);
+        String[] serialize(JniPtr<NativeOriginMatcher> ptr);
     }
 }

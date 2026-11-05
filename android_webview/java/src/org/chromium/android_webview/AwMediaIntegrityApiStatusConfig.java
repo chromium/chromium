@@ -31,8 +31,7 @@ public class AwMediaIntegrityApiStatusConfig {
         MediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY,
         MediaIntegrityApiStatus.ENABLED
     };
-    private final OriginMatcher mRuleValidationMatcher = new OriginMatcher();
-    private final Map<@MediaIntegrityApiStatus Integer, OriginMatcher> mPermissionToMatcher;
+    private Map<@MediaIntegrityApiStatus Integer, List<String>> mPermissionToRules;
 
     private @MediaIntegrityApiStatus int mDefaultStatus;
     private Map<String, @MediaIntegrityApiStatus Integer> mOverrideRulesToPermission;
@@ -40,25 +39,26 @@ public class AwMediaIntegrityApiStatusConfig {
     public AwMediaIntegrityApiStatusConfig() {
         mDefaultStatus = MediaIntegrityApiStatus.ENABLED;
         mOverrideRulesToPermission = Collections.emptyMap();
-        Map<@MediaIntegrityApiStatus Integer, OriginMatcher> matcherMap = new HashMap<>();
-        for (@MediaIntegrityApiStatus int status : sStatusByPriority) {
-            matcherMap.put(status, new OriginMatcher());
-        }
-        mPermissionToMatcher = Collections.unmodifiableMap(matcherMap);
+        mPermissionToRules = Collections.emptyMap();
     }
 
     public void setApiAvailabilityRules(
             @MediaIntegrityApiStatus int defaultStatus,
             Map<String, @MediaIntegrityApiStatus Integer> permissionConfig) {
         mDefaultStatus = defaultStatus;
-        List<String> badRules =
-                mRuleValidationMatcher.setRuleList(new ArrayList<>(permissionConfig.keySet()));
+        OriginMatcher validationMatcher = new OriginMatcher();
+        List<String> badRules;
+        try {
+            badRules = validationMatcher.setRuleList(new ArrayList<>(permissionConfig.keySet()));
+        } finally {
+            validationMatcher.destroy();
+        }
         if (badRules.size() > 0) {
             throw new IllegalArgumentException(
                     "Badly formed rules: " + String.join(", ", badRules));
         }
         mOverrideRulesToPermission = permissionConfig;
-        populateMatchersForLookup(permissionConfig);
+        populateRulesForLookup(permissionConfig);
     }
 
     @MediaIntegrityApiStatus
@@ -72,27 +72,42 @@ public class AwMediaIntegrityApiStatusConfig {
 
     @MediaIntegrityApiStatus
     public int getStatusForUri(Uri uri) {
-        for (@MediaIntegrityApiStatus int status : sStatusByPriority) {
-            if (mPermissionToMatcher.get(status).matchesOrigin(uri)) {
-                return status;
-            }
+        if (mOverrideRulesToPermission.isEmpty()) {
+            return mDefaultStatus;
         }
-        // Uri does not match any override rules
-        return mDefaultStatus;
+        // AwMediaIntegrityApiStatusConfig has no explicit destroy() lifecycle, so persist
+        // rules as strings and scope native OriginMatcher instances to each lookup.
+        OriginMatcher matcher = new OriginMatcher();
+        try {
+            for (@MediaIntegrityApiStatus int status : sStatusByPriority) {
+                List<String> rules = mPermissionToRules.get(status);
+                if (rules != null && !rules.isEmpty()) {
+                    matcher.setRuleList(rules);
+                    if (matcher.matchesOrigin(uri)) {
+                        return status;
+                    }
+                }
+            }
+            // Uri does not match any override rules
+            return mDefaultStatus;
+        } finally {
+            matcher.destroy();
+        }
     }
 
-    private void populateMatchersForLookup(
+    private void populateRulesForLookup(
             Map<String, @MediaIntegrityApiStatus Integer> permissionConfig) {
-        Map<Integer, List<String>> newPatterns = new HashMap<>();
-        for (int status : sStatusByPriority) {
+        Map<@MediaIntegrityApiStatus Integer, List<String>> newPatterns = new HashMap<>();
+        for (@MediaIntegrityApiStatus int status : sStatusByPriority) {
             newPatterns.put(status, new ArrayList<>());
         }
         for (Map.Entry<String, @MediaIntegrityApiStatus Integer> entry :
                 permissionConfig.entrySet()) {
             newPatterns.get(entry.getValue()).add(entry.getKey());
         }
-        for (int status : sStatusByPriority) {
-            mPermissionToMatcher.get(status).setRuleList(newPatterns.get(status));
+        for (@MediaIntegrityApiStatus int status : sStatusByPriority) {
+            newPatterns.put(status, Collections.unmodifiableList(newPatterns.get(status)));
         }
+        mPermissionToRules = Collections.unmodifiableMap(newPatterns);
     }
 }
