@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -22,9 +23,12 @@ import org.chromium.build.annotations.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Container for all parameters related to creating a customizable button. */
+/**
+ * Container for all parameters related to creating a customizable button. Implementations must be
+ * {@link Parcelable} so they can be stored in {@link CustomTabIntentDataHolder}.
+ */
 @NullMarked
-public interface CustomButtonParams {
+public interface CustomButtonParams extends Parcelable {
 
     /** Enum used to describe different types of buttons. */
     @IntDef({

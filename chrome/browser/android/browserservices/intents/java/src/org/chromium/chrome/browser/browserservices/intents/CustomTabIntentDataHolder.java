@@ -23,6 +23,7 @@ import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetDecorationT
 import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetRoundedCornersPosition;
 import androidx.browser.customtabs.CustomTabsIntent.OpenInBrowserState;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
+import androidx.core.os.ParcelCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -91,6 +92,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final AuthTabColorSchemeParams mLightAuthTabColorSchemeParams;
     public final AuthTabColorSchemeParams mDarkAuthTabColorSchemeParams;
     public final @ColorInt int mInitialBackgroundColor;
+    public final List<CustomButtonParams> mCustomButtonParams;
 
     private CustomTabIntentDataHolder(Builder builder) {
         mSessionHolder = builder.mSessionHolder;
@@ -145,6 +147,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mLightAuthTabColorSchemeParams = builder.mLightAuthTabColorSchemeParams;
         mDarkAuthTabColorSchemeParams = builder.mDarkAuthTabColorSchemeParams;
         mInitialBackgroundColor = builder.mInitialBackgroundColor;
+        mCustomButtonParams = builder.mCustomButtonParams;
     }
 
     private CustomTabIntentDataHolder(Parcel in) {
@@ -199,6 +202,9 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mLightAuthTabColorSchemeParams = readAuthTabColorSchemeParams(in, classLoader);
         mDarkAuthTabColorSchemeParams = readAuthTabColorSchemeParams(in, classLoader);
         mInitialBackgroundColor = in.readInt();
+        mCustomButtonParams =
+                ParcelCompat.readParcelableList(
+                        in, new ArrayList<>(), classLoader, CustomButtonParams.class);
     }
 
     @Override
@@ -257,6 +263,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         writeAuthTabColorSchemeParams(dest, mLightAuthTabColorSchemeParams);
         writeAuthTabColorSchemeParams(dest, mDarkAuthTabColorSchemeParams);
         dest.writeInt(mInitialBackgroundColor);
+        dest.writeParcelableList(mCustomButtonParams, flags);
     }
 
     @Override
@@ -437,6 +444,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         private AuthTabColorSchemeParams mDarkAuthTabColorSchemeParams =
                 new AuthTabColorSchemeParams.Builder().build();
         private @ColorInt int mInitialBackgroundColor = Color.TRANSPARENT;
+        private List<CustomButtonParams> mCustomButtonParams = List.of();
 
         public Builder setSessionHolder(@Nullable SessionHolder sessionHolder) {
             mSessionHolder = sessionHolder;
@@ -696,6 +704,11 @@ public class CustomTabIntentDataHolder implements Parcelable {
 
         public Builder setInitialBackgroundColor(@ColorInt int initialBackgroundColor) {
             mInitialBackgroundColor = initialBackgroundColor;
+            return this;
+        }
+
+        public Builder setCustomButtonParams(List<CustomButtonParams> customButtonParams) {
+            mCustomButtonParams = customButtonParams;
             return this;
         }
 

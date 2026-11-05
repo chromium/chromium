@@ -40,8 +40,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
+import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.List;
 
@@ -125,6 +128,7 @@ public class CustomTabIntentDataHolderUnitTest {
         assertNull(restored.mDarkAuthTabColorSchemeParams.getNavigationBarColor());
         assertNull(restored.mDarkAuthTabColorSchemeParams.getNavigationBarDividerColor());
         assertEquals(Color.TRANSPARENT, restored.mInitialBackgroundColor);
+        assertTrue(restored.mCustomButtonParams.isEmpty());
         assertSame(
                 restored.mLightColorSchemeParams,
                 restored.getColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT));
@@ -176,6 +180,20 @@ public class CustomTabIntentDataHolderUnitTest {
         PendingIntent swipeUpPi =
                 PendingIntent.getBroadcast(
                         context, 3, new Intent("swipe_up"), PendingIntent.FLAG_IMMUTABLE);
+        CustomButtonParams shareButton =
+                CustomButtonParamsImpl.createShareButton(context, Color.BLACK);
+        CustomButtonParams bottomBarButton =
+                CustomButtonParamsImpl.fromIntent(
+                                context,
+                                new CustomTabsIntent.Builder()
+                                        .addToolbarItem(
+                                                8,
+                                                Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888),
+                                                "eight",
+                                                swipeUpPi)
+                                        .build()
+                                        .intent)
+                        .get(0);
 
         ImmersiveMode twaDisplayMode =
                 new ImmersiveMode(
@@ -254,6 +272,7 @@ public class CustomTabIntentDataHolderUnitTest {
                                         .setToolbarColor(0xFF000002)
                                         .build())
                         .setInitialBackgroundColor(0xFF123456)
+                        .setCustomButtonParams(List.of(shareButton, bottomBarButton))
                         .build();
 
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
@@ -356,6 +375,42 @@ public class CustomTabIntentDataHolderUnitTest {
                 restored.getAuthTabColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK)
                         .getToolbarColor());
         assertEquals(0xFF123456, restored.mInitialBackgroundColor);
+        assertEquals(2, restored.mCustomButtonParams.size());
+        CustomButtonParams restoredShare = restored.mCustomButtonParams.get(0);
+        assertEquals(CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID, restoredShare.getId());
+        assertEquals(shareButton.getDescription(), restoredShare.getDescription());
+        assertTrue(restoredShare.showOnToolbar());
+        assertEquals(ButtonType.CCT_SHARE_BUTTON, restoredShare.getType());
+        assertTrue(restoredShare.getIcon(context) instanceof TintedDrawable);
+        assertNotNull(restoredShare.getPendingIntent());
+
+        CustomButtonParams restoredBottom = restored.mCustomButtonParams.get(1);
+        assertEquals(8, restoredBottom.getId());
+        assertEquals("eight", restoredBottom.getDescription());
+        assertFalse(restoredBottom.showOnToolbar());
+        assertEquals(ButtonType.OTHER, restoredBottom.getType());
+        assertFalse(restoredBottom.getIcon(context) instanceof TintedDrawable);
+        assertEquals(swipeUpPi, restoredBottom.getPendingIntent());
+    }
+
+    @Test
+    public void testParcelRoundTrip_customButtonUpdateSurvives() {
+        Context context = ContextUtils.getApplicationContext();
+        CustomTabIntentDataHolder original =
+                new CustomTabIntentDataHolder.Builder()
+                        .setCustomButtonParams(
+                                List.of(
+                                        CustomButtonParamsImpl.createShareButton(
+                                                context, Color.BLACK)))
+                        .build();
+        original.mCustomButtonParams
+                .get(0)
+                .update(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888), "new");
+
+        CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
+
+        assertEquals(1, restored.mCustomButtonParams.size());
+        assertEquals("new", restored.mCustomButtonParams.get(0).getDescription());
     }
 
     @Test

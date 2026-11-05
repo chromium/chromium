@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +14,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -71,6 +75,45 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         mIsOnToolbar = onToolbar;
         mType = type;
     }
+
+    private CustomButtonParamsImpl(Parcel in) {
+        mId = in.readInt();
+        mIcon = assumeNonNull(in.readTypedObject(Bitmap.CREATOR));
+        mDescription = assumeNonNull(in.readString());
+        mPendingIntent = in.readTypedObject(PendingIntent.CREATOR);
+        mShouldTint = in.readBoolean();
+        mIsOnToolbar = in.readBoolean();
+        mType = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
+        dest.writeTypedObject(mIcon, flags);
+        dest.writeString(mDescription);
+        dest.writeTypedObject(mPendingIntent, flags);
+        dest.writeBoolean(mShouldTint);
+        dest.writeBoolean(mIsOnToolbar);
+        dest.writeInt(mType);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<CustomButtonParamsImpl> CREATOR =
+            new Parcelable.Creator<>() {
+                @Override
+                public CustomButtonParamsImpl createFromParcel(Parcel in) {
+                    return new CustomButtonParamsImpl(in);
+                }
+
+                @Override
+                public CustomButtonParamsImpl[] newArray(int size) {
+                    return new CustomButtonParamsImpl[size];
+                }
+            };
 
     /** Replaces the current icon and description with new ones. */
     @Override
