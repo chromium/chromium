@@ -50,13 +50,6 @@ bool IsAndroidMultiprofileStartupDataEnabled();
 // user data directory.
 base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir);
 
-// Returns the base name of the last used profile recorded in `local_state`.
-// Falls back to the initial profile if none is recorded or it names the system
-// profile. On Android with AndroidMultiprofileStartupData enabled, it also
-// falls back unless the name has an entry in ProfileAttributesStorage
-// (prefs::kProfileAttributes in `local_state`).
-base::FilePath GetLastUsedProfileBaseName(const PrefService& local_state);
-
 // Register multi-profile related preferences in Local State.
 void RegisterPrefs(PrefRegistrySimple* registry);
 

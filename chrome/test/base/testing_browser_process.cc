@@ -402,10 +402,6 @@ void TestingBrowserProcess::SetVariationsService(
   variations_service_ = variations_service;
 }
 
-void TestingBrowserProcess::SetStartupData(StartupData* startup_data) {
-  startup_data_ = startup_data;
-}
-
 PrefService* TestingBrowserProcess::local_state() {
   return testing_local_state_.get();
 }
@@ -420,7 +416,7 @@ variations::VariationsService* TestingBrowserProcess::variations_service() {
 }
 
 StartupData* TestingBrowserProcess::startup_data() {
-  return startup_data_;
+  return nullptr;
 }
 
 policy::ChromeBrowserPolicyConnector*

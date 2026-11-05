@@ -82,29 +82,6 @@ base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir) {
   return default_profile_dir;
 }
 
-base::FilePath GetLastUsedProfileBaseName(const PrefService& local_state) {
-  const base::FilePath initial_profile =
-      base::FilePath::FromASCII(chrome::kInitialProfile);
-  base::FilePath base_name = local_state.GetFilePath(prefs::kProfileLastUsed);
-  if (base_name.empty() || base_name.value() == chrome::kSystemProfileDir) {
-    return initial_profile;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  // With AndroidMultiprofileStartupData, the startup profile is chosen from
-  // this value, so require a ProfileAttributesStorage entry. This also rejects
-  // deleted profiles and values that are not profile directory names, such as
-  // "..".
-  if (IsAndroidMultiprofileStartupDataEnabled() &&
-      !local_state.GetDict(prefs::kProfileAttributes)
-           .contains(base_name.AsUTF8Unsafe())) {
-    return initial_profile;
-  }
-#endif
-
-  return base_name;
-}
-
 void RegisterPrefs(PrefRegistrySimple* registry) {
   // Preferences about global profile information.
   registry->RegisterStringPref(prefs::kProfileLastUsed, std::string());

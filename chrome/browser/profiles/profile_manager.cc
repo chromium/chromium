@@ -137,7 +137,6 @@
 #else
 #include "chrome/browser/profiles/profile_manager_android.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
-#include "chrome/browser/startup_data.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -933,16 +932,6 @@ base::FilePath ProfileManager::GetInitialProfileDir() {
         user_manager::User::GetDirName(user->username_hash()));
   }
 #endif
-#if BUILDFLAG(IS_ANDROID)
-  // The first profile created must be the one StartupData was built for, so
-  // that its ProfileImpl takes over the pre-created objects.
-  StartupData* startup_data =
-      g_browser_process ? g_browser_process->startup_data() : nullptr;
-  if (profiles::IsAndroidMultiprofileStartupDataEnabled() && startup_data &&
-      !startup_data->GetProfilePath().empty()) {
-    return startup_data->GetProfilePath().BaseName();
-  }
-#endif
   base::FilePath relative_profile_dir;
   // TODO(mirandac): should not automatically be default profile.
   return relative_profile_dir.AppendASCII(chrome::kInitialProfile);
@@ -956,7 +945,16 @@ base::FilePath ProfileManager::GetLastUsedProfileDir() {
 base::FilePath ProfileManager::GetLastUsedProfileBaseName() {
   PrefService* local_state = g_browser_process->local_state();
   CHECK(local_state, base::NotFatalUntil::M162);
-  return profiles::GetLastUsedProfileBaseName(*local_state);
+  base::FilePath last_used_profile_base_name =
+      local_state->GetFilePath(prefs::kProfileLastUsed);
+  // Make sure the system profile can't be the one marked as the last one used
+  // since it shouldn't get a browser.
+  if (!last_used_profile_base_name.empty() &&
+      last_used_profile_base_name.value() != chrome::kSystemProfileDir) {
+    return last_used_profile_base_name;
+  }
+
+  return base::FilePath::FromASCII(chrome::kInitialProfile);
 }
 
 base::FilePath ProfileManager::GetProfileDirForEmail(const std::string& email) {
@@ -2244,7 +2242,10 @@ void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
   // Also never consider the SystemProfile as "active".
   if (profiles_info_.find(last_active->GetPath()) != profiles_info_.end() &&
       !last_active->IsSystemProfile()) {
-    profiles::SetLastUsedProfile(last_active->GetBaseName());
+    base::FilePath profile_path_base = last_active->GetBaseName();
+    if (profile_path_base != GetLastUsedProfileBaseName()) {
+      profiles::SetLastUsedProfile(profile_path_base);
+    }
 
     ProfileAttributesEntry* entry =
         GetProfileAttributesStorage().GetProfileAttributesWithPath(
