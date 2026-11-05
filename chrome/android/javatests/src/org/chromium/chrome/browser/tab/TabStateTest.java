@@ -100,16 +100,11 @@ public class TabStateTest {
         WebContentsState.WebContentsStateMetadata metadata2 = state.getMetadata();
         Assert.assertSame("Should return cached metadata instance", metadata1, metadata2);
 
-        // 3. Swap buffer, cache must be cleared and re-evaluated
-        boolean swapped =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> state.maybeSwapPackedData(state.buffer(), false));
-        Assert.assertTrue(swapped);
-
-        // 4. After swap, getMetadata() should return a NEW instance
-        WebContentsState.WebContentsStateMetadata metadata3 = state.getMetadata();
+        // 3. New WebContentsState wrapping a buffer starts with a fresh metadata cache
+        WebContentsState newState = new WebContentsState(state.buffer(), state.version());
+        WebContentsState.WebContentsStateMetadata metadata3 = newState.getMetadata();
         Assert.assertNotNull(metadata3);
-        Assert.assertNotSame("Cache should be cleared after swap", metadata1, metadata3);
+        Assert.assertNotSame("New state should extract fresh metadata", metadata1, metadata3);
         Assert.assertEquals(info.title, metadata3.title);
     }
 

@@ -91,7 +91,6 @@ public class WebContentsStateTest {
                 () -> {
                     // Return a null contents state but don't crash.
                     Assert.assertNull(tabState.contentsState.restoreWebContents(mProfile, false));
-                    tabState.contentsState.destroy();
                 });
     }
 }

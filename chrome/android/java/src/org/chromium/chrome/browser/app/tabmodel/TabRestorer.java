@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.BackgroundTabRestorationHelper;
@@ -190,11 +189,7 @@ class TabRestorer {
      */
     public void onCachedActiveTabLoaded(LoadedTabState loadedTabState) {
         TabState tabState = loadedTabState.tabState;
-        if (mState == State.CANCELLED) {
-            loadedTabState.destroy();
-            return;
-        } else if (mState >= State.LOADED) {
-            loadedTabState.destroy();
+        if (mState == State.CANCELLED || mState >= State.LOADED) {
             return;
         }
 
@@ -205,19 +200,12 @@ class TabRestorer {
         mTabIdsToIgnore.add(loadedTabState.tabId);
 
         int tabCount = mTabModelSelector.getModel(mIncognito).getCount();
-        Tab tab =
-                maybeRestoreTab(
-                        tabState,
-                        loadedTabState.tabId,
-                        tabCount,
-                        /* isActiveTab= */ true,
-                        mIsFromRecreating);
-
-        if (tab == null) {
-            loadedTabState.destroy();
-        } else {
-            loadedTabState.claim();
-        }
+        maybeRestoreTab(
+                tabState,
+                loadedTabState.tabId,
+                tabCount,
+                /* isActiveTab= */ true,
+                mIsFromRecreating);
         mCachedRestoredActiveTabId = loadedTabState.tabId;
     }
 
@@ -287,8 +275,6 @@ class TabRestorer {
             onFinished();
             return;
         }
-
-        maybeDestroyActiveTabState();
 
         // Synchronously restore the active tab if requested as there is no other tab already open
         // and doing this in a posted task would block user interaction with the app until finished.
@@ -386,8 +372,6 @@ class TabRestorer {
 
     /** Cleans up the {@link StorageLoadedData}. */
     private void cleanupStorageLoadedData() {
-        maybeDestroyActiveTabState();
-
         assumeNonNull(mData);
         if (TabStateStorageFlagHelper.isStorageAuthoritative()) {
             TabGroupVisualDataStore.removeCachedGroups(mData.getGroupsData());
@@ -395,8 +379,8 @@ class TabRestorer {
 
         if (mState != State.CANCELLED) {
             for (LoadedTabState loadedTabState : mData.getLoadedTabStates()) {
-                assert loadedTabState.isClaimedOrDestroyed()
-                        : "Not all tabs were claimed or destroyed";
+                assert mTabIdsToIgnore.contains(loadedTabState.tabId)
+                        : "Not all tabs were restored or ignored";
             }
         }
 
@@ -460,11 +444,9 @@ class TabRestorer {
      */
     private void restoreTab(LoadedTabState loadedTabState, int index, boolean isActive) {
         assert mState == State.RESTORING;
-        if (loadedTabState.isClaimedOrDestroyed()) return;
 
         @TabId int tabId = loadedTabState.tabId;
-
-        if (mTabIdsToIgnore.contains(loadedTabState.tabId)) return;
+        if (mTabIdsToIgnore.contains(tabId)) return;
 
         assert mData != null;
         mTabIdsToIgnore.add(tabId);
@@ -473,11 +455,8 @@ class TabRestorer {
         Tab tab =
                 maybeRestoreTab(loadedTabState.tabState, tabId, index, isActive, mIsFromRecreating);
         if (tab == null) {
-            loadedTabState.destroy();
             return;
         }
-
-        loadedTabState.claim();
 
         boolean isIncognito = mIncognito;
         mDelegate.onDetailsRead(
@@ -535,7 +514,6 @@ class TabRestorer {
             if (tab != null) {
                 if (tabState.contentsState != null
                         && tab.getWebContentsState() != tabState.contentsState) {
-                    tabState.contentsState.destroy();
                     tabState.contentsState = null;
                 }
                 if (isActiveTab) {
@@ -616,22 +594,6 @@ class TabRestorer {
         return mTabCreator.createFrozenTab(tabState, tabId, index);
     }
 
-    private void maybeDestroyActiveTabState() {
-        assert mData != null;
-
-        if (!wasActiveTabRestoredFromCache()) return;
-
-        LoadedTabState[] loadedTabStates = mData.getLoadedTabStates();
-        if (loadedTabStates.length == 0) return;
-
-        for (LoadedTabState loadedTabState : loadedTabStates) {
-            if (loadedTabState.tabId != mCachedRestoredActiveTabId) continue;
-            loadedTabState.destroy();
-            break;
-        }
-    }
-
-    @EnsuresNonNullIf({"mCachedRestoredActiveTabId"})
     private boolean wasActiveTabRestoredFromCache() {
         return mCachedRestoredActiveTabId != null;
     }

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -317,7 +316,7 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testMaybeRestoreBackgroundTab_success_destroysPlaceholderContentsState() {
+    public void testMaybeRestoreBackgroundTab_success_clearsPlaceholderContentsState() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         TabState tabState = new TabState();
         tabState.contentsState = mWebContentsState;
@@ -340,7 +339,7 @@ public class BackgroundTabRestorationHelperTest {
         verify(mBackgroundPoolTab).prepareForForeground(mTabModelSelector);
         verify(mBackgroundPoolTab)
                 .attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX), eq(tabState));
-        verify(mWebContentsState).destroy();
+        assertNull(tabState.contentsState);
     }
 
     @Test
@@ -361,7 +360,7 @@ public class BackgroundTabRestorationHelperTest {
 
         assertNull(restoredTab);
         verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
-        verify(mWebContentsState, never()).destroy();
+        assertEquals(mWebContentsState, tabState.contentsState);
     }
 
     @Test
@@ -382,7 +381,7 @@ public class BackgroundTabRestorationHelperTest {
 
         assertNull(restoredTab);
         verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
-        verify(mWebContentsState, never()).destroy();
+        assertEquals(mWebContentsState, tabState.contentsState);
     }
 
     @Test
@@ -403,7 +402,7 @@ public class BackgroundTabRestorationHelperTest {
 
         assertNull(restoredTab);
         verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
-        verify(mWebContentsState, never()).destroy();
+        assertEquals(mWebContentsState, tabState.contentsState);
     }
 
     @Test
@@ -430,7 +429,7 @@ public class BackgroundTabRestorationHelperTest {
         assertEquals(mTab, restoredTab);
         verify(mBackgroundTabPool).loadTabByPlaceholderId(TAB_ID);
         verify(mBackgroundPoolTab).prepareForForeground(mTabModelSelector);
-        verify(mWebContentsState).destroy();
+        assertNull(tabState.contentsState);
     }
 
     @Test
@@ -453,7 +452,7 @@ public class BackgroundTabRestorationHelperTest {
 
         assertNull(restoredTab);
         verify(mBackgroundTabPool).loadTabByPlaceholderId(TAB_ID);
-        verify(mWebContentsState, never()).destroy();
+        assertEquals(mWebContentsState, tabState.contentsState);
     }
 
     @Test
@@ -720,13 +719,6 @@ public class BackgroundTabRestorationHelperTest {
                             ShadowSystemClock.advanceBy(45, TimeUnit.MILLISECONDS);
                             return mTab;
                         });
-        doAnswer(
-                        invocation -> {
-                            ShadowSystemClock.advanceBy(50, TimeUnit.MILLISECONDS);
-                            return null;
-                        })
-                .when(mWebContentsState)
-                .destroy();
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(

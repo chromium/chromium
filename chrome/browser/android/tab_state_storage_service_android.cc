@@ -5,6 +5,7 @@
 #include "chrome/browser/android/tab_state_storage_service_android.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -14,11 +15,12 @@
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/token.h"
 #include "chrome/browser/android/storage_loaded_data_android.h"
 #include "chrome/browser/android/tab_android.h"
@@ -46,13 +48,38 @@ namespace tabs {
 
 namespace {
 
-void RunJavaCallbackLoadAll(const JavaRef<jobject>& j_loaded_data_callback,
-                            std::unique_ptr<StorageLoadedData> loaded_data) {
+// Runs on the background DB sequence (chained via `.Then(...)` in
+// `TabStateStorageBackend::LoadAllNodes`) so JNI object and direct `ByteBuffer`
+// allocations happen off the UI thread, returning a `base::OnceClosure` to run
+// on the UI thread via `TabStateStorageBackend::OnLoadDone` (guarded by
+// `WeakPtr`).
+// TODO(crbug.com/582296321): Explore centralizing StorageLoadedData lifecycle
+// and background marshalling in the backend/service instead of callback-scoped
+// cleanup.
+base::OnceClosure BuildStorageLoadedDataAndroidOnDBThread(
+    ScopedJavaGlobalRef<jobject> j_loaded_data_callback,
+    std::unique_ptr<StorageLoadedData> loaded_data) {
+  CHECK(loaded_data);
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  StorageLoadedDataAndroid* data_android =
-      new StorageLoadedDataAndroid(env, std::move(loaded_data));
-  base::android::RunObjectCallbackAndroid(j_loaded_data_callback,
-                                          data_android->GetJavaObject());
+  ScopedJavaGlobalRef<jobject> j_data(
+      StorageLoadedDataAndroid::CreateJavaObject(env, std::move(loaded_data)));
+  // Java `StorageLoadedData.mNativePtr` (`JniUniquePtr`) is the single owner of
+  // `StorageLoadedDataAndroid` (with `LifetimeAssert`). Because Java has not
+  // received `j_data` until the UI-thread reply runs, `cleanup_on_cancel`
+  // invokes `StorageLoadedData#destroy()` to delete the owned C++ peer if the
+  // reply closure is cancelled before running (e.g. `TabStateStorageBackend`
+  // teardown). On normal UI delivery, `cleanup.Release()` disarms it and
+  // `RunObjectCallbackAndroid` hands ownership to the Java callback.
+  base::ScopedClosureRunner cleanup_on_cancel(
+      base::BindOnce(&StorageLoadedDataAndroid::DestroyJavaObject, j_data));
+  return base::BindOnce(
+      [](ScopedJavaGlobalRef<jobject> callback,
+         ScopedJavaGlobalRef<jobject> data, base::ScopedClosureRunner cleanup) {
+        std::ignore = cleanup.Release();
+        base::android::RunObjectCallbackAndroid(callback, data);
+      },
+      std::move(j_loaded_data_callback), std::move(j_data),
+      std::move(cleanup_on_cancel));
 }
 
 // Recursively crawls the entire tree and retrieves storage ids for all nodes.
@@ -119,11 +146,10 @@ void TabStateStorageServiceAndroid::LoadAllData(
     const std::string& window_tag,
     bool is_off_the_record,
     const jni_zero::JavaRef<jobject>& j_loaded_data_callback) {
-  auto load_data_callback = base::BindOnce(
-      &RunJavaCallbackLoadAll,
-      jni_zero::ScopedJavaGlobalRef<jobject>(j_loaded_data_callback));
-  tab_state_storage_service_->LoadAllNodes(window_tag, is_off_the_record,
-                                           std::move(load_data_callback));
+  tab_state_storage_service_->LoadAllNodes(
+      window_tag, is_off_the_record,
+      base::BindOnce(&BuildStorageLoadedDataAndroidOnDBThread,
+                     ScopedJavaGlobalRef<jobject>(j_loaded_data_callback)));
 }
 
 void TabStateStorageServiceAndroid::CountTabsForWindow(

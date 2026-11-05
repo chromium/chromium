@@ -2074,7 +2074,7 @@ public class TabUnitTest {
         tab.loadIfNeeded(/* forceBackingSize= */ false);
 
         verify(mObserver).onRestoreFailed(tab);
-        verify(mockState).destroy();
+        assertNull(tab.getWebContentsState());
         ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mNavigationController).loadUrl(paramsCaptor.capture());
         LoadUrlParams params = paramsCaptor.getValue();

@@ -638,8 +638,4 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsState_GetMetadata(
                                               is_off_the_record);
 }
 
-static void JNI_WebContentsState_FreeStringPointer(int64_t string_pointer) {
-  delete reinterpret_cast<std::string*>(string_pointer);
-}
-
 DEFINE_JNI(WebContentsState)

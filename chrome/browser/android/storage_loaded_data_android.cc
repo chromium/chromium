@@ -4,19 +4,19 @@
 
 #include "chrome/browser/android/storage_loaded_data_android.h"
 
-#include <algorithm>
 #include <memory>
-#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
-#include "base/functional/bind.h"
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/android/restore_entity_tracker_android.h"
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_state_storage_service_factory.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/storage_loading_context.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
@@ -33,16 +33,26 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
     JNIEnv* env,
     tabs_pb::TabState& tab_state) {
   base::android::ScopedJavaLocalRef<jobject> j_web_contents_state_buffer;
-  long j_web_contents_state_string_pointer = 0;
+  // Take ownership of the protobuf's C++ `std::string`, copy its bytes into a
+  // Java-owned direct `ByteBuffer` (`ByteBuffer.allocateDirect`) when
+  // non-empty, and free the C++ `std::string` immediately when `state_bytes`
+  // goes out of scope on the DB sequence. Once stored in `WebContentsState`,
+  // the `DirectByteBuffer`'s off-heap memory is owned by Java and freed
+  // automatically by the Android GC when unreachable (no manual
+  // `WebContentsState#destroy()` needed).
   if (tab_state.has_web_contents_state_bytes()) {
-    std::string* web_contents_state_bytes_ptr =
-        tab_state.release_web_contents_state_bytes();
-    j_web_contents_state_buffer = jni_zero::AdoptRef(
-        env, env->NewDirectByteBuffer(
-                 static_cast<void*>(web_contents_state_bytes_ptr->data()),
-                 web_contents_state_bytes_ptr->size()));
-    j_web_contents_state_string_pointer =
-        reinterpret_cast<long>(web_contents_state_bytes_ptr);
+    std::unique_ptr<std::string> state_bytes(
+        tab_state.release_web_contents_state_bytes());
+    if (!state_bytes->empty() &&
+        base::IsValueInRangeForNumericType<int>(state_bytes->size())) {
+      j_web_contents_state_buffer = jni_zero::ByteBufferAllocateDirect(
+          env, base::checked_cast<int>(state_bytes->size()));
+      if (j_web_contents_state_buffer) {
+        base::android::JavaByteBufferToMutableSpan(env,
+                                                   j_web_contents_state_buffer)
+            .copy_from(base::as_byte_span(*state_bytes));
+      }
+    }
   }
 
   const tabs_pb::Token& tab_group_id = tab_state.tab_group_id();
@@ -56,9 +66,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
       Java_StorageLoadedData_createTabState(
           env, tab_state.parent_id(), tab_state.timestamp_millis(),
           j_web_contents_state_buffer, tab_state.web_contents_state_version(),
-          j_web_contents_state_string_pointer, tab_state.opener_app_id(),
-          tab_state.theme_color(), tab_state.launch_type_at_creation(),
-          tab_state.user_agent(),
+          tab_state.opener_app_id(), tab_state.theme_color(),
+          tab_state.launch_type_at_creation(), tab_state.user_agent(),
           tab_state.last_navigation_committed_timestamp_millis(),
           j_tab_group_id, tab_state.tab_has_sensitive_content(),
           tab_state.is_pinned(), tab_state.url());
@@ -83,34 +92,42 @@ base::android::ScopedJavaLocalRef<jobject> CreateTabGroupCollectionData(
 }
 
 StorageLoadedDataAndroid::StorageLoadedDataAndroid(
-    JNIEnv* env,
     std::unique_ptr<StorageLoadedData> data)
-    : data_(std::move(data)) {
-  const StorageLoadingContext& context = data_->GetLoadingContext();
-
-  j_object_ = Java_StorageLoadedData_createData(
-      env,
-      jni_zero::MakeUnique<StorageLoadedDataAndroid>(base::WrapUnique(this)),
-      data_->GetLoadedTabs(), data_->GetLoadedGroups(),
-      data_->GetActiveTabIndex().value_or(-1), context.warnings());
-}
+    : data_(std::move(data)) {}
 
 StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;
 
-void StorageLoadedDataAndroid::OnTabRejected(JNIEnv* env, int tab_android_id) {
-  RestoreEntityTrackerAndroid* tracker =
-      static_cast<RestoreEntityTrackerAndroid*>(data_->GetTracker());
-  std::optional<StorageId> node_id =
-      tracker->GetStorageIdForTab(tab_android_id);
-  if (node_id.has_value()) {
-    GetData()->NotifyNodeRejected(*node_id);
-  }
+// static
+base::android::ScopedJavaLocalRef<jobject>
+StorageLoadedDataAndroid::CreateJavaObject(
+    JNIEnv* env,
+    std::unique_ptr<StorageLoadedData> data) {
+  CHECK(data);
+  // Extract the tab and group vectors out of `data` before moving `data` into
+  // `StorageLoadedDataAndroid` so the C++ `tabs_pb::TabState` and
+  // `TabGroupCollectionData` payloads are freed as soon as JNI marshalling
+  // finishes on the DB sequence. Java `StorageLoadedData.mNativePtr`
+  // (`JniUniquePtr`) is the single owner of `StorageLoadedDataAndroid`.
+  std::vector<tabs_pb::TabState> loaded_tabs =
+      std::exchange(data->GetLoadedTabs(), {});
+  std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups =
+      std::exchange(data->GetLoadedGroups(), {});
+  int active_tab_index = data->GetActiveTabIndex().value_or(-1);
+  auto native_wrapper =
+      base::WrapUnique(new StorageLoadedDataAndroid(std::move(data)));
+  const auto& warnings =
+      native_wrapper->GetData()->GetLoadingContext().warnings();
+  return Java_StorageLoadedData_createData(
+      env,
+      jni_zero::MakeUnique<StorageLoadedDataAndroid>(std::move(native_wrapper)),
+      loaded_tabs, loaded_groups, active_tab_index, warnings);
 }
 
-base::android::ScopedJavaLocalRef<jobject>
-StorageLoadedDataAndroid::GetJavaObject() const {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return j_object_.AsLocalRef(env);
+// static
+void StorageLoadedDataAndroid::DestroyJavaObject(
+    const jni_zero::JavaRef<jobject>& j_object) {
+  CHECK(j_object);
+  Java_StorageLoadedData_destroy(jni_zero::AttachCurrentThread(), j_object);
 }
 
 StorageLoadedData* StorageLoadedDataAndroid::GetData() const {

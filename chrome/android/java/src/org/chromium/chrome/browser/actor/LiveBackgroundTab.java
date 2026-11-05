@@ -120,12 +120,8 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
             placeholderTab.destroy();
         }
 
-        if (placeholderTabState != null && placeholderTabState.contentsState != null) {
-            placeholderTabState.contentsState.destroy();
-            placeholderTabState.contentsState = null;
-        }
-
         if (placeholderTabState != null) {
+            placeholderTabState.contentsState = null;
             transferPlaceholderMetadata(mTab, placeholderTabState);
         }
         tabModel.addTab(

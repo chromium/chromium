@@ -8,7 +8,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabmodel.TabStoreMetricsService.MetricsBucket;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
-import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator;
@@ -88,11 +87,6 @@ public class ShadowTabStoreValidator {
     private void onBothStateLoaded() {
         recordDiffMetrics();
 
-        for (CreateFrozenTabArguments arguments : mShadowTabCreator.createFrozenTabArgumentsList) {
-            if (arguments.state != null && arguments.state.contentsState != null) {
-                arguments.state.contentsState.destroy();
-            }
-        }
         mShadowTabCreator.createNewTabArgumentsList.clear();
         mShadowTabCreator.createFrozenTabArgumentsList.clear();
 

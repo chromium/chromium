@@ -1206,18 +1206,17 @@ class TabImpl implements Tab, TabInternal {
                     : "Should not have both a WebContentsState and a pending load params.";
 
             // Case 2: We have a WebContentsState. Append the pending navigation to it.
-            boolean success =
+            WebContentsState updatedState =
                     mWebContentsState.appendPendingNavigation(
                             mProfile, title, params, /* trackLastEntryWasPending= */ true);
+            mWebContentsState = updatedState;
             RecordHistogram.recordBooleanHistogram(
-                    "Tabs.FreezeAndAppendPendingNavigationResult", success);
-            if (success) {
-                mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
+                    "Tabs.FreezeAndAppendPendingNavigationResult", updatedState != null);
+            if (updatedState != null) {
+                mUrl = new GURL(updatedState.getVirtualUrlFromState());
             } else {
-                // If we failed to append the pending navigation, clear the WebContentsState and
-                // clobber with the new pending load params.
-                mWebContentsState.destroy();
-                mWebContentsState = null;
+                // If we failed to append the pending navigation, clobber with the new pending
+                // load params.
                 setPendingLoadParams(params);
             }
         } else {
@@ -1678,10 +1677,7 @@ class TabImpl implements Tab, TabInternal {
         mObservers.clear();
         mTabViewManager.destroy();
         hideNativePage(/* notify= */ false);
-        if (mWebContentsState != null) {
-            mWebContentsState.destroy();
-            mWebContentsState = null;
-        }
+        mWebContentsState = null;
 
         if (mWindowAndroid != null) {
             mWindowAndroid.getOcclusionSupplier().removeObserver(mOcclusionCallback);
@@ -2910,7 +2906,6 @@ class TabImpl implements Tab, TabInternal {
             if (compositorView != null) {
                 webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
             }
-            mWebContentsState.destroy();
             mWebContentsState = null;
             initWebContents(webContents);
 
@@ -3190,9 +3185,6 @@ class TabImpl implements Tab, TabInternal {
 
     @VisibleForTesting
     void setWebContentsState(WebContentsState webContentsState) {
-        if (mWebContentsState != null) {
-            mWebContentsState.destroy();
-        }
         mWebContentsState = webContentsState;
     }
 
@@ -3258,8 +3250,9 @@ class TabImpl implements Tab, TabInternal {
     @CalledByNative
     private void deleteNavigationEntriesFromFrozenState(long predicate) {
         if (mWebContentsState == null) return;
-        boolean success = mWebContentsState.deleteNavigationEntries(predicate);
-        if (success) {
+        WebContentsState updatedState = mWebContentsState.deleteNavigationEntries(predicate);
+        if (updatedState != null) {
+            mWebContentsState = updatedState;
             notifyNavigationEntriesDeleted();
         }
     }
