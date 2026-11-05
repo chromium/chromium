@@ -189,8 +189,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
 // Tests that the bottom sheet populates the new password and confirm password
 // fields.
-// TODO(crbug.com/425885707): ensures this test works on CQ.
-- (void)FLAKY_testFillNewPasswordWithProactiveBottomSheet {
+- (void)testFillNewPasswordWithProactiveBottomSheet {
   [self loadSignupPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -361,8 +360,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 }
 
 // Tests that the bottom sheet does not show if the user isn't signed in.
-// TODO(crbug.com/440577394): This test is flaky.
-- (void)FLAKY_testUserSignedOut {
+- (void)testUserSignedOut {
   [ChromeEarlGrey signOutAndClearIdentities];
 
   [self loadSignupPage];
