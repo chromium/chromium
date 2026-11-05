@@ -8456,8 +8456,14 @@ void Document::RequestResizeResponsiveIframe(ExceptionState* exception_state) {
     }
     return;
   }
-  if (auto* owner = GetFrame()->Owner()) {
-    LocalFrameView* view = View();
+  LocalFrame* frame = GetFrame();
+  if (FrameOwner* owner = frame ? frame->Owner() : nullptr) {
+    LocalFrameView* view = frame->View();
+    CHECK(view);
+    if (RuntimeEnabledFeatures::ResponsiveIframesAsyncResizeEnabled()) {
+      view->ScheduleResponsiveIframeResize();
+      return;
+    }
     LocalFrameView::NaturalSizeLayoutScope natural_size_scope(view);
     UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
     if (view->RecordNaturalDimensions()) {

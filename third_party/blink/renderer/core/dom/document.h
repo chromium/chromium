@@ -2069,6 +2069,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // This flag is immutable once set.
   // https://drafts.csswg.org/css-sizing-4/#document-responsive-embedded-sizing-flag
   void SetResponsiveEmbeddedSizing() { responsive_embedded_sizing_ = true; }
+  bool HasResponsiveEmbeddedSizing() const {
+    return responsive_embedded_sizing_;
+  }
 
   // A META element with name=text-scale was added, removed, or
   // modified. Re-collect the META values.

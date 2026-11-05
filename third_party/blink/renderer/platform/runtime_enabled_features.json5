@@ -5590,6 +5590,11 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/579210216.
+      name: "ResponsiveIframesAsyncResize",
+      status: "stable",
+    },
+    {
       // Kill switch for https://crbug.com/570579609.
       name: "ResponsiveIframesShrink",
       status: "stable",

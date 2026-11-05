@@ -11,13 +11,16 @@
 #include "third_party/blink/public/platform/web_runtime_features_base.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
@@ -367,6 +370,183 @@ TEST_F(HTMLIFrameElementSimTest, SetTrackedElement) {
 
   iframe->remove();
   EXPECT_FALSE(iframe->GetTrackedElementSubRect(tracking_feature));
+}
+
+TEST_F(HTMLIFrameElementSimTest,
+       ResponsiveIframeAsyncResizeAvoidsSyncLayoutAndLimitsLayouts) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest child_resource("https://example.com/subframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      iframe { border: 0; frame-sizing: content-height; }
+    </style>
+    <iframe id="target" src="https://example.com/subframe.html"></iframe>
+  )HTML");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* iframe = To<HTMLIFrameElement>(GetElementById("target"));
+  ASSERT_TRUE(iframe);
+  EXPECT_EQ(iframe->OffsetHeight(), 150);
+
+  child_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <style>* { margin: 0; }</style>
+      <meta name="responsive-embedded-sizing" content="allow-origins=*">
+    </head>
+    <body><div id="box" style="height: 300px"></div></body>
+  )HTML");
+  test::RunPendingTasks();
+
+  Document* child_doc = iframe->contentDocument();
+  ASSERT_TRUE(child_doc);
+  LocalFrameView* child_view = child_doc->View();
+  ASSERT_TRUE(child_view);
+
+  // Parsing/load schedules a pending resize instead of resizing synchronously.
+  EXPECT_TRUE(child_view->needs_responsive_iframe_resize_);
+  EXPECT_EQ(iframe->OffsetHeight(), 150);
+
+  Compositor().BeginFrame();
+  EXPECT_FALSE(child_view->needs_responsive_iframe_resize_);
+  EXPECT_EQ(iframe->OffsetHeight(), 300);
+
+  // Mutate child DOM and call RequestResizeResponsiveIframe().
+  Element* box = child_doc->getElementById(AtomicString("box"));
+  ASSERT_TRUE(box);
+  box->setAttribute(html_names::kStyleAttr, AtomicString("height: 250px"));
+
+  const unsigned layouts_before_request = child_view->LayoutCountForTesting();
+  DummyExceptionStateForTesting exception_state;
+  child_doc->RequestResizeResponsiveIframe(&exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  // No synchronous layout should occur at the call site.
+  EXPECT_LT(child_doc->Lifecycle().GetState(), DocumentLifecycle::kLayoutClean);
+  EXPECT_EQ(child_view->LayoutCountForTesting(), layouts_before_request);
+  EXPECT_TRUE(child_view->needs_responsive_iframe_resize_);
+
+  // Forcing kLayoutClean on the parent should not flush the pending resize.
+  EXPECT_EQ(iframe->OffsetHeight(), 300);
+  EXPECT_TRUE(child_view->needs_responsive_iframe_resize_);
+
+  // BeginFrame() measures at the locked 150px ICB (Layout #1) and lays out at
+  // the new 250px frame size (Layout #2) -- 2 layouts total, not 3.
+  const unsigned layouts_before_frame = child_view->LayoutCountForTesting();
+  Compositor().BeginFrame();
+  EXPECT_FALSE(child_view->needs_responsive_iframe_resize_);
+  EXPECT_EQ(child_view->LayoutCountForTesting() - layouts_before_frame, 2u);
+  EXPECT_EQ(iframe->OffsetHeight(), 250);
+}
+
+TEST_F(HTMLIFrameElementSimTest, ResponsiveIframeAsyncResizeDisabledFallback) {
+  ScopedResponsiveIframesAsyncResizeForTest scoped_async(false);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest child_resource("https://example.com/subframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      iframe { border: 0; frame-sizing: content-height; }
+    </style>
+    <iframe id="target" src="https://example.com/subframe.html"></iframe>
+  )HTML");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  child_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <style>* { margin: 0; }</style>
+      <meta name="responsive-embedded-sizing" content="allow-origins=*">
+    </head>
+    <body><div id="box" style="height: 300px"></div></body>
+  )HTML");
+  test::RunPendingTasks();
+
+  auto* iframe = To<HTMLIFrameElement>(GetElementById("target"));
+  ASSERT_TRUE(iframe);
+  EXPECT_EQ(iframe->OffsetHeight(), 300);
+
+  Document* child_doc = iframe->contentDocument();
+  ASSERT_TRUE(child_doc);
+  Element* box = child_doc->getElementById(AtomicString("box"));
+  ASSERT_TRUE(box);
+  box->setAttribute(html_names::kStyleAttr, AtomicString("height: 220px"));
+
+  DummyExceptionStateForTesting exception_state;
+  child_doc->RequestResizeResponsiveIframe(&exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_EQ(iframe->OffsetHeight(), 220);
+}
+
+TEST_F(HTMLIFrameElementSimTest,
+       ResponsiveIframeDisplayNoneSkipsUntilAttached) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest child_resource("https://example.com/subframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      iframe {
+        border: 0;
+        display: none;
+        width: 400px;
+        frame-sizing: content-height;
+      }
+    </style>
+    <iframe id="target" src="https://example.com/subframe.html"></iframe>
+  )HTML");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  child_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <style>* { margin: 0; }</style>
+      <meta name="responsive-embedded-sizing" content="allow-origins=*">
+    </head>
+    <body><div id="box" style="height: 50vw"></div></body>
+  )HTML");
+  test::RunPendingTasks();
+
+  auto* iframe = To<HTMLIFrameElement>(GetElementById("target"));
+  ASSERT_TRUE(iframe);
+  Document* child_doc = iframe->contentDocument();
+  ASSERT_TRUE(child_doc);
+  LocalFrameView* child_view = child_doc->View();
+  ASSERT_TRUE(child_view);
+  EXPECT_TRUE(child_view->needs_responsive_iframe_resize_);
+
+  // A rendering frame while `display: none` must skip the detached subframe
+  // rather than locking a `0x0` ICB or consuming the pending resize.
+  Compositor().BeginFrame();
+  EXPECT_TRUE(child_view->needs_responsive_iframe_resize_);
+
+  // Showing the iframe attaches it at `width: 400px` and measures `50vw` = 200
+  // in the same rendering frame.
+  iframe->setAttribute(html_names::kStyleAttr, AtomicString("display: block"));
+  Compositor().BeginFrame();
+  EXPECT_FALSE(child_view->needs_responsive_iframe_resize_);
+  EXPECT_EQ(iframe->OffsetHeight(), 200);
+
+  // Subsequent `RequestResizeResponsiveIframe()` still uses the locked 400px
+  // ICB width (`100vw` = 400).
+  Element* box = child_doc->getElementById(AtomicString("box"));
+  ASSERT_TRUE(box);
+  box->setAttribute(html_names::kStyleAttr, AtomicString("height: 100vw"));
+  DummyExceptionStateForTesting exception_state;
+  child_doc->RequestResizeResponsiveIframe(&exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  Compositor().BeginFrame();
+  EXPECT_EQ(iframe->OffsetHeight(), 400);
 }
 
 }  // namespace blink

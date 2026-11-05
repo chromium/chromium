@@ -1353,6 +1353,98 @@ bool LocalFrameView::RecordNaturalDimensions() {
   return true;
 }
 
+bool LocalFrameView::ShouldSkipResponsiveIframeResize() const {
+  // Detached subframes (e.g., `display: none` same-origin `<iframe>`s) are not
+  // render-throttled, but have no `LayoutEmbeddedContent` in the parent and a
+  // `0x0` layout size. Skip them until `AttachToLayout()` so they do not lock
+  // a `0x0` ICB size or record natural dimensions measured at `0px` inline
+  // size.
+  if (!IsAttached() && !frame_->IsLocalRoot()) {
+    return true;
+  }
+  // Use `CanThrottleRendering()` rather than `ShouldThrottleRendering()` so
+  // callers outside `AllowThrottlingScope` (such as
+  // `ScheduleResponsiveIframeResize()` and `AttachToLayout()`) also recognize
+  // throttled frames.
+  return CanThrottleRendering() || LocalFrameTreeForcesThrottling();
+}
+
+void LocalFrameView::ScheduleResponsiveIframeResize() {
+  needs_responsive_iframe_resize_ = true;
+  // When detached or throttled, `AttachToLayout()`, `BeginLifecycleUpdates()`,
+  // or `RenderThrottlingStatusChanged()` schedules a visual update when the
+  // frame becomes renderable.
+  if (ShouldSkipResponsiveIframeResize()) {
+    return;
+  }
+  if (Page* page = GetPage()) {
+    page->Animator().ScheduleVisualUpdate(
+        frame_, cc::BeginMainFrameReason::kLayoutInvalidation);
+  }
+}
+
+bool LocalFrameView::HasPendingResponsiveIframeResize() {
+  if (ShouldSkipResponsiveIframeResize()) {
+    return false;
+  }
+  if (needs_responsive_iframe_resize_) {
+    return true;
+  }
+  bool has_pending = false;
+  ForAllChildLocalFrameViews([&has_pending](LocalFrameView& child) {
+    if (!has_pending) {
+      has_pending = child.HasPendingResponsiveIframeResize();
+    }
+  });
+  return has_pending;
+}
+
+void LocalFrameView::UpdateResponsiveIframeSizesIfNeeded() {
+  if (ShouldSkipResponsiveIframeResize()) {
+    return;
+  }
+
+  HeapVector<Member<LocalFrameView>> pending_children;
+  ForAllChildLocalFrameViews([&pending_children](LocalFrameView& child) {
+    if (child.HasPendingResponsiveIframeResize()) {
+      pending_children.push_back(&child);
+    }
+  });
+
+  if (!needs_responsive_iframe_resize_ && pending_children.empty()) {
+    return;
+  }
+
+  std::optional<NaturalSizeLayoutScope> natural_size_scope;
+  if (needs_responsive_iframe_resize_) {
+    needs_responsive_iframe_resize_ = false;
+    Document* document = frame_->GetDocument();
+    if (document && document->IsActive() && document->IsHTMLDocument() &&
+        document->HasResponsiveEmbeddedSizing() && frame_->Owner()) {
+      natural_size_scope.emplace(this);
+    }
+  }
+
+  if (!pending_children.empty() || natural_size_scope) {
+    UpdateStyleAndLayout();
+  }
+
+  for (LocalFrameView* child_view : pending_children) {
+    child_view->UpdateResponsiveIframeSizesIfNeeded();
+  }
+
+  if (natural_size_scope) {
+    // Recursing into nested responsive child frames above may have updated
+    // their natural sizes and dirtied `LayoutIFrame`s in this document.
+    if (!pending_children.empty()) {
+      UpdateStyleAndLayout();
+    }
+    if (RecordNaturalDimensions()) {
+      frame_->Owner()->NaturalSizingInfoChanged();
+    }
+  }
+}
+
 void LocalFrameView::RequestSameDocumentNavigationPresentationTime(
     base::OnceCallback<void(const viz::FrameTimingDetails&)> callback) {
   GetFrame()
@@ -1396,6 +1488,7 @@ std::optional<NaturalSizingInfo> LocalFrameView::GetNaturalDimensions() const {
 
 void LocalFrameView::ClearNaturalDimensions() {
   natural_size_.reset();
+  needs_responsive_iframe_resize_ = false;
 }
 
 void LocalFrameView::UpdateGeometry() {
@@ -2972,7 +3065,19 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     DocumentLifecycle::LifecycleState target_state) {
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::RunStyleAndLayoutLifecyclePhases");
+  const bool should_update_responsive_iframes =
+      RuntimeEnabledFeatures::ResponsiveIframesAsyncResizeEnabled() &&
+      target_state == DocumentLifecycle::kPaintClean;
+  if (should_update_responsive_iframes) {
+    UpdateResponsiveIframeSizesIfNeeded();
+  }
   UpdateStyleAndLayoutIfNeededRecursive();
+  if (should_update_responsive_iframes && HasPendingResponsiveIframeResize()) {
+    // Style and layout above may have newly attached (e.g., `display: none` ->
+    // visible) or unthrottled a subframe with a pending responsive resize.
+    UpdateResponsiveIframeSizesIfNeeded();
+    UpdateStyleAndLayoutIfNeededRecursive();
+  }
   DCHECK(ShouldThrottleRendering() ||
          Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
   if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)
@@ -4205,6 +4310,13 @@ void LocalFrameView::AttachToLayout() {
   UpdateRenderThrottlingStatus(IsHiddenForThrottling(),
                                parent_view->CanThrottleRendering(),
                                IsDisplayLocked());
+  if (RuntimeEnabledFeatures::ResponsiveIframesAsyncResizeEnabled() &&
+      HasPendingResponsiveIframeResize()) {
+    if (Page* page = GetPage()) {
+      page->Animator().ScheduleVisualUpdate(
+          frame_, cc::BeginMainFrameReason::kLayoutInvalidation);
+    }
+  }
 
   // This is to handle a special case: a display:none iframe may have a fully
   // populated layout tree if it contains an <embed>. In that case, we must
