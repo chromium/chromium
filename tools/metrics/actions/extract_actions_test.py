@@ -7,7 +7,7 @@ import dataclasses
 from typing import Any, List
 import unittest
 
-from parameterized import parameterized
+from parameterized import parameterized  # type: ignore
 import setup_modules  # pylint: disable=unused-import
 
 

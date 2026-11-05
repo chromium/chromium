@@ -5,7 +5,6 @@
 import contextlib
 import os
 import pathlib
-import re
 import platform
 import sys
 
@@ -18,12 +17,9 @@ from typing import Dict, List, Generator
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_ROOT = _THIS_DIR.parent.parent.parent
 
-# This file lists all preexisting errors that were in the code when this
-# check was added. Long term we want to clean that list.
-# TODO(crbug.com/484881364): Fix this list.
-_IGNORE_LIST_PATH = _SRC_ROOT.joinpath(
-  'tools/metrics/python_support/mypy_ignore_list.txt'
-)
+# Decides which findings are relevant for tools/metrics, e.g. it silences
+# errors inside vendored code.
+_CONFIG_PATH = _SRC_ROOT.joinpath('tools/metrics/python_support/mypy.ini')
 
 # Specs of venv paths are applied in order of the list
 _VPYTHON_SPEC_FILES: List[pathlib.Path] = [
@@ -41,32 +37,6 @@ _STUB_MAPPINGS: Dict[str, str] = {
   'setup_modules.py': 'tools/metrics/setup_modules.py',
   'typ': 'third_party/catapult/third_party/typ',
 }
-
-# List of regex patterns for errors to ignore.
-_IGNORED_ERRORS: List[str] = [
-  # Ignore issues in chromium_src/tools/metrics as they are duplicates
-  # of what we already have through analyzing "local" files.
-  r'^.*chromium_mypy_stubs_.*chromium_src.tools.metrics.*$',
-  # Ignore all third party errors.
-  # TODO(crbug.com/484881364): Treat them as warning instead.
-  r'^.*chromium_mypy_stubs_.*chromium_src.third_party.*$',
-  # TODO(crbug.com/484881364): Fix this.
-  r'^.*chromium_src.components.autofill.core.browser.data_model',
-]
-
-_IGNORED_ERRORS_PATTERNS = [re.compile(p) for p in _IGNORED_ERRORS]
-
-
-def _convert_to_windows_ignore_line_if_needed(ignore_file_entry: str) -> str:
-  """Converts the line from mypy_ignore_list.txt fixing paths on Windows."""
-  if platform.system() != 'Windows':
-    return ignore_file_entry
-
-  # Replace slashes with backslashes in the first part of each line which
-  # is a path.
-  parts = ignore_file_entry.split(':', 1)
-  parts[0] = parts[0].replace('/', '\\')
-  return ':'.join(parts)
 
 
 def _create_symlink(target: pathlib.Path, link_name: pathlib.Path) -> None:
@@ -139,6 +109,8 @@ def run_mypy(stub_dir: pathlib.Path, dir_to_check: str) -> List[str]:
     *itertools.chain(*spec_flags),
     '-m',
     'mypy',
+    '--config-file',
+    str(_CONFIG_PATH),
     '--explicit-package-bases',
     '--no-error-summary',  # Easier to parse without the summary
     '--hide-error-context',  # Cleaner line-by-line filtering
@@ -160,47 +132,17 @@ def run_mypy(stub_dir: pathlib.Path, dir_to_check: str) -> List[str]:
 
 
 def run_mypy_and_filter_irrelevant(dir_to_check: str) -> List[str]:
-  """Runs mypy and reports finding after filtering exceptions.
+  """Runs mypy and reports the findings relevant for tools/metrics.
 
-  Sets up stubs, runs mypy, and filters the output based on _IGNORED_ERRORS
-  and _IGNORE_LIST_PATH content.
+  Sets up stubs and runs mypy, which filters out irrelevant findings according
+  to _CONFIG_PATH.
 
   Returns:
-    List[str]: The filtered list of error messages.
+    List[str]: The list of error messages.
   """
-  with open(_IGNORE_LIST_PATH, 'r') as f:
-    ignored_errors = {
-      _convert_to_windows_ignore_line_if_needed(error.strip())
-      for error in f.readlines()
-    }
-
   with _setup_stubs() as stub_dir:
-    raw_errors = run_mypy(stub_dir, dir_to_check)
+    errors = [line.strip() for line in run_mypy(stub_dir, dir_to_check)]
 
-    ignored_errors_cnt = 0
-    ignored_patterns = 0
-    empty_lines = 0
-
-    filtered_errors = []
-    for line in raw_errors:
-      line = line.strip()
-      if not line:
-        empty_lines += 1
-        continue
-
-      if any(pattern.search(line) for pattern in _IGNORED_ERRORS_PATTERNS):
-        ignored_patterns += 1
-        continue
-
-      if line in ignored_errors:
-        ignored_errors_cnt += 1
-        continue
-
-      filtered_errors.append(line)
-
-    assert empty_lines == 0
-    print(
-      f'MyPy found {len(filtered_errors)} issues + {ignored_patterns}'
-      f' ignored by pattern + {ignored_errors_cnt} ignored by list'
-    )
-    return filtered_errors
+  assert all(errors)
+  print(f'MyPy found {len(errors)} issues')
+  return errors
