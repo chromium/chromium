@@ -46,7 +46,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </variants>
 
 <histogram name="AddSupervisionDialog.Enrollment"
-    enum="AddSupervisionEnrollment" expires_after="2026-12-12">
+    enum="AddSupervisionEnrollment" expires_after="2027-06-12">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
