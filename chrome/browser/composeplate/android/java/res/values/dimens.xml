@@ -27,6 +27,9 @@ found in the LICENSE file.
     <dimen name="composeplate_view_lateral_margin">16dp</dimen>
     <dimen name="composeplate_view_margin_top">8dp</dimen>
     <dimen name="composeplate_view_legacy_margin_top">4dp</dimen>
-    <dimen name="composeplate_view_beside_mvt_width">88dp</dimen>
+    <dimen name="composeplate_view_beside_mvt_width">80dp</dimen>
     <dimen name="composeplate_view_beside_mvt_margin_end">12dp</dimen>
+    <!-- The size of the AI Mode button icon (the search spark, or the third party search
+         engine's logo or its fallback icon) in the beside-MVT layout. -->
+    <dimen name="composeplate_view_beside_mvt_icon_size">26dp</dimen>
 </resources>

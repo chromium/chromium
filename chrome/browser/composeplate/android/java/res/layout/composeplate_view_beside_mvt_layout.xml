@@ -35,8 +35,8 @@ found in the LICENSE file.
 
             <ImageView
                 android:id="@+id/composeplate_button_icon"
-                android:layout_width="@dimen/composeplate_view_icon_size"
-                android:layout_height="@dimen/composeplate_view_icon_size"
+                android:layout_width="@dimen/composeplate_view_beside_mvt_icon_size"
+                android:layout_height="@dimen/composeplate_view_beside_mvt_icon_size"
                 android:layout_gravity="center"
                 android:src="@drawable/search_spark"
                 android:tint="@macro/default_icon_color"
