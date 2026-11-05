@@ -8,6 +8,7 @@
 import argparse
 import logging
 import os
+import re
 import shutil
 import sys
 import time
@@ -54,6 +55,11 @@ _DISABLED_ALWAYS = [
 
 _RES_ZIP_DIR = 'RESZIPS'
 _SRCJAR_DIR = 'SRCJARS'
+
+# Placeholder for the source root in the <ignore regexp="..."> entries of
+# lint-suppressions.xml files. See _SourceRootRegexp() and
+# //build/android/docs/lint.md.
+_SRC_PLACEHOLDER = '$SRC'
 
 
 def _SrcRelative(path):
@@ -147,9 +153,27 @@ def _RetrieveBackportedMethods(backported_methods_path):
     return sorted(set(methods))
 
 
-def _GenerateConfigXmlTree(orig_config_path, backported_methods):
+def _SourceRootRegexp(pathvar_src):
+    """Returns a regexp matching the source root as lint spells it in paths.
+
+    Lint matches <ignore regexp="..."> against the absolute path of each file,
+    which is <output dir>/../../path/in/src for sources, but the canonical
+    /path/to/src/path/in/src for resource files (lint canonicalizes those).
+    """
+    return '(?:{}|{})'.format(
+        re.escape(os.path.realpath(pathvar_src)), re.escape(pathvar_src)
+    )
+
+
+def _GenerateConfigXmlTree(orig_config_path, backported_methods, src_regexp):
     if orig_config_path:
         root_node = ElementTree.parse(orig_config_path).getroot()
+        for ignore_node in root_node.iter('ignore'):
+            regexp = ignore_node.get('regexp')
+            if regexp and _SRC_PLACEHOLDER in regexp:
+                ignore_node.set(
+                    'regexp', regexp.replace(_SRC_PLACEHOLDER, src_regexp)
+                )
     else:
         root_node = ElementTree.fromstring('<lint/>')
 
@@ -245,7 +269,9 @@ def _RunLint(
 
     logging.info('Generating config.xml')
     backported_methods = _RetrieveBackportedMethods(backported_methods_path)
-    config_xml_node = _GenerateConfigXmlTree(config_path, backported_methods)
+    config_xml_node = _GenerateConfigXmlTree(
+        config_path, backported_methods, _SourceRootRegexp(pathvar_src)
+    )
     generated_config_path = os.path.join(lint_gen_dir, 'config.xml')
     _WriteXmlFile(config_xml_node, generated_config_path)
     cmd.extend(['--config', generated_config_path])

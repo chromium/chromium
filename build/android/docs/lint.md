@@ -122,8 +122,18 @@ Here is an example of how to structure a suppressions XML file:
     <!-- TODO(crbug.com/###): Remove the following line.  -->
     <ignore regexp="The resource `R.string.soon_to_be_used` appears to be unused"/>
   </issue>
+  <!-- Ignore all warnings from //third_party. -->
+  <issue id="all">
+    <ignore regexp="^$SRC/third_party/"/>
+  </issue>
 </lint>
 ```
+
+Each `regexp` is matched against both the warning message and the absolute path
+of the file it is in. Use `$SRC` to refer to the source root in a path: lint
+spells it differently for source files and for resource files, and
+[build/android/gyp/lint.py](https://source.chromium.org/chromium/chromium/src/+/main:build/android/gyp/lint.py)
+expands `$SRC` to match either form.
 
 
 ### Per-target cache

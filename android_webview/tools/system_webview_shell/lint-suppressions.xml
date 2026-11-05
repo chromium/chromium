@@ -8,10 +8,10 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     directories already covered by Chrome's lint check.
   -->
   <issue id="all">
-    <ignore regexp="../../../base/"/>
-    <ignore regexp="../../../components/"/>
-    <ignore regexp="../../../content/"/>
-    <ignore regexp="../../../net/"/>
+    <ignore regexp="^$SRC/base/"/>
+    <ignore regexp="^$SRC/components/"/>
+    <ignore regexp="^$SRC/content/"/>
+    <ignore regexp="^$SRC/net/"/>
   </issue>
   <issue id="AcceptsUserCertificates" severity="ignore"/>
   <issue id="ForegroundServiceType" severity="ignore" />
