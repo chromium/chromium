@@ -1098,6 +1098,11 @@ void BaseRenderingContext2D::UpdateRecordingLimits(bool is_graphite) {
 void BaseRenderingContext2D::ResetInternal() {
   Canvas2DRecorderContext::ResetInternal();
   clear_frame_ = true;
+  if (!OriginClean()) {
+    // Flush the clear canvas immediately if canvas is tainted to
+    // preventively block non-CORS data exfiltration.
+    FlushCanvas(FlushReason::kOther);
+  }
 }
 
 CanvasRenderingContext2DSettings* BaseRenderingContext2D::getContextAttributes()
@@ -2652,7 +2657,7 @@ void BaseRenderingContext2D::SetOriginTainted() {
 }
 
 bool BaseRenderingContext2D::OriginClean() const {
-  return Host()->OriginClean();
+  return Host() ? Host()->OriginClean() : true;
 }
 
 }  // namespace blink

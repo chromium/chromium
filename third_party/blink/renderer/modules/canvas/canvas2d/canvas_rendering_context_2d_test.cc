@@ -4142,4 +4142,90 @@ TEST_P(CanvasRenderingContext2DTest, ContextCreationErrorEventReentrancy) {
   }
 }
 
+// Tests that resizing a tainted canvas to the same dimensions immediately
+// flushes the clear canvas to the backing store instead of dropping the
+// backing (crbug.com/581364640).
+TEST_P(CanvasRenderingContext2DTest, TaintedCanvasReshapeSameSizeFlushesClear) {
+  CreateContext();
+  HTMLCanvasElement& canvas = CanvasElement();
+  CanvasRenderingContext2D* context = Context2D();
+
+  // Draw something to initialize the backing store.
+  DrawSomething();
+  ASSERT_TRUE(context->HasBacking());
+  ASSERT_TRUE(canvas.OriginClean());
+
+  // Resizing an untainted canvas to the same dimensions preserves deferred
+  // clear. This is not a spec requirement: it's to allow overdraw
+  // optimisations to drop the clear op.
+  canvas.setWidth(canvas.width(), ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(canvas.OriginClean());
+  EXPECT_TRUE(context->HasBacking());
+  EXPECT_TRUE(context->clear_frame());
+
+  // Taint the canvas by drawing a cross-origin image.
+  FakeImageSource cross_origin_source({
+      .size = gfx::Size(10, 10),
+      .would_taint_origin = true,
+  });
+  context->drawImage(&cross_origin_source, 0, 0, 10, 10, 0, 0, 10, 10,
+                     ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(canvas.OriginClean());
+  EXPECT_FALSE(context->OriginClean());
+  ASSERT_TRUE(context->HasBacking());
+  EXPECT_TRUE(context->clear_frame());
+
+  // Resizing the tainted canvas to the same dimensions restores OriginClean
+  // on the element and retains the backing store, but must immediately flush
+  // the clear canvas so clear_frame() transitions to false as the backing is
+  // erased.
+  canvas.setWidth(canvas.width(), ASSERT_NO_EXCEPTION);
+
+  EXPECT_TRUE(canvas.OriginClean());
+  EXPECT_TRUE(context->OriginClean());
+  EXPECT_TRUE(context->HasBacking());
+  EXPECT_FALSE(context->clear_frame());
+}
+
+// Tests that calling reset() on a tainted canvas immediately flushes the
+// clear canvas to the backing store instead of leaving it deferred
+// (crbug.com/581364640).
+TEST_P(CanvasRenderingContext2DTest, TaintedCanvasResetFlushesClear) {
+  CreateContext();
+  HTMLCanvasElement& canvas = CanvasElement();
+  CanvasRenderingContext2D* context = Context2D();
+
+  // Draw something to initialize the backing store.
+  DrawSomething();
+  ASSERT_TRUE(context->HasBacking());
+  ASSERT_TRUE(canvas.OriginClean());
+
+  // Calling reset() on an untainted canvas preserves deferred clear.
+  context->reset();
+  EXPECT_TRUE(canvas.OriginClean());
+  EXPECT_TRUE(context->HasBacking());
+  EXPECT_TRUE(context->clear_frame());
+
+  // Taint the canvas by drawing a cross-origin image.
+  FakeImageSource cross_origin_source({
+      .size = gfx::Size(10, 10),
+      .would_taint_origin = true,
+  });
+  context->drawImage(&cross_origin_source, 0, 0, 10, 10, 0, 0, 10, 10,
+                     ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(canvas.OriginClean());
+  EXPECT_FALSE(context->OriginClean());
+  ASSERT_TRUE(context->HasBacking());
+  EXPECT_TRUE(context->clear_frame());
+
+  // Calling reset() on the tainted canvas must immediately flush the clear
+  // canvas to the backing store so clear_frame() transitions to false.
+  context->reset();
+
+  EXPECT_FALSE(canvas.OriginClean());
+  EXPECT_FALSE(context->OriginClean());
+  EXPECT_TRUE(context->HasBacking());
+  EXPECT_FALSE(context->clear_frame());
+}
+
 }  // namespace blink
