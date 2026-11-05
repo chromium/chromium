@@ -11,6 +11,7 @@ data/cert_issuer_source_static_unittest/*.pem
 data/cert_net_fetcher_impl_unittest/**
 data/embedded_test_server/*
 data/filter_unittests/*
+data/fuzzer_data/net_crl_set_fuzzer/*
 data/fuzzer_dictionaries/*
 data/ov_name_constraints/*.pem
 data/pac_file_fetcher_unittest/**

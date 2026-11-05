@@ -241,6 +241,17 @@ data/filter_unittests/google.szst
 data/filter_unittests/google.txt
 data/filter_unittests/google.zst
 data/filter_unittests/test.dict
+data/fuzzer_data/net_crl_set_fuzzer/crlset_by_intermediate_serial.raw
+data/fuzzer_data/net_crl_set_fuzzer/crlset_by_leaf_spki.raw
+data/fuzzer_data/net_crl_set_fuzzer/crlset_by_leaf_subject_no_spki.raw
+data/fuzzer_data/net_crl_set_fuzzer/crlset_by_root_serial.raw
+data/fuzzer_data/net_crl_set_fuzzer/crlset_by_root_subject.raw
+data/fuzzer_data/net_crl_set_fuzzer/crlset_by_root_subject_no_spki.raw
+data/fuzzer_data/net_crl_set_fuzzer/multi-root-crlset-C.raw
+data/fuzzer_data/net_crl_set_fuzzer/multi-root-crlset-CD-and-FE.raw
+data/fuzzer_data/net_crl_set_fuzzer/multi-root-crlset-D-and-E.raw
+data/fuzzer_data/net_crl_set_fuzzer/multi-root-crlset-E.raw
+data/fuzzer_data/net_crl_set_fuzzer/multi-root-crlset-unrelated.raw
 data/fuzzer_dictionaries/http_chunked_decoder_fuzzer.dict
 data/fuzzer_dictionaries/net_cookies_fuzzer.dict
 data/fuzzer_dictionaries/net_data_url_fuzzer.dict
