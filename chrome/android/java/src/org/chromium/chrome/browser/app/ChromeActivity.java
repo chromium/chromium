@@ -1605,8 +1605,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         super.onPictureInPictureModeChanged(inPicture, newConfig);
         Log.i(
                 TAG,
-                "Picture in picture mode changed, inPicture: " + inPicture,
-                " custom tabs: " + wasInPictureInPictureForMinimizedCustomTabs());
+                "Picture in picture mode changed, inPicture: %b custom tabs: %b",
+                inPicture,
+                wasInPictureInPictureForMinimizedCustomTabs());
         if (wasInPictureInPictureForMinimizedCustomTabs()) return;
         if (inPicture) {
             mLastPictureInPictureModeForTesting = true;
@@ -1820,10 +1821,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             //  & fixed.
             Log.i(
                     TAG,
-                    "#onStart, num async tabs: "
-                            + AsyncTabParamsManagerSingleton.getInstance()
-                                    .getAsyncTabParams()
-                                    .size());
+                    "#onStart, num async tabs: %d",
+                    AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().size());
 
             CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
             if (compositorViewHolder != null) {
@@ -3720,7 +3719,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 mConfig.smallestScreenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
         boolean didChangeTabletMode = wasTablet != isTablet;
         if (didChangeTabletMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Log.i(TAG, "Current smallest screen width is: " + smallestWidth);
+            Log.i(TAG, "Current smallest screen width is: %d", smallestWidth);
         }
         return new TabletMode(isTablet, didChangeTabletMode);
     }

@@ -5355,7 +5355,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
      * @param tabToClose Tab that will be closed once the app is not visible.
      */
     private void sendToBackground(@Nullable final Tab tabToClose) {
-        Log.i(TAG, "sendToBackground(): " + tabToClose);
+        Log.i(TAG, "sendToBackground(): %s", tabToClose);
         moveTaskToBack(true);
         if (tabToClose != null) closeTabUponMinimization(tabToClose);
     }

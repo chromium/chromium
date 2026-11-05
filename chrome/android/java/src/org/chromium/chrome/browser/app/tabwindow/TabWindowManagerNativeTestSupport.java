@@ -29,7 +29,7 @@ public class TabWindowManagerNativeTestSupport {
             for (TabModel model : selector.getModels()) {
                 if (model == targetModel) {
                     int id = manager.getWindowIdForSelector(selector);
-                    Log.i(TAG, "Window id found for model: " + id);
+                    Log.i(TAG, "Window id found for model: %d", id);
                     return id;
                 }
             }
@@ -44,11 +44,11 @@ public class TabWindowManagerNativeTestSupport {
         TabWindowManager manager = TabWindowManagerSingleton.getInstance();
         assert manager != null;
 
-        Log.i(TAG, "Waiting for TabModelSelector with id " + windowId);
+        Log.i(TAG, "Waiting for TabModelSelector with id %d", windowId);
 
         TabModelSelector existingSelector = manager.getTabModelSelectorById(windowId);
         if (existingSelector != null) {
-            Log.i(TAG, "TabModelSelector already exists for id " + windowId);
+            Log.i(TAG, "TabModelSelector already exists for id %d", windowId);
             runOnTabStateInitialized(quitRunnable, existingSelector);
             return;
         }
@@ -57,7 +57,7 @@ public class TabWindowManagerNativeTestSupport {
                     @Override
                     public void onTabModelSelectorAdded(TabModelSelector selector) {
                         @WindowId int id = manager.getWindowIdForSelector(selector);
-                        Log.i(TAG, "TabModelSelector added " + id);
+                        Log.i(TAG, "TabModelSelector added %d", id);
 
                         if (id == windowId) {
                             manager.removeObserver(this);

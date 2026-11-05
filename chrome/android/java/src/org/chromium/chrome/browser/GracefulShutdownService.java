@@ -78,13 +78,10 @@ public class GracefulShutdownService extends SplitCompatService {
         boolean result = activeCount == 0 && finishingCount > 0;
         Log.i(
                 TAG,
-                "isLastActivityDying result: "
-                        + result
-                        + " (active="
-                        + activeCount
-                        + ", finishing="
-                        + finishingCount
-                        + ")");
+                "isLastActivityDying result: %b (active=%d, finishing=%d)",
+                result,
+                activeCount,
+                finishingCount);
         return result;
     }
 

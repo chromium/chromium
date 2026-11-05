@@ -111,7 +111,7 @@ public class ChromeInactivityTracker
         ChromeSharedPreferences.getInstance()
                 .writeLong(ChromePreferenceKeys.TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS, timeInMillis);
 
-        Log.i(TAG, "Last visible time read from the SharedPreference is:" + lastVisibleTime + ".");
+        Log.i(TAG, "Last visible time read from the SharedPreference is:%d.", lastVisibleTime);
         RecordHistogram.recordBooleanHistogram(
                 UMA_IS_LAST_VISIBLE_TIME_LOGGED, lastVisibleTime != UNKNOWN_LAST_BACKGROUNDED_TIME);
     }
@@ -149,9 +149,8 @@ public class ChromeInactivityTracker
 
         Log.i(
                 TAG,
-                "Last background time read from the SharedPreference is:"
-                        + lastBackgroundTime
-                        + ".");
+                "Last background time read from the SharedPreference is:%d.",
+                lastBackgroundTime);
         RecordHistogram.recordBooleanHistogram(
                 UMA_IS_LAST_BACKGROUND_TIME_LOGGED,
                 lastBackgroundTime != UNKNOWN_LAST_BACKGROUNDED_TIME);
