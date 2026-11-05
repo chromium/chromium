@@ -154,7 +154,9 @@ BrowserUserEducationInterfaceImpl::WouldShowFeaturePromoImpl(
 bool BrowserUserEducationInterfaceImpl::HasFeaturePromoBeenDismissed(
     const base::Feature& iph_feature) const {
   auto* const service = GetUserEducationService();
-  CHECK(service);
+  if (!service) {
+    return false;
+  }
   const std::optional<user_education::FeaturePromoData> result =
       service->user_education_storage_service().ReadPromoData(iph_feature);
 
