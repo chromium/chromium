@@ -27,7 +27,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .type = PageActionIconType::kAiMode,
             .element_identifier = kAiModePageActionIconElementId,
             .priority =
-                page_actions::PageActionPriorityCategory::kCoreSiteUtility,
+                page_actions::PageActionPriorityCategory::kStrategicPromotion,
         },
     },
     {
@@ -37,7 +37,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .type = PageActionIconType::kIndigo,
             .element_identifier = kIndigoPageActionIconElementId,
             .priority =
-                page_actions::PageActionPriorityCategory::kContextualCue,
+                page_actions::PageActionPriorityCategory::kProactiveSuggestion,
         },
     },
     {
@@ -47,7 +47,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .type = PageActionIconType::kMultistepFilter,
             .element_identifier = kMultistepFilterPageActionIconElementId,
             .priority =
-                page_actions::PageActionPriorityCategory::kContextualCue,
+                page_actions::PageActionPriorityCategory::kProactiveSuggestion,
         },
     },
 
@@ -57,7 +57,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "LensOverlay",
             .type = PageActionIconType::kLensOverlay,
             .priority =
-                page_actions::PageActionPriorityCategory::kDiscoveryNudge,
+                page_actions::PageActionPriorityCategory::kStrategicPromotion,
         },
     },
     {
@@ -67,7 +67,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .type = PageActionIconType::kLensOverlayHomework,
             .element_identifier = kLensOverlayHomeworkPageActionIconElementId,
             .priority =
-                page_actions::PageActionPriorityCategory::kDiscoveryNudge,
+                page_actions::PageActionPriorityCategory::kStrategicPromotion,
         },
     },
     {
@@ -85,7 +85,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .type = PageActionIconType::kMemorySaver,
             .element_identifier = kMemorySaverChipElementId,
             .priority =
-                page_actions::PageActionPriorityCategory::kPrivacySecurity,
+                page_actions::PageActionPriorityCategory::kStrategicPromotion,
         },
     },
     {
@@ -110,8 +110,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "IntentPicker",
             .type = PageActionIconType::kIntentPicker,
             .element_identifier = kIntentPickerPageActionElementId,
-            .priority =
-                page_actions::PageActionPriorityCategory::kCoreSiteUtility,
+            .priority = page_actions::PageActionPriorityCategory::kQuietUtility,
         },
     },
     {
@@ -128,8 +127,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "ReadingMode",
             .type = PageActionIconType::kReadingMode,
             .element_identifier = kReadAnythingPageActionElementId,
-            .priority =
-                page_actions::PageActionPriorityCategory::kCoreSiteUtility,
+            .priority = page_actions::PageActionPriorityCategory::kQuietUtility,
         },
     },
     {
@@ -154,8 +152,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "PwaInstall",
             .type = PageActionIconType::kPwaInstall,
             .element_identifier = kInstallPwaElementId,
-            .priority =
-                page_actions::PageActionPriorityCategory::kCoreSiteUtility,
+            .priority = page_actions::PageActionPriorityCategory::kQuietUtility,
         },
     },
     {
@@ -173,8 +170,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "Discounts",
             .type = PageActionIconType::kDiscounts,
             .element_identifier = kDiscountsChipElementId,
-            .priority =
-                page_actions::PageActionPriorityCategory::kDiscoveryNudge,
+            .priority = page_actions::PageActionPriorityCategory::kQuietUtility,
         },
     },
     {
@@ -192,8 +188,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .type = PageActionIconType::kCollaborationMessaging,
             .element_identifier =
                 kCollaborationMessagingPageActionIconElementId,
-            .priority =
-                page_actions::PageActionPriorityCategory::kDiscoveryNudge,
+            .priority = page_actions::PageActionPriorityCategory::kQuietUtility,
         },
     },
     {
@@ -218,8 +213,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "CookieControls",
             .type = PageActionIconType::kCookieControls,
             .element_identifier = kCookieControlsIconElementId,
-            .priority =
-                page_actions::PageActionPriorityCategory::kPrivacySecurity,
+            .priority = page_actions::PageActionPriorityCategory::
+                kSecurityTrustAndPermissions,
         },
     },
     {
@@ -289,8 +284,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "Federation",
             .type = PageActionIconType::kFederation,
             .element_identifier = kFederationElementId,
-            .priority =
-                page_actions::PageActionPriorityCategory::kPrivacySecurity,
+            .priority = page_actions::PageActionPriorityCategory::
+                kSecurityTrustAndPermissions,
         },
     },
     {
@@ -313,8 +308,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "AutofillPayment",
             .type = PageActionIconType::kAutofillPayment,
             .element_identifier = kAutofillPaymentIconElementId,
-            .priority =
-                page_actions::PageActionPriorityCategory::kContextualCue,
+            .priority = page_actions::PageActionPriorityCategory::
+                kSecurityTrustAndPermissions,
         },
     },
     {
@@ -330,8 +325,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         {
             .histogram_name = "FakePageActionForDebug",
             .type = PageActionIconType::kFakePageActionForDebug,
-            .priority =
-                page_actions::PageActionPriorityCategory::kPrivacySecurity,
+            .priority = page_actions::PageActionPriorityCategory::
+                kSecurityTrustAndPermissions,
         },
     },
     {

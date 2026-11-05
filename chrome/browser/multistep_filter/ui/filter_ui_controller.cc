@@ -50,7 +50,7 @@ namespace {
 using SuggestionViewState = FilterUiController::SuggestionViewState;
 
 constexpr page_actions::PageActionPriorityCategory kMultistepFilterPriority =
-    page_actions::PageActionPriorityCategory::kContextualCue;
+    page_actions::PageActionPriorityCategory::kProactiveSuggestion;
 
 constexpr std::string_view ViewStateToString(SuggestionViewState state) {
   switch (state) {

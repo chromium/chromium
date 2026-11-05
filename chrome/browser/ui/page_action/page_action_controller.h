@@ -80,10 +80,10 @@ enum class PageActionAnimationStyle {
 // shown.
 enum class PageActionPriorityCategory {
   kUnknown = 0,
-  kDiscoveryNudge,
-  kCoreSiteUtility,
-  kContextualCue,
-  kPrivacySecurity,
+  kQuietUtility,
+  kProactiveSuggestion,
+  kStrategicPromotion,
+  kSecurityTrustAndPermissions,
   kUserInteraction,  // This priority is only used for Anchored Messages.
   kMaxValue = kUserInteraction,
 };

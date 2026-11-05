@@ -211,10 +211,11 @@ void PriorityChipSelector::RequestChipShow(actions::ActionId page_action_id,
   }
 
   if (config.priority <= active_priority_ &&
-      config.priority < PageActionPriorityCategory::kPrivacySecurity) {
+      config.priority <
+          PageActionPriorityCategory::kSecurityTrustAndPermissions) {
     // Active suggestion chip or anchored message is either of higher priority,
-    // or of the same priority, which is not Privacy/Security, so we don't show
-    // the new one.
+    // or of the same priority, which is not security/trust/permissions, so we
+    // don't show the new one.
     return;
   }
 
@@ -227,8 +228,8 @@ void PriorityChipSelector::RequestChipShow(actions::ActionId page_action_id,
   }
 
   // Final case: active suggestion chip or anchored message, and requested one
-  // are both Privacy/Security, so we show the newly requested chip alongside
-  // the existing one(s).
+  // are both security/trust/permissions, so we show the newly requested chip
+  // alongside the existing one(s).
   ShowChip(page_action_id, config);
 }
 
@@ -298,16 +299,19 @@ void PriorityChipSelector::RequestAnchoredMessageShow(
   }
 
   if (config.priority <= active_priority_ &&
-      config.priority < PageActionPriorityCategory::kPrivacySecurity) {
-    // We always show privacy/security or user interaction requests in a
-    // possibly downgraded state. Otherwise, we only show higher priority ones.
+      config.priority <
+          PageActionPriorityCategory::kSecurityTrustAndPermissions) {
+    // We always show security/trust/permissions or user interaction requests in
+    // a possibly downgraded state. Otherwise, we only show higher priority
+    // ones.
     return;
   }
 
   if (active_priority_ < config.priority &&
-      active_priority_ < PageActionPriorityCategory::kPrivacySecurity) {
+      active_priority_ <
+          PageActionPriorityCategory::kSecurityTrustAndPermissions) {
     // Active suggestion chip or anchored message is of lower priority. Hide it
-    // unless it is a privacy/security one.
+    // unless it is a security/trust/permissions one.
     HideAllActive();
     MaybeShowOrQueueAnchoredMessage(page_action_id, config);
     return;
@@ -328,14 +332,15 @@ void PriorityChipSelector::RequestAnchoredMessageShow(
   }
 
   // Final case: active suggestion chip or anchored message is either
-  // Privacy/Security or User Interaction, and requested one is
-  // Privacy/Security. If we are already showing or pending an anchored message,
-  // the new request is downgraded to a suggestion chip, otherwise, we show or
-  // queue it.
+  // Security/Trust/Permissions or User Interaction, and requested one is
+  // Security/Trust/Permissions. If we are already showing or pending an
+  // anchored message, the new request is downgraded to a suggestion chip,
+  // otherwise, we show or queue it.
   if (active_anchored_message_ || pending_anchored_message_) {
     ShowChip(page_action_id,
              SuggestionChipConfig{
-                 .priority = PageActionPriorityCategory::kPrivacySecurity});
+                 .priority =
+                     PageActionPriorityCategory::kSecurityTrustAndPermissions});
   } else {
     MaybeShowOrQueueAnchoredMessage(page_action_id, config);
   }
@@ -449,10 +454,12 @@ void PriorityChipSelector::HideAllActive() {
 void PriorityChipSelector::ShowChip(actions::ActionId page_action_id,
                                     const SuggestionChipConfig& config) {
   // We verify that either there is no active priority, it has already been set
-  // to the same level as requested, or the request is Privacy/Security or
-  // higher, which allows multiple items to show at once.
+  // to the same level as requested, or the request is
+  // Security/Trust/Permissions or higher, which allows multiple items to show
+  // at once.
   CHECK(!active_priority_ || active_priority_ == config.priority ||
-        config.priority >= PageActionPriorityCategory::kPrivacySecurity);
+        config.priority >=
+            PageActionPriorityCategory::kSecurityTrustAndPermissions);
   active_chips_.insert(page_action_id);
   show_chip_callback_.Run(page_action_id, config);
   if (!active_priority_ || active_priority_ == config.priority) {
@@ -465,10 +472,12 @@ void PriorityChipSelector::ShowAnchoredMessage(
     const AnchoredMessageConfig& config) {
   CHECK(!active_anchored_message_);
   // We verify that either there is no active priority, it has already been set
-  // to the same level as requested, or the request is Privacy/Security or
-  // higher, which allows multiple items to show at once.
+  // to the same level as requested, or the request is
+  // Security/Trust/Permissions or higher, which allows multiple items to show
+  // at once.
   CHECK(!active_priority_ || active_priority_ == config.priority ||
-        config.priority >= PageActionPriorityCategory::kPrivacySecurity);
+        config.priority >=
+            PageActionPriorityCategory::kSecurityTrustAndPermissions);
   active_anchored_message_ = page_action_id;
   show_anchored_message_callback_.Run(page_action_id, config);
   active_priority_ = config.priority;

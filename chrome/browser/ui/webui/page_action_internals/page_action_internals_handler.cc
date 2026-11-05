@@ -185,7 +185,7 @@ void PageActionInternalsHandler::ShowPageAction(
     controller->OverrideText(kActionId, *params->chip_text);
     page_actions::SuggestionChipConfig chip_config;
     chip_config.priority =
-        page_actions::PageActionPriorityCategory::kCoreSiteUtility;
+        page_actions::PageActionPriorityCategory::kQuietUtility;
     chip_config.should_animate = true;
     controller->ShowSuggestionChip(kActionId, chip_config);
   } else {

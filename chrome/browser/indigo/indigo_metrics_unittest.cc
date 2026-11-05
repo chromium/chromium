@@ -44,7 +44,7 @@ TEST(IndigoMetricsTest, RecordClickedEntryPoint_AnchoredMessageContextualCue) {
 
   RecordClickedEntryPoint(
       EntryPoint::kAnchoredMessage,
-      page_actions::PageActionPriorityCategory::kContextualCue);
+      page_actions::PageActionPriorityCategory::kProactiveSuggestion);
 
   histogram_tester.ExpectUniqueSample(
       kClickedEntryPointHistogram,

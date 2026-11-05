@@ -107,17 +107,17 @@ class DefaultChipSelector : public ChipSelector {
 };
 
 // Priority based ChipSelector implementation. For priorities other than
-// Privacy/Security, only allows a single anchored message or suggestion chip to
-// be shown. For Privacy/Security, allows a single anchored message and any
-// number of suggestion chips.
+// security/trust/permissions, only allows a single anchored message or
+// suggestion chip to be shown. For security/trust/permissions, allows a single
+// anchored message and any number of suggestion chips.
 //
 // Prioritization logic:
 // * Higher priority suggestion chips / anchored messages always win
-// * At every level except Privacy/Security, a single suggestion chip or
-// anchored message can be shown at once with first one to request winning
-// * At Privacy/Security, we can show any number of suggestion chips and at most
-// one anchored message, with any further anchored message requests downgraded
-// to suggestion chips if one is already showing
+// * At every level except security/trust/permissions, a single suggestion chip
+// or anchored message can be shown at once with first one to request winning
+// * At security/trust/permissions, we can show any number of suggestion chips
+// and at most one anchored message, with any further anchored message requests
+// downgraded to suggestion chips if one is already showing
 class PriorityChipSelector : public ChipSelector {
  public:
   static constexpr base::TimeDelta kPmcTimeout = base::Seconds(10);

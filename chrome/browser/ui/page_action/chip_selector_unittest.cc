@@ -278,18 +278,19 @@ class PriorityChipSelectorTest : public testing::Test {
 
 TEST_F(PriorityChipSelectorTest, ShowSingleChip) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 }
 
 TEST_F(PriorityChipSelectorTest, HigherPriorityPreemptsLowerPriority) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestChipShow(
       1, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
                                  Pair("show_chip", 1)));
@@ -298,10 +299,11 @@ TEST_F(PriorityChipSelectorTest, HigherPriorityPreemptsLowerPriority) {
 TEST_F(PriorityChipSelectorTest, LowerPriorityIgnored) {
   selector->RequestChipShow(
       0, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestChipShow(
-      1, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 
@@ -313,22 +315,22 @@ TEST_F(PriorityChipSelectorTest, LowerPriorityIgnored) {
 
 TEST_F(PriorityChipSelectorTest, SamePriorityIgnored) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestChipShow(
-      1, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 }
 
 TEST_F(PriorityChipSelectorTest, SamePriorityReevalSuppression) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestChipShow(
-      1, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 
@@ -342,11 +344,11 @@ TEST_F(PriorityChipSelectorTest, SamePriorityReevalSuppression) {
 
 TEST_F(PriorityChipSelectorTest, ReevalSuppressionReentry) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestChipShow(
-      1, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 
@@ -358,8 +360,9 @@ TEST_F(PriorityChipSelectorTest, ReevalSuppressionReentry) {
     if (id == 0) {
       for (int i = 2; i < 100; ++i) {
         selector->RequestChipShow(
-            i, SuggestionChipConfig{
-                   .priority = PageActionPriorityCategory::kContextualCue});
+            i,
+            SuggestionChipConfig{
+                .priority = PageActionPriorityCategory::kProactiveSuggestion});
       }
     }
   });
@@ -371,14 +374,14 @@ TEST_F(PriorityChipSelectorTest, ReevalSuppressionReentry) {
 
 TEST_F(PriorityChipSelectorTest, ReevalSuppressionReentry2) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestChipShow(
-      1, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestChipShow(
-      2, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      2, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 
@@ -411,16 +414,17 @@ TEST_F(PriorityChipSelectorTest, ReevalSuppressionReentry2) {
 
 TEST_F(PriorityChipSelectorTest, PriorityChangeReevalSuppression) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestChipShow(
-      1, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   // Change priority of action 1; that should make it expand in preference to
   // 0.
   selector->RequestChipShow(
       1, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
                                  Pair("show_chip", 1)));
 
@@ -437,36 +441,41 @@ TEST_F(PriorityChipSelectorTest, PriorityChangeReevalSuppression) {
   EXPECT_THAT(calls, ElementsAre(Pair("hide_chip", 0), Pair("show_chip", 1)));
 }
 
-TEST_F(PriorityChipSelectorTest, PrivacySecurityAllowsMultipleChips) {
+TEST_F(PriorityChipSelectorTest, SecurityAllowsMultipleChips) {
   selector->RequestChipShow(
       0, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestChipShow(
       1, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("show_chip", 1)));
 }
 
 TEST_F(PriorityChipSelectorTest, AnchoredMessagePreemptsLowerPriorityChip) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
                                  Pair("show_anchored_message", 1)));
 }
 
-TEST_F(PriorityChipSelectorTest, PrivacySecurityAllowsChipAndMessage) {
+TEST_F(PriorityChipSelectorTest, SecurityAllowsChipAndMessage) {
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestChipShow(
       1, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
                                  Pair("show_chip", 1)));
@@ -476,56 +485,63 @@ TEST_F(PriorityChipSelectorTest,
        ChipDoesntPreemptHigherPriorityAnchoredMessage) {
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestChipShow(
-      1, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
-  // ContextualCue is lower than PrivacySecurity, so it should be ignored.
+  // ContextualCue is lower than security/trust/permissions, so it should be
+  // ignored.
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 }
 
 TEST_F(PriorityChipSelectorTest, HideClearsPriority) {
   selector->RequestChipShow(
       0, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestChipHide(0);
 
   // Now lower priority should be allowed.
   selector->RequestChipShow(
-      1, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      1, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
                                  Pair("show_chip", 1)));
 }
 
-TEST_F(PriorityChipSelectorTest, PrivacySecurityChipThenMessage) {
+TEST_F(PriorityChipSelectorTest, SecurityChipThenMessage) {
   selector->RequestChipShow(
       0, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0),
                                  Pair("show_anchored_message", 1)));
 }
 
-TEST_F(PriorityChipSelectorTest, PrivacySecurityMultipleChipsHideOne) {
+TEST_F(PriorityChipSelectorTest, SecurityMultipleChipsHideOne) {
   selector->RequestChipShow(
       0, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestChipShow(
       1, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   selector->RequestChipHide(0);
 
-  // Priority should still be PrivacySecurity because of chip 1.
+  // Priority should still be security/trust/permissions because of chip 1.
   selector->RequestChipShow(
-      2, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      2, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("show_chip", 1),
                                  Pair("hide_chip", 0)));
@@ -533,24 +549,25 @@ TEST_F(PriorityChipSelectorTest, PrivacySecurityMultipleChipsHideOne) {
 
 TEST_F(PriorityChipSelectorTest, SamePriorityChipThenMessage) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestAnchoredMessageShow(
-      1, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      1, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   // Message should be ignored as a chip of the same priority is active.
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 }
 
-TEST_F(PriorityChipSelectorTest,
-       PrivacySecuritySecondAnchoredMessageDowngraded) {
+TEST_F(PriorityChipSelectorTest, SecuritySecondAnchoredMessageDowngraded) {
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
                                  Pair("show_chip", 1)));
@@ -559,7 +576,8 @@ TEST_F(PriorityChipSelectorTest,
 TEST_F(PriorityChipSelectorTest, UserInteractionDowngradesAnchoredMessage) {
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
              .priority = PageActionPriorityCategory::kUserInteraction});
@@ -572,8 +590,8 @@ TEST_F(PriorityChipSelectorTest, UserInteractionDowngradesAnchoredMessage) {
 
 TEST_F(PriorityChipSelectorTest, UserInteractionPreemptsLowerPriority) {
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
              .priority = PageActionPriorityCategory::kUserInteraction});
@@ -583,57 +601,60 @@ TEST_F(PriorityChipSelectorTest, UserInteractionPreemptsLowerPriority) {
                                  Pair("show_anchored_message", 1)));
 }
 
-TEST_F(PriorityChipSelectorTest, UserInteractionAlongsidePrivacySecurityChips) {
+TEST_F(PriorityChipSelectorTest, UserInteractionAlongsideSecurityChips) {
   selector->RequestChipShow(
       0, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
              .priority = PageActionPriorityCategory::kUserInteraction});
 
-  // PrivacySecurity chip should remain showing alongside UserInteraction
-  // message.
+  // security/trust/permissions chip should remain showing alongside
+  // UserInteraction message.
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0),
                                  Pair("show_anchored_message", 1)));
 }
 
-TEST_F(PriorityChipSelectorTest,
-       PrivacySecurityChipShownWhileUserInteractionActive) {
+TEST_F(PriorityChipSelectorTest, SecurityChipShownWhileUserInteractionActive) {
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
              .priority = PageActionPriorityCategory::kUserInteraction});
   selector->RequestChipShow(
       1, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
                                  Pair("show_chip", 1)));
 }
 
 TEST_F(PriorityChipSelectorTest,
-       PrivacySecurityAnchoredMessageDowngradedWhileUserInteractionActive) {
+       SecurityAnchoredMessageDowngradedWhileUserInteractionActive) {
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
              .priority = PageActionPriorityCategory::kUserInteraction});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
                                  Pair("show_chip", 1)));
 }
 
-TEST_F(PriorityChipSelectorTest,
-       PrivacySecurityShowsAfterUserInteractionDismissed) {
+TEST_F(PriorityChipSelectorTest, SecurityShowsAfterUserInteractionDismissed) {
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
              .priority = PageActionPriorityCategory::kUserInteraction});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestAnchoredMessageHide(0);
   selector->RequestAnchoredMessageShow(
-      2, {.priority = PageActionPriorityCategory::kPrivacySecurity});
+      2,
+      {.priority = PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(
       calls, ElementsAre(Pair("show_anchored_message", 0), Pair("show_chip", 1),
                          Pair("hide_anchored_message", 0),
@@ -647,7 +668,8 @@ TEST_F(PriorityChipSelectorTest, AnchoredMessageDowngradedOnTabDeactivation) {
   selector->OnTabActiveChanged(true);
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 
   selector->OnTabActiveChanged(false);
@@ -665,7 +687,8 @@ TEST_F(PriorityChipSelectorTest,
   selector->OnTabActiveChanged(true);
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 
   selector->OnTabActiveChanged(false);
@@ -695,7 +718,8 @@ TEST_F(PriorityChipSelectorTest,
   selector->OnTabActiveChanged(false);
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 }
 
@@ -721,7 +745,8 @@ TEST_F(
   selector->OnTabActiveChanged(false);
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 }
 
@@ -813,8 +838,8 @@ class PriorityChipSelectorPmcTest : public testing::Test {
 
 TEST_F(PriorityChipSelectorPmcTest, ShowAnchoredMessage_WaitsForPmcPermission) {
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   EXPECT_THAT(calls, IsEmpty());
   EXPECT_EQ(pmc().GetMessageStatus(
                 internal::PriorityChipSelector::kAnchoredMessageId),
@@ -841,8 +866,8 @@ TEST_F(PriorityChipSelectorPmcTest,
   ASSERT_TRUE(blocking_handle);
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   EXPECT_THAT(calls, IsEmpty());
 
   task_environment().FastForwardBy(base::Seconds(9));
@@ -875,8 +900,8 @@ TEST_F(PriorityChipSelectorPmcTest, UserInteraction_CancelsPendingPmcMessage) {
       AcquireBlockingNotice();
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   EXPECT_THAT(calls, IsEmpty());
 
   selector->RequestAnchoredMessageShow(
@@ -894,11 +919,12 @@ TEST_F(PriorityChipSelectorPmcTest,
       AcquireBlockingNotice();
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kDiscoveryNudge});
+      0, AnchoredMessageConfig{.priority =
+                                   PageActionPriorityCategory::kQuietUtility});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   blocking_handle.reset();
   ASSERT_TRUE(base::test::RunUntil([&]() { return !calls.empty(); }));
@@ -912,11 +938,12 @@ TEST_F(PriorityChipSelectorPmcTest,
       AcquireBlockingNotice();
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kDiscoveryNudge});
+      0, AnchoredMessageConfig{.priority =
+                                   PageActionPriorityCategory::kQuietUtility});
   selector->RequestChipShow(
       1, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 1)));
 }
@@ -926,14 +953,14 @@ TEST_F(PriorityChipSelectorPmcTest, LowerPriorityIgnoredWhilePendingPmc) {
       AcquireBlockingNotice();
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestAnchoredMessageShow(
-      1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kDiscoveryNudge});
+      1, AnchoredMessageConfig{.priority =
+                                   PageActionPriorityCategory::kQuietUtility});
   selector->RequestChipShow(
       2, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kDiscoveryNudge});
+                                  PageActionPriorityCategory::kQuietUtility});
 
   EXPECT_THAT(calls, IsEmpty());
 
@@ -949,8 +976,8 @@ TEST_F(PriorityChipSelectorPmcTest,
       AcquireBlockingNotice();
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   selector->RequestAnchoredMessageHide(0);
 
   EXPECT_EQ(pmc().GetMessageStatus(
@@ -963,16 +990,18 @@ TEST_F(PriorityChipSelectorPmcTest,
 }
 
 TEST_F(PriorityChipSelectorPmcTest,
-       PrivacySecuritySecondAnchoredMessageDowngradedWhileFirstPending) {
+       SecuritySecondAnchoredMessageDowngradedWhileFirstPending) {
   user_education::ProductMessagingHandle blocking_handle =
       AcquireBlockingNotice();
 
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 1)));
 
@@ -983,15 +1012,17 @@ TEST_F(PriorityChipSelectorPmcTest,
                                  Pair("show_anchored_message", 0)));
 }
 
-TEST_F(PriorityChipSelectorPmcTest, PrivacySecurityAlongsideChips_WithPmc) {
+TEST_F(PriorityChipSelectorPmcTest, SecurityAlongsideChips_WithPmc) {
   selector->RequestChipShow(
       0, SuggestionChipConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 
   selector->RequestAnchoredMessageShow(
       1, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
 
   ASSERT_TRUE(base::test::RunUntil([&]() { return calls.size() == 2; }));
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0),
@@ -1006,15 +1037,16 @@ TEST_F(PriorityChipSelectorPmcTest,
   // Request higher priority anchored message for ID 0 while PMC is blocked.
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(calls, IsEmpty());
 
   // Request lower priority anchored message for the same ID 0.
   // Cancelling the pending higher-priority request should reset
   // active_priority_ and queue the lower-priority anchored message.
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   EXPECT_THAT(calls, IsEmpty());
 
   // Release the blocking notice and verify the lower-priority anchored message
@@ -1031,13 +1063,14 @@ TEST_F(PriorityChipSelectorPmcTest, SameIdChipReplacesPendingAnchoredMessage) {
   // Request higher priority anchored message for ID 0 while PMC is blocked.
   selector->RequestAnchoredMessageShow(
       0, AnchoredMessageConfig{
-             .priority = PageActionPriorityCategory::kPrivacySecurity});
+             .priority =
+                 PageActionPriorityCategory::kSecurityTrustAndPermissions});
   EXPECT_THAT(calls, IsEmpty());
 
   // Request chip show for the same ID 0 with lower priority.
   selector->RequestChipShow(
-      0, SuggestionChipConfig{.priority =
-                                  PageActionPriorityCategory::kContextualCue});
+      0, SuggestionChipConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   // Chip shows immediately.
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
@@ -1056,8 +1089,8 @@ TEST_F(PriorityChipSelectorPmcTest,
 
   selector->OnTabActiveChanged(true);
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   EXPECT_THAT(calls, IsEmpty());
   EXPECT_EQ(pmc().GetMessageStatus(
                 internal::PriorityChipSelector::kAnchoredMessageId),
@@ -1080,8 +1113,8 @@ TEST_F(PriorityChipSelectorPmcTest,
        ActivePmcMessage_DowngradedOnTabDeactivation) {
   selector->OnTabActiveChanged(true);
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   ASSERT_TRUE(base::test::RunUntil([&]() { return !calls.empty(); }));
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
   EXPECT_EQ(pmc().GetMessageStatus(
@@ -1106,8 +1139,8 @@ TEST_F(PriorityChipSelectorPmcTest,
 
   selector->OnTabActiveChanged(false);
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
   EXPECT_EQ(pmc().GetMessageStatus(
@@ -1124,8 +1157,8 @@ TEST_F(PriorityChipSelectorPmcTest, FeatureDisabled_ShowsImmediately) {
           features::kPageActionsPrioritySelectorProductMessagingController});
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
   EXPECT_EQ(pmc().GetMessageStatus(
@@ -1143,8 +1176,8 @@ TEST_F(PriorityChipSelectorPmcTest, ActiveTabOnlyDisabled_ShowsImmediately) {
           features::kPageActionAnchoredMessageActiveTabOnly});
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
   EXPECT_EQ(pmc().GetMessageStatus(
@@ -1168,8 +1201,8 @@ TEST_F(PriorityChipSelectorPmcTest, NullPmc_ShowsImmediately) {
       nullptr);
 
   null_pmc_selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 }
@@ -1180,8 +1213,8 @@ TEST_F(PriorityChipSelectorPmcTest,
       AcquireBlockingNotice();
 
   selector->RequestAnchoredMessageShow(
-      0, AnchoredMessageConfig{.priority =
-                                   PageActionPriorityCategory::kContextualCue});
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kProactiveSuggestion});
   EXPECT_THAT(calls, IsEmpty());
   EXPECT_EQ(pmc().GetMessageStatus(
                 internal::PriorityChipSelector::kAnchoredMessageId),

@@ -532,7 +532,7 @@ class IndigoPageActionControllerTestBase : public testing::Test {
     ASSERT_TRUE(cue_future.Get().has_value());
 
     cue_target_->OnAnchoredMessageShown(
-        page_actions::PageActionPriorityCategory::kContextualCue);
+        page_actions::PageActionPriorityCategory::kProactiveSuggestion);
   }
 
   // Navigates to `url`, which the optimization guide allows Indigo on, and
@@ -1574,7 +1574,7 @@ TEST_P(IndigoPageActionControllerTest,
   base::HistogramTester histogram_tester;
   IndigoPageActionController::TestApi(controller_.get())
       .SetLastAnchoredMessagePriority(
-          page_actions::PageActionPriorityCategory::kContextualCue);
+          page_actions::PageActionPriorityCategory::kProactiveSuggestion);
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
   EXPECT_EQ(user_action_tester.GetActionCount(kSuggestionChipClickAction), 0);
   EXPECT_EQ(user_action_tester.GetActionCount(kAnchoredMessageClickAction), 1);

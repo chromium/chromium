@@ -141,7 +141,7 @@ TEST_F(IndigoCueTargetTest, OnAnchoredMessageShownProactiveRecordsMetrics) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
   cue_target_->OnAnchoredMessageShown(
-      page_actions::PageActionPriorityCategory::kContextualCue);
+      page_actions::PageActionPriorityCategory::kProactiveSuggestion);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    kProactiveAnchoredMessageShowAction));
   histogram_tester.ExpectUniqueSample(

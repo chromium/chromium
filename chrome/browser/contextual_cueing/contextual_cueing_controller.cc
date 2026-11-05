@@ -1307,7 +1307,7 @@ void ContextualCueingController::ShowCue(
   // that a loud anchored message is being shown rather than a quiet chip.
   if (intrusiveness == CueIntrusiveness::kLoud) {
     current_anchored_message_priority_ =
-        page_actions::PageActionPriorityCategory::kContextualCue;
+        page_actions::PageActionPriorityCategory::kProactiveSuggestion;
   }
 
   // Show() must be called before ShowAnchoredMessage() because the page action
@@ -1318,7 +1318,8 @@ void ContextualCueingController::ShowCue(
   if (intrusiveness == CueIntrusiveness::kLoud) {
     page_action_controller->ShowAnchoredMessage(
         kActionAnchoredContextualCue,
-        {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
+        {.priority =
+             page_actions::PageActionPriorityCategory::kProactiveSuggestion});
   }
 
   CUEING_LOG(base::StringPrintf(

@@ -139,7 +139,8 @@ void IndigoCueTarget::OnAnchoredMessageShown(
   if (auto* controller = IndigoPageActionController::From(&tab_.get())) {
     controller->set_last_anchored_message_priority(priority);
   }
-  if (priority == page_actions::PageActionPriorityCategory::kContextualCue) {
+  if (priority ==
+      page_actions::PageActionPriorityCategory::kProactiveSuggestion) {
     RecordShownEntryPoint(
         IndigoPageActionEntryPoint::kProactiveAnchoredMessage);
   } else if (priority ==

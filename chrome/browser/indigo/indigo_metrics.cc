@@ -86,7 +86,7 @@ void RecordClickedEntryPoint(
     case EntryPoint::kAnchoredMessage:
       base::RecordAction(base::UserMetricsAction(kAnchoredMessageClickAction));
       if (last_anchored_message_priority ==
-          page_actions::PageActionPriorityCategory::kContextualCue) {
+          page_actions::PageActionPriorityCategory::kProactiveSuggestion) {
         base::UmaHistogramEnumeration(
             kClickedEntryPointHistogram,
             IndigoPageActionEntryPoint::kProactiveAnchoredMessage);

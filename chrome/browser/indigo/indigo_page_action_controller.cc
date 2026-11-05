@@ -842,7 +842,7 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     if (indigo_service_->CanShowContextualCue() &&
         !glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
       ShowAnchoredMessage(
-          page_actions::PageActionPriorityCategory::kContextualCue);
+          page_actions::PageActionPriorityCategory::kProactiveSuggestion);
     } else {
       page_action_controller_->ShowSuggestionChip(kActionIndigo);
     }
@@ -942,7 +942,7 @@ void IndigoPageActionController::OnPageActionAnchoredMessageShown(
       page_actions::PageActionPriorityCategory::kUserInteraction) {
     RecordShownEntryPoint(IndigoPageActionEntryPoint::kReactiveAnchoredMessage);
   } else if (last_anchored_message_priority_ ==
-             page_actions::PageActionPriorityCategory::kContextualCue) {
+             page_actions::PageActionPriorityCategory::kProactiveSuggestion) {
     RecordShownEntryPoint(
         IndigoPageActionEntryPoint::kProactiveAnchoredMessage);
   }
@@ -1008,7 +1008,7 @@ void IndigoPageActionController::ShowAnchoredMessage(
         nullptr);
   } else {
     CHECK_EQ(priority,
-             page_actions::PageActionPriorityCategory::kContextualCue);
+             page_actions::PageActionPriorityCategory::kProactiveSuggestion);
     content::WebContents* web_contents = tab().GetContents();
     Profile* profile =
         web_contents

@@ -620,13 +620,12 @@ TEST_F(FilterUiControllerTest,
   controller_->ShowSuggestion(suggestion, {});
 
   test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
-  EXPECT_CALL(
-      *mock_page_action_controller_,
-      ShowSuggestionChip(
-          kActionMultistepFilter,
-          page_actions::SuggestionChipConfig{
-              .priority =
-                  page_actions::PageActionPriorityCategory::kContextualCue}))
+  EXPECT_CALL(*mock_page_action_controller_,
+              ShowSuggestionChip(
+                  kActionMultistepFilter,
+                  page_actions::SuggestionChipConfig{
+                      .priority = page_actions::PageActionPriorityCategory::
+                          kProactiveSuggestion}))
       .Times(1);
   test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
   EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
@@ -645,13 +644,12 @@ TEST_F(
   // Transition: Inactive -> ShowingInitialCue -> CollapsedInOmnibox ->
   // ReopenedFromOmnibox
   test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
-  EXPECT_CALL(
-      *mock_page_action_controller_,
-      ShowSuggestionChip(
-          kActionMultistepFilter,
-          page_actions::SuggestionChipConfig{
-              .priority =
-                  page_actions::PageActionPriorityCategory::kContextualCue}))
+  EXPECT_CALL(*mock_page_action_controller_,
+              ShowSuggestionChip(
+                  kActionMultistepFilter,
+                  page_actions::SuggestionChipConfig{
+                      .priority = page_actions::PageActionPriorityCategory::
+                          kProactiveSuggestion}))
       .Times(1);
   test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
   controller_->OnActionInvoked();
@@ -661,13 +659,12 @@ TEST_F(
 
   // Transition: ReopenedFromOmnibox -> CollapsedInOmniboxAfterReopen (on
   // hidden)
-  EXPECT_CALL(
-      *mock_page_action_controller_,
-      ShowSuggestionChip(
-          kActionMultistepFilter,
-          page_actions::SuggestionChipConfig{
-              .priority =
-                  page_actions::PageActionPriorityCategory::kContextualCue}))
+  EXPECT_CALL(*mock_page_action_controller_,
+              ShowSuggestionChip(
+                  kActionMultistepFilter,
+                  page_actions::SuggestionChipConfig{
+                      .priority = page_actions::PageActionPriorityCategory::
+                          kProactiveSuggestion}))
       .Times(1);
   test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
   EXPECT_EQ(
