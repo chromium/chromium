@@ -18,7 +18,6 @@
 #include "base/functional/callback.h"
 #include "base/process/process_handle.h"
 #include "base/test/scoped_path_override.h"
-#include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +25,11 @@
 namespace enterprise_connectors {
 
 namespace {
+
+using internal::ExtractInterpreterScript;
+using internal::IsAllowlistedInterpreter;
+using internal::SanitizeProcessNodePaths;
+using internal::SanitizeProcessPath;
 
 std::vector<char> BuildKernProcArgs2Buffer(
     int argc,
@@ -86,6 +90,20 @@ TEST_F(ProcessExtractorTest, ScrubsHomeDirectoriesAndTruncatesUtf8) {
   EXPECT_EQ(SanitizeProcessPath("/Users/alice/projects/agent.js"),
             "/Users/<USER>/projects/agent.js");
   EXPECT_EQ(SanitizeProcessPath("/Users/alice"), "/Users/<USER>");
+
+  // Multiple occurrences of the username component anywhere in the path,
+  // macOS APFS firmlinks, and per-user temporary directories are scrubbed.
+  EXPECT_EQ(SanitizeProcessPath("/Users/alice/work/alice/agent.js"),
+            "/Users/<USER>/work/<USER>/agent.js");
+  EXPECT_EQ(
+      SanitizeProcessPath("/System/Volumes/Data/Users/alice/projects/agent.js"),
+      "/System/Volumes/Data/Users/<USER>/projects/agent.js");
+  EXPECT_EQ(SanitizeProcessPath("/tmp/alice/agent.js"), "/tmp/<USER>/agent.js");
+
+  // Component-wise matching preserves filenames that merely contain the
+  // username as a substring.
+  EXPECT_EQ(SanitizeProcessPath("/Users/alice/projects/alice_helper.js"),
+            "/Users/<USER>/projects/alice_helper.js");
 
   // Repeated internal slashes in home prefixes are normalized by
   // base::FilePath.
@@ -473,7 +491,6 @@ TEST_F(ProcessExtractorTest,
 
 TEST_F(ProcessExtractorTest, LiveCurrentProcessAncestryExtraction) {
   const base::ProcessId self_pid = base::GetCurrentProcId();
-#if BUILDFLAG(IS_POSIX)
   ASSERT_GT(self_pid, static_cast<base::ProcessId>(1));
 
   ProcessTree tree = ExtractProcessTreeFromPid(self_pid);
@@ -492,9 +509,6 @@ TEST_F(ProcessExtractorTest, LiveCurrentProcessAncestryExtraction) {
   }
 
   EXPECT_TRUE(ExtractProcessTreeForWebSocket(net::IPEndPoint()).empty());
-#else
-  EXPECT_TRUE(ExtractProcessTreeFromPid(self_pid).empty());
-#endif
 }
 
 }  // namespace

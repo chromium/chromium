@@ -85,14 +85,15 @@ ProcessTree ExtractProcessTreeForWebSocket(
 
 // -----------------------------------------------------------------------------
 // Internal / unit-testing types and helpers:
-// TODO(crbug.com/575478024): Move the helpers below from the base CLs into
-// `namespace internal` and suffix test-only entry points with `ForTesting`.
 // -----------------------------------------------------------------------------
 
+namespace internal {
+
 // Sanitizes a raw process or script path for telemetry reporting:
-// - Replaces the current user's home directory prefix (from `base::DIR_HOME`)
-//   with `<home_parent>/<USER>` (e.g. `/Users/<USER>`). Fails closed (returns
-//   an empty string) if `base::DIR_HOME` cannot be resolved.
+// - Replaces every path component matching the current user's home directory
+//   username (from `base::DIR_HOME`) with `<USER>` (e.g. `/Users/<USER>`).
+//   Fails closed (returns an empty string) if `base::DIR_HOME` cannot be
+//   resolved.
 // - If the path exceeds `kMaxProcessPathLength` (1024 bytes), drops the
 //   beginning of the string and keeps the trailing bytes starting on a valid
 //   UTF-8 character boundary.
@@ -116,8 +117,6 @@ bool IsAllowlistedInterpreter(std::string_view executable_path);
 //   target can be identified or if `SanitizeProcessPath()` fails closed.
 std::string ExtractInterpreterScript(std::string_view executable_path,
                                      const std::vector<std::string>& argv);
-
-namespace internal {
 
 // Maximum buffer allocation ceiling (32 KB) when reading macOS sysctl
 // `KERN_PROCARGS2`.

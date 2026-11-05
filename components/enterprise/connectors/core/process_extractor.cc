@@ -4,6 +4,12 @@
 
 #include "components/enterprise/connectors/core/process_extractor.h"
 
+#include <libproc.h>
+#include <netinet/in.h>
+#include <sys/proc_info.h>
+#include <sys/socket.h>
+#include <sys/sysctl.h>
+
 #include <algorithm>
 #include <cstdint>
 #include <optional>
@@ -23,38 +29,19 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-
-// TODO(crbug.com/575478024): Remove redundant `IS_MAC` / `IS_POSIX` platform
-// guards while `process_extractor.cc` is gated on `enterprise_cdp_attribution`
-// (`is_mac` in `features.gni`), or split into platform-specific files when
-// expanding beyond macOS.
-#if BUILDFLAG(IS_MAC)
-#include <libproc.h>
-#include <netinet/in.h>
-#include <sys/proc_info.h>
-#include <sys/socket.h>
-#include <sys/sysctl.h>
-#endif
 
 namespace enterprise_connectors {
 
 namespace {
 
 bool IsValidUserProcessId(base::ProcessId pid) {
-#if BUILDFLAG(IS_POSIX)
   // On POSIX, PID 0 is the kernel scheduler and PID 1 is init/launchd.
   return pid > 1;
-#else
-  return pid != base::kNullProcessId;
-#endif
 }
 
-// TODO(crbug.com/575478024): Scrub multiple occurrences of the home directory
-// in a follow-up CL.
-std::string ScrubHomePrefix(std::string_view raw_path) {
+std::string ScrubHomeAndUserComponents(std::string_view raw_path) {
   base::FilePath home_dir;
   if (!base::PathService::Get(base::DIR_HOME, &home_dir) || home_dir.empty()) {
     return std::string();
@@ -63,17 +50,40 @@ std::string ScrubHomePrefix(std::string_view raw_path) {
   if (home_dir == home_dir.DirName()) {
     return std::string();
   }
+  const base::FilePath::StringType username = home_dir.BaseName().value();
+  if (username.empty() ||
+      base::EqualsCaseInsensitiveASCII(username, "Shared") ||
+      base::EqualsCaseInsensitiveASCII(username, "Guest")) {
+    return std::string(raw_path);
+  }
+
   const base::FilePath file_path =
       base::FilePath::FromUTF8Unsafe(raw_path).StripTrailingSeparators();
-  const base::FilePath masked_home = home_dir.DirName().AppendASCII("<USER>");
-  if (file_path == home_dir) {
-    return masked_home.AsUTF8Unsafe();
+  std::vector<base::FilePath::StringType> components =
+      file_path.GetComponents();
+  if (components.empty()) {
+    return std::string();
   }
-  base::FilePath masked_path = masked_home;
-  if (home_dir.AppendRelativePath(file_path, &masked_path)) {
-    return masked_path.AsUTF8Unsafe();
+
+  bool replaced = false;
+  for (base::FilePath::StringType& component : components) {
+    if (component == username) {
+      component = FILE_PATH_LITERAL("<USER>");
+      replaced = true;
+    }
   }
-  return std::string(raw_path);
+  if (!replaced) {
+    return std::string(raw_path);
+  }
+
+  base::FilePath sanitized_path(components[0]);
+  for (size_t i = 1; i < components.size(); ++i) {
+    if (components[i] == base::FilePath::kCurrentDirectory) {
+      continue;
+    }
+    sanitized_path = sanitized_path.Append(components[i]);
+  }
+  return sanitized_path.AsUTF8Unsafe();
 }
 
 std::string TruncatePathFromFrontUtf8(std::string path, size_t max_bytes) {
@@ -164,16 +174,13 @@ std::optional<internal::RawProcessInfo> QueryOsProcessInfo(
   }
 
   internal::RawProcessInfo info;
-#if BUILDFLAG(IS_POSIX)
   // On POSIX, `base::ProcessHandle` is `base::ProcessId` (`pid_t`).
   info.parent_process_id = base::GetParentProcessId(pid);
   base::FilePath exec_path = base::GetProcessExecutablePath(pid);
   if (!exec_path.empty()) {
     info.executable_path = exec_path.AsUTF8Unsafe();
   }
-#endif
 
-#if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/575478024): Add Windows and Linux argv/process extraction
   // support when enabling `ENTERPRISE_CDP_ATTRIBUTION` on other platforms.
   if (info.parent_process_id <= 0) {
@@ -204,7 +211,6 @@ std::optional<internal::RawProcessInfo> QueryOsProcessInfo(
       info.argv = std::move(parsed->argv);
     }
   }
-#endif
 
   if (info.parent_process_id < 0) {
     info.parent_process_id = base::kNullProcessId;
@@ -322,10 +328,10 @@ ProcessTree ExtractProcessTreeWithProvider(
     }
 
     std::string script_path =
-        ExtractInterpreterScript(raw->executable_path, raw->argv);
+        internal::ExtractInterpreterScript(raw->executable_path, raw->argv);
     ProcessNode node(current_pid, raw->parent_process_id,
                      std::move(raw->executable_path), std::move(script_path));
-    SanitizeProcessNodePaths(node);
+    internal::SanitizeProcessNodePaths(node);
     tree.process_nodes.push_back(std::move(node));
 
     const base::ProcessId ppid = raw->parent_process_id;
@@ -357,11 +363,13 @@ ProcessNode::ProcessNode(ProcessNode&&) noexcept = default;
 ProcessNode& ProcessNode::operator=(ProcessNode&&) noexcept = default;
 ProcessNode::~ProcessNode() = default;
 
+namespace internal {
+
 std::string SanitizeProcessPath(std::string_view raw_path) {
   if (raw_path.empty()) {
     return std::string();
   }
-  return TruncatePathFromFrontUtf8(ScrubHomePrefix(raw_path),
+  return TruncatePathFromFrontUtf8(ScrubHomeAndUserComponents(raw_path),
                                    kMaxProcessPathLength);
 }
 
@@ -406,8 +414,6 @@ std::string ExtractInterpreterScript(std::string_view executable_path,
   }
   return std::string();
 }
-
-namespace internal {
 
 RawProcessInfo::RawProcessInfo() = default;
 RawProcessInfo::RawProcessInfo(base::ProcessId parent_process_id,
