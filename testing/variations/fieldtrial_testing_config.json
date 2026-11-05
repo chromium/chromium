@@ -5528,7 +5528,7 @@
                         "ContextualTasksEphemeralButtonContextMenuOption": "close-side-panel",
                         "ContextualTasksPinnedButtonActiveIndicatorCircleHighlight": "true",
                         "ContextualTasksPinnedButtonContextMenuCloseSidePanel": "true",
-                        "ContextualTasksPinningStringVariant": "ai-mode",
+                        "ContextualTasksPinningStringVariant": "in-chrome",
                         "ContextualTasksUnifyPinButtonLogo": "super-g",
                         "EnableCircularEphemeralButtonNextToBatterySaver": "true",
                         "overflow-items": "all-without-new-thread"
