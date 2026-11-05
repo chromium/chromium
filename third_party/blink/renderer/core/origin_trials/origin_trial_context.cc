@@ -284,7 +284,7 @@ OriginTrialContext::GetInheritedTrialFeatures() const {
       std::make_unique<Vector<mojom::blink::OriginTrialFeature>>();
   // TODO(crbug.com/1083407): Handle features from
   // |navigation_activated_features_| and |feature_expiry_times_| expiry.
-  for (const mojom::blink::OriginTrialFeature& feature : enabled_features_) {
+  for (mojom::blink::OriginTrialFeature feature : enabled_features_) {
     result->push_back(feature);
   }
   return result;
@@ -296,7 +296,7 @@ OriginTrialContext::GetEnabledNavigationFeatures() const {
     return nullptr;
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>> result =
       std::make_unique<Vector<mojom::blink::OriginTrialFeature>>();
-  for (const mojom::blink::OriginTrialFeature& feature : enabled_features_) {
+  for (mojom::blink::OriginTrialFeature feature : enabled_features_) {
     if (IsCrossNavigationFeature(feature)) {
       result->push_back(feature);
     }
@@ -357,25 +357,26 @@ void OriginTrialContext::AddTokens(const Vector<String>& tokens) {
 
 void OriginTrialContext::ActivateWorkerInheritedFeatures(
     const Vector<mojom::blink::OriginTrialFeature>& features) {
-  for (const mojom::blink::OriginTrialFeature& feature : features) {
-    enabled_features_.insert(feature);
+  for (mojom::blink::OriginTrialFeature feature : features) {
+    enabled_features_.Put(feature);
   }
   InitializePendingFeatures();
 }
 
 void OriginTrialContext::ActivateNavigationFeaturesFromInitiator(
     const Vector<mojom::blink::OriginTrialFeature>& features) {
-  for (const mojom::blink::OriginTrialFeature& feature : features) {
+  for (mojom::blink::OriginTrialFeature feature : features) {
     if (IsCrossNavigationFeature(feature)) {
-      navigation_activated_features_.insert(feature);
+      navigation_activated_features_.Put(feature);
     }
   }
   InitializePendingFeatures();
 }
 
 void OriginTrialContext::InitializePendingFeatures() {
-  if (!enabled_features_.size() && !navigation_activated_features_.size())
+  if (enabled_features_.empty() && navigation_activated_features_.empty()) {
     return;
+  }
   auto* window = DynamicTo<LocalDOMWindow>(context_.Get());
   // Normally, LocalDOMWindow::document() doesn't need to be null-checked.
   // However, this is a rare function that can get called between when the
@@ -402,10 +403,9 @@ void OriginTrialContext::InitializePendingFeatures() {
   }
 }
 
-bool OriginTrialContext::InstallFeatures(
-    const HashSet<mojom::blink::OriginTrialFeature>& features,
-    Document& document,
-    ScriptState* script_state) {
+bool OriginTrialContext::InstallFeatures(const OriginTrialFeatureSet& features,
+                                         Document& document,
+                                         ScriptState* script_state) {
   bool added_binding_features = false;
   for (mojom::blink::OriginTrialFeature enabled_feature : features) {
     // TODO(https://crbug.com/40243430): add support for workers/non-frames that
@@ -419,10 +419,11 @@ bool OriginTrialContext::InstallFeatures(
               enabled_feature, feature_to_tokens_.find(enabled_feature)->value);
     }
 
-    if (installed_features_.Contains(enabled_feature))
+    if (installed_features_.Has(enabled_feature)) {
       continue;
+    }
 
-    installed_features_.insert(enabled_feature);
+    installed_features_.Put(enabled_feature);
 
     if (enabled_feature ==
         mojom::blink::OriginTrialFeature::kBackgroundPageFreezeOptOut) {
@@ -450,14 +451,14 @@ bool OriginTrialContext::InstallFeatures(
 }
 
 void OriginTrialContext::AddFeature(mojom::blink::OriginTrialFeature feature) {
-  enabled_features_.insert(feature);
+  enabled_features_.Put(feature);
   InitializePendingFeatures();
 }
 
 bool OriginTrialContext::IsFeatureEnabled(
     mojom::blink::OriginTrialFeature feature) const {
-  return enabled_features_.Contains(feature) ||
-         navigation_activated_features_.Contains(feature);
+  return enabled_features_.Has(feature) ||
+         navigation_activated_features_.Has(feature);
 }
 
 base::Time OriginTrialContext::GetFeatureExpiry(
@@ -474,7 +475,7 @@ base::Time OriginTrialContext::GetFeatureExpiry(
 
 bool OriginTrialContext::IsNavigationFeatureActivated(
     mojom::blink::OriginTrialFeature feature) const {
-  return navigation_activated_features_.Contains(feature);
+  return navigation_activated_features_.Has(feature);
 }
 
 void OriginTrialContext::AddForceEnabledTrials(
@@ -565,7 +566,7 @@ OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     }
 
     did_enable_feature = true;
-    enabled_features_.insert(feature);
+    enabled_features_.Put(feature);
     origin_trial_features.push_back(feature);
 
     // Use the latest expiry time for the feature.
@@ -575,7 +576,7 @@ OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     // Also enable any features implied by this feature.
     for (mojom::blink::OriginTrialFeature implied_feature :
          origin_trials::GetImpliedFeatures(feature)) {
-      enabled_features_.insert(implied_feature);
+      enabled_features_.Put(implied_feature);
       origin_trial_features.push_back(implied_feature);
 
       // Use the latest expiry time for the implied feature.

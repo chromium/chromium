@@ -7,16 +7,17 @@
 
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_state_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -196,6 +197,8 @@ class CORE_EXPORT OriginTrialContext final
   }
 
  private:
+  using OriginTrialFeatureSet = base::EnumSet<mojom::blink::OriginTrialFeature>;
+
   struct OriginInfo {
     const scoped_refptr<const SecurityOrigin> origin;
     bool is_secure;
@@ -229,13 +232,12 @@ class CORE_EXPORT OriginTrialContext final
                             const OriginInfo origin_info,
                             const Vector<OriginInfo>* script_origins);
 
-  // Installs a series of OriginTrialFeatures listed in a HashSet. The return
-  // value indicates whether binding features were added, signalling that V8
-  // has to proceed with installing the conditional features.
-  bool InstallFeatures(
-      const HashSet<mojom::blink::OriginTrialFeature>& features,
-      Document&,
-      ScriptState*);
+  // Installs a series of OriginTrialFeatures. The return value indicates
+  // whether binding features were added, signalling that V8 has to proceed
+  // with installing the conditional features.
+  bool InstallFeatures(const OriginTrialFeatureSet& features,
+                       Document&,
+                       ScriptState*);
 
   // Caches raw origin trial token along with the parse result to
   // `trial_results_`.
@@ -255,9 +257,9 @@ class CORE_EXPORT OriginTrialContext final
                           const String& raw_token,
                           const Vector<OriginInfo>* script_origin_info);
 
-  HashSet<mojom::blink::OriginTrialFeature> enabled_features_;
-  HashSet<mojom::blink::OriginTrialFeature> installed_features_;
-  HashSet<mojom::blink::OriginTrialFeature> navigation_activated_features_;
+  OriginTrialFeatureSet enabled_features_;
+  OriginTrialFeatureSet installed_features_;
+  OriginTrialFeatureSet navigation_activated_features_;
   HashMap<mojom::blink::OriginTrialFeature, base::Time> feature_expiry_times_;
   std::unique_ptr<TrialTokenValidator> trial_token_validator_;
   Member<ExecutionContext> context_;

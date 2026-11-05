@@ -179,6 +179,12 @@ class OriginTrialContextTest : public testing::Test {
   }
 
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+  GetInheritedTrialFeatures() {
+    return execution_context_->GetOriginTrialContext()
+        ->GetInheritedTrialFeatures();
+  }
+
+  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
   GetEnabledNavigationFeatures() {
     return execution_context_->GetOriginTrialContext()
         ->GetEnabledNavigationFeatures();
@@ -458,6 +464,78 @@ TEST_F(OriginTrialContextTest, ActivateNavigationFeature) {
       mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPINavigation));
   EXPECT_FALSE(ActivateNavigationFeature(
       mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI));
+  EXPECT_TRUE(IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPINavigation));
+  EXPECT_FALSE(IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI));
+}
+
+TEST_F(OriginTrialContextTest, GetInheritedTrialFeaturesAndWorkerActivation) {
+  EXPECT_EQ(nullptr, GetInheritedTrialFeatures());
+
+  // Navigation-activated features are enabled in this context, but are not
+  // part of `enabled_features_` returned by `GetInheritedTrialFeatures()`.
+  EXPECT_TRUE(ActivateNavigationFeature(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPINavigation));
+  EXPECT_EQ(nullptr, GetInheritedTrialFeatures());
+
+  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
+  AddTokenWithResponse(kFrobulateTrialName, OriginTrialTokenStatus::kSuccess);
+  // Adding an already-enabled feature again should not produce duplicates.
+  execution_context_->GetOriginTrialContext()->AddFeature(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI);
+
+  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>> inherited =
+      GetInheritedTrialFeatures();
+  ASSERT_NE(nullptr, inherited);
+  EXPECT_EQ(2u, inherited->size());
+  EXPECT_TRUE(inherited->Contains(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI));
+  EXPECT_TRUE(inherited->Contains(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPIImplied));
+
+  ScopedNullExecutionContext worker_context;
+  OriginTrialContext* worker_ot_context =
+      worker_context.GetExecutionContext().GetOriginTrialContext();
+  worker_ot_context->ActivateWorkerInheritedFeatures(*inherited);
+  EXPECT_TRUE(worker_ot_context->IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI));
+  EXPECT_TRUE(worker_ot_context->IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPIImplied));
+  EXPECT_FALSE(worker_ot_context->IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kNonExisting));
+}
+
+TEST_F(OriginTrialContextTest, InstallAndReinitializeFeaturesIdempotent) {
+  auto page_holder = std::make_unique<DummyPageHolder>();
+  LocalDOMWindow* window = page_holder->GetFrame().DomWindow();
+  OriginTrialContext* context = window->GetOriginTrialContext();
+
+  // No-op when neither enabled nor navigation-activated features are present.
+  context->InitializePendingFeatures();
+  EXPECT_FALSE(context->IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI));
+
+  context->AddFeature(mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI);
+  context->ActivateNavigationFeaturesFromInitiator(
+      {mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPINavigation});
+  EXPECT_TRUE(context->IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI));
+  EXPECT_TRUE(context->IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPINavigation));
+  EXPECT_TRUE(context->IsNavigationFeatureActivated(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPINavigation));
+  EXPECT_FALSE(context->IsNavigationFeatureActivated(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI));
+
+  // Re-adding and re-initializing already-installed features should remain
+  // enabled without errors.
+  context->AddFeature(mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI);
+  context->InitializePendingFeatures();
+  EXPECT_TRUE(context->IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI));
+  EXPECT_TRUE(context->IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPINavigation));
 }
 
 TEST_F(OriginTrialContextTest, GetTokenExpiryTimeIgnoresIrrelevantTokens) {
