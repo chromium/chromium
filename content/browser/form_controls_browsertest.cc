@@ -187,7 +187,9 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 };
 
 // TODO(crbug.com/401594933): The test fails on Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/582437791): Consistently failing on Android after Lavapipe
+// Vulkan exclusion (Goldfish GLES 0x MSAA fallback).
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Checkbox DISABLED_Checkbox
 #else
 #define MAYBE_Checkbox Checkbox
@@ -377,7 +379,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_ColorInput) {
 }
 
 // TODO(crbug.com/401594933): The test fails on Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/582437791): Consistently failing on Android after Lavapipe
+// Vulkan exclusion (Goldfish GLES 0x MSAA fallback).
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Select DISABLED_Select
 #else
 #define MAYBE_Select Select
