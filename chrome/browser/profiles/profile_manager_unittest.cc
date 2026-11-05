@@ -73,6 +73,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#else
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -248,7 +250,6 @@ class ProfileManagerTestBase : public testing::Test {
                        base::Unretained(mock_observer)));
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   // Helper function to create a profile with |name| for a profile |manager|.
   void CreateMultiProfileAsync(ProfileManager* manager,
                                const std::string& name,
@@ -260,7 +261,6 @@ class ProfileManagerTestBase : public testing::Test {
         base::BindOnce(&MockObserver::OnProfileCreated,
                        base::Unretained(mock_observer)));
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Helper function to add a profile with |profile_name| to |profile_manager|'s
   // ProfileAttributesStorage, and return the profile created.
@@ -812,9 +812,19 @@ TEST_F(ProfileManagerTest, ConcurrentCreationAsyncAndSync) {
   EXPECT_EQ(profile, profile_created);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// There's no multi-profiles on Android.
-TEST_F(ProfileManagerTest, CreateMultiProfileAsync) {
+// Fixture for tests that call `ProfileManager::CreateMultiProfileAsync()`,
+// which requires `kAndroidMultiprofile` on Android.
+// TODO(crbug.com/546299633): Remove this fixture and move these tests back to
+// `ProfileManagerTest` after `kAndroidMultiprofile` is launched.
+class ProfileManagerMultiProfileTest : public ProfileManagerTest {
+#if BUILDFLAG(IS_ANDROID)
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      chrome::android::kAndroidMultiprofile};
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
+TEST_F(ProfileManagerMultiProfileTest, CreateMultiProfileAsync) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
 
@@ -842,7 +852,7 @@ TEST_F(ProfileManagerTest, CreateMultiProfileAsync) {
   EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kProfileName), profile_name);
 }
 
-TEST_F(ProfileManagerTest, CreateMultiProfilesAsync) {
+TEST_F(ProfileManagerMultiProfileTest, CreateMultiProfilesAsync) {
   const std::string profile_name1 = "New Profile 1";
   const std::string profile_name2 = "New Profile 2";
 
@@ -860,7 +870,8 @@ TEST_F(ProfileManagerTest, CreateMultiProfilesAsync) {
   run_loop.Run();
 }
 
-TEST_F(ProfileManagerTest, CreateMultiProfileAsyncMultipleRequests) {
+TEST_F(ProfileManagerMultiProfileTest,
+       CreateMultiProfileAsyncMultipleRequests) {
   base::RunLoop run_loop;
   MockObserver mock_observer;
   Profile *profile1 = nullptr, *profile2 = nullptr, *profile3 = nullptr;
@@ -884,7 +895,7 @@ TEST_F(ProfileManagerTest, CreateMultiProfileAsyncMultipleRequests) {
   EXPECT_NE(profile2, profile3);
 }
 
-TEST_F(ProfileManagerTest,
+TEST_F(ProfileManagerMultiProfileTest,
        CreateMultiProfilesAsyncWithBrokenPrefAndProfileInCache) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
@@ -920,7 +931,7 @@ TEST_F(ProfileManagerTest,
   ASSERT_NE(entry2, nullptr);
 }
 
-TEST_F(ProfileManagerTest,
+TEST_F(ProfileManagerMultiProfileTest,
        PRE_CreateMultiProfilesAsyncWithBrokenPrefAndProfileOnDisk) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
@@ -957,7 +968,7 @@ TEST_F(ProfileManagerTest,
 
 // We need to restart Chrome in the mean-time to make sure the profile is not
 // loaded in memory.
-TEST_F(ProfileManagerTest,
+TEST_F(ProfileManagerMultiProfileTest,
        CreateMultiProfilesAsyncWithBrokenPrefAndProfileOnDisk) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
@@ -983,7 +994,7 @@ TEST_F(ProfileManagerTest,
   EXPECT_EQ(base::UTF16ToUTF8(entry2->GetName()), "Profile B");
 }
 
-TEST_F(ProfileManagerTest, CreateHiddenProfileAsync) {
+TEST_F(ProfileManagerMultiProfileTest, CreateHiddenProfileAsync) {
   base::RunLoop run_loop;
   Profile* profile = nullptr;
   MockObserver mock_observer;
@@ -1011,7 +1022,6 @@ TEST_F(ProfileManagerTest, CreateHiddenProfileAsync) {
   EXPECT_TRUE(entry->IsOmitted());
   EXPECT_TRUE(entry->IsEphemeral());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Checks that the supervised profiles no longer marked as omitted on creation.
 TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {

@@ -54,6 +54,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -129,7 +130,6 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck
 #include "components/live_caption/live_caption_controller.h"
@@ -1030,7 +1030,6 @@ std::map<ProfileKeepAliveOrigin, int> ProfileManager::GetKeepAlivesByPath(
                       : std::map<ProfileKeepAliveOrigin, int>();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
 void ProfileManager::CreateMultiProfileAsync(
     const std::u16string& name,
@@ -1038,6 +1037,9 @@ void ProfileManager::CreateMultiProfileAsync(
     bool is_hidden,
     base::OnceCallback<void(Profile*)> initialized_callback,
     base::OnceCallback<void(Profile*)> created_callback) {
+  // On Android, multiple profiles are only supported behind
+  // `kAndroidMultiprofile`.
+  CHECK(profiles::IsMultipleProfilesEnabled());
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(!name.empty(), base::NotFatalUntil::M162);
   CHECK(profiles::IsDefaultAvatarIconIndex(icon_index),
@@ -1099,7 +1101,6 @@ void ProfileManager::CreateMultiProfileAsync(
                                     new_path, std::move(initialized_callback),
                                     std::move(created_callback))));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 base::FilePath ProfileManager::GetGuestProfilePath() {

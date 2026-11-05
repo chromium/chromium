@@ -266,7 +266,6 @@ class ProfileManager : public Profile::Delegate {
   // otherwise return null.
   Profile* GetProfileByPath(const base::FilePath& path) const;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Asynchronously creates a new profile in the next available multiprofile
   // directory. Directories are named "profile_1", "profile_2", etc., in
   // sequence of creation. (Because directories can be deleted, however, it may
@@ -274,6 +273,7 @@ class ProfileManager : public Profile::Delegate {
   // continuous.) If |is_hidden| is true, the new profile
   // will be created as ephemeral (deleted on the next startup) and omitted (not
   // visible in the list of profiles).
+  // On Android, must only be called if `kAndroidMultiprofile` is enabled.
   // Params:
   // - `initialized_callback`: called when profile initialization is done, will
   // return nullptr if failed. If the profile has already been fully loaded then
@@ -288,7 +288,6 @@ class ProfileManager : public Profile::Delegate {
       bool is_hidden,
       base::OnceCallback<void(Profile*)> initialized_callback,
       base::OnceCallback<void(Profile*)> created_callback = {});
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns the full path to be used for guest profiles.
   static base::FilePath GetGuestProfilePath();
