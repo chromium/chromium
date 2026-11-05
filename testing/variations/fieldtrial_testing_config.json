@@ -10474,18 +10474,17 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Main_ANE_InfobarAndChip",
+                    "name": "Enabled_Main_CPU_InfobarAndChip_V2",
                     "params": {
                         "EducationClassifierThreshold": "2.0",
-                        "EnablePrivateInsightsLogging": "true",
                         "ForceMessageUiOnly": "false",
                         "ForceOmniboxChipUiOnly": "false",
                         "GlobalCapCount": "4",
                         "GlobalCapDuration": "24h",
                         "MinPageCountBetweenNudges": "10",
                         "MinTimeBetweenNudges": "60m",
-                        "ShoppingClassifierThreshold": "0.5",
-                        "allow_gpu_execution": "true",
+                        "ShoppingClassifierThreshold": "0.9",
+                        "allow_gpu_execution": "false",
                         "enable_on_device_classifier": "true",
                         "enable_server_model_execution": "true",
                         "use_title_and_url_only": "true"
