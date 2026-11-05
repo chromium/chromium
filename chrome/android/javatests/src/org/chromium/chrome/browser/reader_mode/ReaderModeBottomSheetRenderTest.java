@@ -15,7 +15,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -120,12 +119,6 @@ public class ReaderModeBottomSheetRenderTest {
                             .addThemeColorObserver(mThemeColorObserverCaptor.capture());
                     verify(mThemeColorProvider).addTintObserver(mTintObserverCaptor.capture());
                 });
-    }
-
-    @After
-    public void tearDown() {
-        // Since setUp() calls setContentView() on the Activity, the clean up causes an exception.
-        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Test

@@ -152,9 +152,6 @@ public class MostVisitedTilesLayoutTest {
             ThreadUtils.runOnUiThreadBlocking(() -> mTileGroupDelegate.destroy());
             mTileGroupDelegate = null;
         }
-        // Since renderTiles() calls setContentView() on the Activity, the clean up causes an
-        // exception.
-        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Test
