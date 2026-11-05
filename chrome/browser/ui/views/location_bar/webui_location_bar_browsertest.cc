@@ -663,7 +663,6 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   WaitForInitialWebUIToolbar(browser());
-  ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
 
   constexpr int kBookmarkMojomId = std::to_underlying(
       toolbar_ui_api::mojom::PageActionId::kActionBookmarkThisTab);
@@ -716,7 +715,6 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   BrowserView::GetBrowserViewForBrowser(browser())
       ->browser_widget()
       ->SetUserColorOverride(SK_ColorMAGENTA);
-  ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(GetWebUIToolbarWebContents(),

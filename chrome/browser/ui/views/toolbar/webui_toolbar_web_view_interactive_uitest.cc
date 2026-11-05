@@ -519,17 +519,19 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !new_toolbar->HasPendingFocusRequestForTesting(); }));
   EXPECT_TRUE(new_web_view->HasFocus());
-  ASSERT_TRUE(FlushWebUIToolbarPipes(new_browser));
-  EXPECT_EQ("input", content::EvalJs(new_web_view->web_contents(), R"(
-              (() => {
-                let active = document.activeElement;
-                while (active && active.shadowRoot &&
-                       active.shadowRoot.activeElement) {
-                  active = active.shadowRoot.activeElement;
-                }
-                return active ? active.id : null;
-              })()
-            )"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(new_web_view->web_contents(), R"(
+             (() => {
+               let active = document.activeElement;
+               while (active && active.shadowRoot &&
+                      active.shadowRoot.activeElement) {
+                 active = active.shadowRoot.activeElement;
+               }
+               return active ? active.id : '';
+             })()
+           )")
+               .ExtractString() == "input";
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
@@ -847,7 +849,6 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
   auto check_inactive = [this](bool expected) {
     return CheckView(kWebUIToolbarElementIdentifier,
                      [expected](WebUIToolbarWebView* view) {
-                       view->FlushPendingToolbarStateForTesting();
                        return static_cast<WebUIToolbarControlDelegate*>(view)
                                   ->GetState()
                                   .controls_appear_inactive == expected;
@@ -880,7 +881,6 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
   RunTestSequence(
       WaitForShow(kWebUIToolbarElementIdentifier),
       CheckView(kWebUIToolbarElementIdentifier, [](WebUIToolbarWebView* view) {
-        view->FlushPendingToolbarStateForTesting();
         return !static_cast<WebUIToolbarControlDelegate*>(view)
                     ->GetState()
                     .controls_appear_inactive;

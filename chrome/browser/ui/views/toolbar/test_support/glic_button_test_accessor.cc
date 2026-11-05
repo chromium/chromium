@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -239,9 +240,20 @@ void GlicButtonTestAccessor::OnThemeChanged() const {
   ASSERT_TRUE(webui_toolbar->GetWidget());
   ASSERT_TRUE(WaitForVisible());
   webui_toolbar->GetWidget()->ThemeChanged();
-  ASSERT_TRUE(FlushWebUIToolbarPipes(browser_));
+  const bool expected_fallback =
+      static_cast<WebUIToolbarControlDelegate*>(webui_toolbar)
+          ->GetState()
+          .glic_button_state->use_custom_theme_fallback;
   content::WebContents* web_contents = GetWebContents();
   ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalOnGlicButton(
+               web_contents,
+               content::JsReplace(
+                   "return glic?.state?.useCustomThemeFallback === $1;",
+                   expected_fallback))
+        .ExtractBool();
+  }));
   EXPECT_EQ(
       true,
       EvalOnGlicButton(

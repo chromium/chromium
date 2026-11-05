@@ -2088,6 +2088,21 @@ It’s possible that the element is being dynamically created. You can use [**Wa
 Also, if the element is consistently not there, you may want to inspect the page using Developer Tools in Chrome; it’s possible that you are providing the wrong DeepQuery, or that the path to the element may vary (this is especially the case if you are using any of the “nth\*” selectors and the number of elements may vary).
 If, for example, you are looking for a specific value in a list, but the list could be in different orders, you probably want to do a **WaitForStateChange** or **CheckJsResultAt** that targets the list itself rather than a specific list element, and manually searches the list items for the one you care about.
 
+### Should I flush WebUI Mojo pipes (e.g. `FlushForTesting()`) to wait for WebUI updates? {#should-i-flush-webui-mojo-pipes-to-wait-for-webui-updates?}
+
+Prefer waiting on an observable UI or model state change rather than manually flushing Mojo pipes (`FlushForTesting()`).
+
+Interactions between the browser and a WebUI often span multiple independent Mojo pipes (for example, `WidgetInputHandler` for input events, `TrackedElementManager` for tracked element visibility and highlight state, and feature-specific WebUI page handlers) that have no ordering guarantees relative to one another. Flushing a single pipe (or a fixed set of pipes) can still race with messages on other pipes, coalesced browser tasks, or asynchronous renderer microtasks and DOM updates (such as Lit's `updateComplete`).
+
+Instead of flushing pipes between steps:
+
+* Use [**WaitForStateChange**](#what-is-waitforstatechange-for?) or **PollElement** to wait for a DOM attribute, property, or element state in a WebContents or `TrackedElementWebUI`.
+* Use [**ObserveState**](#advanced:-waiting-for-non-ui-state) or [**PollState**](#polling-state) to wait for a browser-side model or controller state updated by the WebUI.
+* Use [**InParallel**](#i-have-events-that-can-happen-in-different-orders---how-do-i-avoid-a-race-condition?) to avoid race conditions when waiting for multiple discrete events that can happen in any order (this is less of an issue for non-discrete state changes, where a state transitions to a new value and stays there).
+* Use a synchronous check (such as **CheckView**, **CheckResult**, or **Check**) when inspecting browser-side controller or view state that is updated synchronously in C++ before being queued or sent to the WebUI (or after a preceding step has already waited for the triggering browser-side event); neither pipe flushing nor additional polling is needed in that case.
+
+Reserve manual Mojo pipe flushing for negative assertions where there is no state transition to wait for (for example, verifying that an action did not change a state that already holds the expected value).
+
 ## Testing User Education Experiences {#testing-user-education-experiences}
 
 ### How do I test my IPH or Tutorial? {#how-do-i-test-my-iph-or-tutorial?}
