@@ -19,8 +19,7 @@
 #include "chrome/updater/test/request_matcher.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace net {
 namespace test_server {
@@ -58,8 +57,8 @@ class ScopedServer {
         net::HttpStatusCode response_status_code = net::HTTP_OK);
     Expectation(const Expectation&);
     Expectation& operator=(const Expectation&);
-    Expectation(Expectation&&);
-    Expectation& operator=(Expectation&&);
+    Expectation(Expectation&&) noexcept;
+    Expectation& operator=(Expectation&&) noexcept;
     ~Expectation();
 
     request::MatcherGroup matchers;
@@ -135,16 +134,6 @@ class ScopedServer {
 
   std::string proxy_pac_path() const { return "/pac_script.pac"; }
   GURL proxy_pac_url() const { return test_server_.GetURL(proxy_pac_path()); }
-
-  std::string proxy_url_no_path() const {
-    std::string proxy = test_server_.base_url().spec();
-    // A valid proxy string should not have any path component. Strip the root
-    // path ('/') if it is present.
-    if (proxy.back() == '/') {
-      proxy.pop_back();
-    }
-    return proxy;
-  }
 
   // If `gzip_response` is true, the server gzip-compresses response bodies and
   // fails the test on requests that do not accept gzip.

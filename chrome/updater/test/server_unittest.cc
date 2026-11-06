@@ -238,6 +238,23 @@ TEST_F(ScopedServerTest, DestructorReportsUnmetExpectation) {
       "Unmet expectation");
 }
 
+TEST_F(ScopedServerTest, DestructorReportsStatusOfUnmetExpectation) {
+  testing::TestPartResultArray failures;
+  {
+    testing::ScopedFakeTestPartResultReporter reporter(
+        testing::ScopedFakeTestPartResultReporter::
+            INTERCEPT_ONLY_CURRENT_THREAD,
+        &failures);
+    ScopedServer server;
+    server.ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  }
+  ASSERT_EQ(failures.size(), 1);
+  // A list of reasons would follow as "):\n  ...". The stack trace that gtest
+  // appends starts on the next line.
+  EXPECT_THAT(failures.GetTestPartResult(0).message(),
+              testing::HasSubstr("Unmet expectation (response status 500)\n"));
+}
+
 TEST_F(ScopedServerTest, DestructorReportsEachUnmetUnorderedExpectation) {
   testing::TestPartResultArray failures;
   {

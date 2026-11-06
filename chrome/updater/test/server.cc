@@ -25,7 +25,6 @@
 #include "build/buildflag.h"
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/test/integration_test_commands.h"
-#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/request_matcher.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -126,9 +125,9 @@ ScopedServer::Expectation::Expectation(
 ScopedServer::Expectation::Expectation(const Expectation&) = default;
 ScopedServer::Expectation& ScopedServer::Expectation::operator=(
     const Expectation&) = default;
-ScopedServer::Expectation::Expectation(Expectation&&) = default;
-ScopedServer::Expectation& ScopedServer::Expectation::operator=(Expectation&&) =
-    default;
+ScopedServer::Expectation::Expectation(Expectation&&) noexcept = default;
+ScopedServer::Expectation& ScopedServer::Expectation::operator=(
+    Expectation&&) noexcept = default;
 ScopedServer::Expectation::~Expectation() = default;
 
 ScopedServer::ScopedServer() {
@@ -163,8 +162,14 @@ ScopedServer::~ScopedServer() {
           unmet_reasons.push_back(result.message());
         }
       }
-      ADD_FAILURE() << "Unmet expectation:\n  "
-                    << base::JoinString(unmet_reasons, "\n  ");
+      // Matchers that accept an empty request, or no matchers at all, give no
+      // reasons, so show the status too.
+      std::string reasons;
+      if (!unmet_reasons.empty()) {
+        reasons = ":\n  " + base::JoinString(unmet_reasons, "\n  ");
+      }
+      ADD_FAILURE() << "Unmet expectation (response status "
+                    << expectation.response_status_code << ")" << reasons;
     }
   }
 }
