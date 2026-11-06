@@ -104,8 +104,9 @@ async function waitUntilStoppedByUser(method) {
     throw new Error("Unknown method");
   }
 
-  await (method == "getAllScreensMedia") ? gasm_ended_promise :
-    gdm_ended_promise;
+  await (
+      (method == 'getAllScreensMedia') ? gasm_ended_promise :
+                                         gdm_ended_promise);
 }
 
 function areAllTracksLive(method) {

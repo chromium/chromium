@@ -10,7 +10,10 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -559,9 +562,25 @@ class InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest
                            base::StringPrintf("run(\"%s\");", method.c_str()));
   }
 
+  void FlushBrowserMediaStopTasks() {
+    // Flush IO -> UI -> IO -> UI so
+    // `MediaStreamDispatcherHost::StopStreamDevice`
+    // (`MediaStreamManager::StopStreamDevice`), any resulting UI-thread
+    // indicator cleanup, and any browser-to-renderer `OnDeviceStopped` Mojo
+    // notifications have been posted before renderer track state is queried.
+    for (int i = 0; i < 2; ++i) {
+      base::RunLoop io_flush_loop;
+      content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+          FROM_HERE, base::DoNothing(), io_flush_loop.QuitClosure());
+      io_flush_loop.Run();
+    }
+  }
+
   content::EvalJsResult ProgrammaticallyStop(const std::string& method) {
-    return content::EvalJs(contents_,
-                           base::StringPrintf("stop(\"%s\");", method.c_str()));
+    content::EvalJsResult result = content::EvalJs(
+        contents_, base::StringPrintf("stop(\"%s\");", method.c_str()));
+    FlushBrowserMediaStopTasks();
+    return result;
   }
 
   content::EvalJsResult AreAllTracksLive(const std::string& method) {
@@ -581,11 +600,9 @@ INSTANTIATE_TEST_SUITE_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
     ::testing::Bool());
 
-// crbug.com/441674610: Disabled as failing on ChromeOS without being able to
-// reproduce.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    DISABLED_ProgrammaticallyStoppingOneDoesNotStopTheOther) {
+    ProgrammaticallyStoppingOneDoesNotStopTheOther) {
   SetScreens(/*screen_count=*/1u);
   ASSERT_EQ(Run(method1_), base::Value());
   ASSERT_EQ(Run(method2_), base::Value());
@@ -595,12 +612,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(true, AreAllTracksLive(method2_));
 }
 
-// crbug.com/441674610: Disabled as failing on ChromeOS without being able to
-// reproduce. Identical to StoppingOneDoesNotStopTheOther other than that this
-// following test stops the second-started method first.
+// Identical to ProgrammaticallyStoppingOneDoesNotStopTheOther other than that
+// this following test stops the second-started method first.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    DISABLED_ProgrammaticallyStoppingOneDoesNotStopTheOtherInverseOrder) {
+    ProgrammaticallyStoppingOneDoesNotStopTheOtherInverseOrder) {
   SetScreens(/*screen_count=*/1u);
   ASSERT_EQ(Run(method1_), base::Value());
   ASSERT_EQ(Run(method2_), base::Value());
@@ -610,17 +626,15 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(false, AreAllTracksLive(method2_));
 }
 
-// crbug.com/441674610: Disabled as failing on ChromeOS without being able to
-// reproduce.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    DISABLED_UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
+    UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
   SetScreens(/*screen_count=*/1u);
   ASSERT_EQ(Run(method1_), base::Value());
   ASSERT_EQ(Run(method2_), base::Value());
 
   // The capture which was started via getDisplayMedia() caused the
-  // browser to show the user UX for stopping that capture. Simlate a user
+  // browser to show the user UX for stopping that capture. Simulate a user
   // interaction with that UX.
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
@@ -629,7 +643,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(content::EvalJs(contents_,
                             "waitUntilStoppedByUser(\"getDisplayMedia\");"),
             base::Value());
+  FlushBrowserMediaStopTasks();
 
+  EXPECT_EQ(false, AreAllTracksLive("getDisplayMedia"));
   // Test-focus - the capture started through gASM was not affected
   // by the user's interaction with the capture started via gDM.
   EXPECT_EQ(true, AreAllTracksLive("getAllScreensMedia"));
