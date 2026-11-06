@@ -91,7 +91,12 @@ import org.chromium.ui.modelutil.PropertyModel;
             mUiController.addObserver(this);
             mDelegate.onUiShown();
         } else {
-            notifyDismissed(EmailVerificationPermissionUiStatus.OTHER);
+            // The controller still enqueues the content when suppressed, so explicitly retract it
+            // from the queue before notifying dismissal.
+            hideContent(
+                    /* animate= */ false,
+                    StateChangeReason.NONE,
+                    EmailVerificationPermissionUiStatus.OTHER);
         }
     }
 
