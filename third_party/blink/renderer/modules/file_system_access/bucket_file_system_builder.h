@@ -29,16 +29,16 @@ class MODULES_EXPORT BucketFileSystemBuilder final
       BucketFileSystemAgent* agent,
       ExecutionContext* execution_context,
       const String& name,
+      FileSystemDirectoryHandle* directory_handle,
       std::unique_ptr<protocol::FileSystem::Backend::GetDirectoryCallback>
           completion_callback);
+
+  void Dispose();
 
   // mojom::blink::FileSystemAccessDirectoryEntriesListener
   void DidReadDirectory(mojom::blink::FileSystemAccessErrorPtr result,
                         Vector<mojom::blink::FileSystemAccessEntryPtr> entries,
                         bool has_more_entries) override;
-
-  mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryEntriesListener>
-  GetListener();
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
@@ -47,11 +47,16 @@ class MODULES_EXPORT BucketFileSystemBuilder final
   void Trace(Visitor* visitor) const override;
 
  private:
+  mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryEntriesListener>
+  GetListener();
+
   // This method is called for each file seen to track the `nested_files`
   // encountered.
-  void DidBuildFile(base::OnceClosure barrier_callback,
+  void DidBuildFile(const String& name,
+                    base::OnceClosure barrier_callback,
                     mojom::blink::FileSystemAccessErrorPtr result,
-                    std::unique_ptr<protocol::FileSystem::File> file);
+                    const base::File::Info& info,
+                    const scoped_refptr<BlobDataHandle>& blob);
 
   // This method is called when all the entries have been iterated on and the
   // `nested_files_` and `nested_directories_` are fully created. It builds the
@@ -65,6 +70,9 @@ class MODULES_EXPORT BucketFileSystemBuilder final
 
   Member<BucketFileSystemAgent> agent_;
   const String directory_name_;
+  // Retained to keep the directory handle's HeapMojoRemote alive while
+  // GetEntries() is in flight.
+  Member<FileSystemDirectoryHandle> directory_handle_;
   HeapDeque<Member<FileSystemHandle>> file_system_handle_queue_;
   std::unique_ptr<protocol::FileSystem::Backend::GetDirectoryCallback>
       completion_callback_;

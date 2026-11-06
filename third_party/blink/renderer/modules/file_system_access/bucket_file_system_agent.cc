@@ -99,9 +99,8 @@ void BucketFileSystemAgent::DidGetDirectoryHandle(
   }
 
   auto* builder = MakeGarbageCollected<BucketFileSystemBuilder>(
-      this, execution_context, directory_name, std::move(callback));
+      this, execution_context, directory_name, handle, std::move(callback));
   builders_.insert(builder);
-  handle->MojoHandle()->GetEntries(builder->GetListener());
 }
 
 void BucketFileSystemAgent::OnBuilderComplete(
@@ -110,6 +109,9 @@ void BucketFileSystemAgent::OnBuilderComplete(
 }
 
 void BucketFileSystemAgent::Dispose() {
+  for (auto& builder : builders_) {
+    builder->Dispose();
+  }
   builders_.clear();
   InspectorBaseAgent::Dispose();
 }
