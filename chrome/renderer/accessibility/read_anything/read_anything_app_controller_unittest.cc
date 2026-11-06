@@ -424,6 +424,27 @@ class ReadAnythingAppControllerTest : public testing::Test {
     AccessibilityEventReceived({std::move(update)});
   }
 
+  // Simulates the user selecting text from node 2 to node 3 on the main page.
+  // Unlike SetMainPageSelection(), this updates the tree's selection, so the
+  // selection is processed as a non-collapsed selection on the page.
+  void SelectTextOnPage() {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    update.has_tree_data = true;
+    update.tree_data.sel_anchor_object_id = 2;
+    update.tree_data.sel_anchor_offset = 0;
+    update.tree_data.sel_focus_object_id = 3;
+    update.tree_data.sel_focus_offset = 1;
+    AccessibilityEventReceived({std::move(update)});
+  }
+
+  // Opens reading mode to translate a PDF, and then fails the translation.
+  void FailAwaitedTranslation() {
+    controller().OnReadingModeShown(
+        read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+    controller().OnTranslationFailed();
+  }
+
   void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
     model().Reset(content_node_ids);
     model().ComputeDisplayNodeIdsForDistilledTree();
@@ -2823,8 +2844,11 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_FALSE(controller().IsContentTranslated());
 }
 
-TEST_F(ReadAnythingAppControllerTest, IsAwaitingTranslation_DefaultsToFalse) {
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+TEST_F(ReadAnythingAppControllerTest, TranslationState_DefaultsToNone) {
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+  EXPECT_EQ(static_cast<int>(ReadAnythingAppModel::TranslationState::kNone),
+            controller().GetTranslationState());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2832,14 +2856,17 @@ TEST_F(ReadAnythingAppControllerTest,
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  EXPECT_TRUE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   // A report that the tab isn't translated (yet) doesn't stop awaiting.
   controller().OnTranslationStateChanged(/*is_translated=*/false);
-  EXPECT_TRUE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   controller().OnTranslationStateChanged(/*is_translated=*/true);
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2848,7 +2875,8 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnTranslationStateChanged(/*is_translated=*/true);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2857,7 +2885,8 @@ TEST_F(ReadAnythingAppControllerTest,
   feature_list.InitAndDisableFeature(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2865,18 +2894,21 @@ TEST_F(ReadAnythingAppControllerTest,
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kReadAnythingContextMenu);
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_StopsAwaiting) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  ASSERT_TRUE(controller().IsAwaitingTranslation());
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
   controller().OnReadingModeHidden(/*tab_active=*/true);
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2884,19 +2916,23 @@ TEST_F(ReadAnythingAppControllerTest,
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  ASSERT_TRUE(controller().IsAwaitingTranslation());
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
   controller().OnReadingModeHidden(/*tab_active=*/false);
-  EXPECT_TRUE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   // Returning to the tab keeps awaiting the pending translation.
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kTabSwitch);
-  EXPECT_TRUE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   controller().OnTranslationStateChanged(/*is_translated=*/true);
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2908,12 +2944,14 @@ TEST_F(ReadAnythingAppControllerTest,
                                        kFirstPage, /*is_pdf=*/true);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  ASSERT_TRUE(controller().IsAwaitingTranslation());
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   // Navigating to another page cancels the pending translation.
   controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
                                        kSecondPage, /*is_pdf=*/false);
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2924,17 +2962,20 @@ TEST_F(ReadAnythingAppControllerTest,
                                        /*is_pdf=*/true);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  ASSERT_TRUE(controller().IsAwaitingTranslation());
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   // The PDF's tree can change without the page changing.
   controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(), kPage,
                                        /*is_pdf=*/true);
-  EXPECT_TRUE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   // An unknown tree doesn't mean that the page changed.
   controller().OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(),
                                        ukm::kInvalidSourceId, /*is_pdf=*/false);
-  EXPECT_TRUE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -2947,26 +2988,197 @@ TEST_F(ReadAnythingAppControllerTest,
                                        /*is_pdf=*/true);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  ASSERT_TRUE(controller().IsAwaitingTranslation());
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   // On a navigation, the previous page's tree can be destroyed before the new
   // page's tree becomes active. The page change is still detected.
   controller().OnAXTreeDestroyed(first_tree);
   controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
                                        kSecondPage, /*is_pdf=*/false);
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnTranslationFailed_StopsAwaiting) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
-  ASSERT_TRUE(controller().IsAwaitingTranslation());
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
 
   controller().OnTranslationFailed();
-  EXPECT_FALSE(controller().IsAwaitingTranslation());
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
   // The content is still not translated.
   EXPECT_FALSE(model().is_content_translated());
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnTranslationFailed_SetsFailed) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  FailAwaitedTranslation();
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
+
+  // Other translation state changes keep showing the failure.
+  controller().OnTranslationStateChanged(/*is_translated=*/false);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTranslationFailed_NotAwaiting_DoesNotSetFailed) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  // Reading mode wasn't opened for the translation, so the untranslated content
+  // is still shown.
+  controller().OnTranslationFailed();
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTranslationFailed_AfterReadingModeClosed_DoesNotSetFailed) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  controller().OnReadingModeHidden(/*tab_active=*/true);
+
+  controller().OnTranslationFailed();
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest, TranslationFailed_ClearedWhenTranslated) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  FailAwaitedTranslation();
+
+  controller().OnTranslationStateChanged(/*is_translated=*/true);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       TranslationFailed_ClearedByNewTranslationRequest) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  FailAwaitedTranslation();
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest, TranslationFailed_KeptOnTabSwitch) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  FailAwaitedTranslation();
+
+  // Switching tabs only hides reading mode.
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  controller().OnReadingModeHidden(/*tab_active=*/false);
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kTabSwitch);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       TranslationFailed_ClearedWhenReadingModeClosed) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  FailAwaitedTranslation();
+
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  controller().OnReadingModeHidden(/*tab_active=*/true);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       TranslationFailed_ClearedBySelectionOnPage) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  // PDFs are distilled with Screen2x.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+  // Only node 2 is distilled, so a selection that ends in node 3 is outside the
+  // distilled content.
+  OnAXTreeDistilled(tree_id_, {2});
+  FailAwaitedTranslation();
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
+
+  // A selection on the page replaces the translation failure message with the
+  // selected content.
+  SelectTextOnPage();
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       TranslationFailed_KeptBySelectionFromReadingMode) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  // PDFs are distilled with Screen2x.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+  // Only node 2 is distilled, so a selection that ends in node 3 is outside the
+  // distilled content.
+  OnAXTreeDistilled(tree_id_, {2});
+  FailAwaitedTranslation();
+
+  // A selection made in reading mode is reflected on the page, but isn't a
+  // selection the user made on the page.
+  EXPECT_CALL(page_handler_, OnSelectionChange).Times(1);
+  controller().OnSelectionChange(2, 0, 3, 1);
+  FlushPageHandlerReplies();
+  SelectTextOnPage();
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AwaitingTranslation_KeptBySelectionOnPage) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  // PDFs are distilled with Screen2x.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+  // Only node 2 is distilled, so a selection that ends in node 3 is outside the
+  // distilled content.
+  OnAXTreeDistilled(tree_id_, {2});
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
+
+  // Only a failure is replaced by the selection. The selected content is still
+  // kept behind the loading screen until it's translated.
+  SelectTextOnPage();
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest, TranslationFailed_ClearedOnNewPage) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  constexpr ukm::SourceId kFirstPage = 1;
+  constexpr ukm::SourceId kSecondPage = 2;
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       kFirstPage, /*is_pdf=*/true);
+  FailAwaitedTranslation();
+
+  // A tree change within the same page keeps the failure.
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       kFirstPage, /*is_pdf=*/true);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
+
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       kSecondPage, /*is_pdf=*/false);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
 }
 
 TEST_F(ReadAnythingAppControllerTest,

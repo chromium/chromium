@@ -52,6 +52,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"readAnythingTabTitle", IDS_READING_MODE_TITLE},
       {"notSelectableHeader", IDS_READING_MODE_NOT_SELECTABLE_HEADER},
       {"emptyStateHeader", IDS_READING_MODE_EMPTY_STATE_HEADER},
+      {"emptyStateTranslationHeader",
+       IDS_READING_MODE_EMPTY_STATE_TRANSLATION_HEADER},
       {"emptyStateSubheader", IDS_READING_MODE_EMPTY_STATE_SUBHEADER},
       {"readAnythingLoadingMessage", IDS_READ_ANYTHING_LOADING},
       {"lineSpacingTitle", IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL},

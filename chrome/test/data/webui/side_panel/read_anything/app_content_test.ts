@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, ContentController, NodeStore, SpeechController, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AppStyleUpdater, ContentType, ReadabilityImageClassifier, ReadAloudNode, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AppStyleUpdater, ContentType, ReadabilityImageClassifier, ReadAloudNode, ToolbarEvent, TranslationState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -137,7 +137,8 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertContentShown();
 
-      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(true);
+      contentBrowserProxy.translationState = TranslationState.AWAITING;
+      contentBrowserProxy.onTranslationStateChanged.callListeners();
       await microtasksFinished();
 
       assertContentHiddenForTranslation();
@@ -145,18 +146,21 @@ suite('AppContent', () => {
 
     test('shows content once translation is done', async () => {
       contentController.setState(ContentType.HAS_CONTENT);
-      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(true);
+      contentBrowserProxy.translationState = TranslationState.AWAITING;
+      contentBrowserProxy.onTranslationStateChanged.callListeners();
       await microtasksFinished();
       assertContentHiddenForTranslation();
 
-      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(false);
+      contentBrowserProxy.translationState = TranslationState.NONE;
+      contentBrowserProxy.onTranslationStateChanged.callListeners();
       await microtasksFinished();
 
       assertContentShown();
     });
 
     test('content drawn while awaiting stays hidden', async () => {
-      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(true);
+      contentBrowserProxy.translationState = TranslationState.AWAITING;
+      contentBrowserProxy.onTranslationStateChanged.callListeners();
       app.showLoading();
       await microtasksFinished();
       // With no content yet, the regular loading state is shown.
@@ -185,11 +189,13 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(app.$.toolbar.isReadAloudPlayable);
 
-      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(true);
+      contentBrowserProxy.translationState = TranslationState.AWAITING;
+      contentBrowserProxy.onTranslationStateChanged.callListeners();
       await microtasksFinished();
       assertFalse(app.$.toolbar.isReadAloudPlayable);
 
-      visualBrowserProxy.onAwaitingTranslationChanged.callListeners(false);
+      contentBrowserProxy.translationState = TranslationState.NONE;
+      contentBrowserProxy.onTranslationStateChanged.callListeners();
       await microtasksFinished();
       assertTrue(app.$.toolbar.isReadAloudPlayable);
     });

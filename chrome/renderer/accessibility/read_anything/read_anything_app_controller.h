@@ -324,7 +324,8 @@ class ReadAnythingAppController
   bool IsGoogleDocs() const;
   bool IsPdf() const;
   bool IsContentTranslated() const;
-  bool IsAwaitingTranslation() const;
+  // The model's TranslationState, as an int for the WebUI.
+  int GetTranslationState() const;
   bool IsImprovedReadAloudEnabled() const;
   bool IsReadAnythingImprovedUiEnabled() const;
   bool IsReadAnythingTranslateEntryPointEnabled() const;
@@ -464,9 +465,9 @@ class ReadAnythingAppController
 
   void ExecuteJavaScript(const std::string& script);
 
-  // Updates the model's awaiting-translation state and notifies the WebUI if
-  // it changed.
-  void SetAwaitingTranslation(bool awaiting);
+  // Updates the model's translation state and notifies the WebUI if it
+  // changed.
+  void SetTranslationState(ReadAnythingAppModel::TranslationState state);
 
   // Returns true if a draw occurred.
   bool PostProcessSelection();

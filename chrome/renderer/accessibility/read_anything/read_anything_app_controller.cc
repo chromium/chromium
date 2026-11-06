@@ -541,7 +541,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
         model_.active_page_ukm_source_id();
     if (previous_page_ukm_source_id != ukm::kInvalidSourceId &&
         ukm_source_id != previous_page_ukm_source_id) {
-      SetAwaitingTranslation(false);
+      SetTranslationState(ReadAnythingAppModel::TranslationState::kNone);
     }
     model_.set_active_page_ukm_source_id(ukm_source_id);
   }
@@ -1090,6 +1090,14 @@ bool ReadAnythingAppController::PostProcessSelection() {
   // Note post `model_.PostProcessSelection` returns true if a draw is required.
   if (model_.PostProcessSelection()) {
     did_draw = true;
+    // A selection made on the page replaces the translation failure message,
+    // so that the selected content is shown.
+    if (model_.has_selection() &&
+        model_.unprocessed_selections_from_reading_mode() == 0 &&
+        model_.translation_state() ==
+            ReadAnythingAppModel::TranslationState::kFailed) {
+      SetTranslationState(ReadAnythingAppModel::TranslationState::kNone);
+    }
     if (model_.is_empty()) {
       DrawEmptyState();
     } else if (model_.is_readability_next_distillation_method()) {
@@ -1347,8 +1355,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty<&ReadAnythingAppController::IsPdf>("isPdf")
       .SetProperty<&ReadAnythingAppController::IsContentTranslated>(
           "isContentTranslated")
-      .SetProperty<&ReadAnythingAppController::IsAwaitingTranslation>(
-          "isAwaitingTranslation")
+      .SetProperty<&ReadAnythingAppController::GetTranslationState>(
+          "translationState")
       .SetProperty<&ReadAnythingAppController::IsImprovedReadAloudEnabled>(
           "isImprovedReadAloudEnabled")
       .SetProperty<&ReadAnythingAppController::IsReadAnythingImprovedUiEnabled>(
@@ -1376,8 +1384,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "defaultLanguageForSpeech")
       .SetProperty<&ReadAnythingAppController::IsPhraseHighlightingEnabled>(
           "isPhraseHighlightingEnabled")
-      .SetProperty<&ReadAnythingAppController::GetReadabilityTitle>(
-          "htmlTitle")
+      .SetProperty<&ReadAnythingAppController::GetReadabilityTitle>("htmlTitle")
       .SetProperty<&ReadAnythingAppController::GetDocumentUrl>("documentUrl")
       .SetProperty<&ReadAnythingAppController::GetReadabilityContentHtml>(
           "htmlContent")
@@ -2700,7 +2707,7 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
     // Only stop awaiting translation when RM is actually closed. A pending
     // translation still starts after switching tabs and returning, so keep the
     // content behind the loading screen until then.
-    SetAwaitingTranslation(false);
+    SetTranslationState(ReadAnythingAppModel::TranslationState::kNone);
     ReadingModeWillClose();
     if (read_aloud_model_.speech_playing()) {
       read_aloud_model_.LogSpeechStop(
@@ -2731,16 +2738,13 @@ void ReadAnythingAppController::OnReadingModeShown(
   }
 
   // Reading mode is opened with this trigger right after a PDF translation is
-  // requested. The browser starts the translation once the content is
-  // distilled, or right away if it already is (see
-  // ReadAnythingUntrustedPageHandler::OnDistillationStateChanged() and
-  // ReadAnythingUntrustedPageHandler::Activate()). Keep the content behind the
-  // loading screen until it's translated so the user doesn't see the
-  // untranslated text first.
+  // requested, and the translation is dispatched once the content is
+  // distilled. Keep the content behind the loading screen until it's
+  // translated so the user doesn't see the untranslated text first.
   if (open_trigger ==
           read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation &&
       IsTranslatePdfEnabled() && !model_.is_content_translated()) {
-    SetAwaitingTranslation(true);
+    SetTranslationState(ReadAnythingAppModel::TranslationState::kAwaiting);
   }
 
   if (ax_tree_ready_for_current_active_tree_measured_) {
@@ -2789,34 +2793,43 @@ void ReadAnythingAppController::OnTranslationStateChanged(bool is_translated) {
   // enabled. See ReadAnythingTranslateObserver::ObserveTranslationState().
   CHECK(IsTranslatePdfEnabled());
   model_.set_is_content_translated(is_translated);
-  ExecuteJavaScript("chrome.readingMode.onTranslationStateChanged();");
   if (is_translated) {
-    SetAwaitingTranslation(false);
+    model_.set_translation_state(ReadAnythingAppModel::TranslationState::kNone);
   }
+  // Notify once, after both are updated, so the WebUI always reads a
+  // consistent pair.
+  ExecuteJavaScript("chrome.readingMode.onTranslationStateChanged?.();");
 }
 
 void ReadAnythingAppController::OnTranslationFailed() {
   // The browser only reports translation failures when PDF translation is
   // enabled. See ReadAnythingTranslateObserver::OnPageTranslated().
   CHECK(IsTranslatePdfEnabled());
-  // The content won't be translated, so stop hiding it behind the loading
-  // screen.
-  SetAwaitingTranslation(false);
-}
-
-void ReadAnythingAppController::SetAwaitingTranslation(bool awaiting) {
-  if (model_.is_awaiting_translation() == awaiting) {
+  // Only a translation that reading mode was opened for, and is still waiting
+  // for, replaces the content. If another translation of the tab fails, the
+  // untranslated content is still shown as usual.
+  if (model_.translation_state() !=
+      ReadAnythingAppModel::TranslationState::kAwaiting) {
     return;
   }
-  model_.set_is_awaiting_translation(awaiting);
-  // The WebUI may not have registered its handler yet if this happens very
-  // early; in that case it reads `isAwaitingTranslation` when it draws.
-  ExecuteJavaScript("chrome.readingMode.onAwaitingTranslationChanged?.(" +
-                    base::ToString(awaiting) + ")");
+  // Show the translation empty state instead of the untranslated content
+  // until it's translated or the user makes a selection.
+  SetTranslationState(ReadAnythingAppModel::TranslationState::kFailed);
 }
 
-bool ReadAnythingAppController::IsAwaitingTranslation() const {
-  return model_.is_awaiting_translation();
+void ReadAnythingAppController::SetTranslationState(
+    ReadAnythingAppModel::TranslationState state) {
+  if (model_.translation_state() == state) {
+    return;
+  }
+  model_.set_translation_state(state);
+  // The WebUI may not have registered its handler yet if this happens very
+  // early; in that case it reads `translationState` when it draws.
+  ExecuteJavaScript("chrome.readingMode.onTranslationStateChanged?.();");
+}
+
+int ReadAnythingAppController::GetTranslationState() const {
+  return static_cast<int>(model_.translation_state());
 }
 
 void ReadAnythingAppController::SetDefaultLanguageCode(

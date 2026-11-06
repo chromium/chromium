@@ -153,10 +153,11 @@ declare namespace chrome {
     // to date when isTranslatePdfEnabled is true.
     let isContentTranslated: boolean;
 
-    // Whether the browser is waiting for the distilled content to be
-    // translated. While true, content should stay hidden behind the loading
-    // screen.
-    let isAwaitingTranslation: boolean;
+    // Whether content should stay hidden behind the loading screen until it's
+    // translated, or the translation empty state should be shown instead of
+    // the untranslated content because the translation failed. One of the
+    // TranslationState values in content_controller.ts.
+    let translationState: number;
 
     // Fonts supported by the user's current language.
     let supportedFonts: string[];
@@ -442,11 +443,6 @@ declare namespace chrome {
 
     function onPinStateReceived(pinState: boolean): void;
 
-    // Called when the browser starts or stops waiting for the distilled
-    // content to be translated. While awaiting, content should stay hidden
-    // behind the loading screen.
-    function onAwaitingTranslationChanged(awaiting: boolean): void;
-
     // Display the empty state page to tell the user we can't distill the page.
     function showEmpty(): void;
 
@@ -463,8 +459,8 @@ declare namespace chrome {
     // Ping that the selection has been updated.
     function updateSelection(): void;
 
-    // Called when the translation state of the page changes. The new state can
-    // be read from isContentTranslated.
+    // Called when the translation state of the content changes. The new state
+    // can be read from isContentTranslated and translationState.
     function onTranslationStateChanged(): void;
 
     // Read Aloud state should be updated if the lock screen state changes.

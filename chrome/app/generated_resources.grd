@@ -9204,6 +9204,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_EMPTY_STATE_HEADER" desc="Header for reading mode when the current webpage cannot be opened in reading mode.">
         Highlight the text you want to open in reading mode
       </message>
+      <message name="IDS_READING_MODE_EMPTY_STATE_TRANSLATION_HEADER" desc="Header for reading mode when it was opened to translate the current page, but the page's content cannot be opened in reading mode.">
+        Highlight the text you want to translate
+      </message>
       <message name="IDS_READING_MODE_EMPTY_STATE_SUBHEADER" desc="Subheader for reading mode when the current webpage cannot be opened in reading mode.">
         Reading mode can't find the main content on this page
       </message>

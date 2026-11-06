@@ -90,6 +90,24 @@ class ReadAnythingAppModel {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingEarlySelection)
 
+  // Whether the WebUI shows something other than the content because of a
+  // translation of the content. Passed to the WebUI as an int.
+  // TODO(crbug.com/564944081): Add a translated state to replace
+  // is_content_translated_, so that this describes the whole translation of the
+  // content.
+  //
+  // LINT.IfChange(ReadAnythingTranslationState)
+  enum class TranslationState {
+    // The content is shown as usual.
+    kNone = 0,
+    // The content is kept behind the loading screen until it's translated.
+    kAwaiting = 1,
+    // The translation failed, so the translation empty state is shown instead
+    // of the untranslated content.
+    kFailed = 2,
+  };
+  // LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/content/content_controller.ts:ReadAnythingTranslationState)
+
   // Information about content on the original page, used for capturing
   // differences in types of content on the original page and on the distilled
   // page in metrics.
@@ -773,11 +791,11 @@ class ReadAnythingAppModel {
     is_content_translated_ = is_content_translated;
   }
 
-  // Whether the WebUI should keep content hidden behind the loading screen
-  // until translation completes.
-  bool is_awaiting_translation() const { return is_awaiting_translation_; }
-  void set_is_awaiting_translation(bool is_awaiting_translation) {
-    is_awaiting_translation_ = is_awaiting_translation;
+  // Whether the WebUI keeps the content behind the loading screen or shows the
+  // translation empty state instead of it, because of a translation.
+  TranslationState translation_state() const { return translation_state_; }
+  void set_translation_state(TranslationState translation_state) {
+    translation_state_ = translation_state;
   }
 
   // The UKM source of the page that the active AXTree belongs to, as reported
@@ -1074,13 +1092,16 @@ class ReadAnythingAppModel {
   // ReadAnythingUntrustedPageHandler::SendTranslationState()).
   bool is_content_translated_ = false;
 
-  // Whether the WebUI should keep content hidden behind the loading screen
-  // until translation completes. Set when reading mode is opened to translate a
-  // PDF, and cleared once the tab is translated, the translation fails, or
-  // reading mode is hidden. Only changed through
-  // ReadAnythingAppController::SetAwaitingTranslation(), which also notifies
-  // the WebUI.
-  bool is_awaiting_translation_ = false;
+  // kAwaiting when reading mode is opened to translate a PDF, until the tab is
+  // translated or the translation fails. kFailed when the browser reports that
+  // the awaited translation failed, until the content is translated, the user
+  // makes a selection on the page, or a new translation is requested. Reset to
+  // kNone when the page changes or reading mode is closed. Only changed through
+  // ReadAnythingAppController::SetTranslationState(), which also notifies the
+  // WebUI, except in ReadAnythingAppController::OnTranslationStateChanged(),
+  // which sets it directly so that it notifies the WebUI only once, after both
+  // this and `is_content_translated_` are updated.
+  TranslationState translation_state_ = TranslationState::kNone;
 
   // The UKM source of the page that the active AXTree belongs to, as reported
   // by the browser with each new active tree. Several trees can belong to the

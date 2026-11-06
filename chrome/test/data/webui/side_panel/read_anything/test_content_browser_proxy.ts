@@ -28,6 +28,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   hasValidSelectionVal: boolean = true;
   readabilityEnabled: boolean = true;
   contentTranslated: boolean = false;
+  translationState: number = 0;
   translatePdfEnabled: boolean = false;
   sendFeedbackEnabled: boolean = false;
   textContentMap: {[key: number]: string} = {2: 'some text content'};
@@ -67,6 +68,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'hasValidSelection',
       'isReadabilityEnabled',
       'isContentTranslated',
+      'getTranslationState',
       'isTranslatePdfEnabled',
       'isReadAnythingSendFeedbackEnabled',
       'getActiveDistillationMethod',
@@ -143,6 +145,11 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   isContentTranslated(): boolean {
     this.methodCalled('isContentTranslated');
     return this.contentTranslated;
+  }
+
+  getTranslationState(): number {
+    this.methodCalled('getTranslationState');
+    return this.translationState;
   }
 
   isTranslatePdfEnabled(): boolean {

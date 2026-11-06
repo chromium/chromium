@@ -18,7 +18,7 @@ export {VisualBrowserProxyImpl} from './app/visual_browser_proxy.js';
 export type {AxSegment, ContentBrowserProxy, SkiaImageBitmap} from './content/content_browser_proxy.js';
 export {ContentBrowserProxyImpl} from './content/content_browser_proxy.js';
 export type {ContentListener, ContentState} from './content/content_controller.js';
-export {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS} from './content/content_controller.js';
+export {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS, TranslationState} from './content/content_controller.js';
 export {LineFocusController} from './content/line_focus_controller.js';
 export type {LineFocusListener} from './content/line_focus_controller.js';
 export {LineFocusModel} from './content/line_focus_model.js';

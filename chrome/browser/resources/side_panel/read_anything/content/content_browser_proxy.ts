@@ -73,6 +73,7 @@ export interface ContentBrowserProxy {
   hasValidSelection(): boolean;
   isReadabilityEnabled(): boolean;
   isContentTranslated(): boolean;
+  getTranslationState(): number;
   isTranslatePdfEnabled(): boolean;
   isReadAnythingSendFeedbackEnabled(): boolean;
   isGoogleDocs(): boolean;
@@ -189,6 +190,10 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   isContentTranslated(): boolean {
     return chrome.readingMode.isContentTranslated;
+  }
+
+  getTranslationState(): number {
+    return chrome.readingMode.translationState;
   }
 
   isTranslatePdfEnabled(): boolean {

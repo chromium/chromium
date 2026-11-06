@@ -815,6 +815,135 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       OnTranslationFailed_WhileAwaiting_NotifiesFailureOnce) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  // Record the translation state each time the WebUI is notified. Going from
+  // awaiting straight to failed means the content hidden while awaiting is
+  // never shown.
+  ExecuteJavaScriptForTests(
+      "var translationStates = [];"
+      "chrome.readingMode.onTranslationStateChanged = () => {"
+      "  translationStates.push(chrome.readingMode.translationState);"
+      "};");
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
+
+  controller().OnTranslationFailed();
+
+  int count = -1;
+  EXPECT_TRUE(
+      ExecuteJavaScriptAndReturnIntValue(u"translationStates.length", &count));
+  EXPECT_EQ(2, count);
+  int last_state = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"translationStates[translationStates.length - 1]", &last_state));
+  EXPECT_EQ(static_cast<int>(ReadAnythingAppModel::TranslationState::kFailed),
+            last_state);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTranslationFailed_NotAwaiting_DoesNotNotify) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  ExecuteJavaScriptForTests(
+      "var notifiedCount = 0;"
+      "chrome.readingMode.onTranslationStateChanged = () => {"
+      "  notifiedCount++;"
+      "};");
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+
+  // Reading mode wasn't opened for the translation, so the untranslated
+  // content that's already shown stays shown.
+  controller().OnTranslationFailed();
+
+  int notified_count = -1;
+  EXPECT_TRUE(
+      ExecuteJavaScriptAndReturnIntValue(u"notifiedCount", &notified_count));
+  EXPECT_EQ(0, notified_count);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTranslationStateChanged_Translated_NotifiesFailureCleared) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  ExecuteJavaScriptForTests(
+      "var translationState = -1;"
+      "chrome.readingMode.onTranslationStateChanged = () => {"
+      "  translationState = chrome.readingMode.translationState;"
+      "};");
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+  controller().OnTranslationFailed();
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kFailed,
+            model().translation_state());
+
+  controller().OnTranslationStateChanged(/*is_translated=*/true);
+
+  int translation_state = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"translationState",
+                                                 &translation_state));
+  EXPECT_EQ(static_cast<int>(ReadAnythingAppModel::TranslationState::kNone),
+            translation_state);
+  EXPECT_EQ(ReadAnythingAppModel::TranslationState::kNone,
+            model().translation_state());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTranslationStateChanged_TranslatedWhileAwaiting_NotifiesOnce) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+  ASSERT_EQ(ReadAnythingAppModel::TranslationState::kAwaiting,
+            model().translation_state());
+  // Record the state the WebUI reads each time it's notified.
+  ExecuteJavaScriptForTests(
+      "var notifications = [];"
+      "chrome.readingMode.onTranslationStateChanged = () => {"
+      "  notifications.push([chrome.readingMode.isContentTranslated ? 1 : 0,"
+      "                      chrome.readingMode.translationState]);"
+      "};");
+
+  controller().OnTranslationStateChanged(/*is_translated=*/true);
+
+  // The WebUI is notified once, with the content translated and no longer
+  // awaiting, so it never sees one without the other.
+  int count = -1;
+  EXPECT_TRUE(
+      ExecuteJavaScriptAndReturnIntValue(u"notifications.length", &count));
+  EXPECT_EQ(1, count);
+  int is_content_translated = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"notifications[0][0]",
+                                                 &is_content_translated));
+  EXPECT_EQ(1, is_content_translated);
+  int translation_state = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"notifications[0][1]",
+                                                 &translation_state));
+  EXPECT_EQ(static_cast<int>(ReadAnythingAppModel::TranslationState::kNone),
+            translation_state);
+}
+
+TEST_F(ReadAnythingAppControllerTest, TranslationState_ExposedToJavaScript) {
+  base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
+  int translation_state = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"chrome.readingMode.translationState", &translation_state));
+  EXPECT_EQ(static_cast<int>(ReadAnythingAppModel::TranslationState::kNone),
+            translation_state);
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation);
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"chrome.readingMode.translationState", &translation_state));
+  EXPECT_EQ(static_cast<int>(ReadAnythingAppModel::TranslationState::kAwaiting),
+            translation_state);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        IsTranslatePdfEnabled_ExposedToJavaScript) {
   int enabled = -1;
   {
