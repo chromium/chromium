@@ -12,6 +12,7 @@
 #include "content/public/common/referrer.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/search/search.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #endif
@@ -69,8 +70,7 @@ void ChromeSerializedNavigationDriver::Sanitize(
 
 #if BUILDFLAG(IS_ANDROID)
   // Rewrite the old new tab URL to the new NTP URL.
-  if (navigation->virtual_url().SchemeIs(content::kChromeUIScheme) &&
-      navigation->virtual_url().host() == chrome::kChromeUINewTabHost) {
+  if (search::IsNewTabOrigin(navigation->virtual_url())) {
     ChangeDestination(GURL(chrome::kChromeUINativeNewTabURL), navigation);
   }
 #endif  // BUILDFLAG(IS_ANDROID)

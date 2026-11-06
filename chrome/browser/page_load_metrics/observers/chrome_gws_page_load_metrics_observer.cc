@@ -8,8 +8,8 @@
 
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,11 +26,8 @@ bool ChromeGWSPageLoadMetricsObserver::IsFromNewTabPage(
     return false;
   }
 
-  auto& principal = start_instance->GetSecurityPrincipal();
-  const GURL& ntp_url = chrome::ChromeUINewTabPageURLAsGURL();
-
-  return principal.SchemeIs(ntp_url.scheme()) &&
-         principal.GetHost() == ntp_url.host();
+  return search::IsNewTabPageSecurityPrincipal(
+      start_instance->GetSecurityPrincipal());
 }
 
 bool ChromeGWSPageLoadMetricsObserver::IsBrowserStartupComplete() {

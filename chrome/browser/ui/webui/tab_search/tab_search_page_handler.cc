@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -349,7 +350,7 @@ tabs::TabInterface* TabSearchPageHandler::GetTabInterface(int32_t tab_id) {
 void TabSearchPageHandler::GetIsSplit(GetIsSplitCallback callback) {
   bool is_split = false;
   GURL url = web_ui_->GetWebContents()->GetURL();
-  if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
+  if (search::IsSplitViewNewTabPage(url)) {
     is_split = tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
                    ->IsSplit();
   }
@@ -999,7 +1000,7 @@ void TabSearchPageHandler::OnTabDataChanged(
 
 void TabSearchPageHandler::OnSplitTabRemoved() {
   GURL url = web_ui_->GetWebContents()->GetURL();
-  if (url.spec() != chrome::kChromeUISplitViewNewTabPageURL) {
+  if (!search::IsSplitViewNewTabPage(url)) {
     return;
   }
   if (!tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())

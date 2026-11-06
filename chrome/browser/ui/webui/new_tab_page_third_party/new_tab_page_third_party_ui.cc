@@ -202,13 +202,6 @@ WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageThirdPartyUI)
 
 NewTabPageThirdPartyUI::~NewTabPageThirdPartyUI() = default;
 
-// static
-bool NewTabPageThirdPartyUI::IsNewTabPageOrigin(const GURL& url) {
-  return url.DeprecatedGetOriginAsURL() ==
-         GURL(chrome::kChromeUINewTabPageThirdPartyURL)
-             .DeprecatedGetOriginAsURL();
-}
-
 void NewTabPageThirdPartyUI::BindInterface(
     mojo::PendingReceiver<new_tab_page_third_party::mojom::PageHandlerFactory>
         pending_receiver) {

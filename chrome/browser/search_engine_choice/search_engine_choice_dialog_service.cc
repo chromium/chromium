@@ -19,6 +19,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -26,7 +27,7 @@
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
@@ -40,6 +41,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -454,7 +456,7 @@ bool SearchEngineChoiceDialogService::IsUrlSuitableForDialog(GURL url) {
     return true;  // NTP URL for regular profiles.
   }
 
-  if (NewTabUI::IsNewTab(url)) {
+  if (search::IsNewTabOrigin(url)) {
     // This is the NTP URL for Guest and incognito profiles. This service is not
     // instantiated for incognito profiles, so this is only Guest in practice.
     return true;

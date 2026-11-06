@@ -4,15 +4,13 @@
 
 #include "chrome/browser/ttc/core/page_context_util.h"
 
-#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
-#include "chrome/common/webui_url_constants.h"
+#include "chrome/browser/search/search.h"
 #include "components/actor/core/safety_list_manager.h"
-#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
 namespace ttc {
@@ -31,13 +29,8 @@ namespace {
 // TODO(crbug.com/555804152): Decide what page context, if any, the mobile
 // Android native New Tab Page should produce.
 bool IsSchemeAndHostSupported(const GURL& url) {
-  if (url.SchemeIs(content::kChromeUIScheme)) {
-    const std::string_view host = url.host();
-    if (host == chrome::kChromeUINewTabHost ||
-        host == chrome::kChromeUINewTabPageHost ||
-        host == chrome::kChromeUINewTabPageThirdPartyHost) {
-      return true;
-    }
+  if (search::IsWebUINewTabPageOrigin(url)) {
+    return true;
   }
   // Excludes all other chrome:// URLs, as well as file:, javascript:, about:,
   // data:, blob:, chrome-extension:, etc.

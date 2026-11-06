@@ -132,6 +132,7 @@ if (toolkit_views) {
       "//chrome/browser/permissions",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resource_coordinator",
+      "//chrome/browser/search",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/dialogs",

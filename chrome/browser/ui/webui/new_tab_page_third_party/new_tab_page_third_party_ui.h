@@ -56,8 +56,6 @@ class NewTabPageThirdPartyUI
 
   ~NewTabPageThirdPartyUI() override;
 
-  static bool IsNewTabPageOrigin(const GURL& url);
-
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(

@@ -5,7 +5,6 @@
 #include "chrome/browser/actor/execution_engine.h"
 
 #include <algorithm>
-#include <array>
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -61,10 +60,10 @@
 #include "chrome/browser/origin_gating/origin_gating_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_metrics.h"
 #include "components/actor/core/actor_switches.h"
@@ -100,7 +99,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/url_constants.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -294,11 +292,7 @@ origin_gating::Decision BlockTabErrorDocument(
   return origin_gating::Decision::kNoDecision;
 }
 
-constexpr auto kNewTabPageHosts = std::to_array<std::string_view>(
-    {chrome::kChromeUINewTabHost, chrome::kChromeUINewTabPageHost,
-     chrome::kChromeUINewTabPageThirdPartyHost});
-
-// Allow HTTP/HTTPS schemes, as well as NTP hosts under the chrome:// scheme.
+// Allow HTTP/HTTPS schemes, as well as NTP origins.
 origin_gating::Decision RequireHttpsOrHttpOrNtp(
     origin_gating::GatingDecisionContext* context,
     const GateableEvent& event) {
@@ -306,8 +300,7 @@ origin_gating::Decision RequireHttpsOrHttpOrNtp(
   if (destination.SchemeIsHTTPOrHTTPS()) {
     return origin_gating::Decision::kNoDecision;
   }
-  if (destination.SchemeIs(content::kChromeUIScheme) &&
-      std::ranges::contains(kNewTabPageHosts, destination.host())) {
+  if (search::IsWebUINewTabPageOrigin(destination)) {
     return origin_gating::Decision::kNoDecision;
   }
   return origin_gating::Decision::kBlocked;

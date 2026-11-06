@@ -6,10 +6,10 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -36,7 +36,7 @@ SidePanelControllerViews::~SidePanelControllerViews() = default;
 
 bool SidePanelControllerViews::ShouldEnableEditTheme(const GURL& url) const {
   Profile* const profile = tab_->GetProfile();
-  return NewTabPageUI::IsNewTabPageOrigin(url) ||
+  return search::IsNewTabPageOrigin(url) ||
          (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
           ntp_footer::IsExtensionNtp(url, profile));
 }

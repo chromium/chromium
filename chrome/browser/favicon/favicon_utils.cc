@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/platform_locale_settings.h"
@@ -182,12 +183,8 @@ bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry) {
   }
 
   // Themify favicon for the default NTP and incognito NTP.
-  if (actual_url.SchemeIs(content::kChromeUIScheme)) {
-    return actual_url.host() == chrome::kChromeUINewTabPageHost ||
-           actual_url.host() == chrome::kChromeUINewTabHost;
-  }
-
-  return false;
+  return search::IsNewTabPageOrigin(actual_url) ||
+         search::IsNewTabOrigin(actual_url);
 }
 
 gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,

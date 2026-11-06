@@ -20,6 +20,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -69,10 +70,9 @@ ui::ColorId GetDefaultFaviconBackgroundColorId(
 }
 
 bool IsNTP(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         (url.host() == chrome::kChromeUINewTabHost ||
-          url.host() == chrome::kChromeUITabSearchHost ||
-          url.host() == chrome::kChromeUINewTabPageHost);
+  return search::IsNewTabPageOrigin(url) || search::IsNewTabOrigin(url) ||
+         (url.SchemeIs(content::kChromeUIScheme) &&
+          url.host() == chrome::kChromeUITabSearchHost);
 }
 
 web_app::WebAppBrowserController* GetWebAppBrowserController(

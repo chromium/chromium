@@ -63,7 +63,6 @@ source_set("search") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/themes",
       "//chrome/browser/ui/webui/new_tab_page",
-      "//chrome/browser/ui/webui/new_tab_page_third_party",
       "//chrome/common",
       "//components/history/core/browser",
       "//components/keyed_service/core",
@@ -112,8 +111,19 @@ source_set("search") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = []
-  deps = []
+  sources = [ "search_unittest.cc" ]
+  deps = [
+    ":search",
+    "//base",
+    "//chrome/common",
+    "//extensions/buildflags",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
 
   if (!is_android) {
     sources += [
@@ -124,8 +134,6 @@ source_set("unit_tests") {
     ]
 
     deps += [
-      ":search",
-      "//base",
       "//base/test:test_support",
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
       "//chrome/browser/search/background",
@@ -138,20 +146,15 @@ source_set("unit_tests") {
       "//components/themes",
       "//content/test:test_support",
       "//testing/gmock",
-      "//testing/gtest",
     ]
   }
 
   if (is_android) {
     sources += [ "contextual_search_policy_handler_android_unittest.cc" ]
     deps += [
-      ":search",
-      "//base",
-      "//chrome/common",
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/prefs",
-      "//testing/gtest",
     ]
   }
 }

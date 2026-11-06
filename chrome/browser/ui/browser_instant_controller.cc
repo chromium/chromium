@@ -75,10 +75,8 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
     const auto& principal = contents->GetPrimaryMainFrame()
                                 ->GetSiteInstance()
                                 ->GetSecurityPrincipal();
-    bool is_ntp =
-        principal.SchemeIs(content::kChromeUIScheme) &&
-        (principal.GetHost() == chrome::kChromeUINewTabPageHost ||
-         principal.GetHost() == chrome::kChromeUINewTabPageThirdPartyHost);
+    bool is_ntp = search::IsNewTabPageSecurityPrincipal(principal) ||
+                  search::IsThirdPartyNewTabPageSecurityPrincipal(principal);
 
     if (!is_ntp) {
       InstantService* instant_service =

@@ -59,7 +59,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -970,14 +969,11 @@ bool BrowserWebContentsDelegate::ShouldFocusLocationBarByDefault(
       return false;
     }
 
-    if ((url.SchemeIs(content::kChromeUIScheme) &&
-         url.host() == chrome::kChromeUINewTabHost) ||
-        (virtual_url.SchemeIs(content::kChromeUIScheme) &&
-         virtual_url.host() == chrome::kChromeUINewTabHost)) {
+    if (search::IsNewTabOrigin(url) || search::IsNewTabOrigin(virtual_url)) {
       return true;
     }
 
-    if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
+    if (search::IsSplitViewNewTabPage(url)) {
       return true;
     }
   }

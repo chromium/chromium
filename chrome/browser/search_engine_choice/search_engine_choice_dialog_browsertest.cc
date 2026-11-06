@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -293,7 +293,7 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
     content::WebContents* ntp_contents =
         guest_browser->GetTabStripModel()->GetActiveWebContents();
     content::WaitForLoadStop(ntp_contents);
-    CHECK(NewTabUI::IsNewTab(ntp_contents->GetURL()));
+    CHECK(search::IsNewTabOrigin(ntp_contents->GetURL()));
     return guest_browser;
   }
 

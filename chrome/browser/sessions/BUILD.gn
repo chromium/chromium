@@ -86,6 +86,7 @@ source_set("impl") {
     "//chrome/browser:buildflags",
     "//chrome/browser/glic",
     "//chrome/browser/lifetime",
+    "//chrome/browser/search",
   ]
 
   if (enable_extensions_core) {
@@ -147,7 +148,6 @@ source_set("impl") {
       "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/browser/performance_manager",
       "//chrome/browser/profiles/keep_alive",
-      "//chrome/browser/search",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:browser_manager_service",

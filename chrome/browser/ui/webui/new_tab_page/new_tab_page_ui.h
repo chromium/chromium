@@ -126,7 +126,6 @@ class NewTabPageUI
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRealboxContextualEntrypointElementId);
 
-  static bool IsNewTabPageOrigin(const GURL& url);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void ResetProfilePrefs(PrefService* prefs);
   static void MigrateDeprecatedUseMostVisitedTilesPref(PrefService* prefs);

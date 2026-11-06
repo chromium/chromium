@@ -399,6 +399,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/reading_list",
       "//chrome/browser/resource_coordinator",
+      "//chrome/browser/search",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tab_strip",

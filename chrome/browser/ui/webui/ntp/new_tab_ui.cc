@@ -112,12 +112,6 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 NewTabUI::~NewTabUI() = default;
 
 // static
-bool NewTabUI::IsNewTab(const GURL& url) {
-  return url.DeprecatedGetOriginAsURL() ==
-         chrome::ChromeUINewTabURLAsGURL().DeprecatedGetOriginAsURL();
-}
-
-// static
 void NewTabUI::SetUrlTitleAndDirection(base::DictValue* dictionary,
                                        const std::u16string& title,
                                        const GURL& gurl) {

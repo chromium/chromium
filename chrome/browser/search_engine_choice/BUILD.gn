@@ -61,13 +61,13 @@ source_set("impl") {
 
     deps += [
       "//build:branding_buildflags",
+      "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search_engine_choice",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/web_applications",
-      "//chrome/browser/ui/webui/ntp",
       "//chrome/common:non_code_constants",
       "//components/country_codes",
     ]
@@ -110,6 +110,7 @@ if (!is_android) {
         "//chrome/browser/prefs:util",
         "//chrome/browser/profiles:misc",
         "//chrome/browser/profiles/keep_alive",
+        "//chrome/browser/search",
         "//chrome/browser/search_engines",
         "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui:browser_tabstrip",

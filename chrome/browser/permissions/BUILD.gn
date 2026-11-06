@@ -95,6 +95,7 @@ source_set("permissions") {
     "//chrome/browser/pwc",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/serial",
     "//chrome/browser/storage",

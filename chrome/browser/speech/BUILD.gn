@@ -102,6 +102,7 @@ source_set("impl") {
     "//chrome/browser/component_updater",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/search",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/services/speech/buildflags",

@@ -242,6 +242,7 @@ if (!is_android) {
       "//chrome/browser/favicon",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resource_coordinator:mojo_bindings",
+      "//chrome/browser/search",
       "//chrome/browser/sessions",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/performance_controls",

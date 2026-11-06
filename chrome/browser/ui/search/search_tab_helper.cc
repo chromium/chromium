@@ -19,7 +19,6 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/search/search_ipc_router_policy_impl.h"
-#include "chrome/common/url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/search/ntp_features.h"
@@ -71,12 +70,10 @@ bool InInstantProcess(const InstantService* instant_service,
 
 void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
   NewTabPageConcretePage concrete_page = NewTabPageConcretePage::kOther;
-  if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
-      chrome::ChromeUINewTabPageURLAsGURL().DeprecatedGetOriginAsURL()) {
+  if (search::IsNewTabPageOrigin(navigation_handle->GetURL())) {
     concrete_page = NewTabPageConcretePage::k1PWebUiNtp;
-  } else if (navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
-             GURL(chrome::kChromeUINewTabPageThirdPartyURL)
-                 .DeprecatedGetOriginAsURL()) {
+  } else if (search::IsThirdPartyNewTabPageOrigin(
+                 navigation_handle->GetURL())) {
     concrete_page = NewTabPageConcretePage::k3PWebUiNtp;
   } else if (search::IsInstantNTP(navigation_handle->GetWebContents())) {
     concrete_page = NewTabPageConcretePage::k3PRemoteNtp;
@@ -86,8 +83,7 @@ void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
   } else if (Profile::FromBrowserContext(
                  navigation_handle->GetWebContents()->GetBrowserContext())
                  ->IsOffTheRecord() &&
-             navigation_handle->GetURL().DeprecatedGetOriginAsURL() ==
-                 chrome::ChromeUINewTabURLAsGURL().DeprecatedGetOriginAsURL()) {
+             search::IsNewTabOrigin(navigation_handle->GetURL())) {
     concrete_page = NewTabPageConcretePage::kOffTheRecordNtp;
   }
   base::UmaHistogramEnumeration("NewTabPage.ConcretePage", concrete_page);
@@ -200,8 +196,7 @@ void SearchTabHelper::DidStartNavigation(
     return;
   }
 
-  if (web_contents()->GetVisibleURL().DeprecatedGetOriginAsURL() ==
-      chrome::ChromeUINewTabURLAsGURL().DeprecatedGetOriginAsURL()) {
+  if (search::IsNewTabOrigin(web_contents()->GetVisibleURL())) {
     RecordConcreteNtp(navigation_handle);
   }
 

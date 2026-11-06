@@ -23,13 +23,11 @@
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -59,9 +57,8 @@ tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
 }
 
 bool IsNTP(const GURL& url) {
-  return (url.SchemeIs(content::kChromeUIScheme) &&
-          url.GetHost() == chrome::kChromeUINewTabHost) ||
-         search::IsNTPURL(url) || search::IsSplitViewNewTabPage(url);
+  return search::IsNewTabOrigin(url) || search::IsNTPURL(url) ||
+         search::IsSplitViewNewTabPage(url);
 }
 
 void SetAccessibleNameAndTooltip(views::View* view, int string_id) {

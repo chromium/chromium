@@ -82,9 +82,8 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
   // Google, or the Chrome-owned fallback 3P NTP for non-Google DSEs that do
   // not provide their own remote NTP.
   if (search::IsWebUiNtpEnabledForDesktopAndroid() &&
-      url.SchemeIs(content::kChromeUIScheme) &&
-      (url.host() == chrome::kChromeUINewTabPageHost ||
-       url.host() == chrome::kChromeUINewTabPageThirdPartyHost)) {
+      (search::IsNewTabPageOrigin(url) ||
+       search::IsThirdPartyNewTabPageOrigin(url))) {
     return true;
   }
 

@@ -949,8 +949,7 @@ bool IsIsolatedWebAppUrl(const GURL& url) {
 bool HandleNewTabPageLocationOverride(
     GURL* url,
     content::BrowserContext* browser_context) {
-  if (!url->SchemeIs(content::kChromeUIScheme) ||
-      url->host() != chrome::kChromeUINewTabHost) {
+  if (!search::IsNewTabOrigin(*url)) {
     return false;
   }
 
@@ -1981,12 +1980,9 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
 
   // NTP should use process-per-site.  This is a performance optimization to
   // reduce process count associated with NTP tabs.
-  if (security_principal.SchemeIs(content::kChromeUIScheme)) {
-    const std::string_view host = security_principal.GetHost();
-    if (host == chrome::kChromeUINewTabHost ||
-        host == chrome::kChromeUINewTabPageHost) {
-      return true;
-    }
+  if (search::IsNewTabSecurityPrincipal(security_principal) ||
+      search::IsNewTabPageSecurityPrincipal(security_principal)) {
+    return true;
   }
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
@@ -4490,7 +4486,7 @@ bool ChromeContentBrowserClient::IsUnboundedElementAllowedForSubframesOf(
   // Allowlist of outermost main frames whose subframes may use the Unbounded
   // Element API.
   // TODO(crbug.com/571879162): Remove this temporary allowlist.
-  return origin.IsSameOriginWith(GURL(chrome::kChromeUINewTabPageURL));
+  return search::IsNewTabPageOrigin(origin);
 }
 
 bool ChromeContentBrowserClient::CanCreateWindow(

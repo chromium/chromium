@@ -103,6 +103,7 @@ if (!is_android || enable_webui_ntp) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/side_panel/customize_chrome:resources",
       "//chrome/browser/resources/side_panel/shared:resources_grit",
+      "//chrome/browser/search",
       "//chrome/browser/search/background",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",

@@ -297,6 +297,7 @@ source_set("impl") {
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/resource_coordinator:utils",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/search",
     "//chrome/browser/site_isolation",
     "//chrome/browser/skills",
     "//chrome/browser/subscription_eligibility",

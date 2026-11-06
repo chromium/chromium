@@ -4,8 +4,6 @@
 
 #include "chrome/browser/actor/tools/page_search_utils.h"
 
-#include <algorithm>
-#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -20,9 +18,9 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -30,7 +28,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
 namespace actor {
@@ -74,13 +71,9 @@ bool IsAllowedMatchUrl(const GURL& url, UrlMatchFilter filter) {
   if (!filter.Has(UrlMatchCategory::kNewTabPage)) {
     return false;
   }
-  // The NTP is reachable under several hosts depending on which
+  // The NTP is reachable under several origins depending on which
   // implementation is active.
-  static constexpr auto kNewTabPageHosts = std::to_array<std::string_view>(
-      {chrome::kChromeUINewTabHost, chrome::kChromeUINewTabPageHost,
-       chrome::kChromeUINewTabPageThirdPartyHost});
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         std::ranges::contains(kNewTabPageHosts, url.host());
+  return search::IsWebUINewTabPageOrigin(url);
 }
 
 bool AreUrlsEquivalentForDeduplication(const GURL& a, const GURL& b) {

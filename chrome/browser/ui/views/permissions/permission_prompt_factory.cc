@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -296,9 +297,8 @@ bool ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty(
   // permissions.
   const url::Origin committed_origin =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  if (committed_origin.IsSameOriginWith(chrome::ChromeUINewTabURLAsGURL()) ||
-      committed_origin.IsSameOriginWith(
-          chrome::ChromeUINewTabPageURLAsGURL()) ||
+  if (search::IsNewTabOrigin(committed_origin) ||
+      search::IsNewTabPageOrigin(committed_origin) ||
       committed_origin.IsSameOriginWith(
           GURL(chrome::kChromeUIOmniboxPopupURL)) ||
       committed_origin.IsSameOriginWith(

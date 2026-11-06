@@ -17,6 +17,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -552,8 +553,7 @@ void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
   GURL url = page.GetMainDocument().GetLastCommittedURL();
   bool is_aim_page = (url.scheme() == content::kChromeUIScheme &&
                       url.host() == chrome::kChromeUIContextualTasksHost) ||
-                     (url.scheme() == content::kChromeUIScheme &&
-                      url.host() == chrome::kChromeUINewTabPageHost);
+                     search::IsNewTabPageOrigin(url);
   // Post-rearchitecture, full-tab AI Mode loads the AI Mode URL directly
   // instead of chrome://contextual-tasks. If `is_aim_page` were false, the
   // `!is_aim_page` block below would disassociate the tab's task and clear its

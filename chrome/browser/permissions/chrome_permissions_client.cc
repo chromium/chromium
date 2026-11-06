@@ -39,6 +39,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
@@ -141,18 +142,6 @@ using permissions::PermissionPromptDisposition;
 using permissions::PermissionPromptDispositionReason;
 using permissions::PermissionRequest;
 using permissions::PermissionRequestGestureType;
-
-const url::Origin& GetNewTabOrigin() {
-  static const base::NoDestructor<url::Origin> origin(
-      url::Origin::Create(chrome::ChromeUINewTabURLAsGURL()));
-  return *origin;
-}
-
-const url::Origin& GetNtpOrigin() {
-  static const base::NoDestructor<url::Origin> origin(
-      url::Origin::Create(chrome::ChromeUINewTabPageURLAsGURL()));
-  return *origin;
-}
 
 const url::Origin& GetOmniboxPopupOrigin() {
   static const base::NoDestructor<url::Origin> origin(
@@ -745,7 +734,8 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
   // New Tab Page:
   // Bypass embedding origin check as the `requesting_origin` will later be
   // transformed to the DSE origin in `GetCanonicalOriginOverride()`.
-  if (embedder == GetNewTabOrigin() || embedder == GetNtpOrigin()) {
+  if (search::IsNewTabOrigin(embedder) ||
+      search::IsNewTabPageOrigin(embedder)) {
     return true;
   }
 
@@ -775,8 +765,10 @@ std::optional<GURL> ChromePermissionsClient::GetCanonicalOriginOverride(
   // without the requester being the new tab page, do not override the URL.
   // Only if the embedder is the new tab AND the requester is the new tab page,
   // override the canonical origin to be 'Google.com'.
-  if (embedder == GetNewTabOrigin() || embedder == GetNtpOrigin()) {
-    if (requester == GetNtpOrigin() || requester == GetNewTabOrigin()) {
+  if (search::IsNewTabOrigin(embedder) ||
+      search::IsNewTabPageOrigin(embedder)) {
+    if (search::IsNewTabPageOrigin(requester) ||
+        search::IsNewTabOrigin(requester)) {
       return GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
           .DeprecatedGetOriginAsURL();
     }
@@ -912,8 +904,8 @@ bool ChromePermissionsClient::IsFromNewTabPage(
 
   // A page is not from the new tab page if its embedder is not a new tab page
   // type.
-  if (embedding_origin != GetNtpOrigin() &&
-      embedding_origin != GetNewTabOrigin()) {
+  if (!search::IsNewTabPageOrigin(embedding_origin) &&
+      !search::IsNewTabOrigin(embedding_origin)) {
     return false;
   }
 
@@ -928,8 +920,8 @@ bool ChromePermissionsClient::IsFromNewTabPage(
   // Since the embedder is from the new tab page at this point, a page
   // is definitely from new tab page if the requester is of new tab or new tab
   // page origin.
-  return requesting_origin == GetNtpOrigin() ||
-         requesting_origin == GetNewTabOrigin();
+  return search::IsNewTabPageOrigin(requesting_origin) ||
+         search::IsNewTabOrigin(requesting_origin);
 }
 
 bool ChromePermissionsClient::IsPrivilegedInternalWebUI(

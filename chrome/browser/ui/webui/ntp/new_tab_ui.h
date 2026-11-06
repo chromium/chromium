@@ -39,11 +39,6 @@ class NewTabUI : public content::WebUIController {
 
   ~NewTabUI() override;
 
-  // Checks whether the given URL points to an NTP WebUI. Note that this only
-  // applies to incognito and guest mode NTPs - you probably want to check
-  // search::NavEntryIsInstantNTP too!
-  static bool IsNewTab(const GURL& url);
-
   // TODO(dbeam): why are these static |Set*()| methods on NewTabUI?
 
   // Adds "url", "title", and "direction" keys on incoming dictionary, setting

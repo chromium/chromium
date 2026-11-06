@@ -11,8 +11,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -144,7 +144,7 @@ ChromeSpeechRecognitionManagerDelegate::GetRoutingParams(
   // the speech service otherwise routes to its dictation recognizer. These
   // parameters ask it to treat the requests as voice search.
   if (base::FeatureList::IsEnabled(omnibox::kVoiceSearchCoherenceSearchbox) &&
-      origin.IsSameOriginWith(chrome::ChromeUINewTabPageURLAsGURL())) {
+      search::IsNewTabPageOrigin(origin)) {
     return {
         {"client", "chrome-ntp"},
         {"condition", "search"},

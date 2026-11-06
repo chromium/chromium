@@ -36,6 +36,7 @@ source_set("impl") {
     "//chrome/browser:browser_features",
     "//chrome/browser/history",
     "//chrome/browser/image_fetcher",
+    "//chrome/browser/search",
     "//chrome/browser/sync",
     "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
     "//chrome/common",

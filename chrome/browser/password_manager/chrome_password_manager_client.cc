@@ -50,6 +50,7 @@
 #include "chrome/browser/password_manager/password_manager_critical_action_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -65,7 +66,6 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/renderer_data_validation.h"
@@ -147,6 +147,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
@@ -1419,10 +1420,8 @@ bool ChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
 }
 
 bool ChromePasswordManagerClient::IsNewTabPage() const {
-  auto origin = GetLastCommittedURL().DeprecatedGetOriginAsURL();
-  return origin ==
-             chrome::ChromeUINewTabPageURLAsGURL().DeprecatedGetOriginAsURL() ||
-         origin == chrome::ChromeUINewTabURLAsGURL().DeprecatedGetOriginAsURL();
+  const GURL& url = GetLastCommittedURL();
+  return search::IsNewTabPageOrigin(url) || search::IsNewTabOrigin(url);
 }
 
 bool ChromePasswordManagerClient::IsChromeSigninPage() const {

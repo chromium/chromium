@@ -13,6 +13,7 @@ source_set("breadcrumbs") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
     "//chrome/common",
     "//components/breadcrumbs/core",
     "//components/infobars/content",

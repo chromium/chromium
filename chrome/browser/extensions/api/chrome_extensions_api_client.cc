@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -185,16 +185,12 @@ bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
       is_browser_request && DevToolsUI::IsFrontendResourceURL(request.url);
 
   // Hide requests made by the browser on behalf of the NTP.
-  is_sensitive_request |=
-      is_browser_request &&
-      request.initiator ==
-          url::Origin::Create(chrome::ChromeUINewTabURLAsGURL());
+  is_sensitive_request |= is_browser_request && request.initiator.has_value() &&
+                          search::IsNewTabOrigin(*request.initiator);
 
   // Hide requests made by the browser on behalf of the 1P WebUI NTP.
-  is_sensitive_request |=
-      is_browser_request &&
-      request.initiator ==
-          url::Origin::Create(chrome::ChromeUINewTabPageURLAsGURL());
+  is_sensitive_request |= is_browser_request && request.initiator.has_value() &&
+                          search::IsNewTabPageOrigin(*request.initiator);
 
   // Android does not support instant.
 #if !BUILDFLAG(IS_ANDROID)

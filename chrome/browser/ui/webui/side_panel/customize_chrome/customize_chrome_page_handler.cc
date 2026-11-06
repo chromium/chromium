@@ -24,6 +24,7 @@
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -67,8 +67,6 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
-#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
-#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #endif
 
@@ -922,17 +920,17 @@ void CustomizeChromePageHandler::FileSelectionCanceled() {
 
 side_panel::mojom::NewTabPageType CustomizeChromePageHandler::GetNewTabPageType(
     const GURL& url) {
-  if (NewTabPageUI::IsNewTabPageOrigin(url)) {
+  if (search::IsNewTabPageOrigin(url)) {
     return side_panel::mojom::NewTabPageType::kFirstPartyWebUI;
   }
 #if !BUILDFLAG(IS_ANDROID)
   if (ntp_footer::IsExtensionNtp(url, profile_)) {
     return side_panel::mojom::NewTabPageType::kExtension;
-  } else if (NewTabPageThirdPartyUI::IsNewTabPageOrigin(url)) {
+  } else if (search::IsThirdPartyNewTabPageOrigin(url)) {
     return side_panel::mojom::NewTabPageType::kThirdPartyWebUI;
   } else if (IsNtpManagedByThirdPartySearchEngine()) {
     return side_panel::mojom::NewTabPageType::kThirdPartyRemote;
-  } else if (NewTabUI::IsNewTab(url)) {
+  } else if (search::IsNewTabOrigin(url)) {
     return profile_->IsGuestSession()
                ? side_panel::mojom::NewTabPageType::kGuestMode
                : side_panel::mojom::NewTabPageType::kIncognito;

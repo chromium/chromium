@@ -31,6 +31,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/tab_footprint_aggregator.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -46,7 +47,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "partition_alloc/buildflags.h"
@@ -98,9 +98,7 @@ bool Is1pNtpUrl(const GURL& url) {
   if (!url.is_valid()) {
     return false;
   }
-  if (url.SchemeIs(content::kChromeUIScheme) &&
-      (url.host() == chrome::kChromeUINewTabPageHost ||
-       url.host() == chrome::kChromeUINewTabHost)) {
+  if (search::IsNewTabPageOrigin(url) || search::IsNewTabOrigin(url)) {
     return true;
   }
   if (url.SchemeIs(chrome::kChromeNativeScheme) &&

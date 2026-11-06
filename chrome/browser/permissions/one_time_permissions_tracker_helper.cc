@@ -10,6 +10,7 @@
 #include "chrome/browser/permissions/one_time_permissions_condition_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
+#include "chrome/browser/search/search.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_user_data.h"
@@ -24,9 +25,8 @@ bool ShouldIgnoreOrigin(const url::Origin& origin) {
   // There are cases where chrome://newtab/ and chrome://new-tab-page/ are
   // used synonymously causing inconsistencies in the map. So we just ignore
   // them.
-  return origin.opaque() ||
-         origin == url::Origin::Create(GURL("chrome://newtab/")) ||
-         origin == url::Origin::Create(GURL("chrome://new-tab-page/"));
+  return origin.opaque() || search::IsNewTabOrigin(origin) ||
+         search::IsNewTabPageOrigin(origin);
 }
 
 // A helper class for tracking events relevant to OneTimePermissions expiration

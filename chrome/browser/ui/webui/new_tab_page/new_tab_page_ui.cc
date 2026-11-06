@@ -1113,12 +1113,6 @@ NewTabPageUI::~NewTabPageUI() {
 }
 
 // static
-bool NewTabPageUI::IsNewTabPageOrigin(const GURL& url) {
-  return url.DeprecatedGetOriginAsURL() ==
-         chrome::ChromeUINewTabPageURLAsGURL().DeprecatedGetOriginAsURL();
-}
-
-// static
 void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kPrevNavigationTimePrefName, base::Time());
   registry->RegisterTimePref(ntp_prefs::kNtpLastModuleStalenessUpdate,
