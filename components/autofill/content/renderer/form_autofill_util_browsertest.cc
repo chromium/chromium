@@ -663,10 +663,10 @@ TEST_P(InferLabelForElementParameterizedTest, InferLabelForElementTest) {
   LoadHTML(test_case.html);
   WebFormControlElement form_target =
       GetFormControlElementById(GetDocument(), "target");
-  std::vector<FormFieldData> fields(1);
-  InferLabelForElementsForTesting(
-      std::to_array<WebFormControlElement>({form_target}), fields);
-  EXPECT_EQ(fields.front().label(), expected_label);
+  FormFieldData field;
+  field.set_renderer_id(GetFieldRendererId(form_target));
+  InferLabelForElementsForTesting(base::span_from_ref(field));
+  EXPECT_EQ(field.label(), expected_label);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -743,10 +743,10 @@ TEST_P(InferLabelSourceParameterizedTest, InferLabelSourceTest) {
   LoadHTML(test_case.html);
   WebFormControlElement form_target =
       GetFormControlElementById(GetDocument(), "target");
-  std::vector<FormFieldData> fields(1);
-  InferLabelForElementsForTesting(
-      std::to_array<WebFormControlElement>({form_target}), fields);
-  EXPECT_EQ(fields.front().label_source(), expected_label_source);
+  FormFieldData field;
+  field.set_renderer_id(GetFieldRendererId(form_target));
+  InferLabelForElementsForTesting(base::span_from_ref(field));
+  EXPECT_EQ(field.label_source(), expected_label_source);
 }
 
 INSTANTIATE_TEST_SUITE_P(

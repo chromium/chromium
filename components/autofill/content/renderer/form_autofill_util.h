@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/stack_allocated.h"
 #include "components/autofill/content/renderer/timing.h"
@@ -381,9 +382,7 @@ std::u16string GetAriaLabelForTesting(const blink::WebDocument& document,
                                       const blink::WebElement& element);
 std::u16string GetAriaDescriptionForTesting(const blink::WebDocument& document,
                                             const blink::WebElement& element);
-void InferLabelForElementsForTesting(
-    base::span<const blink::WebFormControlElement> control_elements,
-    std::vector<FormFieldData>& fields);
+void InferLabelForElementsForTesting(base::span<FormFieldData> fields);
 std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);

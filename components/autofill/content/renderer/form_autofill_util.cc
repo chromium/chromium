@@ -1052,21 +1052,25 @@ std::optional<InferredLabel> InferLabelForElement(
   return std::nullopt;
 }
 
-void InferLabelForElements(
-    base::span<const WebFormControlElement> control_elements,
-    std::vector<FormFieldData>& fields) {
+void InferLabelForElements(base::span<FormFieldData> fields) {
+  if (fields.empty()) {
+    return;
+  }
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.TimingPrecise.InferLabelForElement");
-  CHECK_EQ(control_elements.size(), fields.size());
-  for (size_t i = 0; i < control_elements.size(); ++i) {
-    if (fields[i].label().empty()) {
-      if (auto label = InferLabelForElement(control_elements[i])) {
-        fields[i].set_label(std::move(label->label));
-        fields[i].set_label_source(label->source);
+  for (FormFieldData& field : fields) {
+    if (field.label().empty()) {
+      WebFormControlElement control =
+          GetFormControlByRendererId(field.renderer_id());
+      if (!control) {
+        continue;
+      }
+      if (std::optional<InferredLabel> label = InferLabelForElement(control)) {
+        field.set_label(std::move(label->label));
+        field.set_label_source(label->source);
       }
     }
-    fields[i].set_label(
-        std::move(fields[i].label()).substr(0, kMaxStringLength));
+    field.set_label(std::move(field.label()).substr(0, kMaxStringLength));
   }
 }
 
@@ -2061,6 +2065,53 @@ bool IsLikelyCaptchaIframe(const WebElement& element) {
 }
 #endif
 
+// Extracts the `FrameTokenWithPredecessor`s of `iframe_elements` and sets
+// `child_frames[i].predecessor` to the field index of the last field in
+// `fields` that precedes the `i`th child frame.
+std::vector<FrameTokenWithPredecessor> ExtractChildFrames(
+    const WebFormElement& form_element,
+    base::span<const WebElement> iframe_elements,
+    base::span<const FormFieldData> fields) {
+  std::vector<FrameTokenWithPredecessor> child_frames(iframe_elements.size());
+  // After each iteration, `iframe_elements[next_iframe]` is the first iframe
+  // that comes after `fields[i]`.
+  size_t next_iframe = 0;
+  for (size_t i = 0; i < fields.size() && next_iframe < iframe_elements.size();
+       ++i) {
+    // Finds the first frame that succeeds `fields[i]`.
+    WebNode field = WebNode::FromDomNodeId(*fields[i].renderer_id());
+    while (
+        next_iframe < iframe_elements.size() &&
+        !IsDOMPredecessor(field, iframe_elements[next_iframe], form_element)) {
+      ++next_iframe;
+    }
+    // The `i`th field is the last field that precedes the `next_iframe`th
+    // frame. It may also be the last field that precedes the `k`th frames for
+    // `k > next_iframe`; otherwise, if there are more fields before the `k`th
+    // frame, `child_frames[k].predecessor` will be updated in a later
+    // iteration.
+    for (size_t k = next_iframe; k < iframe_elements.size(); ++k) {
+      child_frames[k].predecessor = i;
+    }
+  }
+
+  // Extracts the frame tokens of `iframe_elements`.
+  for (auto [iframe_element, child_frame] :
+       std::views::zip(iframe_elements, child_frames)) {
+    WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
+    CHECK(iframe);
+    if (iframe->IsWebLocalFrame()) {
+      child_frame.token = LocalFrameToken(
+          iframe->ToWebLocalFrame()->GetLocalFrameToken().value());
+    } else {
+      CHECK(iframe->IsWebRemoteFrame());
+      child_frame.token = RemoteFrameToken(
+          iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
+    }
+  }
+  return child_frames;
+}
+
 std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebDocument& document,
     FormRendererId form_id,
@@ -2083,55 +2134,16 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   if (control_elements.size() > kMaxExtractableFields) {
     return std::nullopt;
   }
-  std::vector<WebElement> iframe_elements =
-      GetIframeElements(document, form_element);
 
-  if (control_elements.empty() && iframe_elements.empty()) {
-    return std::nullopt;
-  }
-
-  // Extracts fields from `control_elements` into `fields` and sets
-  // `child_frames[i].predecessor` to the field index of the last field that
-  // precedes the `i`th child frame.
-  //
-  // After each iteration, `iframe_elements[next_iframe]` is the first iframe
-  // that comes after `control_elements[i]`.
-  //
-  // After the loop,
-  // - `fields` is completely populated;
-  // - `child_frames` has the correct size and `child_frames[i].predecessor` is
-  //   set to the correct value, but `child_frames[i].token` is not initialized
-  //   yet.
+  // Extracts fields from `control_elements` into `fields`.
   std::vector<FormFieldData> fields;
-  std::vector<FrameTokenWithPredecessor> child_frames;
   fields.reserve(control_elements.size());
-  child_frames.resize(iframe_elements.size());
-  size_t next_iframe = 0;
   for (const WebFormControlElement& control_element : control_elements) {
     DCHECK(IsAccessible(control_element));
     DCHECK(IsAutofillableElement(control_element));
-
     fields.emplace_back();
     WebFormControlElementToFormField(form_element, control_element,
                                      &field_data_manager, &fields.back());
-
-    // Finds the last frame that precedes |control_element|.
-    while (next_iframe < iframe_elements.size() &&
-           !IsDOMPredecessor(control_element, iframe_elements[next_iframe],
-                             form_element)) {
-      ++next_iframe;
-    }
-    // The `next_frame`th frame precedes `control_element` and thus `fields[i]`,
-    // where `i` is the index of `control_element`. The frames after that, i.e.,
-    // the `k`th frames for `k > next_frame`, may also precede `fields[i]`; in
-    // case they do not, `child_frames[k].predecessor` will be updated in a
-    // later iteration.
-    for (size_t k = next_iframe; k < iframe_elements.size(); ++k) {
-      child_frames[k].predecessor = fields.size() - 1;
-    }
-    if (fields.size() > kMaxExtractableFields) {
-      return std::nullopt;
-    }
   }
 
   // Extracts field labels from the <label for="..."> tags.
@@ -2142,28 +2154,18 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   MatchLabelsAndFields(document, fields);
 
   // Infers field labels from other tags or <labels> without for="...".
-  InferLabelForElements(control_elements, fields);
+  InferLabelForElements(fields);
 
-  // Extracts the frame tokens of |iframe_elements|.
-  DCHECK_EQ(child_frames.size(), iframe_elements.size());
-  for (auto [iframe_element, child_frame] :
-       std::views::zip(iframe_elements, child_frames)) {
-    WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
-    if (iframe && iframe->IsWebLocalFrame()) {
-      child_frame.token = LocalFrameToken(
-          iframe->ToWebLocalFrame()->GetLocalFrameToken().value());
-    } else if (iframe && iframe->IsWebRemoteFrame()) {
-      child_frame.token = RemoteFrameToken(
-          iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
-    }
+  // Extracts child frames of `form_element` (or `document` if unowned) and
+  // computes their field predecessors in `fields`.
+  std::vector<WebElement> iframe_elements =
+      GetIframeElements(document, form_element);
+  std::vector<FrameTokenWithPredecessor> child_frames =
+      ExtractChildFrames(form_element, iframe_elements, fields);
+
+  if (fields.empty() && iframe_elements.empty()) {
+    return std::nullopt;
   }
-  // `WebFormControlElementToFormField()` triggers layout via
-  // `BoundsInWidget()`, which may synchronously detach frames that were alive
-  // when `iframe_elements` was filtered above.
-  std::erase_if(child_frames, [](const FrameTokenWithPredecessor& child_frame) {
-    return std::visit([](const auto& token) { return token.is_empty(); },
-                      child_frame.token);
-  });
 
   FormData form;
   if (!form_element) {
@@ -3105,9 +3107,8 @@ std::u16string GetAriaDescriptionForTesting(  // IN-TEST
 }
 
 void InferLabelForElementsForTesting(  // IN-TEST
-    base::span<const WebFormControlElement> control_elements,
-    std::vector<FormFieldData>& fields) {
-  InferLabelForElements(control_elements, fields);
+    base::span<FormFieldData> fields) {
+  InferLabelForElements(fields);
 }
 
 std::vector<WebFormControlElement> GetOwnedFormControlsForTesting(  // IN-TEST
