@@ -20,7 +20,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -97,7 +96,7 @@ class AccountPickerMediator implements ProfileDataCache.Observer {
         mListModel.clear();
 
         // Add an "existing account" row for each account
-        for (CoreAccountInfo account : accounts) {
+        for (AccountInfo account : accounts) {
             PropertyModel model =
                     ExistingAccountRowProperties.createModel(
                             mProfileDataCache.getById(account.getId()),

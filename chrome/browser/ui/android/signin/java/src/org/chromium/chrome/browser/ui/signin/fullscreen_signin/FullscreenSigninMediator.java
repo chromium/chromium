@@ -114,9 +114,9 @@ class FullscreenSigninMediator
     private boolean mInitialLoadCompleted;
 
     private @Nullable AccountPickerDialogCoordinator mDialogCoordinator;
-    private @Nullable CoreAccountInfo mSelectedAccount;
-    private @Nullable CoreAccountInfo mDefaultAccount;
-    private @Nullable CoreAccountInfo mAddedAccount;
+    private @Nullable AccountInfo mSelectedAccount;
+    private @Nullable AccountInfo mDefaultAccount;
+    private @Nullable AccountInfo mAddedAccount;
     // This field is used to save the added account email while the account info becomes available
     // on device for sign-in.
     private @Nullable String mPendingSelectedAccountEmail;
@@ -591,7 +591,7 @@ class FullscreenSigninMediator
     }
 
     @Override
-    public void onAccountSelected(CoreAccountInfo account) {
+    public void onAccountSelected(AccountInfo account) {
         // An account was selected in the account picker.
         if (mDefaultAccount != null && account.getId().equals(mDefaultAccount.getId())) {
             SigninMetricsUtils.logSigninFunnelEvent(
@@ -604,7 +604,7 @@ class FullscreenSigninMediator
     }
 
     /** Selects {@code account} and closes the account picker if it is open. */
-    private void selectAccount(CoreAccountInfo account) {
+    private void selectAccount(AccountInfo account) {
         if (mPendingSelectedAccountEmail != null) {
             // If the user manually selects an account before the pending selection is available in
             // the account list, clear the pending email to prevent it from overriding the user's
@@ -803,7 +803,7 @@ class FullscreenSigninMediator
 
     /** Performs sign-in after confirming account management with the user, if necessary. */
     private void checkAccountManagementAndSignIn(
-            CoreAccountInfo account,
+            AccountInfo account,
             @SigninAccessPoint int accessPoint,
             SigninFlowTimestampsLogger signinTimestampsLogger,
             SignInCallback signInCallback) {
@@ -863,7 +863,7 @@ class FullscreenSigninMediator
      * @param signInCallback The callback to be called after sign-in completes or aborts.
      */
     private void signOutThenSignInWithSelectedAccount(
-            CoreAccountInfo selectedAccount,
+            AccountInfo selectedAccount,
             @SigninAccessPoint int accessPoint,
             SigninFlowTimestampsLogger signinTimestampsLogger,
             SignInCallback signInCallback) {
@@ -960,7 +960,7 @@ class FullscreenSigninMediator
                 || mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
     }
 
-    private void setSelectedAccount(CoreAccountInfo account) {
+    private void setSelectedAccount(AccountInfo account) {
         mSelectedAccount = account;
         updateSelectedAccountData();
     }

@@ -100,8 +100,8 @@ public class AccountPickerBottomSheetMediator
     private final AccountManagerFacade mAccountManagerFacade;
     private final boolean mIsSeamlessSignin;
     private @Nullable Runnable mRequestDisplayBottomSheet;
-    private @Nullable CoreAccountInfo mSelectedAccount;
-    private @Nullable CoreAccountInfo mDefaultAccount;
+    private @Nullable AccountInfo mSelectedAccount;
+    private @Nullable AccountInfo mDefaultAccount;
 
     // This field is used to save the added account email while the account info becomes available
     // in AccountManagerFacade for sign-in.
@@ -116,7 +116,7 @@ public class AccountPickerBottomSheetMediator
     // Properties for metrics recording.
     private final AccountPickerDismissalLogger mDismissalLogger;
     private @Nullable SigninFlowTimestampsLogger mSigninTimestampsLogger;
-    private @Nullable CoreAccountInfo mAddedAccount;
+    private @Nullable AccountInfo mAddedAccount;
     private final @SigninAccessPoint int mSigninAccessPoint;
     private boolean mInitializedWithNoAccount;
     // TODO(crbug.com/328747528): The web sign-in specific logic should be moved out of the bottom
@@ -288,7 +288,7 @@ public class AccountPickerBottomSheetMediator
 
     /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
-    public void onAccountSelected(CoreAccountInfo account) {
+    public void onAccountSelected(AccountInfo account) {
         assert !mIsSeamlessSignin
                 : "Account selection is not supported in the seamless sign-in flow.";
         if (mPendingAddedAccountEmail != null) {
@@ -611,7 +611,7 @@ public class AccountPickerBottomSheetMediator
         mModel.set(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA, null);
     }
 
-    private void setSelectedAccount(CoreAccountInfo account) {
+    private void setSelectedAccount(AccountInfo account) {
         mSelectedAccount = account;
         final var profileData = mProfileDataCache.getById(account.getId());
         updateSelectedAccountData(profileData);
@@ -710,11 +710,9 @@ public class AccountPickerBottomSheetMediator
 
     void launchDeviceLockIfNeededAndSignIn() {
         if (DeviceInfo.isAutomotive()) {
-            var selectedAccountId =
-                    mSelectedAccount == null ? null : assertNonNull(mSelectedAccount).getId();
             mDeviceLockActivityLauncher.launchDeviceLockActivity(
                     mActivity,
-                    selectedAccountId,
+                    AccountInfo.getIdFrom(mSelectedAccount),
                     /* requireDeviceLockReauthentication= */ true,
                     mWindowAndroid,
                     (resultCode, data) -> {
@@ -818,7 +816,7 @@ public class AccountPickerBottomSheetMediator
             mSigninManager.setUserAcceptedAccountManagement(true);
         }
 
-        CoreAccountInfo selectedAccount = mSelectedAccount;
+        AccountInfo selectedAccount = mSelectedAccount;
         mIsSigningIn = true;
         mSigninManager.signin(
                 selectedAccount,
@@ -845,7 +843,7 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void handlePostSigninResult(
-            CoreAccountInfo signedInAccount, @PostSigninOperationResult int result) {
+            AccountInfo signedInAccount, @PostSigninOperationResult int result) {
         @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
         assert viewState == ViewState.SIGNIN_IN_PROGRESS;
 

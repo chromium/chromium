@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ItemType;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -29,9 +29,9 @@ public class AccountPickerCoordinator {
         /**
          * Notifies that the user has selected an account.
          *
-         * @param coreAccountInfo The selected account.
+         * @param accountInfo The selected account.
          */
-        void onAccountSelected(CoreAccountInfo coreAccountInfo);
+        void onAccountSelected(AccountInfo accountInfo);
 
         /** Notifies when the user clicked the "add account" button. */
         void addAccount();
