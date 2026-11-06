@@ -442,6 +442,7 @@ public class TabListMediatorUnitTest {
     private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
             ObservableSuppliers.createMonotonic();
 
+    private TabListDataObserver mDataObserver;
     private Tab mTab1;
     private Tab mTab2;
     private TabListMediator mMediator;
@@ -7781,7 +7782,7 @@ public class TabListMediatorUnitTest {
 
         mMediator.destroy();
 
-        verify(mTabListDataProvider).removeObserver(mTabListDataObserverCaptor.getValue());
+        verify(mTabListDataProvider).removeObserver(mDataObserver);
     }
 
     @Test
@@ -7802,9 +7803,7 @@ public class TabListMediatorUnitTest {
         setUpProviderMediator();
         mMediator.resetWithListOfTabs(
                 List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
         mModelList.add(0, new ListItem(UiType.PRICE_MESSAGE, createMessageCardModel()));
         assertEquals(3, mModelList.size());
         clearInvocations(mTabListDataProvider);
@@ -7848,7 +7847,7 @@ public class TabListMediatorUnitTest {
     public void testDataProvider_OnDataReset_NotTracking_Ignored() {
         setUpProviderMediator();
 
-        mTabListDataObserverCaptor.getValue().onDataReset(List.of(createTabItem(TAB1_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID)));
 
         assertEquals(0, mModelList.size());
     }
@@ -7859,13 +7858,9 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(
                 List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
 
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(createTabItem(TAB2_ID), createTabItem(TAB1_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB2_ID), createTabItem(TAB1_ID)));
 
-        assertEquals(2, mModelList.size());
-        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
-        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertTabIds(TAB2_ID, TAB1_ID);
     }
 
     @Test
@@ -7873,15 +7868,12 @@ public class TabListMediatorUnitTest {
         setUpProviderMediator();
         mMediator.resetWithListOfTabs(
                 List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(createTabItem(TAB2_ID), createTabItem(TAB1_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB2_ID), createTabItem(TAB1_ID)));
 
         // A second snapshot replaces the previous tab cards rather than appending to them.
-        mTabListDataObserverCaptor.getValue().onDataReset(List.of(createTabItem(TAB1_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID)));
 
-        assertEquals(1, mModelList.size());
-        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertTabIds(TAB1_ID);
     }
 
     @Test
@@ -7895,9 +7887,7 @@ public class TabListMediatorUnitTest {
         TabGroupItem groupItem =
                 new TabGroupItem(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true);
 
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(groupItem, createTabItem(TAB2_ID)));
+        mDataObserver.onDataReset(List.of(groupItem, createTabItem(TAB2_ID)));
 
         assertEquals(2, mModelList.size());
         PropertyModel groupModel = mModelList.get(0).model;
@@ -7913,9 +7903,7 @@ public class TabListMediatorUnitTest {
                 List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
         mModelList.add(0, new ListItem(UiType.PRICE_MESSAGE, createMessageCardModel()));
 
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
 
         assertEquals(3, mModelList.size());
         assertEquals(MESSAGE, mModelList.get(0).model.get(CARD_TYPE));
@@ -7929,12 +7917,10 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(
                 List.of(mTab1, mTab2), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
         mModelList.add(0, new ListItem(UiType.PRICE_MESSAGE, createMessageCardModel()));
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
 
         // Re-resetting preserves the message card and keeps tabs after it.
-        mTabListDataObserverCaptor.getValue().onDataReset(List.of(createTabItem(TAB2_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB2_ID)));
 
         assertEquals(2, mModelList.size());
         assertEquals(MESSAGE, mModelList.get(0).model.get(CARD_TYPE));
@@ -7949,13 +7935,10 @@ public class TabListMediatorUnitTest {
         int missingTabId = 99999;
         when(mTabModel.getTabById(missingTabId)).thenReturn(null);
 
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(createTabItem(missingTabId), createTabItem(TAB1_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(missingTabId), createTabItem(TAB1_ID)));
 
         // The tab missing from the TabModel is skipped.
-        assertEquals(1, mModelList.size());
-        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertTabIds(TAB1_ID);
     }
 
     @Test
@@ -7968,13 +7951,10 @@ public class TabListMediatorUnitTest {
         TabGroupItem emptyGroupItem =
                 new TabGroupItem(emptyGroupId, /* isSelected= */ false, /* isCollapsed= */ true);
 
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(emptyGroupItem, createTabItem(TAB1_ID)));
+        mDataObserver.onDataReset(List.of(emptyGroupItem, createTabItem(TAB1_ID)));
 
         // The group with no tabs in the TabModel is skipped.
-        assertEquals(1, mModelList.size());
-        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertTabIds(TAB1_ID);
     }
 
     @Test
@@ -7993,13 +7973,8 @@ public class TabListMediatorUnitTest {
         when(tab3.isIncognito()).thenReturn(false);
         clearInvocations(mIdentityServicesProvider);
 
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(
-                        List.of(
-                                createTabItem(TAB1_ID),
-                                createTabItem(TAB2_ID),
-                                createTabItem(TAB3_ID)));
+        mDataObserver.onDataReset(
+                List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID), createTabItem(TAB3_ID)));
 
         assertThat(mModelList.size(), equalTo(3));
         for (int i = 0; i < 3; i++) {
@@ -8042,9 +8017,7 @@ public class TabListMediatorUnitTest {
         when(controller2.getUiTabState()).thenReturn(state2);
         clearInvocations(controller1, controller2);
 
-        mTabListDataObserverCaptor
-                .getValue()
-                .onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
+        mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID), createTabItem(TAB2_ID)));
 
         // Queried once per tab during model creation, but not again in addObserversForTab().
         verify(controller1, times(1)).getUiTabState();
@@ -8080,6 +8053,7 @@ public class TabListMediatorUnitTest {
         mMediator.initWithNative(mProfile);
 
         verify(mTabListDataProvider).addObserver(mTabListDataObserverCaptor.capture());
+        mDataObserver = mTabListDataObserverCaptor.getValue();
     }
 
     private static TabItem createTabItem(int tabId) {
@@ -8088,6 +8062,14 @@ public class TabListMediatorUnitTest {
                 /* isSelected= */ false,
                 /* isPinned= */ false,
                 /* isMultiSelected= */ false);
+    }
+
+    private void assertTabIds(Integer... expected) {
+        List<Integer> actual = new ArrayList<>();
+        for (ListItem item : mModelList) {
+            actual.add(item.model.get(TabProperties.TAB_ID));
+        }
+        assertEquals(List.of(expected), actual);
     }
 
     private static PropertyModel createMessageCardModel() {
