@@ -272,6 +272,28 @@ TEST_F(SessionServiceTest, Basic) {
   helper_.AssertNavigationEquals(nav1, tab->navigations[0]);
 }
 
+// Verifies that the platform session id is kept when the session file is
+// rebuilt from the current browsers (which happens every kWritesPerReset
+// commands).
+TEST_F(SessionServiceTest, PlatformSessionIdSurvivesReset) {
+  service()->SetPlatformSessionIdForTesting("some-platform-session-id");
+  helper_.SaveNow();
+
+  service()->ResetFromCurrentBrowsers();
+  EXPECT_TRUE(helper_.HasPendingReset());
+  // The test has no browsers. Schedule a command so that the reset writes a
+  // new session file in any case.
+  service()->SetWindowType(SessionID::NewUnique(),
+                           BrowserWindowInterface::TYPE_NORMAL);
+  helper_.SaveNow();
+  EXPECT_FALSE(helper_.HasPendingReset());
+
+  std::vector<std::unique_ptr<sessions::SessionWindow>> unused_windows;
+  std::string platform_session_id;
+  ReadWindows(&unused_windows, nullptr, &platform_session_id, nullptr);
+  EXPECT_EQ("some-platform-session-id", platform_session_id);
+}
+
 // Make sure we persist post entries.
 TEST_F(SessionServiceTest, PersistPostData) {
   SessionID tab_id = SessionID::NewUnique();

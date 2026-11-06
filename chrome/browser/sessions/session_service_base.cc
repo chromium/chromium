@@ -816,6 +816,13 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
   CHECK(is_saving_enabled_, base::NotFatalUntil::M163);
+  // The platform session id is only written once, when the platform session is
+  // initialized, so it has to be carried over when the commands are rebuilt.
+  // Otherwise the next launch can't restore the platform session.
+  if (platform_session_id_.has_value()) {
+    command_storage_manager()->AppendRebuildCommand(
+        sessions::CreateSetPlatformSessionIdCommand(*platform_session_id_));
+  }
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, tab_to_available_range,
        windows_to_track](BrowserWindowInterface* browser) {
