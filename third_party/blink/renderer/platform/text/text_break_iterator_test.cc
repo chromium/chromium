@@ -6,6 +6,8 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -392,6 +394,43 @@ TEST_F(TextBreakIteratorTest, HyphenMinusBeforeHighLatin) {
   MatchLineBreaks({6, 11});
   SetTestString("Lorem-èpsum");
   MatchLineBreaks({6, 11});
+}
+
+TEST_P(BreakTypeTest, RightSingleQuotationMark) {
+  // The fast path for U+2019 should not change break opportunities next to it,
+  // for all characters in the fast table range and some CJK characters, in
+  // locales and strictness values that use different ICU rules.
+  StringBuilder builder;
+  for (UChar ch = '!'; ch <= 0xFF; ++ch) {
+    builder.Append(ch);
+    builder.Append(uchar::kRightSingleQuotationMark);
+  }
+  builder.Append(String(u"あ’一’、’。’，’"));
+  const String text = builder.ToString();
+
+  auto break_positions = [&](const char* locale, LineBreakStrictness strictness,
+                             bool enable_fast_path) {
+    ScopedBreakIteratorRightSingleQuotationMarkForTest scoped_feature(
+        enable_fast_path);
+    LazyLineBreakIterator break_iterator(text, AtomicString(locale));
+    break_iterator.SetBreakType(GetParam());
+    break_iterator.SetStrictness(strictness);
+    Vector<wtf_size_t> positions;
+    for (wtf_size_t i = 0; i <= text.length(); ++i) {
+      i = break_iterator.NextBreakOpportunity(i);
+      positions.push_back(i);
+    }
+    return positions;
+  };
+  for (const char* locale : {"", "zh", "ja"}) {
+    for (LineBreakStrictness strictness :
+         {LineBreakStrictness::kDefault, LineBreakStrictness::kNormal,
+          LineBreakStrictness::kStrict, LineBreakStrictness::kLoose}) {
+      EXPECT_EQ(break_positions(locale, strictness, true),
+                break_positions(locale, strictness, false))
+          << locale << " " << static_cast<int>(strictness);
+    }
+  }
 }
 
 TEST_F(TextBreakIteratorTest, WordBreakSwedish) {

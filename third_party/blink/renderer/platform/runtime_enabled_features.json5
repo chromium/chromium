@@ -1032,6 +1032,11 @@
       status: "test",
     },
     {
+      // crbug.com/41485013
+      name: "BreakIteratorRightSingleQuotationMark",
+      status: "stable",
+    },
+    {
       name: "BrowserInitiatedAutomaticPictureInPicture",
       public: true,
       status: "experimental",

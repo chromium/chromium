@@ -29,6 +29,7 @@
 #include <array>
 
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/break_iterator_data_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -251,6 +252,24 @@ struct LazyLineBreakIterator::Context {
         return FastBreakResult::kNoBreak;
       }
       return FastBreakResult::kCanBreak;
+    }
+
+    // U+2019 is common as an apostrophe in English. UAX#14 LB19 and LB19a
+    // prohibit breaks around it unless next to East Asian characters, none of
+    // which are in the fast table range. U+0085 NEL requires a break after it.
+    if constexpr (sizeof(CharacterType) > 1) {
+      static_assert(kFastLineBreakMaxChar <= 0xFF);
+      if (RuntimeEnabledFeatures::
+              BreakIteratorRightSingleQuotationMarkEnabled()) {
+        if (ch == uchar::kRightSingleQuotationMark) {
+          if (last_ch <= kFastLineBreakMaxChar && last_ch != uchar::kNextLine) {
+            return FastBreakResult::kNoBreak;
+          }
+        } else if (last_ch == uchar::kRightSingleQuotationMark &&
+                   ch <= kFastLineBreakMaxChar) {
+          return FastBreakResult::kNoBreak;
+        }
+      }
     }
 
     // Otherwise defer to the Unicode algorithm.
