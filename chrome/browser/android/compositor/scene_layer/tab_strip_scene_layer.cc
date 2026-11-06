@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/nine_patch_layer.h"
@@ -80,6 +81,8 @@ class TabStripRootLayer : public cc::slim::Layer {
           base::TimeTicks presentation_time =
               details.presentation_feedback.timestamp;
           if (presentation_time >= activity_creation_time) {
+            TRACE_EVENT_INSTANT("ui", "TabStripNewTabButtonFirstPaint",
+                                presentation_time);
             base::UmaHistogramMediumTimes(
                 "Android.TabStrip.NewTabButton.ActivityCreationToFirstPaint",
                 presentation_time - activity_creation_time);

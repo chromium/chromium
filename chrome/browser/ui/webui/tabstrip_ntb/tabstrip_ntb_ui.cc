@@ -48,10 +48,10 @@ class TabStripServiceUserData
   ~TabStripServiceUserData() override = default;
 
   // Connects `service_end` to the service, or holds it until there is one.
+  // Replaces any unconsumed pending end if the WebUI is recreated (e.g., on
+  // renderer crash recovery) before a service is attached.
   void Connect(
       mojo::PendingReceiver<tabs_api::mojom::TabStripService> service_end) {
-    CHECK(!pending_service_end_.is_valid())
-        << "TabStripServiceUserData already has a pending service end";
     pending_service_end_ = std::move(service_end);
     MaybeConnect();
   }

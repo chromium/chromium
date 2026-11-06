@@ -35,6 +35,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -964,11 +965,14 @@ public class StripLayoutHelperManager
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
-        assert mTabStripTreeProvider != null;
-        mResourceManager = resourceManager;
+        try (TraceEvent e =
+                TraceEvent.scoped("StripLayoutHelperManager.getUpdatedSceneOverlayTree")) {
+            assert mTabStripTreeProvider != null;
+            mResourceManager = resourceManager;
 
-        pushAndUpdateStrip(mSceneLayerYOffset, mSceneLayerVisibleHeight);
-        return mTabStripTreeProvider;
+            pushAndUpdateStrip(mSceneLayerYOffset, mSceneLayerVisibleHeight);
+            return mTabStripTreeProvider;
+        }
     }
 
     private void pushAndUpdateStrip(float yOffsetDp, float visibleHeightDp) {
@@ -1019,7 +1023,7 @@ public class StripLayoutHelperManager
         // TabModelSelectorImpl#onNativeLibraryReady before #setTabModelSelector is called.
         assert tabModel.getProfile() != null;
         mNtbWebUiCoordinator =
-                new NtbWebUiCoordinator(
+                NtbWebUiCoordinator.create(
                         mWindowAndroid,
                         tabModel,
                         (ControlContainer) mControlContainer,

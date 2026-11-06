@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -97,6 +98,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -105,6 +107,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -254,7 +257,7 @@ public class StripLayoutHelperManagerTest {
         when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
         mNtbWebUiNativePtr = JniUniquePtr.createForTesting(1L);
         NtbWebUiCoordinatorJni.setInstanceForTesting(mNtbWebUiCoordinatorJniMock);
-        when(mNtbWebUiCoordinatorJniMock.init(any(), anyInt(), anyLong()))
+        when(mNtbWebUiCoordinatorJniMock.init(any(), any(), anyLong()))
                 .thenReturn(mNtbWebUiNativePtr);
         when(mNtbWebUiCoordinatorJniMock.getWebContents(mNtbWebUiNativePtr))
                 .thenReturn(mWebContents);
@@ -291,6 +294,7 @@ public class StripLayoutHelperManagerTest {
         TabStripSceneLayer.setTestFlag(false);
         CompositorAnimationHandler.setTestingMode(false);
         DeviceInfo.resetIsDesktopForTesting();
+        ProfileManager.resetForTesting();
     }
 
     private void initializeTest() {
@@ -1574,11 +1578,29 @@ public class StripLayoutHelperManagerTest {
     public void testNtbWebUiCoordinator_Lifecycle() {
         mStripLayoutHelperManager.destroy();
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+
+        ActivityProfileProvider profileProviderSupplier =
+                new ActivityProfileProvider(mLifecycleDispatcher);
+        WebUiPreloadManager.maybePreload(
+                mLifecycleDispatcher,
+                mWindowAndroid,
+                profileProviderSupplier,
+                SupportedProfileType.REGULAR,
+                /* isTablet= */ true,
+                123L);
+        verify(mNtbWebUiCoordinatorJniMock, never()).init(any(), any(), anyLong());
+
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        verify(mNtbWebUiCoordinatorJniMock).init(any(), eq(mProfile), eq(123L));
+        verify(mNtbWebUiCoordinatorJniMock, never()).setTabModel(any(), anyInt());
+        assertEquals(0, mControlContainer.getChildCount());
+
         initializeTest();
 
         NtbWebUiCoordinator coordinator =
                 mStripLayoutHelperManager.getNtbWebUiCoordinatorForTesting();
-        verify(mNtbWebUiCoordinatorJniMock).init(eq(coordinator), eq(1), eq(0L));
+        verify(mNtbWebUiCoordinatorJniMock).init(eq(coordinator), eq(mProfile), eq(123L));
+        verify(mNtbWebUiCoordinatorJniMock).setTabModel(mNtbWebUiNativePtr, 1);
         assertEquals(mNtbWebUiNativePtr, mStripLayoutHelperManager.getNtbWebUiNativePtr());
         assertEquals(1, mControlContainer.getChildCount());
         assertTrue(AccessibilityState.getListeners().contains(coordinator));

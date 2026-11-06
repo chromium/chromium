@@ -59,8 +59,9 @@ TEST_F(TabStripNtbWebUiHostTest, ResetOnTabModelRemovedUnblocksOtrDestruction) {
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   auto otr_tab_model = std::make_unique<OwningTestTabModel>(otr_profile);
 
-  TabStripNtbWebUiHost host(otr_tab_model.get(), base::TimeTicks(),
+  TabStripNtbWebUiHost host(otr_profile, base::TimeTicks(),
                             /*java_coordinator=*/nullptr);
+  host.SetTabModel(otr_tab_model.get());
   ASSERT_NE(nullptr, host.GetWebContents());
   content::WebContentsDestroyedWatcher watcher(host.GetWebContents());
 
@@ -93,8 +94,9 @@ TEST_F(TabStripNtbWebUiHostTest,
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   auto otr_tab_model = std::make_unique<OwningTestTabModel>(otr_profile);
 
-  TabStripNtbWebUiHost host(otr_tab_model.get(), base::TimeTicks(),
+  TabStripNtbWebUiHost host(otr_profile, base::TimeTicks(),
                             /*java_coordinator=*/nullptr);
+  host.SetTabModel(otr_tab_model.get());
   ASSERT_NE(nullptr, host.GetWebContents());
   content::WebContentsDestroyedWatcher watcher(host.GetWebContents());
 
@@ -112,13 +114,29 @@ TEST_F(TabStripNtbWebUiHostTest,
   otr_tab_model.reset();
 }
 
+TEST_F(TabStripNtbWebUiHostTest,
+       ResetOnProfileWillBeDestroyedBeforeSetTabModelUnblocksOtrDestruction) {
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  TabStripNtbWebUiHost host(otr_profile, base::TimeTicks(),
+                            /*java_coordinator=*/nullptr);
+  ASSERT_NE(nullptr, host.GetWebContents());
+  content::WebContentsDestroyedWatcher watcher(host.GetWebContents());
+
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile);
+  EXPECT_TRUE(watcher.IsDestroyed());
+  EXPECT_EQ(nullptr, host.GetWebContents());
+  EXPECT_EQ(nullptr, host.GetLayer());
+  EXPECT_FALSE(profile()->HasPrimaryOTRProfile());
+}
+
 TEST_F(TabStripNtbWebUiHostTest, RecordsActivityCreationToFirstPaintOnce) {
   base::HistogramTester histogram_tester;
-  OwningTestTabModel tab_model(profile());
   const base::TimeTicks activity_creation_time =
       base::TimeTicks() + base::Seconds(10);
 
-  TabStripNtbWebUiHost host(&tab_model, activity_creation_time,
+  TabStripNtbWebUiHost host(profile(), activity_creation_time,
                             /*java_coordinator=*/nullptr);
   host.OnFirstContentfulPaintInPrimaryMainFrame(activity_creation_time +
                                                 base::Milliseconds(125));
@@ -136,8 +154,7 @@ TEST_F(TabStripNtbWebUiHostTest, RecordsActivityCreationToFirstPaintOnce) {
 TEST_F(TabStripNtbWebUiHostTest, RecreatesRendererWhenKilled) {
   base::test::ScopedFeatureList feature_list(
       chrome::android::kAndroidNewTabButtonTabstripWebUI);
-  OwningTestTabModel tab_model(profile());
-  TabStripNtbWebUiHost host(&tab_model, base::TimeTicks(),
+  TabStripNtbWebUiHost host(profile(), base::TimeTicks(),
                             /*java_coordinator=*/nullptr);
   content::WebContents* web_contents = host.GetWebContents();
   ASSERT_NE(nullptr, web_contents);
@@ -175,8 +192,7 @@ TEST_F(TabStripNtbWebUiHostTest, RecreatesRendererWhenKilled) {
 TEST_F(TabStripNtbWebUiHostTest, RateLimitsRepeatedRendererCrashes) {
   base::test::ScopedFeatureList feature_list(
       chrome::android::kAndroidNewTabButtonTabstripWebUI);
-  OwningTestTabModel tab_model(profile());
-  TabStripNtbWebUiHost host(&tab_model, base::TimeTicks(),
+  TabStripNtbWebUiHost host(profile(), base::TimeTicks(),
                             /*java_coordinator=*/nullptr);
   content::WebContents* web_contents = host.GetWebContents();
   ASSERT_NE(nullptr, web_contents);

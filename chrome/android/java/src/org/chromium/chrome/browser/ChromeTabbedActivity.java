@@ -131,6 +131,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
+import org.chromium.chrome.browser.compositor.overlays.strip.WebUiPreloadManager;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
@@ -3718,6 +3719,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
         assumeNonNull(getStartupMetricsTracker()).registerPaintPreviewObserver(paintPreviewHelper);
         maybeRegisterHomeModules();
+        WebUiPreloadManager.maybePreload(
+                getLifecycleDispatcher(),
+                getWindowAndroid(),
+                getProfileProviderSupplier(),
+                getSupportedProfileType(),
+                isTablet(),
+                assumeNonNull(getStartupMetricsTracker()).getActivityStartTimeMs());
     }
 
     private void maybeRegisterHomeModules() {

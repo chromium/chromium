@@ -44,13 +44,17 @@ class TabStripNtbWebUiHost
       public ProfileObserver,
       public TabModelListObserver {
  public:
-  TabStripNtbWebUiHost(TabModel* tab_model,
+  TabStripNtbWebUiHost(Profile* profile,
                        base::TimeTicks activity_creation_time,
                        const base::android::JavaRef<jobject>& java_coordinator);
   TabStripNtbWebUiHost(const TabStripNtbWebUiHost&) = delete;
   TabStripNtbWebUiHost& operator=(const TabStripNtbWebUiHost&) = delete;
   ~TabStripNtbWebUiHost() override;
 
+  // Binds the hosted WebContents to |tab_model| by creating and attaching its
+  // TabStripService. Must be called at most once, with a TabModel belonging to
+  // the same Profile passed at construction.
+  void SetTabModel(TabModel* tab_model);
   void Resize(int32_t width_px, int32_t height_px);
   void SetButtonVisible(bool visible);
   // Returns the hosted WebContents. It stays owned by this object.
@@ -88,9 +92,9 @@ class TabStripNtbWebUiHost
   void LoadWebUi();
   void Reset();
 
-  // The TabModel the service operates on. Caller is responsible for calling
-  // Reset when the TabModel is destroyed.
-  raw_ptr<TabModel> tab_model_;
+  // The TabModel the service operates on. Null until SetTabModel() is called
+  // or after Reset().
+  raw_ptr<TabModel> tab_model_ = nullptr;
   base::TimeTicks activity_creation_time_;
   bool recorded_first_paint_ = false;
   // How many times the NTB WebUI renderer has exited. Cleared after

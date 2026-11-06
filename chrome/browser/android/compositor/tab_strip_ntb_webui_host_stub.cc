@@ -6,6 +6,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/notreached.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -23,9 +24,14 @@ class TabStripNtbWebUiHost {
 
 static jni_zero::JniUniquePtr<TabStripNtbWebUiHost>
 JNI_NtbWebUiCoordinator_Init(const base::android::JavaRef<jobject>& caller,
-                             int32_t session_id,
+                             Profile* profile,
                              int64_t activity_creation_uptime_ms) {
   return nullptr;
+}
+
+static void JNI_NtbWebUiCoordinator_SetTabModel(TabStripNtbWebUiHost* host,
+                                                int32_t session_id) {
+  NOTREACHED();
 }
 
 }  // namespace android
