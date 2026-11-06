@@ -631,6 +631,7 @@ PermissionChangeInfo GetChangeInfo(bool is_used,
   }
 }
 
+// LINT.IfChange(PermissionTypes)
 std::string GetPermissionStringForUma(
     ContentSettingsType content_setting_type) {
   switch (content_setting_type) {
@@ -707,6 +708,7 @@ std::string GetPermissionStringForUma(
                << PermissionUtil::GetPermissionString(content_setting_type)
                << " not accounted for";
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PermissionTypes)
 
 const char* GetPredictionGrantLikelihoodString(
     PermissionUiSelector::PredictionGrantLikelihood likelihood) {

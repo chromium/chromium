@@ -251,14 +251,19 @@ chromium-metrics-reviews@google.com.
   <variant name="VideoCapture"/>
 </variants>
 
+<!-- LINT.IfChange(PermissionTypes) -->
+
 <variants name="PermissionTypes">
   <variant name=".AR" summary="AR permission actions"/>
   <variant name=".AudioCapture" summary="Microphone permission actions"/>
   <variant name=".CameraPanTiltZoom"
       summary="Camera movements permission actions"/>
+  <variant name=".CapturedSurfaceControl"
+      summary="Captured Surface Control permission actions"/>
   <variant name=".ClipboardReadWrite" summary="Clipboard permission actions"/>
   <variant name=".DisplayCapture" summary="Display capture permission actions"/>
   <variant name=".Geolocation" summary="Geolocation permission actions"/>
+  <variant name=".HandTracking" summary="Hand tracking permission actions"/>
   <variant name=".IdleDetection" summary="Idle detection permission actions"/>
   <variant name=".KeyboardAndPointerLock"
       summary="Keyboard and pointer lock permission"/>
@@ -277,15 +282,19 @@ chromium-metrics-reviews@google.com.
   <variant name=".ProtectedMedia" summary="Protected media permission actions"/>
   <variant name=".PushMessaging" summary="Push messaging permission actions"/>
   <variant name=".Sensors" summary="Sensors permission actions"/>
+  <variant name=".SmartCard" summary="Smart card permission actions"/>
   <variant name=".StorageAccess"
       summary="Storage Access API permission actions"/>
   <variant name=".VideoCapture" summary="Camera permission actions"/>
   <variant name=".VR" summary="VR permission actions"/>
   <variant name=".WebAppInstallation"
       summary="Web app installation permission actions"/>
+  <variant name=".WebPrinting" summary="Web Printing permission actions"/>
   <variant name=".WindowPlacement"
       summary="Window Management permission actions"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.cc:PermissionTypes) -->
 
 <variants name="PermissionTypesSupportPermissionsPolicy">
   <variant name="AR"/>
