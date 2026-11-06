@@ -6,6 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,6 +18,17 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
+
+// Swizzled in for -[NSApplication currentEvent] to simulate a hit test made
+// when there is no current event.
+@interface OmniboxEverywhereNilCurrentEventDonor : NSObject
+@end
+
+@implementation OmniboxEverywhereNilCurrentEventDonor
+- (NSEvent*)currentEvent {
+  return nil;
+}
+@end
 
 namespace omnibox_everywhere {
 namespace {
@@ -149,6 +161,21 @@ TEST_F(MacWindowUtilTest, NonClientHitTestAllowsHoverInDraggableRegion) {
   EXPECT_TRUE(ShouldTreatCurrentEventAsDraggableOnMac());
   EXPECT_EQ(delegate.NonClientHitTest(gfx::Point(50, 50)), HTCAPTION);
   EXPECT_EQ(delegate.NonClientHitTest(gfx::Point(300, 300)), HTNOWHERE);
+}
+
+TEST_F(MacWindowUtilTest, NonClientHitTestIgnoresMissingCurrentEvent) {
+  OmniboxEverywhereWidgetDelegate delegate(/*template_url_service=*/nullptr);
+  SkRegion region;
+  region.op(SkIRect::MakeXYWH(0, 0, 200, 100), SkRegion::kUnion_Op);
+  delegate.SetDraggableRegion(region);
+
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      [NSApplication class], [OmniboxEverywhereNilCurrentEventDonor class],
+      @selector(currentEvent));
+  ASSERT_FALSE([NSApp currentEvent]);
+
+  EXPECT_FALSE(ShouldTreatCurrentEventAsDraggableOnMac());
+  EXPECT_EQ(delegate.NonClientHitTest(gfx::Point(50, 50)), HTNOWHERE);
 }
 
 }  // namespace

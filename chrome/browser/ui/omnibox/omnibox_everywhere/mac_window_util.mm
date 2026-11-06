@@ -50,7 +50,7 @@ bool ShouldTreatCurrentEventAsDraggableOnMac() {
   // TODO(b/581982251): Move away from the HTCAPTION approach for dragging.
   NSEvent* event = [NSApp currentEvent];
   if (!event) {
-    return true;
+    return false;
   }
   return [event type] == NSEventTypeLeftMouseDown &&
          ([event modifierFlags] & NSEventModifierFlagControl) == 0;
