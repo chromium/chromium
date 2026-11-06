@@ -158,10 +158,13 @@ bool ChromeClient::OpenJavaScriptPrompt(LocalFrame* frame,
 void ChromeClient::MouseDidMoveOverElement(LocalFrame& frame,
                                            const HitTestLocation& location,
                                            const HitTestResult& result) {
-  if (!result.GetScrollbar() && result.InnerNode() &&
-      result.InnerNode()->GetDocument().IsDNSPrefetchEnabled()) {
+  LocalFrame* hovered_frame = result.InnerNodeFrame();
+  if (!result.GetScrollbar() && hovered_frame &&
+      hovered_frame->GetDocument()->IsDNSPrefetchEnabled()) {
+    // The hovered node may belong to a descendant frame with different network
+    // restrictions from the frame handling the mouse event.
     WebPrescientNetworking* web_prescient_networking =
-        frame.PrescientNetworking();
+        hovered_frame->PrescientNetworking();
     if (web_prescient_networking) {
       web_prescient_networking->PrefetchDNS(result.AbsoluteLinkURL());
     }
