@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -38,6 +39,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -385,6 +387,8 @@ public class NotificationManagerTest {
         Intent dismissIntent = new Intent(NotificationManager.NOTIFICATION_ACTION_DISMISS);
         dismissIntent.putExtra(NotificationManager.NOTIFICATION_GUID_EXTRA, GUID);
         NotificationManager.handleIntent(dismissIntent);
+        verify(mNotificationManagerProxy)
+                .cancel(eq(NotificationConstants.GROUP_SEND_TAB_TO_SELF), anyInt());
         verify(mMetricsMock).recordNotificationStatus(NotificationStatus.DISMISSED);
 
         Intent timeoutIntent = new Intent(NotificationManager.NOTIFICATION_ACTION_TIMEOUT);

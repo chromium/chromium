@@ -40,6 +40,11 @@ public class NotificationSharedPrefManagerTest {
         ActiveNotification unVersioned = new ActiveNotification(50, "guid25");
         Assert.assertEquals(
                 "1_50_guid25", NotificationSharedPrefManager.serializeNotification(unVersioned));
+
+        ActiveNotification underscoreGuid = new ActiveNotification(50, "test_guid");
+        Assert.assertEquals(
+                "1_50_test_guid",
+                NotificationSharedPrefManager.serializeNotification(underscoreGuid));
     }
 
     @Test
@@ -59,10 +64,16 @@ public class NotificationSharedPrefManagerTest {
     public void testDeserialization() {
         assertNotificationEquals(100, 50, "guid25", deserialize("100_50_guid25"));
 
-        // Too many tokens
-        Assert.assertNull(deserialize("100_12_12_12_guid"));
+        // GUIDs containing underscores
+        assertNotificationEquals(1, 50, "test_guid", deserialize("1_50_test_guid"));
+        assertNotificationEquals(100, 12, "12_12_guid", deserialize("100_12_12_12_guid"));
+        assertNotificationEquals(1, 2, "guid_", deserialize("1_2_guid_"));
+        assertNotificationEquals(1, 2, "_guid", deserialize("1_2__guid"));
+        assertNotificationEquals(1, 2, "a_b_c_d", deserialize("1_2_a_b_c_d"));
 
         // Not enough tokens
+        Assert.assertNull(deserialize(""));
+        Assert.assertNull(deserialize("100"));
         Assert.assertNull(deserialize("100_guid"));
 
         // Malformed version
@@ -71,8 +82,7 @@ public class NotificationSharedPrefManagerTest {
         // Malformed notificationId
         Assert.assertNull(deserialize("100_notificationId_guid"));
 
-        // Trailing tokens
-        assertNotificationEquals(1, 2, "guid", deserialize("1_2_guid_"));
+        // Empty tokens (including empty GUID)
         Assert.assertNull(deserialize("_2_guid"));
         Assert.assertNull(deserialize("1__guid"));
         Assert.assertNull(deserialize("1_2_"));

@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Class responsible for tracking the SendTabToSelf related notifications currently being displayed
@@ -85,15 +84,15 @@ class NotificationSharedPrefManager {
     @VisibleForTesting
     static @Nullable ActiveNotification deserializeNotification(String notificationString) {
         try {
-            String[] tokens = notificationString.split("_");
-            if (tokens.length != 3) {
+            String[] tokens = notificationString.split("_", /* limit= */ 3);
+            // A positive split limit preserves trailing empty strings and any '_' inside the
+            // GUID, so reject an empty GUID token explicitly.
+            if (tokens.length != 3 || tokens[2].isEmpty()) {
                 return null;
             }
-            // We can safely access all three tokens because trailing empty strings are discarded
-            // when tokenizing thereby guaranteeing that the guid is available and non-null.
             return new ActiveNotification(
                     Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]), tokens[2]);
-        } catch (NumberFormatException | PatternSyntaxException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
     }
