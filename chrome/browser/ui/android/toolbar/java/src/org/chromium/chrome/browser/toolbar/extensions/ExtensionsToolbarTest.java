@@ -99,7 +99,7 @@ import java.util.concurrent.TimeoutException;
 /** End-to-end test for the extension toolbar on Desktop Android. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.TEST_TYPE})
+@CommandLineFlags.Add(ChromeSwitches.TEST_TYPE)
 // @ImportantFormFactors may look redundant, but is actually essential to make this test run on CQ
 // because android-desktop CQ builders run chrome_public_test_apk_desktop that only covers tests
 // specific to desktop.

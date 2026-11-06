@@ -31,10 +31,7 @@ import org.chromium.components.autofill.TestViewStructure;
 
 /** Tests for the {@link PageContentProtoViewStructureBuilder} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_STARTUP_PROMOS
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({"AnnotatedPageContentsVirtualStructure"})
 public class PageContentProtoViewStructureBuilderTest {

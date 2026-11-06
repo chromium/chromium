@@ -39,7 +39,6 @@ import java.util.concurrent.TimeoutException;
 /** Test that verifies back press will dismiss the selection popup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     // long press triggers contextual search
     ChromeSwitches.DISABLE_CONTEXTUAL_SEARCH,
 })

@@ -27,10 +27,8 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -46,7 +44,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Verifies the main user journeys for supervised users. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SupervisedUserCriticalJourneysIntegrationTest {
     private static final String BLOCKED_SITE_URL = "www.example.com";
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";

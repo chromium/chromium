@@ -27,12 +27,10 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.supervised_user.android.AndroidLocalWebApprovalFlowOutcome;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -63,7 +61,6 @@ import java.util.concurrent.TimeoutException;
                 "Running tests in parallel can interfere with each tests setup."
                         + "The code under tests involes setting static methods and features, "
                         + "which must remain unchanged for the duration of the test.")
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebsiteParentApprovalTest {
     public FreshCtaTransitTestRule mTabbedActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
