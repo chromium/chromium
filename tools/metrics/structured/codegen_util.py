@@ -6,9 +6,31 @@ import os
 import re
 import struct
 
+# Non-sequenced projects in structured.xml that are only recorded on ChromeOS.
+# Kept here rather than as a structured.xml attribute so sync/structured.xml
+# stays schema-compatible with downstream proto generators.
+CHROMEOS_ONLY_PROJECTS = frozenset(
+  {
+    'FastPair',
+    'Hindsight',
+    'LauncherUsage',
+    'NearbyShare',
+    'PhoneHub',
+    'PopularDisplays',
+    'StructuredMetrics',
+  }
+)
+
 
 class Util:
   """Helpers for generating C++."""
+
+  @staticmethod
+  def is_chromeos_only_project(project) -> bool:
+    return (
+      project.is_event_sequence_project
+      or project.name in CHROMEOS_ONLY_PROJECTS
+    )
 
   @staticmethod
   def sanitize_name(name):

@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <optional>
-#include <string>
 #include <string_view>
 
 #include "components/metrics/structured/enums.h"
@@ -18,15 +17,33 @@ namespace metrics::structured {
 
 using EventType = StructuredEventProto_EventType;
 
-// Interface to be implemented by codegen for every project to validate
-// messages received by the structured metric service.
-class ProjectValidator {
+// Validates project metadata and events against definitions in structured.xml.
+class ProjectValidator final {
  public:
+  constexpr ProjectValidator(uint64_t project_hash,
+                             EventType event_type,
+                             IdType id_type,
+                             IdScope id_scope,
+                             uint16_t key_rotation_period,
+                             uint16_t name_offset,
+                             uint8_t name_len,
+                             uint16_t events_offset,
+                             uint16_t events_count)
+      : project_hash_(project_hash),
+        event_type_(event_type),
+        id_type_(id_type),
+        id_scope_(id_scope),
+        key_rotation_period_(key_rotation_period),
+        name_offset_(name_offset),
+        events_offset_(events_offset),
+        events_count_(events_count),
+        name_len_(name_len) {}
+
   // Should not be copied or moved.
   ProjectValidator(const ProjectValidator&) = delete;
   ProjectValidator& operator=(const ProjectValidator& other) = delete;
 
-  virtual ~ProjectValidator();
+  ~ProjectValidator() = default;
 
   // Returns the event validator if |event_name| is a valid event for this
   // project.
@@ -39,26 +56,19 @@ class ProjectValidator {
   IdScope id_scope() const { return id_scope_; }
   EventType event_type() const { return event_type_; }
   int key_rotation_period() const { return key_rotation_period_; }
-
- protected:
-  // Should not be constructed directly.
-  ProjectValidator(uint64_t project_hash,
-                   IdType id_type,
-                   IdScope id_scope,
-                   EventType event_type,
-                   int key_rotation_period);
-
-  std::unordered_map<std::string_view, std::unique_ptr<EventValidator>>
-      event_validators_;
-
-  std::unordered_map<uint64_t, std::string_view> event_name_map_;
+  uint16_t name_offset() const { return name_offset_; }
+  uint8_t name_len() const { return name_len_; }
 
  private:
   const uint64_t project_hash_;
+  const EventType event_type_;
   const IdType id_type_;
   const IdScope id_scope_;
-  const EventType event_type_;
-  const int key_rotation_period_;
+  const uint16_t key_rotation_period_;
+  const uint16_t name_offset_;
+  const uint16_t events_offset_;
+  const uint16_t events_count_;
+  const uint8_t name_len_;
 };
 
 }  // namespace metrics::structured

@@ -181,6 +181,10 @@ action("gen_structured_events_cpp") {
     "--target",
     "chromium",
   ]
+
+  if (is_chromeos) {
+    args += [ "--cros_events" ]
+  }
 }
 
 action("gen_structured_events_ts") {
@@ -216,7 +220,6 @@ action("gen_structured_events_ts") {
   ]
 }
 
-# TODO(b/309122738): Generate the events by platform.
 source_set("structured_events") {
   sources = get_target_outputs(":gen_structured_events_cpp")
 
@@ -267,6 +270,7 @@ action("gen_structured_metrics_validator") {
     sources += [ "//tools/metrics/structured/sync/structured_chromiumos.xml" ]
 
     args += [
+      "--cros_events",
       "--cros_input",
       rebase_path(sources[1], root_build_dir),
     ]

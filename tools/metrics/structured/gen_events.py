@@ -16,6 +16,7 @@ import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.structured.code_generator_cpp as code_generator_cpp
 import chromium_src.tools.metrics.structured.code_generator_ts as code_generator_ts
+from chromium_src.tools.metrics.structured.codegen_util import Util
 from chromium_src.tools.metrics.structured.sync import model
 import chromium_src.tools.metrics.structured.templates_events as templates
 
@@ -27,6 +28,11 @@ parser.add_argument('--output', help='Path to generated files.')
 parser.add_argument(
   '--target', help='Target for generating events, e.g. chromium, webui.'
 )
+parser.add_argument(
+  '--cros_events',
+  action='store_true',
+  help='Include ChromeOS-only projects for chromium target.',
+)
 
 
 def main():
@@ -34,6 +40,10 @@ def main():
   data = model.Model(open(args.input, encoding='utf-8').read(), 'chrome')
 
   if args.target == 'chromium':
+    if not args.cros_events:
+      data.projects = [
+        p for p in data.projects if not Util.is_chromeos_only_project(p)
+      ]
     code_generator_cpp.TemplateCpp(
       data,
       args.output,

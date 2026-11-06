@@ -8,7 +8,7 @@ import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.structured.templates_validator as validator_tmpl
-from chromium_src.tools.metrics.structured.codegen_util import FileInfo, Util
+from chromium_src.tools.metrics.structured.codegen_util import FileInfo
 from chromium_src.tools.metrics.structured.code_generator import (
   EventTemplateBase,
   ProjectInfoBase,
@@ -24,68 +24,10 @@ class ProjectInfoCpp(ProjectInfoBase):
 
   def __init__(self, project):
     super().__init__(project, CHROMIUM_TARGET)
-    self.validator = '{}ProjectValidator'.format(self.name)
-    self.validator_snake_name = Util.camel_to_snake(self.validator)
-
-  def build_validator_code(self) -> str:
-    event_infos = list(EventInfoCpp(event, self) for event in self.events)
-
-    # Generate map entries.
-    validator_map_str = ';\n  '.join(
-      'event_validators_.emplace("{}", std::make_unique<{}>())'.format(
-        event_info.name, event_info.validator_name
-      )
-      for event_info in event_infos
-    )
-
-    event_name_map_str = ';\n  '.join(
-      'event_name_map_.emplace(UINT64_C({}), "{}")'.format(
-        event_info.name_hash, event_info.name
-      )
-      for event_info in event_infos
-    )
-
-    return validator_tmpl.IMPL_PROJECT_VALIDATOR_TEMPLATE.format(
-      project=self,
-      event_validator_map=validator_map_str,
-      event_name_map=event_name_map_str,
-    )
 
 
 class EventInfoCpp(EventInfoBase):
   """Codegen-related info about an event in C++."""
-
-  def __init__(self, event, project_info):
-    super().__init__(event, project_info)
-    self.validator_name = '{}_{}EventValidator'.format(
-      self.project_name, self.name
-    )
-    self.validator_snake_name = Util.camel_to_snake(self.validator_name)
-
-  def build_metric_hash_map(self) -> str:
-    if self.platform == 'cros':
-      return ''
-    metric_infos = (MetricInfoCpp(metric) for metric in self.metrics)
-    return ',\n  '.join(
-      '{{"{}", {{ Event::MetricType::{}, UINT64_C({})}}}}'.format(
-        metric_info.name, metric_info.type_enum, metric_info.hash
-      )
-      for metric_info in metric_infos
-    )
-
-  def build_metric_name_map(self) -> str:
-    metric_infos = (MetricInfoCpp(metric) for metric in self.metrics)
-    return ',\n  '.join(
-      '{{ UINT64_C({}), "{}" }}'.format(metric_info.hash, metric_info.name)
-      for metric_info in metric_infos
-    )
-
-  def build_validator_code(self) -> str:
-    return validator_tmpl.IMPL_EVENT_VALIDATOR_TEMPLATE.format(
-      event=self,
-      metric_hash_map=self.build_metric_hash_map(),
-      metrics_name_map=self.build_metric_name_map(),
-    )
 
 
 class MetricInfoCpp(MetricInfoBase):
@@ -225,24 +167,16 @@ class ValidatorHeaderTemplate:
     with open(file_info.filepath, 'w') as f:
       f.write(self._stamp_file(file_info))
 
-  def _stamp_file(self, file_info) -> str:
+  def _stamp_file(self, file_info: FileInfo) -> str:
     return validator_tmpl.HEADER_FILE_TEMPLATE.format(file=file_info)
 
 
 class ValidatorImplTemplate:
   """Template for generating implementation validator code from structured.xml.
 
-  The generated file will store a static map containing all the validators
-  mapped by event name. All validators are initialized statically.
-
-  Almost everything is generated in an anonymous namespace as the generated map
-  should not be exposed. The generated code will be in the following order:
-
-    1) EventValidator class implementation.
-    2) Project map initialization mapping event name to corresponding
-    EventValidator.
-    3) Project class implementation.
-    4) Map initialization mapping project name to ProjectValidator.
+  Generates constexpr flat tables (kStrings, kMetrics, kEvents, kProjects) in
+  an anonymous namespace sorted by name for binary-search lookup with zero
+  heap allocations or dynamic relocations.
   """
 
   def __init__(self, structured_model, dirname, basename):
@@ -256,51 +190,146 @@ class ValidatorImplTemplate:
     with open(file_info.filepath, 'w') as f:
       f.write(self._stamp_file(file_info))
 
-  def _stamp_file(self, file_info) -> str:
-    event_code = []
-    project_event_maps: list[str] = []
-    project_code = []
+  @staticmethod
+  def _format_array_init(entries: list[str]) -> str:
+    if not entries:
+      return '{}'
+    body = ',\n      '.join(entries)
+    return '{{\n      ' + body + ',\n  }}'
 
-    for project in self.projects:
-      project_info = ProjectInfoCpp(project)
-      event_infos = (
-        EventInfoCpp(event, project_info) for event in project.events
+  def _stamp_file(self, file_info: FileInfo) -> str:
+    project_infos = sorted(
+      (ProjectInfoCpp(project) for project in self.projects),
+      key=lambda p: p.name.encode('utf-8'),
+    )
+    if len({p.name for p in project_infos}) != len(project_infos):
+      raise ValueError('Duplicate sanitized project names in validator model.')
+
+    unique_names: set[str] = set()
+    structured_tree = []
+    for project_info in project_infos:
+      unique_names.add(project_info.name)
+      event_infos = sorted(
+        (EventInfoCpp(event, project_info) for event in project_info.events),
+        key=lambda e: e.name.encode('utf-8'),
       )
-      project_event_code = '\n'.join(
-        event_info.build_validator_code() for event_info in event_infos
+      if len({e.name for e in event_infos}) != len(event_infos):
+        raise ValueError(
+          f'Duplicate sanitized event names in project {project_info.name}.'
+        )
+      events_with_metrics = []
+      for event_info in event_infos:
+        unique_names.add(event_info.name)
+        metric_infos = sorted(
+          (MetricInfoCpp(metric) for metric in event_info.metrics),
+          key=lambda m: m.name.encode('utf-8'),
+        )
+        if len({m.name for m in metric_infos}) != len(metric_infos):
+          raise ValueError(
+            f'Duplicate sanitized metric names in event {event_info.name}.'
+          )
+        for metric_info in metric_infos:
+          unique_names.add(metric_info.name)
+        events_with_metrics.append((event_info, metric_infos))
+      structured_tree.append((project_info, events_with_metrics))
+
+    string_blob = ''
+    string_offsets: dict[str, int] = {}
+    for name in sorted(unique_names, key=lambda s: (-len(s), s)):
+      if len(name) > 0xFF:
+        raise ValueError(f'Identifier exceeds uint8_t length limit: {name}')
+      idx = string_blob.find(name)
+      if idx == -1:
+        idx = len(string_blob)
+        string_blob += name
+      string_offsets[name] = idx
+
+    if len(string_blob) > 0xFFFF:
+      raise ValueError(
+        f'Validator string table ({len(string_blob)}B) exceeds uint16_t limit.'
       )
 
-      event_code.append(project_event_code)
-      project_code.append(project_info.build_validator_code())
+    metric_entries: list[str] = []
+    event_entries: list[str] = []
+    project_entries: list[str] = []
 
-    # Turn all lists into strings.
-    events_code_str = ''.join(event_code)
-    project_event_maps_str = '\n'.join(project_event_maps)
-    project_code_str = ''.join(project_code)
+    for project_info, events_with_metrics in structured_tree:
+      events_offset = len(event_entries)
+      events_count = len(events_with_metrics)
+      if events_offset > 0xFFFF or events_count > 0xFFFF:
+        raise ValueError('Event table exceeds uint16_t index limit.')
+
+      for event_info, metric_infos in events_with_metrics:
+        metrics_offset = len(metric_entries)
+        metrics_count = len(metric_infos)
+        if metrics_offset > 0xFFFF:
+          raise ValueError('Metric table exceeds uint16_t offset limit.')
+        if metrics_count > 0xFF:
+          raise ValueError(
+            f'Event {event_info.name} exceeds uint8_t metric count limit.'
+          )
+
+        can_validate_metrics = event_info.platform != 'cros'
+        for metric_info in metric_infos:
+          type_enum = metric_info.type_enum
+          if not type_enum:
+            if can_validate_metrics:
+              raise ValueError(
+                f'Unsupported metric type in {event_info.name}:'
+                f' {metric_info.name}'
+              )
+            type_enum = 'kHmac'
+          metric_entries.append(
+            f'{{UINT64_C({metric_info.hash}), '
+            f'{string_offsets[metric_info.name]}, '
+            f'{len(metric_info.name)}, '
+            f'Event::MetricType::{type_enum}}}'
+          )
+
+        can_validate_str = 'true' if can_validate_metrics else 'false'
+        event_entries.append(
+          f'EventValidator(UINT64_C({event_info.name_hash}), '
+          f'{string_offsets[event_info.name]}, '
+          f'{len(event_info.name)}, '
+          f'{metrics_offset}, '
+          f'{metrics_count}, '
+          f'{event_info.force_record}, '
+          f'{can_validate_str})'
+        )
+
+      if project_info.key_rotation_period > 0xFFFF:
+        raise ValueError(
+          f'Key rotation period exceeds uint16_t in {project_info.name}.'
+        )
+      project_entries.append(
+        f'ProjectValidator(UINT64_C({project_info.name_hash}), '
+        f'StructuredEventProto_EventType_{project_info.event_type}, '
+        f'IdType::{project_info.id_type}, '
+        f'IdScope::{project_info.id_scope}, '
+        f'{project_info.key_rotation_period}, '
+        f'{string_offsets[project_info.name]}, '
+        f'{len(project_info.name)}, '
+        f'{events_offset}, '
+        f'{events_count})'
+      )
+
+    if string_blob:
+      chunks = [
+        f'    "{string_blob[i : i + 68]}"'
+        for i in range(0, len(string_blob), 68)
+      ]
+      string_table_literal = '\n'.join(chunks)
+    else:
+      string_table_literal = '    ""'
 
     return validator_tmpl.IMPL_FILE_TEMPLATE.format(
       file=file_info,
-      projects_code=project_code_str,
-      event_code=events_code_str,
-      project_event_maps=project_event_maps_str,
-      project_map=self._build_project_map(),
-      name_map=self._build_name_map(),
-    )
-
-  def _build_project_map(self) -> str:
-    project_infos = (ProjectInfoCpp(project) for project in self.projects)
-    return ';\n  '.join(
-      'validators_.emplace("{}", std::make_unique<{}>())'.format(
-        project.name, project.validator
-      )
-      for project in project_infos
-    )
-
-  def _build_name_map(self):
-    project_infos = (ProjectInfoCpp(project) for project in self.projects)
-    return ';\n  '.join(
-      'project_name_map_.emplace(UINT64_C({}), "{}")'.format(
-        project.name_hash, project.name
-      )
-      for project in project_infos
+      string_table_literal=string_table_literal,
+      string_table_len=len(string_blob),
+      num_metrics=len(metric_entries),
+      metrics_init=self._format_array_init(metric_entries),
+      num_events=len(event_entries),
+      events_init=self._format_array_init(event_entries),
+      num_projects=len(project_entries),
+      projects_init=self._format_array_init(project_entries),
     )

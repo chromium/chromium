@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/key_data_provider_file.h"
 #include "components/metrics/structured/lib/key_data_provider.h"
@@ -52,8 +53,10 @@ constexpr uint64_t kProjectFourHash = UINT64_C(6801665881746546626);
 constexpr uint64_t kProjectFiveHash = UINT64_C(3960582687892677139);
 // The name hash of "TestProjectSix"
 constexpr uint64_t kProjectSixHash = UINT64_C(6972396123792667134);
+#if BUILDFLAG(IS_CHROMEOS)
 // The name hash of "CrOSEvents"
 constexpr uint64_t kCrOSEventsProjectHash = UINT64_C(12657197978410187837);
+#endif
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
 constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
@@ -69,8 +72,10 @@ constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 constexpr uint64_t kEventSevenHash = UINT64_C(16749091071228286247);
 // The name hash of "chrome::TestProjectSix::TestEnum".
 constexpr uint64_t kEventEnumHash = UINT64_C(14837072141472316574);
+#if BUILDFLAG(IS_CHROMEOS)
 // The name hash of "chrome::CrOSEvents::NoMetricsEvent".
 constexpr uint64_t kNoMetricsEventHash = UINT64_C(5106854608989380457);
+#endif
 // The name has for "chrome::TestProjectSevent::TestEventEight".
 const uint64_t kEventEightHash = UINT64_C(16290206418240617738);
 
@@ -244,10 +249,12 @@ class StructuredMetricsRecorderTest : public testing::Test {
     key_three.set_last_rotation(today);
     key_three.set_rotation_period(90);
 
+#if BUILDFLAG(IS_CHROMEOS)
     KeyProto& cros_events = (*proto.mutable_keys())[kCrOSEventsProjectHash];
     cros_events.set_key("cccccccccccccccccccccccccccccccc");
     cros_events.set_last_rotation(today);
     cros_events.set_rotation_period(90);
+#endif
 
     base::CreateDirectory(ProfileKeyFilePath().DirName());
     ASSERT_TRUE(
@@ -683,6 +690,7 @@ TEST_F(StructuredMetricsRecorderTest, EventsWithinProjectReportedWithSameID) {
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(StructuredMetricsRecorderTest, EventWithoutMetricsReportCorrectly) {
   Init();
 
@@ -703,6 +711,7 @@ TEST_F(StructuredMetricsRecorderTest, EventWithoutMetricsReportCorrectly) {
   EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
   EXPECT_EQ(event.event_name_hash(), kNoMetricsEventHash);
 }
+#endif
 
 // Test that events reported before recording is enabled are ignored.
 TEST_F(StructuredMetricsRecorderTest, EventsNotRecordedBeforeRecordingEnabled) {
@@ -852,14 +861,15 @@ TEST_F(StructuredMetricsRecorderTest,
 TEST_F(StructuredMetricsRecorderTest, EventsClone) {
   Init();
 
-  events::v2::cr_os_events::Test1 event;
+  Event event("CrOSEvents", "Test1", /*is_event_sequence=*/true);
 
   const int test_time = 50;
   const double test_metric = 1.0;
 
   event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
   event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
-  event.SetMetric1(test_metric);
+  event.AddMetric("Metric1", Event::MetricType::kDouble,
+                  base::Value(test_metric));
 
   auto cloned_event = event.Clone();
 
@@ -954,6 +964,19 @@ TEST_F(StructuredMetricsRecorderTest, EventMetadataLookupCorrectly) {
 
   ASSERT_EQ(event_validator->GetMetricName(kMetricOneHash), kMetricOneName);
   ASSERT_EQ(event_validator->GetMetricName(kMetricTwoHash), kMetricTwoName);
+
+  EXPECT_EQ(validators->GetProjectValidator(""), nullptr);
+  EXPECT_EQ(validators->GetProjectValidator("ZZZUnknownProject"), nullptr);
+  EXPECT_EQ(validators->GetProjectName(0), std::nullopt);
+  EXPECT_EQ(project_validator->GetEventValidator("ZZZUnknownEvent"), nullptr);
+  EXPECT_EQ(project_validator->GetEventName(0), std::nullopt);
+  EXPECT_EQ(event_validator->GetMetricMetadata("ZZZUnknownMetric"),
+            std::nullopt);
+  EXPECT_EQ(event_validator->GetMetricName(0), std::nullopt);
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(validators->GetProjectValidator("CrOSEvents"), nullptr);
+  EXPECT_EQ(validators->GetProjectValidator("PhoneHub"), nullptr);
+#endif
 }
 
 class TestWatcher : public StructuredMetricsRecorder::Observer {
