@@ -9,6 +9,7 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_view.h"
@@ -36,7 +37,7 @@ constexpr int kQuickAnswersAndMahiSpacing = 8;
 
 views::Widget::InitParams CreateWidgetInitParams() {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
@@ -261,6 +262,8 @@ void ReadWriteCardsUiController::OnViewLayoutInvalidated(views::View* view) {
 void ReadWriteCardsUiController::MaybeCreateWidget() {
   if (!widget_) {
     widget_ = std::make_unique<views::Widget>(CreateWidgetInitParams());
+    widget_->MakeCloseSynchronous(base::BindOnce(
+        &ReadWriteCardsUiController::OnWidgetClosed, base::Unretained(this)));
 
     widget_->SetContentsView(
         views::Builder<views::BoxLayoutView>()
@@ -288,6 +291,12 @@ void ReadWriteCardsUiController::MaybeHideWidget() {
   }
 
   // Close the widget if all the views are removed.
+  pre_target_handler_.reset();
+  widget_.reset();
+}
+
+void ReadWriteCardsUiController::OnWidgetClosed(
+    views::Widget::ClosedReason reason) {
   pre_target_handler_.reset();
   widget_.reset();
 }

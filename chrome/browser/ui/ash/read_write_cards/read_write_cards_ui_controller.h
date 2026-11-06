@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_READ_WRITE_CARDS_READ_WRITE_CARDS_UI_CONTROLLER_H_
 #define CHROME_BROWSER_UI_ASH_READ_WRITE_CARDS_READ_WRITE_CARDS_UI_CONTROLLER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -13,11 +14,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 class View;
-class Widget;
 }  // namespace views
 
 namespace chromeos {
@@ -86,6 +86,9 @@ class ReadWriteCardsUiController
   // Hides `widget_` if necessary.
   void MaybeHideWidget();
 
+  // Called when `widget_` is closed, e.g. when its parent window goes away.
+  void OnWidgetClosed(views::Widget::ClosedReason reason);
+
   // Reorder the child views inside `widget_`, depending on if the widget is
   // above or below the context menu.
   void ReorderChildViews();
@@ -112,7 +115,7 @@ class ReadWriteCardsUiController
   // Indicates whether the widget is placed above or below the context menu.
   bool widget_above_context_menu_ = false;
 
-  views::UniqueWidgetPtr widget_;
+  std::unique_ptr<views::Widget> widget_;
 
   // The bounds of the context menu, used to calculate the widget bounds.
   gfx::Rect context_menu_bounds_;
