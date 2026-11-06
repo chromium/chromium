@@ -15,7 +15,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -98,7 +97,11 @@ public class ReaderModeBottomSheetRenderTest {
                             new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                    mActivityTestRule.getActivity().setContentView(mContentView, params);
+                    // Overlay the content instead of replacing it with setContentView(), which
+                    // would break the hub when the test rule closes the tabs during cleanup.
+                    ViewGroup activityContent =
+                            mActivityTestRule.getActivity().findViewById(android.R.id.content);
+                    activityContent.addView(mContentView, params);
                     mCoordinator =
                             new ReaderModeBottomSheetCoordinator(
                                     mActivityTestRule.getActivity(),
@@ -117,12 +120,6 @@ public class ReaderModeBottomSheetRenderTest {
                             .addThemeColorObserver(mThemeColorObserverCaptor.capture());
                     verify(mThemeColorProvider).addTintObserver(mTintObserverCaptor.capture());
                 });
-    }
-
-    @After
-    public void tearDown() {
-        // Since setUp() calls setContentView() on the Activity, the clean up causes an exception.
-        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Test
