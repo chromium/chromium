@@ -11,7 +11,6 @@
 #include "base/strings/string_split.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -70,11 +69,7 @@ class DocumentPictureInPicturePixelTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
         {{blink::features::kDocumentPictureInPictureAPI, true},
-         {features::kDocumentPipStandaloneWindow, standalone_enabled()},
-         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
-         // Omnibox is enabled and then remove the two omnibox features.
-         {omnibox::internal::kWebUIOmniboxPopup, false},
-         {omnibox::internal::kWebUIOmniboxAimPopup, false}});
+         {features::kDocumentPipStandaloneWindow, standalone_enabled()}});
 
     // Disable animation for stability.
     animation_duration_ =

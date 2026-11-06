@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -192,13 +191,6 @@ class TabDragTest
     enabled.push_back({tabs::kTabStripUnification, {}});
     enabled.push_back({features::kCollapseTabGroupDuringDrag, {}});
     return enabled;
-  }
-
-  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
-    // enabled and then remove this.
-    return {omnibox::internal::kWebUIOmniboxPopup,
-            omnibox::internal::kWebUIOmniboxAimPopup};
   }
 
  protected:
