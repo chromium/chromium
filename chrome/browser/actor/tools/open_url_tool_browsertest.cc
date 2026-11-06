@@ -112,6 +112,8 @@ IN_PROC_BROWSER_TEST_P(ActorOpenUrlToolBrowserTest, OpenUrl) {
   std::unique_ptr<ToolRequest> action =
       MakeOpenUrlRequest(*source_tab, url_target);
   ActResultFuture result;
+  execution_engine().AddWritableMainframeOrigins(
+      {url::Origin::Create(url_target)});
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
@@ -135,9 +137,11 @@ IN_PROC_BROWSER_TEST_P(ActorOpenUrlToolBrowserTest, CrossOrigin) {
   std::unique_ptr<ToolRequest> action =
       MakeOpenUrlRequest(*source_tab, url_target);
   ActResultFuture result;
+
+  execution_engine().AddWritableMainframeOrigins(
+      {url::Origin::Create(url_target)});
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
-
   tabs::TabInterface* navigated_tab =
       GetNavigatedTab(source_tab, url_start, initial_tab_count);
   ASSERT_TRUE(navigated_tab);

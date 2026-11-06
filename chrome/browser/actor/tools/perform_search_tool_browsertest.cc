@@ -116,8 +116,9 @@ IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
                        PerformSearchCrossOriginDefaultSearchProviderAllowed) {
   constexpr char kQuery[] = "test query";
-  SetDefaultSearchProviderUrl(
-      embedded_https_test_server().GetURL("b.test", kSearchUrlPath));
+  const GURL url_target =
+      embedded_https_test_server().GetURL("b.test", kSearchUrlPath);
+  SetDefaultSearchProviderUrl(url_target);
 
   const GURL url_start =
       embedded_https_test_server().GetURL("a.test", kStartUrlPath);
@@ -126,6 +127,8 @@ IN_PROC_BROWSER_TEST_F(ActorPerformSearchToolBrowserTest,
   std::unique_ptr<ToolRequest> action =
       MakePerformSearchRequest(*active_tab(), kQuery);
   ActResultFuture result;
+  execution_engine().AddWritableMainframeOrigins(
+      {url::Origin::Create(url_target)});
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectOkResult(result);
 

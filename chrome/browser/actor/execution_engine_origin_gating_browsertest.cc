@@ -1185,6 +1185,10 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   std::unique_ptr<ToolRequest> click_link =
       MakeClickRequest(*active_tab(), gfx::Point(1, 1));
 
+  actor_task().GetExecutionEngine().AddWritableMainframeOrigins(
+      {url::Origin::Create(cross_origin_url),
+       url::Origin::Create(link_page_url)});
+
   ActResultFuture result1;
   actor_task().Act(
       ToRequestList(navigate_x_origin, navigate_to_link_page, click_link),
@@ -1300,6 +1304,9 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
   RunTestSequence(CreateMockWebClientRequest(
       content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+  actor_task().GetExecutionEngine().AddWritableMainframeOrigins(
+      {url::Origin::Create(link_page_url)});
+
   ActResultFuture result;
   actor_task().Act(ToRequestList(navigate_to_sensitive, click_link_same_origin,
                                  navigate_to_link_page, click_link_x_origin),
@@ -1359,6 +1366,9 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
   RunTestSequence(CreateMockWebClientRequest(
       content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+  actor_task().GetExecutionEngine().AddWritableMainframeOrigins(
+      {url::Origin::Create(normal_page_with_link)});
+
   ActResultFuture result;
   actor_task().Act(ToRequestList(click, navigate_to_link, click_link),
                    result.GetCallback());
@@ -2525,6 +2535,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest, PerTaskAllowlist) {
   // Clicks on full-page link to other.foo.com.
   std::unique_ptr<ToolRequest> click_link =
       MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  actor_task().GetExecutionEngine().AddWritableMainframeOrigins(
+      {url::Origin::Create(other_url),
+       url::Origin::Create(cross_site_url_with_link)});
 
   ActResultFuture result;
   actor_task().Act(
