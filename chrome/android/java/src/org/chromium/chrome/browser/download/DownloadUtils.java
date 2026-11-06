@@ -297,7 +297,7 @@ public class DownloadUtils {
                     origin);
         } else {
             // Otherwise, the download can be started immediately.
-            OfflinePageDownloadBridge.startDownload(tab, origin);
+            OfflinePageDownloadBridge.startDownload(tab, origin, fromAppMenu);
         }
         tracker.notifyEvent(EventConstants.DOWNLOAD_PAGE_STARTED);
     }

@@ -299,7 +299,8 @@ void InitializeBackendOnProfileCreated(Profile* profile) {
 static void JNI_OfflinePageDownloadBridge_StartDownload(
     JNIEnv* env,
     const JavaRef<jobject>& j_tab,
-    const std::string& origin) {
+    const std::string& origin,
+    bool from_app_menu) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, j_tab);
   if (!tab)
     return;
@@ -325,8 +326,9 @@ static void JNI_OfflinePageDownloadBridge_StartDownload(
   // Off the record save page and save as enabled on desktop android are
   // handled via standard SavePackage.
   if (web_contents->GetBrowserContext()->IsOffTheRecord() ||
-      base::FeatureList::IsEnabled(
-          download::features::kEnableDownloadSaveAsContextMenu) ||
+      (!from_app_menu &&
+       base::FeatureList::IsEnabled(
+           download::features::kEnableDownloadSaveAsContextMenu)) ||
       base::android::device_info::is_desktop()) {
     web_contents->OnSavePage();
     return;
