@@ -549,7 +549,8 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
 
 void ReadAnythingAppModel::ComputeReadabilityDisplayNodeIds() {
   for (const auto& block_segments : text_to_ax_map_) {
-    for (const MappingSegment& segment : block_segments) {
+    for (const ReadAnythingTextAligner::MappingSegment& segment :
+         block_segments) {
       const ui::AXNode* node = GetAXNode(segment.id);
       if (!node) {
         continue;
@@ -2323,7 +2324,7 @@ void ReadAnythingAppModel::RecordReadabilityMappingMetrics(
       total_duration);
 }
 
-std::vector<ReadAnythingAppModel::MappingSegment>
+std::vector<ReadAnythingTextAligner::MappingSegment>
 ReadAnythingAppModel::GetAXMapping(size_t index) const {
   // TODO: crbug.com/507447796 - 10. Implement getter for frontend to receive
   // mapped segments from a block. Done in ReadAnythingAppController.

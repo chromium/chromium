@@ -38,6 +38,7 @@
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller_factory.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_text_aligner.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_features.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -3301,7 +3302,7 @@ v8::Local<v8::Value> ReadAnythingAppController::GetAXMapping(int index) {
   // Retrieve the mapping segments from the model for the given block index.
   // A single Readability block can map to multiple AXNodes (e.g. if it contains
   // inline links).
-  std::vector<ReadAnythingAppModel::MappingSegment> segments =
+  std::vector<ReadAnythingTextAligner::MappingSegment> segments =
       model_.GetAXMapping(static_cast<size_t>(index));
 
   v8::Local<v8::Array> v8_segments =

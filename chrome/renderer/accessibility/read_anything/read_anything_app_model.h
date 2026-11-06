@@ -21,6 +21,7 @@
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_text_aligner.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -169,20 +170,6 @@ class ReadAnythingAppModel {
     std::string title;
 
     ui::AXNodeID id;
-  };
-
-  // Represents a segment of text within an AXNode. A distilled Readability
-  // block may be mapped to multiple AXNodes (e.g., a paragraph with a link
-  // inside); each part of that mapping is a MappingSegment.
-  struct MappingSegment {
-    ui::AXNodeID id;
-    // The 0-based start and end character offsets within the *Readability
-    // block's* text content that correspond to this AXNode.
-    int start;
-    int end;
-    // The 0-based character offset within the *AXNode's* own text content where
-    // this segment begins.
-    int ax_node_offset;
   };
 
   // Represents a segment of the flattened |global_ax_tree_text_| and the AXNode
@@ -531,7 +518,7 @@ class ReadAnythingAppModel {
         should_map_rendered_text_to_tree_for_readability;
   }
 
-  const std::vector<std::vector<MappingSegment>>& text_to_ax_map() const {
+  const ReadAnythingTextAligner::TextToAXMap& text_to_ax_map() const {
     return text_to_ax_map_;
   }
 
@@ -544,7 +531,8 @@ class ReadAnythingAppModel {
   // for the WebUI to consume the results of the mapping algorithm. The index
   // corresponds to the index of the block in readability_text_blocks_ and
   // text_to_ax_map_.
-  std::vector<MappingSegment> GetAXMapping(size_t index) const;
+  std::vector<ReadAnythingTextAligner::MappingSegment> GetAXMapping(
+      size_t index) const;
 
   const std::u16string& global_ax_tree_text() const {
     return global_ax_tree_text_;
@@ -867,6 +855,8 @@ class ReadAnythingAppModel {
  private:
   // TODO(crbug.com/513618559): Move text selection mapping algorithm logic
   // into static utility methods / class.
+  using MappingSegment = ReadAnythingTextAligner::MappingSegment;
+
   // An index for searching substrings within the flattened
   // |global_ax_tree_text_|. It uses a Suffix Array to find any string in O(log
   // N) time, where N is the length of the article.
@@ -1232,7 +1222,7 @@ class ReadAnythingAppModel {
   //     containing a link).
   //   - If a block fails to map, the entry at that index will be an empty
   //     vector.
-  std::vector<std::vector<MappingSegment>> text_to_ax_map_;
+  ReadAnythingTextAligner::TextToAXMap text_to_ax_map_;
 
   // A contiguous string representation of all leaf text nodes in the original
   // page's AXTree, in reading order. This serves as the global "search space"
