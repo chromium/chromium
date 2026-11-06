@@ -157,6 +157,7 @@ static_library("browser") {
     ":features",
     "//base",
     "//components/autofill/content/browser",
+    "//components/autofill/core/common:credit_card_number_validation",
     "//components/password_manager/core/browser/form_parsing",
     "//content/public/browser",
     "//url",

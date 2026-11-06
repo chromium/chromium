@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "url/origin.h"
@@ -144,6 +146,55 @@ void RecordValidationResult(MainFrameCreditCardFieldValidationResult result) {
       "Autofill.WebView.CrossOriginMainFrameCreditCardFieldValidation", result);
 }
 
+bool IsPlausibleCvc(std::u16string_view value) {
+  value = base::TrimWhitespace(value, base::TRIM_ALL);
+  return (value.size() == 3 || value.size() == 4) &&
+         std::ranges::all_of(value, base::IsAsciiDigit<char16_t>);
+}
+
+// Returns whether `filled_fields` puts a valid credit card number into a field
+// of `origin` that Autofill classified as a credit card number.
+bool FillsValidCreditCardNumberInOrigin(
+    const FormStructure& form,
+    base::span<const FormFieldData> filled_fields,
+    const url::Origin& origin) {
+  return std::ranges::any_of(
+      filled_fields, [&](const FormFieldData& filled_field) {
+        const AutofillField* field =
+            form.GetFieldById(filled_field.global_id());
+        return filled_field.origin() == origin && field &&
+               field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER &&
+               IsValidCreditCardNumber(filled_field.value());
+      });
+}
+
+// Returns whether `filled_fields` puts a value into a password control outside
+// the main frame's origin.
+bool FillsPasswordControlOutsideMainFrame(
+    const FormStructure& form,
+    base::span<const FormFieldData> filled_fields) {
+  return std::ranges::any_of(
+      filled_fields, [&](const FormFieldData& filled_field) {
+        if (filled_field.origin() == form.main_frame_origin() ||
+            filled_field.form_control_type() !=
+                FormControlType::kInputPassword) {
+          return false;
+        }
+        const AutofillField* field =
+            form.GetFieldById(filled_field.global_id());
+        // Credit card number and CVC fields with matching values don't count,
+        // since some payment iframes use password controls for them.
+        switch (field ? field->Type().GetCreditCardType() : UNKNOWN_TYPE) {
+          case CREDIT_CARD_NUMBER:
+            return !IsValidCreditCardNumber(filled_field.value());
+          case CREDIT_CARD_VERIFICATION_CODE:
+            return !IsPlausibleCvc(filled_field.value());
+          default:
+            return true;
+        }
+      });
+}
+
 }  // namespace
 
 bool IsPlausibleNonSensitiveCreditCardValue(FieldType type,
@@ -181,6 +232,23 @@ GetPlausibleNonSensitiveCreditCardTypes(
   if (triggered_origin == form.main_frame_origin()) {
     return {};
   }
+  // The main frame may embed a cross-origin login form and add fields that
+  // Autofill classifies as cardholder names. When the user fills the login
+  // form, the service may fill those fields too, e.g. with a password, which
+  // passes the value checks below if it has no digits. So only assign types if
+  // this fill
+  // - fills a valid card number into a card number field of `triggered_origin`.
+  //   The field's type alone isn't enough, since main-frame fields can make
+  //   Autofill classify a username field of the login form as a card number.
+  // - and doesn't fill an <input type=password> outside the main frame. This
+  //   catches login forms whose username is a card number, which pass the
+  //   first check. It isn't limited to `triggered_origin`, since the password
+  //   field may be in a different iframe than the one the user tapped.
+  if (!FillsValidCreditCardNumberInOrigin(form, filled_fields,
+                                          triggered_origin) ||
+      FillsPasswordControlOutsideMainFrame(form, filled_fields)) {
+    return {};
+  }
   absl::flat_hash_map<FieldGlobalId, FieldType> types;
   DenseSet<ExpirationPart> seen_expiration_parts;
   for (const FormFieldData& filled_field : filled_fields) {
@@ -194,6 +262,12 @@ GetPlausibleNonSensitiveCreditCardTypes(
     // parsing), as Autofill hasn't classified them.
     const AutofillField* field = form.GetFieldById(filled_field.global_id());
     if (!field) {
+      continue;
+    }
+    // Skip password controls. The service may fill passwords into them, even if
+    // Autofill classifies them as cardholder name or expiration date fields,
+    // e.g. because of `autocomplete="cc-name"`.
+    if (filled_field.form_control_type() == FormControlType::kInputPassword) {
       continue;
     }
     // Only cardholder name and expiration date fields can get a type here;

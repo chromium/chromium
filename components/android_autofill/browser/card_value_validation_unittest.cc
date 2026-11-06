@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -227,10 +229,11 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, OtherTypesInMainFrame) {
   FormData form = test::GetFormData(
       {.fields = {{.value = u"4111111111111111", .origin = main_origin_},
                   {.value = u"123", .origin = main_origin_},
-                  {.value = u"Jane Doe", .origin = main_origin_}},
+                  {.value = u"Jane Doe", .origin = main_origin_},
+                  {.value = u"4111111111111111", .origin = iframe_origin_}},
        .main_frame_origin = main_origin_});
   EXPECT_THAT(GetTypes(form, {CREDIT_CARD_NUMBER, CREDIT_CARD_VERIFICATION_CODE,
-                              NAME_FULL}),
+                              NAME_FULL, CREDIT_CARD_NUMBER}),
               IsEmpty());
   histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
 }
@@ -244,12 +247,13 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, ImplausibleValues) {
                   {.value = u"2030",
                    .form_control_type = FormControlType::kSelectOne,
                    .origin = main_origin_,
-                   .select_options = {{{.value = u"2030", .text = u"2030"}}}}},
+                   .select_options = {{{.value = u"2030", .text = u"2030"}}}},
+                  {.value = u"4111111111111111", .origin = iframe_origin_}},
        .main_frame_origin = main_origin_});
   // A 4-digit year only gets a type in a <select> element.
   EXPECT_THAT(
       GetTypes(form, {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_4_DIGIT_YEAR,
-                      CREDIT_CARD_EXP_4_DIGIT_YEAR}),
+                      CREDIT_CARD_EXP_4_DIGIT_YEAR, CREDIT_CARD_NUMBER}),
       UnorderedElementsAre(
           Pair(form.fields()[2].global_id(), CREDIT_CARD_EXP_4_DIGIT_YEAR)));
   EXPECT_THAT(
@@ -268,11 +272,12 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
   FormData form = test::GetFormData(
       {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
                   {.value = u"12", .origin = main_origin_},
-                  {.value = u"30", .origin = main_origin_}},
+                  {.value = u"30", .origin = main_origin_},
+                  {.value = u"4111111111111111", .origin = main_origin_}},
        .main_frame_origin = main_origin_});
   EXPECT_THAT(GetTypes(form,
                        {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
-                        CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                        CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER},
                        main_origin_),
               IsEmpty());
   histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
@@ -288,13 +293,13 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
                   {.origin = iframe_origin_},
                   {.form_control_type = FormControlType::kSelectOne,
                    .origin = main_origin_,
-                   .select_options = {{{.value = u"12",
-                                        .text = u"December"}}}}},
+                   .select_options = {{{.value = u"12", .text = u"December"}}}},
+                  {.origin = iframe_origin_}},
        .main_frame_origin = main_origin_});
   FormStructure form_structure(cached_form);
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,
-                      CREDIT_CARD_EXP_MONTH});
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_NUMBER});
 
   FormData filled_form = cached_form;
   test_api(filled_form).field(0).set_origin(iframe_origin_);
@@ -303,6 +308,7 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
   test_api(filled_form).field(1).set_value(u"Doe");
   test_api(filled_form).field(2).set_options({{.value = u"12", .text = u"12"}});
   test_api(filled_form).field(2).set_value(u"12");
+  test_api(filled_form).field(3).set_value(u"4111111111111111");
 
   EXPECT_THAT(
       GetPlausibleNonSensitiveCreditCardTypes(
@@ -329,7 +335,8 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
                   {.value = u"30", .origin = main_origin_},
                   {.value = u"31", .origin = main_origin_},
                   {.value = u"12/30", .origin = main_origin_},
-                  {.value = u"11/31", .origin = main_origin_}},
+                  {.value = u"11/31", .origin = main_origin_},
+                  {.value = u"4111111111111111", .origin = iframe_origin_}},
        .main_frame_origin = main_origin_});
   // The first month fails the check, so the second one gets the type.
   EXPECT_THAT(
@@ -338,7 +345,7 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
                 CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_MONTH,
                 CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
                 CREDIT_CARD_EXP_4_DIGIT_YEAR, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-                CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}),
+                CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, CREDIT_CARD_NUMBER}),
       UnorderedElementsAre(
           Pair(form.fields()[0].global_id(), CREDIT_CARD_NAME_FIRST),
           Pair(form.fields()[1].global_id(), CREDIT_CARD_NAME_LAST),
@@ -400,9 +407,10 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, SelectOptionTexts) {
         {.fields = {{.value = test_case.value,
                      .form_control_type = FormControlType::kSelectOne,
                      .origin = main_origin_,
-                     .select_options = test_case.options}},
+                     .select_options = test_case.options},
+                    {.value = u"4111111111111111", .origin = iframe_origin_}},
          .main_frame_origin = main_origin_});
-    EXPECT_EQ(GetTypes(form, {test_case.type}).size(),
+    EXPECT_EQ(GetTypes(form, {test_case.type, CREDIT_CARD_NUMBER}).size(),
               test_case.gets_type ? 1u : 0u);
     histogram_tester.ExpectUniqueSample(
         kValidationHistogram,
@@ -410,6 +418,214 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, SelectOptionTexts) {
                             : MainFrameCreditCardFieldValidationResult::
                                   kImplausibleSelectOptionText,
         1);
+  }
+}
+
+// Tests that the fill must put a valid card number into a card number field of
+// `triggered_origin` before any main-frame field gets a type.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
+       RequiresValidCardNumberFillInTriggeredOrigin) {
+  const url::Origin other_iframe_origin =
+      url::Origin::Create(GURL("https://other.test"));
+
+  // A card number field in the main frame or in a different iframe is not
+  // sufficient when `other_iframe_origin` triggered the fill.
+  {
+    base::HistogramTester histogram_tester;
+    FormData form = test::GetFormData(
+        {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                    {.value = u"4111111111111111", .origin = main_origin_},
+                    {.value = u"4111111111111111", .origin = iframe_origin_},
+                    {.value = u"Jane Doe", .origin = other_iframe_origin}},
+         .main_frame_origin = main_origin_});
+    EXPECT_THAT(GetTypes(form,
+                         {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                          CREDIT_CARD_NUMBER, USERNAME},
+                         other_iframe_origin),
+                IsEmpty());
+    histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
+  }
+
+  // Main-frame fields can make Autofill classify a field of another frame as
+  // a card number, e.g. a username field labeled "Acct #" next to a cardholder
+  // name field. A value that isn't a valid card number is not sufficient.
+  for (std::u16string_view value : {u"JaneDoe", u"4111111111111112", u"4111"}) {
+    SCOPED_TRACE(base::UTF16ToUTF8(value));
+    base::HistogramTester histogram_tester;
+    FormData form = test::GetFormData(
+        {.fields = {{.value = u"JaneDoe", .origin = main_origin_},
+                    {.value = std::u16string(value), .origin = iframe_origin_}},
+         .main_frame_origin = main_origin_});
+    EXPECT_THAT(GetTypes(form, {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER}),
+                IsEmpty());
+    histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
+  }
+
+  // A CVC alone is not sufficient.
+  {
+    base::HistogramTester histogram_tester;
+    FormData form = test::GetFormData(
+        {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                    {.value = u"123", .origin = iframe_origin_}},
+         .main_frame_origin = main_origin_});
+    EXPECT_THAT(
+        GetTypes(form, {CREDIT_CARD_NAME_FULL, CREDIT_CARD_VERIFICATION_CODE}),
+        IsEmpty());
+    histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
+  }
+
+  // A card number field of `triggered_origin` that the fill doesn't fill is not
+  // sufficient.
+  {
+    base::HistogramTester histogram_tester;
+    FormData form = test::GetFormData(
+        {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                    {.value = u"4111111111111111", .origin = iframe_origin_}},
+         .main_frame_origin = main_origin_});
+    FormStructure form_structure(form);
+    test_api(form_structure)
+        .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
+    EXPECT_THAT(GetPlausibleNonSensitiveCreditCardTypes(
+                    form_structure, base::span(form.fields()).first(1u),
+                    iframe_origin_),
+                IsEmpty());
+    histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
+  }
+
+  // Card numbers may contain separators.
+  {
+    base::HistogramTester histogram_tester;
+    FormData form = test::GetFormData(
+        {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                    {.value = u"4111 1111 1111 1111",
+                     .origin = iframe_origin_}},
+         .main_frame_origin = main_origin_});
+    EXPECT_THAT(GetTypes(form, {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER}),
+                UnorderedElementsAre(
+                    Pair(form.fields()[0].global_id(), CREDIT_CARD_NAME_FULL)));
+    histogram_tester.ExpectUniqueSample(
+        kValidationHistogram,
+        MainFrameCreditCardFieldValidationResult::kAllowed, 1);
+  }
+}
+
+// Tests that main-frame password controls never receive cardholder name or
+// expiration date types, based on the control types in `filled_fields` (i.e.
+// what the service saw when the session started) rather than those in the
+// possibly newer `FormStructure`, while unrelated main-frame password controls
+// do not block sibling card fields.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
+       SkipsMainFramePasswordControls) {
+  base::HistogramTester histogram_tester;
+  FormData cached_form = test::GetFormData(
+      {.fields = {{.form_control_type = FormControlType::kInputPassword,
+                   .origin = main_origin_},
+                  {.form_control_type = FormControlType::kInputPassword,
+                   .origin = main_origin_},
+                  {.form_control_type = FormControlType::kInputText,
+                   .origin = main_origin_},
+                  {.form_control_type = FormControlType::kInputPassword,
+                   .origin = main_origin_},
+                  {.origin = main_origin_},
+                  {.origin = iframe_origin_}},
+       .main_frame_origin = main_origin_});
+  FormStructure form_structure(cached_form);
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NAME_FIRST,
+                      CREDIT_CARD_NAME_LAST, PASSWORD, CREDIT_CARD_EXP_MONTH,
+                      CREDIT_CARD_NUMBER});
+
+  FormData filled_form = cached_form;
+  test_api(filled_form).field(0).set_value(u"Jane Doe");
+  // A text field when the session started, which only became a password
+  // control in the newer `FormStructure`.
+  test_api(filled_form)
+      .field(1)
+      .set_form_control_type(FormControlType::kInputText);
+  test_api(filled_form).field(1).set_value(u"Jane");
+  // A password control when the session started, which only became a text
+  // field in the newer `FormStructure`.
+  test_api(filled_form)
+      .field(2)
+      .set_form_control_type(FormControlType::kInputPassword);
+  test_api(filled_form).field(2).set_value(u"Doe");
+  // Pre-existing main-frame password field (e.g. account creation on checkout).
+  test_api(filled_form).field(3).set_value(u"AccountPass1!");
+  test_api(filled_form).field(4).set_value(u"12");
+  test_api(filled_form).field(5).set_value(u"4111111111111111");
+
+  EXPECT_THAT(
+      GetPlausibleNonSensitiveCreditCardTypes(
+          form_structure, filled_form.fields(), iframe_origin_),
+      UnorderedElementsAre(
+          Pair(filled_form.fields()[1].global_id(), CREDIT_CARD_NAME_FIRST),
+          Pair(filled_form.fields()[4].global_id(), CREDIT_CARD_EXP_MONTH)));
+  histogram_tester.ExpectUniqueSample(
+      kValidationHistogram, MainFrameCreditCardFieldValidationResult::kAllowed,
+      2);
+}
+
+// Tests that cross-origin fills containing a password control return an empty
+// map unless the password control is a card number or CVC field whose value
+// matches that type.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
+       RejectsCrossOriginPasswordFillsExceptMaskedCardFields) {
+  // Non-card password field filled in the iframe.
+  {
+    base::HistogramTester histogram_tester;
+    FormData form = test::GetFormData(
+        {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                    {.value = u"4111111111111111", .origin = iframe_origin_},
+                    {.value = u"SecretPassphrase",
+                     .form_control_type = FormControlType::kInputPassword,
+                     .origin = iframe_origin_}},
+         .main_frame_origin = main_origin_});
+    EXPECT_THAT(
+        GetTypes(form, {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, PASSWORD}),
+        IsEmpty());
+    histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
+  }
+
+  // Password control classified as CVC, but filled with a non-CVC password.
+  {
+    base::HistogramTester histogram_tester;
+    FormData form = test::GetFormData(
+        {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                    {.value = u"4111111111111111", .origin = iframe_origin_},
+                    {.value = u"Hunter2!",
+                     .form_control_type = FormControlType::kInputPassword,
+                     .origin = iframe_origin_}},
+         .main_frame_origin = main_origin_});
+    EXPECT_THAT(GetTypes(form, {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                                CREDIT_CARD_VERIFICATION_CODE}),
+                IsEmpty());
+    histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
+  }
+
+  // Payment iframe masking card number and CVC with `kInputPassword`.
+  {
+    base::HistogramTester histogram_tester;
+    FormData form = test::GetFormData(
+        {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                    {.value = u"12/30", .origin = main_origin_},
+                    {.value = u"4111111111111111",
+                     .form_control_type = FormControlType::kInputPassword,
+                     .origin = iframe_origin_},
+                    {.value = u"123",
+                     .form_control_type = FormControlType::kInputPassword,
+                     .origin = iframe_origin_}},
+         .main_frame_origin = main_origin_});
+    EXPECT_THAT(
+        GetTypes(form,
+                 {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                  CREDIT_CARD_NUMBER, CREDIT_CARD_VERIFICATION_CODE}),
+        UnorderedElementsAre(
+            Pair(form.fields()[0].global_id(), CREDIT_CARD_NAME_FULL),
+            Pair(form.fields()[1].global_id(),
+                 CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)));
+    histogram_tester.ExpectUniqueSample(
+        kValidationHistogram,
+        MainFrameCreditCardFieldValidationResult::kAllowed, 2);
   }
 }
 

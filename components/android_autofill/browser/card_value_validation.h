@@ -61,12 +61,21 @@ bool IsPlausibleNonSensitiveCreditCardValue(FieldType type,
 // UNKNOWN_TYPE, when a fill triggered from `triggered_origin` fills
 // `filled_fields` of `form`.
 //
-// Returns an empty map if `triggered_origin` is `form`'s main-frame origin,
-// since the security policy already allows filling all main-frame fields in
-// that case without consulting field types.
+// Returns an empty map if:
+// - `triggered_origin` is `form`'s main-frame origin (since the security policy
+//   already allows filling all main-frame fields in that case without
+//   consulting field types),
+// - `filled_fields` doesn't put a valid credit card number into a field of
+//   `triggered_origin` that Autofill classified as a credit card number (the
+//   classification alone isn't enough, since main-frame fields can affect how
+//   fields of other frames are classified), or
+// - `filled_fields` puts a value into a password control outside the main
+//   frame's origin, unless it's a credit card number or verification code
+//   field with a matching value.
 //
 // Otherwise, returns a type for those `filled_fields` that
 // - are in `form`'s main-frame origin,
+// - are not password controls (`FormControlType::kInputPassword`),
 // - Autofill classified as a cardholder name or expiration date, and
 // - got a value that passes `IsPlausibleNonSensitiveCreditCardValue()`. For
 //   <select> elements, the texts of the options with that value must pass,
@@ -76,10 +85,10 @@ bool IsPlausibleNonSensitiveCreditCardValue(FieldType type,
 // first in `filled_fields`), so that at most one short block of a card number
 // that is split across several fields can pass the policy.
 //
-// On cross-origin fills (`triggered_origin` != `form`'s main-frame origin),
-// records `Autofill.WebView.CrossOriginMainFrameCreditCardFieldValidation` for
-// each filled main-frame field that Autofill classified as a cardholder name or
-// expiration date.
+// When evaluating `filled_fields`, records
+// `Autofill.WebView.CrossOriginMainFrameCreditCardFieldValidation` for each
+// filled non-password main-frame field that Autofill classified as a cardholder
+// name or expiration date.
 absl::flat_hash_map<FieldGlobalId, FieldType>
 GetPlausibleNonSensitiveCreditCardTypes(
     const FormStructure& form,

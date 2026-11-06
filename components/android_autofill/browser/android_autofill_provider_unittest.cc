@@ -2998,11 +2998,11 @@ class AndroidAutofillManagerSecurityPolicyTypesTest
   const FormData& form() const { return form_; }
   const url::Origin& main_origin() const { return main_origin_; }
   const url::Origin& iframe_origin() const { return iframe_origin_; }
-
- private:
   TestAndroidAutofillManager& manager() {
     return *autofill_manager_injector_[main_rfh()];
   }
+
+ private:
   MockContentAutofillDriver& driver() {
     return *autofill_driver_injector_[main_rfh()];
   }
@@ -3119,6 +3119,167 @@ TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
               Contains(Pair(field_id(kName), UNKNOWN_TYPE)));
   histogram_tester.ExpectTotalCount(kCrossOriginMainFrameValidationHistogram,
                                     0);
+}
+
+// Tests that a cross-origin fill from a frame without credit card fields leaves
+// all field types as UNKNOWN_TYPE, even when the main frame declares
+// `autocomplete="cc-name"` and `autocomplete="cc-number"`.
+TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
+       NonCardIframeLeavesUnknownTypes) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  base::HistogramTester histogram_tester;
+  const url::Origin login_origin =
+      url::Origin::Create(GURL("https://login.test"));
+
+  FormData mixed_form;
+  mixed_form.set_renderer_id(test::MakeFormRendererId());
+  mixed_form.set_url(GURL("https://merchant.test/page.html"));
+  mixed_form.set_main_frame_origin(main_origin());
+  mixed_form.set_fields(
+      {CreateTestFormField("Name", "ccname", "", FormControlType::kInputText,
+                           "cc-name"),
+       CreateTestFormField("Card", "ccnum", "", FormControlType::kInputText,
+                           "cc-number"),
+       CreateTestFormField("Username", "user", "", FormControlType::kInputText,
+                           "username"),
+       CreateTestFormField("Password", "pass", "",
+                           FormControlType::kInputPassword,
+                           "current-password")});
+  mixed_form = CreateFormDataForFrame(
+      std::move(mixed_form),
+      LocalFrameToken(main_rfh()->GetFrameToken().value()));
+  test_api(mixed_form).field(0).set_origin(main_origin());
+  test_api(mixed_form).field(1).set_origin(main_origin());
+  test_api(mixed_form).field(2).set_origin(login_origin);
+  test_api(mixed_form).field(3).set_origin(login_origin);
+  manager().OnFormsSeen({mixed_form}, /*removed_forms=*/{},
+                        AutofillManagerTestApi::pass_key());
+
+  FormData filled_form = mixed_form;
+  for (int i : {0, 2, 3}) {
+    test_api(filled_form)
+        .field(i)
+        .set_is_autofilled_according_to_renderer(true);
+  }
+  test_api(filled_form).field(0).set_value(u"SecretPassphrase");
+  test_api(filled_form).field(2).set_value(u"JaneDoe");
+  test_api(filled_form).field(3).set_value(u"SecretPassphrase");
+
+  EXPECT_THAT(ApplyFillAndGetTypes(filled_form, login_origin),
+              UnorderedElementsAre(
+                  Pair(mixed_form.fields()[0].global_id(), UNKNOWN_TYPE),
+                  Pair(mixed_form.fields()[2].global_id(), UNKNOWN_TYPE),
+                  Pair(mixed_form.fields()[3].global_id(), UNKNOWN_TYPE)));
+  histogram_tester.ExpectTotalCount(kCrossOriginMainFrameValidationHistogram,
+                                    0);
+}
+
+// Tests that a cross-origin fill leaves all field types as UNKNOWN_TYPE if
+// main-frame fields made Autofill classify a field of the triggering frame as a
+// card number, but the fill doesn't put a valid card number into it.
+TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
+       MisclassifiedIframeFieldWithoutCardNumberLeavesUnknownTypes) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  base::HistogramTester histogram_tester;
+  const url::Origin login_origin =
+      url::Origin::Create(GURL("https://login.test"));
+
+  FormData mixed_form;
+  mixed_form.set_renderer_id(test::MakeFormRendererId());
+  mixed_form.set_url(GURL("https://merchant.test/page.html"));
+  mixed_form.set_main_frame_origin(main_origin());
+  mixed_form.set_fields({CreateTestFormField("Name on card", "ccname", "",
+                                             FormControlType::kInputText),
+                         CreateTestFormField("Acct #", "acct_number", "",
+                                             FormControlType::kInputText),
+                         CreateTestFormField("Expiration date", "exp", "",
+                                             FormControlType::kInputText)});
+  mixed_form = CreateFormDataForFrame(
+      std::move(mixed_form),
+      LocalFrameToken(main_rfh()->GetFrameToken().value()));
+  test_api(mixed_form).field(0).set_origin(main_origin());
+  test_api(mixed_form).field(1).set_origin(login_origin);
+  test_api(mixed_form).field(2).set_origin(main_origin());
+  manager().OnFormsSeen({mixed_form}, /*removed_forms=*/{},
+                        AutofillManagerTestApi::pass_key());
+  // The main frame's cardholder name and expiration date fields make the login
+  // frame's username field look like a card number field.
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(mixed_form.global_id());
+  ASSERT_TRUE(form_structure);
+  ASSERT_EQ(form_structure->field(1)->Type().GetCreditCardType(),
+            CREDIT_CARD_NUMBER);
+
+  FormData filled_form = mixed_form;
+  for (int i : {0, 1}) {
+    test_api(filled_form)
+        .field(i)
+        .set_is_autofilled_according_to_renderer(true);
+    test_api(filled_form).field(i).set_value(u"JaneDoe");
+  }
+
+  EXPECT_THAT(ApplyFillAndGetTypes(filled_form, login_origin),
+              UnorderedElementsAre(
+                  Pair(mixed_form.fields()[0].global_id(), UNKNOWN_TYPE),
+                  Pair(mixed_form.fields()[1].global_id(), UNKNOWN_TYPE)));
+  histogram_tester.ExpectTotalCount(kCrossOriginMainFrameValidationHistogram,
+                                    0);
+}
+
+// Tests that a main-frame password control with `autocomplete="cc-name"` stays
+// UNKNOWN_TYPE, while a payment iframe CVC masked with `kInputPassword` still
+// allows non-password main-frame card fields to receive their predicted types.
+TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
+       MainFramePasswordControlGetsUnknownTypeWhileMaskedIframeCvcWorks) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  base::HistogramTester histogram_tester;
+
+  FormData card_form;
+  card_form.set_renderer_id(test::MakeFormRendererId());
+  card_form.set_url(GURL("https://merchant.test/checkout.html"));
+  card_form.set_main_frame_origin(main_origin());
+  card_form.set_fields(
+      {CreateTestFormField("Name on card", "name", "",
+                           FormControlType::kInputPassword, "cc-name"),
+       CreateTestFormField("Card number", "number", "",
+                           FormControlType::kInputText, "cc-number"),
+       CreateTestFormField("Expiration month", "month", "",
+                           FormControlType::kInputText, "cc-exp-month"),
+       CreateTestFormField("Expiration year", "year", "",
+                           FormControlType::kInputText, "cc-exp-year"),
+       CreateTestFormField("CVC", "cvc", "", FormControlType::kInputPassword,
+                           "cc-csc")});
+  card_form = CreateFormDataForFrame(
+      std::move(card_form),
+      LocalFrameToken(main_rfh()->GetFrameToken().value()));
+  for (int i : {kName, kMonth, kYear}) {
+    test_api(card_form).field(i).set_origin(main_origin());
+  }
+  for (int i : {kNumber, kCvc}) {
+    test_api(card_form).field(i).set_origin(iframe_origin());
+  }
+  manager().OnFormsSeen({card_form}, /*removed_forms=*/{},
+                        AutofillManagerTestApi::pass_key());
+
+  FormData filled_form = card_form;
+  FillAllFields(filled_form, /*name=*/u"SecretPassphrase");
+
+  EXPECT_THAT(
+      ApplyFillAndGetTypes(filled_form, iframe_origin()),
+      UnorderedElementsAre(
+          Pair(card_form.fields()[kName].global_id(), UNKNOWN_TYPE),
+          Pair(card_form.fields()[kNumber].global_id(), UNKNOWN_TYPE),
+          Pair(card_form.fields()[kMonth].global_id(), CREDIT_CARD_EXP_MONTH),
+          Pair(card_form.fields()[kYear].global_id(),
+               AnyOf(CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                     CREDIT_CARD_EXP_4_DIGIT_YEAR)),
+          Pair(card_form.fields()[kCvc].global_id(), UNKNOWN_TYPE)));
+  histogram_tester.ExpectUniqueSample(
+      kCrossOriginMainFrameValidationHistogram,
+      MainFrameCreditCardFieldValidationResult::kAllowed, 2);
 }
 
 }  // namespace
