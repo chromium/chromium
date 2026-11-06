@@ -272,6 +272,7 @@ SKIP_IF_FALSY = {
     'whole_program_vtables',
     'afdo',
     'rtti',
+    'no_linked_cc_support',
 }
 
 SKIP_IF_TRUTHY = {
@@ -711,6 +712,8 @@ class CrubitModule(Module):
         'source_stem',
         'source_subdir',
         'rustlibs',
+        'static_libs',
+        'no_linked_cc_support',
         'min_sdk_version',
     }
 
@@ -726,6 +729,10 @@ class CrubitModule(Module):
         self.source_stem = None
         self.source_subdir = None
         self.rustlibs = set()
+        self.static_libs = set()
+        # Whether to opt out of Android's prebuilt `libcrubit_support_cc`, see
+        # `gn_utils.CRUBIT_CPP_SUPPORT_TARGET`.
+        self.no_linked_cc_support = False
         self.min_sdk_version = None
         self._initialize_targets(RustTarget)
 

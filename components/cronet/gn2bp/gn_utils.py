@@ -46,6 +46,43 @@ POSSIBLE_SUFFIXES = [
     for suffix_2 in ["", TESTING_SUFFIX]
 ]
 
+# Crubit's C++ support library (the headers and the handful of `.cc` files
+# that Crubit-generated C++ bindings rely on) lives in
+# `//third_party/rust-toolchain/lib/third_party/crubit/support/`, which is
+# not imported into AOSP. Soong instead ships the same sources as the
+# `crubit_support_cc_srcs` filegroup, and the headers as the
+# `crubit_support_headers` header library (both in prebuilts/rust-toolchain).
+#
+# Cronet cannot use Android's prebuilt `libcrubit_support_cc` either, because
+# it is built against Android's libc++ while Cronet vendors its own. gn2bp
+# therefore collapses every GN entry point to the support library (the
+# `group`s in //build/rust/crubit/BUILD.gn below) into a single synthetic
+# `static_library` target, `CRUBIT_CPP_SUPPORT_TARGET`, which translators.py
+# turns into one `cc_library_static` compiling the filegroup with Cronet's own
+# flags and libc++. The synthetic target borrows its compile configuration
+# (cflags, defines, include_dirs) from the support `source_set`s it replaces,
+# so that it is built exactly like GN would build them.
+CRUBIT_CPP_SUPPORT_TARGET = '//build/rust/crubit:cpp_support'
+CRUBIT_CPP_SUPPORT_ENTRY_POINTS = frozenset(
+    {
+        '//build/rust/crubit:crubit',
+        '//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps',
+    }
+)
+# Representative Crubit C++ support `source_set` in GN from which
+# `CRUBIT_CPP_SUPPORT_TARGET` borrows its compile flags, defines, and
+# include_dirs (all Crubit support `source_set`s share the same GN configs).
+CRUBIT_REPRESENTATIVE_SOURCE_SET = '//third_party/rust-toolchain/lib/third_party/crubit/support/internal:bindings_support'
+# Soong modules provided by prebuilts/rust-toolchain.
+CRUBIT_SUPPORT_CC_SRCS_FILEGROUP = 'crubit_support_cc_srcs'
+CRUBIT_SUPPORT_HEADERS_MODULE = 'crubit_support_headers'
+
+
+def is_crubit_cpp_support_target(target_name):
+    """Returns whether `target_name` is (a suffixed variant of) the synthetic
+    Crubit C++ support target, see `CRUBIT_CPP_SUPPORT_TARGET`."""
+    return target_name.startswith(CRUBIT_CPP_SUPPORT_TARGET)
+
 
 def repo_root():
     """Returns an absolute path to the repository root."""
@@ -534,6 +571,24 @@ class GnParser:
         target_name = gn2bp_common.label_without_toolchain(gn_target_name)
         desc = gn_desc[gn_target_name]
         arch, chromium_arch = self._get_arch(desc['toolchain'])
+
+        if target_name in CRUBIT_CPP_SUPPORT_ENTRY_POINTS:
+            target_name = CRUBIT_CPP_SUPPORT_TARGET
+            rep_label = CRUBIT_REPRESENTATIVE_SOURCE_SET
+            if arch == 'host':
+                rep_label = self._label_with_toolchain(
+                    rep_label, desc['toolchain']
+                )
+            rep_desc = gn_desc[rep_label]
+            desc = {
+                'type': 'static_library',
+                'toolchain': desc['toolchain'],
+                'cflags': rep_desc.get('cflags', []),
+                'cflags_cc': rep_desc.get('cflags_cc', []),
+                'defines': rep_desc.get('defines', []),
+                'include_dirs': rep_desc.get('include_dirs', []),
+            }
+
         metadata = desc.get("metadata", {})
 
         if arch == 'host':

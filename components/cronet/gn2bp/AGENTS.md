@@ -55,6 +55,7 @@ Translating GN's `java_library` to Soong requires simulating GN's jar filtering 
 * **Bindgen**: Mapped to `rust_bindgen`.
 * **Crates**: Mapped to `rust_ffi_static` or `rust_binary`. The `crate_name` is extracted, and target names are hashed to avoid file path length limits in Soong.
 * **Build Scripts**: Because Soong doesn't run `build.rs` scripts dynamically, `generate_build_scripts_output.py` pre-evaluates them and saves outputs in `gn2bp_rust_build_script_outputs/`.
+* **Crubit (`cpp_api_from_rust`)**: Mapped to Soong's native `crubit_cpp_from_rust` module. Crubit's C++ support library lives in `//third_party/rust-toolchain`, which is not imported; instead, `gn_utils.py` collapses the GN entry points (`//build/rust/crubit:crubit` and `:cpp_api_from_rust_bindings_cpp_deps`) into a single synthetic `cc_library_static` (`CRUBIT_CPP_SUPPORT_TARGET`) that compiles prebuilts/rust-toolchain's `crubit_support_cc_srcs` filegroup with Cronet's own flags and libc++. `crubit_cpp_from_rust` modules link it via `static_libs` and set `no_linked_cc_support: true` to opt out of Android's prebuilt `libcrubit_support_cc`.
 
 ### C++
 * Extracts `cflags`, `ldflags`, `include_dirs`, and links them to the proper targets.

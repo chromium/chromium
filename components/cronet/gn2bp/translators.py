@@ -1535,6 +1535,26 @@ def create_jni_registration_modules(
     return [cc_genrule, header_genrule]
 
 
+def _configure_crubit_cpp_support_module(module):
+    """Turns `module` into Cronet's build of Crubit's C++ support library.
+
+    See `gn_utils.CRUBIT_CPP_SUPPORT_TARGET`: the module compiles the
+    `crubit_support_cc_srcs` filegroup from prebuilts/rust-toolchain with
+    Cronet's own cflags, `cc_defaults` and vendored libc++, instead of relying
+    on Android's prebuilt `libcrubit_support_cc` (built against Android's
+    libc++). The compile flags themselves come from the GN target, which
+    borrows them from Crubit's support `source_set`s.
+    """
+    module.comment = (
+        f"GN: {', '.join(sorted(gn_utils.CRUBIT_CPP_SUPPORT_ENTRY_POINTS))}\n"
+        "// Crubit's C++ support library, built from prebuilts/rust-toolchain's"
+        f"\n// `{gn_utils.CRUBIT_SUPPORT_CC_SRCS_FILEGROUP}` with Cronet's own "
+        "flags and libc++."
+    )
+    module.srcs.add(f":{gn_utils.CRUBIT_SUPPORT_CC_SRCS_FILEGROUP}")
+    module.header_libs.add(gn_utils.CRUBIT_SUPPORT_HEADERS_MODULE)
+
+
 def _create_initial_modules(
     blueprint,
     gn,
@@ -1606,15 +1626,16 @@ def _create_initial_modules(
             ),
         )
     elif target.type in ['static_library', 'source_set']:
-        modules = (
-            soong_ast.create_module(
-                'cc_library_static',
-                bp_module_name,
-                gn_target_name,
-                context,
-                is_test=is_test_target,
-            ),
+        module = soong_ast.create_module(
+            'cc_library_static',
+            bp_module_name,
+            gn_target_name,
+            context,
+            is_test=is_test_target,
         )
+        if gn_utils.is_crubit_cpp_support_target(gn_target_name):
+            _configure_crubit_cpp_support_module(module)
+        modules = (module,)
     elif target.type == 'shared_library':
         modules = (
             soong_ast.create_module(
@@ -1705,6 +1726,12 @@ def _create_initial_modules(
         module.stem = f"lib{module.crate_name}"
         module.source_stem = target.source_stem
         module.source_subdir = target.source_subdir
+        # By default, Soong's `crubit_cpp_from_rust` pulls in Android's prebuilt
+        # `libcrubit_support_cc` through the Rust stdlib bindings. That library
+        # is built against Android's libc++, whereas Cronet vendors its own
+        # libc++, so opt out of it and link Cronet's own build of the support
+        # library instead (see `gn_utils.CRUBIT_CPP_SUPPORT_TARGET`).
+        module.no_linked_cc_support = True
         module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
         module.apex_available.add(common.tethering_apex)
         modules = (module,)
@@ -2034,13 +2061,20 @@ def _resolve_dependencies(
                     # See https:/crbug.com/417429009.
                     pass
                 elif (
-                    module.type.startswith('crubit')
+                    module.type == 'crubit_cpp_from_rust'
                     and dep_module.type == 'cc_library_static'
                 ):
-                    # crubit_cpp_from_rust modules do not link C++ static
-                    # libraries directly; C++ dependencies are consumed by
-                    # downstream C++ targets.
-                    pass
+                    if gn_utils.is_crubit_cpp_support_target(
+                        dep_module.gn_target
+                    ):
+                        # Link Cronet's own build of Crubit's C++ support
+                        # library (see `_configure_crubit_cpp_support_module`).
+                        module_target.static_libs.add(dep_module.name)
+                    else:
+                        # Otherwise, crubit_cpp_from_rust modules do not link
+                        # C++ static libraries directly; C++ dependencies are
+                        # consumed by downstream C++ targets.
+                        pass
                 else:
                     raise Exception(
                         f"Cannot add {dep_module.name} ({dep_module.type}) to {module.name} ({module.type})"

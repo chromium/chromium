@@ -213,13 +213,16 @@ _builtin_deps = {
     # instead use the library from AOSP which has a workaround for it. See
     # https://crbug.com/394303030.
     '//third_party/rust/rustversion/v1:lib__proc_macro': add_rustversion_deps,
-    # Crubit GN helper and stdlib binding targets. In Soong, `crubit_cpp_from_rust`
-    # natively links `libcrubit_support_cc`, `libcrubit_bridge_rust`, and the
-    # prebuilt toolchain's stdlib Crubit bindings (`libcore_crubit`,
-    # `liballoc_crubit`, `libstd_crubit`), so Chromium's GN targets for these
-    # are not needed.
-    '//build/rust/crubit:crubit': always_disable,
-    '//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps': always_disable,
+    # Crubit GN helper targets for the Rust side of the bindings and the Rust
+    # stdlib bindings. In Soong, `crubit_cpp_from_rust` natively provides
+    # `libcrubit_bridge_rust` and the prebuilt toolchain's stdlib Crubit
+    # bindings (`libcore_crubit`, `liballoc_crubit`, `libstd_crubit`), so
+    # Chromium's GN targets for these are not needed.
+    #
+    # Note: the C++ side (`//build/rust/crubit:crubit` and
+    # `//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps`) is *not*
+    # disabled: gn_utils.py translates it into Cronet's own build of Crubit's
+    # C++ support library, see `gn_utils.CRUBIT_CPP_SUPPORT_TARGET`.
     '//build/rust/crubit:cpp_api_from_rust_bindings_rs_deps': always_disable,
     '//build/rust/std:std_bindings': always_disable,
     # Chromium-internal GTest unittest Java support libraries pulled in by
