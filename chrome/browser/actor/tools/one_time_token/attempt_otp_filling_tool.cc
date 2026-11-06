@@ -332,11 +332,13 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
       .FetchUserDataProcessingConsent(base::BindOnce(
           &AttemptOtpFillingTool::OnUserDataProcessingConsentFetched,
           weak_factory_.GetWeakPtr(), std::move(callback),
-          gmail_otp_filling_enabled, within_cool_off_period));
+          base::TimeTicks::Now(), gmail_otp_filling_enabled,
+          within_cool_off_period));
 }
 
 void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
     ToolCallback callback,
+    base::TimeTicks start_time,
     bool gmail_otp_filling_enabled,
     bool within_cool_off_period,
     std::optional<one_time_tokens::UserDataProcessingConsentStates>
@@ -344,6 +346,8 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
   // The awaited step has finished; see `pending_cancellation_event_` for more
   // details.
   pending_cancellation_event_.reset();
+  RecordConsentFetchDuration(base::TimeTicks::Now() - start_time,
+                             consent_states.has_value());
   if (!consent_states.has_value()) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::

@@ -12,6 +12,10 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace actor {
 
 // LINT.IfChange(AttemptOtpFillingEvent)
@@ -155,6 +159,12 @@ inline constexpr char kGmailOtpConfirmationDialogInteractionHistogram[] =
 inline constexpr std::string_view kActorOtpVerifyIsActorLoginFlowHistogram =
     "OneTimeTokens.Actor.AttemptOtpFilling.VerifyIsActorLoginFlow";
 
+// Histogram name for the time from requesting the Gmail and Google Smart
+// Features consent until the response.
+inline constexpr char kAttemptOtpFillingConsentFetchDurationHistogram[] =
+    "OneTimeTokens.Actor.AttemptOtpFilling."
+    "GmailAndGoogleSmartFeaturesConsent.Duration";
+
 // Histogram name for the combination of the Gmail and Google Smart Features
 // consent states.
 inline constexpr char kGmailAndGoogleSmartFeaturesConsentHistogram[] =
@@ -177,6 +187,10 @@ void RecordGmailOtpConfirmationDialogInteraction(
 
 // Records the result of VerifyIsActorLoginFlow.
 void RecordActorLoginFlowVerification(ActorLoginFlowVerifier::Result result);
+
+// Records the time from requesting the Gmail and Google Smart Features
+// consent until the response.
+void RecordConsentFetchDuration(base::TimeDelta duration, bool success);
 
 // Records the combination of the Gmail and Google Smart Features consent
 // states.

@@ -395,6 +395,11 @@ std::string ValidateFormFillingContextHistogram(std::string_view step) {
       {kAttemptOtpFillingValidateFormFillingContextHistogram, ".", step});
 }
 
+std::string ConsentFetchDurationHistogram(std::string_view outcome) {
+  return base::StrCat(
+      {kAttemptOtpFillingConsentFetchDurationHistogram, ".", outcome});
+}
+
 void ExpectNoCancellationRecorded(const base::HistogramTester& tester) {
   for (AttemptOtpFillingToolEvent event : {
            AttemptOtpFillingToolEvent::kCancelledDuringConsentFetch,
@@ -534,6 +539,54 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectTotalCount(kGmailOtpOptInCardInteractionHistogram, 0);
 }
 
+TEST_F(AttemptOtpFillingToolTest,
+       Validate_ConsentFetchSuccess_RecordsDuration) {
+  autofill::ActorOneTimeTokenFillingService::
+      FetchUserDataProcessingConsentCallback consent_callback;
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([&consent_callback](
+                    autofill::ActorOneTimeTokenFillingService::
+                        FetchUserDataProcessingConsentCallback callback) {
+        consent_callback = std::move(callback);
+      });
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+  tool.Validate(base::DoNothing());
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  one_time_tokens::UserDataProcessingConsentStates states;
+  states.comms_apps = one_time_tokens::ConsentState::kEnabled;
+  states.google_apps = one_time_tokens::ConsentState::kEnabled;
+  std::move(consent_callback).Run(states);
+
+  histogram_tester_.ExpectUniqueSample(
+      ConsentFetchDurationHistogram("Success"), 500, 1);
+  histogram_tester_.ExpectTotalCount(
+      ConsentFetchDurationHistogram("Error"), 0);
+}
+
+TEST_F(AttemptOtpFillingToolTest, Validate_ConsentFetchError_RecordsDuration) {
+  autofill::ActorOneTimeTokenFillingService::
+      FetchUserDataProcessingConsentCallback consent_callback;
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([&consent_callback](
+                    autofill::ActorOneTimeTokenFillingService::
+                        FetchUserDataProcessingConsentCallback callback) {
+        consent_callback = std::move(callback);
+      });
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+  tool.Validate(base::DoNothing());
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  std::move(consent_callback).Run(std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      ConsentFetchDurationHistogram("Error"), 500, 1);
+  histogram_tester_.ExpectTotalCount(
+      ConsentFetchDurationHistogram("Success"), 0);
+}
+
 // Destroying the tool while the consent fetch is pending records
 // `kCancelledDuringConsentFetch`. A late response records nothing.
 TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringConsentFetch) {
@@ -559,6 +612,8 @@ TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringConsentFetch) {
   std::move(consent_callback).Run(std::nullopt);
   EXPECT_EQ(counts_before_late_response,
             histogram_tester_.GetTotalCountsForPrefix("OneTimeTokens."));
+  histogram_tester_.ExpectTotalCount(ConsentFetchDurationHistogram("Success"), 0);
+  histogram_tester_.ExpectTotalCount(ConsentFetchDurationHistogram("Error"), 0);
 }
 
 // Destroying the tool while the opt-in card is shown records
@@ -1732,7 +1787,6 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ValidationFailsAfterConfirmation) {
           kOtpFieldsFromDifferentOrigins,
       1);
 }
-
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())

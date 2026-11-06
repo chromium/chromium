@@ -9,12 +9,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace actor {
 
 namespace {
+
+// LINT.IfChange(AttemptOtpFillingConsentFetchOutcomeSuffix)
+constexpr std::string_view GetConsentFetchOutcomeSuffix(bool success) {
+  return success ? "Success" : "Error";
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/histograms.xml:AttemptOtpFillingConsentFetchOutcome)
 
 // LINT.IfChange(AttemptOtpFillingStepSuffix)
 
@@ -34,6 +41,12 @@ std::string_view GetUmaSuffix(AttemptOtpFillingStep step) {
 
 }  // namespace
 
+void RecordConsentFetchDuration(base::TimeDelta duration, bool success) {
+  base::UmaHistogramTimes(
+      base::StrCat({kAttemptOtpFillingConsentFetchDurationHistogram, ".",
+                    GetConsentFetchOutcomeSuffix(success)}),
+      duration);
+}
 void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event) {
   base::UmaHistogramEnumeration(kAttemptOtpFillingToolHistogram, event);
 }

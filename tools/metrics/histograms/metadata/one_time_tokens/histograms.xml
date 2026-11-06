@@ -8,6 +8,15 @@ found in the LICENSE file.
 
 <histograms>
 
+<!-- LINT.IfChange(AttemptOtpFillingConsentFetchOutcome) -->
+
+<variants name="AttemptOtpFillingConsentFetchOutcome">
+  <variant name="Error" summary="an error"/>
+  <variant name="Success" summary="success"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.cc:AttemptOtpFillingConsentFetchOutcomeSuffix) -->
+
 <!-- LINT.IfChange(AttemptOtpFillingPredictedOtpType) -->
 
 <variants name="AttemptOtpFillingPredictedOtpType">
@@ -53,6 +62,20 @@ found in the LICENSE file.
     OneTimeTokens.Actor.AttemptOtpFilling.ToolInvocation bucket
     UnableToRetrieveGmailAndGoogleSmartFeaturesConsent.
   </summary>
+</histogram>
+
+<histogram
+    name="OneTimeTokens.Actor.AttemptOtpFilling.GmailAndGoogleSmartFeaturesConsent.Duration.{Outcome}"
+    units="ms" expires_after="2027-06-30">
+  <owner>salmaabdelaziz@google.com</owner>
+  <owner>passwordmanager-mobile-eng@google.com</owner>
+  <summary>
+    Time from requesting the Gmail and Google Smart Features consent states in
+    AttemptOtpFilling Validate until the response ({Outcome}). Recorded once per
+    consent fetch. Not recorded for mock OTP runs or if the tool is destroyed
+    before the response.
+  </summary>
+  <token key="Outcome" variants="AttemptOtpFillingConsentFetchOutcome"/>
 </histogram>
 
 <histogram
