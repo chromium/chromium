@@ -1611,6 +1611,13 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteOpenUse) {
   SimpleTest(GetTestUrl("indexeddb", "delete_open_use.html"));
 }
 
+// Regression test for https://crbug.com/579841820
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest,
+                       CursorPrefetchDeleteDuringUpgrade) {
+  SimpleTest(
+      GetTestUrl("indexeddb", "cursor_prefetch_delete_during_upgrade.html"));
+}
+
 // Regression test for https://crbug.com/475947902
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ConcurrentlyWriteBlobAndRead) {
   SimpleTest(GetTestUrl("indexeddb", "concurrently_write_blob_and_read.html"));

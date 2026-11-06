@@ -8528,6 +8528,7 @@ data/indexeddb/crbug899446_noai/file__0.indexeddb.leveldb/LOG
 data/indexeddb/crbug899446_noai/file__0.indexeddb.leveldb/MANIFEST-000001
 data/indexeddb/cursor_prefetch.html
 data/indexeddb/cursor_prefetch.js
+data/indexeddb/cursor_prefetch_delete_during_upgrade.html
 data/indexeddb/cursor_test.html
 data/indexeddb/cursor_test.js
 data/indexeddb/database_callbacks_first.html

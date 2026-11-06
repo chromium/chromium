@@ -865,6 +865,7 @@ void IDBDatabase::CreateIndex(int64_t transaction_id,
 void IDBDatabase::DeleteIndex(int64_t transaction_id,
                               int64_t object_store_id,
                               int64_t index_id) {
+  IDBCursor::ResetCursorPrefetchCaches(transaction_id, nullptr);
   GetDatabaseRemote()->DeleteIndex(transaction_id, object_store_id, index_id);
 }
 

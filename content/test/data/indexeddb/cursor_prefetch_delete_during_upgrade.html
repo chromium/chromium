@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Regression test for crbug.com/579841820</title>
+<script type="text/javascript" src="common.js"></script>
+<script>
+'use strict';
+
+// Must match IDBCursor::kPrefetchContinueThreshold in idb_cursor.h.
+const kPrefetchThreshold = 2;
+const kNumItems = 10;
+
+function onUpgradeNeeded(event) {
+  const db = event.target.result;
+  const tx = event.target.transaction;
+  tx.onabort = unexpectedAbortCallback;
+
+  const store = db.createObjectStore('store');
+  const index = store.createIndex('index', 'k');
+  for (let i = 0; i < kNumItems; ++i) {
+    store.put({k: i}, i);
+  }
+
+  testDeleteIndexDuringPrefetch(db, store, index);
+}
+
+// Deleting an index while a cursor on that index has been used for prefetch:
+// the test passes if this doesn't crash.
+function testDeleteIndexDuringPrefetch(db, store, index) {
+  let indexSteps = 0;
+  const indexCursorReq = index.openCursor();
+  indexCursorReq.onerror = unexpectedErrorCallback;
+  indexCursorReq.onsuccess = (e) => {
+    const cursor = e.target.result;
+    ++indexSteps;
+    if (indexSteps === kPrefetchThreshold + 3) {
+      store.deleteIndex('index');
+      try {
+        cursor.continue();
+        fail('Expected InvalidStateError after deleteIndex');
+      } catch (err) {
+        if (err.name !== 'InvalidStateError') {
+          fail('Expected InvalidStateError, got ' + err.name);
+        }
+      }
+      // Test the object store case afterwards, otherwise two concurrent cursors
+      // will wipe each others' prefetch cache.
+      testDeleteObjectStoreDuringPrefetch(db, store);
+      return;
+    }
+    cursor.continue();
+  };
+}
+
+// Deleting an object store while a cursor in that store has been used for
+// prefetch: the test passes if this doesn't crash.
+function testDeleteObjectStoreDuringPrefetch(db, store) {
+  let storeSteps = 0;
+  const storeCursorReq = store.openCursor();
+  storeCursorReq.onerror = unexpectedErrorCallback;
+  storeCursorReq.onsuccess = (e) => {
+    const cursor = e.target.result;
+    ++storeSteps;
+    if (storeSteps === kPrefetchThreshold + 3) {
+      db.deleteObjectStore('store');
+      try {
+        cursor.continue();
+        fail('Expected InvalidStateError after deleteObjectStore');
+      } catch (err) {
+        if (err.name !== 'InvalidStateError') {
+          fail('Expected InvalidStateError, got ' + err.name);
+        }
+      }
+      return;
+    }
+    cursor.continue();
+  };
+}
+
+function test() {
+  indexedDBTest(onUpgradeNeeded, () => done());
+}
+</script>
+</head>
+<body onLoad="test()">
+<div id="status">Starting...</div>
+</body>
+</html>

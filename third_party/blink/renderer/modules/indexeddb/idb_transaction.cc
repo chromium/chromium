@@ -511,6 +511,7 @@ void IDBTransaction::CreateObjectStore(int64_t object_store_id,
 
 void IDBTransaction::DeleteObjectStore(int64_t object_store_id) {
   if (remote_.is_connected()) {
+    IDBCursor::ResetCursorPrefetchCaches(id_, nullptr);
     remote_->DeleteObjectStore(object_store_id);
   }
 }
