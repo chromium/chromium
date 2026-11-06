@@ -157,14 +157,43 @@ class VpnService : public KeyedService,
   void DestroyConfigurationsForExtension(const std::string& extension_id);
 
   // Callback used to indicate that configuration creation succeeded.
+  //
+  // Concurrency between CreateConfiguration, OnGetShillProperties, and
+  // DestroyConfiguration:
+  // 1. `CreateConfiguration()` creates an unpopulated `VpnConfiguration` entry
+  //    in `key_to_configuration_map_` (with `service_path() == std::nullopt`)
+  //    and starts an asynchronous `CreateShillConfiguration()` call. While
+  //    `service_path()` is `std::nullopt`, `DestroyConfiguration()` rejects any
+  //    concurrent `destroyConfig` call with `"Pending create."`.
+  // 2. Once Shill creates the service, two async flows may register the
+  //    resulting `service_path` via `RegisterConfiguration()`:
+  //    - `NetworkListChanged()` -> `GetShillProperties()` ->
+  //      `OnGetShillProperties()`
+  //    - `CreateShillConfiguration()`'s direct completion callback ->
+  //      `OnCreateConfigurationSuccess()`
+  // 3. If `OnGetShillProperties()` runs before `OnCreateConfigurationSuccess()`,
+  //    `configuration->service_path()` becomes populated. A concurrent
+  //    `DestroyConfiguration()` (or `OnConfigurationRemoved()`) can then run
+  //    before `OnCreateConfigurationSuccess()`, destroying the
+  //    `VpnConfiguration` in `VpnService` and calling
+  //    `NetworkConfigurationHandler::RemoveConfiguration(*service_path)` to
+  //    remove the service in Shill.
+  // 4. When `OnCreateConfigurationSuccess()` subsequently runs,
+  //    `LookupConfiguration()` returns `nullptr` because the configuration was
+  //    already registered and then destroyed from both `VpnService` and
+  //    `NetworkConfigurationHandler`. `OnCreateConfigurationSuccess()` skips
+  //    `RegisterConfiguration()` and still runs `callback` because the creation
+  //    in Shill had chronologically succeeded prior to the destruction.
   void OnCreateConfigurationSuccess(SuccessCallback callback,
-                                    VpnConfiguration* configuration,
+                                    const std::string& extension_id,
+                                    const std::string& configuration_name,
                                     const std::string& service_path,
-                                    const std::string&);
+                                    const std::string& guid);
 
   // Callback used to indicate that configuration creation failed.
   void OnCreateConfigurationFailure(FailureCallback callback,
-                                    VpnConfiguration* configuration,
+                                    const std::string& extension_id,
+                                    const std::string& configuration_name,
                                     const std::string& error_name);
 
   // Callback for ash::NetworkConfigurationHandler::GetShillProperties that

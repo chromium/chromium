@@ -9,6 +9,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"
@@ -29,6 +31,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/ash/components/network/shill_property_handler.h"
 #include "chromeos/ash/experiences/extensions/common/api/vpn_provider.h"
 #include "content/public/browser/browser_context.h"
@@ -85,6 +88,25 @@ void DoNothingSuccessCallback(const std::string& service_path,
 class TestShillThirdPartyVpnDriverClient
     : public ash::FakeShillThirdPartyVpnDriverClient {
  public:
+  void AddShillThirdPartyVpnObserver(
+      const std::string& object_path_value,
+      ash::ShillThirdPartyVpnObserver* observer) override {
+    EXPECT_TRUE(active_observers_.insert(object_path_value).second)
+        << "Duplicate observer added for " << object_path_value;
+    add_observer_counter_++;
+    FakeShillThirdPartyVpnDriverClient::AddShillThirdPartyVpnObserver(
+        object_path_value, observer);
+  }
+
+  void RemoveShillThirdPartyVpnObserver(
+      const std::string& object_path_value) override {
+    EXPECT_EQ(active_observers_.erase(object_path_value), 1u)
+        << "Removed non-existent observer for " << object_path_value;
+    remove_observer_counter_++;
+    FakeShillThirdPartyVpnDriverClient::RemoveShillThirdPartyVpnObserver(
+        object_path_value);
+  }
+
   void SetParameters(const std::string& object_path_value,
                      const base::DictValue& parameters,
                      StringCallback callback,
@@ -118,6 +140,9 @@ class TestShillThirdPartyVpnDriverClient
                                                    std::move(error_callback));
   }
 
+  int add_observer_counter_ = 0;
+  int remove_observer_counter_ = 0;
+  std::set<std::string> active_observers_;
   int set_parameters_counter_ = 0;
   base::DictValue parameters_;
   int update_connection_state_counter_ = 0;
@@ -202,6 +227,24 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
 
   bool IsConfigConnected() {
     return service()->GetActiveConfigurationForExtension(extension_id());
+  }
+
+  void RegisterAndDestroyConfigurationForTest(
+      const std::string& configuration_name,
+      const std::string& service_path) {
+    VpnService::VpnConfiguration* configuration =
+        service()->LookupConfiguration(extension_id(), configuration_name);
+    ASSERT_TRUE(configuration);
+    service()->RegisterConfiguration(configuration, service_path);
+    service()->DestroyConfigurationInternal(configuration);
+  }
+
+  void RegisterConfigurationForTest(const std::string& configuration_name,
+                                    const std::string& service_path) {
+    VpnService::VpnConfiguration* configuration =
+        service()->LookupConfiguration(extension_id(), configuration_name);
+    ASSERT_TRUE(configuration);
+    service()->RegisterConfiguration(configuration, service_path);
   }
 
   std::string GetSingleServicePath() {
@@ -378,6 +421,68 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, CreateDisable) {
   content::RunAllPendingInMessageLoop();
   EXPECT_FALSE(DoesConfigExist(kTestConfig));
   EXPECT_FALSE(HasService(service_path));
+}
+
+IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, DestroyWhileCreateInFlight) {
+  // Observe `OnConfigurationCreated` (which runs inside
+  // `NetworkConfigurationHandler::NotifyConfigurationCompleted` right before
+  // `VpnService::OnCreateConfigurationSuccess`) and destroy the configuration
+  // there, simulating the race where `OnGetShillProperties` registered the
+  // configuration and `DestroyConfiguration` destroyed it before
+  // `OnCreateConfigurationSuccess` ran.
+  class DestroyOnCreatedObserver : public ash::NetworkConfigurationObserver {
+   public:
+    explicit DestroyOnCreatedObserver(VpnProviderApiTest* test) : test_(test) {}
+
+    void OnConfigurationCreated(const std::string& service_path,
+                                const std::string& guid) override {
+      if (destroyed_) {
+        return;
+      }
+      destroyed_ = true;
+      test_->RegisterAndDestroyConfigurationForTest(kTestConfig, service_path);
+      EXPECT_FALSE(test_->DoesConfigExist(kTestConfig));
+    }
+
+   private:
+    raw_ptr<VpnProviderApiTest> test_;
+    bool destroyed_ = false;
+  };
+
+  DestroyOnCreatedObserver observer(this);
+  base::ScopedObservation<ash::NetworkConfigurationHandler,
+                          ash::NetworkConfigurationObserver>
+      observation(&observer);
+  observation.Observe(
+      ash::NetworkHandler::Get()->network_configuration_handler());
+
+  // `CreateConfigForTest` runs `VpnProviderCreateConfigFunction` and waits for
+  // its response:
+  // - Without the UAF fix, `OnCreateConfigurationSuccess` dereferences the
+  //   dangling `VpnConfiguration*` pointer.
+  // - Without calling `std::move(callback).Run()` when `!configuration`,
+  //   `VpnProviderCreateConfigFunction` is destroyed without responding and
+  //   hits `DCHECK(did_respond() || can_be_destroyed_before_responding())`.
+  EXPECT_TRUE(CreateConfigForTest(kTestConfig));
+  EXPECT_FALSE(DoesConfigExist(kTestConfig));
+}
+
+IN_PROC_BROWSER_TEST_F(VpnProviderApiTest,
+                       ReRegisterConfigurationWithNewServicePath) {
+  EXPECT_TRUE(CreateConfigForTest(kTestConfig));
+  EXPECT_TRUE(DoesConfigExist(kTestConfig));
+  const std::string old_service_path = GetSingleServicePath();
+  EXPECT_EQ(1, test_client_->add_observer_counter_);
+  EXPECT_EQ(0, test_client_->remove_observer_counter_);
+
+  // Re-registering the same configuration with a new `service_path` must
+  // remove the old `service_path` mapping and unregister the previous observer
+  // before registering the new one.
+  const std::string new_service_path = old_service_path + "_new";
+  RegisterConfigurationForTest(kTestConfig, new_service_path);
+  EXPECT_EQ(new_service_path, GetSingleServicePath());
+  EXPECT_EQ(2, test_client_->add_observer_counter_);
+  EXPECT_EQ(1, test_client_->remove_observer_counter_);
 }
 
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, CreateBlocklist) {
