@@ -4287,8 +4287,10 @@ class AXPosition {
     // Valid positions are required for comparison. Use `AsValidPosition`
     // or `SnapToMaxTextOffsetIfBeyond` before calling `CompareTo` or making
     // comparisons.
-    CHECK(IsValid(), base::NotFatalUntil::M163);
-    CHECK(other.IsValid(), base::NotFatalUntil::M163);
+    // TODO(crbug.com/582444065): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(IsValid());
+    DCHECK(other.IsValid());
 
     if (GetAnchor() == other.GetAnchor())
       return SlowCompareTo(other);  // No optimization is necessary.
