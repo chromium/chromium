@@ -90,7 +90,7 @@ FontDescription::FontDescription(HashTableDeletedValueType)
 
 FontDescription::FontDescription() {
   fields_.orientation_ = static_cast<uint32_t>(FontOrientation::kHorizontal);
-  fields_.width_variant_ = kRegularWidth;
+  fields_.width_variant_ = std::to_underlying(FontWidthVariant::kRegular);
   fields_.variant_caps_ = kCapsNormal;
   fields_.is_absolute_size_ = false;
   fields_.generic_family_ = kNoFamily;

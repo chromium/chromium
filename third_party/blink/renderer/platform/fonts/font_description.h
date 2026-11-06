@@ -425,7 +425,7 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetOrientation(FontOrientation orientation);
   void SetWidthVariant(FontWidthVariant width_variant) {
-    fields_.width_variant_ = width_variant;
+    fields_.width_variant_ = std::to_underlying(width_variant);
   }
   void SetLocale(scoped_refptr<const LayoutLocale> locale) {
     locale_ = std::move(locale);
@@ -557,7 +557,7 @@ class PLATFORM_EXPORT FontDescription {
 
     uint32_t orientation_ : kFontOrientationBitCount;
 
-    uint32_t width_variant_ : 2;  // FontWidthVariant
+    uint32_t width_variant_ : kFontWidthVariantBitCount;  // FontWidthVariant
 
     uint32_t variant_caps_ : 3;  // FontVariantCaps
     // Whether or not CSS specified an explicit size

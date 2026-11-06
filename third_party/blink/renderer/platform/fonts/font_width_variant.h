@@ -26,24 +26,28 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_WIDTH_VARIANT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_WIDTH_VARIANT_H_
 
+#include <utility>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
-enum FontWidthVariant {
-  kRegularWidth,
-  kHalfWidth,
-  kThirdWidth,
-  kQuarterWidth,
-  kLastFontWidthVariant = kQuarterWidth
+enum class FontWidthVariant : uint32_t {
+  kRegular,
+  kHalf,
+  kThird,
+  kQuarter,
+
+  kMaxValue = kQuarter
 };
 
-const wtf_size_t kFontWidthVariantWidth = 2;
+inline constexpr wtf_size_t kFontWidthVariantBitCount = 2;
 
-static_assert(kLastFontWidthVariant >> kFontWidthVariantWidth == 0,
-              "FontWidthVariantWidth must be correct");
+static_assert((std::to_underlying(FontWidthVariant::kMaxValue) >>
+               kFontWidthVariantBitCount) == 0,
+              "kFontWidthVariantBitCount must be correct");
 
 PLATFORM_EXPORT String ToString(FontWidthVariant);
 

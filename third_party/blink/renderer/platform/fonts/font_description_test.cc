@@ -358,7 +358,7 @@ TEST_F(FontDescriptionTest, AllFeaturesHash) {
   key_a = font_description.GetHash();
   EXPECT_EQ(key_a, key_b);
 
-  font_description.SetWidthVariant(kHalfWidth);
+  font_description.SetWidthVariant(FontWidthVariant::kHalf);
   key_b = font_description.GetHash();
   EXPECT_NE(key_a, key_b);
   key_a = font_description.GetHash();

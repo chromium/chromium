@@ -1585,8 +1585,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
       DCHECK_EQ(font.GetFontDescription().Orientation(),
                 FontOrientation::kHorizontal);
       LayoutTextCombine::AssertStyleIsValid(start_style);
-      DCHECK(!override_font ||
-             font.GetFontDescription().WidthVariant() != kRegularWidth);
+      DCHECK(!override_font || font.GetFontDescription().WidthVariant() !=
+                                   FontWidthVariant::kRegular);
     }
 #endif
     shaper.SetOptions({
@@ -2421,7 +2421,8 @@ void InlineNode::AdjustFontForTextCombineUprightAll() const {
 
   // Try compressed fonts.
   static const std::array<FontWidthVariant, 3> kWidthVariants = {
-      kHalfWidth, kThirdWidth, kQuarterWidth};
+      FontWidthVariant::kHalf, FontWidthVariant::kThird,
+      FontWidthVariant::kQuarter};
   for (const auto width_variant : kWidthVariants) {
     description.SetWidthVariant(width_variant);
     Font* compressed_font =

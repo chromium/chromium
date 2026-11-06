@@ -90,16 +90,16 @@ void FontFeatureRange::FromFontDescription(
   static constexpr FontFeatureRange twid{{{'t', 'w', 'i', 'd'}, 1}};
   static constexpr FontFeatureRange qwid{{{'q', 'w', 'i', 'd'}, 1}};
   switch (description.WidthVariant()) {
-    case kHalfWidth:
+    case FontWidthVariant::kHalf:
       features.push_back(hwid);
       break;
-    case kThirdWidth:
+    case FontWidthVariant::kThird:
       features.push_back(twid);
       break;
-    case kQuarterWidth:
+    case FontWidthVariant::kQuarter:
       features.push_back(qwid);
       break;
-    case kRegularWidth:
+    case FontWidthVariant::kRegular:
       break;
   }
 
