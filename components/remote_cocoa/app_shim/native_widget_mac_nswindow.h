@@ -97,6 +97,11 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // expected to be hidden.
 - (BOOL)invokeOriginalIsVisibleForTesting;
 
+// Returns whether this window keeps the toolbar revealed in immersive
+// fullscreen only while it is the key window, rather than whenever it is a
+// child of the overlay window. Defaults to NO.
+- (BOOL)immersiveRevealLockRequiresKey;
+
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process
 // or the NativeWidgetNSWindowBridge in a display process.
@@ -123,6 +128,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 
 // Called whenever a child window is removed to the receiver.
 @property(nonatomic, copy) void (^childWindowRemovedHandler)(NSWindow* child);
+
+// Called whenever a child window of the receiver becomes or resigns key.
+@property(nonatomic, copy) void (^childWindowKeyChangedHandler)(NSWindow*);
 
 // Window to dispatch commands to. Needed for situations where the window that
 // needs to handle events is not the target's immediate parent; for example

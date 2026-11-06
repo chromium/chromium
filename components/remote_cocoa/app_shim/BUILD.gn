@@ -121,6 +121,7 @@ source_set("unit_tests") {
   sources = [
     "browser_native_widget_window_mac_unittests.mm",
     "native_widget_mac_nswindow_headless_unittests.mm",
+    "native_widget_mac_nswindow_unittests.mm",
     "native_widget_mac_overlay_nswindow_unittests.mm",
   ]
   deps = [

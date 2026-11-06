@@ -238,6 +238,7 @@ struct NSEdgeAndCornerThicknesses {
 @synthesize preventKeyWindow = _preventKeyWindow;
 @synthesize childWindowAddedHandler = _childWindowAddedHandler;
 @synthesize childWindowRemovedHandler = _childWindowRemovedHandler;
+@synthesize childWindowKeyChangedHandler = _childWindowKeyChangedHandler;
 @synthesize commandDispatchParentOverride = _commandDispatchParentOverride;
 
 - (instancetype)initWithContentRect:(NSRect)contentRect
@@ -285,6 +286,10 @@ struct NSEdgeAndCornerThicknesses {
   return [self isVisible];
 }
 
+- (BOOL)immersiveRevealLockRequiresKey {
+  return NO;
+}
+
 // This is called by the "Move Window to {Left/Right} Side of Screen"
 // Window menu alternate items (must press Option to see).
 // Without this, selecting these items will move child windows like
@@ -318,6 +323,26 @@ struct NSEdgeAndCornerThicknesses {
   childWin.level = level;
   if (self.childWindowAddedHandler) {
     self.childWindowAddedHandler(childWin);
+  }
+}
+
+- (void)becomeKeyWindow {
+  [super becomeKeyWindow];
+  [self notifyParentOfKeyChange];
+}
+
+- (void)resignKeyWindow {
+  [super resignKeyWindow];
+  [self notifyParentOfKeyChange];
+}
+
+// Lets the parent track key changes of its children, e.g. for immersive
+// fullscreen reveal locks.
+- (void)notifyParentOfKeyChange {
+  NativeWidgetMacNSWindow* parent =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>(self.parentWindow);
+  if (parent.childWindowKeyChangedHandler) {
+    parent.childWindowKeyChangedHandler(self);
   }
 }
 
