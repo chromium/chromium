@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -15,6 +17,7 @@ import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -188,5 +191,15 @@ public final class TabBottomSheetUtils {
         if (windowAndroid == null) return true;
         @ActivityState int activityState = windowAndroid.getActivityState();
         return activityState == ActivityState.STOPPED || activityState == ActivityState.DESTROYED;
+    }
+
+    /** Returns the expanded content container inside a tab bottom sheet view. */
+    public static @Nullable ViewGroup getExpandedContentGroup(View contentView) {
+        return contentView.findViewById(R.id.expanded_content_group);
+    }
+
+    /** Returns the WebUI container inside a tab bottom sheet view. */
+    public static @Nullable View getWebUiContainer(View contentView) {
+        return contentView.findViewById(R.id.web_ui_container);
     }
 }

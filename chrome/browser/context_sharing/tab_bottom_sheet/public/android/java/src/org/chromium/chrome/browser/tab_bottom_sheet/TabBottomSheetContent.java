@@ -145,6 +145,12 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
         return false;
     }
 
+    /**
+     * Called with the sheet container's bottom margin when the content is shown and when it
+     * changes.
+     */
+    public void onBottomMarginChanged(@Px int bottomMargin) {}
+
     @Override
     public int getPeekHeight() {
         return mPeekViewHeight;
