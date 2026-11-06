@@ -17,13 +17,17 @@
   line-height: 22px;
 }
 
+/* The title and the "More options" button are aligned on their first baselines.
+ * The button spans the title and subtitle rows, so it is aligned with the
+ * title, in its first row. */
 .title {
+  align-self: baseline;
   grid-column: 1;
   margin-bottom: 16px;
 }
 
 #moreEnginesButton {
-  align-self: start;
+  align-self: baseline;
   grid-column: 2;
   grid-row: 1 / span 2;
 }

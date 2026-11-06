@@ -44,15 +44,15 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTabId);
 
 // Baseline Gerrit CL number of the most recent CL that modified the UI of the
 // default search engine picker.
-constexpr char kPickerScreenshotBaselineCL[] = "8641569";
+constexpr char kPickerScreenshotBaselineCL[] = "8726329";
 
 // Baseline Gerrit CL number of the most recent CL that modified the UI of the
 // "More search engines" dialog.
-constexpr char kMoreEnginesScreenshotBaselineCL[] = "8715108";
+constexpr char kMoreEnginesScreenshotBaselineCL[] = "8726329";
 
 // Baseline Gerrit CL number of the most recent CL that modified the UI of the
 // "More search engines" dialog with the guest checkbox.
-constexpr char kMoreEnginesGuestCheckboxBaselineCL[] = "8715108";
+constexpr char kMoreEnginesGuestCheckboxBaselineCL[] = "8726329";
 
 // Artificial prepopulated search engines, which replace the production ones
 // through `ScopedPrepopulatedEnginesOverride`. They have no favicon URL, so

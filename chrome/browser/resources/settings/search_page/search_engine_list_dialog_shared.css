@@ -30,11 +30,18 @@ cr-dialog {
   padding: 16px;
 }
 
-/* Resets the browser's default <h2> styles, matching cr-dialog. */
+/* Follows the type style of the settings-section titles in Settings Refresh
+ * 2026, such as the Languages card title, until all dialog styles are made
+ * consistent. Also resets the browser's default <h2> styles and the
+ * settings-shared-lit <h2> sub-header styles, which would make the title grey
+ * and add padding above it. */
 .title {
-  font-size: inherit;
-  font-weight: inherit;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
   margin: 0;
+  padding: 0;
 }
 
 cr-dialog::part(body-container) {
