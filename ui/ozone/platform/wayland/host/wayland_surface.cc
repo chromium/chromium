@@ -655,6 +655,20 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
                       .size());
     gfx::Size new_size_dip = gfx::ScaleToFlooredSize(
         old_size_px, 1.f / pending_state_.buffer_scale_float);
+    // When ui_scale != 1.0, rounding UI DIP bounds up to an integer can make
+    // `buffer_size_px` 1-2px larger than the window's Wayland DIP surface size
+    // even at integer `buffer_scale_float`. Clamp `new_size_dip` to the
+    // latched Wayland surface size so the committed root surface does not
+    // exceed the configured Wayland geometry.
+    const auto& latched_state = root_window_->latched_state();
+    if (!old_size_px.IsEmpty() && latched_state.ui_scale != 1.0f) {
+      const gfx::Size max_size_dip =
+          gfx::ToRoundedSize(wl::ApplyWaylandTransform(
+              gfx::SizeF(
+                  root_window_->GetSurfaceSizeInWaylandDIP(latched_state)),
+              wl::ToWaylandTransform(pending_state_.buffer_transform)));
+      new_size_dip.SetToMin(max_size_dip);
+    }
     gfx::Size new_size_px = gfx::ScaleToRoundedSize(
         new_size_dip, pending_state_.buffer_scale_float);
     if (new_size_px != old_size_px) {

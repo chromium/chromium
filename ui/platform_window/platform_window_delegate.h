@@ -91,6 +91,13 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
     // produces a new frame or not. Only the size of `bounds_dip` does.
     gfx::Rect bounds_dip;
 
+    // Size of the window geometry (excluding client-side decoration insets) in
+    // Wayland DIP, i.e. not scaled by `ui_scale`. This is kept alongside
+    // `bounds_dip` because converting `bounds_dip` back by `ui_scale` may not
+    // reproduce the size configured by the compositor. Changes to it alone do
+    // not produce a new frame. Used only by the Wayland backend.
+    gfx::Size geometry_size_dip;
+
     // Size in pixels. Note that it's required to keep information in both DIP
     // and pixels since it is not always possible to convert between them.
     gfx::Size size_px;

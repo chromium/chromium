@@ -674,28 +674,50 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
     // pre-fullscreen no-shadow size; stale maximized configures are still acked
     // and must obey the configured size (crbug.com/576504456).
     bounds_dip = GetBoundsInDIP();
+    pending_configure_state_.geometry_size_dip =
+        applied_state().geometry_size_dip;
   } else if (width_dip > 1 && height_dip > 1) {
-    bounds_dip.SetRect(x, y, width_dip, height_dip);
-    const auto& insets = delegate()->CalculateInsetsInDIP(window_state);
-    if (ShouldSetBounds(window_state) && !insets.IsEmpty()) {
-      bounds_dip.Inset(-insets);
-      bounds_dip.set_origin({x, y});
-    }
+    // The configured size is the exact window geometry size in Wayland DIP.
+    const gfx::Size geometry_size_dip(width_dip, height_dip);
+    pending_configure_state_.geometry_size_dip = geometry_size_dip;
     // UI Scale must be applied only for size coming from the server. Restored
     // and current dip bounds (used below) are already ui-scale'd.
-    bounds_dip = gfx::ScaleToEnclosingRectIgnoringError(
-        bounds_dip, 1.f / applied_state().ui_scale);
+    const float ui_scale = applied_state().ui_scale;
+    bounds_dip =
+        gfx::Rect(gfx::ScaleToEnclosingRectIgnoringError(
+                      gfx::Rect(x, y, width_dip, height_dip), 1.f / ui_scale)
+                      .origin(),
+                  ShouldSetBounds(window_state)
+                      ? GeometrySizeToBoundsSizeDIP(geometry_size_dip,
+                                                    window_state, ui_scale)
+                      : gfx::ScaleToEnclosingRectIgnoringError(
+                            gfx::Rect(geometry_size_dip), 1.f / ui_scale)
+                            .size());
   } else if (ShouldSetBounds(window_state)) {
-    bounds_dip = !restored_bounds_dip().IsEmpty() ? restored_bounds_dip()
-                                                  : GetBoundsInDIP();
+    if (!restored_bounds_dip().IsEmpty()) {
+      bounds_dip = restored_bounds_dip();
+      pending_configure_state_.geometry_size_dip = GetRestoredGeometrySizeDIP();
+    } else {
+      bounds_dip = GetBoundsInDIP();
+      pending_configure_state_.geometry_size_dip =
+          applied_state().geometry_size_dip;
+    }
   } else if (bounds_dip.IsEmpty()) {
     // 0x0 maximized/fullscreen configure with no size from an earlier
     // configure in this batch: keep the current bounds.
     bounds_dip = GetBoundsInDIP();
+    pending_configure_state_.geometry_size_dip =
+        applied_state().geometry_size_dip;
   }
 
   if (ShouldSetBounds(window_state)) {
-    bounds_dip = AdjustBoundsToConstraintsDIP(bounds_dip);
+    const gfx::Rect adjusted_bounds_dip =
+        AdjustBoundsToConstraintsDIP(bounds_dip);
+    if (adjusted_bounds_dip.size() != bounds_dip.size()) {
+      // Derived from the adjusted bounds in RequestState().
+      pending_configure_state_.geometry_size_dip.reset();
+    }
+    bounds_dip = adjusted_bounds_dip;
   }
   pending_configure_state_.bounds_dip = bounds_dip;
   pending_configure_state_.size_px =
@@ -709,7 +731,7 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   if (ShouldSetBounds(window_state)) {
     SetRestoredBoundsInDIP({});
   } else if (GetRestoredBoundsInDIP().IsEmpty()) {
-    SetRestoredBoundsInDIP(GetBoundsInDIP());
+    SetRestoredGeometry(GetBoundsInDIP(), applied_state().geometry_size_dip);
   }
 
   auto alive = weak_ptr_factory_.GetWeakPtr();
@@ -815,24 +837,12 @@ void WaylandToplevelWindow::SetWindowGeometry(
     return;
   }
 
-  gfx::Rect geometry_dip = gfx::ScaleToEnclosingRectIgnoringError(
-      gfx::Rect(state.bounds_dip.size()), state.ui_scale);
-
-  auto insets_dip = delegate()->CalculateInsetsInDIP(state.window_state);
-  if (!insets_dip.IsEmpty()) {
-    geometry_dip.Inset(insets_dip);
-
-    // Shrinking the bounds by the decoration insets might result in empty
-    // bounds. For the reasons already explained in WaylandWindow::Initialize(),
-    // we mustn't request an empty window geometry.
-    if (geometry_dip.width() == 0) {
-      geometry_dip.set_width(1);
-    }
-    if (geometry_dip.height() == 0) {
-      geometry_dip.set_height(1);
-    }
-  }
-  xdg_toplevel_->SetWindowGeometry(geometry_dip);
+  // `geometry_size_dip` is already in Wayland DIP and excludes the decoration
+  // insets, and is never empty.
+  const auto insets_dip = delegate()->CalculateInsetsInDIP(state.window_state);
+  xdg_toplevel_->SetWindowGeometry(
+      gfx::Rect(gfx::Point(insets_dip.left(), insets_dip.top()),
+                state.geometry_size_dip));
 }
 
 void WaylandToplevelWindow::AckConfigure(uint32_t serial) {

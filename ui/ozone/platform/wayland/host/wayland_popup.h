@@ -28,7 +28,7 @@ class WaylandPopup final : public WaylandWindow {
 
   // Configure related:
   void HandleSurfaceConfigure(uint32_t serial) override;
-  void HandlePopupConfigure(const gfx::Rect& bounds) override;
+  void HandlePopupConfigure(const gfx::Rect& geometry_dip) override;
   void OnSequencePoint(int64_t seq) override;
   bool IsSurfaceConfigured() override;
   void AckConfigure(uint32_t serial) override;
@@ -38,6 +38,11 @@ class WaylandPopup final : public WaylandWindow {
                     PlatformWindowDelegate::State* state) override;
   WaylandPopup* AsWaylandPopup() override;
   void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
+  gfx::Size GeometrySizeToBoundsSizeDIP(const gfx::Size& geometry_size_dip,
+                                        PlatformWindowState window_state,
+                                        float ui_scale) const override;
+  gfx::Size GetSurfaceSizeInWaylandDIP(
+      const PlatformWindowDelegate::State& state) const override;
   void UpdateWindowMask() override;
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
 

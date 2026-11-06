@@ -6432,6 +6432,198 @@ TEST_P(WaylandWindowTest, UiScale_ForceDeviceScaleFactor) {
   Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_EQ(2.0f, connection_->window_manager()->DetermineUiScale());
   EXPECT_EQ(window_->applied_state(), previous_state);
+  display::Display::ResetForceDeviceScaleFactorForTesting();
+}
+
+// Regression test for crbug.com/579974754: when maximized with a fractional
+// font/UI scale (< 1.0 or > 1.0), xdg_surface.set_window_geometry and the
+// committed root wl_surface size must match the exact Wayland DIP bounds
+// configured by the compositor rather than overshooting by 1 DIP due to
+// UI-DIP ceiling.
+TEST_P(WaylandWindowTest, UiScale_MaximizedGeometryAndViewportNoOvershoot) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    ASSERT_TRUE(mock_surface->fractional_scale());
+    mock_surface->fractional_scale()->SendPreferredScale(1.0f);
+  });
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // 58/64 (0.90625) matches the sanitized ui_scale for GNOME
+  // text-scaling-factor = 0.9.
+  constexpr float kFontScale090 = 58.0f / 64.0f;
+  connection_->window_manager()->SetFontScale(kFontScale090);
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(&delegate_);
+  ASSERT_EQ(kFontScale090, window_->applied_state().ui_scale);
+
+  // Configure maximized at 2560x1408 Wayland DIPs with window_scale = 1.0.
+  // ceil(2560 / 0.90625) = 2825 UI DIPs -> ceil(2825 * 0.90625) = 2561 px,
+  // so both window geometry and root surface viewport must stay at 2560x1408.
+  constexpr uint32_t kMaximizedSerial = 71u;
+  SendConfigureEvent(surface_id_, gfx::Size(2560, 1408),
+                     wl::ScopedWlArray({XDG_TOPLEVEL_STATE_MAXIMIZED,
+                                        XDG_TOPLEVEL_STATE_ACTIVATED}),
+                     kMaximizedSerial);
+  VerifyAndClearExpectations();
+  EXPECT_EQ(gfx::Size(2825, 1554), window_->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(2561, 1409), window_->applied_state().size_px);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    ASSERT_TRUE(mock_surface->xdg_surface());
+    ASSERT_TRUE(mock_surface->viewport());
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(2560, 1408)));
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                AckConfigure(Eq(kMaximizedSerial)));
+    EXPECT_CALL(*mock_surface->viewport(), SetSource(0, 0, 2560, 1408));
+    EXPECT_CALL(*mock_surface->viewport(), SetDestination(_, _)).Times(0);
+  });
+  CreateBufferAndPresentAsNewFrame(window_.get(), delegate_,
+                                   /*buffer_size=*/gfx::Size(2561, 1409),
+                                   /*buffer_scale=*/kFontScale090);
+  VerifyAndClearExpectations();
+
+  // Ack the frame callback and switch surface preferred scale to 1.25,
+  // producing a 3201x1761 buffer that must crop to 3200x1760 with viewport
+  // destination 2560x1408.
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    mock_surface->SendFrameCallback();
+    mock_surface->fractional_scale()->SendPreferredScale(1.25f);
+  });
+  WaylandTestBase::SyncDisplay();
+  EXPECT_EQ(gfx::Size(3201, 1761), window_->applied_state().size_px);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface->viewport(), SetSource(0, 0, 3200, 1760));
+    EXPECT_CALL(*mock_surface->viewport(), SetDestination(2560, 1408));
+  });
+  CreateBufferAndPresentAsNewFrame(window_.get(), delegate_,
+                                   /*buffer_size=*/gfx::Size(3201, 1761),
+                                   /*buffer_scale=*/1.25f * kFontScale090);
+  VerifyAndClearExpectations();
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    mock_surface->SendFrameCallback();
+  });
+  WaylandTestBase::SyncDisplay();
+
+  // Changing font scale to 1.5 while already maximized (without a new server
+  // configure) must preserve the 2560x1408 Wayland geometry even though no
+  // integer UI DIP size multiplies by 1.5 back to 2560x1408.
+  connection_->window_manager()->SetFontScale(1.5f);
+  WaylandTestBase::SyncDisplay();
+  EXPECT_EQ(gfx::Size(1707, 939), window_->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(3201, 1761), window_->applied_state().size_px);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(2560, 1408)));
+    EXPECT_CALL(*mock_surface->viewport(), SetSource(_, _, _, _)).Times(0);
+    EXPECT_CALL(*mock_surface->viewport(), SetDestination(_, _)).Times(0);
+  });
+  CreateBufferAndPresentAsNewFrame(window_.get(), delegate_,
+                                   /*buffer_size=*/gfx::Size(3201, 1761),
+                                   /*buffer_scale=*/1.25f * 1.5f);
+  VerifyAndClearExpectations();
+
+  // Resetting font scale to 1.0 restores exact 2560x1408 UI DIP bounds without
+  // cumulative rounding drift.
+  connection_->window_manager()->SetFontScale(1.0f);
+  WaylandTestBase::SyncDisplay();
+  EXPECT_EQ(gfx::Size(2560, 1408), window_->applied_state().bounds_dip.size());
+}
+
+// Regression test for crbug.com/579974754: repeated server configures echoing
+// the client's window geometry (as Mutter sends on focus changes) must not
+// cause a normal window to grow by 1 DIP per configure when ui_scale != 1.0.
+TEST_P(WaylandWindowTest, UiScale_RepeatedServerConfiguresDoNotGrowWindow) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  constexpr float kFontScale090 = 58.0f / 64.0f;
+  connection_->window_manager()->SetFontScale(kFontScale090);
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  const gfx::Insets kShadowInsets = gfx::Insets::TLBR(10, 10, 14, 10);
+  ON_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kNormal))
+      .WillByDefault(Return(kShadowInsets));
+
+  constexpr uint32_t kSerial1 = 81u;
+  SendConfigureEvent(surface_id_, gfx::Size(1000, 800),
+                     wl::ScopedWlArray({XDG_TOPLEVEL_STATE_ACTIVATED}),
+                     kSerial1);
+  const gfx::Size initial_bounds_dip =
+      window_->applied_state().bounds_dip.size();
+  const gfx::Size initial_size_px = window_->applied_state().size_px;
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(10, 10, 1000, 800)));
+    EXPECT_CALL(*mock_surface->xdg_surface(), AckConfigure(Eq(kSerial1)));
+  });
+  CreateBufferAndPresentAsNewFrame(window_.get(), delegate_,
+                                   /*buffer_size=*/initial_size_px,
+                                   /*buffer_scale=*/kFontScale090);
+  VerifyAndClearExpectations();
+
+  // Subsequent focus-change configures echoing 1000x800 must be a no-op on
+  // bounds and window geometry.
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  SendConfigureEvent(surface_id_, gfx::Size(1000, 800), wl::ScopedWlArray({}),
+                     82u);
+  SendConfigureEvent(surface_id_, gfx::Size(1000, 800),
+                     wl::ScopedWlArray({XDG_TOPLEVEL_STATE_ACTIVATED}), 83u);
+  VerifyAndClearExpectations();
+  EXPECT_EQ(initial_bounds_dip, window_->applied_state().bounds_dip.size());
+  EXPECT_EQ(initial_size_px, window_->applied_state().size_px);
+}
+
+// Tests that the window geometry derived from client-requested bounds maps back
+// to the same bounds, so a server configure echoing that geometry does not grow
+// the window by 1 DIP when ui_scale != 1.0.
+TEST_P(WaylandWindowTest, UiScale_ClientResizeDoesNotGrowOnConfigure) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  constexpr float kFontScale090 = 58.0f / 64.0f;
+  connection_->window_manager()->SetFontScale(kFontScale090);
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // floor(1000 * ui_scale) x floor(800 * ui_scale) = 906x725.
+  const gfx::Rect kBounds(1000, 800);
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(906, 725)));
+  });
+  window_->SetBoundsInDIP(kBounds);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
+  EXPECT_EQ(kBounds.size(), window_->applied_state().bounds_dip.size());
+
+  // ceil(906 / ui_scale) x ceil(725 / ui_scale) = 1000x800.
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  SendConfigureEvent(surface_id_, gfx::Size(906, 725),
+                     wl::ScopedWlArray({XDG_TOPLEVEL_STATE_ACTIVATED}), 91u);
+  VerifyAndClearExpectations();
+  EXPECT_EQ(kBounds.size(), window_->applied_state().bounds_dip.size());
 }
 
 // Regression POC: WaylandToplevelWindow::HandleToplevelConfigure() continues to
@@ -6723,6 +6915,56 @@ TEST_P(WaylandWindowTest, WaylandToplevelWindowTriggerStateChangesUaf) {
 
   // This should not crash.
   toplevel_window->Maximize();
+}
+
+// Verifies that initializing a toplevel window under UI scale != 1.0 before
+// frame insets are available (matching Widget::Init creating PlatformWindow
+// before FrameView) queries insets once without clamping an empty surface, and
+// updates window geometry once insets become non-empty on initial configure.
+TEST_P(WaylandWindowTest, UiScale_InitializeBeforeFrameInsetsReady) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  constexpr float kFontScale090 = 58.0f / 64.0f;
+  connection_->window_manager()->SetFontScale(kFontScale090);
+  WaylandTestBase::SyncDisplay();
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> init_delegate(
+      connection_.get());
+  EXPECT_CALL(init_delegate, CalculateInsetsInDIP(PlatformWindowState::kNormal))
+      .WillOnce(Return(gfx::Insets()));
+
+  PlatformWindowInitProperties properties(gfx::Rect(0, 0, 800, 600));
+  properties.type = PlatformWindowType::kWindow;
+  auto new_window = init_delegate.CreateWaylandWindow(connection_.get(),
+                                                      std::move(properties));
+  ASSERT_TRUE(new_window);
+  Mock::VerifyAndClearExpectations(&init_delegate);
+  EXPECT_EQ(gfx::Size(725, 543), new_window->latched_state().geometry_size_dip);
+
+  new_window->Show(false);
+  WaylandTestBase::SyncDisplay();
+
+  const gfx::Insets kShadowInsets = gfx::Insets::TLBR(10, 10, 14, 10);
+  ON_CALL(init_delegate, CalculateInsetsInDIP(PlatformWindowState::kNormal))
+      .WillByDefault(Return(kShadowInsets));
+
+  const uint32_t new_surface_id = new_window->root_surface()->get_surface_id();
+  constexpr uint32_t kInitSerial = 91u;
+  PostToServerAndWait([id = new_surface_id](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    ASSERT_TRUE(mock_surface->xdg_surface());
+    EXPECT_CALL(*mock_surface->xdg_surface(),
+                SetWindowGeometry(gfx::Rect(10, 10, 705, 519)));
+    EXPECT_CALL(*mock_surface->xdg_surface(), AckConfigure(Eq(kInitSerial)));
+  });
+
+  SendConfigureEvent(new_surface_id, gfx::Size(0, 0),
+                     wl::ScopedWlArray({XDG_TOPLEVEL_STATE_ACTIVATED}),
+                     kInitSerial);
+  AdvanceFrameToCurrent(new_window.get(), init_delegate);
+  VerifyAndClearExpectations(init_delegate, new_surface_id);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

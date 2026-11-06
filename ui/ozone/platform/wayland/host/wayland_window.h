@@ -321,6 +321,11 @@ class WaylandWindow : public PlatformWindow,
     return latched_state_;
   }
 
+  // Returns the size of the root surface in Wayland DIP (i.e. not scaled by
+  // `ui_scale`) for `state`: its window geometry plus decoration insets.
+  virtual gfx::Size GetSurfaceSizeInWaylandDIP(
+      const PlatformWindowDelegate::State& state) const;
+
   // Tells if the surface has already been configured. This will be true after
   // the first set of configure event and ack request, meaning that wl_surface
   // can attach buffers.
@@ -439,6 +444,27 @@ class WaylandWindow : public PlatformWindow,
 
   const gfx::Rect& restored_bounds_dip() const { return restored_bounds_dip_; }
 
+  // Sets the restored bounds together with their window geometry size in
+  // Wayland DIP. An empty `geometry_size_dip` means it is derived from
+  // `bounds` when needed.
+  void SetRestoredGeometry(const gfx::Rect& bounds,
+                           const gfx::Size& geometry_size_dip);
+
+  // Returns the window geometry size of the restored bounds in Wayland DIP:
+  // the stored one, or one derived from `restored_bounds_dip()`.
+  gfx::Size GetRestoredGeometrySizeDIP() const;
+
+  // Convert between the window geometry size in Wayland DIP (see
+  // `PlatformWindowDelegate::State::geometry_size_dip`) and the size of
+  // `bounds_dip` in UI DIP, which includes decoration insets.
+  virtual gfx::Size GeometrySizeToBoundsSizeDIP(
+      const gfx::Size& geometry_size_dip,
+      PlatformWindowState window_state,
+      float ui_scale) const;
+  gfx::Size BoundsSizeToGeometrySizeDIP(const gfx::Size& bounds_size_dip,
+                                        PlatformWindowState window_state,
+                                        float ui_scale) const;
+
   WaylandFrameManager* frame_manager() { return frame_manager_.get(); }
 
   // Configure related:
@@ -517,6 +543,7 @@ class WaylandWindow : public PlatformWindow,
     std::optional<PlatformWindowState> window_state;
     std::optional<WindowTiledEdges> tiled_edges;
     std::optional<gfx::Rect> bounds_dip;
+    std::optional<gfx::Size> geometry_size_dip;
     std::optional<gfx::Size> size_px;
   };
 
@@ -646,6 +673,7 @@ class WaylandWindow : public PlatformWindow,
   // The bounds of the platform window before it went maximized or fullscreen in
   // dip.
   gfx::Rect restored_bounds_dip_;
+  gfx::Size restored_geometry_size_dip_;
 
   // A focus client that, once set, is expected to live at least as long as this
   // window.

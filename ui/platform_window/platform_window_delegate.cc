@@ -20,6 +20,7 @@ bool PlatformWindowDelegate::State::WillProduceFrameOnUpdateFrom(
     const State& old) const {
   // None of the following changes will produce a new frame:
   // - bounds origin and fullscreen type: no relayout scheduled.
+  // - geometry size: only changes the Wayland window geometry, not the content.
   // - ui scale: does not imply in a new frame per-se, though inherently implies
   //   in bounds_dip and/or size_px change. See its declaration for further
   //   explanation.
@@ -44,6 +45,7 @@ std::string PlatformWindowDelegate::State::ToString() const {
          << ", right = " << tiled_edges.right << ", top = " << tiled_edges.top
          << ", bottom = " << tiled_edges.bottom << "}";
   result << ", bounds_dip = " << bounds_dip.ToString();
+  result << ", geometry_size_dip = " << geometry_size_dip.ToString();
   result << ", size_px = " << size_px.ToString();
   result << ", window_scale = " << window_scale;
   result << ", ui_scale = " << ui_scale;

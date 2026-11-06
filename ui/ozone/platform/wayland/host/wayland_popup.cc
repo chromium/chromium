@@ -242,19 +242,34 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
   }
 }
 
-void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
+void WaylandPopup::HandlePopupConfigure(const gfx::Rect& geometry_dip) {
   auto* xdg_parent_window = GetXdgParentWindow();
   if (!xdg_parent_window) {
     return;
   }
 
-  // Use UI scale to scale the bounds received from the Wayland compositor (ie:
-  // non-empty `bounds_dip`) as it is an internal scaling factor, which the
-  // compositor is not aware of.
+  // Unlike xdg_toplevel, an empty xdg_popup configure does not let the client
+  // decide the size, and positioner sizes are always positive. Keep the
+  // current bounds, which are already in toplevel coordinates and include the
+  // decoration insets.
+  if (geometry_dip.IsEmpty()) {
+    pending_configure_state_.bounds_dip = GetBoundsInDIP();
+    pending_configure_state_.geometry_size_dip =
+        applied_state().geometry_size_dip;
+    pending_configure_state_.size_px = applied_state().size_px;
+    return;
+  }
+
+  // Use UI scale to scale the bounds received from the Wayland compositor as it
+  // is an internal scaling factor, which the compositor is not aware of.
+  pending_configure_state_.geometry_size_dip = geometry_dip.size();
+  const float ui_scale = applied_state().ui_scale;
   gfx::Rect pending_bounds_dip(
-      bounds_dip.IsEmpty() ? GetBoundsInDIP()
-                           : gfx::ScaleToEnclosingRectIgnoringError(
-                                 bounds_dip, 1.0f / applied_state().ui_scale));
+      gfx::ScaleToEnclosingRectIgnoringError(geometry_dip, 1.0f / ui_scale)
+          .origin(),
+      gfx::ScaleToEnclosingRectIgnoringError(gfx::Rect(geometry_dip.size()),
+                                             1.0f / ui_scale)
+          .size());
 
   // The origin is relative to parent's window geometry.
   // See https://crbug.com/1292486.
@@ -340,14 +355,35 @@ void WaylandPopup::SetWindowGeometry(
     return;
   }
 
-  // State's `bounds_dip` is in UI coordinates space (ie: ui_scale'd), thus
-  // before sending it through Wayland, it must be reverse-transformed to
-  // Wayland coordinates space.
-  gfx::Rect geometry_dip(gfx::ScaleToEnclosingRectIgnoringError(
-      gfx::Rect(state.bounds_dip.size()), state.ui_scale));
+  const auto insets_dip = delegate()->CalculateInsetsInDIP(state.window_state);
+  xdg_popup_->SetWindowGeometry(
+      gfx::Rect(gfx::Point(insets_dip.left(), insets_dip.top()),
+                state.geometry_size_dip));
+}
 
-  geometry_dip.Inset(delegate()->CalculateInsetsInDIP(state.window_state));
-  xdg_popup_->SetWindowGeometry(geometry_dip);
+gfx::Size WaylandPopup::GeometrySizeToBoundsSizeDIP(
+    const gfx::Size& geometry_size_dip,
+    PlatformWindowState window_state,
+    float ui_scale) const {
+  // Unlike toplevels, decoration insets are added after applying `ui_scale`.
+  gfx::Size size = gfx::ScaleToEnclosingRectIgnoringError(
+                       gfx::Rect(geometry_size_dip), 1.f / ui_scale)
+                       .size();
+  const gfx::Insets insets = delegate()->CalculateInsetsInDIP(window_state);
+  size.Enlarge(insets.width(), insets.height());
+  return size;
+}
+
+gfx::Size WaylandPopup::GetSurfaceSizeInWaylandDIP(
+    const PlatformWindowDelegate::State& state) const {
+  if (delegate()->CalculateInsetsInDIP(state.window_state).IsEmpty()) {
+    return state.geometry_size_dip;
+  }
+  // The insets are in UI DIP, so the surface size can't be derived exactly
+  // from the geometry size.
+  return gfx::ScaleToEnclosingRectIgnoringError(
+             gfx::Rect(state.bounds_dip.size()), state.ui_scale)
+      .size();
 }
 
 void WaylandPopup::AckConfigure(uint32_t serial) {

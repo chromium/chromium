@@ -36,6 +36,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
@@ -724,7 +725,62 @@ void WaylandWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {
 }
 
 void WaylandWindow::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
+  SetRestoredGeometry(bounds, gfx::Size());
+}
+
+void WaylandWindow::SetRestoredGeometry(const gfx::Rect& bounds,
+                                        const gfx::Size& geometry_size_dip) {
   restored_bounds_dip_ = bounds;
+  restored_geometry_size_dip_ = geometry_size_dip;
+}
+
+gfx::Size WaylandWindow::GetRestoredGeometrySizeDIP() const {
+  if (!restored_geometry_size_dip_.IsEmpty()) {
+    return restored_geometry_size_dip_;
+  }
+  return BoundsSizeToGeometrySizeDIP(restored_bounds_dip_.size(),
+                                     PlatformWindowState::kNormal,
+                                     applied_state_.ui_scale);
+}
+
+gfx::Size WaylandWindow::GeometrySizeToBoundsSizeDIP(
+    const gfx::Size& geometry_size_dip,
+    PlatformWindowState window_state,
+    float ui_scale) const {
+  // Decoration insets are added in Wayland DIP before applying `ui_scale`.
+  gfx::Size size = geometry_size_dip;
+  const gfx::Insets insets = delegate()->CalculateInsetsInDIP(window_state);
+  size.Enlarge(insets.width(), insets.height());
+  return gfx::ScaleToEnclosingRectIgnoringError(gfx::Rect(size), 1.f / ui_scale)
+      .size();
+}
+
+gfx::Size WaylandWindow::BoundsSizeToGeometrySizeDIP(
+    const gfx::Size& bounds_size_dip,
+    PlatformWindowState window_state,
+    float ui_scale) const {
+  // Round down, since GeometrySizeToBoundsSizeDIP() rounds up. Otherwise a
+  // geometry size derived from client-requested bounds could map back to
+  // bounds 1 DIP larger.
+  gfx::Size size =
+      gfx::ToEnclosedRectIgnoringError(
+          gfx::ScaleRect(gfx::RectF(gfx::Rect(bounds_size_dip)), ui_scale),
+          /*error=*/0.001f)
+          .size();
+  const gfx::Insets insets = delegate()->CalculateInsetsInDIP(window_state);
+  size.Enlarge(-insets.width(), -insets.height());
+  // As per spec, width and height must be greater than zero.
+  size.SetToMax(gfx::Size(1, 1));
+  return size;
+}
+
+gfx::Size WaylandWindow::GetSurfaceSizeInWaylandDIP(
+    const PlatformWindowDelegate::State& state) const {
+  gfx::Size size = state.geometry_size_dip;
+  const gfx::Insets insets =
+      delegate()->CalculateInsetsInDIP(state.window_state);
+  size.Enlarge(insets.width(), insets.height());
+  return size;
 }
 
 gfx::Rect WaylandWindow::GetRestoredBoundsInDIP() const {
@@ -1044,6 +1100,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
                       gfx::Rect(state.bounds_dip.size()),
                       state.window_scale * state.ui_scale)
                       .size();
+  state.geometry_size_dip = BoundsSizeToGeometrySizeDIP(
+      state.bounds_dip.size(), state.window_state, state.ui_scale);
 
   applied_state_ = state;
   latched_state_ = state;
@@ -1385,6 +1443,9 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   }
   if (pending_configure_state_.bounds_dip.has_value()) {
     state.bounds_dip = pending_configure_state_.bounds_dip.value();
+    // An empty geometry size is derived from `bounds_dip` in RequestState().
+    state.geometry_size_dip =
+        pending_configure_state_.geometry_size_dip.value_or(gfx::Size());
   }
   if (pending_configure_state_.size_px.has_value()) {
     state.size_px = pending_configure_state_.size_px.value();
@@ -1402,9 +1463,11 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
     // For the window activated from minimized state,
     // the saved window placement should be set as window geometry.
     state.bounds_dip = GetBoundsInDIP();
+    state.geometry_size_dip = applied_state_.geometry_size_dip;
     // As per spec, width and height must be greater than zero.
     if (state.bounds_dip.IsEmpty()) {
       state.bounds_dip = gfx::Rect(0, 0, 1, 1);
+      state.geometry_size_dip = gfx::Size();
     }
   }
 
@@ -1472,19 +1535,43 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
     CHECK_EQ(applied_state_copy, latched_state_);
   }
 
+  // `geometry_size_dip` must correspond to `bounds_dip`. Derive it from
+  // `bounds_dip` if it is unset or stale (e.g. the bounds were changed by the
+  // client).
+  if (state.geometry_size_dip.IsEmpty() ||
+      GeometrySizeToBoundsSizeDIP(state.geometry_size_dip, state.window_state,
+                                  state.ui_scale) != state.bounds_dip.size()) {
+    state.geometry_size_dip = BoundsSizeToGeometrySizeDIP(
+        state.bounds_dip.size(), state.window_state, state.ui_scale);
+  }
+
   // ui_scale determines how the window content, ie: UI, will be laid out and
   // sized. See WaylandWindowManager::DetermineUiScale docs for more details.
+  // The size is recomputed from `geometry_size_dip` so that it does not drift
+  // with repeated rounding.
   const float new_ui_scale = connection_->window_manager()->DetermineUiScale();
-  state.bounds_dip = gfx::ScaleToEnclosingRectIgnoringError(
-      state.bounds_dip, state.ui_scale / new_ui_scale);
-  state.ui_scale = new_ui_scale;
+  if (new_ui_scale != state.ui_scale) {
+    state.bounds_dip = gfx::Rect(
+        gfx::ScaleToEnclosingRectIgnoringError(state.bounds_dip,
+                                               state.ui_scale / new_ui_scale)
+            .origin(),
+        GeometrySizeToBoundsSizeDIP(state.geometry_size_dip, state.window_state,
+                                    new_ui_scale));
+    state.ui_scale = new_ui_scale;
+  }
 
   // Adjust state values if necessary. Size constraints only apply to normal
   // windows; per the xdg-shell specification, maximized geometry must be obeyed
   // exactly, and fullscreen geometry is an upper bound (otherwise compositors
   // raise xdg_wm_base.invalid_surface_state).
   if (state.window_state == PlatformWindowState::kNormal) {
-    state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);
+    const gfx::Rect adjusted_bounds_dip =
+        AdjustBoundsToConstraintsDIP(state.bounds_dip);
+    if (adjusted_bounds_dip.size() != state.bounds_dip.size()) {
+      state.geometry_size_dip = BoundsSizeToGeometrySizeDIP(
+          adjusted_bounds_dip.size(), state.window_state, state.ui_scale);
+    }
+    state.bounds_dip = adjusted_bounds_dip;
   }
 
   const float scale = state.window_scale * state.ui_scale;
@@ -1635,9 +1722,10 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   latched_state_ = req.state;
 
   // Update the geometry if:
-  // - either bounds, tiling or insets has changed since the latest latched
-  //   request.
+  // - either bounds, geometry size, tiling or insets has changed since the
+  //   latest latched request.
   if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
+      req.state.geometry_size_dip != old_state.geometry_size_dip ||
       req.state.tiled_edges != old_state.tiled_edges ||
       delegate()->CalculateInsetsInDIP(req.state.window_state) !=
           delegate()->CalculateInsetsInDIP(old_state.window_state)) {
