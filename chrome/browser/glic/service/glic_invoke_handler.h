@@ -104,11 +104,25 @@ class GlicInvokeHandler {
   uint64_t invocation_id() const { return metrics_->GetInvocationId(); }
 
  private:
+  // Describes the actor surface in `options_.target.actuation_target`.
+  struct ActuationSurface {
+    // The handle is null when `options_.target.actuation_target` holds a
+    // mojom::ActuationTarget.
+    actor::ActorSurfaceHandle handle;
+    // True when `handle` is a surface other than the invoked tab, such as a
+    // headless surface. This is false for every mojom::ActuationTarget value,
+    // including kNewTab.
+    bool differs_from_invoked_tab = false;
+  };
+
   bool IsFloatingTarget() const;
   bool IsTabTarget() const;
   tabs::TabInterface& GetTab() const;
   mojom::InvokeOptionsPtr CreateMojoOptions();
   bool IsActuatingFeatureMode() const;
+  // Returns the actor surface in `options_.target.actuation_target` and
+  // whether it is a surface other than the invoked tab.
+  ActuationSurface GetActuationSurface() const;
 
   // Deletes `this`. Exactly one of these methods will be called.
   void OnSuccess();

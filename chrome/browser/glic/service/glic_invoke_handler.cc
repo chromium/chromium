@@ -87,6 +87,19 @@ GlicInvokeError ToInvokeError(InstanceRemovalReason reason) {
   NOTREACHED();
 }
 
+// Returns the mojom::ActuationTarget that `target` maps to. An actor surface
+// maps to kTargetSurface.
+mojom::ActuationTarget GetMojoActuationTarget(const Target& target) {
+  return std::visit(
+      absl::Overload{[](mojom::ActuationTarget actuation_target) {
+                       return actuation_target;
+                     },
+                     [](const actor::ActorSurfaceHandle&) {
+                       return mojom::ActuationTarget::kTargetSurface;
+                     }},
+      target.actuation_target);
+}
+
 }  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -171,8 +184,8 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
       // Allow detached / background tabs for actuation, reject non-normal
       // browser windows.
       bool is_background_actuation =
-          !browser &&
-          target.actuation_target == mojom::ActuationTarget::kTargetSurface;
+          !browser && GetMojoActuationTarget(target) ==
+                          mojom::ActuationTarget::kTargetSurface;
       bool is_normal_browser =
           browser &&
           browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
@@ -260,6 +273,8 @@ bool GlicInvokeHandler::RequiresClientInvoke(const GlicInvokeOptions& options,
   // already covered below.
   const auto* payload =
       std::get_if<mojom::InvocationPayloadPtr>(&options.source_or_payload);
+  const mojom::ActuationTarget actuation_target =
+      GetMojoActuationTarget(options.target);
   return options.GetInvocationSource() ==
              mojom::InvocationSource::kCaptureRegionHotkey ||
          has_auto_submit_passkey || (payload && !payload->is_null()) ||
@@ -268,9 +283,8 @@ bool GlicInvokeHandler::RequiresClientInvoke(const GlicInvokeOptions& options,
           !options.additional_context->context.is_null()) ||
          options.feature_mode.value_or(mojom::FeatureMode::kUnspecified) !=
              mojom::FeatureMode::kUnspecified ||
-         (options.target.actuation_target != mojom::ActuationTarget::kUnknown &&
-          options.target.actuation_target !=
-              mojom::ActuationTarget::kAgentDecides) ||
+         (actuation_target != mojom::ActuationTarget::kUnknown &&
+          actuation_target != mojom::ActuationTarget::kAgentDecides) ||
          options.disable_zss || options.skill_id.has_value() ||
          options.zss_config.has_value();
 }
@@ -325,7 +339,10 @@ void GlicInvokeHandler::Invoke() {
                        weak_ptr_factory_.GetWeakPtr())));
   }
 
-  if (IsActuatingFeatureMode() && IsTabTarget()) {
+  // Mark the invoked tab as pending only when actuation is not explicitly
+  // directed to a different surface.
+  if (IsActuatingFeatureMode() && IsTabTarget() &&
+      !GetActuationSurface().differs_from_invoked_tab) {
     tasks.push_back(std::make_unique<SetTabPendingActuationTask>(
         instance_->profile(), GetTab().GetHandle()));
   }
@@ -559,6 +576,21 @@ bool GlicInvokeHandler::IsActuatingFeatureMode() const {
   }
 }
 
+GlicInvokeHandler::ActuationSurface GlicInvokeHandler::GetActuationSurface()
+    const {
+  const auto* handle =
+      std::get_if<actor::ActorSurfaceHandle>(&options_.target.actuation_target);
+  if (!handle || handle->is_null()) {
+    return {};
+  }
+  // A headless surface has no tab, so GetTabHandle() returns
+  // TabHandle::Null(), which never equals GetTab().GetHandle().
+  const bool is_invoked_tab_surface =
+      IsTabTarget() && handle->GetTabHandle() == GetTab().GetHandle();
+  return {.handle = *handle,
+          .differs_from_invoked_tab = !is_invoked_tab_surface};
+}
+
 mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {
   auto mojo_options = mojom::InvokeOptions::New();
   mojo_options->invocation_source = options_.GetInvocationSource();
@@ -579,18 +611,27 @@ mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {
   mojo_options->auto_submit = auto_submit_passkey_.has_value();
   mojo_options->feature_mode =
       options_.feature_mode.value_or(mojom::FeatureMode::kUnspecified);
-  mojo_options->actuation_target = options_.target.actuation_target;
   mojo_options->disable_zero_state_suggestions = options_.disable_zss;
 
-  if (mojo_options->actuation_target ==
-      mojom::ActuationTarget::kTargetSurface) {
-    // If the target surface is not a tab, no specific tab ID is passed to the
-    // client. The actuation will still happen, but it won't be targeted at a
-    // specific tab.
-    if (IsTabTarget()) {
-      mojo_options->actuation_tab_id = GetTab().GetHandle().raw_value();
-    }
-  }
+  std::visit(absl::Overload{
+                 [&](mojom::ActuationTarget target) {
+                   mojo_options->actuation_target = target;
+                   if (target == mojom::ActuationTarget::kTargetSurface &&
+                       IsTabTarget()) {
+                     const actor::ActorSurfaceHandle surface =
+                         actor::ActorSurfaceHandle::From(GetTab().GetHandle());
+                     if (!surface.is_null()) {
+                       mojo_options->actuation_tab_id = surface.raw_value();
+                     }
+                   }
+                 },
+                 [&](const actor::ActorSurfaceHandle& surface) {
+                   CHECK(!surface.is_null());
+                   mojo_options->actuation_target =
+                       mojom::ActuationTarget::kTargetSurface;
+                   mojo_options->actuation_tab_id = surface.raw_value();
+                 }},
+             options_.target.actuation_target);
 
   if (options_.skill_id) {
     mojo_options->skill_id = *options_.skill_id;

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_instance_id.h"
@@ -159,8 +160,13 @@ struct Target {
       conversation = DefaultConversation();
 
   // Specifies the target for actuation.
-  mojom::ActuationTarget actuation_target =
-      mojom::ActuationTarget::kAgentDecides;
+  // - mojom::ActuationTarget: Lets the agent decide, or forces a target, such
+  //   as a new tab. kTargetSurface forces the invoked tab, if there is one.
+  // - actor::ActorSurfaceHandle: Forces a specific actor surface, such as a
+  //   headless surface that has no tab or window. The web client receives it
+  //   as kTargetSurface with the surface ID. The handle must not be null.
+  std::variant<mojom::ActuationTarget, actor::ActorSurfaceHandle>
+      actuation_target = mojom::ActuationTarget::kAgentDecides;
 };
 
 // Configuration to override the default ZSS behavior for the invocation,

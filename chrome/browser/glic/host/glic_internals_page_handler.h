@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_INTERNALS_PAGE_HANDLER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/glic_internals.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -71,6 +74,11 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
   mojo::Receiver<glic::mojom::InternalsPageHandler> receiver_;
 
   base::WeakPtr<GlicInstance> active_test_instance_;
+  // Keeps the page of the latest headless invocation (kTargetSurface with
+  // headless_actuation) alive. The next headless invocation, or the
+  // destruction of this handler, destroys that page through
+  // ActorKeyedService::DestroyHeadlessActorSurface().
+  std::optional<actor::ScopedHeadlessActorSurface> headless_surface_;
   base::WeakPtrFactory<GlicInternalsPageHandler> weak_ptr_factory_{this};
 };
 

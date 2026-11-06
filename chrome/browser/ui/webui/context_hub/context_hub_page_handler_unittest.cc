@@ -4104,8 +4104,9 @@ TEST_F(ContextHubPageHandlerGlicTest, RunTodoTaskInvokesGlicWithAutoSubmit) {
                            "Details: Confirm Q3 roadmap"));
   EXPECT_EQ(captured_options_->feature_mode,
             glic::mojom::FeatureMode::kActuation);
-  EXPECT_EQ(captured_options_->target.actuation_target,
-            glic::mojom::ActuationTarget::kAgentDecides);
+  EXPECT_THAT(captured_options_->target.actuation_target,
+              ::testing::VariantWith<glic::mojom::ActuationTarget>(
+                  glic::mojom::ActuationTarget::kAgentDecides));
   EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
       captured_options_->target.conversation));
   EXPECT_TRUE(std::holds_alternative<glic::DefaultSurface>(

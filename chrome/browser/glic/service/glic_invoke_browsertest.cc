@@ -11,6 +11,9 @@
 #include "base/test/values_test_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/states/tab_indicator_state.h"
 #include "chrome/browser/glic/glic_enums.h"
@@ -3219,6 +3222,57 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
     EXPECT_EQ(tab_controller->GetCurrentUiTabState().tab_indicator,
               actor::ui::TabIndicatorStatus::kNone);
   }
+}
+
+// Verifies that targeting a headless surface does not mark the invoked
+// tab as pending actuation.
+IN_PROC_BROWSER_TEST_F(
+    GlicInvokeActuationBrowserTest,
+    InvokeWithActuationSurfaceDoesNotSetTabPendingActuation) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  actor::ui::ActorUiStateManager* ui_state_manager =
+      actor::ui::ActorUiStateManager::Get(GetProfile());
+  ASSERT_TRUE(ui_state_manager);
+  actor::ScopedHeadlessActorSurface headless_surface =
+      actor_service->CreateHeadlessActorSurface();
+
+  GlicInvokeOptions options(Target(*tab), mojom::InvocationSource::kOsButton);
+  options.feature_mode = mojom::FeatureMode::kActuation;
+  options.target.actuation_target = headless_surface.actor_surface_handle();
+  coordinator().Invoke(std::move(options));
+
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  EXPECT_FALSE(ui_state_manager->ClearTabPendingActuation(tab->GetHandle()));
+}
+
+// Verifies that explicitly targeting the invoked tab's surface preserves
+// its pending-actuation indicator.
+IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
+                       InvokeWithInvokedTabSurfaceSetsTabPendingActuation) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  actor::ui::ActorUiStateManager* ui_state_manager =
+      actor::ui::ActorUiStateManager::Get(GetProfile());
+  ASSERT_TRUE(ui_state_manager);
+  const actor::ActorSurfaceHandle tab_surface =
+      actor::ActorSurfaceHandle::From(tab->GetHandle());
+  ASSERT_FALSE(tab_surface.is_null());
+
+  GlicInvokeOptions options(Target(*tab), mojom::InvocationSource::kOsButton);
+  options.feature_mode = mojom::FeatureMode::kActuation;
+  options.target.actuation_target = tab_surface;
+  coordinator().Invoke(std::move(options));
+
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  EXPECT_TRUE(ui_state_manager->ClearTabPendingActuation(tab->GetHandle()));
 }
 
 // TODO(b/477918640): Tests habe been failing consistently on ChromeOS, Linux

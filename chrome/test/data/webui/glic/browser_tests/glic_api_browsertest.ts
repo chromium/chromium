@@ -5,6 +5,7 @@
 // cc_file_path: chrome/browser/glic/host/glic_api_browsertest.cc
 
 import {                             //
+  ActuationTarget,                   //
   CancelActionsResult,               //
   ClientCapabilities,                //
   ExperimentalTriggeringUpdateType,  //
@@ -3322,6 +3323,28 @@ class InvokeTest extends ApiTests {
     assertTrue(
         client.lastInvokeOptions!.payload?.captureRegion
             ?.captureRegionHandoff === true);
+  }
+
+  // Waits for the client's invoke() call and returns its options.
+  async waitForInvokeOptions(): Promise<InvokeOptions> {
+    const client = this.getInvokeClient();
+    await runUntil(() => client.lastInvokeOptions !== null);
+    assertDefined(client.lastInvokeOptions);
+    return client.lastInvokeOptions;
+  }
+
+  async testInvokeWithActuationSurface() {
+    const options = await this.waitForInvokeOptions();
+    assertEquals(options.actuationTarget, ActuationTarget.TARGET_SURFACE);
+    // `testParams` is the headless surface ID sent by the C++ side.
+    assertEquals(options.actuationTabId, this.testParams);
+  }
+
+  async testInvokeWithTargetSurfaceSendsTabSurfaceId() {
+    const options = await this.waitForInvokeOptions();
+    assertEquals(options.actuationTarget, ActuationTarget.TARGET_SURFACE);
+    // `testParams` is the invoked tab's surface ID sent by the C++ side.
+    assertEquals(options.actuationTabId, this.testParams);
   }
 }
 

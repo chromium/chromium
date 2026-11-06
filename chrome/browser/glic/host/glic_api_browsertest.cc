@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
@@ -4437,6 +4438,39 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInvokeWaitsForNotifyPanelWillOpen) {
   coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options));
 
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testInvokeWithActuationSurface) {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  actor::ScopedHeadlessActorSurface headless_surface =
+      actor_service->CreateHeadlessActorSurface();
+
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.target.surface = DefaultSurface{
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
+  options.target.actuation_target = headless_surface.actor_surface_handle();
+  coordinator().Invoke(std::move(options));
+
+  // The client must receive the headless surface ID instead of the tab ID.
+  ExecuteJsTest({.params = base::Value(base::NumberToString(
+                     headless_surface.actor_surface_handle().raw_value()))});
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testInvokeWithTargetSurfaceSendsTabSurfaceId) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.target.surface = DefaultSurface{tab->GetBrowserWindowInterface()};
+  options.target.actuation_target = mojom::ActuationTarget::kTargetSurface;
+  coordinator().Invoke(std::move(options));
+
+  // Without an explicit actor surface, the client must receive the invoked
+  // tab's surface ID.
+  ExecuteJsTest(
+      {.params = base::Value(base::NumberToString(
+           actor::ActorSurfaceHandle::From(tab->GetHandle()).raw_value()))});
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetExperimentalTriggeringUpdates) {

@@ -22,6 +22,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
@@ -499,12 +501,22 @@ void LogGlicInvokeOptions(const GlicInvokeOptions& options,
           }},
       options.target.conversation);
 
-  if (options.target.actuation_target !=
-      glic::mojom::ActuationTarget::kAgentDecides) {
-    target_pieces.push_back(base::StrCat(
-        {"    actuation_target: ",
-         ActuationTargetToString(options.target.actuation_target)}));
-  }
+  std::visit(
+      absl::Overload{
+          [&target_pieces](glic::mojom::ActuationTarget actuation_target) {
+            if (actuation_target !=
+                glic::mojom::ActuationTarget::kAgentDecides) {
+              target_pieces.push_back(
+                  base::StrCat({"    actuation_target: ",
+                                ActuationTargetToString(actuation_target)}));
+            }
+          },
+          [&target_pieces](const actor::ActorSurfaceHandle& surface) {
+            target_pieces.push_back(base::StrCat(
+                {"    actuation_target: ActorSurfaceHandle { id: ",
+                 base::NumberToString(surface.raw_value()), " }"}));
+          }},
+      options.target.actuation_target);
 
   if (!target_pieces.empty()) {
     ss << "  target: Target {\n"
@@ -869,6 +881,18 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
       break;
   }
   options.target.actuation_target = mojo_options->actuation_target;
+
+  if (mojo_options->headless_actuation &&
+      mojo_options->actuation_target ==
+          glic::mojom::ActuationTarget::kTargetSurface) {
+    auto* actor_service = actor::ActorKeyedService::Get(browser_context_);
+    if (!actor_service) {
+      std::move(callback).Run(false, "No ActorKeyedService available.");
+      return;
+    }
+    headless_surface_.emplace(actor_service->CreateHeadlessActorSurface());
+    options.target.actuation_target = headless_surface_->actor_surface_handle();
+  }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
 

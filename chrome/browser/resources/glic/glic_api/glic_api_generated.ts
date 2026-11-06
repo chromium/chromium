@@ -1268,7 +1268,10 @@ export declare interface InvokeOptions {
   zssConfig?: ZssConfig;
   // Source-specific payload for the invocation.
   payload?: InvocationPayload;
-  // The ID of the tab to actuate on, if actuationTarget is kTargetSurface.
+  // TODO(b/582448011): Replace actuation_target and actuation_tab_id with one
+  // union that matches Target::actuation_target in glic_invoke_options.h.
+  // The ID of the ActorSurface (which can be a tab or a headless surface), to
+  // actuate on, if actuation_target == kTargetSurface.
   actuationTabId?: string;
 }
 

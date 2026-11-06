@@ -258,6 +258,10 @@ struct TriggerInvokeFromInternalsOptions {
   bool take_screenshot;
   ScreenshotTestKeyConfiguration? key_config;
   bool supersede_if_in_progress;
+  // When actuation_target is kTargetSurface, creates a headless surface and
+  // passes its handle as Target::actuation_target. Ignored for other actuation
+  // targets.
+  bool headless_actuation;
 };
 
 // Page handler for the glic internals WebUI.

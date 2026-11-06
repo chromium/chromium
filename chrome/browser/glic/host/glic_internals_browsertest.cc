@@ -5,8 +5,13 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -14,12 +19,15 @@
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 #include "chrome/browser/glic/host/glic_internals_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/scoped_geic_test_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -27,11 +35,13 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/url_constants.h"
 
 namespace glic {
 
@@ -724,6 +734,128 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
   )js";
 
   EXPECT_EQ("ok", content::EvalJs(contents, kTestTabSwitching));
+}
+
+// Uses the glic test client, which logs every invoke() call it receives in
+// #invocationLog.
+class GlicInternalsInvokeBrowserTest
+    : public GlicBrowserTestMixin<PlatformBrowserTest> {
+ public:
+  GlicInternalsInvokeBrowserTest() {
+    SetGlicPagePath("/glic/test_client/index.html");
+  }
+};
+
+// Verifies that the Use Headless Page checkbox shows only for kTargetSurface
+// and is disabled while Auto Submit is off, and that Trigger Invoke with it
+// checked creates a headless surface and sends its ID to the client as
+// actuationTabId. Navigating away from the internals page destroys the
+// surface.
+IN_PROC_BROWSER_TEST_F(GlicInternalsInvokeBrowserTest,
+                       HeadlessActuationSendsHeadlessSurfaceId) {
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals")));
+  ASSERT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  constexpr char kTriggerHeadlessInvoke[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      if (!app) {
+        return 'app-missing';
+      }
+
+      // Switch to the Debug Controls tab and wait for rendering.
+      app.selectedTabIndex_ = 1;
+      await app.updateComplete;
+      const select =
+          app.shadowRoot.querySelector('#invokeActuationTargetSelect');
+      if (!select) {
+        return 'missing-select';
+      }
+      if (app.shadowRoot.querySelector('#invokeHeadlessActuationCheckbox')) {
+        return 'checkbox-shown-before-target-surface';
+      }
+
+      const targetSurfaceOption = Array.from(select.options).find(
+          option => option.textContent.trim() === 'kTargetSurface');
+      if (!targetSurfaceOption) {
+        return 'missing-target-surface-option';
+      }
+      select.value = targetSurfaceOption.value;
+      select.dispatchEvent(new Event('change'));
+      await app.updateComplete;
+      const checkbox =
+          app.shadowRoot.querySelector('#invokeHeadlessActuationCheckbox');
+      if (!checkbox) {
+        return 'missing-checkbox';
+      }
+      if (checkbox.disabled) {
+        return 'checkbox-disabled-with-auto-submit';
+      }
+
+      app.invokeAutoSubmit_ = false;
+      await app.updateComplete;
+      if (!checkbox.disabled) {
+        return 'checkbox-not-disabled-without-auto-submit';
+      }
+
+      app.invokeAutoSubmit_ = true;
+      await app.updateComplete;
+      if (checkbox.disabled) {
+        return 'checkbox-still-disabled-after-auto-submit-restored';
+      }
+
+      checkbox.click();
+      await app.updateComplete;
+      if (!app.invokeHeadlessActuation_) {
+        return 'checkbox-did-not-update-state';
+      }
+
+      // onTriggerInvokeClick_() resolves after it logs the invoke result.
+      await app.onTriggerInvokeClick_();
+      const result = app.invokeLogs_.at(-1);
+      return result.includes('SUCCESS') ? 'ok' : `invoke-failed: ${result}`;
+    })()
+  )js";
+  ASSERT_EQ("ok", content::EvalJs(contents, kTriggerHeadlessInvoke));
+
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(contents);
+  ASSERT_TRUE(tab);
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+  content::RenderFrameHost* guest_frame = instance->host().GetGuestMainFrame();
+  ASSERT_TRUE(guest_frame);
+
+  constexpr char kGetActuationTabId[] = R"js(
+    (() => {
+      const log = document.getElementById('invocationLog').textContent;
+      const match = log.match(/"actuationTabId": "(-?\d+)"/);
+      return match ? Number(match[1]) : 0;
+    })()
+  )js";
+  const int actuation_tab_id =
+      content::EvalJs(guest_frame, kGetActuationTabId).ExtractInt();
+  ASSERT_NE(actuation_tab_id, 0);
+
+  // The ID must resolve to a headless surface of this profile.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  actor::ActorSurface* surface = actor_service->GetSurfaceRegistry().Get(
+      actor::ActorSurfaceHandle::FromRawValue(actuation_tab_id));
+  ASSERT_TRUE(surface);
+  EXPECT_FALSE(surface->IsTab());
+
+  // GlicInternalsPageHandler owns the headless surface, so navigating away
+  // from chrome://glic/internals destroys the surface.
+  const actor::ActorSurfaceHandle handle = surface->GetHandle();
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(contents, GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return !actor_service->GetSurfaceRegistry().Get(handle); }));
 }
 
 }  // namespace glic

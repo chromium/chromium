@@ -502,6 +502,23 @@ export function getHtml(this: GlicInternalsAppElement) {
               </option>
             `)}
           </select>
+          ${this.isTargetSurfaceSelected_() ? html`
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <label>
+                <input id="invokeHeadlessActuationCheckbox" type="checkbox"
+                    .checked="${this.invokeHeadlessActuation_}"
+                    ?disabled="${!this.invokeAutoSubmit_}"
+                    @change="${this.onInvokeHeadlessActuationChange_}">
+                Use Headless Page
+                ${!this.invokeAutoSubmit_ ? html`
+                  <span style="color: var(--cr-secondary-text-color, #5f6368);
+                      font-size: 12px; margin-left: 8px;">
+                    (requires Auto Submit)
+                  </span>
+                ` : ''}
+              </label>
+            </div>
+          ` : ''}
 
           <div style="display: flex; gap: 16px; align-items: center;">
             <label>

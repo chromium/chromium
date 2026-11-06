@@ -83,6 +83,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeZssAdditionalContent_: {type: String},
       invokeOpenInForeground_: {type: Boolean},
       invokeActuationTarget_: {type: Number},
+      invokeHeadlessActuation_: {type: Boolean},
       actuationTargetEnumValues_: {type: Array},
       invokeShowPanel_: {type: Boolean},
       invokePayloadUniversalCartMetadata_: {type: String},
@@ -128,6 +129,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeOpenInForeground_: boolean = true;
   protected accessor invokeActuationTarget_: ActuationTarget =
       ActuationTarget.kAgentDecides;
+  protected accessor invokeHeadlessActuation_: boolean = false;
   protected accessor invokeShowPanel_: boolean = true;
   protected accessor invokePayloadUniversalCartMetadata_: string = '';
   protected accessor invokeFreCompletionWaitMode_: FreCompletionWaitMode =
@@ -726,6 +728,14 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeActuationTarget_ = Number((e.target as HTMLSelectElement).value);
   }
 
+  protected isTargetSurfaceSelected_(): boolean {
+    return this.invokeActuationTarget_ === ActuationTarget.kTargetSurface;
+  }
+
+  protected onInvokeHeadlessActuationChange_(e: Event) {
+    this.invokeHeadlessActuation_ = (e.target as HTMLInputElement).checked;
+  }
+
   protected onInvokeShowPanelChange_(e: Event) {
     this.invokeShowPanel_ = (e.target as HTMLInputElement).checked;
   }
@@ -745,7 +755,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected onInvokeAuthSecretInput_(e: Event) {
     this.invokeAuthSecret_ = (e.target as HTMLInputElement).value;
   }
-  protected onTriggerInvokeClick_() {
+  protected async onTriggerInvokeClick_() {
     let surface: TriggerInvokeFromInternalsOptions['surface'];
     if (this.invokeSurfaceType_ === 'newTab') {
       surface = {newTab: {openInForeground: this.invokeOpenInForeground_}};
@@ -809,6 +819,8 @@ export class GlicInternalsAppElement extends CrLitElement {
       payload: payload,
       takeScreenshot: this.invokeTakeScreenshot_,
       supersedeIfInProgress: this.invokeSupersedeIfInProgress_,
+      headlessActuation: this.isTargetSurfaceSelected_() &&
+          this.invokeAutoSubmit_ && this.invokeHeadlessActuation_,
       keyConfig: (this.invokePublicKey_ || this.invokeAuthSecret_) ? {
         publicKey: this.invokePublicKey_,
         authSecret: this.invokeAuthSecret_,
@@ -891,14 +903,14 @@ export class GlicInternalsAppElement extends CrLitElement {
     ];
     console.info(this.invokeLogs_[0]);
 
-    this.browserProxy_.handler.triggerInvokeFromInternalsAction(options).then(
-        ({success, errorMessage}: {success: boolean, errorMessage: string}) => {
-          const timestamp = new Date().toLocaleTimeString();
-          const logEntry = `[${timestamp}] ${
-              success ? 'SUCCESS' : 'ERROR: ' + errorMessage}`;
-          this.invokeLogs_ = [...this.invokeLogs_, logEntry];
-          console.info(logEntry);
-        });
+    const {success, errorMessage} =
+        await this.browserProxy_.handler.triggerInvokeFromInternalsAction(
+            options);
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry =
+        `[${timestamp}] ${success ? 'SUCCESS' : 'ERROR: ' + errorMessage}`;
+    this.invokeLogs_ = [...this.invokeLogs_, logEntry];
+    console.info(logEntry);
   }
 
   protected getPlatformString_(platform: Platform): string {
