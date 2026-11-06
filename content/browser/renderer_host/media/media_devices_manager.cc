@@ -11,6 +11,7 @@
 #include <functional>
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
@@ -226,17 +228,40 @@ void SendDeviceNotifierToAudioService(
   GetAudioService().BindDeviceNotifier(std::move(device_notifier_receiver));
 }
 
-void ReportVideoEnumerationStart() {
-  base::UmaHistogramBoolean(
-      "Media.MediaDevicesManager.VideoDeviceEnumeration.Start", true);
+std::string_view GetVideoEnumerationHistogramSuffix(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode) {
+  switch (enumeration_mode) {
+#if BUILDFLAG(IS_WIN)
+    case media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesOnly:
+      return ".DevicesOnly";
+#endif
+    case media::mojom::VideoCaptureDeviceEnumerationMode::
+        kDevicesWithCapabilities:
+      return ".DevicesWithCapabilities";
+  }
+  NOTREACHED();
 }
 
-void ReportVideoEnumerationResult(DeviceEnumerationResult result_code,
-                                  bool has_devices) {
+void ReportVideoEnumerationStart(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Media.MediaDevicesManager.VideoDeviceEnumeration.Start",
+                    GetVideoEnumerationHistogramSuffix(enumeration_mode)}),
+      true);
+}
+
+void ReportVideoEnumerationResult(
+    DeviceEnumerationResult result_code,
+    bool has_devices,
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode) {
+  const std::string_view suffix =
+      GetVideoEnumerationHistogramSuffix(enumeration_mode);
   base::UmaHistogramEnumeration(
-      "Media.MediaDevicesManager.VideoDeviceEnumeration.Result", result_code);
+      base::StrCat(
+          {"Media.MediaDevicesManager.VideoDeviceEnumeration.Result", suffix}),
+      result_code);
   base::UmaHistogramEnumeration(
-      "Media.Video.InputDeviceEnumerationOutcome",
+      base::StrCat({"Media.Video.InputDeviceEnumerationOutcome", suffix}),
       media::GetDeviceEnumerationOutcome(
           result_code == DeviceEnumerationResult::kSuccess, has_devices));
 }
@@ -1506,7 +1531,7 @@ void MediaDevicesManager::EnumerateSystemDevices(uint64_t request_id,
       break;
     case MediaDeviceType::kMediaVideoInput:
       ongoing_update_video_enumeration_mode_ = video_enumeration_mode_;
-      ReportVideoEnumerationStart();
+      ReportVideoEnumerationStart(video_enumeration_mode_);
       video_capture_manager_->EnumerateDevices(
           video_enumeration_mode_,
           base::BindOnce(&MediaDevicesManager::VideoInputDevicesEnumerated,
@@ -1543,7 +1568,9 @@ void MediaDevicesManager::VideoInputDevicesEnumerated(
     DeviceEnumerationResult result_code,
     const media::VideoCaptureDeviceDescriptors& descriptors) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M155);
-  ReportVideoEnumerationResult(result_code, !descriptors.empty());
+  CHECK(ongoing_update_video_enumeration_mode_);
+  ReportVideoEnumerationResult(result_code, !descriptors.empty(),
+                               *ongoing_update_video_enumeration_mode_);
 
   if (result_code != DeviceEnumerationResult::kSuccess) {
     std::string log_message = base::StringPrintf(

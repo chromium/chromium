@@ -796,11 +796,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed (Non-Empty Result)"/>
 </enum>
 
+<!-- LINT.IfChange(DeviceEnumerationResult) -->
+
 <enum name="DeviceEnumerationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error"/>
   <int value="2" label="Error - Video Capturer Service crashed"/>
+  <int value="3" label="Error - Video Capturer Service dropped request"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/capture/mojom/video_capture_types.mojom:DeviceEnumerationResult) -->
 
 <!-- LINT.IfChange(DisplayAffinityResult) -->
 

@@ -6,12 +6,14 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -68,6 +70,10 @@ using ::testing::SaveArg;
 namespace content {
 
 namespace {
+
+constexpr std::string_view kDevicesWithCapabilitiesSuffix =
+    ".DevicesWithCapabilities";
+constexpr std::string_view kDevicesOnlySuffix = ".DevicesOnly";
 
 const int kRenderProcessId = 1;
 const int kRenderFrameId = 3;
@@ -432,6 +438,12 @@ class MediaDevicesManagerTest : public ::testing::Test {
   }
 
  protected:
+  struct VideoEnumerationCounts {
+    int success_with_devices = 0;
+    int success_without_devices = 0;
+    int failures = 0;
+  };
+
   void SetUp() override {
     SetBrowserClientForTesting(&browser_client_);
     audio_manager_ = std::make_unique<MockAudioManager>();
@@ -496,23 +508,47 @@ class MediaDevicesManagerTest : public ::testing::Test {
     return media_devices_manager_->video_enumeration_mode_;
   }
 
-  void ExpectVideoEnumerationHistogramReport(int success_count,
-                                             int error_count = 0) {
-    histogram_tester_.ExpectTotalCount(
-        "Media.MediaDevicesManager.VideoDeviceEnumeration.Start",
-        success_count + error_count);
+  void ExpectVideoEnumerationHistogramCounts(
+      const VideoEnumerationCounts& devices_with_capabilities) {
+    ExpectVideoEnumerationHistogramCounts(devices_with_capabilities, {});
+  }
+
+  void ExpectVideoEnumerationHistogramCounts(
+      const VideoEnumerationCounts& devices_with_capabilities,
+      const VideoEnumerationCounts& devices_only) {
+    ExpectVideoEnumerationHistogramCountsForSuffix(
+        kDevicesWithCapabilitiesSuffix, devices_with_capabilities);
+    ExpectVideoEnumerationHistogramCountsForSuffix(kDevicesOnlySuffix,
+                                                   devices_only);
+  }
+
+  void ExpectVideoEnumerationHistogramCountsForSuffix(
+      std::string_view suffix,
+      const VideoEnumerationCounts& counts) {
+    const int successes =
+        counts.success_with_devices + counts.success_without_devices;
+    const int total = successes + counts.failures;
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat(
+            {"Media.MediaDevicesManager.VideoDeviceEnumeration.Start", suffix}),
+        true, total);
+    const std::string result = base::StrCat(
+        {"Media.MediaDevicesManager.VideoDeviceEnumeration.Result", suffix});
+    histogram_tester_.ExpectTotalCount(result, total);
     histogram_tester_.ExpectBucketCount(
-        "Media.MediaDevicesManager.VideoDeviceEnumeration.Result",
-        DeviceEnumerationResult::kSuccess, success_count);
+        result, DeviceEnumerationResult::kSuccess, successes);
+    const std::string outcome =
+        base::StrCat({"Media.Video.InputDeviceEnumerationOutcome", suffix});
+    histogram_tester_.ExpectTotalCount(outcome, total);
     histogram_tester_.ExpectBucketCount(
-        "Media.MediaDevicesManager.VideoDeviceEnumeration.Result",
-        DeviceEnumerationResult::kUnknownError, error_count);
+        outcome, media::DeviceEnumerationOutcome::kSuccessNonEmptyResult,
+        counts.success_with_devices);
     histogram_tester_.ExpectBucketCount(
-        "Media.Video.InputDeviceEnumerationOutcome",
-        media::DeviceEnumerationOutcome::kSuccessNonEmptyResult, success_count);
+        outcome, media::DeviceEnumerationOutcome::kSuccessEmptyResult,
+        counts.success_without_devices);
     histogram_tester_.ExpectBucketCount(
-        "Media.Video.InputDeviceEnumerationOutcome",
-        media::DeviceEnumerationOutcome::kFailureEmptyResult, error_count);
+        outcome, media::DeviceEnumerationOutcome::kFailureEmptyResult,
+        counts.failures);
   }
 
   void InitializeRenderFrameHost() {
@@ -602,7 +638,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateNoCacheAudioInput) {
                        base::Unretained(this), &run_loop));
     run_loop.Run();
   }
-  ExpectVideoEnumerationHistogramReport(0);
+  ExpectVideoEnumerationHistogramCounts({});
 }
 
 TEST_F(MediaDevicesManagerTest, EnumerateNoCacheVideoInput) {
@@ -623,7 +659,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateNoCacheVideoInput) {
                        base::Unretained(this), &run_loop));
     run_loop.Run();
   }
-  ExpectVideoEnumerationHistogramReport(kNumCalls);
+  ExpectVideoEnumerationHistogramCounts({.success_with_devices = kNumCalls});
 }
 
 TEST_F(MediaDevicesManagerTest, EnumerateNoCacheVideoEmptyResult) {
@@ -644,14 +680,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateNoCacheVideoEmptyResult) {
                        base::Unretained(this), &run_loop));
     run_loop.Run();
   }
-  histogram_tester_.ExpectTotalCount(
-      "Media.MediaDevicesManager.VideoDeviceEnumeration.Start", kNumCalls);
-  histogram_tester_.ExpectBucketCount(
-      "Media.MediaDevicesManager.VideoDeviceEnumeration.Result",
-      DeviceEnumerationResult::kSuccess, kNumCalls);
-  histogram_tester_.ExpectBucketCount(
-      "Media.Video.InputDeviceEnumerationOutcome",
-      media::DeviceEnumerationOutcome::kSuccessEmptyResult, kNumCalls);
+  ExpectVideoEnumerationHistogramCounts({.success_without_devices = kNumCalls});
 }
 
 TEST_F(MediaDevicesManagerTest, EnumerateNoCacheAudioOutput) {
@@ -851,12 +880,16 @@ TEST_P(MediaDevicesManagerWinEnumerateWithoutActivationFeatureEnabledTest,
       .Run(media::mojom::DeviceEnumerationResult::kSuccess, {});
   devices_only_run_loop.Run();
   EXPECT_EQ(callback_order, std::vector<int>({0}));
+  ExpectVideoEnumerationHistogramCountsForSuffix(
+      kDevicesOnlySuffix, {.success_without_devices = 1});
   ASSERT_TRUE(capabilities_callback);
 
   std::move(capabilities_callback)
       .Run(media::mojom::DeviceEnumerationResult::kSuccess, {});
   capabilities_run_loop.Run();
   EXPECT_EQ(callback_order, (std::vector<int>{0, 1}));
+  ExpectVideoEnumerationHistogramCounts({.success_without_devices = 1},
+                                        {.success_without_devices = 1});
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -900,6 +933,7 @@ TEST_F(MediaDevicesManagerWinEnumerateWithoutActivationFeatureEnabledTest,
           }));
   run_loop.Run();
 
+  ExpectVideoEnumerationHistogramCounts({}, {.success_with_devices = 1});
   ASSERT_TRUE(mock_video_capture_provider_->last_enumeration_mode());
   EXPECT_EQ(*mock_video_capture_provider_->last_enumeration_mode(),
             VideoCaptureDeviceEnumerationMode::kDevicesOnly);
@@ -1369,6 +1403,14 @@ TEST_F(MediaDevicesManagerWinEnumerateWithoutActivationFeatureEnabledTest,
             [&](const MediaDeviceEnumeration&) { run_loop.Quit(); }));
     run_loop.Run();
   }
+
+  ExpectVideoEnumerationHistogramCounts(
+      {.success_without_devices = 1, .failures = 1},
+      {.success_without_devices = 1});
+  histogram_tester_.ExpectBucketCount(
+      base::StrCat({"Media.MediaDevicesManager.VideoDeviceEnumeration.Result",
+                    kDevicesWithCapabilitiesSuffix}),
+      DeviceEnumerationResult::kUnknownError, 1);
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -1462,7 +1504,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheVideo) {
                        base::Unretained(this), &run_loop));
     run_loop.Run();
   }
-  ExpectVideoEnumerationHistogramReport(1);
+  ExpectVideoEnumerationHistogramCounts({.success_with_devices = 1});
 }
 
 TEST_F(MediaDevicesManagerTest, EnumerateCacheAudioWithDeviceChanges) {
@@ -2258,8 +2300,41 @@ TEST_F(MediaDevicesManagerTest, EnumerateVideoInputFailsOnce) {
                        base::Unretained(this), &run_loop));
     run_loop.Run();
   }
-  ExpectVideoEnumerationHistogramReport(/*success_count=*/kNumCalls - 1,
-                                        /*error_count=*/1);
+  ExpectVideoEnumerationHistogramCounts(
+      {.success_with_devices = kNumCalls - 1, .failures = 1});
+  histogram_tester_.ExpectBucketCount(
+      base::StrCat({"Media.MediaDevicesManager.VideoDeviceEnumeration.Result",
+                    kDevicesWithCapabilitiesSuffix}),
+      DeviceEnumerationResult::kUnknownError, 1);
+}
+
+TEST_F(MediaDevicesManagerTest, EnumerateVideoInputServiceDroppedRequest) {
+  EXPECT_CALL(
+      *mock_video_capture_provider_,
+      DoGetDeviceInfosAsync(
+          VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities, _))
+      .WillOnce(testing::WithArg<1>(
+          [](VideoCaptureProvider::GetDeviceInfosCallback callback) {
+            std::move(callback).Run(
+                DeviceEnumerationResult::kErrorCaptureServiceDroppedRequest,
+                {});
+          }));
+  EXPECT_CALL(*this, MockCallback(_));
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+      true;
+  base::RunLoop run_loop;
+  media_devices_manager_->EnumerateDevices(
+      devices_to_enumerate,
+      base::BindOnce(&MediaDevicesManagerTest::EnumerateCallback,
+                     base::Unretained(this), &run_loop));
+  run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      base::StrCat({"Media.MediaDevicesManager.VideoDeviceEnumeration.Result",
+                    kDevicesWithCapabilitiesSuffix}),
+      DeviceEnumerationResult::kErrorCaptureServiceDroppedRequest, 1);
+  ExpectVideoEnumerationHistogramCounts({.failures = 1});
 }
 
 TEST_F(MediaDevicesManagerTest,
@@ -2542,6 +2617,7 @@ TEST_F(MediaDevicesManagerWinEnumerateWithoutActivationFeatureDisabledTest,
           }));
   run_loop.Run();
 
+  ExpectVideoEnumerationHistogramCounts({.success_with_devices = 1});
   ASSERT_TRUE(mock_video_capture_provider_->last_enumeration_mode());
   EXPECT_EQ(*mock_video_capture_provider_->last_enumeration_mode(),
             VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities);

@@ -438,9 +438,11 @@ enum ApplySubCaptureTargetResult {
   kInvalidTarget,
 };
 
+// LINT.IfChange(DeviceEnumerationResult)
 enum DeviceEnumerationResult {
   kSuccess,
   kUnknownError,
   kErrorCaptureServiceCrash,
   kErrorCaptureServiceDroppedRequest,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:DeviceEnumerationResult)

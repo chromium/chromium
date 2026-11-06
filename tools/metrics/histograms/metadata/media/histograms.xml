@@ -178,6 +178,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".Reject" summary="reject"/>
 </variants>
 
+<variants name="VideoCaptureDeviceEnumerationMode">
+  <variant name=".DevicesOnly"
+      summary="video capture device-only enumerations (Windows only, without
+               formats or PTZ support)"/>
+  <variant name=".DevicesWithCapabilities"
+      summary="video capture device enumerations with capabilities (with
+               formats and PTZ support)"/>
+</variants>
+
 <!-- The names should match media::GetCodecNameForUMA(). -->
 
 <variants name="VideoCodec">
@@ -5847,25 +5856,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevicesManager.VideoDeviceEnumeration.Result"
+<histogram
+    name="Media.MediaDevicesManager.VideoDeviceEnumeration.Result{VideoCaptureDeviceEnumerationMode}"
     enum="DeviceEnumerationResult" expires_after="2027-03-07">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <summary>
     The success or failure code of MediaDevicesManager requests to enumerate
-    video devices (ie cameras) with the camera capture service.
+    video devices (ie cameras) with the camera capture service. Covers
+    {VideoCaptureDeviceEnumerationMode}.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevicesManager.VideoDeviceEnumeration.Start"
+<histogram
+    name="Media.MediaDevicesManager.VideoDeviceEnumeration.Start{VideoCaptureDeviceEnumerationMode}"
     enum="Boolean" expires_after="2027-10-15">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
-    Count of MediaDevicesManager starting enumerating video devices (ie cameras)
+    Count of MediaDevicesManager starting video device (camera) enumerations
     with the camera capture service, including enumerations which never
-    finished.
+    finished. Covers {VideoCaptureDeviceEnumerationMode}.
   </summary>
 </histogram>
 
@@ -8280,7 +8292,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Video.InputDeviceEnumerationOutcome"
+<histogram
+    name="Media.Video.InputDeviceEnumerationOutcome{VideoCaptureDeviceEnumerationMode}"
     enum="DeviceEnumerationOutcome" expires_after="2027-05-01">
   <owner>agpalak@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -8291,7 +8304,8 @@ chromium-metrics-reviews@google.com.
     results. Helps detect if OS errors or capture service failures cause the
     browser to report empty device lists versus legitimate zero-camera hardware
     configurations. Recorded when video device enumeration results are received
-    (e.g. during enumerateDevices calls).
+    (e.g. during enumerateDevices calls). Covers
+    {VideoCaptureDeviceEnumerationMode}.
   </summary>
 </histogram>
 
