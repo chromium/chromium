@@ -1137,7 +1137,7 @@ void AshNotificationView::UpdateWithNotification(
   CreateOrUpdateSnoozeButton(notification);
 
   // Configure views style.
-  UpdateIconAndButtonsColor(&notification);
+  UpdateButtonsColor(&notification);
   UpdateIconViewBackground();
   if (message_label()) {
     notification_style_utils::ConfigureLabelStyle(message_label(),
@@ -1356,9 +1356,11 @@ void AshNotificationView::UpdateCornerRadius(int top_radius,
 void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  UpdateIconAndButtonsColor(
+  const auto* notification =
       message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          notification_id()));
+          notification_id());
+  UpdateAppIconView(notification);
+  UpdateButtonsColor(notification);
 }
 
 std::unique_ptr<message_center::NotificationInputContainer>
@@ -1612,10 +1614,8 @@ void AshNotificationView::UpdateAppIconView(
       notification_style_utils::CreateNotificationAppIcon(notification));
 }
 
-void AshNotificationView::UpdateIconAndButtonsColor(
+void AshNotificationView::UpdateButtonsColor(
     const message_center::Notification* notification) {
-  UpdateAppIconView(notification);
-
   SkColor button_color =
       notification_style_utils::CalculateIconBackgroundColor(notification);
   bool use_default_button_color =

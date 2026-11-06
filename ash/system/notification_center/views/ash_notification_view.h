@@ -260,9 +260,8 @@ class ASH_EXPORT AshNotificationView
   // Update the color and icon for `app_icon_view_`.
   void UpdateAppIconView(const message_center::Notification* notification);
 
-  // Update the color of icon and buttons.
-  void UpdateIconAndButtonsColor(
-      const message_center::Notification* notification);
+  // Update the color of action and snooze buttons.
+  void UpdateButtonsColor(const message_center::Notification* notification);
 
   // Updates the background and rounded corners of `icon_view()` and
   // `right_content()` based on the image size relative to `GetIconViewSize()`.
