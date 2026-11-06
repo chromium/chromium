@@ -55,7 +55,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
 
     private ActivityController<TestActivity> mActivityController;
     private PropertyModel mModel;
-    private View mView;
+    private FuseboxAttachmentView mView;
     private Context mContext;
     private FuseboxAttachmentViewBinder mBinder;
     private Bitmap mTabFavicon;
@@ -66,8 +66,9 @@ public class FuseboxAttachmentViewBinderUnitTest {
         Activity activity = mActivityController.get();
         mModel = new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS);
         mView =
-                LayoutInflater.from(activity)
-                        .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
+                (FuseboxAttachmentView)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
         mView.setLayoutParams(new LayoutParams(100, 100));
         var resourceProvider =
                 new OmniboxResourceProvider(

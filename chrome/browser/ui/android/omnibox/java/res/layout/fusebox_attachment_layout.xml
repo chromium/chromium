@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<FrameLayout
+<org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
@@ -76,4 +76,4 @@ found in the LICENSE file.
         android:src="@drawable/btn_close"
         app:tint="@macro/default_icon_color_secondary" />
 
-</FrameLayout>
+</org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentView>

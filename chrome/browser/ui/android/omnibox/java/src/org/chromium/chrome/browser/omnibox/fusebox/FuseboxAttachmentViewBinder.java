@@ -41,7 +41,7 @@ class FuseboxAttachmentViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+    public void bind(PropertyModel model, FuseboxAttachmentView view, PropertyKey propertyKey) {
         if (propertyKey == FuseboxAttachmentProperties.ATTACHMENT) {
             FuseboxAttachment attachment = model.get(FuseboxAttachmentProperties.ATTACHMENT);
             assert attachment != null : "FuseboxAttachment cannot be null";
@@ -53,18 +53,19 @@ class FuseboxAttachmentViewBinder {
                 updateViewForUploadState(attachment, view);
             }
         } else if (propertyKey == FuseboxAttachmentProperties.ON_REMOVE) {
-            view.findViewById(R.id.attachment_remove_button)
+            view.getRemoveButton()
                     .setOnClickListener(
                             v -> model.get(FuseboxAttachmentProperties.ON_REMOVE).run());
         } else if (propertyKey == FuseboxAttachmentProperties.REMOVE_BUTTON_SELECTED) {
-            view.findViewById(R.id.attachment_remove_button)
+            view.getRemoveButton()
                     .setSelected(model.get(FuseboxAttachmentProperties.REMOVE_BUTTON_SELECTED));
         }
     }
 
-    private void updateViewForUploadState(FuseboxAttachment attachment, View view) {
-        View progressView = view.findViewById(R.id.attachment_spinner);
-        ImageView imageView = view.findViewById(R.id.attachment_thumbnail);
+    private void updateViewForUploadState(
+            FuseboxAttachment attachment, FuseboxAttachmentView view) {
+        View progressView = view.getSpinner();
+        ImageView imageView = view.getThumbnail();
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (attachment.isUploadComplete() || attachment.isSuggestedTab) {
             progressView.setVisibility(View.GONE);
@@ -74,7 +75,7 @@ class FuseboxAttachmentViewBinder {
         } else {
             progressView.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.INVISIBLE);
-            TextView titleView = view.findViewById(R.id.attachment_title);
+            TextView titleView = view.getTitle();
             if (titleView != null) {
                 titleView.setText(attachment.title);
                 titleView.setVisibility(View.INVISIBLE);
@@ -137,28 +138,29 @@ class FuseboxAttachmentViewBinder {
         return drawable;
     }
 
-    private static void applyTitleAndDescriptionIfPresent(FuseboxAttachment attachment, View view) {
-        TextView titleView = view.findViewById(R.id.attachment_title);
+    private static void applyTitleAndDescriptionIfPresent(
+            FuseboxAttachment attachment, FuseboxAttachmentView view) {
+        TextView titleView = view.getTitle();
         if (titleView == null) return;
 
         titleView.setVisibility(View.VISIBLE);
         titleView.setText(attachment.title);
     }
 
-    private void adjustColorsForScheme(View view) {
+    private void adjustColorsForScheme(FuseboxAttachmentView view) {
         Context context = view.getContext();
-        ProgressBar progressView = view.findViewById(R.id.attachment_spinner);
+        ProgressBar progressView = view.getSpinner();
         progressView.setIndeterminateTintList(
                 ColorStateList.valueOf(mResourceProvider.getColorPrimary()));
 
-        View backgroundView = view.findViewById(R.id.attachment_background);
+        View backgroundView = view.getBackgroundView();
         backgroundView.getBackground().setTint(mResourceProvider.getRequestTypeButtonColor());
 
-        TextView titleView = view.findViewById(R.id.attachment_title);
+        TextView titleView = view.getTitle();
         if (titleView != null) {
             titleView.setTextAppearance(mResourceProvider.getRequestTypeButtonTextRes());
         }
-        ImageButton closeButton = view.findViewById(R.id.attachment_remove_button);
+        ImageButton closeButton = view.getRemoveButton();
         closeButton.setColorFilter(mResourceProvider.getColorOnSurface());
         @ColorInt int colorSurface = mResourceProvider.getColorSurface();
         @ColorInt int closeBgColor = ColorUtils.setAlphaComponentWithFloat(colorSurface, 0.64f);
