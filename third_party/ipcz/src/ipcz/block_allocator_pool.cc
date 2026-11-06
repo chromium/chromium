@@ -4,8 +4,8 @@
 
 #include "ipcz/block_allocator_pool.h"
 
+#include "base/logging.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
-#include "util/log.h"
 #include "util/safe_math.h"
 
 namespace ipcz {

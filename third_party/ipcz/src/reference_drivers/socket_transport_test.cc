@@ -6,6 +6,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/memfd_memory.h"
@@ -13,7 +14,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/synchronization/notification.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz::reference_drivers {
 namespace {
@@ -102,9 +102,8 @@ TEST_F(SocketTransportTest, Flood) {
     // Make sure messages arrive in the order they were sent.
     std::fill(expected_values.begin(), expected_values.end(),
               next_expected_value++);
-    IPCZ_UNSAFE_TODO(EXPECT_EQ(
-        0,
-        memcmp(message.data.data(), expected_bytes.data(), kMessageNumBytes)));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(message.data.data(), expected_bytes.data(),
+                                    kMessageNumBytes)));
 
     // Finish only once the last expected message is received.
     if (next_expected_value == kNumMessages) {

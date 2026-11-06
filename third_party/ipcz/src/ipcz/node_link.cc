@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ipcz/node_link.h"
+
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
@@ -11,6 +13,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/logging.h"
 #include "ipcz/box.h"
 #include "ipcz/fragment_ref.h"
 #include "ipcz/ipcz.h"
@@ -19,7 +22,6 @@
 #include "ipcz/message.h"
 #include "ipcz/node.h"
 #include "ipcz/node_connector.h"
-#include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/parcel.h"
@@ -29,10 +31,8 @@
 #include "ipcz/router_link_state.h"
 #include "ipcz/sublink_id.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
-#include "util/log.h"
 #include "util/ref_counted.h"
 #include "util/safe_math.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 

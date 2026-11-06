@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/logging.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
@@ -18,7 +19,6 @@
 #include "ipcz/router.h"
 #include "ipcz/sublink_id.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
-#include "util/log.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {

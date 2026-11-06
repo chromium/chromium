@@ -20,7 +20,6 @@
 #include "ipcz/parcel_wrapper.h"
 #include "ipcz/router.h"
 #include "util/ref_counted.h"
-#include "util/unsafe_buffers.h"
 
 class IpczAPIImpl : public IpczAPI {
  public:

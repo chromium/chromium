@@ -8,13 +8,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/object.h"
 #include "reference_drivers/random.h"
 #include "reference_drivers/single_process_reference_driver_base.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz::reference_drivers {
 
@@ -25,7 +25,7 @@ class InProcessMemory : public ObjectImpl<InProcessMemory, Object::kMemory> {
  public:
   explicit InProcessMemory(size_t size)
       : size_(size), data_(new uint8_t[size]) {
-    IPCZ_UNSAFE_TODO(memset(&data_[0], 0, size_));
+    UNSAFE_TODO(memset(&data_[0], 0, size_));
   }
 
   size_t size() const { return size_; }

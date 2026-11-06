@@ -10,13 +10,13 @@
 #include <variant>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "fuzzer/driver.h"
 #include "fuzzer/fuzzer.h"
 #include "ipcz/ipcz.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz::fuzzer {
 
@@ -461,8 +461,8 @@ void Fuzzer::InjectFuzzDataIntoMemory() {
     const auto bytes = memory->bytes();
     const size_t offset = (4ul * config_.target_offset) % bytes.size();
     const size_t size = std::min(bytes.size() - offset, fuzz_data_.size());
-    std::copy(fuzz_data_.begin(), IPCZ_UNSAFE_TODO(fuzz_data_.begin() + size),
-              IPCZ_UNSAFE_TODO(bytes.begin() + offset));
+    std::copy(fuzz_data_.begin(), UNSAFE_TODO(fuzz_data_.begin() + size),
+              UNSAFE_TODO(bytes.begin() + offset));
   }
 }
 

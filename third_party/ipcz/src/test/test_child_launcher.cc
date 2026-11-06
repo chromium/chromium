@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "reference_drivers/handle_eintr.h"
 #include "test/multinode_test.h"
 #include "test/test_child_launcher.h"
@@ -18,7 +19,6 @@
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "util/safe_math.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz::test {
 
@@ -94,7 +94,7 @@ void TestChildLauncher::Initialize(int argc, char** argv) {
   ArgList& args = GetArgList();
   args.resize(argc);
   for (int i = 0; i < argc; ++i) {
-    std::string_view value(IPCZ_UNSAFE_TODO(argv[i]));
+    std::string_view value(UNSAFE_TODO(argv[i]));
     if (value.rfind(kTestChildSwitchPrefix) != std::string::npos) {
       GetTestNodeName() = value.substr(kTestChildSwitchPrefix.size());
     } else if (value.rfind(kSocketFdSwitchPrefix) != std::string::npos) {

@@ -8,13 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "ipcz/buffer_id.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
 #include "ipcz/fragment.h"
 #include "reference_drivers/sync_reference_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 namespace {
@@ -29,7 +29,7 @@ TEST_F(FragmentTest, FromDescriptorUnsafe) {
   char kBuffer[] = "Hello, world!";
 
   Fragment f = Fragment::FromDescriptorUnsafe({BufferId{0}, 1, 4},
-                                              IPCZ_UNSAFE_TODO(kBuffer + 1));
+                                              UNSAFE_TODO(kBuffer + 1));
   EXPECT_FALSE(f.is_null());
   EXPECT_FALSE(f.is_pending());
   EXPECT_EQ(1u, f.offset());
@@ -37,7 +37,7 @@ TEST_F(FragmentTest, FromDescriptorUnsafe) {
   EXPECT_EQ("ello", std::string(f.bytes().begin(), f.bytes().end()));
 
   f = Fragment::FromDescriptorUnsafe({BufferId{0}, 7, 6},
-                                     IPCZ_UNSAFE_TODO(kBuffer + 7));
+                                     UNSAFE_TODO(kBuffer + 7));
   EXPECT_FALSE(f.is_null());
   EXPECT_FALSE(f.is_pending());
   EXPECT_EQ(7u, f.offset());
@@ -92,7 +92,7 @@ TEST_F(FragmentTest, ValidMappedFromDescriptor) {
   const char kData[] = "0123456789abcdef";
   DriverMemory memory(GetTestDriver(), std::size(kData));
   auto mapping = memory.Map();
-  IPCZ_UNSAFE_TODO(memcpy(mapping.bytes().data(), kData, std::size(kData)));
+  UNSAFE_TODO(memcpy(mapping.bytes().data(), kData, std::size(kData)));
 
   Fragment f = Fragment::MappedFromDescriptor({BufferId{0}, 2, 11}, mapping);
   EXPECT_FALSE(f.is_null());

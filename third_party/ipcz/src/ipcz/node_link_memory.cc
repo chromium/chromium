@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/logging.h"
 #include "ipcz/buffer_id.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/fragment_descriptor.h"
@@ -20,7 +21,6 @@
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/numeric/bits.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
-#include "util/log.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {

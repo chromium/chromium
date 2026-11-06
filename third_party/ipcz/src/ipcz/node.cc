@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/features.h"
 #include "ipcz/ipcz.h"
@@ -20,9 +22,7 @@
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
-#include "util/log.h"
 #include "util/ref_counted.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -36,8 +36,8 @@ IpczCreateNodeOptions CopyOrUseDefaultOptions(
     const IpczCreateNodeOptions* options) {
   IpczCreateNodeOptions copied_options = {0};
   if (options) {
-    IPCZ_UNSAFE_TODO(memcpy(&copied_options, options,
-                            std::min(options->size, sizeof(copied_options))));
+    UNSAFE_TODO(memcpy(&copied_options, options,
+                       std::min(options->size, sizeof(copied_options))));
   }
   copied_options.size = sizeof(copied_options);
   return copied_options;

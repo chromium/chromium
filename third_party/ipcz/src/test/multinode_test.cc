@@ -6,13 +6,12 @@
 #include "test/multinode_test.h"
 
 #include <cstring>
-
 #include <map>
 #include <optional>
 #include <string>
 #include <thread>
-#include "util/unsafe_buffers.h"
 
+#include "base/compiler_specific.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/async_reference_driver.h"
 #include "reference_drivers/sync_reference_driver.h"
@@ -414,7 +413,7 @@ IpczHandle TestNode::BoxBlob(std::string_view contents) {
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
   // SAFETY: We just allocated memory of contents.size() available starting from
   // base.
-  IPCZ_UNSAFE_BUFFERS(
+  UNSAFE_BUFFERS(
       memcpy(const_cast<void*>(base), contents.data(), contents.size()));
   GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr);
 

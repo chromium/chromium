@@ -8,10 +8,10 @@
 #include <thread>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "ipcz/block_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 namespace {
@@ -38,7 +38,7 @@ TEST_F(BlockAllocatorTest, Basic) {
   for (size_t i = 0; i < allocator().capacity(); ++i) {
     void* block = allocator().Allocate();
     ASSERT_TRUE(block);
-    IPCZ_UNSAFE_TODO(memset(block, 0xaa, kBlockSize));
+    UNSAFE_TODO(memset(block, 0xaa, kBlockSize));
     auto [it, inserted] = blocks.insert(block);
     EXPECT_TRUE(inserted);
   }
@@ -50,9 +50,9 @@ TEST_F(BlockAllocatorTest, Basic) {
   // bytes, as all blocks were allocated and filled completely.
   constexpr size_t kNumAllocatedBytes = kPageSize - kBlockSize;
   char expected_data[kNumAllocatedBytes];
-  IPCZ_UNSAFE_TODO(memset(expected_data, 0xaa, kNumAllocatedBytes));
-  IPCZ_UNSAFE_TODO(EXPECT_EQ(0, memcmp(allocator().region().data() + kBlockSize,
-                                       expected_data, kNumAllocatedBytes)));
+  UNSAFE_TODO(memset(expected_data, 0xaa, kNumAllocatedBytes));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(allocator().region().data() + kBlockSize,
+                                  expected_data, kNumAllocatedBytes)));
 
   for (void* block : blocks) {
     EXPECT_TRUE(allocator().Free(block));
@@ -64,7 +64,7 @@ TEST_F(BlockAllocatorTest, InitializePrezeroedRegion) {
   // free-list terminator and does not zero-fill the preceding blocks.
   absl::Span<uint8_t> prefix =
       allocator().region().subspan(0, kPageSize - kBlockSize);
-  IPCZ_UNSAFE_TODO(memset(prefix.data(), 0xaa, prefix.size()));
+  UNSAFE_TODO(memset(prefix.data(), 0xaa, prefix.size()));
 
   allocator().InitializePrezeroedRegion();
 
@@ -126,12 +126,12 @@ TEST_F(BlockAllocatorTest, StressTest) {
       for (size_t j = 0; j < kNumAllocationsPerIteration; ++j) {
         if (auto* p =
                 static_cast<std::atomic<uint32_t>*>(allocator().Allocate())) {
-          IPCZ_UNSAFE_TODO(allocations[num_allocations++]) = p;
+          UNSAFE_TODO(allocations[num_allocations++]) = p;
           p->store(id, std::memory_order_relaxed);
         }
       }
       for (size_t j = 0; j < num_allocations; ++j) {
-        std::atomic<uint32_t>* p = IPCZ_UNSAFE_TODO(allocations[j]);
+        std::atomic<uint32_t>* p = UNSAFE_TODO(allocations[j]);
         EXPECT_EQ(id, p->load(std::memory_order_relaxed));
         EXPECT_TRUE(allocator().Free(p));
       }

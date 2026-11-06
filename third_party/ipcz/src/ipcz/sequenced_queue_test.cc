@@ -4,12 +4,12 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "ipcz/sequence_number.h"
 #include "ipcz/sequenced_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -158,12 +158,11 @@ TEST(SequencedQueueTest, SparseSequence) {
       SequenceNumber(12), SequenceNumber(15), SequenceNumber(13),
       SequenceNumber(14)};
   for (SequenceNumber n : kMessageSequence) {
-    IPCZ_UNSAFE_TODO(
-        EXPECT_TRUE(q.Push(SequenceNumber(n), kEntries[n.value()])));
+    UNSAFE_TODO(EXPECT_TRUE(q.Push(SequenceNumber(n), kEntries[n.value()])));
     std::string s;
     while (q.Pop(s)) {
       EXPECT_EQ(*next_expected_pop, s);
-      IPCZ_UNSAFE_TODO(++next_expected_pop);
+      UNSAFE_TODO(++next_expected_pop);
     }
   }
 

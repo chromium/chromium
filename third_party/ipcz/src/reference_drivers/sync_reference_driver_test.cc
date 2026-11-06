@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "ipcz/api_object.h"
 #include "reference_drivers/sync_reference_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz::reference_drivers {
 namespace {
@@ -65,8 +65,7 @@ class TransportReceiver
 
     const std::string message(reinterpret_cast<const char*>(data), num_bytes);
     std::vector<IpczDriverHandle> handles(num_driver_handles);
-    std::copy(driver_handles,
-              IPCZ_UNSAFE_TODO(driver_handles + num_driver_handles),
+    std::copy(driver_handles, UNSAFE_TODO(driver_handles + num_driver_handles),
               handles.begin());
     return handlers.on_message(
         {.data = std::move(message), .handles = std::move(handles)});

@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "ipcz/router.h"
 #include "ipcz/router_link.h"
-#include "util/log.h"
 
 namespace ipcz {
 

@@ -8,6 +8,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
@@ -17,7 +18,6 @@
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/safe_math.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -363,7 +363,7 @@ bool Message::CopyDataAndValidateHeader(absl::Span<const uint8_t> data) {
   // Copy the data into a local message object to avoid any TOCTOU issues in
   // case `data` is in unsafe shared memory.
   received_data_.emplace(data.size());
-  IPCZ_UNSAFE_TODO(memcpy(received_data_->data(), data.data(), data.size()));
+  UNSAFE_TODO(memcpy(received_data_->data(), data.data(), data.size()));
   data_ = received_data_->bytes();
 
   // The message must at least be large enough to encode a v0 MessageHeader.

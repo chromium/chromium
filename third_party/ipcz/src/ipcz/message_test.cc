@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
@@ -18,7 +19,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "util/ref_counted.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 namespace {
@@ -47,8 +47,8 @@ class MessageTest : public testing::Test {
                             size_t num_handles, uint32_t, const void*) {
           const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data);
           received_messages_.push(
-              {{bytes, IPCZ_UNSAFE_TODO(bytes + num_bytes)},
-               {handles, IPCZ_UNSAFE_TODO(handles + num_handles)}});
+              {{bytes, UNSAFE_TODO(bytes + num_bytes)},
+               {handles, UNSAFE_TODO(handles + num_handles)}});
           return IPCZ_RESULT_OK;
         });
 
@@ -223,8 +223,8 @@ TEST_F(MessageTest, DriverObjectArray) {
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
   for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
-    IPCZ_UNSAFE_TODO(in_objects[i]) = DriverObject(
-        test::GetMockDriver(), IPCZ_UNSAFE_TODO(kObjectHandles[i]));
+    UNSAFE_TODO(in_objects[i]) =
+        DriverObject(test::GetMockDriver(), UNSAFE_TODO(kObjectHandles[i]));
   }
 
   test::msg::MessageWithDriverObjectArray in;
@@ -239,7 +239,7 @@ TEST_F(MessageTest, DriverObjectArray) {
   auto objects = out.GetDriverObjectArrayView(out.v0()->objects);
   EXPECT_EQ(3u, objects.size());
   for (size_t i = 0; i < objects.size(); ++i) {
-    IPCZ_UNSAFE_TODO(EXPECT_EQ(kObjectHandles[i], objects[i].release()));
+    UNSAFE_TODO(EXPECT_EQ(kObjectHandles[i], objects[i].release()));
   }
 }
 
@@ -328,8 +328,8 @@ TEST_F(MessageTest, DriverObjectClaimedTwice) {
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
   for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
-    IPCZ_UNSAFE_TODO(in_objects[i]) = DriverObject(
-        test::GetMockDriver(), IPCZ_UNSAFE_TODO(kObjectHandles[i]));
+    UNSAFE_TODO(in_objects[i]) =
+        DriverObject(test::GetMockDriver(), UNSAFE_TODO(kObjectHandles[i]));
   }
 
   test::msg::MessageWithDriverArrayAndExtraObject in;

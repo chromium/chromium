@@ -6,13 +6,13 @@
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "ipcz/ipcz.h"
 #include "test/multinode_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
-#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 namespace {
@@ -219,8 +219,8 @@ class NamedPortal {
 
     auto* header = static_cast<volatile Header*>(data);
     header->name_length = static_cast<size_t>(portal.name_.size());
-    IPCZ_UNSAFE_TODO(memcpy(const_cast<Header*>(header + 1),
-                            portal.name_.data(), portal.name_.size()));
+    UNSAFE_TODO(memcpy(const_cast<Header*>(header + 1), portal.name_.data(),
+                       portal.name_.size()));
     handles[0] = std::exchange(portal.portal_, IPCZ_INVALID_HANDLE);
     return IPCZ_RESULT_OK;
   }
