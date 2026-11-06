@@ -17,6 +17,7 @@
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
@@ -400,7 +401,8 @@ const base::cstring_view GetRecurrentNetworkDirection(
 }  // namespace
 
 // static
-std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::CreateAndBuild(
+base::expected<std::unique_ptr<ModelEditor::ModelInfo>, mojom::ErrorPtr>
+GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     EpWorkarounds ep_workarounds,
@@ -859,6 +861,26 @@ void GraphBuilderOrt::EmulateWithIdentityNode(base::cstring_view label,
   model_editor_.AddNode(kOpTypeIdentity, node_name, inputs, outputs);
 }
 
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::ValidateInsertedTensorByteLength(
+    OperandDataType data_type,
+    base::span<const uint32_t> shape,
+    std::string_view label) const {
+  auto make_error = [label](std::string_view message) {
+    return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                             ErrorWithLabel(label, message));
+  };
+  ASSIGN_OR_RETURN(uint64_t byte_length,
+                   OperandDescriptor::ValidateAndGetByteLength(
+                       OperandDescriptor::GetBitsPerElement(data_type), shape),
+                   make_error);
+  if (byte_length > context_properties_.tensor_byte_length_limit) {
+    return base::unexpected(make_error(NotSupportedTensorSizeError(
+        byte_length, context_properties_.tensor_byte_length_limit)));
+  }
+  return base::ok();
+}
+
 std::string GraphBuilderOrt::ShiftNegativeIndices(
     base::cstring_view indices,
     base::cstring_view zero,
@@ -1023,7 +1045,7 @@ void GraphBuilderOrt::AddUnaryOperation(const T& operation,
   model_editor_.AddNode(op_type, node_name, inputs, outputs);
 }
 
-void GraphBuilderOrt::AddArgMinMaxOperation(
+base::expected<void, mojom::ErrorPtr> GraphBuilderOrt::AddArgMinMaxOperation(
     const mojom::ArgMinMax& arg_min_max) {
   const std::string node_name = GenerateNodeName(arg_min_max.label);
   const std::string input = GetOperandNameById(arg_min_max.input_operand_id);
@@ -1041,9 +1063,15 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
           kAttrKeepDims, static_cast<int64_t>(arg_min_max.keep_dimensions))};
 
   // ONNX ArgMin/Max only supports int64 output.
-  OperandDataType output_data_type =
-      GetOperand(arg_min_max.output_operand_id).descriptor.data_type();
+  const OperandDescriptor& output_descriptor =
+      GetOperand(arg_min_max.output_operand_id).descriptor;
+  OperandDataType output_data_type = output_descriptor.data_type();
   bool need_cast = output_data_type != OperandDataType::kInt64;
+  if (need_cast) {
+    // Verify if the inserted int64 output exceeds the tensor byte length limit.
+    RETURN_IF_ERROR(ValidateInsertedTensorByteLength(
+        OperandDataType::kInt64, output_descriptor.shape(), arg_min_max.label));
+  }
   const std::string int64_output = need_cast ? GenerateOperandName() : output;
 
   std::array<const char*, 1> inputs = {input.c_str()};
@@ -1061,6 +1089,7 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
     CHECK_EQ(output_data_type, OperandDataType::kInt32);
     InsertCastNode(int64_output, output, WebnnToOnnxDataType(output_data_type));
   }
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddBatchNormalizationOperation(
@@ -1764,7 +1793,8 @@ void GraphBuilderOrt::AddGatherOperation(const T& operation,
   model_editor_.AddNode(op_type, node_name, inputs, outputs, attributes);
 }
 
-void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
+base::expected<void, mojom::ErrorPtr> GraphBuilderOrt::AddGatherNDOperation(
+    const mojom::GatherND& gather_nd) {
   const std::string node_name = GenerateNodeName(gather_nd.label);
   const std::string input = GetOperandNameById(gather_nd.input_operand_id);
   const std::string indices = GetOperandNameById(gather_nd.indices_operand_id);
@@ -1780,10 +1810,16 @@ void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
       indices_descriptor));
 
   // ONNX GatherND only supports int64 indices.
+  bool need_cast = indices_descriptor.data_type() != OperandDataType::kInt64;
+  if (need_cast) {
+    // Verify if the inserted int64 indices exceeds the tensor byte length
+    // limit.
+    RETURN_IF_ERROR(ValidateInsertedTensorByteLength(
+        OperandDataType::kInt64, indices_descriptor.shape(), gather_nd.label));
+  }
   std::string int64_indices =
-      indices_descriptor.data_type() == OperandDataType::kInt64
-          ? indices
-          : CreateCastNode(indices, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
+      need_cast ? CreateCastNode(indices, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64)
+                : indices;
 
   std::string normalized_indices = NormalizeGatherScatterNDIndices(
       int64_indices, input_descriptor.shape(), indices_descriptor.shape());
@@ -1793,6 +1829,7 @@ void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeGatherND, node_name, inputs, outputs);
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
@@ -2975,7 +3012,7 @@ void GraphBuilderOrt::AddScatterElementsOperation(
                         attributes);
 }
 
-void GraphBuilderOrt::AddScatterNDOperation(
+base::expected<void, mojom::ErrorPtr> GraphBuilderOrt::AddScatterNDOperation(
     const mojom::ScatterND& scatter_nd) {
   const std::string node_name = GenerateNodeName(scatter_nd.label);
   const std::string input = GetOperandNameById(scatter_nd.input_operand_id);
@@ -2997,10 +3034,16 @@ void GraphBuilderOrt::AddScatterNDOperation(
       indices_descriptor));
 
   // ONNX ScatterND only supports int64 indices.
+  bool need_cast = indices_descriptor.data_type() != OperandDataType::kInt64;
+  if (need_cast) {
+    // Verify if the inserted int64 indices exceeds the tensor byte length
+    // limit.
+    RETURN_IF_ERROR(ValidateInsertedTensorByteLength(
+        OperandDataType::kInt64, indices_descriptor.shape(), scatter_nd.label));
+  }
   std::string int64_indices =
-      indices_descriptor.data_type() == OperandDataType::kInt64
-          ? indices
-          : CreateCastNode(indices, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
+      need_cast ? CreateCastNode(indices, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64)
+                : indices;
 
   std::string normalized_indices = NormalizeGatherScatterNDIndices(
       int64_indices, input_descriptor.shape(), indices_descriptor.shape());
@@ -3010,6 +3053,7 @@ void GraphBuilderOrt::AddScatterNDOperation(
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeScatterND, node_name, inputs, outputs);
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddSliceOperation(const mojom::Slice& slice) {
@@ -3255,7 +3299,8 @@ void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
   model_editor_.AddNode(kOpTypeWhere, node_name, inputs, outputs);
 }
 
-std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::BuildModel() {
+base::expected<std::unique_ptr<ModelEditor::ModelInfo>, mojom::ErrorPtr>
+GraphBuilderOrt::BuildModel() {
   for (OperandId input_id : graph_info_->input_operands) {
     model_editor_.AddInput(GetOperandNameById(input_id), GetOperand(input_id));
   }
@@ -3271,7 +3316,7 @@ std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::BuildModel() {
         context_properties_.data_type_limits;
     switch (operation->which()) {
       case mojom::Operation::Tag::kArgMinMax: {
-        AddArgMinMaxOperation(*operation->get_arg_min_max());
+        RETURN_IF_ERROR(AddArgMinMaxOperation(*operation->get_arg_min_max()));
         break;
       }
       case mojom::Operation::Tag::kBatchNormalization: {
@@ -3345,7 +3390,7 @@ std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kGatherNd: {
-        AddGatherNDOperation(*operation->get_gather_nd());
+        RETURN_IF_ERROR(AddGatherNDOperation(*operation->get_gather_nd()));
         break;
       }
       case mojom::Operation::Tag::kGelu: {
@@ -3458,7 +3503,7 @@ std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kScatterNd: {
-        AddScatterNDOperation(*operation->get_scatter_nd());
+        RETURN_IF_ERROR(AddScatterNDOperation(*operation->get_scatter_nd()));
         break;
       }
       case mojom::Operation::Tag::kSlice: {

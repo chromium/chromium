@@ -309,10 +309,11 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.Compilation");
 
   scoped_trace.AddStep("Create model info");
-  std::unique_ptr<ModelEditor::ModelInfo> model_info =
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<ModelEditor::ModelInfo> model_info,
       GraphBuilderOrt::CreateAndBuild(
           *graph_info, std::move(context_properties), std::move(ep_workarounds),
-          std::move(constant_operands));
+          std::move(constant_operands)));
 
   scoped_trace.AddStep("Create session from model");
   ScopedOrtSession session;
