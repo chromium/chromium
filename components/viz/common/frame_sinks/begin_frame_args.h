@@ -102,6 +102,7 @@ struct VIZ_COMMON_EXPORT PossibleDeadline {
 };
 
 struct VIZ_COMMON_EXPORT PossibleDeadlines {
+  PossibleDeadlines();
   explicit PossibleDeadlines(size_t os_preferred_index);
   ~PossibleDeadlines();
 
@@ -111,10 +112,14 @@ struct VIZ_COMMON_EXPORT PossibleDeadlines {
   PossibleDeadlines& operator=(const PossibleDeadlines& other);
   PossibleDeadlines& operator=(PossibleDeadlines&& other);
 
+  bool empty() const { return deadlines.empty(); }
+  size_t size() const { return deadlines.size(); }
+
+  // Should only be called when `deadlines` is non-empty.
   const PossibleDeadline& GetOSPreferredDeadline() const;
 
   // Index into to `deadlines` vector picked by the OS as the default.
-  size_t os_preferred_index;
+  size_t os_preferred_index = 0;
   std::vector<PossibleDeadline> deadlines;
 };
 
@@ -254,7 +259,7 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   // Note `deadline` is not yet updated to one of these deadline since some
   // code still assumes `deadline` is a multiple of `interval` from
   // `frame_time`.
-  std::optional<PossibleDeadlines> possible_deadlines;
+  PossibleDeadlines possible_deadlines;
 
   // VSync interval derived from `possible_deadlines` (aka frame timelines)
   // provided by the OS. Populated on recent Android versions when

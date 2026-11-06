@@ -68,7 +68,7 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
       void* data);
 
   void OnVSync(int64_t frame_time_nanos,
-               std::optional<PossibleDeadlines> possible_deadlines,
+               PossibleDeadlines possible_deadlines,
                base::WeakPtr<AChoreographerImpl>* self);
   void SetVsyncPeriod(int64_t vsync_period_nanos);
   void RequestVsyncIfNeeded();
@@ -76,7 +76,7 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
   std::optional<base::TimeDelta> SnapToClosestSupportedVsyncInterval(
       base::TimeDelta interval) const;
   std::optional<base::TimeDelta> CalculateDeadlineDerivedInterval(
-      const std::optional<PossibleDeadlines>& possible_deadlines) const;
+      const PossibleDeadlines& possible_deadlines) const;
 
   const raw_ptr<ExternalBeginFrameSourceAndroid> client_;
   const raw_ptr<AChoreographer> achoreographer_;
@@ -153,7 +153,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::FrameCallback64(
     delete self;
     return;
   }
-  (*self)->OnVSync(frame_time_nanos, /*possible_deadlines=*/std::nullopt, self);
+  (*self)->OnVSync(frame_time_nanos, PossibleDeadlines(), self);
 }
 
 // static
@@ -272,19 +272,18 @@ std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
 
 std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
     AChoreographerImpl::CalculateDeadlineDerivedInterval(
-        const std::optional<PossibleDeadlines>& possible_deadlines) const {
+        const PossibleDeadlines& possible_deadlines) const {
   if (base::android::android_info::sdk_int() <
           base::android::android_info::SDK_VERSION_BAKLAVA ||
-      !possible_deadlines.has_value() ||
-      possible_deadlines->deadlines.size() < 2u ||
+      possible_deadlines.deadlines.size() < 2u ||
       !base::FeatureList::IsEnabled(
           features::kCalculateDeadlineDerivedInterval)) {
     return std::nullopt;
   }
 
   const base::TimeDelta timeline_derived_interval =
-      possible_deadlines->deadlines[1].present_delta -
-      possible_deadlines->deadlines[0].present_delta;
+      possible_deadlines.deadlines[1].present_delta -
+      possible_deadlines.deadlines[0].present_delta;
   if (timeline_derived_interval < kMinDerivedVsyncInterval) {
     return std::nullopt;
   }
@@ -308,7 +307,7 @@ std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
 
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
     int64_t frame_time_nanos,
-    std::optional<PossibleDeadlines> possible_deadlines,
+    PossibleDeadlines possible_deadlines,
     base::WeakPtr<AChoreographerImpl>* self) {
   DCHECK(!self_for_frame_callback_);
   DCHECK(self);
@@ -379,14 +378,14 @@ void ExternalBeginFrameSourceAndroid::OnVSync(JNIEnv* env,
                                               int64_t time_micros,
                                               int64_t period_micros) {
   OnVSyncImpl(time_micros * 1000, base::Microseconds(period_micros),
-              /*possible_deadlines=*/std::nullopt,
+              PossibleDeadlines(),
               /*deadline_derived_interval=*/std::nullopt);
 }
 
 void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
     int64_t time_nanos,
     base::TimeDelta vsync_period,
-    std::optional<PossibleDeadlines> possible_deadlines,
+    PossibleDeadlines possible_deadlines,
     std::optional<base::TimeDelta> deadline_derived_interval) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);

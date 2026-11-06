@@ -71,7 +71,7 @@ FrameDeadlineDecider::QueryResult FrameDeadlineDecider::QueryDeadline(
     base::TimeTicks frame_time,
     std::optional<base::TimeTicks> earliest_input_time,
     bool is_handling_interaction) const {
-  CHECK(!possible_deadlines.deadlines.empty());
+  CHECK(!possible_deadlines.empty());
 
   if (use_platform_preferred_deadlines_) {
     return {possible_deadlines.os_preferred_index,

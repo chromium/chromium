@@ -30,8 +30,8 @@ namespace viz {
 namespace {
 
 base::TimeDelta ComputeAdpfTarget(const BeginFrameArgs& args) {
-  if (args.possible_deadlines) {
-    const auto& deadline = args.possible_deadlines->GetOSPreferredDeadline();
+  if (!args.possible_deadlines.empty()) {
+    const auto& deadline = args.possible_deadlines.GetOSPreferredDeadline();
     // Arbitrarily use 75% of the deadline for CPU work.
     return deadline.latch_delta * 3 / 4;
   }
@@ -330,8 +330,8 @@ bool DisplayScheduler::DrawAndSwap(const BeginFrameArgs& begin_frame_args) {
   params.begin_frame_args = begin_frame_args;
   params.expected_display_time = current_frame_display_time(begin_frame_args);
   params.max_pending_swaps = MaxPendingSwaps(begin_frame_args);
-  if (begin_frame_args.possible_deadlines) {
-    auto& deadlines = *begin_frame_args.possible_deadlines;
+  if (!begin_frame_args.possible_deadlines.empty()) {
+    const auto& deadlines = begin_frame_args.possible_deadlines;
     auto earliest_input_time =
         damage_tracker_
             ? damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
@@ -363,8 +363,7 @@ bool DisplayScheduler::DrawAndSwap(const BeginFrameArgs& begin_frame_args) {
       // submitted to.
       if (last_targeted_latch_time_ > preferred_latch_time ||
           last_targeted_latch_time_ > now || preferred_latch_time < now) {
-        for (const auto& deadline :
-             begin_frame_args.possible_deadlines->deadlines) {
+        for (const auto& deadline : deadlines.deadlines) {
           base::TimeTicks latch_time =
               begin_frame_args.frame_time + deadline.latch_delta;
           if (latch_time > last_targeted_latch_time_ && latch_time > now) {
@@ -503,7 +502,7 @@ int DisplayScheduler::MaxPendingSwaps(const BeginFrameArgs& args) const {
   int max_pending_swaps_for_refresh_rate =
       MaxPendingSwapsForRefreshRate(args.interval);
 
-  if (!args.possible_deadlines) {
+  if (args.possible_deadlines.empty()) {
     return max_pending_swaps_for_refresh_rate;
   }
 
@@ -511,7 +510,7 @@ int DisplayScheduler::MaxPendingSwaps(const BeginFrameArgs& args) const {
     // Estimate the max pending swap based on the frame rate and presentation
     // time.
     int deadline_max_pending_swaps = MaxPendingSwapsForDeadline(
-        args.possible_deadlines->GetOSPreferredDeadline(), args.interval);
+        args.possible_deadlines.GetOSPreferredDeadline(), args.interval);
     return std::clamp(deadline_max_pending_swaps, 1,
                       max_pending_swaps_for_refresh_rate);
   }
@@ -614,7 +613,7 @@ bool DisplayScheduler::CanDrawForPreviousFrame(
       begin_frame_id != last_undrawn_begin_frame_args_->frame_id) {
     return false;
   }
-  if (!last_undrawn_begin_frame_args_->possible_deadlines.has_value()) {
+  if (last_undrawn_begin_frame_args_->possible_deadlines.empty()) {
     // The frame can't be drawn late if there are no late deadlines to choose
     // from.
     return false;
@@ -627,7 +626,7 @@ bool DisplayScheduler::CanDrawForPreviousFrame(
     return false;
   }
 
-  const auto& deadlines = *begin_frame_args.possible_deadlines;
+  const auto& deadlines = begin_frame_args.possible_deadlines;
   auto earliest_input_time =
       damage_tracker_
           ? damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
@@ -834,9 +833,8 @@ void DisplayScheduler::OnBeginFrameDeadline() {
   if (did_draw) {
     result = DisplaySchedulerDrawResult::kDrawn;
   } else {
-    bool can_draw_late =
-        allow_multiple_swaps_per_vsync_ &&
-        current_begin_frame_args_.possible_deadlines.has_value();
+    bool can_draw_late = allow_multiple_swaps_per_vsync_ &&
+                         !current_begin_frame_args_.possible_deadlines.empty();
     if (can_draw_late) {
       last_undrawn_begin_frame_args_ = current_begin_frame_args_;
       result = DisplaySchedulerDrawResult::kMayDrawLate;

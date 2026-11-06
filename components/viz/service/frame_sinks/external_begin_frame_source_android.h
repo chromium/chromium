@@ -49,7 +49,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
   void SetEnabled(bool enabled);
   void OnVSyncImpl(int64_t time_nanos,
                    base::TimeDelta vsync_period,
-                   std::optional<PossibleDeadlines> possible_deadlines,
+                   PossibleDeadlines possible_deadlines,
                    std::optional<base::TimeDelta> deadline_derived_interval);
 
   std::unique_ptr<AChoreographerImpl> achoreographer_;

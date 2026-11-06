@@ -93,6 +93,7 @@ void PossibleDeadline::SetTraceTimelineData(
   timeline.set_present_delta_us(present_delta.InMicroseconds());
 }
 
+PossibleDeadlines::PossibleDeadlines() = default;
 PossibleDeadlines::PossibleDeadlines(size_t os_preferred_index)
     : os_preferred_index(os_preferred_index) {}
 PossibleDeadlines::PossibleDeadlines(const PossibleDeadlines& other) = default;
@@ -196,7 +197,7 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
 #endif
   state->SetBoolean("on_critical_path", on_critical_path);
   state->SetBoolean("animate_only", animate_only);
-  state->SetBoolean("has_possible_deadlines", !!possible_deadlines);
+  state->SetBoolean("has_possible_deadlines", !possible_deadlines.empty());
 }
 
 void BeginFrameArgs::AsProtozeroInto(
