@@ -283,6 +283,10 @@ BASE_DECLARE_FEATURE(kGlicForceFcmExperimentalTriggerFailure);
 BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringNavigationReconnectGrace);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicExperimentalTriggeringNavigationReconnectGracePeriod;
+
+// Highlights the Ask Gemini button when users who started from a secondary
+// entry point close the Glic panel.
+BASE_DECLARE_FEATURE(kGlicAskGeminiWayfinding);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

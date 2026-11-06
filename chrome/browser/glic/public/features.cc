@@ -358,4 +358,6 @@ const base::FeatureParam<base::TimeDelta>
     kGlicExperimentalTriggeringNavigationReconnectGracePeriod{
         &kGlicExperimentalTriggeringNavigationReconnectGrace, "grace_period",
         base::Seconds(10)};
+
+BASE_FEATURE(kGlicAskGeminiWayfinding, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
