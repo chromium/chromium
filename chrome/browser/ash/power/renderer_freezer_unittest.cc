@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -350,6 +351,28 @@ TEST_F(RendererFreezerTestWithExtensions, FreezesNonGcmExtensionRenderers) {
   extensions::ExtensionRegistrar::Get(profile_)->AddExtension(
       background_app.get());
   CreateRenderProcessForExtension(background_app.get());
+
+  EXPECT_EQ(kSetShouldFreezeRenderer, test_delegate_->GetActions());
+}
+
+// Tests that the RendererFreezer freezes renderers for the top-chrome WebUI
+// profile without crashing.
+TEST_F(RendererFreezerTestWithExtensions, FreezesTopChromeWebUIRenderers) {
+  Init();
+
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_top_chrome_webui_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+  ASSERT_TRUE(top_chrome_webui_profile->IsTopChromeWebUIProfile());
+
+  std::unique_ptr<content::MockRenderProcessHostFactory> rph_factory(
+      new content::MockRenderProcessHostFactory());
+  scoped_refptr<content::SiteInstance> site_instance(
+      content::SiteInstance::Create(top_chrome_webui_profile));
+  content::RenderProcessHost* rph = rph_factory->CreateRenderProcessHost(
+      top_chrome_webui_profile, site_instance.get());
+
+  SimulateRenderProcessHostCreated(rph);
 
   EXPECT_EQ(kSetShouldFreezeRenderer, test_delegate_->GetActions());
 }

@@ -24,5 +24,6 @@ specific_include_rules = {
   "renderer_freezer_unittest\\.cc": [
     "+chrome/browser/extensions/extension_service.h",
     "+chrome/browser/extensions/test_extension_system.h",
+    "+chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h",
   ],
 }

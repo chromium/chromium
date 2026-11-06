@@ -79,9 +79,13 @@ void RendererFreezer::OnRenderProcessLaunched(content::RenderProcessHost* rph) {
   // iterate over all the extensions in the newly created process and take the
   // appropriate action based on whether we find an extension using GCM.
   content::BrowserContext* context = rph->GetBrowserContext();
+  // Profiles without extensions, such as the top-chrome WebUI profile, have no
+  // ProcessMap.
+  const extensions::ProcessMap* process_map =
+      extensions::ProcessMap::Get(context);
   if (const extensions::Extension* extension =
-          extensions::ProcessMap::Get(context)->GetEnabledExtensionByProcessID(
-              rph_id)) {
+          process_map ? process_map->GetEnabledExtensionByProcessID(rph_id)
+                      : nullptr) {
     if (extension->permissions_data()->HasAPIPermission(
             extensions::mojom::APIPermissionID::kGcm)) {
       // This renderer has an extension that is using GCM.  Make sure it is not
