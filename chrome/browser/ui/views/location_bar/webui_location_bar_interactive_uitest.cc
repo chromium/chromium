@@ -102,6 +102,9 @@ const WebContentsInteractionTestUtil::DeepQuery kAimPopupInputDeepQuery = {
     "omnibox-aim-app", "#composebox", "#composeboxInput", "#input"};
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxAdditionalText = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#additionalText"};
+const WebContentsInteractionTestUtil::DeepQuery kFullPopupAdditionalText = {
+    "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-input",
+    "#additionalText"};
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxInlineAutocomplete = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#inlineAutocomplete"};
 const WebContentsInteractionTestUtil::DeepQuery kSearchKeywordText = {
@@ -351,6 +354,14 @@ class WebUILocationBarInteractiveUiTest
       return kFullPopupAIMButtonOuter;
     } else {
       return kAIMButtonOuter;
+    }
+  }
+
+  const WebContentsInteractionTestUtil::DeepQuery& AdditionalText() {
+    if (mode() == Mode::kFull) {
+      return kFullPopupAdditionalText;
+    } else {
+      return kOmniboxAdditionalText;
     }
   }
 
@@ -720,9 +731,15 @@ class WebUILocationBarInteractiveUiTest
 
     WebContentsInteractionTestUtil::StateChange text_matches;
     text_matches.event = kAdditionalTextOK;
-    text_matches.where = kOmniboxAdditionalText;
-    text_matches.test_function = content::JsReplace(kTemplate, expected_text);
-    return WaitForStateChange(kWebUIToolbarId, text_matches);
+    text_matches.where = AdditionalText();
+    if (mode() == Mode::kFull && expected_text.empty()) {
+      // With full, empty additional text just doesn't get an element.
+      text_matches.type =
+          WebContentsInteractionTestUtil::StateChange::Type::kDoesNotExist;
+    } else {
+      text_matches.test_function = content::JsReplace(kTemplate, expected_text);
+    }
+    return WaitForStateChange(InputWebContents(), text_matches);
   }
 
   // This checks for inline completion rendered as selection.
@@ -1372,10 +1389,6 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
                        FocusLocationNoDefaultSuggestion) {
-  FAILS_IN_MODE(Mode::kFull,
-                "Relies on additional text as a source for sync suggestions;"
-                "see crbug.com/525540275");
-
   auto shortcuts_backend =
       ShortcutsBackendFactory::GetForProfile(browser()->GetProfile());
   if (!shortcuts_backend->initialized()) {
@@ -1404,9 +1417,8 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
-      WaitTillOmniboxViewText("about:blank", View::kStatic),
-      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0),
-                                   View::kStatic),
+      HandleAutofocus(), WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
       // Unfocus, since we want to test us focusing.
       FocusTab(), NavigateWebContents(kTabId, GURL("https://www.cnn.com/")),
       WaitTillOmniboxViewText("cnn.com", View::kStatic),
@@ -1414,9 +1426,7 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
       // this case).
       SendAccelerator(kBrowserViewElementId, accelerator),
       // Since we are checking for a negative, delay before checking.
-      DoWaitForTime(base::Milliseconds(500)),
-      CheckJsResultAt(kWebUIToolbarId, kOmniboxAdditionalText,
-                      "el => el.textContent === ''"));
+      DoWaitForTime(base::Milliseconds(500)), WaitTillAdditionalText(""));
 }
 
 // Faking composing the way PretendComposeInputMethod does doesn't appear to
@@ -1468,9 +1478,6 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarIMEInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, AdditionalText) {
-  FAILS_IN_MODE(Mode::kFull,
-                "No additional text in full, it seems."
-                "See crbug.com/525540275");
   auto shortcuts_backend =
       ShortcutsBackendFactory::GetForProfile(browser()->GetProfile());
   if (!shortcuts_backend->initialized()) {
