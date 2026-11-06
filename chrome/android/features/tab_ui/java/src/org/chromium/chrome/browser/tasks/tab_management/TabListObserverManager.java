@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.util.SparseArray;
+
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages observers for the tab list (e.g. {@link TabGroupObserver}), coordinating their lifecycles
@@ -21,7 +25,7 @@ import java.util.Set;
 @NullMarked
 class TabListObserverManager {
     private final TabListLayoutDelegate mLayoutDelegate;
-    private final Set<Tab> mObservedTabs = new HashSet<>();
+    private final SparseArray<Tab> mObservedTabs = new SparseArray<>();
     private @Nullable TabModel mObservedTabModel;
 
     /**
@@ -61,7 +65,7 @@ class TabListObserverManager {
      * @param tab The {@link Tab} to observe.
      */
     void addTabObserver(Tab tab) {
-        mObservedTabs.add(tab);
+        mObservedTabs.put(tab.getId(), tab);
         tab.addObserver(mLayoutDelegate);
     }
 
@@ -72,14 +76,39 @@ class TabListObserverManager {
      */
     void removeTabObserver(@Nullable Tab tab) {
         if (tab == null) return;
-        mObservedTabs.remove(tab);
+        mObservedTabs.remove(tab.getId());
         tab.removeObserver(mLayoutDelegate);
+    }
+
+    /**
+     * Returns the observed {@link Tab} with the given id. The tab may already be gone from the
+     * {@link TabModel}, so it is looked up in the observed tabs instead.
+     *
+     * @param tabId The id of the tab to find.
+     */
+    @Nullable Tab getObservedTabById(@TabId int tabId) {
+        return mObservedTabs.get(tabId);
+    }
+
+    /**
+     * Returns the observed {@link Tab}s currently in the given tab group. Returns a copy so callers
+     * can detach tabs while iterating.
+     *
+     * @param tabGroupId The tab group id to match.
+     */
+    List<Tab> getObservedTabsInGroup(Token tabGroupId) {
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mObservedTabs.size(); i++) {
+            Tab tab = mObservedTabs.valueAt(i);
+            if (tabGroupId.equals(tab.getTabGroupId())) tabs.add(tab);
+        }
+        return tabs;
     }
 
     /** Unregisters all active observers. */
     void destroy() {
-        for (Tab tab : mObservedTabs) {
-            tab.removeObserver(mLayoutDelegate);
+        for (int i = 0; i < mObservedTabs.size(); i++) {
+            mObservedTabs.valueAt(i).removeObserver(mLayoutDelegate);
         }
         mObservedTabs.clear();
 
