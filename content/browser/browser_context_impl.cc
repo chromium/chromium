@@ -482,34 +482,9 @@ void BrowserContextImpl::RemoveInitiatorNavigationStateFromMap(
 void BrowserContextImpl::SetSitesForEmbedderShard(
     const base::flat_set<net::SchemefulSite>& sites) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(embedder_shard_sites_.empty())
-      << "SetSitesForEmbedderShard() may only be called once.";
+  CHECK(CanSetSitesForEmbedderShard())
+      << "Not in a valid state to call SetSitesForEmbedderShard().";
   CHECK(!sites.empty()) << "SetSitesForEmbedderShard() requires sites.";
-  // TODO(crbug.com/576113096): Support shards with default SiteInstanceGroups,
-  // e.g. by having one default SiteInstanceGroup per shard.
-  CHECK(!ShouldUseDefaultSiteInstanceGroup())
-      << "Shards are not supported with default SiteInstanceGroups.";
-  // In single-process mode there is only one renderer, so content from
-  // different shards can't be kept apart.
-  CHECK(!RenderProcessHost::run_renderer_in_process())
-      << "Shards are not supported in single-process mode.";
-  // TODO(crbug.com/576113096): Support shards in the Rust implementation of
-  // ChildProcessSecurityPolicy's ProcessState, which doesn't track shards yet.
-  CHECK(!base::FeatureList::IsEnabled(
-      features::kChildProcessSecurityPolicyRustProcessState))
-      << "Shards are not supported with the Rust ProcessState.";
-  // Shards must be set before any RenderProcessHost in this BrowserContext is
-  // used, so that the shard of content never changes after it is loaded.
-  // Enforce this by checking that no process in this BrowserContext has been
-  // used yet. Unused processes (e.g. spare renderers) are allowed, since they
-  // can still be used for any shard.
-  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
-       !it.IsAtEnd(); it.Advance()) {
-    RenderProcessHost* host = it.GetCurrentValue();
-    CHECK(host->GetBrowserContext() != self_ || host->IsUnused())
-        << "Shards must be set before any RenderProcessHost in the "
-           "BrowserContext is used.";
-  }
   for (const net::SchemefulSite& site : sites) {
     // Only HTTP(S) sites are supported, since other schemes either always
     // require a dedicated process (e.g. WebUI), or don't have sites that are
@@ -519,6 +494,43 @@ void BrowserContextImpl::SetSitesForEmbedderShard(
         << "Only HTTP(S) sites can be put in a shard: " << site;
   }
   embedder_shard_sites_ = sites;
+}
+
+bool BrowserContextImpl::CanSetSitesForEmbedderShard() const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(crbug.com/576113096): Support shards with default SiteInstanceGroups,
+  // e.g. by having one default SiteInstanceGroup per shard.
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    return false;
+  }
+  // In single-process mode there is only one renderer, so content from
+  // different shards can't be kept apart.
+  if (RenderProcessHost::run_renderer_in_process()) {
+    return false;
+  }
+  // TODO(crbug.com/576113096): Support shards in the Rust implementation of
+  // ChildProcessSecurityPolicy's ProcessState, which doesn't track shards yet.
+  if (base::FeatureList::IsEnabled(
+          features::kChildProcessSecurityPolicyRustProcessState)) {
+    return false;
+  }
+  // SetSitesForEmbedderShard() may only be called once.
+  if (!embedder_shard_sites_.empty()) {
+    return false;
+  }
+  // Shards must be set before any RenderProcessHost in this BrowserContext is
+  // used, so that the shard of content never changes after it is loaded.
+  // Enforce this by checking that no process in this BrowserContext has been
+  // used yet. Unused processes (e.g. spare renderers) are allowed, since they
+  // can still be used for any shard.
+  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
+       !it.IsAtEnd(); it.Advance()) {
+    RenderProcessHost* host = it.GetCurrentValue();
+    if (host->GetBrowserContext() == self_ && !host->IsUnused()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 SiteShard BrowserContextImpl::GetShardForSite(

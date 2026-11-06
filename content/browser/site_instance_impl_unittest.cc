@@ -3251,12 +3251,14 @@ TEST_F(SiteInstanceShardTest, SetSitesForEmbedderShard) {
 TEST_F(SiteInstanceShardTest, SetSitesForEmbedderShardInvalid) {
   {
     TestBrowserContext other_context;
+    EXPECT_TRUE(other_context.CanSetSitesForEmbedderShard());
     other_context.SetSitesForEmbedderShard(
         {net::SchemefulSite(GURL("https://example.com"))});
+    EXPECT_FALSE(other_context.CanSetSitesForEmbedderShard());
     EXPECT_CHECK_DEATH_WITH(
         other_context.SetSitesForEmbedderShard(
             {net::SchemefulSite(GURL("https://other.com"))}),
-        "SetSitesForEmbedderShard\\(\\) may only be called once.");
+        "Not in a valid state to call SetSitesForEmbedderShard().");
     // The failed call had no effect.
     EXPECT_EQ(SiteShard::kEmbedderSites,
               GetShard(&other_context, GURL("https://example.com/")));
@@ -3265,6 +3267,7 @@ TEST_F(SiteInstanceShardTest, SetSitesForEmbedderShardInvalid) {
   }
 
   TestBrowserContext other_context;
+  EXPECT_TRUE(other_context.CanSetSitesForEmbedderShard());
   EXPECT_CHECK_DEATH_WITH(other_context.SetSitesForEmbedderShard({}),
                           "SetSitesForEmbedderShard\\(\\) requires sites.");
   EXPECT_CHECK_DEATH_WITH(
@@ -3285,6 +3288,7 @@ TEST_F(SiteInstanceShardTest, SetSitesForEmbedderShardInvalid) {
                           "Only HTTP\\(S\\) sites can be put in a shard");
   // The failed calls had no effect.
   EXPECT_FALSE(BrowserContextImpl::From(&other_context)->HasShards());
+  EXPECT_TRUE(other_context.CanSetSitesForEmbedderShard());
 }
 
 // Tests that shards can't be set in single-process mode.
@@ -3292,10 +3296,11 @@ TEST_F(SiteInstanceShardTest,
        SetSitesForEmbedderShardNotSupportedInSingleProcessMode) {
   TestBrowserContext other_context;
   RenderProcessHost::SetRunRendererInProcess(true);
+  EXPECT_FALSE(other_context.CanSetSitesForEmbedderShard());
   EXPECT_CHECK_DEATH_WITH(
       other_context.SetSitesForEmbedderShard(
           {net::SchemefulSite(GURL("https://example.com"))}),
-      "Shards are not supported in single-process mode.");
+      "Not in a valid state to call SetSitesForEmbedderShard().");
   RenderProcessHost::SetRunRendererInProcess(false);
 }
 
@@ -3308,10 +3313,11 @@ TEST_F(SiteInstanceShardTest,
     GTEST_SKIP() << "Default SiteInstanceGroups are not allowed.";
   }
   TestBrowserContext other_context;
+  EXPECT_FALSE(other_context.CanSetSitesForEmbedderShard());
   EXPECT_CHECK_DEATH_WITH(
       other_context.SetSitesForEmbedderShard(
           {net::SchemefulSite(GURL("https://example.com"))}),
-      "Shards are not supported with default SiteInstanceGroups.");
+      "Not in a valid state to call SetSitesForEmbedderShard().");
 }
 
 // Tests that shards can't be set when the Rust implementation of
@@ -3324,10 +3330,11 @@ TEST_F(SiteInstanceShardTest, SetSitesForEmbedderShardNotSupportedWithRust) {
        features::kChildProcessSecurityPolicyRustProcessState},
       {});
   TestBrowserContext other_context;
+  EXPECT_FALSE(other_context.CanSetSitesForEmbedderShard());
   EXPECT_CHECK_DEATH_WITH(
       other_context.SetSitesForEmbedderShard(
           {net::SchemefulSite(GURL("https://example.com"))}),
-      "Shards are not supported with the Rust ProcessState.");
+      "Not in a valid state to call SetSitesForEmbedderShard().");
 }
 
 // Tests that shards must be set before any RenderProcessHost in the
@@ -3341,18 +3348,21 @@ TEST_F(SiteInstanceShardTest, SetSitesForEmbedderShardAfterUse) {
     // A used process in a different BrowserContext doesn't matter.
     MockRenderProcessHost used_host_in_other_context(context());
     used_host_in_other_context.SetIsUsed();
+    EXPECT_TRUE(other_context.CanSetSitesForEmbedderShard());
     other_context.SetSitesForEmbedderShard(
         {net::SchemefulSite(GURL("https://example.com"))});
+    EXPECT_FALSE(other_context.CanSetSitesForEmbedderShard());
   }
 
   TestBrowserContext other_context;
   MockRenderProcessHost used_host(&other_context);
+  EXPECT_TRUE(other_context.CanSetSitesForEmbedderShard());
   used_host.SetIsUsed();
+  EXPECT_FALSE(other_context.CanSetSitesForEmbedderShard());
   EXPECT_CHECK_DEATH_WITH(
       other_context.SetSitesForEmbedderShard(
           {net::SchemefulSite(GURL("https://example.com"))}),
-      "Shards must be set before any RenderProcessHost in the BrowserContext "
-      "is used.");
+      "Not in a valid state to call SetSitesForEmbedderShard().");
 }
 
 // Tests that shards only divide up content that does not require a dedicated

@@ -432,6 +432,10 @@ void BrowserContext::SetSitesForEmbedderShard(
   impl()->SetSitesForEmbedderShard(sites);
 }
 
+bool BrowserContext::CanSetSitesForEmbedderShard() const {
+  return impl()->CanSetSitesForEmbedderShard();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // The //content embedder can override the methods below to change or extend
 // how the //content layer interacts with a BrowserContext.  The code below
