@@ -765,7 +765,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     @Override
                     public void onItemsMoved(
                             List<? extends TabListItem> items, @Nullable TabListItem after) {
-                        // TODO(crbug.com/562590772): Handle moved items.
+                        onProviderItemsMoved(items, after);
                     }
 
                     @Override
@@ -2825,6 +2825,36 @@ public class TabListMediator implements TabListNotificationHandler {
 
         beginProviderUpdate();
         insertProviderItems(tabModel, items, insertionIndex);
+        endProviderUpdate();
+    }
+
+    /**
+     * Moves cards for items moved by the {@link TabListDataProvider}. Moved items keep their tabs,
+     * so per-tab observers are unchanged.
+     *
+     * @param items The items that were moved, in display order.
+     * @param after The item immediately preceding the moved items after the move, or null if they
+     *     moved to the start of the tab region.
+     */
+    private void onProviderItemsMoved(
+            List<? extends TabListItem> items, @Nullable TabListItem after) {
+        if (!mTrackingTabs || mCurrentTabModelSupplier.get() == null) return;
+
+        beginProviderUpdate();
+        // An expanded group arrives as one move: its header followed by its child tabs (see
+        // GroupedTabListDataProvider#moveGroupItem). Place each card after the previous one so
+        // the group stays contiguous.
+        TabListItem anchor = after;
+        for (TabListItem item : items) {
+            int from = mModelList.indexFromItem(item);
+            if (from == TabModel.INVALID_TAB_INDEX) continue;
+            int to = mModelList.resolveInsertionIndex(anchor);
+            if (to == TabModel.INVALID_TAB_INDEX) break;
+            // The target index counts the moved card; moveItem removes it first.
+            if (from < to) to--;
+            mModelList.moveItem(from, to);
+            anchor = item;
+        }
         endProviderUpdate();
     }
 
