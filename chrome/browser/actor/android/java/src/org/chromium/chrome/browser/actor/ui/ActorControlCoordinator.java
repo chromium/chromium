@@ -40,7 +40,6 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
      * @param stateTracker The tracker for the UI state.
      * @param tabSelectionDelegate The delegate to handle tab selection.
      */
-    // TODO(crbug.com/491895203): Add render test for peek view.
     public ActorControlCoordinator(
             TabBottomSheetManager tabBottomSheetManager,
             ActorControlStateTracker stateTracker,
