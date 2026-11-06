@@ -277,7 +277,6 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteToInvalidAddress) {
   char* write_to = static_cast<char*>(TestUtils::MapPagesOrDie(1));
   TestUtils::MprotectLastPageOrDie(write_to, 1);
   base::ScopedFD parent_signal_fd;
-  const std::vector<int> empty_fd_vec;
 
   pid_t pid = ForkWaitingChild();
   munmap(write_to, base::GetPageSize());
@@ -298,7 +297,6 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WritePartiallyToInvalidAddress) {
   TestUtils::MprotectLastPageOrDie(write_to, 2);
   UNSAFE_TODO(write_to += base::GetPageSize() / 2);
   base::ScopedFD parent_signal_fd;
-  const std::vector<int> empty_fd_vec;
 
   pid_t pid = ForkWaitingChild();
   munmap(write_to, base::GetPageSize());
@@ -331,7 +329,6 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteChildExited) {
   base::UnixDomainSocket::RecvMsg(
       parent_sync.get(), base::byte_span_from_ref(dummy_char), &empty_fd_vec);
 
-  std::string out_str;
   UNSAFE_TODO(SANDBOX_ASSERT_EQ(
       WriteRemoteData(pid, reinterpret_cast<uintptr_t>(addr),
                       strlen(kPathPart.data()),

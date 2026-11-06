@@ -164,7 +164,6 @@ SandboxSerializer::DeserializePolicy(const std::string& serialized_policy,
       }
       break;
     case Target::kSource:
-      std::string profile;
       if (!DecodeString(&remaining_serialized_policy,
                         &(deserialized_policy.profile))) {
         error = "could not decode source mode profile string";

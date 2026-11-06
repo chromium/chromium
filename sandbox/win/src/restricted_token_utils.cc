@@ -55,7 +55,6 @@ std::optional<base::win::AccessToken> CreateRestrictedToken(
         base::win::SecurityAccessMode::kGrant, READ_CONTROL);
   }
 
-  std::vector<std::wstring> privilege_exceptions;
   std::vector<base::win::Sid> sid_exceptions;
 
   bool deny_sids = true;
