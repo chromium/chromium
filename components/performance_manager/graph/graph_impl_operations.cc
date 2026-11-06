@@ -4,22 +4,33 @@
 
 #include "components/performance_manager/graph/graph_impl_operations.h"
 
-#include <set>
+#include <functional>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace performance_manager {
 
 namespace {
 
+using VisitedFrameSet =
+    base::flat_set<const FrameNodeImpl*,
+                   std::less<>,
+                   absl::InlinedVector<const FrameNodeImpl*, 16>>;
+using VisitedWorkerSet =
+    base::flat_set<const WorkerNodeImpl*,
+                   std::less<>,
+                   absl::InlinedVector<const WorkerNodeImpl*, 16>>;
+
 bool VisitWorkerClientFrames(
     const WorkerNodeImpl* worker,
     GraphImplOperations::FrameNodeImplVisitor frame_visitor,
-    std::set<const FrameNodeImpl*>& visited_frames) {
+    VisitedFrameSet& visited_frames) {
   for (FrameNodeImpl* f : worker->client_frames()) {
     // Mark this frame as visited.
     const auto [_, inserted] = visited_frames.insert(f);
@@ -38,8 +49,8 @@ bool VisitWorkerAndClients(
     WorkerNodeImpl* worker,
     GraphImplOperations::FrameNodeImplVisitor frame_visitor,
     GraphImplOperations::WorkerNodeImplVisitor worker_visitor,
-    std::set<const FrameNodeImpl*>& visited_frames,
-    std::set<const WorkerNodeImpl*>& visited_workers) {
+    VisitedFrameSet& visited_frames,
+    VisitedWorkerSet& visited_workers) {
   // Mark this worker as visited.
   const auto [_, inserted] = visited_workers.insert(worker);
   if (!inserted) {
@@ -204,8 +215,8 @@ bool GraphImplOperations::VisitAllWorkerClients(
     const WorkerNodeImpl* worker,
     FrameNodeImplVisitor frame_visitor,
     WorkerNodeImplVisitor worker_visitor) {
-  std::set<const FrameNodeImpl*> visited_frames;
-  std::set<const WorkerNodeImpl*> visited_workers;
+  VisitedFrameSet visited_frames;
+  VisitedWorkerSet visited_workers;
   // Don't visit `worker` itself.
   if (!VisitWorkerClientFrames(worker, frame_visitor, visited_frames)) {
     return false;

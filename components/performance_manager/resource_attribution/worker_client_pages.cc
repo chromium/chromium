@@ -11,10 +11,10 @@
 
 namespace resource_attribution {
 
-std::pair<std::set<const PageNode*>, std::set<content::BrowsingInstanceId>>
+std::pair<ClientPageSet, ClientBrowsingInstanceSet>
 GetWorkerClientPagesAndBrowsingInstances(const WorkerNode* worker_node) {
-  std::set<const PageNode*> client_pages;
-  std::set<content::BrowsingInstanceId> client_browsing_instances;
+  ClientPageSet client_pages;
+  ClientBrowsingInstanceSet client_browsing_instances;
   performance_manager::GraphOperations::VisitAllWorkerClients(
       worker_node,
       [&](const FrameNode* f) {
