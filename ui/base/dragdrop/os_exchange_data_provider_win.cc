@@ -1299,7 +1299,9 @@ HRESULT DataObjectImpl::SetData(
   // lifetime issues, perform a deep copy of `medium`.
   STGMEDIUM local_medium =
       should_release ? *medium : DuplicateMedium(format_etc->cfFormat, *medium);
-  CHECK_EQ(local_medium.tymed, format_etc->tymed, base::NotFatalUntil::M163);
+  // TODO(crbug.com/582495563): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(local_medium.tymed, format_etc->tymed);
   auto info = StoredDataInfo::TakeStorageMedium(*format_etc, local_medium);
 
   // Make newly added data appear first.
