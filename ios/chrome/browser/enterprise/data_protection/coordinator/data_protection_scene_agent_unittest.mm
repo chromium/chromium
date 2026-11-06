@@ -75,6 +75,7 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
     scene_state_.scene = scoped_key_window_.GetScene();
     scene_state_.window = scoped_key_window_.Get();
     scene_state_.UIEnabled = YES;
+    scene_state_.tabGridState.currentPage = TabGridPageRegularTabs;
 
     agent_ = [[DataProtectionSceneAgent alloc] init];
 
@@ -519,6 +520,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest, TabGrid_SwitchToIncognito) {
 
   // Start in regular profile
   scene_state_.tabGridState.tabGridVisible = YES;
+  scene_state_.tabGridState.currentPage = TabGridPageRegularTabs;
   scene_state_.incognitoState.incognitoContentVisible = NO;
 
   ExpectApplyScreenshotProtection(YES);
@@ -527,6 +529,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest, TabGrid_SwitchToIncognito) {
   // Switch to Incognito Tab Grid should disable the protection as lookups don't
   // work on incognito.
   ExpectApplyScreenshotProtection(NO);
+  scene_state_.tabGridState.currentPage = TabGridPageIncognitoTabs;
   scene_state_.incognitoState.incognitoContentVisible = YES;
 }
 
@@ -541,12 +544,14 @@ TEST_F(DataProtectionSceneAgentTransitionTest, TabGrid_SwitchToRegular) {
 
   // Start in incognito profile.
   scene_state_.tabGridState.tabGridVisible = YES;
+  scene_state_.tabGridState.currentPage = TabGridPageIncognitoTabs;
   scene_state_.incognitoState.incognitoContentVisible = YES;
 
   SetRealTimeUrlCheckModePolicy(1);
 
   // Switch to Regular Tab Grid should enable the protection.
   ExpectApplyScreenshotProtection(YES);
+  scene_state_.tabGridState.currentPage = TabGridPageRegularTabs;
   scene_state_.incognitoState.incognitoContentVisible = NO;
 }
 
@@ -635,12 +640,14 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   // Start in Main Tab Grid with protection.
   ExpectApplyScreenshotProtection(YES);
   scene_state_.tabGridState.tabGridVisible = YES;
+  scene_state_.tabGridState.currentPage = TabGridPageRegularTabs;
   scene_state_.incognitoState.incognitoContentVisible = NO;
   EXPECT_OCMOCK_VERIFY(mock_agent_);
 
   // Switch to Incognito Tab Grid should disable the protection.
   ExpectApplyScreenshotProtection(NO);
 
+  scene_state_.tabGridState.currentPage = TabGridPageIncognitoTabs;
   scene_state_.incognitoState.incognitoContentVisible = YES;
 }
 
@@ -738,6 +745,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   scene_state_.tabGridState.tabGridVisible = YES;
 
   // Switch to Incognito Tab Grid.
+  scene_state_.tabGridState.currentPage = TabGridPageIncognitoTabs;
   scene_state_.incognitoState.incognitoContentVisible = YES;
   [scene_state_ setCurrentBrowser:BrowserForMode(scene_state_,
                                                  /*is_off_the_record=*/true)];
@@ -748,6 +756,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   // Switch back to Regular Tab Grid. This will cause the scene state
   // to update its observers, which could lead to a UAF if the destroyed
   // browser wasn't properly unobserved.
+  scene_state_.tabGridState.currentPage = TabGridPageRegularTabs;
   scene_state_.incognitoState.incognitoContentVisible = NO;
   [scene_state_ setCurrentBrowser:BrowserForMode(scene_state_,
                                                  /*is_off_the_record=*/false)];
@@ -831,6 +840,7 @@ TEST_F(DataProtectionSceneAgentTransitionTest, WatermarkNotAppliedInIncognito) {
   scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
   SetRealTimeUrlCheckModePolicy(1);
   scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.tabGridState.currentPage = TabGridPageRegularTabs;
   scene_state_.incognitoState.incognitoContentVisible = NO;
 
   web::FakeWebState* web_state = AddActiveWebState();
@@ -841,12 +851,29 @@ TEST_F(DataProtectionSceneAgentTransitionTest, WatermarkNotAppliedInIncognito) {
   ASSERT_NE(watermark_view, nil);
   EXPECT_NSEQ(watermark_view.text, @"Test Watermark");
 
-  // Switch to incognito. Watermark must be removed immediately.
+  // Switch to an empty Incognito Tab Grid (where `incognitoContentVisible`
+  // remains `NO`). Watermark must be removed immediately.
+  scene_state_.tabGridState.currentPage = TabGridPageIncognitoTabs;
+  EXPECT_EQ(GetWatermarkView(), nil);
+
+  // Switch back to regular Tab Grid. Watermark should be restored.
+  scene_state_.tabGridState.currentPage = TabGridPageRegularTabs;
+  watermark_view = GetWatermarkView();
+  ASSERT_NE(watermark_view, nil);
+  EXPECT_NSEQ(watermark_view.text, @"Test Watermark");
+
+  // Switch to a non-empty Incognito Tab Grid. Watermark must be removed.
+  scene_state_.tabGridState.currentPage = TabGridPageIncognitoTabs;
   scene_state_.incognitoState.incognitoContentVisible = YES;
   EXPECT_EQ(GetWatermarkView(), nil);
 
-  // Switch back to regular tab grid. Watermark should be restored.
+  // Simulate closing last tab in incognito tab grid and verifies the the
+  // watermark reamins nil.
   scene_state_.incognitoState.incognitoContentVisible = NO;
+  EXPECT_EQ(GetWatermarkView(), nil);
+
+  // Switch back to regular tab grid. Watermark should be restored.
+  scene_state_.tabGridState.currentPage = TabGridPageRegularTabs;
   watermark_view = GetWatermarkView();
   ASSERT_NE(watermark_view, nil);
   EXPECT_NSEQ(watermark_view.text, @"Test Watermark");
