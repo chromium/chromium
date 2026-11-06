@@ -463,10 +463,11 @@ bool GpuInit2::InitializeAndStartSandbox(
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, MITIGATION_FORCE_MS_SIGNED_BINS is used which disallows
-  // loading any .dll that is not signed by Microsoft. Preload the SwiftShader
-  // .dll so it may be accessed later. This is needed for WebGPU to
-  // initialize a software fallback adapter. Also do the same for DXC,
-  // which WebGPU may use on D3D12 devices.
+  // loading any .dll that is not signed by Microsoft. Preload the Vulkan
+  // SwiftShader .dll if SwiftShader is explicitly allowed or requested (e.g.
+  // for ANGLE, the WebGPU fallback adapter, or Graphite/Dawn), so it may be
+  // accessed later. Also do the same for DXC, which WebGPU may use on D3D12
+  // devices.
   // Don't handle errors as failure here is non-fatal. Loading either DLL
   // again at a later point will fail as well.
   bool dlls_preloaded;

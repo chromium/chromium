@@ -184,8 +184,9 @@ void InitializeOverlaySettings(GPUInfo* gpu_info,
   // This has to be called after a context is created, active GPU is identified,
   // and GPU driver bug workarounds are computed again. Otherwise the workaround
   // `disable_direct_composition_video_overlays` may not be correctly applied.
-  // Also, this has to be called after falling back to SwiftShader decision is
-  // finalized because this function depends on GL is ANGLE's GLES or not.
+  // Also, this has to be called after the decision to fall back to WARP is
+  // finalized because this function depends on whether GL is ANGLE's GLES or
+  // not.
   gl::DirectCompositionOverlayWorkarounds workarounds = {
       .disable_sw_video_overlays = gpu_feature_info.IsWorkaroundEnabled(
           DISABLE_DIRECT_COMPOSITION_SW_VIDEO_OVERLAYS),

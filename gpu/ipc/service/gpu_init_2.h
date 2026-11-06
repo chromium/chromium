@@ -134,7 +134,7 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   bool init_successful_ = false;
 
   // The following data are collected from hardware GPU and saved before
-  // switching to software GL / WARP.
+  // switching to WARP on Windows. They stay empty on other platforms.
   std::optional<GPUInfo> gpu_info_for_hardware_gpu_;
   std::optional<GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
 
