@@ -29,8 +29,8 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/platform/web_scroll_anchor_data.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -153,7 +153,7 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   void Trace(Visitor*) const;
 
  private:
-  std::vector<std::optional<std::u16string>>
+  base::flat_set<std::optional<std::u16string>>
   GetReferencedFilePathsForSerialization() const;
 
   ViewState& GetOrCreateViewState();

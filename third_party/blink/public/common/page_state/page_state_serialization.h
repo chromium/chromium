@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -76,9 +77,9 @@ struct BLINK_COMMON_EXPORT ExplodedFrameState {
 struct BLINK_COMMON_EXPORT ExplodedPageState {
   // TODO(creis, lukasza): Instead of storing them in |referenced_files|,
   // extract referenced files from ExplodedHttpBody.  |referenced_files|
-  // currently contains a list from all frames, but cannot be deserialized into
+  // currently contains a set from all frames, but cannot be deserialized into
   // the files referenced by each frame.  See http://crbug.com/441966.
-  std::vector<std::optional<std::u16string>> referenced_files;
+  base::flat_set<std::optional<std::u16string>> referenced_files;
   ExplodedFrameState top;
 
   ExplodedPageState();

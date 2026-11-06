@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -22,14 +23,6 @@ namespace {
 
 base::FilePath ToFilePath(const std::optional<std::u16string>& s) {
   return s ? base::FilePath::FromUTF16Unsafe(*s) : base::FilePath();
-}
-
-void ToFilePathVector(const std::vector<std::optional<std::u16string>>& input,
-                      std::vector<base::FilePath>* output) {
-  output->clear();
-  output->reserve(input.size());
-  for (size_t i = 0; i < input.size(); ++i)
-    output->emplace_back(ToFilePath(input[i]));
 }
 
 PageState ToPageState(const ExplodedPageState& state) {
@@ -95,8 +88,7 @@ PageState PageState::CreateForTesting(
       state.top.http_body.request_body->AppendFileRange(
           *optional_body_file_path, 0, std::numeric_limits<uint64_t>::max(),
           base::Time());
-      state.referenced_files.emplace_back(
-          optional_body_file_path->AsUTF16Unsafe());
+      state.referenced_files.emplace(optional_body_file_path->AsUTF16Unsafe());
     }
     state.top.http_body.contains_passwords = body_contains_password_data;
   }
@@ -134,13 +126,12 @@ const std::string& PageState::ToEncodedData() const {
 }
 
 std::vector<base::FilePath> PageState::GetReferencedFiles() const {
-  std::vector<base::FilePath> results;
-
   ExplodedPageState state;
-  if (DecodePageState(data_, &state))
-    ToFilePathVector(state.referenced_files, &results);
+  if (DecodePageState(data_, &state)) {
+    return base::ToVector(state.referenced_files, &ToFilePath);
+  }
 
-  return results;
+  return {};
 }
 
 PageState PageState::RemovePasswordData() const {

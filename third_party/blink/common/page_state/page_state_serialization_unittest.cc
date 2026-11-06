@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include "base/base64.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -18,8 +19,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/base/string16_mojom_traits.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace blink {
 namespace {
@@ -159,7 +165,7 @@ class PageStateSerializationTest : public testing::Test {
 
   void PopulateHttpBody(
       ExplodedHttpBody* http_body,
-      std::vector<std::optional<std::u16string>>* referenced_files) {
+      base::flat_set<std::optional<std::u16string>>* referenced_files) {
     http_body->request_body = new network::ResourceRequestBody();
     http_body->request_body->set_identifier(12345);
     http_body->contains_passwords = false;
@@ -173,7 +179,7 @@ class PageStateSerializationTest : public testing::Test {
         base::FilePath(path), 100, 1024,
         base::Time::FromSecondsSinceUnixEpoch(9999.0));
 
-    referenced_files->emplace_back(path.AsUTF16Unsafe());
+    referenced_files->emplace(path.AsUTF16Unsafe());
   }
 
   void PopulateFrameStateForBackwardsCompatTest(ExplodedFrameState* frame_state,
@@ -272,7 +278,7 @@ class PageStateSerializationTest : public testing::Test {
 
   void PopulatePageStateForBackwardsCompatTest(ExplodedPageState* page_state,
                                                int version) {
-    page_state->referenced_files.push_back(u"file.txt");
+    page_state->referenced_files.insert(u"file.txt");
     PopulateFrameStateForBackwardsCompatTest(&page_state->top, false, version);
   }
 
@@ -537,6 +543,47 @@ TEST_F(PageStateSerializationTest, ScrollAnchorSelectorLengthLimited) {
   EXPECT_EQ(output.top.scroll_anchor_simhash, 0ul);
 }
 
+TEST_F(PageStateSerializationTest, DeduplicateReferencedFiles) {
+  // Test Mojo deserialization (>= v26) with non-adjacent duplicates.
+  {
+    mojom::PageStatePtr page = mojom::PageState::New();
+    page->referenced_files = {u"file2.txt", u"file1.txt", u"file2.txt"};
+    page->top = mojom::FrameState::New();
+    page->top->http_body = mojom::HttpBody::New();
+
+    base::Pickle pickle;
+    pickle.WriteInt(GetCurrentVersion());
+    pickle.WriteData(mojom::PageState::Serialize(&page));
+
+    ExplodedPageState output;
+    ASSERT_TRUE(DecodePageState(std::string(pickle.AsStringView()), &output));
+    EXPECT_THAT(output.referenced_files,
+                testing::ElementsAre(u"file1.txt", u"file2.txt"));
+  }
+
+  // Test legacy deserialization (< v26) with non-adjacent duplicates.
+  {
+    std::string empty_legacy;
+    LegacyEncodePageStateForTesting(ExplodedPageState(), 25, &empty_legacy);
+
+    base::Pickle pickle;
+    pickle.WriteInt(25);
+    // Write 3 referenced files with non-adjacent duplicates.
+    pickle.WriteInt(3);
+    pickle.WriteData(base::as_byte_span(std::u16string_view(u"file2.txt")));
+    pickle.WriteData(base::as_byte_span(std::u16string_view(u"file1.txt")));
+    pickle.WriteData(base::as_byte_span(std::u16string_view(u"file2.txt")));
+    // Append the serialized empty FrameState (skipping the 4-byte Pickle
+    // header, 4-byte version, and 4-byte empty referenced_files count).
+    pickle.WriteBytes(base::as_byte_span(empty_legacy).subspan(12u));
+
+    ExplodedPageState output;
+    ASSERT_TRUE(DecodePageState(std::string(pickle.AsStringView()), &output));
+    EXPECT_THAT(output.referenced_files,
+                testing::ElementsAre(u"file1.txt", u"file2.txt"));
+  }
+}
+
 // Change to #if 1 to enable this code. Run this test to generate data, based on
 // the current serialization format, for the BackwardsCompat_vXX tests. This
 // will generate an expected.dat in the temp directory, which should be moved
@@ -683,7 +730,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_v33) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_ReferencedFiles) {
   ExplodedPageState state;
-  state.referenced_files.push_back(u"file.txt");
+  state.referenced_files.insert(u"file.txt");
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("referenced_files", 26, &saved_state);

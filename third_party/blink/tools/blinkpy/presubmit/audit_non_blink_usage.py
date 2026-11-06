@@ -497,8 +497,10 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/common/page_state/page_state_serialization.cc',
+            'third_party/blink/public/common/page_state/page_state_serialization.h',
         ],
         'allowed': [
+            'base::flat_set',
             'base::ToVector',
             'mojom::Element',
             'network::DataElementBytes',
@@ -1818,9 +1820,12 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/core/loader/document_loader.cc',
             'third_party/blink/renderer/core/loader/document_loader.h',
+            'third_party/blink/renderer/core/loader/history_item.cc',
+            'third_party/blink/renderer/core/loader/history_item.h',
         ],
         'allowed': [
             'base::flat_map',
+            'base::flat_set',
         ],
     },
     {

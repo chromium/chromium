@@ -25,12 +25,12 @@
 
 #include "third_party/blink/renderer/core/loader/history_item.h"
 
-#include <algorithm>
-#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
@@ -349,32 +349,24 @@ PageState HistoryItem::ToPageState() const {
   return PageState::CreateFromEncodedData(std::move(encoded_data));
 }
 
-std::vector<std::optional<std::u16string>>
+base::flat_set<std::optional<std::u16string>>
 HistoryItem::GetReferencedFilePathsForSerialization() const {
-  HashSet<String> file_paths;
+  std::vector<std::optional<std::u16string>> file_paths =
+      ToOptionalString16Vector(GetReferencedFilePaths());
 
   // These additional paths are presumably used by PageState so the browser can
   // grant the renderer access to referenced files during session restore. This
   // logic dates to https://crrev.com/db4a9b4108635b3678c3f9fd5bdd1f98001db216,
   // and it is not entirely clear if it is still needed.
-  const EncodedFormData* form_data = FormData();
-  if (form_data) {
+  if (const EncodedFormData* form_data = FormData()) {
     for (const FormDataElement& element : form_data->Elements()) {
       if (element.type_ == FormDataElement::kEncodedFile) {
-        file_paths.insert(element.filename_);
+        file_paths.push_back(WebString::ToOptionalString16(element.filename_));
       }
     }
   }
 
-  for (const String& path : GetReferencedFilePaths()) {
-    file_paths.insert(path);
-  }
-
-  std::vector<std::optional<std::u16string>> result;
-  result.reserve(file_paths.size());
-  std::ranges::transform(file_paths, std::back_inserter(result),
-                         WebString::ToOptionalString16);
-  return result;
+  return file_paths;
 }
 
 }  // namespace blink

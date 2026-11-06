@@ -8,10 +8,11 @@
 
 #include <algorithm>
 #include <map>
+#include <ranges>
 #include <string>
 #include <utility>
 
-#include "base/containers/extend.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -66,16 +67,16 @@ int CreateUniqueEntryID() {
 void RecursivelyGenerateFrameEntries(
     NavigationEntryRestoreContextImpl* context,
     const blink::ExplodedFrameState& state,
-    std::vector<std::optional<std::u16string>> referenced_files,
+    base::flat_set<std::optional<std::u16string>> referenced_files,
     NavigationEntryImpl::TreeNode* node) {
   CHECK(context, base::NotFatalUntil::M152);
   // Set a single-frame PageState on the entry.
   blink::ExplodedPageState page_state;
 
-  // Move the incoming PageState's list of referenced files into the main
-  // frame's PageState.  (We don't pass the list to subframes below.)
-  // TODO(creis): Grant access to this list for each process that renders
-  // this page, even for OOPIFs.  Eventually keep track of a verified list of
+  // Move the incoming PageState's set of referenced files into the main
+  // frame's PageState.  (We don't pass the set to subframes below.)
+  // TODO(creis): Grant access to this set for each process that renders
+  // this page, even for OOPIFs.  Eventually keep track of a verified set of
   // files per frame, so that we only grant access to processes that need it.
   page_state.referenced_files = std::move(referenced_files);
 
@@ -149,7 +150,7 @@ std::optional<std::u16string> UrlToOptionalString16(const GURL& url) {
 void RecursivelyGenerateFrameState(
     NavigationEntryImpl::TreeNode* node,
     blink::ExplodedFrameState* state,
-    std::vector<std::optional<std::u16string>>* referenced_files) {
+    base::flat_set<std::optional<std::u16string>>* referenced_files) {
   // The FrameNavigationEntry's PageState contains just the ExplodedFrameState
   // for that particular frame.
   blink::ExplodedPageState exploded_page_state;
@@ -200,8 +201,8 @@ void RecursivelyGenerateFrameState(
       node->frame_entry->protect_url_in_navigation_api();
 
   // Move the frame's files into the PageState's |referenced_files|.
-  base::Extend(*referenced_files,
-               std::move(exploded_page_state.referenced_files));
+  referenced_files->insert_range(
+      std::views::as_rvalue(exploded_page_state.referenced_files));
 
   state->children.resize(node->children.size());
   for (size_t i = 0; i < node->children.size(); ++i) {

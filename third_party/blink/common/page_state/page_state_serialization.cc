@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
@@ -414,9 +415,8 @@ size_t ReadAndValidateVectorSize(DeserializeObject* obj, size_t element_size) {
 }
 
 // Writes a Vector of strings into a SerializeObject for serialization.
-void WriteU16StringVector(
-    const std::vector<std::optional<std::u16string>>& data,
-    SerializeObject* obj) {
+void WriteU16StringVector(base::span<const std::optional<std::u16string>> data,
+                          SerializeObject* obj) {
   WriteInteger(base::checked_cast<int>(data.size()), obj);
   for (const auto& str : data) {
     WriteU16String(str, obj);
@@ -911,14 +911,9 @@ ExplodedPageState ReadMojoPageState(DeserializeObject* obj) {
     return state;
   }
 
+  // De-dupe by converting to a set.
   state.referenced_files = std::move(page->referenced_files);
   state.top = ReadMojoFrameState(std::move(page->top));
-
-  // TODO(crbug.com/579030935): De-dupe properly; std::unique only removes
-  // consecutive duplicates.
-  state.referenced_files.erase(
-      std::unique(state.referenced_files.begin(), state.referenced_files.end()),
-      state.referenced_files.end());
 
   return state;
 }
@@ -935,7 +930,7 @@ void WriteMojoPageState(const ExplodedPageState& state, SerializeObject* obj) {
   // `.value()`.
   CHECK(std::ranges::all_of(state.referenced_files,
                             &std::optional<std::u16string>::has_value));
-  page->referenced_files = state.referenced_files;
+  page->referenced_files = base::ToVector(state.referenced_files);
   page->top = WriteMojoFrameState(state.top);
 
   std::vector<uint8_t> page_bytes = mojom::PageState::Serialize(&page);
@@ -962,24 +957,22 @@ ExplodedPageState ReadPageState(DeserializeObject* obj) {
     return ReadMojoPageState(obj);
   }
 
-  ExplodedPageState state;
+  std::vector<std::optional<std::u16string>> referenced_files;
   if (obj->version >= 14) {
-    state.referenced_files = ReadU16StringVector(obj);
+    referenced_files = ReadU16StringVector(obj);
   }
 
+  ExplodedPageState state;
   std::vector<UniqueNameHelper::Replacement> unique_name_replacements;
   state.top =
       ReadLegacyFrameState(obj, /*is_top=*/true, &unique_name_replacements);
 
   if (obj->version < 14) {
-    RecursivelyAppendReferencedFiles(state.top, &state.referenced_files);
+    RecursivelyAppendReferencedFiles(state.top, &referenced_files);
   }
 
-  // TODO(crbug.com/579030935): De-dupe properly; std::unique only removes
-  // consecutive duplicates.
-  state.referenced_files.erase(
-      std::unique(state.referenced_files.begin(), state.referenced_files.end()),
-      state.referenced_files.end());
+  // De-dupe by converting to a set.
+  state.referenced_files = std::move(referenced_files);
 
   return state;
 }
@@ -1097,15 +1090,12 @@ bool VerifyReferencedFilesInPageState(const ExplodedPageState& exploded) {
     return false;
   }
 
-  // Convert the referenced files list to a set to confirm that `all_files` is a
-  // subset of `referenced_files`.
+  // Confirm that `all_files` is a subset of `referenced_files`.
   // TODO(crbug.com/499019935): Check if all_files and exploded.referenced_files
   // are equal, rather than the former being a subset of the latter.
-  std::set<std::optional<std::u16string>> referenced_file_set(
-      exploded.referenced_files.begin(), exploded.referenced_files.end());
   for (const std::optional<std::u16string>& file : all_files) {
-    if (file && !referenced_file_set.contains(file)) {
-      // Found a file that was not in the list to be validated, so the renderer
+    if (file && !exploded.referenced_files.contains(file)) {
+      // Found a file that was not in the set to be validated, so the renderer
       // should be killed.
       return false;
     }
