@@ -7,15 +7,18 @@
 #import <Cocoa/Cocoa.h>
 
 #include <tuple>
+#include <utility>
 
 #include "base/apple/foundation_util.h"
 #import "base/mac/mac_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -809,4 +812,39 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   wait_for_revealed(false);
 
   widget->CloseNow();
+}
+
+class ImmersiveModeControllerMacTabStripUnificationInteractiveTest
+    : public ImmersiveModeControllerMacInteractiveTest {
+ public:
+  ImmersiveModeControllerMacTabStripUnificationInteractiveTest() {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kTabStripUnification);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test verifying that closing the last tab of a browser window in
+// macOS immersive fullscreen (which triggers exiting immersive fullscreen and
+// reparenting the tab strip while the closing TabView is still in the view
+// tree) does not crash.
+IN_PROC_BROWSER_TEST_F(
+    ImmersiveModeControllerMacTabStripUnificationInteractiveTest,
+    CloseLastTabInFullscreen) {
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+  BrowserView* second_browser_view =
+      BrowserView::GetBrowserViewForBrowser(second_browser);
+  if (!second_browser_view->tab_overlay_view()) {
+    GTEST_SKIP() << "Tab strip is not hosted in a separate overlay.";
+  }
+
+  ui_test_utils::ToggleFullscreenModeAndWait(second_browser);
+  ASSERT_EQ(second_browser_view->tab_strip_view()->parent(),
+            second_browser_view->tab_overlay_view());
+
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(second_browser);
+  std::exchange(second_browser, nullptr)->GetTabStripModel()->CloseAllTabs();
+  destroyed_observer.Wait();
 }

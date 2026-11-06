@@ -82,7 +82,9 @@ void SplitTabView::AddedToWidget() {
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &SplitTabView::UpdateBorder, base::Unretained(this)));
 
-  OnDataChanged();
+  if (collection_node_) {
+    OnDataChanged();
+  }
   UpdateHovered(IsMouseHovered());
 }
 
@@ -203,6 +205,7 @@ void SplitTabView::ResetCollectionNode() {
 }
 
 void SplitTabView::OnDataChanged() {
+  CHECK(collection_node_);
   const tabs::TabCollection* tab_collection =
       std::get<tabs::ConstDanglingUntriagedTabCollection>(
           collection_node_->GetNodeData());

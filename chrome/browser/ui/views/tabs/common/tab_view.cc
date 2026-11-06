@@ -857,11 +857,15 @@ void TabView::AddedToWidget() {
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &TabView::OnFrameActiveStateChanged, base::Unretained(this)));
 
-  OnTabStateChanged();
+  if (collection_node_) {
+    OnTabStateChanged();
+  }
   UpdateClipPathAndRoundedCorners();
 
   // Recompute accessible name when the structure changes.
-  UpdateAccessibleName();
+  if (collection_node_) {
+    UpdateAccessibleName();
+  }
 
   // Recompute the hovered state as mouse events are not processed if a view
   // removed from the widget and added.
@@ -888,7 +892,9 @@ void TabView::OnFocus() {
   // Update the accessible label before showing the hover card to ensure that
   // the displayed memory usage is in sync with what will be read to screen
   // readers.
-  UpdateAccessibleName();
+  if (collection_node_) {
+    UpdateAccessibleName();
+  }
   UpdateHoverCard(this, TabSlotController::HoverCardUpdateType::kFocus);
   InvalidateLayout();
 }
