@@ -366,3 +366,6 @@ crbug.com/572662973 [ iPad Device ] GeminiAppSwitchingTestCase/testAppSwitchingA
 
 # Gardening suppression 2026-11-05
 crbug.com/582335504 QuickDeleteOtherDataTestCase/testPasswordsAndPasskeysCellRedirection [ Pass Failure Crash ]
+
+crbug.com/441761691 [ iOS27 Simulator ] ContextMenuTestCase/testOpenLinkInNewWindow [ Skip ]
+crbug.com/441761691 [ iOS27 Simulator ] ContextMenuTestCase/testOpenIncognitoLinkInNewWindow [ Skip ]
