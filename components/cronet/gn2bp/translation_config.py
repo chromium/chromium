@@ -164,8 +164,8 @@ _builtin_deps = {
     # when generating the cxxbindings and build scripts (build scripts is a
     # rust concept, it's an rust binary that generates flags used to compile
     # other rust binaries).
-    # For CXXBindings, we use AOSP's binary which already have the configuration
-    # specified depending on which arch it's building for.
+    # For CXXBindings, create_rust_cxx_modules in translators.py invokes
+    # cxxbridge directly and passes the required --cfg flags explicitly.
     # For build scripts, we generate those on Chromium side in a JSON file and
     # inject them in the pipeline.
     #
