@@ -50,6 +50,7 @@
 
 - (void)disconnect {
   _personalDataManager = nullptr;
+  [_cvcStorageEnabled stop];
   _cvcStorageEnabled.observer = nil;
   _cvcStorageEnabled = nil;
 }
