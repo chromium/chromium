@@ -1957,10 +1957,17 @@ Response PageHandler::BringToFront() {
     return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
   }
 
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(host_));
-  web_contents->Activate();
-  web_contents->GetOutermostWebContents()->Focus();
+  base::WeakPtr<PageHandler> weak_self = weak_factory_.GetWeakPtr();
+  WebContentsImpl::FromRenderFrameHostImpl(host_)
+      ->GetOutermostWebContents()
+      ->Activate();
+  // Re-check this since activation can synchronously destroy the WebContents.
+  if (!weak_self || !host_) {
+    return Response::ServerError(kErrorNotAttached);
+  }
+  WebContentsImpl::FromRenderFrameHostImpl(host_)
+      ->GetOutermostWebContents()
+      ->Focus();
   return Response::Success();
 }
 

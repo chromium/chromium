@@ -7309,4 +7309,57 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(2, result->FindIntByDottedPath("result.value"));
 }
 
+namespace {
+
+class MockActivationDelegate : public WebContentsDelegate {
+ public:
+  MOCK_METHOD(void, ActivateContents, (WebContents*), (override));
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       BringToFrontInnerWebContentsActivatesOutermost) {
+  testing::StrictMock<MockActivationDelegate> outer_delegate;
+  testing::StrictMock<MockActivationDelegate> inner_delegate;
+  std::unique_ptr<WebContents> outer_contents = WebContents::Create(
+      WebContents::CreateParams(shell()->web_contents()->GetBrowserContext()));
+  ASSERT_TRUE(NavigateToURL(outer_contents.get(),
+                            GURL("data:text/html,<iframe></iframe>")));
+  RenderFrameHost* child_frame =
+      ChildFrameAt(outer_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+
+  std::unique_ptr<WebContents> inner_contents = WebContents::Create(
+      WebContents::CreateParams(shell()->web_contents()->GetBrowserContext()));
+  WebContents* inner = inner_contents.get();
+  outer_contents->AttachInnerWebContents(std::move(inner_contents), child_frame,
+                                         /*is_full_page=*/false);
+  outer_contents->SetDelegate(&outer_delegate);
+  inner->SetDelegate(&inner_delegate);
+  AttachToWebContents(inner);
+
+  EXPECT_CALL(outer_delegate, ActivateContents(outer_contents.get()));
+  EXPECT_CALL(inner_delegate, ActivateContents(testing::_)).Times(0);
+  EXPECT_TRUE(SendCommandSync("Page.bringToFront"));
+
+  Detach();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       BringToFrontHandlesSynchronousWebContentsDestruction) {
+  set_agent_host_can_close();
+  testing::StrictMock<MockActivationDelegate> delegate;
+  std::unique_ptr<WebContents> contents = WebContents::Create(
+      WebContents::CreateParams(shell()->web_contents()->GetBrowserContext()));
+  contents->SetDelegate(&delegate);
+  AttachToWebContents(contents.get());
+
+  EXPECT_CALL(delegate, ActivateContents(contents.get()))
+      .WillOnce([&](WebContents*) { contents.reset(); });
+  SendCommandAsync("Page.bringToFront");
+  EXPECT_FALSE(contents);
+  EXPECT_EQ(nullptr, agent_host_->GetWebContents());
+}
+
 }  // namespace content
