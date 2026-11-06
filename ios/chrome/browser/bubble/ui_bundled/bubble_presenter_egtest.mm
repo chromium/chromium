@@ -142,6 +142,11 @@ void ReloadFromOmnibox() {
     }));
   }
 
+  if ([self isRunningTest:@selector(testSendTabToSelfOmniboxIPHOnTabSwitch)]) {
+    config.iph_feature_enabled =
+        feature_engagement::kIPHSendTabToSelfOmnibox.name;
+  }
+
   return config;
 }
 
@@ -679,8 +684,8 @@ void ReloadFromOmnibox() {
                       grey_accessibilityID(kBubbleViewArrowViewIdentifier)];
 }
 
-// Test that the Send Tab to Self omnibox IPH is displayed on startup when a
-// suitable page is already loaded.
+// Test that the Send Tab to Self omnibox IPH is not displayed on the restored
+// startup tab, but is displayed after navigating to another page.
 - (void)testSendTabToSelfOmniboxIPH {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
@@ -693,6 +698,7 @@ void ReloadFromOmnibox() {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:@"My other device"
                          lastUpdatedTimestamp:base::Time::Now()];
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSendTabToSelfTargetDevice:@"My other device"];
 
   // Persist the tab session, fake sync server data, and user preferences so
   // that the loaded page and signed-in state survive the app relaunch.
@@ -703,10 +709,42 @@ void ReloadFromOmnibox() {
   [self relaunchWithIPHFeature:@"IPH_SendTabToSelfOmnibox" safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          chrome_test_util::StaticTextWithAccessibilityLabel(
-              l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_OMNIBOX_IPH_TEXT))];
+  id<GREYMatcher> iphText = chrome_test_util::StaticTextWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_OMNIBOX_IPH_TEXT));
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
+  [ChromeEarlGrey waitForSendTabToSelfTargetDevice:@"My other device"];
+  [[EarlGrey selectElementWithMatcher:iphText] assertWithMatcher:grey_nil()];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/chromium_logo_page.html")];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iphText];
+}
+
+// Tests that the Send Tab to Self omnibox IPH is displayed when switching to an
+// eligible tab.
+- (void)testSendTabToSelfOmniboxIPHOnTabSwitch {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
+  }
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
+
+  // Open a second tab on the NTP before signing in so the eligible tab stays in
+  // the background until tab switch.
+  [ChromeEarlGrey openNewTab];
+
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:@"My other device"
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSendTabToSelfTargetDevice:@"My other device"];
+
+  id<GREYMatcher> iphText = chrome_test_util::StaticTextWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_OMNIBOX_IPH_TEXT));
+  [[EarlGrey selectElementWithMatcher:iphText] assertWithMatcher:grey_nil()];
+
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iphText];
 }
 
 // Tests that presenting the swipe back/forward gesture IPH while the

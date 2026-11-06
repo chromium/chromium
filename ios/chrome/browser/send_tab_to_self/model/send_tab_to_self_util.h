@@ -24,6 +24,10 @@ class SendTabToSelfEntry;
 // shown for `web_state`.
 bool IsOmniboxEntryPointEligible(web::WebState* web_state, ProfileIOS* profile);
 
+// Returns whether the omnibox Send Tab to Self IPH is eligible for `web_state`
+// and `profile`. Returns `false` if either is `nullptr`.
+bool IsOmniboxIPHEligible(web::WebState* web_state, ProfileIOS* profile);
+
 // Creates an OpenNewTabCommand for the given `entry`.
 OpenNewTabCommand* CreateOpenNewTabCommand(const SendTabToSelfEntry* entry);
 

@@ -11,12 +11,13 @@
 #import "base/scoped_observation.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "components/reading_list/core/reading_list_model_observer.h"
-#import "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
+#import "url/gurl.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -26,10 +27,6 @@ class BookmarkNode;
 namespace reading_list {
 enum EntrySource;
 }  // namespace reading_list
-
-namespace send_tab_to_self {
-class SendTabToSelfModel;
-}  // namespace send_tab_to_self
 
 class Browser;
 class BrowserViewVisibilityNotifierBrowserAgent;
@@ -51,14 +48,13 @@ class Tracker;
 
 // A browser agent that serves a central manager for all IPHs features that
 // should be triggered by tab and/or tab list changes.
-class TabBasedIPHBrowserAgent
-    : public bookmarks::BaseBookmarkModelObserver,
-      public BrowserUserData<TabBasedIPHBrowserAgent>,
-      public BrowserObserver,
-      public ReadingListModelObserver,
-      public send_tab_to_self::SendTabToSelfModelObserver,
-      public UrlLoadingObserver,
-      public web::WebStateObserver {
+class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
+                                public BrowserUserData<TabBasedIPHBrowserAgent>,
+                                public BrowserObserver,
+                                public ReadingListModelObserver,
+                                public UrlLoadingObserver,
+                                public WebStateListObserver,
+                                public web::WebStateObserver {
  public:
   TabBasedIPHBrowserAgent(const TabBasedIPHBrowserAgent&) = delete;
   TabBasedIPHBrowserAgent& operator=(const TabBasedIPHBrowserAgent&) = delete;
@@ -99,9 +95,6 @@ class TabBasedIPHBrowserAgent
                               const GURL& url,
                               reading_list::EntrySource source) override;
 
-  // send_tab_to_self::SendTabToSelfModelObserver
-  void OnModelReady() override;
-
   // UrlLoadingObserver
   void TabDidPrerenderUrl(const GURL& url,
                           ui::PageTransition transition_type,
@@ -109,6 +102,11 @@ class TabBasedIPHBrowserAgent
   void TabDidLoadUrl(const GURL& url,
                      ui::PageTransition transition_type,
                      base::WeakPtr<web::WebState> web_state) override;
+
+  // WebStateListObserver
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
 
   // WebStateObserver
   void DidStartNavigation(web::WebState* web_state,
@@ -119,6 +117,7 @@ class TabBasedIPHBrowserAgent
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+  void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
@@ -186,11 +185,9 @@ class TabBasedIPHBrowserAgent
   // destroyed.
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_model_observation_{this};
-  // Automatically removes this observer from the Send Tab to Self model when
-  // destroyed.
-  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
-                          send_tab_to_self::SendTabToSelfModelObserver>
-      send_tab_to_self_model_observation_{this};
+  // Automatically removes this observer from the web state list when destroyed.
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
   // Observer for URL loading.
   raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;
   // Command dispatcher for the browser; used to retrieve help handler.
@@ -211,10 +208,15 @@ class TabBasedIPHBrowserAgent
   // Whether the user has just navigated from the omnibox; will be reset to
   // `false` after the navigation has completed.
   bool loaded_from_omnibox_ = false;
-  // Whether the BVC is covered by another view.
-  bool is_bvc_covered_ = false;
-  // Whether the Send Tab to Self omnibox IPH has been attempted upon startup.
+  // Whether the BVC is covered by another view. True until it is first visible.
+  bool is_bvc_covered_ = true;
+  // Whether a user navigation or tab switch requested a Send Tab to Self
+  // omnibox IPH attempt.
+  bool should_attempt_send_tab_to_self_iph_ = false;
+  // Whether the Send Tab to Self omnibox IPH has been attempted.
   bool send_tab_to_self_iph_attempted_ = false;
+  // Last committed URL when the active `WebState`'s current navigation started.
+  GURL url_before_navigation_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_

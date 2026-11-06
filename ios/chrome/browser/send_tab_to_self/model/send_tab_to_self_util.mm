@@ -10,6 +10,7 @@
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/outgoing_tab_form_field_extractor.h"
 #import "components/send_tab_to_self/received_tab_forms_filler.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -35,6 +36,18 @@ bool IsOmniboxEntryPointEligible(web::WebState* web_state,
   return service &&
          service->GetEntryPointDisplayReason(web_state->GetVisibleURL())
              .has_value();
+}
+
+bool IsOmniboxIPHEligible(web::WebState* web_state, ProfileIOS* profile) {
+  if (!web_state || !profile) {
+    return false;
+  }
+  SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
+  // Unlike the entry point, only show the IPH when ready to send a tab.
+  return service &&
+         service->GetEntryPointDisplayReason(web_state->GetVisibleURL()) ==
+             EntryPointDisplayReason::kOfferFeature;
 }
 
 OpenNewTabCommand* CreateOpenNewTabCommand(const SendTabToSelfEntry* entry) {

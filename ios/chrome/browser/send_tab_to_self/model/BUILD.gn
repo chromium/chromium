@@ -126,6 +126,7 @@ source_set("unit_tests") {
     "send_tab_to_self_tab_card_label_data_unittest.mm",
     "send_tab_to_self_tab_helper_unittest.mm",
     "send_tab_to_self_text_fragment_selector_generator_unittest.mm",
+    "send_tab_to_self_util_unittest.mm",
   ]
   deps = [
     ":model",

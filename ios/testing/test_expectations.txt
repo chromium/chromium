@@ -275,7 +275,6 @@ crbug.com/572663884 [ Device ] FullscreenNoBroadcasterTestCase/testShowHeaderOnR
 crbug.com/572663884 [ Device ] FullscreenNoBroadcasterTestCase/testShowHeaderWhenChildTabCloses [ Pass Failure ]
 crbug.com/572663468 [ Device ] PopupMenuTestCase/testTabHistoryMenu [ Pass Failure ]
 crbug.com/572664294 [ Simulator ] AutofillCreditCardSettingsTestCase/testDisableReauthToggle [ Pass Failure ]
-crbug.com/572663823 [ Simulator ] BubblePresenterTestCase/testSendTabToSelfOmniboxIPH [ Pass Failure ]
 
 # Gardening suppression 2026-10-13
 crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyInvoked [ Pass Failure ]
