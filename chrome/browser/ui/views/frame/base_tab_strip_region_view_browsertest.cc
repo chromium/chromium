@@ -38,8 +38,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/assistive_tech.h"
+#include "ui/accessibility/platform/ax_platform.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
@@ -314,6 +318,47 @@ IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest,
   model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
   views::test::RunScheduledLayout(browser_view);
   verify_tab_indices();
+}
+
+IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest,
+                       WindowActivationFiresSelectionForJaws) {
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  auto* tab_strip_view =
+      views::AsViewClass<TabStripView>(region_view()->GetTabStripView());
+  ASSERT_TRUE(tab_strip_view);
+
+  views::View* active_tab_view =
+      GetTabViewAt(browser()->GetTabStripModel()->active_index());
+  ASSERT_TRUE(active_tab_view);
+  active_tab_view->GetViewAccessibility().SetIsSelected(false);
+
+  ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
+      ui::AssistiveTech::kJaws);
+  ui::AXPlatform::GetInstance().SetJawsNeedsTabSelectionEvent(true);
+
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
+  tab_strip_view->OnWidgetActivationChanged(widget, true);
+  // SetIsSelected(true) fires kSelection when transitioning from false to true,
+  // followed by the explicit kSelection event for JAWS.
+  EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kSelection));
+
+  ui::AXNodeData active_tab_ax_data;
+  active_tab_view->GetViewAccessibility().GetAccessibleNodeData(
+      &active_tab_ax_data);
+  EXPECT_TRUE(
+      active_tab_ax_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  // Verify the selection event still fires when kSelected is already true.
+  tab_strip_view->OnWidgetActivationChanged(widget, true);
+  EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kSelection));
+
+  ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
+      ui::AssistiveTech::kNone);
+  ui::AXPlatform::GetInstance().SetJawsNeedsTabSelectionEvent(false);
+
+  tab_strip_view->OnWidgetActivationChanged(widget, true);
+  EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kSelection));
 }
 
 IN_PROC_BROWSER_TEST_P(BaseTabStripRegionViewBrowserTest, SplitTabsShareSpace) {
