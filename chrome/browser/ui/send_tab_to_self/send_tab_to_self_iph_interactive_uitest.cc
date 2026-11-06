@@ -978,15 +978,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphGracePeriodInteractiveUiTest,
 // tabs are enabled.
 // -----------------------------------------------------------------------------
 class SendTabToSelfVerticalTabsIphInteractiveUiTest
-    : public VerticalTabsBrowserTestMixin<SendTabToSelfIphInteractiveUiTest> {
- public:
-  // Bypass VerticalTabsBrowserTestMixin::SetUpCommandLine so its
-  // ScopedFeatureList is not initialized after
-  // InteractiveFeaturePromoTestMixin::SetUp() and torn down out of LIFO order.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SendTabToSelfIphInteractiveUiTest::SetUpCommandLine(command_line);
-  }
-};
+    : public VerticalTabsBrowserTestMixin<SendTabToSelfIphInteractiveUiTest> {};
 
 IN_PROC_BROWSER_TEST_F(
     SendTabToSelfVerticalTabsIphInteractiveUiTest,
