@@ -30,18 +30,8 @@ ExportedCanvasResource::ExportedCanvasResource(
       resource_source_(resource_source),
       accelerated_raster_(true),
       context_provider_wrapper_(provider),
-      use_legacy_external_canvas_resource_bitmap_path_(true) {
-  // Unretained is safe because wait_sync_token_ is private callback that is
-  // destroyed in dtor.
-  release_callback_ = base::BindOnce(
-      [](ExportedCanvasResource* resource, viz::ReleaseCallback callback,
-         bool is_lost) {
-        if (callback) {
-          std::move(callback).Run(resource->last_access_sync_token_, is_lost);
-        }
-      },
-      base::Unretained(this), std::move(callback));
-}
+      release_callback_(std::move(callback)),
+      use_legacy_external_canvas_resource_bitmap_path_(true) {}
 
 ExportedCanvasResource::ExportedCanvasResource(
     scoped_refptr<CanvasResourceSharedImage> resource,
@@ -67,7 +57,8 @@ ExportedCanvasResource::ExportedCanvasResource(
       resource);
 
   release_callback_ = base::BindOnce(
-      [](scoped_refptr<CanvasResourceSharedImage> resource, bool is_lost) {
+      [](scoped_refptr<CanvasResourceSharedImage> resource,
+         const gpu::SyncToken& sync_token, bool is_lost) {
         if (is_lost) {
           resource->NotifyResourceLost();
         }
@@ -83,8 +74,8 @@ ExportedCanvasResource::~ExportedCanvasResource() {
   // We PostTask ExportedCanvasResource to the CanvasResource owning thread, but
   // if the thread gets destroyed before, destructor will still run, but we
   // can't tell CanvasResource to recycle.
-  if (!is_cross_thread()) {
-    std::move(release_callback_).Run(is_lost_);
+  if (!is_cross_thread() && release_callback_) {
+    std::move(release_callback_).Run(last_access_sync_token_, is_lost_);
   }
 }
 

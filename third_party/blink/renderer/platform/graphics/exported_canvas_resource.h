@@ -65,7 +65,6 @@ class PLATFORM_EXPORT ExportedCanvasResource
   gpu::SyncToken last_access_sync_token_;
 
   base::RepeatingCallback<void(gpu::SyncToken)> wait_sync_token_;
-  base::OnceCallback<void(bool)> release_callback_;
 
   const base::PlatformThreadRef owning_thread_ref_;
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
@@ -77,6 +76,8 @@ class PLATFORM_EXPORT ExportedCanvasResource
   const bool accelerated_raster_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+
+  viz::ReleaseCallback release_callback_;
 
   const bool use_legacy_external_canvas_resource_bitmap_path_;
 };
