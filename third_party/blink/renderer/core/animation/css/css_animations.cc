@@ -3315,6 +3315,13 @@ const ComputedStyle& CSSAnimations::CalculateBeforeChangeStyle(
     }
   }
 
+  // With no transitions to sample, the before-change style is the base style.
+  // Avoid resolving a copy of it.
+  if (interpolations_map.empty()) {
+    state.before_change_style = base_style;
+    return *base_style;
+  }
+
   state.before_change_style =
       state.animating_element.GetDocument()
           .GetStyleResolver()
