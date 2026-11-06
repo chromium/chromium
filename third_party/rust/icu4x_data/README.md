@@ -14,6 +14,8 @@ cost.
 
 ## Directory Layout
 
+- `README.chromium` / `LICENSE`: Chromium third-party dependency metadata and
+  `Unicode-3.0` license file.
 - `BUILD.gn`: Defines `//third_party/rust/icu4x_data:lib`, selecting the target
   platform's data bundle via `--cfg=icu4x_data_platform_<platform>` (mirroring
   `//third_party/icu/BUILD.gn`, overridable via the `icu4x_override_data_dir`
