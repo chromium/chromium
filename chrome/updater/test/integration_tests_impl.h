@@ -288,7 +288,11 @@ void DeleteUpdaterDirectory(UpdaterScope scope);
 // configuration, app registration, etc.
 void DeleteActiveUpdaterExecutable(UpdaterScope scope);
 
-// Runs the command and waits for it to exit or time out.
+// Runs `command_line`, adding `--system` (and `sudo` on macOS and Linux) for
+// system scope, and fails the test if it cannot be launched. Returns without
+// waiting if `exit_code` is null. Otherwise waits up to
+// 2 * `TestTimeouts::action_max_timeout()` and stores the exit code in
+// `*exit_code`; on timeout, fails the test and leaves `*exit_code` unchanged.
 void Run(
     UpdaterScope scope,
     base::CommandLine command_line,

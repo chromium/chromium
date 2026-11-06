@@ -1289,10 +1289,11 @@ void Run(
   }
 
   // macOS requires a larger timeout value for --install.
-  bool succeeded = process.WaitForExitWithTimeout(
-      2 * TestTimeouts::action_max_timeout(), exit_code);
-  VPLOG_IF(0, !succeeded);
-  ASSERT_TRUE(succeeded);
+  const base::TimeDelta timeout = 2 * TestTimeouts::action_max_timeout();
+  const bool exited = process.WaitForExitWithTimeout(timeout, exit_code);
+  VLOG_IF(0, exited) << "Exit code: " << *exit_code;
+  ASSERT_TRUE(exited) << "Process " << process.Pid() << " did not exit within "
+                      << timeout;
 }
 
 void RunDeElevated(UpdaterScope scope,
