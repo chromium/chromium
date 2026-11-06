@@ -6,11 +6,10 @@
 #define ASH_ACCESSIBILITY_DEFAULT_ACCESSIBILITY_DELEGATE_H_
 
 #include "ash/accessibility/accessibility_delegate.h"
-#include "ash/ash_export.h"
 
 namespace ash {
 
-class ASH_EXPORT DefaultAccessibilityDelegate : public AccessibilityDelegate {
+class DefaultAccessibilityDelegate : public AccessibilityDelegate {
  public:
   DefaultAccessibilityDelegate();
 
