@@ -314,6 +314,16 @@ constexpr auto kPrivateUseBulletMap =
         {kSymbolPrivateUseBulletCodePoint, kBulletCodePoint},
     });
 
+// Blocks that hold other blocks instead of text. Only covers the kinds this
+// builder makes.
+//
+// Leftover annotations aren't added to these.
+constexpr auto kContainerBlockRoles = std::to_array<ax::mojom::Role>({
+    ax::mojom::Role::kFigure,
+    ax::mojom::Role::kList,
+    ax::mojom::Role::kTable,
+});
+
 enum class HeaderFooterRole {
   kNone,
   kHeader,
@@ -2863,13 +2873,12 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       SortBlockNodesByVerticalBands(block_nodes,
                                     builder_->page_node()->child_ids);
       // Remaining annotations go in a new paragraph rather than a trailing
-      // figure or list.
-      block_node =
-          !block_nodes.empty() &&
-                  block_nodes.back()->role != ax::mojom::Role::kFigure &&
-                  block_nodes.back()->role != ax::mojom::Role::kList
-              ? block_nodes.back()
-              : nullptr;
+      // figure, list, or table.
+      block_node = !block_nodes.empty() &&
+                           !std::ranges::contains(kContainerBlockRoles,
+                                                  block_nodes.back()->role)
+                       ? block_nodes.back()
+                       : nullptr;
     }
     RecordHeaderFooterLocationHistograms(block_nodes, page_properties);
   }
