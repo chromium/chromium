@@ -154,10 +154,11 @@ void Watcher::DidRunTask(const base::PendingTask* task,
           ? metadata.execution_start_time
           : task->queue_time;
   const base::TimeTicks execution_finish_time = base::TimeTicks::Now();
-
-  CHECK(!queue_time.is_null(), base::NotFatalUntil::M160);
-  CHECK(!metadata.execution_start_time.is_null(), base::NotFatalUntil::M160);
-  CHECK(!execution_finish_time.is_null(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/580200095): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!queue_time.is_null());
+  DCHECK(!metadata.execution_start_time.is_null());
+  DCHECK(!execution_finish_time.is_null());
   // TODO(crbug.com/563467054): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK_LE(queue_time, metadata.execution_start_time);
