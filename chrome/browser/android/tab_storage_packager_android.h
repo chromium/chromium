@@ -53,14 +53,6 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   std::string GetWindowTag(const TabCollection* collection) const override;
   std::unique_ptr<StoragePackage> Package(const TabInterface* tab) override;
 
-  // Returns a pointer to an UnmappedTabStripCollectionStorageData (as a long in
-  // Java). The caller is responsible for managing the lifecycle of the returned
-  // object.
-  int64_t ConsolidateTabStripCollectionData(JNIEnv* env,
-                                            std::string window_tag,
-                                            int32_t j_tab_model_type,
-                                            TabAndroid* active_tab);
-
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   std::unique_ptr<Payload> PackageTabStripCollectionData(

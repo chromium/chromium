@@ -38,7 +38,6 @@ import java.util.function.Supplier;
 @JNINamespace("tabs")
 @NullMarked
 public class TabStoragePackager {
-    private final long mNativeTabStoragePackager;
     private final Map<JniPtr<TabStripCollection>, TabModelInfo> mTabModelInfoMap = new HashMap<>();
 
     /** A data object representing a {@link TabModel} and its associated window tag. */
@@ -108,13 +107,11 @@ public class TabStoragePackager {
         }
     }
 
-    private TabStoragePackager(long nativeTabStoragePackager) {
-        mNativeTabStoragePackager = nativeTabStoragePackager;
-    }
+    private TabStoragePackager() {}
 
     @CalledByNative
-    private static TabStoragePackager create(long nativeTabStoragePackager) {
-        return new TabStoragePackager(nativeTabStoragePackager);
+    private static TabStoragePackager create() {
+        return new TabStoragePackager();
     }
 
     @CalledByNative
@@ -236,10 +233,7 @@ public class TabStoragePackager {
         assert info != null;
         return TabStoragePackagerJni.get()
                 .consolidateTabStripCollectionData(
-                        mNativeTabStoragePackager,
-                        info.windowTag,
-                        info.tabModelType,
-                        info.activeTabSupplier.get());
+                        info.windowTag, info.tabModelType, info.activeTabSupplier.get());
     }
 
     @CalledByNative
@@ -283,7 +277,6 @@ public class TabStoragePackager {
                 @Nullable @JniType("std::optional<std::string>") String openerAppId);
 
         long consolidateTabStripCollectionData(
-                long nativeTabStoragePackagerAndroid,
                 @JniType("std::string") String windowTag,
                 @TabModelType int tabModelType,
                 @JniType("TabAndroid*") @Nullable Tab activeTab);

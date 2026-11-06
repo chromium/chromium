@@ -132,8 +132,7 @@ MapAndConsumeUnmappedTabStripCollectionStorageData(
 TabStoragePackagerAndroid::TabStoragePackagerAndroid(Profile* profile)
     : profile_(profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(
-      Java_TabStoragePackager_create(env, reinterpret_cast<intptr_t>(this)));
+  java_obj_.Reset(Java_TabStoragePackager_create(env));
 }
 
 bool TabStoragePackagerAndroid::IsOffTheRecord(
@@ -236,7 +235,9 @@ TabStoragePackagerAndroid::PackageTabStripCollectionData(
       mapping);
 }
 
-int64_t TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
+// The caller is responsible for managing the lifecycle of the returned
+// UnmappedTabStripCollectionStorageData.
+static int64_t JNI_TabStoragePackager_ConsolidateTabStripCollectionData(
     JNIEnv* env,
     std::string window_tag,
     int32_t j_tab_model_type,
