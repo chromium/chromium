@@ -84,12 +84,6 @@ export interface ReadAnythingToolbarElement {
     presentationMenu: PresentationMenuElement,
   };
 }
-interface MenuButton {
-  id: string;
-  icon: string;
-  ariaLabel: string;
-  openMenu: (target: HTMLElement) => void;
-}
 
 const ReadAnythingToolbarElementBase =
     HelpBubbleMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
@@ -126,7 +120,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       linksEnabled: {type: Boolean},
       imagesEnabled: {type: Boolean},
       areFontsLoaded_: {type: Boolean},
-      textStyleOptions_: {type: Array},
       hideSpinner_: {type: Boolean},
       pageLanguage: {type: String},
       presentationState: {type: Number},
@@ -180,8 +173,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor isAiPlaybackActive: boolean = false;
   protected accessor hideSpinner_: boolean = true;
   protected accessor isAiPlaybackUiEnabled_: boolean = false;
-  // Buttons on the toolbar that open a menu of options.
-  protected accessor textStyleOptions_: MenuButton[] = [];
   protected accessor areFontsLoaded_: boolean = false;
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
@@ -191,8 +182,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private constructorTime_: number = 0;
   private currentFocusId_: string = '';
   private toolbarContainerBlurCallback_: () => void = () => {};
-  // The previous speech active status so we can track when it changes.
-  private wasSpeechActive_: boolean = false;
   private spinnerDebouncerCallbackHandle_?: number;
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private visualBrowserProxy_: VisualBrowserProxy =
@@ -234,7 +223,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         'blur', this.toolbarContainerBlurCallback_);
 
     this.loadFontsStylesheet();
-    this.initializeMenuButtons_();
     this.isSetupComplete_ = true;
   }
 
@@ -287,21 +275,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
   }
 
-  private initializeMenuButtons_() {
-    this.textStyleOptions_ = [{
-      id: 'font-size',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'read-anything:format-size' :
-          'read-anything:font-size-old',
-      ariaLabel: loadTimeData.getString('fontSizeTitle'),
-      openMenu: (target: HTMLElement) => this.$.fontSizeMenu.open(target),
-    }];
-  }
-
-  protected getHighlightButtonLabel_(): string {
-    return loadTimeData.getString('voiceHighlightLabel');
-  }
-
   protected getFormattedSpeechRate_(): string {
     const includeSuffix = this.speechRate % 1 === 0;
     return includeSuffix ?
@@ -350,11 +323,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   protected playPauseButtonIronIcon_() {
     if (this.isSpeechActive) {
-      return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+      return this.webuiRoundedIconsEnabled_ ?
           'read-anything-20:pause-circle-filled' :
           'read-anything-20:pause-old';
     }
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+    return this.webuiRoundedIconsEnabled_ ?
         'read-anything-20:play-circle-filled' :
         'read-anything-20:play-old';
   }
@@ -369,12 +342,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.fire(ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
-  protected onTextStyleMenuButtonClick_(e: Event) {
-    const currentTarget = e.currentTarget as HTMLElement;
-    const index = Number.parseInt(currentTarget.dataset['index']!);
-    const menu = this.textStyleOptions_[index];
-    assert(menu);
-    menu.openMenu(currentTarget);
+  protected onFontSizeMenuButtonClick_(e: Event) {
+    this.$.fontSizeMenu.open(e.currentTarget as HTMLElement);
   }
 
   protected onShowRateMenuClick_(event: MouseEvent) {
@@ -535,10 +504,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       // we should focus the rate menu.
       const tagToFocus = this.isReadAloudPlayable ? '#play-pause' : '#rate';
       this.$.toolbarContainer.querySelector<HTMLElement>(tagToFocus)?.focus();
-    }
-
-    if (this.isSpeechActive !== this.wasSpeechActive_) {
-      this.wasSpeechActive_ = this.isSpeechActive;
     }
   }
 

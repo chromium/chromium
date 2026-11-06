@@ -69,14 +69,14 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         @click="${this.onAiPlaybackClick_}">
     </cr-icon-button>
   ` : ''}
-
-  ${this.textStyleOptions_.map((item, index) => html`
-    <cr-icon-button class="toolbar-button text-style-button" id="${item.id}"
-        tabindex="-1" data-index="${index}" aria-label="${item.ariaLabel}"
-        title="${item.ariaLabel}" aria-haspopup="menu" iron-icon="${item.icon}"
-        @click="${this.onTextStyleMenuButtonClick_}">
-    </cr-icon-button>
-  `)}
+  <cr-icon-button class="toolbar-button text-style-button" id="font-size"
+      tabindex="-1" aria-label="$i18n{fontSizeTitle}"
+      title="$i18n{fontSizeTitle}" aria-haspopup="menu"
+      iron-icon="${this.webuiRoundedIconsEnabled_ ?
+          'read-anything:format-size' :
+          'read-anything:font-size-old'}"
+      @click="${this.onFontSizeMenuButtonClick_}">
+  </cr-icon-button>
   <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{settingsLabel}"
       class="toolbar-button" title="$i18n{settingsLabel}" aria-haspopup="menu"
       iron-icon="${this.webuiRoundedIconsEnabled_ ?
