@@ -37,7 +37,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   }
   bool UsesAcceleratedRaster() const final { return true; }
 
-  ~ExternalCanvasResource() override;
+  ~ExternalCanvasResource() override = default;
 
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;
@@ -49,21 +49,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   // SyncToken to wait on at destruction.
   gpu::SyncToken destruction_sync_token_;
 };
-
-ExternalCanvasResource::~ExternalCanvasResource() {
-  if (is_cross_thread()) {
-    // Destroyed on wrong thread. This can happen when the thread of origin was
-    // torn down, in which case the GPU context owning any underlying resources
-    // no longer exists and it is not possible to do cleanup of any GPU
-    // context-associated state.
-    return;
-  }
-
-  if (release_callback_) {
-    std::move(release_callback_)
-        .Run(destruction_sync_token_, resource_is_lost_);
-  }
-}
 
 void ExternalCanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
@@ -115,8 +100,9 @@ ExportedCanvasResource::ExportedCanvasResource(
       resource);
   release_callback_ = base::BindOnce(
       [](scoped_refptr<ExternalCanvasResource> resource, bool is_lost) {
-        if (is_lost) {
-          resource->NotifyResourceLost();
+        if (resource->release_callback_) {
+          std::move(resource->release_callback_)
+              .Run(resource->destruction_sync_token_, is_lost);
         }
       },
       resource);
