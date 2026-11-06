@@ -21,3 +21,4 @@ data/**
 -data/layout_tests/**
 -data/plugin/**
 -data/fuzzer_*/**
+data/fuzzer_corpus/clear_site_data/*

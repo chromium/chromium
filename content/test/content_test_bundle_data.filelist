@@ -8202,6 +8202,15 @@ data/frame_tree/scrollable_page_with_two_frames.html
 data/frame_tree/top.html
 data/frame_with_load_event.html
 data/fullscreen_frame.html
+data/fuzzer_corpus/clear_site_data/all.txt
+data/fuzzer_corpus/clear_site_data/cache.txt
+data/fuzzer_corpus/clear_site_data/clientHints.txt
+data/fuzzer_corpus/clear_site_data/cookies.txt
+data/fuzzer_corpus/clear_site_data/extra.txt
+data/fuzzer_corpus/clear_site_data/storage-bucket.txt
+data/fuzzer_corpus/clear_site_data/storage.txt
+data/fuzzer_corpus/clear_site_data/string.txt
+data/fuzzer_corpus/clear_site_data/unknown.txt
 data/gamepad-permissions-policy-none.html
 data/gamepad-permissions-policy-none.html.mock-http-headers
 data/generic_sensor/ambient_light_sensor_cross_origin_iframe_test.html
