@@ -6,7 +6,9 @@
 
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,9 +17,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
-#include "components/skills/features.h"
 #include "components/skills/proto/skill.pb.h"
-#include "components/skills/public/skills_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -68,7 +68,10 @@ SkillsUpdateObserver* SkillsUpdateObserver::From(tabs::TabInterface* tab) {
 
 void SkillsUpdateObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  if (!glic::GetGlicProviderSpec(profile).SupportsFeature(
+          glic::GlicFeature::kSkills)) {
     return;
   }
 

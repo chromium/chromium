@@ -15,6 +15,8 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
+#include "chrome/browser/skills/skills_update_observer.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -29,6 +31,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/skills/features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -99,6 +102,11 @@ IN_PROC_BROWSER_TEST_F(SkillsGeicBrowserTest, SkillsDisabled) {
 
   EXPECT_FALSE(SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
   EXPECT_EQ(SkillsServiceFactory::GetForProfile(profile), nullptr);
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  ASSERT_NE(tab, nullptr);
+  EXPECT_EQ(SkillsUiTabControllerInterface::From(tab), nullptr);
+  EXPECT_EQ(SkillsUpdateObserver::From(tab), nullptr);
 
   actions::ActionItem* skills_and_extensions_action =
       actions::ActionManager::Get().FindAction(

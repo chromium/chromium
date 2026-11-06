@@ -12,8 +12,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/glic_api_metrics.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_dialog_launcher.h"
@@ -320,7 +322,8 @@ GlicSkillsClientSession::GlicSkillsClientSession(
     : manager_(*manager),
       receiver_(this, std::move(receiver)),
       client_(std::move(client)) {
-  if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+  if (GetGlicProviderSpec(manager_->profile())
+          .SupportsFeature(GlicFeature::kSkills)) {
     skills_service_ =
         skills::SkillsServiceFactory::GetForProfile(manager_->profile());
     if (skills_service_) {

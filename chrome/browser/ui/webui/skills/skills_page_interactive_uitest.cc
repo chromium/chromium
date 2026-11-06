@@ -10,8 +10,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -97,7 +99,8 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
     identity_test_env_adaptor_->identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
 
-    if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+    if (glic::GetGlicProviderSpec(browser()->GetProfile())
+            .SupportsFeature(glic::GlicFeature::kSkills)) {
       skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
           browser()->GetProfile(),
           base::BindRepeating(&SkillsPageInteractiveUITest::CreateSkillsService,

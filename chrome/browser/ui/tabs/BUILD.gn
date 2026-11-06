@@ -740,7 +740,6 @@ if (!is_android) {
       "//components/sessions",
       "//components/sessions:session_id",
       "//components/site_engagement/content",
-      "//components/skills:features",
       "//components/sync_sessions",
       "//components/tab_groups",
       "//components/tabs:impl",

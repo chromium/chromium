@@ -214,7 +214,6 @@
 #include "components/search/search.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/skills/features.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -243,7 +242,9 @@
 #include "chrome/browser/glic/navigation_capture/glic_marketing_page_tab_helper.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_impl.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
@@ -750,7 +751,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<actor::ui::ActorUiTabController>(
               tab, tab, actor::ActorKeyedService::Get(profile));
     }
-    if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+    if (glic::GetGlicProviderSpec(profile).SupportsFeature(
+            glic::GlicFeature::kSkills)) {
       skills_ui_tab_controller_ =
           GetUserDataFactory().CreateInstance<skills::SkillsUiTabController>(
               tab, tab);
@@ -1099,7 +1101,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+  if (glic::GetGlicProviderSpec(profile).SupportsFeature(
+          glic::GlicFeature::kSkills)) {
     skills_update_observer_ =
         std::make_unique<skills::SkillsUpdateObserver>(tab);
   }

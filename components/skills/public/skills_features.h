@@ -10,8 +10,14 @@ class PrefService;
 namespace skills {
 
 // Returns true if the Skills in Chrome feature is enabled by both the
-// base::Feature flag and the user-visible toggle preference.
+// `features::kSkillsEnabled` flag and the user-visible toggle preference.
 // Safe to call with a null `pref_service` (returns false).
+//
+// NOTE: Because this lives in //components, it does NOT check Glic enablement
+// or whether the profile's Glic provider supports `GlicFeature::kSkills` (e.g.
+// Gemini Enterprise does not). Callers in //chrome/browser should aim to use
+// `SkillsServiceFactory::IsSkillsEnabledForProfile()` or check
+// `GlicProviderSpec::SupportsFeature(GlicFeature::kSkills)` directly.
 bool IsSkillsEnabled(const PrefService* pref_service);
 
 }  // namespace skills
