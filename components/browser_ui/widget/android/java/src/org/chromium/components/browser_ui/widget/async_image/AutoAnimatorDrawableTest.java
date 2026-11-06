@@ -14,9 +14,12 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Animatable2;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +32,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.components.browser_ui.widget.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,5 +180,27 @@ public class AutoAnimatorDrawableTest {
                 };
         mImageView.setForegroundDrawableCompat(callbackCheckingDrawable);
         assertEquals(mImageView, callbackCheckingDrawable.getCallback());
+    }
+
+    @Test
+    public void testAsyncImageViewWaitingDrawableRepeatsInfinitelyAndStopsWhenHidden() {
+        AnimatedVectorDrawable avd =
+                (AnimatedVectorDrawable)
+                        AppCompatResources.getDrawable(
+                                mParent.getContext(), R.drawable.async_image_view_waiting);
+        assertNotNull(avd);
+        Drawable wrapped = AutoAnimatorDrawable.wrap(avd);
+        assertNotNull(wrapped);
+
+        mParent.addView(mImageView);
+        mImageView.setForegroundDrawableCompat(wrapped);
+        avd.draw(new Canvas());
+        assertTrue(avd.isVisible());
+        assertTrue(avd.isRunning());
+
+        mImageView.onWindowVisibilityChanged(View.GONE);
+        assertFalse(avd.isVisible());
+        assertFalse(avd.isRunning());
+        ShadowLooper.idleMainLooper();
     }
 }

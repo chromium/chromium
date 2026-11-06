@@ -5,28 +5,25 @@
 package org.chromium.components.browser_ui.widget.async_image;
 
 import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableWrapper;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.graphics.drawable.ScaleDrawable;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.appcompat.graphics.drawable.DrawableWrapperCompat;
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
- * A helper {@link Drawable} that wraps another {@link Drawable} and starts/stops any
- * {@link Animatable} {@link Drawable}s in the {@link Drawable} hierarchy when this {@link Drawable}
- * is shown or hidden.
+ * A helper {@link Drawable} that wraps another {@link Drawable} and starts/stops any {@link
+ * Animatable} {@link Drawable}s in the {@link Drawable} hierarchy when this {@link Drawable} is
+ * shown or hidden.
  */
 @NullMarked
 public class AutoAnimatorDrawable extends DrawableWrapperCompat {
@@ -49,7 +46,6 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
 
     private AutoAnimatorDrawable(Drawable drawable) {
         super(drawable);
-        AutoAnimatorDrawable.attachRestartListeners(this);
     }
 
     // DrawableWrapperCompat implementation.
@@ -88,24 +84,12 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
         return found.get();
     }
 
-    private static void attachRestartListeners(@Nullable Drawable drawable) {
-        AutoAnimatorDrawable.animatedDrawableHelper(
-                drawable,
-                animatable -> {
-                    if (animatable instanceof Animatable2Compat compat) {
-                        compat.registerAnimationCallback(LazyHolderCompat.INSTANCE);
-                    } else if (animatable instanceof Animatable2 animatable2) {
-                        animatable2.registerAnimationCallback(LazyHolder.INSTANCE);
-                    }
-                });
-    }
-
     private static void animatedDrawableHelper(
-            @Nullable Drawable drawable, org.chromium.base.Callback<Animatable> consumer) {
+            @Nullable Drawable drawable, Consumer<Animatable> consumer) {
         if (drawable == null) return;
 
         if (drawable instanceof Animatable animatable) {
-            consumer.onResult(animatable);
+            consumer.accept(animatable);
 
             // Assume Animatable drawables can handle animating their own internals/sub drawables.
             return;
@@ -138,36 +122,6 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
         } else if (drawable instanceof ScaleDrawable scaleDrawable) {
             // Support legacy versions of ScaleDrawable.
             AutoAnimatorDrawable.animatedDrawableHelper(scaleDrawable.getDrawable(), consumer);
-        }
-    }
-
-    private static final class LazyHolder {
-        private static final AutoRestarter INSTANCE = new AutoRestarter();
-    }
-
-    private static final class LazyHolderCompat {
-        private static final AutoRestarterCompat INSTANCE = new AutoRestarterCompat();
-    }
-
-    private static final class AutoRestarterCompat extends Animatable2Compat.AnimationCallback {
-        private final Handler mHandler = new Handler(Looper.getMainLooper());
-
-        // Animatable2Compat.AnimationCallback implementation.
-        @Override
-        public void onAnimationEnd(Drawable drawable) {
-            if (!(drawable instanceof Animatable)) return;
-            mHandler.post(
-                    () -> {
-                        if (drawable.isVisible()) ((Animatable) drawable).start();
-                    });
-        }
-    }
-
-    private static final class AutoRestarter extends Animatable2.AnimationCallback {
-        // Animatable2.AnimationCallback implementation.
-        @Override
-        public void onAnimationEnd(Drawable drawable) {
-            LazyHolderCompat.INSTANCE.onAnimationEnd(drawable);
         }
     }
 }

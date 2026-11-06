@@ -11,70 +11,88 @@ found in the LICENSE file.
 
     <target android:name="circle">
         <aapt:attr name="android:animation">
-            <set android:ordering="sequentially">
-                <objectAnimator
-                    android:startOffset="0"
-                    android:duration="450"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"
+            <objectAnimator
+                android:duration="1500"
+                android:interpolator="@android:anim/linear_interpolator"
+                android:repeatCount="infinite">
+                <propertyValuesHolder
                     android:propertyName="fillAlpha"
-                    android:valueFrom="1"
-                    android:valueTo="0.5"
-                    android:valueType="floatType"/>
-                <objectAnimator
-                    android:startOffset="0"
-                    android:duration="833"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"
-                    android:propertyName="fillAlpha"
-                    android:valueFrom="0.5"
-                    android:valueTo="1"
-                    android:valueType="floatType"/>
-            </set>
+                    android:valueType="floatType">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="1"/>
+                    <keyframe
+                        android:fraction="0.3"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:value="0.5"/>
+                    <keyframe
+                        android:fraction="0.85533333"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:value="1"/>
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1"/>
+                </propertyValuesHolder>
+            </objectAnimator>
         </aapt:attr>
     </target>
 
     <target android:name="square">
         <aapt:attr name="android:animation">
-            <set android:ordering="sequentially">
-                <objectAnimator
-                    android:startOffset="83"
-                    android:duration="767"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"
+            <objectAnimator
+                android:duration="1500"
+                android:interpolator="@android:anim/linear_interpolator"
+                android:repeatCount="infinite">
+                <propertyValuesHolder
                     android:propertyName="fillAlpha"
-                    android:valueFrom="1"
-                    android:valueTo="0.5"
-                    android:valueType="floatType"/>
-                <objectAnimator
-                    android:duration="517"
-                    android:startOffset="0"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"
-                    android:propertyName="fillAlpha"
-                    android:valueFrom="0.5"
-                    android:valueTo="1"
-                    android:valueType="floatType"/>
-            </set>
+                    android:valueType="floatType">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="1"/>
+                    <keyframe
+                        android:fraction="0.05533333"
+                        android:value="1"/>
+                    <keyframe
+                        android:fraction="0.56666666"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:value="0.5"/>
+                    <keyframe
+                        android:fraction="0.91133333"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:value="1"/>
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1"/>
+                </propertyValuesHolder>
+            </objectAnimator>
         </aapt:attr>
     </target>
 
     <target android:name="arc">
         <aapt:attr name="android:animation">
-            <set android:ordering="sequentially">
-                <objectAnimator
-                    android:startOffset="150"
-                    android:duration="417"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"
+            <objectAnimator
+                android:duration="1500"
+                android:interpolator="@android:anim/linear_interpolator"
+                android:repeatCount="infinite">
+                <propertyValuesHolder
                     android:propertyName="fillAlpha"
-                    android:valueFrom="0"
-                    android:valueTo="0.3"
-                    android:valueType="floatType"/>
-                <objectAnimator
-                    android:startOffset="0"
-                    android:duration="933"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"
-                    android:propertyName="fillAlpha"
-                    android:valueFrom="0.3"
-                    android:valueTo="0"
-                    android:valueType="floatType"/>
-            </set>
+                    android:valueType="floatType">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0"/>
+                    <keyframe
+                        android:fraction="0.1"
+                        android:value="0"/>
+                    <keyframe
+                        android:fraction="0.378"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:value="0.3"/>
+                    <keyframe
+                        android:fraction="1"
+                        android:interpolator="@android:interpolator/fast_out_slow_in"
+                        android:value="0"/>
+                </propertyValuesHolder>
+            </objectAnimator>
         </aapt:attr>
     </target>
 
