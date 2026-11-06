@@ -711,8 +711,8 @@ proto-plus==1.28.3 ; python_full_version < '3.12' \
     #   google-cloud-kms
     #   google-cloud-pubsub
     #   google-cloud-secret-manager
-protobuf==7.36.0 ; python_full_version < '3.12' \
-    --hash=sha256:53374d53fc29a67f7dbbf0ade47d7526a0f0137bf0f9c90e48d8a60790ef748c
+protobuf==7.36.2 ; python_full_version < '3.12' \
+    --hash=sha256:bdb3a345d48db958e6ce1f18e508beb0cc981d64f24088427549c866cd039f1e
     # via
     #   google-api-core
     #   google-cloud-bigquery-storage

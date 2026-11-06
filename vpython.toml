@@ -6,7 +6,7 @@
 
 requires-python = '>=3.11,<3.12'
 dependencies = [
-  'protobuf==7.36.0',
+  'protobuf==7.36.2',
   'six==1.17.0',
   "pytype==2024.1.24; sys_platform == 'linux' and platform_machine == 'x86_64'",
   "importlab==0.8; sys_platform == 'linux' and platform_machine == 'x86_64'",
