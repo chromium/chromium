@@ -430,8 +430,8 @@ class BaseRenderingContext2DSharedImageTest : public testing::Test {
     return context;
   }
 
-  const gpu::SyncToken& GetSyncToken(const ExportedCanvasResource* resource) {
-    return resource->GetResourceForTesting()->sync_token();
+  gpu::SyncToken GetSyncToken(const ExportedCanvasResource* resource) {
+    return resource->GetSyncTokenForTesting();
   }
 
   void EnsureResourceRecycled(

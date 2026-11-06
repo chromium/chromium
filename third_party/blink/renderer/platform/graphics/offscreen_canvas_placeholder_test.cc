@@ -160,46 +160,6 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameCleared) {
   Mock::VerifyAndClearExpectations(client());
 }
 
-TEST_F(OffscreenCanvasPlaceholderTest, OldFrameClearedWithExtraRef) {
-  // This test verifies that OffscreenCanvasPlaceholder clears
-  // the previous frame when it receives a new one regardless of whether there
-  // is another ref on that previous frame.
-  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
-  CreateClient();
-
-  DrawSomething();
-  ExportedCanvasResource* frame1_raw_ptr = DispatchOneFrame();
-
-  EXPECT_CALL(*(client()), MainThreadReceivedImage()).Times(1);
-  // Run task that propagates the frame to the placeholder canvas.
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
-  platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
-  scoped_refptr<CanvasResource> extra_ref =
-      placeholder()->OffscreenCanvasFrame()->GetResourceForTesting();
-  Mock::VerifyAndClearExpectations(client());
-
-  EXPECT_CALL(*(client()), MainThreadReceivedImage()).Times(0);
-  DrawSomething();
-  ExportedCanvasResource* frame2_raw_ptr = DispatchOneFrame();
-  Mock::VerifyAndClearExpectations(client());
-
-  EXPECT_CALL(*(client()), MainThreadReceivedImage()).Times(1);
-  // Propagate second frame to the placeholder. First frame will be cleared.
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
-  platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame2_raw_ptr);
-  Mock::VerifyAndClearExpectations(client());
-
-  EXPECT_CALL(*(client()), MainThreadReceivedImage()).Times(0);
-  extra_ref = nullptr;
-  Mock::VerifyAndClearExpectations(client());
-
-  EXPECT_CALL(*(client()), MainThreadReceivedImage()).Times(0);
-  platform->RunUntilIdle();
-  Mock::VerifyAndClearExpectations(client());
-}
-
 TEST_F(OffscreenCanvasPlaceholderTest, DeferredAnimationStateIsApplied) {
   // Test that changes to the animation state are deferred until the resource is
   // provided to the placeholder.

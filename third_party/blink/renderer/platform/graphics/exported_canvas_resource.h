@@ -50,10 +50,11 @@ class PLATFORM_EXPORT ExportedCanvasResource
   void EndDisplayCompositorAccess(gpu::SyncToken export_result, bool is_lost);
   viz::TransferableResource PrepareTransferableResource();
 
-  CanvasResource* GetResourceForTesting() const { return resource_.get(); }
   scoped_refptr<gpu::ClientSharedImage> GetSharedImageForTesting() {
-    return GetResourceForTesting()->GetSharedImage();
+    return shared_image_;
   }
+
+  gpu::SyncToken GetSyncTokenForTesting() const { return sync_token_; }
 
  private:
   bool is_cross_thread() const {
