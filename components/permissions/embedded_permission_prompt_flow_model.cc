@@ -14,6 +14,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
@@ -98,7 +99,7 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
     const PermissionRequest* request) const {
   ContentSettingsType type = request->GetContentSettingsType();
   auto* map = PermissionsClient::Get()->GetSettingsMap(
-      web_contents()->GetBrowserContext());
+      content::GetUserBrowserContext(*web_contents()));
   content_settings::SettingInfo info;
   PermissionSetting setting = map->GetPermissionSetting(
       request->requesting_origin(), request->embedding_origin(), type, &info);
@@ -262,7 +263,7 @@ void EmbeddedPermissionPromptFlowModel::RecordPermissionActionUKM(
       PermissionUtil::GetUmaValueForRequests(delegate_->Requests()), action,
       GetElementAnchoredBubbleVariant(prompt_variant()),
       prompt_screen_counter_for_metrics_, delegate_->GetRequestingOrigin(),
-      delegate_->GetAssociatedWebContents()->GetBrowserContext());
+      content::GetUserBrowserContext(*delegate_->GetAssociatedWebContents()));
 
   ++prompt_screen_counter_for_metrics_;
 }

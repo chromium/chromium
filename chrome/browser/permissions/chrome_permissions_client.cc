@@ -83,6 +83,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
@@ -244,7 +245,7 @@ bool ShouldShowInfobarOnPromptResolved(
     return false;
   }
   content::PermissionController* permission_controller =
-      web_contents->GetBrowserContext()->GetPermissionController();
+      content::GetUserBrowserContext(*web_contents)->GetPermissionController();
   if (!permission_controller) {
     return false;
   }
@@ -467,8 +468,8 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     ContentSetting initial_permission_status,
     base::OnceCallback<void()> hats_shown_callback,
     PromptOptions prompt_options) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(
+      content::GetUserBrowserContext(*web_contents));
   std::optional<GURL> recorded_gurl =
       profile->GetPrefs()->GetBoolean(
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)
@@ -529,8 +530,8 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
 permissions::PermissionIgnoredReason
 ChromePermissionsClient::DetermineIgnoreReason(
     content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(
+      content::GetUserBrowserContext(*web_contents));
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   if (browser) {
@@ -577,8 +578,8 @@ void ChromePermissionsClient::OnPromptResolved(
   const GURL& origin = request->requesting_origin();
   PermissionRequestGestureType gesture_type = request->GetGestureType();
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(
+      content::GetUserBrowserContext(*web_contents));
   PermissionActionsHistoryFactory::GetForProfile(profile)->RecordAction(
       action, request_type, prompt_disposition);
 
@@ -616,7 +617,8 @@ void ChromePermissionsClient::OnPromptResolved(
       (request->request_type() == permissions::RequestType::kNotifications ||
        request->request_type() == permissions::RequestType::kGeolocation)) {
     content::PermissionController* permission_controller =
-        web_contents->GetBrowserContext()->GetPermissionController();
+        content::GetUserBrowserContext(*web_contents)
+            ->GetPermissionController();
     if (permission_controller) {
       permissions::PermissionUmaUtil::
           RecordOnPermissionStatusChangedEventSubscribed(
@@ -1100,8 +1102,8 @@ bool ChromePermissionsClient::IsPermissionBlockedByDevicePolicy(
     return true;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(
+      content::GetUserBrowserContext(*web_contents));
   if (type == ContentSettingsType::MEDIASTREAM_MIC) {
     return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
                            prefs::kAudioCaptureAllowed,
@@ -1131,8 +1133,8 @@ bool ChromePermissionsClient::IsPermissionAllowedByDevicePolicy(
     return true;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(
+      content::GetUserBrowserContext(*web_contents));
   if (type == ContentSettingsType::MEDIASTREAM_MIC) {
     return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
                            prefs::kAudioCaptureAllowed,

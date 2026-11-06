@@ -20,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -88,7 +89,7 @@ void MediaStreamDevicesController::RequestPermissions(
   std::vector<blink::mojom::PermissionDescriptorPtr> permission_types;
 
   content::PermissionController* permission_controller =
-      web_contents->GetBrowserContext()->GetPermissionController();
+      content::GetUserBrowserContext(*web_contents)->GetPermissionController();
 
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;
@@ -184,13 +185,11 @@ void MediaStreamDevicesController::RequestPermissions(
   // `AUDIO_CAPTURE` and `VIDEO_CAPTURE`.
   // `render_frame_host->GetMainFrame()->GetLastCommittedOrigin()` will be used
   // instead.
-  rfh->GetBrowserContext()
-      ->GetPermissionController()
-      ->RequestPermissionsFromCurrentDocument(
-          rfh, permission_request_description,
-          base::BindOnce(
-              &MediaStreamDevicesController::PromptAnsweredGroupedRequest,
-              std::move(controller)));
+  permission_controller->RequestPermissionsFromCurrentDocument(
+      rfh, permission_request_description,
+      base::BindOnce(
+          &MediaStreamDevicesController::PromptAnsweredGroupedRequest,
+          std::move(controller)));
 }
 
 MediaStreamDevicesController::~MediaStreamDevicesController() {
@@ -251,7 +250,8 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
   if (!audio_allowed && !video_allowed)
     return nullptr;
 
-  content::BrowserContext* browser_context = web_contents_->GetBrowserContext();
+  content::BrowserContext* browser_context =
+      content::GetUserBrowserContext(*web_contents_);
 
   // TODO(crbug.com/40216442): Generalize to multiple streams.
   stream_devices_set->stream_devices.emplace_back(
@@ -478,7 +478,7 @@ bool MediaStreamDevicesController::PermissionIsBlockedForReason(
   // TODO(raymes): This function wouldn't be needed if
   // PermissionManager::RequestPermissions returned a denial reason.
   content::PermissionResult result =
-      web_contents_->GetBrowserContext()
+      content::GetUserBrowserContext(*web_contents_)
           ->GetPermissionController()
           ->GetPermissionResultForCurrentDocument(
               content::PermissionDescriptorUtil::

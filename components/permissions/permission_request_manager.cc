@@ -58,6 +58,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -309,7 +310,8 @@ void PermissionRequestManager::AddRequest(
 
   const std::optional<PermissionAction> should_auto_approve_request =
       PermissionsClient::Get()->GetAutoApprovalStatus(
-          web_contents()->GetBrowserContext(), request->requesting_origin());
+          content::GetUserBrowserContext(*web_contents()),
+          request->requesting_origin());
 
   if (should_auto_approve_request) {
     PromptOptions prompt_options =
@@ -744,8 +746,8 @@ void PermissionRequestManager::Accept(const PromptOptions& prompt_options) {
     if (content_settings_type.has_value()) {
       PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
           request->requesting_origin(), content_settings_type.value(),
-          PermissionSourceUI::PROMPT, web_contents()->GetBrowserContext(),
-          base::Time::Now());
+          PermissionSourceUI::PROMPT,
+          content::GetUserBrowserContext(*web_contents()), base::Time::Now());
     }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }
@@ -1103,7 +1105,7 @@ PermissionRequestManager::PermissionRequestManager(
       auto_response_for_test_(NONE),
       permission_ui_selectors_(
           PermissionsClient::Get()->CreatePermissionUiSelectors(
-              web_contents->GetBrowserContext())) {
+              content::GetUserBrowserContext(*web_contents))) {
   // Only register TabInterface observers on desktop to support Split View.
   AdoptTabInterfaceIfNeeded(GetTabInterface(web_contents));
   if (!tab_insert_subscription_) {
@@ -1473,7 +1475,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
 #endif
 
   content::BrowserContext* browser_context =
-      web_contents()->GetBrowserContext();
+      content::GetUserBrowserContext(*web_contents());
 
   if (ShouldRecordUmaForCurrentPrompt()) {
     PermissionUmaUtil::PermissionPromptResolved(
@@ -1833,7 +1835,7 @@ void PermissionRequestManager::StorePermissionActionForUMA(
   if (content_settings_type.has_value()) {
     PermissionsClient::Get()
         ->GetOriginKeyedPermissionActionService(
-            web_contents()->GetBrowserContext())
+            content::GetUserBrowserContext(*web_contents()))
         ->RecordAction(PermissionUtil::GetLastCommittedOriginAsURL(
                            web_contents()->GetPrimaryMainFrame()),
                        content_settings_type.value(), permission_action);
@@ -2043,7 +2045,7 @@ void PermissionRequestManager::SetCurrentRequestsInitialStatuses() {
   }
 
   auto* map = PermissionsClient::Get()->GetSettingsMap(
-      web_contents()->GetBrowserContext());
+      content::GetUserBrowserContext(*web_contents()));
   for (const auto& request : requests_) {
     // It's possible in tests for |map| to not be initialized yet. Also there
     // are some permission requests (like SMART_CARD_DATA) which are not for
