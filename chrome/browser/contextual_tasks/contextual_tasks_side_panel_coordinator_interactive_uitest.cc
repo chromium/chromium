@@ -2347,7 +2347,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksExtensionsInteractiveUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWebContentsId);
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSuperGButtonReadyEvent);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSidePanelContentLoadedEvent);
 
   constexpr char kExtensionSiteAccessToggle[] = "extension_site_access_toggle";
@@ -2366,14 +2365,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksExtensionsInteractiveUiTest,
       "#toolbar",
       ".top-toolbar-logo-button",
   };
-
-  StateChange super_g_button_ready;
-  super_g_button_ready.type = StateChange::Type::kExistsAndConditionTrue;
-  super_g_button_ready.where = kPathToSuperGButton;
-  super_g_button_ready.test_function =
-      "(el) => el.getBoundingClientRect().width > 0 && "
-      "el.getBoundingClientRect().height > 0";
-  super_g_button_ready.event = kSuperGButtonReadyEvent;
 
   StateChange side_panel_content_loaded;
   side_panel_content_loaded.type = StateChange::Type::kExistsAndConditionTrue;
@@ -2440,6 +2431,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksExtensionsInteractiveUiTest,
       // Wait for the Contextual Tasks side panel to show and instrument both
       // its toolbar and content WebViews.
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      WithView(kContextualTasksSidePanelWebViewElementId,
+               [](views::View* view) {
+                 view->GetWidget()->LayoutRootViewIfNecessary();
+               }),
       NameViewRelative(kContextualTasksSidePanelWebViewElementId,
                        "SidePanelToolbarWebViewName",
                        [](ContextualTasksWebView* web_view) -> views::View* {
@@ -2466,7 +2461,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksExtensionsInteractiveUiTest,
       // Click the Super G button in the side panel toolbar to open Page Info,
       // then click "Extensions" to open the side panel extensions menu.
       InAnyContext(WaitForShow(kContextualTasksSuperGButtonElementId)),
-      WaitForStateChange(kSidePanelToolbarWebContentsId, super_g_button_ready),
+      WaitForElementVisible(kSidePanelToolbarWebContentsId,
+                            kPathToSuperGButton),
       ClickElement(kSidePanelToolbarWebContentsId, kPathToSuperGButton),
       WaitForShow(PageInfoMainView::kSeeExtensionsButtonElementId),
       PressButton(PageInfoMainView::kSeeExtensionsButtonElementId),
