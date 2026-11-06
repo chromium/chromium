@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -176,7 +176,10 @@ SatisfiesMiscellaneousRequirements(GeoIpCountryCode country_code,
     return std::pair{false, PersonalContextNonEligibilityReason::kNotGeoIpUS};
   }
 
-  if (locale != "en-US") {
+  static constexpr auto kSupportedLocales =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"en", "en-AU", "en-CA", "en-GB", "en-IN", "en-UK", "en-US"});
+  if (!kSupportedLocales.contains(locale)) {
     MaybeOutputReason(debug_message, "Unsupported locale.");
     return std::pair{false,
                      PersonalContextNonEligibilityReason::kNotLocaleEnUS};

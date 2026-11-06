@@ -387,13 +387,24 @@ INSTANTIATE_TEST_SUITE_P(
                         PersonalContextEligibilityState::kDisabledNotEligible),
         std::make_tuple(/*locale=*/"de-DE",
                         PersonalContextEligibilityState::kDisabledNotEligible),
-        std::make_tuple(/*locale=*/"en-US",
+        std::make_tuple(/*locale=*/"en-ZA",
+                        PersonalContextEligibilityState::kDisabledNotEligible),
+        std::make_tuple(/*locale=*/"en",
                         PersonalContextEligibilityState::kEligible),
-        std::make_tuple(
-            /*locale=*/"en-GB",
-            PersonalContextEligibilityState::kDisabledNotEligible)));
+        std::make_tuple(/*locale=*/"en-AU",
+                        PersonalContextEligibilityState::kEligible),
+        std::make_tuple(/*locale=*/"en-CA",
+                        PersonalContextEligibilityState::kEligible),
+        std::make_tuple(/*locale=*/"en-GB",
+                        PersonalContextEligibilityState::kEligible),
+        std::make_tuple(/*locale=*/"en-IN",
+                        PersonalContextEligibilityState::kEligible),
+        std::make_tuple(/*locale=*/"en-UK",
+                        PersonalContextEligibilityState::kEligible),
+        std::make_tuple(/*locale=*/"en-US",
+                        PersonalContextEligibilityState::kEligible)));
 
-// Verifies that the service is only enabled for the en-US locale.
+// Verifies that the service is only enabled for supported English locales.
 TEST_P(PersonalContextEligibilityServiceImplLocaleTest, CheckLocaleEnablement) {
   CreateService("us", std::get<0>(GetParam()));
   EXPECT_EQ(service().GetEligibilityState(), std::get<1>(GetParam()));
