@@ -467,8 +467,9 @@ void TestPasswordsPrivateDelegate::DisconnectCloudAuthenticator(
   std::move(success_callback).Run(false);
 }
 
-bool TestPasswordsPrivateDelegate::IsConnectedToCloudAuthenticator() {
-  return false;
+void TestPasswordsPrivateDelegate::IsConnectedToCloudAuthenticator(
+    base::OnceCallback<void(bool)> is_connected_callback) {
+  std::move(is_connected_callback).Run(false);
 }
 
 password_manager::ActionableError

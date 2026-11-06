@@ -304,7 +304,8 @@ class PasswordsPrivateDelegate
   virtual void DisconnectCloudAuthenticator(
       base::OnceCallback<void(bool)> success_callback) = 0;
 
-  virtual bool IsConnectedToCloudAuthenticator() = 0;
+  virtual void IsConnectedToCloudAuthenticator(
+      base::OnceCallback<void(bool)> is_connected_callback) = 0;
 
   // Returns the current actionable error.
   virtual password_manager::ActionableError GetActionableError() = 0;

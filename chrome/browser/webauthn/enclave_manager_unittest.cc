@@ -2714,6 +2714,23 @@ TEST_F(EnclaveManagerTest, Unenroll) {
   ASSERT_TRUE(manager_.IsRegistered());
 }
 
+TEST_F(EnclaveManagerTest, UnenrollBeforeLoad) {
+  ASSERT_TRUE(Register());
+  NoArgFuture write_future;
+  if (manager_.RunWhenStoppedForTesting(write_future.GetCallback())) {
+    EXPECT_TRUE(write_future.Wait());
+  }
+  manager_.ResetForTesting();
+  ASSERT_FALSE(manager_.IsLoaded());
+
+  BoolFuture unenroll_future;
+  manager_.Unenroll(unenroll_future.GetCallback());
+  EXPECT_TRUE(unenroll_future.Wait());
+  EXPECT_TRUE(unenroll_future.Get());
+  EXPECT_TRUE(manager_.IsLoaded());
+  EXPECT_FALSE(manager_.IsRegistered());
+}
+
 TEST_F(EnclaveManagerTest, UnenrollRace) {
   ASSERT_TRUE(Register());
 

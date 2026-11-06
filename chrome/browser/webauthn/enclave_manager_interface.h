@@ -87,7 +87,8 @@ class EnclaveManagerInterface : public KeyedService {
   // by a real `EnclaveManager`, i.e. when it's a mock.
   virtual EnclaveManager* GetEnclaveManager();
 
-  // Returns true if the current user has been registered with the enclave.
+  // Returns true if the persistent state has been loaded and the current user
+  // has been registered with the enclave.
   virtual bool IsRegistered() const = 0;
 
   // Loads the persistent state from disk if needed and invokes `callback` with

@@ -349,8 +349,8 @@ void PasswordManagerUIHandler::DisconnectCloudAuthenticator(
 
 void PasswordManagerUIHandler::IsConnectedToCloudAuthenticator(
     IsConnectedToCloudAuthenticatorCallback callback) {
-  std::move(callback).Run(
-      passwords_private_delegate_->IsConnectedToCloudAuthenticator());
+  passwords_private_delegate_->IsConnectedToCloudAuthenticator(
+      std::move(callback));
 }
 
 void PasswordManagerUIHandler::UndoRemoveSavedPasswordOrException() {

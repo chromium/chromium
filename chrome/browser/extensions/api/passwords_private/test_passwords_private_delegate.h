@@ -103,7 +103,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       base::OnceCallback<void(bool)> pin_available_callback) override;
   void DisconnectCloudAuthenticator(
       base::OnceCallback<void(bool)> success_callback) override;
-  bool IsConnectedToCloudAuthenticator() override;
+  void IsConnectedToCloudAuthenticator(
+      base::OnceCallback<void(bool)> is_connected_callback) override;
   password_manager::ActionableError GetActionableError() override;
   void DeleteAllPasswordManagerData(
       base::OnceCallback<void(bool)> success_callback) override;

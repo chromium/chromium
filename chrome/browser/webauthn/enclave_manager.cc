@@ -3573,22 +3573,29 @@ void EnclaveManager::AddICloudRecoveryKey(
 
 void EnclaveManager::Unenroll(EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LoadAndCheckIsRegistered(base::BindOnce(&EnclaveManager::DoUnenroll,
+                                          weak_ptr_factory_.GetWeakPtr(),
+                                          std::move(callback)));
+}
 
-  auto action = std::make_unique<PendingAction>();
-  action->callback = ToActionOutcomeCallback(
+void EnclaveManager::DoUnenroll(EnclaveManager::Callback callback,
+                                bool is_registered) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto action_callback = ToActionOutcomeCallback(
       base::BindOnce(&EnclaveManager::UnregisterComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       ActionForUMA::kUnenroll);
-
-  action->unregister = true;
-
-  if (!user_ || !IsRegistered()) {
+  if (!is_registered) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(action->callback), ActionOutcome::kSuccess));
+        base::BindOnce(std::move(action_callback), ActionOutcome::kSuccess));
     return;
   }
 
+  auto action = std::make_unique<PendingAction>();
+  action->unregister = true;
+  action->callback = std::move(action_callback);
   pending_actions_.emplace_back(std::move(action));
   Act();
 }

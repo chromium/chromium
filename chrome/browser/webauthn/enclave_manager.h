@@ -595,6 +595,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // reset, and can be initiated from scratch.
   void ClearRegistration();
 
+  void DoUnenroll(Callback callback, bool is_registered);
   void UnregisterComplete(Callback callback, bool success);
 
   // Store the secret that `TakeSecret` will make available.

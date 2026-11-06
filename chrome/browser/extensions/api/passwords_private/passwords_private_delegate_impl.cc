@@ -921,12 +921,14 @@ void PasswordsPrivateDelegateImpl::DisconnectCloudAuthenticator(
   }
 }
 
-bool PasswordsPrivateDelegateImpl::IsConnectedToCloudAuthenticator() {
+void PasswordsPrivateDelegateImpl::IsConnectedToCloudAuthenticator(
+    base::OnceCallback<void(bool)> is_connected_callback) {
   if (!enclave_manager_) {
-    return false;
+    std::move(is_connected_callback).Run(false);
+    return;
   }
 
-  return enclave_manager_->IsRegistered();
+  enclave_manager_->LoadAndCheckIsRegistered(std::move(is_connected_callback));
 }
 
 password_manager::ActionableError

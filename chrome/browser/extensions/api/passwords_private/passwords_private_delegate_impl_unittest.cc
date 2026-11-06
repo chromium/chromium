@@ -1643,9 +1643,12 @@ TEST_F(PasswordsPrivateDelegateImplTest, DisconnectCloudAuthenticator) {
 TEST_F(PasswordsPrivateDelegateImplTest, IsConnectedToCloudAuthenticator) {
   scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
 
-  EXPECT_CALL(*enclave_manager(), IsRegistered).Times(1);
+  EXPECT_CALL(*enclave_manager(), LoadAndCheckIsRegistered)
+      .WillOnce(base::test::RunOnceCallback<0>(true));
 
-  delegate->IsConnectedToCloudAuthenticator();
+  base::test::TestFuture<bool> future;
+  delegate->IsConnectedToCloudAuthenticator(future.GetCallback());
+  EXPECT_TRUE(future.Get());
 }
 
 class PasswordsPrivateDelegateImplFetchFamilyMembersTest

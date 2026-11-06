@@ -158,7 +158,10 @@ class MockPasswordsPrivateDelegate
               DisconnectCloudAuthenticator,
               (base::OnceCallback<void(bool)> success_callback),
               (override));
-  MOCK_METHOD(bool, IsConnectedToCloudAuthenticator, (), (override));
+  MOCK_METHOD(void,
+              IsConnectedToCloudAuthenticator,
+              (base::OnceCallback<void(bool)> is_connected_callback),
+              (override));
   MOCK_METHOD(password_manager::ActionableError,
               GetActionableError,
               (),

@@ -421,8 +421,8 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 TEST_F(PasswordManagerUIHandlerUnitTest,
        IsConnectedToCloudAuthenticator_CallsDelegate) {
   base::test::TestFuture<bool> future;
-  EXPECT_CALL(mock_delegate(), IsConnectedToCloudAuthenticator())
-      .WillOnce(Return(false));
+  EXPECT_CALL(mock_delegate(), IsConnectedToCloudAuthenticator(_))
+      .WillOnce(base::test::RunOnceCallback<0>(false));
 
   handler().IsConnectedToCloudAuthenticator(future.GetCallback());
 
