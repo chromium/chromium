@@ -20,8 +20,8 @@ interface Sanitizer {
   boolean allowElement(SanitizerElementWithAttributes element);
   boolean removeElement(SanitizerElement element);
   boolean replaceElementWithChildren(SanitizerElement element);
-  [RuntimeEnabled=HTMLProcessingInstruction] boolean allowProcessingInstruction(SanitizerPI pi);
-  [RuntimeEnabled=HTMLProcessingInstruction] boolean removeProcessingInstruction(SanitizerPI pi);
+  boolean allowProcessingInstruction(SanitizerPI pi);
+  boolean removeProcessingInstruction(SanitizerPI pi);
   boolean allowAttribute(SanitizerAttribute attribute);
   boolean removeAttribute(SanitizerAttribute attribute);
   boolean setComments(boolean allow);

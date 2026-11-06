@@ -3862,11 +3862,6 @@
       status: "stable",
     },
     {
-      // Parse processing instructions in HTML.
-      name: "HTMLProcessingInstruction",
-      status: "stable",
-    },
-    {
       // Enables the switch attribute on <input type="checkbox">.
       // https://open-ui.org/components/switch.attribute.explainer/
       name: "HTMLSwitchAttribute",

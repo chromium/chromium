@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -300,7 +299,6 @@ void HTMLViewSourceDocument::ProcessCharacterToken(const String& source,
 void HTMLViewSourceDocument::ProcessProcessingInstructionToken(
     const String& source,
     HTMLToken&) {
-  CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
   AddText(source, class_processing_instruction_);
   current_ = td_;
 }

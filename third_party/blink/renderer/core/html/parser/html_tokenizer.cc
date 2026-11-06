@@ -367,15 +367,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       } else if (cc == '/') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kEndTagOpenState);
       } else if (cc == '?') {
-        if (RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled()) {
-          HTML_ADVANCE_PAST_NON_NEWLINE_TO(kProcessingInstructionOpenState);
-        } else {
-          ParseError();
-          // The spec consumes the current character before switching
-          // to the bogus comment state, but it's easier to implement
-          // if we reconsume the current character.
-          HTML_RECONSUME_IN(kBogusCommentState);
-        }
+        HTML_ADVANCE_PAST_NON_NEWLINE_TO(kProcessingInstructionOpenState);
       } else {
         ParseError();
         BufferCharacter('<');
@@ -1111,7 +1103,6 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
 
     HTML_BEGIN_STATE(kProcessingInstructionOpenState) {
-      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
       if (cc == '_' || IsAsciiAlpha(cc)) {
         token_.BeginProcessingInstruction();
         HTML_RECONSUME_IN(kProcessingInstructionTargetState);
@@ -1128,7 +1119,6 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
 
     HTML_BEGIN_STATE(kProcessingInstructionTargetState) {
-      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
       if (cc == kEndOfFileMarker) {
         ParseError();
         return EmitEndOfFile(source);
@@ -1162,7 +1152,6 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
 
     HTML_BEGIN_STATE(kAfterProcessingInstructionTargetState) {
-      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
       if (!SkipWhitespaces(source, cc)) {
         return HaveBufferedCharacterToken();
       }
@@ -1181,7 +1170,6 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
 
     HTML_BEGIN_STATE(kProcessingInstructionDataState) {
-      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
       if (cc == '?') {
         HTML_ADVANCE_TO(kProcessingInstructionQuestionableState);
       } else if (cc == '>') {
@@ -1197,7 +1185,6 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
 
     HTML_BEGIN_STATE(kProcessingInstructionQuestionableState) {
-      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
       if (cc == '>') {
         return EmitProcessingInstruction(source);
       } else if (cc == kEndOfFileMarker) {

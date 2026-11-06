@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/html_view_source_document.h"
 
-#include <optional>
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -14,7 +12,6 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -28,13 +25,9 @@ class HTMLViewSourceDocumentTest : public SimTest {
   }
 
   void SetUp() override {
-    scoped_feature_.emplace(true);
     SimTest::SetUp();
     MainFrame().EnableViewSourceMode(true);
   }
-
- private:
-  std::optional<ScopedHTMLProcessingInstructionForTest> scoped_feature_;
 };
 
 TEST_F(HTMLViewSourceDocumentTest, ViewSource1) {
