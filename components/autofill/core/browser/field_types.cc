@@ -195,7 +195,9 @@ static constexpr auto kTypeNameToFieldType =
          {"FLIGHT_RESERVATION_DEPARTURE_DATE",
           FLIGHT_RESERVATION_DEPARTURE_DATE}});
 
-bool IsFillableFieldType(FieldType field_type) {
+namespace {
+
+consteval bool IsFillableFieldTypeImpl(FieldType field_type) {
   switch (field_type) {
     case NAME_HONORIFIC_PREFIX:
     case NAME_FIRST:
@@ -366,6 +368,21 @@ bool IsFillableFieldType(FieldType field_type) {
       return false;
   }
   NOTREACHED();
+}
+
+}  // namespace
+
+bool IsFillableFieldType(FieldType field_type) {
+  static constexpr FieldTypeSet kFillableFieldTypes = []() consteval {
+    FieldTypeSet set;
+    for (const FieldType type : FieldTypeSet::all()) {
+      if (IsFillableFieldTypeImpl(type)) {
+        set.insert(type);
+      }
+    }
+    return set;
+  }();
+  return kFillableFieldTypes.contains(field_type);
 }
 
 std::string_view FieldTypeToStringView(FieldType type) {
