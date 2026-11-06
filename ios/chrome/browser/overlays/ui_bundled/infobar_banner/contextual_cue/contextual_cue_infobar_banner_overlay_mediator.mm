@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 
 @interface ContextualCueInfobarBannerOverlayMediator ()
 // The default infobar banner config from the request.
@@ -45,13 +45,11 @@
 
 - (void)configureDependenciesWithDispatcher:(CommandDispatcher*)dispatcher {
   [super configureDependenciesWithDispatcher:dispatcher];
-  if ([dispatcher dispatchingForProtocol:@protocol(SettingsCommands)]) {
-    self.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
-  }
+  self.geminiHandler = HandlerForProtocol(dispatcher, GeminiCommands);
 }
 
 - (void)disconnect {
-  self.settingsHandler = nil;
+  self.geminiHandler = nil;
   [super disconnect];
 }
 
@@ -72,9 +70,9 @@
 #pragma mark - InfobarBannerDelegate
 
 - (void)presentInfobarModalFromBanner {
-  id<SettingsCommands> settingsHandler = self.settingsHandler;
+  id<GeminiCommands> geminiHandler = self.geminiHandler;
   [self dismissOverlay];
-  [settingsHandler showGeminiContextualCueSettings];
+  [geminiHandler showGeminiContextualCueSettingsModal];
 }
 
 @end

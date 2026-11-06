@@ -80,6 +80,12 @@ class GURL;
 // Presents `URL` in a modal web view over the Gemini surface.
 - (void)showGeminiWebModalForURL:(const GURL&)URL;
 
+// Presents the Gemini contextual cue settings modal.
+- (void)showGeminiContextualCueSettingsModal;
+
+// Dismisses the Gemini contextual cue settings modal.
+- (void)hideGeminiContextualCueSettingsModal;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_GEMINI_COMMANDS_H_

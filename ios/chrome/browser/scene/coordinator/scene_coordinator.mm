@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/coordinator/gemini_contextual_cue_settings_coordinator.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
@@ -241,6 +242,8 @@ inline LayoutStateScenePassKey PassKey() {
   // TODO(crbug.com/573186211): Remove once `IOSGeminiBottomSheetMigration`
   // completes rollout.
   GeminiWebModalCoordinator* _geminiWebModalCoordinator;
+  GeminiContextualCueSettingsCoordinator*
+      _geminiContextualCueSettingsCoordinator;
   // Coordinator for display of the Password Checkup.
   PasswordCheckupCoordinator* _passwordCheckupCoordinator;
   // Coordinator for display of Password Settings.
@@ -421,6 +424,7 @@ inline LayoutStateScenePassKey PassKey() {
   _geminiEntryFlowCoordinator = nil;
   [_geminiWebModalCoordinator stop];
   _geminiWebModalCoordinator = nil;
+  [self hideGeminiContextualCueSettingsModal];
 
   _incognitoBrowser = nullptr;
 }
@@ -2884,6 +2888,26 @@ inline LayoutStateScenePassKey PassKey() {
                              URL:URL];
   _geminiWebModalCoordinator.delegate = self;
   [_geminiWebModalCoordinator start];
+}
+
+- (void)showGeminiContextualCueSettingsModal {
+  if (_geminiContextualCueSettingsCoordinator) {
+    return;
+  }
+
+  UIViewController* baseViewController = IsUseSceneViewControllerEnabled()
+                                             ? _viewController
+                                             : self.activeViewController;
+  _geminiContextualCueSettingsCoordinator =
+      [[GeminiContextualCueSettingsCoordinator alloc]
+          initWithBaseViewController:baseViewController
+                             browser:_regularBrowser.get()];
+  [_geminiContextualCueSettingsCoordinator start];
+}
+
+- (void)hideGeminiContextualCueSettingsModal {
+  [_geminiContextualCueSettingsCoordinator stop];
+  _geminiContextualCueSettingsCoordinator = nil;
 }
 
 #pragma mark - Helper methods for Gemini entry flow

@@ -27,6 +27,8 @@
   GeminiContextualCueSettingsViewController* _viewController;
   // Navigation controller wrapping `_viewController` in a sheet.
   UINavigationController* _navigationController;
+  // Handler for Gemini commands.
+  __weak id<GeminiCommands> _geminiHandler;
 }
 
 #pragma mark - ChromeCoordinator
@@ -35,9 +37,10 @@
   [super start];
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  _geminiHandler = HandlerForProtocol(dispatcher, GeminiCommands);
   _mediator = [[GeminiContextualCueSettingsMediator alloc]
       initWithWebState:self.browser->GetWebStateList()->GetActiveWebState()
-         geminiHandler:HandlerForProtocol(dispatcher, GeminiCommands)
+         geminiHandler:_geminiHandler
        settingsHandler:HandlerForProtocol(dispatcher, SettingsCommands)];
   _mediator.delegate = self;
 
@@ -66,6 +69,7 @@
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+  _geminiHandler = nil;
 
   if (_navigationController.presentingViewController &&
       !_navigationController.beingDismissed) {
@@ -99,14 +103,14 @@
 - (void)geminiContextualCueSettingsViewControllerDidTapDone:
     (GeminiContextualCueSettingsViewController*)controller {
   CHECK_EQ(_viewController, controller);
-  [self.delegate geminiContextualCueSettingsCoordinatorDidDismiss:self];
+  [_geminiHandler hideGeminiContextualCueSettingsModal];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate geminiContextualCueSettingsCoordinatorDidDismiss:self];
+  [_geminiHandler hideGeminiContextualCueSettingsModal];
 }
 
 #pragma mark - Private
@@ -126,9 +130,13 @@
   }
 }
 
-// Notifies the coordinator delegate of dismissal and executes `completion`.
+// Hides the contextual cue settings modal and executes `completion`.
 - (void)didDismissModalWithCompletion:(ProceduralBlock)completion {
-  [self.delegate geminiContextualCueSettingsCoordinatorDidDismiss:self];
+  if (!_geminiHandler) {
+    // Coordinator was already stopped while dismissal was in progress.
+    return;
+  }
+  [_geminiHandler hideGeminiContextualCueSettingsModal];
   if (completion) {
     completion();
   }

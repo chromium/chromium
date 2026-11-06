@@ -7,14 +7,14 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator.h"
 
-@protocol SettingsCommands;
+@protocol GeminiCommands;
 
 // Mediator that configures an infobar banner for a contextual cue infobar.
 @interface ContextualCueInfobarBannerOverlayMediator
     : InfobarBannerOverlayMediator
 
-// Handler for `SettingsCommands`.
-@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
+// Handler for `GeminiCommands`.
+@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
 @end
 

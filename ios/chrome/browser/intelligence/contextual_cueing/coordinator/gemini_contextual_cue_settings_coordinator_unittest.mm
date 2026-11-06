@@ -21,19 +21,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-// Fake delegate that counts dismissal notifications from the coordinator.
-@interface FakeGeminiContextualCueSettingsCoordinatorDelegate
-    : NSObject <GeminiContextualCueSettingsCoordinatorDelegate>
-@property(nonatomic, assign) int dismissalCount;
-@end
-
-@implementation FakeGeminiContextualCueSettingsCoordinatorDelegate
-- (void)geminiContextualCueSettingsCoordinatorDidDismiss:
-    (GeminiContextualCueSettingsCoordinator*)coordinator {
-  self.dismissalCount++;
-}
-@end
-
 class GeminiContextualCueSettingsCoordinatorTest : public PlatformTest {
  protected:
   GeminiContextualCueSettingsCoordinatorTest() {
@@ -51,12 +38,9 @@ class GeminiContextualCueSettingsCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(SettingsCommands)];
 
     base_view_controller_ = OCMPartialMock([[UIViewController alloc] init]);
-    delegate_ =
-        [[FakeGeminiContextualCueSettingsCoordinatorDelegate alloc] init];
     coordinator_ = [[GeminiContextualCueSettingsCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
-    coordinator_.delegate = delegate_;
   }
 
   ~GeminiContextualCueSettingsCoordinatorTest() override {
@@ -85,26 +69,27 @@ class GeminiContextualCueSettingsCoordinatorTest : public PlatformTest {
   id gemini_handler_ = nil;
   id settings_handler_ = nil;
   id base_view_controller_ = nil;
-  FakeGeminiContextualCueSettingsCoordinatorDelegate* delegate_ = nil;
   GeminiContextualCueSettingsCoordinator* coordinator_ = nil;
 };
 
-// Tests that tapping Done notifies the coordinator delegate.
+// Tests that tapping Done dispatches `hideGeminiContextualCueSettingsModal`.
 TEST_F(GeminiContextualCueSettingsCoordinatorTest,
-       TapDoneNotifiesCoordinatorDelegate) {
+       TapDoneHidesContextualCueSettingsModal) {
   GeminiContextualCueSettingsViewController* view_controller =
       StartAndGetViewController();
   ASSERT_TRUE(view_controller);
 
+  OCMExpect([gemini_handler_ hideGeminiContextualCueSettingsModal]);
+
   [view_controller.presentationDelegate
       geminiContextualCueSettingsViewControllerDidTapDone:view_controller];
 
-  EXPECT_EQ(1, delegate_.dismissalCount);
+  EXPECT_OCMOCK_VERIFY(gemini_handler_);
   EXPECT_OCMOCK_VERIFY(base_view_controller_);
 }
 
-// Tests that selecting "Manage Gemini suggestions" via the mutator notifies the
-// delegate and dispatches `showGeminiContextualCueSettings`.
+// Tests that selecting "Manage Gemini suggestions" via the mutator hides the
+// modal and dispatches `showGeminiContextualCueSettings`.
 TEST_F(GeminiContextualCueSettingsCoordinatorTest,
        DidTapManageSuggestionsShowsGeminiSuggestionsSettings) {
   GeminiContextualCueSettingsViewController* view_controller =
@@ -112,16 +97,17 @@ TEST_F(GeminiContextualCueSettingsCoordinatorTest,
   ASSERT_TRUE(view_controller);
   ASSERT_TRUE(view_controller.mutator);
 
+  OCMExpect([gemini_handler_ hideGeminiContextualCueSettingsModal]);
   OCMExpect([settings_handler_ showGeminiContextualCueSettings]);
 
   [view_controller.mutator didTapManageSuggestions];
 
-  EXPECT_EQ(1, delegate_.dismissalCount);
+  EXPECT_OCMOCK_VERIFY(gemini_handler_);
   EXPECT_OCMOCK_VERIFY(settings_handler_);
   EXPECT_OCMOCK_VERIFY(base_view_controller_);
 }
 
-// Tests that selecting "Edit prompt" via the mutator notifies the delegate and
+// Tests that selecting "Edit prompt" via the mutator hides the modal and
 // starts the Gemini entry flow with `shouldAutoSubmit = NO`.
 TEST_F(GeminiContextualCueSettingsCoordinatorTest,
        DidTapEditPromptStartsGeminiEntryFlow) {
@@ -130,6 +116,7 @@ TEST_F(GeminiContextualCueSettingsCoordinatorTest,
   ASSERT_TRUE(view_controller);
   ASSERT_TRUE(view_controller.mutator);
 
+  OCMExpect([gemini_handler_ hideGeminiContextualCueSettingsModal]);
   OCMExpect([gemini_handler_
       startGeminiEntryFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
                                                        GeminiStartupState*
@@ -143,7 +130,6 @@ TEST_F(GeminiContextualCueSettingsCoordinatorTest,
 
   [view_controller.mutator didTapEditPrompt];
 
-  EXPECT_EQ(1, delegate_.dismissalCount);
   EXPECT_OCMOCK_VERIFY(gemini_handler_);
   EXPECT_OCMOCK_VERIFY(base_view_controller_);
 }

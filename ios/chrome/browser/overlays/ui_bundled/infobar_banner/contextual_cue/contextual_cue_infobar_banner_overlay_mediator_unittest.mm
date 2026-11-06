@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -79,7 +78,6 @@ class ContextualCueInfobarBannerOverlayMediatorTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
 
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
-    mock_settings_handler_ = OCMStrictProtocolMock(@protocol(SettingsCommands));
 
     contextual_cueing::ContextualCueInfobarConfig config{
         .title = u"Page Insights",
@@ -100,7 +98,7 @@ class ContextualCueInfobarBannerOverlayMediatorTest : public PlatformTest {
     mediator_ = [[ContextualCueInfobarBannerOverlayMediator alloc]
         initWithRequest:request_.get()];
     mediator_.consumer = consumer_;
-    mediator_.settingsHandler = mock_settings_handler_;
+    mediator_.geminiHandler = mock_gemini_handler_;
   }
 
   void TearDown() override {
@@ -110,7 +108,6 @@ class ContextualCueInfobarBannerOverlayMediatorTest : public PlatformTest {
     request_.reset();
     delegate_ = nullptr;
     infobar_.reset();
-    mock_settings_handler_ = nil;
     mock_gemini_handler_ = nil;
     web_state_.reset();
     profile_.reset();
@@ -127,7 +124,6 @@ class ContextualCueInfobarBannerOverlayMediatorTest : public PlatformTest {
   FakeInfobarBannerConsumer* consumer_ = nil;
   ContextualCueInfobarBannerOverlayMediator* mediator_ = nil;
   id mock_gemini_handler_;
-  id mock_settings_handler_;
 };
 
 // Test that the consumer is correctly set up from the contextual cue delegate.
@@ -156,12 +152,12 @@ TEST_F(ContextualCueInfobarBannerOverlayMediatorTest, ActionButtonAccepted) {
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
 
-// Test that presenting modal from banner triggers Gemini contextual cue
-// settings.
+// Tests that presenting modal from banner triggers Gemini contextual cue
+// settings modal.
 TEST_F(ContextualCueInfobarBannerOverlayMediatorTest, PresentsSettings) {
-  OCMExpect([mock_settings_handler_ showGeminiContextualCueSettings]);
+  OCMExpect([mock_gemini_handler_ showGeminiContextualCueSettingsModal]);
 
   [mediator_ presentInfobarModalFromBanner];
 
-  EXPECT_OCMOCK_VERIFY(mock_settings_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
