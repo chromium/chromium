@@ -5,6 +5,9 @@
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 
 #include <optional>
+#include <string_view>
+#include <utility>
+#include <variant>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -52,6 +55,81 @@ void ExpectMaskedAttributeValue(const EntityInstance& entity,
       << "Missing attribute " << static_cast<int>(attribute_name);
   EXPECT_EQ(attr->GetCompleteRawInfo(), expected_value);
   EXPECT_TRUE(attr->masked());
+}
+
+personal_context::proto::DateTime CreateDateTimeProto(int year,
+                                                      int month,
+                                                      int day,
+                                                      int hours = 0,
+                                                      int minutes = 0) {
+  personal_context::proto::DateTime datetime;
+  datetime.set_year(year);
+  datetime.set_month(month);
+  datetime.set_day(day);
+  datetime.set_hours(hours);
+  datetime.set_minutes(minutes);
+  return datetime;
+}
+
+personal_context::proto::SourceReference CreateGmailSource(
+    std::optional<std::string_view> subject,
+    std::optional<personal_context::proto::DateTime> timestamp,
+    std::string_view desktop_url = "https://mail.google.com/mail/#inbox/123",
+    std::string_view mobile_url =
+        "https://mail.google.com/mail/mu/mp/#cv/Inbox/123") {
+  personal_context::proto::SourceReference source;
+  personal_context::proto::GmailReference* gmail = source.mutable_gmail();
+  gmail->mutable_message_urls()->set_desktop_web_url(desktop_url);
+  gmail->mutable_message_urls()->set_mobile_web_url(mobile_url);
+  if (subject.has_value()) {
+    gmail->set_subject(*subject);
+  }
+  if (timestamp.has_value()) {
+    *gmail->mutable_timestamp() = *std::move(timestamp);
+  }
+  return source;
+}
+
+personal_context::proto::SourceReference CreatePhotosSource(
+    std::optional<personal_context::proto::DateTime> timestamp,
+    std::string_view url = "https://photos.google.com/photo/abc") {
+  personal_context::proto::SourceReference source;
+  personal_context::proto::PhotosReference* photos = source.mutable_photos();
+  photos->set_photos_url(url);
+  if (timestamp.has_value()) {
+    *photos->mutable_timestamp() = *std::move(timestamp);
+  }
+  return source;
+}
+
+personal_context::proto::Entity CreateOrderWithMultipleSources() {
+  personal_context::proto::Entity entity;
+  entity.mutable_order()->set_order_id("ORD-001");
+
+  *entity.add_source_references() =
+      CreateGmailSource("Order Confirmation", /*timestamp=*/std::nullopt);
+  *entity.add_source_references() = CreateGmailSource(
+      /*subject=*/std::nullopt, CreateDateTimeProto(2025, 10, 14, 9, 15),
+      "https://mail.google.com/mail/#inbox/124",
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/124");
+  *entity.add_source_references() =
+      CreatePhotosSource(CreateDateTimeProto(2025, 10, 15, 14, 30));
+  // Gmail source without subject or timestamp.
+  *entity.add_source_references() = CreateGmailSource(
+      /*subject=*/std::nullopt, /*timestamp=*/std::nullopt,
+      "https://mail.google.com/mail/#inbox/456",
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/456");
+  // Photos source without timestamp.
+  *entity.add_source_references() = CreatePhotosSource(
+      /*timestamp=*/std::nullopt, "https://photos.google.com/photo/def");
+  // Source with invalid URL.
+  *entity.add_source_references() =
+      CreateGmailSource("Subject", /*timestamp=*/std::nullopt,
+                        "not-a-valid-url", "not-a-valid-url");
+  // Empty source.
+  entity.add_source_references();
+
+  return entity;
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertPassport) {
@@ -217,10 +295,7 @@ TEST(AutofillAiPersonalContextConverters, ConvertFlightReservation) {
   flight.set_passenger_name("Bob Dylan");
   flight.set_departure_airport("FRA");
   flight.set_arrival_airport("JFK");
-  flight.mutable_departure_time()->set_year(2026);
-  flight.mutable_departure_time()->set_month(5);
-  flight.mutable_departure_time()->set_day(28);
-  flight.mutable_departure_time()->set_hours(12);
+  *flight.mutable_departure_time() = CreateDateTimeProto(2026, 5, 28, 12, 0);
 
   personal_context::proto::Entity entity;
   *entity.mutable_flight_reservation() = flight;
@@ -249,10 +324,7 @@ TEST(AutofillAiPersonalContextConverters, ConvertFlightReservationWithOffset) {
   flight.set_departure_airport("FRA");
   flight.set_arrival_airport("JFK");
   // 2026-05-28 12:00:00.
-  flight.mutable_departure_time()->set_year(2026);
-  flight.mutable_departure_time()->set_month(5);
-  flight.mutable_departure_time()->set_day(28);
-  flight.mutable_departure_time()->set_hours(12);
+  *flight.mutable_departure_time() = CreateDateTimeProto(2026, 5, 28, 12, 0);
   // UTC-4 (offset -14400s). Absolute time is 16:00:00 UTC.
   flight.mutable_departure_time()->mutable_utc_offset()->set_seconds(-14400);
 
@@ -401,81 +473,6 @@ TEST(AutofillAiPersonalContextConverters, ConvertKnownTravelerNumber_Unmasked) {
   EXPECT_EQ(result.type().name(), EntityTypeName::kKnownTravelerNumber);
   ExpectAttributeValue(result, kKnownTravelerNumberName, u"Charlie Brown");
   ExpectAttributeValue(result, kKnownTravelerNumberNumber, u"KTN12345");
-}
-
-personal_context::proto::DateTime CreateDateTimeProto(int year,
-                                                      int month,
-                                                      int day,
-                                                      int hours = 0,
-                                                      int minutes = 0) {
-  personal_context::proto::DateTime datetime;
-  datetime.set_year(year);
-  datetime.set_month(month);
-  datetime.set_day(day);
-  datetime.set_hours(hours);
-  datetime.set_minutes(minutes);
-  return datetime;
-}
-
-personal_context::proto::SourceReference CreateGmailSource(
-    std::optional<std::string_view> subject,
-    std::optional<personal_context::proto::DateTime> timestamp,
-    std::string_view desktop_url = "https://mail.google.com/mail/#inbox/123",
-    std::string_view mobile_url =
-        "https://mail.google.com/mail/mu/mp/#cv/Inbox/123") {
-  personal_context::proto::SourceReference source;
-  personal_context::proto::GmailReference* gmail = source.mutable_gmail();
-  gmail->mutable_message_urls()->set_desktop_web_url(desktop_url);
-  gmail->mutable_message_urls()->set_mobile_web_url(mobile_url);
-  if (subject.has_value()) {
-    gmail->set_subject(*subject);
-  }
-  if (timestamp.has_value()) {
-    *gmail->mutable_timestamp() = *std::move(timestamp);
-  }
-  return source;
-}
-
-personal_context::proto::SourceReference CreatePhotosSource(
-    std::optional<personal_context::proto::DateTime> timestamp,
-    std::string_view url = "https://photos.google.com/photo/abc") {
-  personal_context::proto::SourceReference source;
-  personal_context::proto::PhotosReference* photos = source.mutable_photos();
-  photos->set_photos_url(url);
-  if (timestamp.has_value()) {
-    *photos->mutable_timestamp() = *std::move(timestamp);
-  }
-  return source;
-}
-
-personal_context::proto::Entity CreateOrderWithMultipleSources() {
-  personal_context::proto::Entity entity;
-  entity.mutable_order()->set_order_id("ORD-001");
-
-  *entity.add_source_references() =
-      CreateGmailSource("Order Confirmation", /*timestamp=*/std::nullopt);
-  *entity.add_source_references() = CreateGmailSource(
-      /*subject=*/std::nullopt, CreateDateTimeProto(2025, 10, 14, 9, 15),
-      "https://mail.google.com/mail/#inbox/124",
-      "https://mail.google.com/mail/mu/mp/#cv/Inbox/124");
-  *entity.add_source_references() =
-      CreatePhotosSource(CreateDateTimeProto(2025, 10, 15, 14, 30));
-  // Gmail source without subject or timestamp.
-  *entity.add_source_references() = CreateGmailSource(
-      /*subject=*/std::nullopt, /*timestamp=*/std::nullopt,
-      "https://mail.google.com/mail/#inbox/456",
-      "https://mail.google.com/mail/mu/mp/#cv/Inbox/456");
-  // Photos source without timestamp.
-  *entity.add_source_references() = CreatePhotosSource(
-      /*timestamp=*/std::nullopt, "https://photos.google.com/photo/def");
-  // Source with invalid URL.
-  *entity.add_source_references() =
-      CreateGmailSource("Subject", /*timestamp=*/std::nullopt,
-                        "not-a-valid-url", "not-a-valid-url");
-  // Empty source.
-  entity.add_source_references();
-
-  return entity;
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertEntityWithGmailSource) {
