@@ -65,6 +65,7 @@ GeminiServiceImpl::~GeminiServiceImpl() = default;
 
 void GeminiServiceImpl::Shutdown() {
   identity_manager_observation_.Reset();
+  pref_change_registrar_.RemoveAll();
 }
 
 #pragma mark - Public
