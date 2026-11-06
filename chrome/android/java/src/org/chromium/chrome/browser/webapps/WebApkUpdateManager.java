@@ -329,12 +329,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             destroyFetcher();
         }
 
-        assert mInfo != null;
-        if (TextUtils.isEmpty(mInfo.manifestId())) {
-            RecordHistogram.recordBooleanHistogram(
-                    "WebApk.Update.UpdateEmptyUniqueId.NeedsUpgrade", needsUpgrade);
-        }
-
         if (!needsUpgrade) {
             if (!mStorage.didPreviousUpdateSucceed() || mStorage.shouldForceUpdate()) {
                 onFinishedUpdate(mStorage, WebApkInstallResult.SUCCESS, /* relaxUpdates= */ false);

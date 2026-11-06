@@ -427,18 +427,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Update.UpdateEmptyUniqueId.NeedsUpgrade" enum="Boolean"
-    expires_after="2025-04-27">
-  <owner>eirage@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    For WebAPK unique ID migration, record whether an update is neede (with
-    non-empty update reason). This only records for the first legacy update that
-    updates the WebAPK from an empty id.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.WebappRegistry.NumberOfOrigins" units="count"
     expires_after="2027-09-13">
   <owner>eirage@chromium.org</owner>
