@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -36,6 +38,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/functional/callback.h"
 #include "base/threading/sequence_bound.h"
+#include "base/win/windows_types.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
 #endif
 
@@ -257,6 +260,12 @@ class OmniboxEverywhereUIManager
   bool start_menu_shortcut_requested_for_testing() const {
     return start_menu_shortcut_requested_;
   }
+  // Returns whether a window is on the current virtual desktop.
+  using IsOnCurrentVirtualDesktopCallback = base::RepeatingCallback<bool(HWND)>;
+  void SetIsOnCurrentVirtualDesktopCallbackForTesting(
+      IsOnCurrentVirtualDesktopCallback callback) {
+    is_on_current_virtual_desktop_ = std::move(callback);
+  }
 #endif
 
   // For testing:
@@ -297,7 +306,9 @@ class OmniboxEverywhereUIManager
   using ModalSet = base::EnumSet<Modal, Modal::kMinValue, Modal::kMaxValue>;
 
   void EnsureContentsWrapperInitialized(Profile* profile);
-  void CreateAndInitWidget(gfx::NativeWindow context);
+  // Creates the widget. If `bounds` is not set, uses the default position.
+  void CreateAndInitWidget(gfx::NativeWindow context,
+                           std::optional<gfx::Rect> bounds);
   void ActivateAndFocus();
   void OnEphemeralModelPrefChanged();
 
@@ -426,6 +437,8 @@ class OmniboxEverywhereUIManager
 
 #if BUILDFLAG(IS_WIN)
   base::SequenceBound<OmniboxEverywhereShortcutHelperWin> shortcut_helper_;
+
+  IsOnCurrentVirtualDesktopCallback is_on_current_virtual_desktop_;
 
   // Tracks whether shortcut creation has succeeded or is in flight.
   // Reset on failure so subsequent persistent widgets can retry.

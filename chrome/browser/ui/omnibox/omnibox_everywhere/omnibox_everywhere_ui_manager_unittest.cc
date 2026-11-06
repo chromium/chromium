@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -62,11 +63,13 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -3691,5 +3694,177 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
   ui_manager->Shutdown();
 }
+
+#if BUILDFLAG(IS_WIN)
+// Fakes whether the widget is on the current virtual desktop, and records the
+// windows that were checked.
+class OmniboxEverywhereUIManagerVirtualDesktopTest
+    : public OmniboxEverywhereUIManagerTest {
+ protected:
+  std::unique_ptr<OmniboxEverywhereUIManager> CreateUIManager() {
+    auto ui_manager = OmniboxEverywhereUIManagerTest::CreateUIManager();
+    ui_manager->SetIsOnCurrentVirtualDesktopCallbackForTesting(
+        base::BindLambdaForTesting([this](HWND hwnd) {
+          queried_hwnds_.push_back(hwnd);
+          return on_current_desktop_;
+        }));
+    return ui_manager;
+  }
+
+  bool on_current_desktop_ = true;
+  std::vector<HWND> queried_hwnds_;
+};
+
+// Tests that re-invoking reuses the widget when it is on the current virtual
+// desktop.
+TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
+       ReshowReusesWidgetOnCurrentDesktop) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  // A newly created widget opens on the current desktop.
+  EXPECT_TRUE(queried_hwnds_.empty());
+
+  ui_manager->Close();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  EXPECT_EQ(widget, ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(queried_hwnds_, std::vector<HWND>{views::HWNDForWidget(widget)});
+
+  ui_manager->Shutdown();
+}
+
+// Tests that re-invoking recreates the widget at the same position, showing
+// the same `WebContents`, when it is on another virtual desktop.
+TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
+       ReshowRecreatesWidgetOnOtherDesktop) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* old_widget = ui_manager->widget();
+  ASSERT_TRUE(old_widget);
+  content::WebContents* web_contents = ui_manager->web_contents();
+  ASSERT_TRUE(web_contents);
+  gfx::Rect bounds = old_widget->GetWindowBoundsInScreen();
+  bounds.Offset(10, 10);
+  old_widget->SetBounds(bounds);
+  bounds = old_widget->GetRestoredBounds();
+
+  ui_manager->Close();
+  on_current_desktop_ = false;
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* new_widget = ui_manager->widget();
+  ASSERT_TRUE(new_widget);
+  EXPECT_NE(old_widget, new_widget);
+  EXPECT_TRUE(new_widget->IsVisible());
+  EXPECT_EQ(bounds.origin(), new_widget->GetRestoredBounds().origin());
+  EXPECT_EQ(web_contents, ui_manager->web_contents());
+  auto* web_view = views::AsViewClass<views::WebView>(
+      ui_manager->widget_delegate()->GetContentsView());
+  ASSERT_TRUE(web_view);
+  EXPECT_EQ(web_contents, web_view->web_contents());
+
+  ui_manager->Shutdown();
+}
+
+// Tests that a demoted persistent widget on another virtual desktop is
+// recreated as an active, non-demoted widget at the same position.
+TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
+       ReshowRecreatesDemotedWidgetOnOtherDesktop) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* old_widget = ui_manager->widget();
+  ASSERT_TRUE(old_widget);
+  const gfx::Point origin = old_widget->GetRestoredBounds().origin();
+  ui_manager->Demote();
+  ASSERT_TRUE(ui_manager->is_demoted());
+
+  on_current_desktop_ = false;
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* new_widget = ui_manager->widget();
+  ASSERT_TRUE(new_widget);
+  EXPECT_NE(old_widget, new_widget);
+  EXPECT_TRUE(new_widget->IsVisible());
+  EXPECT_FALSE(ui_manager->is_demoted());
+  views::test::WaitForWidgetActive(new_widget, true);
+  EXPECT_TRUE(ui_manager->IsActive());
+  EXPECT_EQ(origin, new_widget->GetRestoredBounds().origin());
+
+  ui_manager->Shutdown();
+}
+
+// Tests that a minimized persistent widget on another virtual desktop is
+// recreated restored, at its restored position.
+TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
+       ReshowRecreatesMinimizedWidgetOnOtherDesktop) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* old_widget = ui_manager->widget();
+  ASSERT_TRUE(old_widget);
+  const gfx::Point origin = old_widget->GetRestoredBounds().origin();
+  ui_manager->Minimize();
+  ASSERT_TRUE(old_widget->IsMinimized());
+
+  on_current_desktop_ = false;
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* new_widget = ui_manager->widget();
+  ASSERT_TRUE(new_widget);
+  EXPECT_NE(old_widget, new_widget);
+  EXPECT_TRUE(new_widget->IsVisible());
+  EXPECT_FALSE(new_widget->IsMinimized());
+  EXPECT_EQ(origin, new_widget->GetRestoredBounds().origin());
+
+  ui_manager->Shutdown();
+}
+
+// Tests that the widget is left alone while a modal dialog is open, since
+// recreating it would dismiss the dialog.
+TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
+       ReshowLeavesWidgetWithOpenDialog) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  ui_manager->OnFileChooserOpened();
+
+  on_current_desktop_ = false;
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  EXPECT_EQ(widget, ui_manager->widget());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kFileChooser));
+  EXPECT_TRUE(queried_hwnds_.empty());
+
+  ui_manager->OnFileChooserClosed();
+  ui_manager->Shutdown();
+}
+
+// Tests that switching profiles creates a new widget without checking the old
+// widget's virtual desktop.
+TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
+       ProfileSwitchDoesNotCheckDesktop) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  on_current_desktop_ = false;
+  TestingProfile profile_2;
+  ui_manager->ShowForProfile(&profile_2, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(queried_hwnds_.empty());
+
+  ui_manager->Shutdown();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace omnibox_everywhere
