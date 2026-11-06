@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_FEATURE_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_FEATURE_H_
 
+#include <memory>
+
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_service.h"
+#include "components/browser_apis/tab_strip/tab_strip_service_view.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -35,9 +38,11 @@ class TabStripServiceFeature {
   void AcceptExperimental(
       mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService> client);
   tabs_api::TabStripService* GetTabStripService() const;
+  tabs_api::TabStripServiceView* GetTabStripServiceView();
 
  private:
   std::unique_ptr<tabs_api::TabStripService> tab_strip_service_;
+  std::unique_ptr<tabs_api::TabStripServiceView> tab_strip_service_view_;
 
   ui::ScopedUnownedUserData<TabStripServiceFeature> scoped_unowned_user_data_;
 };

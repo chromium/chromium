@@ -28,6 +28,7 @@
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_service_impl.h"
+#include "components/browser_apis/tab_strip/tab_strip_service_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
@@ -947,4 +948,67 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, GetAllTabsForProfile) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+namespace {
+
+void ExpectContainersMatch(const tabs_api::mojom::Container& actual,
+                           const tabs_api::mojom::Container& expected) {
+  ASSERT_EQ(static_cast<bool>(actual.data), static_cast<bool>(expected.data));
+  if (actual.data) {
+    ASSERT_EQ(actual.data->which(), expected.data->which());
+    if (actual.data->is_tab()) {
+      const tabs_api::Tab& a = actual.data->get_tab();
+      const tabs_api::Tab& b = expected.data->get_tab();
+      EXPECT_EQ(a.id, b.id);
+      EXPECT_EQ(a.title, b.title);
+      EXPECT_EQ(a.url, b.url);
+      EXPECT_EQ(a.is_active, b.is_active);
+      EXPECT_EQ(a.is_selected, b.is_selected);
+      EXPECT_EQ(a.is_blocked, b.is_blocked);
+      EXPECT_EQ(a.network_state, b.network_state);
+      EXPECT_EQ(a.alert_states, b.alert_states);
+    }
+  }
+  ASSERT_EQ(actual.children.size(), expected.children.size());
+  for (size_t i = 0; i < actual.children.size(); ++i) {
+    ExpectContainersMatch(*actual.children[i], *expected.children[i]);
+  }
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
+                       TabStripServiceViewTracksMutations) {
+  tabs_api::TabStripServiceView view(*tab_strip_service_);
+  ASSERT_EQ(view.GetTabs().size(), 1u);
+  ASSERT_NE(view.GetActiveTab(), nullptr);
+
+  auto create1 =
+      tab_strip_service_->CreateTabAt(std::nullopt, GURL("about:blank?1"));
+  ASSERT_TRUE(create1.has_value());
+  auto create2 =
+      tab_strip_service_->CreateTabAt(std::nullopt, GURL("about:blank?2"));
+  ASSERT_TRUE(create2.has_value());
+
+  ASSERT_EQ(view.GetTabs().size(), 3u);
+  ASSERT_NE(view.GetActiveTab(), nullptr);
+  EXPECT_EQ(view.GetActiveTab()->id, create2->id);
+
+  // Activate the middle tab and verify O(1) active-tab lookup updates.
+  ASSERT_TRUE(tab_strip_service_->ActivateTab(create1->id).has_value());
+  ASSERT_NE(view.GetActiveTab(), nullptr);
+  EXPECT_EQ(view.GetActiveTab()->id, create1->id);
+
+  // Group tabs 1 and 2, then close tab 2, and check structural parity with a
+  // fresh GetTabsWithoutObservation() snapshot.
+  browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  ASSERT_TRUE(tab_strip_service_->CloseNodes({create2->id}).has_value());
+  EXPECT_EQ(view.GetTabs().size(), 2u);
+  EXPECT_EQ(view.GetTab(create2->id), nullptr);
+
+  auto fresh_snapshot = tab_strip_service_->GetTabsWithoutObservation();
+  ASSERT_TRUE(fresh_snapshot.has_value());
+  ASSERT_NE(view.root(), nullptr);
+  ExpectContainersMatch(*view.root(), **fresh_snapshot);
 }

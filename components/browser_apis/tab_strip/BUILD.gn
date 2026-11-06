@@ -161,15 +161,22 @@ source_set("service") {
     "tab_strip_service.h",
     "tab_strip_service_impl.cc",
     "tab_strip_service_impl.h",
+    "tab_strip_service_view.cc",
+    "tab_strip_service_view.h",
   ]
 
-  public_deps = [ ":mojom" ]
+  public_deps = [
+    ":mojom",
+    "observation",
+    "types",
+    "//base",
+    "//components/tabs:public",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   deps = [
     "adapters",
     "events",
-    "observation",
-    "types",
     "utilities",
   ]
 
@@ -181,7 +188,10 @@ source_set("service") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "tab_strip_service_impl_unittest.cc" ]
+  sources = [
+    "tab_strip_service_impl_unittest.cc",
+    "tab_strip_service_view_unittest.cc",
+  ]
 
   deps = [
     ":service",

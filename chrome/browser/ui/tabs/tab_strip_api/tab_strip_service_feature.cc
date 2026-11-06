@@ -37,3 +37,12 @@ void TabStripServiceFeature::AcceptExperimental(
 tabs_api::TabStripService* TabStripServiceFeature::GetTabStripService() const {
   return tab_strip_service_.get();
 }
+
+tabs_api::TabStripServiceView*
+TabStripServiceFeature::GetTabStripServiceView() {
+  if (!tab_strip_service_view_ && tab_strip_service_) {
+    tab_strip_service_view_ =
+        std::make_unique<tabs_api::TabStripServiceView>(*tab_strip_service_);
+  }
+  return tab_strip_service_view_.get();
+}

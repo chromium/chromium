@@ -7,6 +7,7 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_collection.h"
@@ -47,6 +48,11 @@ class NodeId {
   // Two node ids are equal iff they represent the same underlying resource
   // (denoted by the type) and they have the same id.
   friend bool operator==(const NodeId& a, const NodeId& b);
+
+  template <typename H>
+  friend H AbslHashValue(H h, const NodeId& node_id) {
+    return H::combine(std::move(h), node_id.type_, node_id.id_);
+  }
 
  private:
   enum Type type_;
