@@ -476,7 +476,9 @@ void TouchDispositionGestureFilter::SendGesture(
       needs_show_press_event_ = false;
       break;
     case EventType::kGestureTap:
-      CHECK(needs_tap_ending_event_, base::NotFatalUntil::M163);
+      // TODO(crbug.com/582454376): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(needs_tap_ending_event_);
       if (needs_show_press_event_) {
         SendGesture(GestureEventData(EventType::kGestureShowPress, event),
                     packet_being_sent);
