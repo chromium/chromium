@@ -89,8 +89,15 @@ TEST_P(GLCubeMapTextureTest, TexImage2DAfterFBOBinding) {
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
-// TODO(crbug.com/40246425): Re-enable this test
-TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixels) {
+// Verifies reading pixels from a complete cube map texture attached to a
+// framebuffer.
+// TODO(crbug.com/40246425): Flaky on ASan/LSan builds.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_ReadPixels DISABLED_ReadPixels
+#else
+#define MAYBE_ReadPixels ReadPixels
+#endif
+TEST_P(GLCubeMapTextureTest, MAYBE_ReadPixels) {
   GLenum cube_map_target = GetParam();
 
   glBindTexture(GL_TEXTURE_CUBE_MAP, texture_);
@@ -116,8 +123,17 @@ TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixels) {
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
-// TODO(crbug.com/40246425): Re-enable this test
-TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixelsFromIncompleteCubeTexture) {
+// Verifies reading pixels from an incomplete cube map texture attached to a
+// framebuffer.
+// TODO(crbug.com/40246425): Flaky on ASan/LSan builds.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_ReadPixelsFromIncompleteCubeTexture \
+  DISABLED_ReadPixelsFromIncompleteCubeTexture
+#else
+#define MAYBE_ReadPixelsFromIncompleteCubeTexture \
+  ReadPixelsFromIncompleteCubeTexture
+#endif
+TEST_P(GLCubeMapTextureTest, MAYBE_ReadPixelsFromIncompleteCubeTexture) {
   GLenum cube_map_target = GetParam();
 
   glBindTexture(GL_TEXTURE_CUBE_MAP, texture_);
