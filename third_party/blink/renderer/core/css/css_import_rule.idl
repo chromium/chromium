@@ -23,10 +23,9 @@
 [
     Exposed=Window
 ] interface CSSImportRule : CSSRule {
-    // TODO(bhagirathi.s@samsung.com): href should be USVString.
-    readonly attribute DOMString href;
+    readonly attribute USVString href;
     [SameObject, PutForwards=mediaText] readonly attribute MediaList media;
-    [SameObject] readonly attribute CSSStyleSheet styleSheet;
+    [SameObject] readonly attribute CSSStyleSheet? styleSheet;
 
     readonly attribute CSSOMString? layerName;
     readonly attribute CSSOMString? supportsText;

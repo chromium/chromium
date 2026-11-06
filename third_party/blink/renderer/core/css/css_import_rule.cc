@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -85,9 +86,9 @@ String CSSImportRule::cssText() const {
 }
 
 CSSStyleSheet* CSSImportRule::styleSheet() const {
-  // TODO(yukishiino): CSSImportRule.styleSheet attribute is not nullable,
-  // thus this function must not return nullptr.
-  if (!import_rule_->GetStyleSheet()) {
+  if ((RuntimeEnabledFeatures::CSSImportRuleStyleSheetNullableEnabled() &&
+       !import_rule_->IsSupported()) ||
+      !import_rule_->GetStyleSheet()) {
     return nullptr;
   }
 

@@ -1870,6 +1870,11 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/5123480866783232
+      name: "CSSImportRuleStyleSheetNullable",
+      status: "stable",
+    },
+    {
       // The inherit() function works like var(), except that it grabs
       // the computed value of the specified property from the parent style
       // instead of the current style.
