@@ -153,6 +153,10 @@ void ContainerTiming::MaybeUpdateContainerRootIdentifier(
   }
 }
 
+void ContainerTiming::OnContainerRootDisconnected(Element* element) {
+  container_root_records_.erase(element);
+}
+
 void ContainerTiming::OnElementPainted(
     const DOMPaintTimingInfo& paint_timing_info,
     Element* element,
@@ -184,11 +188,12 @@ void ContainerTiming::OnElementPainted(
   }
 
   const gfx::Rect enclosing_rect = gfx::ToEnclosingRect(intersection_rect);
-  // The attribute re-check is not redundant: this runs at presentation time, so
-  // the tracker can be stale relative to the live DOM if the containertiming
-  // attribute was removed since the last pre-paint. Skip roots that are no
-  // longer roots. See StaleTrackerGuard_* tests.
-  while (container_root &&
+  // The attribute and connected re-checks are not redundant: this runs at
+  // presentation time, so the tracker can be stale relative to the live DOM if
+  // the containertiming attribute was removed, or the root disconnected, since
+  // the last pre-paint. Skip roots that are no longer roots. See
+  // StaleTrackerGuard_* tests.
+  while (container_root && container_root->isConnected() &&
          container_root->FastHasAttribute(html_names::kContainertimingAttr)) {
     Record* record = GetOrCreateRecord(paint_timing_info, container_root);
     record->MaybeUpdateLastNewPaintedArea(paint_timing_info, element,

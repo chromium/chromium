@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Paints after inserting the ancestor of the container root again are reported from scratch.
-  assert_equals: entry after inserting the ancestor again expected 1 but got 0
-Harness: the test ran to completion.
-

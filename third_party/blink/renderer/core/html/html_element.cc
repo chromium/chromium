@@ -4082,6 +4082,15 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
     SetUnboundedElementActive(false, UnboundedEvents::kSuppress);
   }
 
+  // Drop the container timing record when a container root is disconnected,
+  // including during atomic moves (moveBefore()).
+  if (was_in_document && FastHasAttribute(html_names::kContainertimingAttr) &&
+      RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext())) {
+    if (auto* window = GetDocument().domWindow()) {
+      ContainerTiming::From(*window).OnContainerRootDisconnected(this);
+    }
+  }
+
   Element::RemovedFrom(insertion_point);
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().RemovedFrom(insertion_point);

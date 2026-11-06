@@ -41,6 +41,8 @@ class CORE_EXPORT ContainerTiming final
 
   void MaybeUpdateContainerRootIdentifier(Element* element,
                                           const AtomicString& new_value);
+  // Drops the record of a disconnected container root.
+  void OnContainerRootDisconnected(Element* element);
 
   ContainerTimingPaintAttributionTracker* PaintAttributionTracker() {
     return paint_attribution_tracker_.Get();
@@ -61,6 +63,10 @@ class CORE_EXPORT ContainerTiming final
                                   Element* element,
                                   const gfx::RectF& intersection_rect) {
     OnElementPainted(paint_timing_info, element, intersection_rect);
+  }
+
+  bool HasRecordForTesting(Element* container_root) const {
+    return container_root_records_.Contains(container_root);
   }
 
   void Trace(Visitor* visitor) const override;
