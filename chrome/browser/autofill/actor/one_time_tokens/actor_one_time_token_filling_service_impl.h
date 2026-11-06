@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
@@ -115,6 +116,7 @@ class ActorOneTimeTokenFillingServiceImpl
       retrieve_otp_callback_;
   // The predicted OTP type of the request that owns `retrieve_otp_callback_`.
   PredictedOtpType retrieve_otp_predicted_type_ = PredictedOtpType::kUnknown;
+  std::optional<base::TimeTicks> retrieve_otp_start_time_;
   std::unique_ptr<ActorFillingObserver> filling_observer_;
 
   base::WeakPtrFactory<ActorOneTimeTokenFillingServiceImpl> weak_ptr_factory_{

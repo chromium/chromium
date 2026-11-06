@@ -227,6 +227,11 @@ ActorOneTimeTokenFillingServiceImpl::~ActorOneTimeTokenFillingServiceImpl() {
   if (retrieve_otp_callback_) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(
         kCancelled, retrieve_otp_predicted_type_);
+    if (retrieve_otp_start_time_) {
+      RecordActorOneTimeTokenFillingServiceRetrieveOtpDuration(
+          base::TimeTicks::Now() - *retrieve_otp_start_time_,
+          ActorOtpRetrieveOtpDurationOutcome::kCancelled);
+    }
   }
   // Any observer callback, pending or already posted, later runs with a null
   // service and records nothing, so there is no double count. A fill whose
@@ -388,6 +393,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
 
   retrieve_otp_callback_ = std::move(callback);
   retrieve_otp_predicted_type_ = predicted_otp_type;
+  retrieve_otp_start_time_ = base::TimeTicks::Now();
   auto checker = std::make_unique<affiliations::DomainRelationChecker>(
       CHECK_DEREF(AffiliationServiceFactory::GetForProfile(profile_)));
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
@@ -413,6 +419,19 @@ void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
                       .Build());
     RecordActorOneTimeTokenFillingServiceRetrieveOtpOutcome(
         MapError(result.error()), retrieve_otp_predicted_type_);
+    if (retrieve_otp_start_time_) {
+      ActorOtpRetrieveOtpDurationOutcome outcome =
+          ActorOtpRetrieveOtpDurationOutcome::kError;
+      if (result.error() == OneTimeTokenRetrievalError::kSubscriptionExpired) {
+        outcome = ActorOtpRetrieveOtpDurationOutcome::kTimeout;
+      } else if (result.error() ==
+                 OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch) {
+        outcome = ActorOtpRetrieveOtpDurationOutcome::kSenderDomainMismatch;
+      }
+      RecordActorOneTimeTokenFillingServiceRetrieveOtpDuration(
+          base::TimeTicks::Now() - *retrieve_otp_start_time_, outcome);
+      retrieve_otp_start_time_.reset();
+    }
     std::move(retrieve_otp_callback_).Run(base::unexpected(result.error()));
     return;
   }
@@ -425,6 +444,14 @@ void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
           ? kSuccessCacheMatchFound
           : kSuccessReceivedMatchFound,
       retrieve_otp_predicted_type_);
+  if (retrieve_otp_start_time_) {
+    RecordActorOneTimeTokenFillingServiceRetrieveOtpDuration(
+        base::TimeTicks::Now() - *retrieve_otp_start_time_,
+        result->source == one_time_tokens::GmailOtpRetriever::Source::kCache
+            ? ActorOtpRetrieveOtpDurationOutcome::kCacheMatch
+            : ActorOtpRetrieveOtpDurationOutcome::kReceivedMatch);
+    retrieve_otp_start_time_.reset();
+  }
   std::move(retrieve_otp_callback_).Run(std::move(result->token.value()));
 }
 

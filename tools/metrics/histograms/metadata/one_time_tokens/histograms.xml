@@ -8,6 +8,20 @@ found in the LICENSE file.
 
 <histograms>
 
+<!-- LINT.IfChange(ActorOtpRetrieveOtpDurationOutcome) -->
+
+<variants name="ActorOtpRetrieveOtpDurationOutcome">
+  <variant name="CacheMatch" summary="a cache match"/>
+  <variant name="Cancelled"
+      summary="Cancelled (the service was destroyed before completion)"/>
+  <variant name="Error" summary="an error"/>
+  <variant name="ReceivedMatch" summary="a received match"/>
+  <variant name="SenderDomainMismatch" summary="a sender-domain mismatch"/>
+  <variant name="Timeout" summary="a timeout"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.cc:ActorOtpRetrieveOtpDurationOutcomeSuffix) -->
+
 <!-- LINT.IfChange(AttemptOtpFillingConsentFetchOutcome) -->
 
 <variants name="AttemptOtpFillingConsentFetchOutcome">
@@ -199,6 +213,20 @@ found in the LICENSE file.
     retrieval is pending, the retrieval continues and its outcome is still
     recorded.
   </summary>
+</histogram>
+
+<histogram
+    name="OneTimeTokens.Actor.OneTimeTokenFillingService.RetrieveOtp.Duration.{Outcome}"
+    units="ms" expires_after="2027-06-30">
+  <owner>salmaabdelaziz@google.com</owner>
+  <owner>passwordmanager-mobile-eng@google.com</owner>
+  <summary>
+    Time from the start of a single OTP retrieval via GmailOtpRetriever until it
+    ended with {Outcome}. Recorded once per request that reaches the retriever.
+    Not recorded for requests that fail before the retriever starts (null tab,
+    no backend, mock OTP) or that are superseded.
+  </summary>
+  <token key="Outcome" variants="ActorOtpRetrieveOtpDurationOutcome"/>
 </histogram>
 
 <histogram

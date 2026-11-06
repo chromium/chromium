@@ -89,6 +89,11 @@ std::string RetrieveOtpSliceHistogram(std::string_view predicted_otp_type) {
                        ".", predicted_otp_type});
 }
 
+std::string RetrieveOtpDurationHistogram(std::string_view outcome) {
+  return base::StrCat({kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+                       ".Duration.", outcome});
+}
+
 class TestActorContentAutofillDriver : public TestContentAutofillDriver {
  public:
   TestActorContentAutofillDriver(content::RenderFrameHost* rfh,
@@ -303,6 +308,9 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kMockOtp, 1);
+  histogram_tester_.ExpectTotalCount(RetrieveOtpDurationHistogram("Error"), 0);
+  histogram_tester_.ExpectTotalCount(RetrieveOtpDurationHistogram("Timeout"),
+                                     0);
 }
 
 // Tests that `RetrieveOtp` returns the OTP and records
@@ -334,6 +342,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 0);
+  histogram_tester_.ExpectTimeBucketCount(
+      RetrieveOtpDurationHistogram("CacheMatch"), base::Seconds(0), 1);
 
   // A completed retrieval is not reported as cancelled on destruction.
   service_.reset();
@@ -394,6 +404,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
 
   ASSERT_FALSE(future.IsReady());
 
+  task_environment()->FastForwardBy(base::Seconds(5));
+
   gmail_otp_service().ProcessCallbacks(one_time_tokens::OneTimeToken(
       one_time_tokens::OneTimeTokenType::kGmail, kOtp, base::TimeTicks::Now(),
       "sender@example.com"));
@@ -409,6 +421,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 0);
+  histogram_tester_.ExpectTimeBucketCount(
+      RetrieveOtpDurationHistogram("ReceivedMatch"), base::Seconds(5), 1);
 }
 
 // Tests that `RetrieveOtp` logs specific Gmail error when it occurs.
@@ -421,6 +435,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
+
+  task_environment()->FastForwardBy(base::Seconds(3));
 
   gmail_otp_service().ProcessCallbacks(
       base::unexpected(OneTimeTokenRetrievalError::kGmailOtpBackendAuthError));
@@ -435,6 +451,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 0);
+  histogram_tester_.ExpectTimeBucketCount(RetrieveOtpDurationHistogram("Error"),
+                                          base::Seconds(3), 1);
 }
 
 // Tests that `RetrieveOtp` logs `kUnknownError` when the retriever returns an
@@ -449,6 +467,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
 
+  task_environment()->FastForwardBy(base::Seconds(3));
+
   gmail_otp_service().ProcessCallbacks(
       base::unexpected(OneTimeTokenRetrievalError::kUnknown));
   EXPECT_EQ(future.Get().error(), OneTimeTokenRetrievalError::kUnknown);
@@ -461,6 +481,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 0);
+  histogram_tester_.ExpectTimeBucketCount(RetrieveOtpDurationHistogram("Error"),
+                                          base::Seconds(3), 1);
 }
 
 // Tests that `RetrieveOtp` correctly yields a timeout error if the underlying
@@ -485,13 +507,18 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Timeout) {
       ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
   EXPECT_THAT(histogram_tester_.GetTotalCountsForPrefix(base::StrCat(
                   {kActorOneTimeTokenFillingServiceRetrieveOtpHistogram, "."})),
-              ElementsAre(Pair(RetrieveOtpSliceHistogram("Sms"), 1)));
+              testing::UnorderedElementsAre(
+                  Pair(RetrieveOtpSliceHistogram("Sms"), 1),
+                  Pair(RetrieveOtpDurationHistogram("Timeout"), 1)));
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kRetrieveOtpStarted, 1);
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 0);
+  histogram_tester_.ExpectTimeBucketCount(
+      RetrieveOtpDurationHistogram("Timeout"),
+      kSubscriptionTimeout + base::Seconds(1), 1);
 }
 
 // Tests that `RetrieveOtp` logs `kGmailOtpSenderDomainMismatch` when the
@@ -506,6 +533,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kUnknown, future.GetCallback());
 
+  task_environment()->FastForwardBy(base::Seconds(3));
+
   gmail_otp_service().ProcessCallbacks(base::unexpected(
       OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch));
   EXPECT_EQ(future.Get().error(),
@@ -513,6 +542,9 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kGmailOtpSenderDomainMismatch,
+      1);
+  histogram_tester_.ExpectTimeBucketCount(
+      RetrieveOtpDurationHistogram("SenderDomainMismatch"), base::Seconds(3),
       1);
 }
 
@@ -525,11 +557,14 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   service().RetrieveOtp(web_contents(), main_rfh_origin(),
                         /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
                         PredictedOtpType::kAuthenticatorApp, base::DoNothing());
+  task_environment()->FastForwardBy(base::Seconds(10));
   service_.reset();
 
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kCancelled, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      RetrieveOtpDurationHistogram("Cancelled"), base::Seconds(10), 1);
   histogram_tester_.ExpectUniqueSample(
       RetrieveOtpSliceHistogram("AuthenticatorApp"),
       ActorOneTimeTokenFillingServiceRetrieveOtp::kCancelled, 1);
@@ -595,6 +630,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_WebContentsNull) {
   histogram_tester_.ExpectUniqueSample(
       RetrieveOtpSliceHistogram("Unknown"),
       ActorOneTimeTokenFillingServiceRetrieveOtp::kNullTab, 1);
+  histogram_tester_.ExpectTotalCount(RetrieveOtpDurationHistogram("Error"), 0);
 }
 
 // Tests that `RetrieveOtp` fails gracefully when the OTP service is null.
@@ -615,6 +651,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_ServiceNull) {
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kNoService, 1);
+  histogram_tester_.ExpectTotalCount(RetrieveOtpDurationHistogram("Error"), 0);
 }
 
 // Tests that multiple sequential `RetrieveOtp` calls supersede previous ones,
