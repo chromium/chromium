@@ -149,28 +149,33 @@
     if (!mimeType.empty()) {
       _fileType = [UTType typeWithMIMEType:base::SysUTF8ToNSString(mimeType)];
 
-      // Promise both the file's contents...
-      if (!_dropData.file_contents.empty()) {
-        [writableTypes addObject:_fileType.identifier];
-      }
+      // The website might have provided a bogus MIME type in
+      // `download_metadata`; only proceed if it is valid
+      // (https://crbug.com/579714584).
+      if (_fileType) {
+        // Promise both the file's contents...
+        if (!_dropData.file_contents.empty()) {
+          [writableTypes addObject:_fileType.identifier];
+        }
 
-      // ... and materialization of the file if requested.
+        // ... and materialization of the file if requested.
 
-      // NB: Why not use `NSFilePromiseProvider`? Its design is fundamentally
-      // broken. It insists on being added to the pasteboard as its own object,
-      // but this code needs to add many, many flavors as one object. The only
-      // way to get it to share a pasteboard item with other flavors is to play
-      // the game of subclassing it, but that would involve a big rewrite of all
-      // of this code. FB11876926
-      //
-      // https://buckleyisms.com/blog/how-to-actually-implement-file-dragging-from-your-app-on-mac/
+        // NB: Why not use `NSFilePromiseProvider`? Its design is fundamentally
+        // broken. It insists on being added to the pasteboard as its own
+        // object, but this code needs to add many, many flavors as one object.
+        // The only way to get it to share a pasteboard item with other flavors
+        // is to play the game of subclassing it, but that would involve a big
+        // rewrite of all of this code. FB11876926
+        //
+        // https://buckleyisms.com/blog/how-to-actually-implement-file-dragging-from-your-app-on-mac/
 
-      [writableTypes
-          addObject:base::apple::CFToNSPtrCast(kPasteboardTypeFileURLPromise)];
-      [writableTypes addObject:base::apple::CFToNSPtrCast(
-                                   kPasteboardTypeFilePromiseContent)];
-      if (!_dropData.file_contents_content_disposition.empty()) {
-        [writableTypes addObject:ui::kUTTypeChromiumContentDisposition];
+        [writableTypes addObject:base::apple::CFToNSPtrCast(
+                                     kPasteboardTypeFileURLPromise)];
+        [writableTypes addObject:base::apple::CFToNSPtrCast(
+                                     kPasteboardTypeFilePromiseContent)];
+        if (!_dropData.file_contents_content_disposition.empty()) {
+          [writableTypes addObject:ui::kUTTypeChromiumContentDisposition];
+        }
       }
     }
   }
