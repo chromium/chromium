@@ -797,6 +797,19 @@ void ContextualTasksEphemeralButtonController::
     if (!was_active_panel_open && will_be_active_panel_open) {
       ephemeral_button_shown_time_ticks_.reset();
       contextual_tasks::RecordEphemeralButtonShown(/*is_panel_open=*/true);
+      if (was_active_panel_collapsed) {
+        // The panel was reopened while the collapsed button's toast could be
+        // showing (e.g. from the Omnibox or a context menu). Match the legacy
+        // ContextualTasksButton, which aborts the toast whenever the panel
+        // opens; a click on the button itself already marks the promo as
+        // used before reaching here.
+        if (auto* user_education = BrowserUserEducationInterface::From(
+                browser_window_interface_)) {
+          user_education->AbortFeaturePromo(
+              feature_engagement::
+                  kIPHContextualTasksEphemeralToolbarButtonFeature);
+        }
+      }
     } else if (!was_active_panel_collapsed && will_be_active_panel_collapsed) {
       ephemeral_button_shown_time_ticks_ = NowTicks();
       contextual_tasks::RecordEphemeralButtonShown(/*is_panel_open=*/false);

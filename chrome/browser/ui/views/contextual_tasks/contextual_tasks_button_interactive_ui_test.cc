@@ -1443,6 +1443,32 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2PromoParamInteractiveTest,
           false));
 }
 
+// Reopening the side panel from any entry point while the collapsed ephemeral
+// button's toast is showing dismisses the toast: the button is no longer in the
+// state the toast describes. A click on the button itself is covered by
+// ShowsPromoOnSidePanelCloseNotOpen.
+IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2PromoParamInteractiveTest,
+                       AbortsEphemeralPromoWhenSidePanelReopens) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0), CreateTaskForTab(0),
+      SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(EphemeralButtonId()),
+      WaitForPromo(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature),
+      // Reopen through the panel controller rather than the button.
+      SimulateOpeningContextualTaskSidePanel(),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckPromoActive(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
+          false),
+      EnsurePresent(EphemeralButtonId()),
+      CheckEphemeralButtonHighlighted(true));
+}
+
 class ContextualTasksEphemeralBrandedButtonInteractiveTest
     : public ContextualTasksEphemeralButtonInteractiveTest {
  public:
