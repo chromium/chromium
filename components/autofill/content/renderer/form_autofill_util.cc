@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <limits>
 #include <map>
 #include <memory>
@@ -1587,15 +1588,22 @@ bool IsDOMPredecessor(const WebNode& x,
     DCHECK(!path.empty());
     path.reserve(path.size() + 16);
     WebNode parent;
-    while ((parent = path.back().ParentNode()) && parent != end) {
+    while ((parent = path.back().ParentOrShadowHostNode()) && parent != end) {
       path.push_back(parent);
     }
     return path;
   };
   // Returns true iff `lhs` is strictly to the left of `rhs`, provided both
-  // nodes are siblings.
+  // nodes have the same `ParentOrShadowHostNode()`.
   auto IsLeftSiblingOf = [](const WebNode& lhs, const WebNode& rhs) {
-    DCHECK(lhs.ParentNode() == rhs.ParentNode());
+    DCHECK_NE(lhs, rhs);
+    DCHECK_EQ(lhs.ParentOrShadowHostNode(), rhs.ParentOrShadowHostNode());
+    // In shadow-including tree order, a host's ShadowRoot (whose ParentNode()
+    // is null) precedes the host's light-DOM children.
+    if (!lhs.ParentNode() || !rhs.ParentNode()) {
+      return !!rhs.ParentNode();
+    }
+    DCHECK_EQ(lhs.ParentNode(), rhs.ParentNode());
     for (WebNode n = rhs; n; n = n.NextSibling()) {
       if (n == lhs) {
         return false;
@@ -1607,7 +1615,8 @@ bool IsDOMPredecessor(const WebNode& x,
   // If their parents aren't the same, we extend the paths to the document root.
   std::vector<WebNode> x_path = BuildPath({x}, ancestor_hint);
   std::vector<WebNode> y_path = BuildPath({y}, ancestor_hint);
-  if (x_path.back().ParentNode() != y_path.back().ParentNode()) {
+  if (x_path.back().ParentOrShadowHostNode() !=
+      y_path.back().ParentOrShadowHostNode()) {
     x_path = BuildPath(std::move(x_path), WebNode());
     y_path = BuildPath(std::move(y_path), WebNode());
   }
@@ -1683,7 +1692,10 @@ bool IsRelevantChildFrame(const WebElement& element) {
           IsVisibleIframe(element));
 }
 
-// Returns the <iframe> elements that are owned by `form_element`.
+// Returns the relevant <iframe> elements that are owned by `form_element` in
+// DOM order.
+// Returns an empty list if there are more than kMaxExtractableFields such
+// elements.
 //
 // An iframe is owned by `form_element` iff it is accessible, in the light DOM,
 // and
@@ -1691,12 +1703,44 @@ bool IsRelevantChildFrame(const WebElement& element) {
 //   `form_element` is the iframe's outermost <form> ancestor
 // - if `form_element` is null:
 //   the iframe has no <form> ancestor.
-//
-// The restriction to the light DOM is only because Blink currently does not
-// provide a shadow-including way of listing iframes.
-// See crbug.com/569934654#comment9 for possible fixes.
 std::vector<WebElement> GetIframeElements(const WebDocument& document,
                                           const WebFormElement& form_element) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillExtractShadowDomIframes)) {
+    std::vector<WebElement> iframes;
+    WebLocalFrame* frame = document.GetFrame();
+    if (!frame) {
+      return {};
+    }
+    for (WebFrame* child = frame->FirstChild(); child;
+         child = child->NextSibling()) {
+      WebElement iframe = child->FrameOwnerElement();
+      if (HasTagName<kIframe>(iframe) && IsAccessible(iframe) &&
+          GetOutermostAncestorFormElement(iframe) == form_element) {
+        iframes.push_back(std::move(iframe));
+      }
+    }
+    // IsRelevantChildFrame() may trigger a layout and thus detach frames.
+    // We therefore need to keep it out of the loop to avoid a CHECK in
+    // NextSibling().
+    std::erase_if(iframes, std::not_fn(IsRelevantChildFrame));
+    // This must happen after IsRelevantChildFrame() because
+    // IsRelevantChildFrame() may detach frames
+    // and thus make WebFrame::FromFrameOwnerElement() nullptr.
+    std::erase_if(iframes, [](const WebElement& iframe_element) {
+      WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
+      return !iframe ||
+             (!iframe->IsWebLocalFrame() && !iframe->IsWebRemoteFrame());
+    });
+    if (iframes.size() > kMaxExtractableChildFrames) {
+      iframes.clear();
+    }
+    std::ranges::sort(iframes, [&](const WebElement& x, const WebElement& y) {
+      return IsDOMPredecessor(x, y, form_element);
+    });
+    return iframes;
+  }
+
   std::vector<WebElement> relevant_iframes;
   WebElementCollection iframes =
       document.GetElementsByHTMLTagName(GetWebString<kIframe>());
@@ -1707,6 +1751,14 @@ std::vector<WebElement> GetIframeElements(const WebDocument& document,
         IsRelevantChildFrame(iframe)) {
       relevant_iframes.push_back(iframe);
     }
+  }
+  std::erase_if(relevant_iframes, [](const WebElement& iframe_element) {
+    WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
+    return !iframe ||
+           (!iframe->IsWebLocalFrame() && !iframe->IsWebRemoteFrame());
+  });
+  if (relevant_iframes.size() > kMaxExtractableChildFrames) {
+    relevant_iframes.clear();
   }
   return relevant_iframes;
 }
@@ -2034,14 +2086,6 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   std::vector<WebElement> iframe_elements =
       GetIframeElements(document, form_element);
 
-  std::erase_if(iframe_elements, [](const WebElement& iframe_element) {
-    WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
-    return !iframe ||
-           (!iframe->IsWebLocalFrame() && !iframe->IsWebRemoteFrame());
-  });
-  if (iframe_elements.size() > kMaxExtractableChildFrames) {
-    iframe_elements.clear();
-  }
   if (control_elements.empty() && iframe_elements.empty()) {
     return std::nullopt;
   }

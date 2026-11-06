@@ -820,6 +820,12 @@ BASE_FEATURE(kAutofillExtendZipCodeValidation,
 BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill also extracts iframes inside shadow DOM rather than
+// only iframes in the light DOM.
+// TODO(crbug.com/569934654): Clean up when launched.
+BASE_FEATURE(kAutofillExtractShadowDomIframes,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, iframes are associated with the outermost ancestor form
 // (analogous to form control ownership) rather than the closest ancestor form
 // (analogous to form control association).
