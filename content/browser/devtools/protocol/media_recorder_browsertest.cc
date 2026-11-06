@@ -18,6 +18,7 @@
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_io_context.h"
+#include "content/browser/devtools/protocol/display_capture_launcher.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/test/browser_test.h"
@@ -104,6 +105,12 @@ class MediaRecorderBrowserTest : public ContentBrowserTest {
   void TearDownOnMainThread() override {
     recorder_.reset();
     io_context_.DiscardAllStreams();
+    // A launch that is pending at shutdown cannot complete, because the IO
+    // thread stops before the device thread. Wait for it, so that the test
+    // does not depend on the shutdown timing.
+    EXPECT_TRUE(base::test::RunUntil([] {
+      return DisplayCaptureLauncher::GetPendingLaunchCountForTesting() == 0;
+    }));
   }
 
   MediaRecorder* recorder() { return recorder_.get(); }
@@ -180,14 +187,7 @@ IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, DisplayCaptureErrorRemovesUI) {
 
 // Checks that the UI gets a unique label, the captured window, and the
 // callbacks that DLP needs.
-// TODO(crbug.com/582000251): Crashes on Windows teardown when IO thread stops
-// before VideoCaptureThread finishes.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DisplayCaptureStartsUI DISABLED_DisplayCaptureStartsUI
-#else
-#define MAYBE_DisplayCaptureStartsUI DisplayCaptureStartsUI
-#endif
-IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, MAYBE_DisplayCaptureStartsUI) {
+IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, DisplayCaptureStartsUI) {
   FakeMediaStreamUIState state;
   recorder()->StartDisplayCapture(WindowId(), shell()->web_contents(),
                                   std::make_unique<FakeMediaStreamUI>(&state),

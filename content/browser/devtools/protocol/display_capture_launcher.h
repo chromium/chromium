@@ -43,6 +43,11 @@ class CONTENT_EXPORT DisplayCaptureLauncher {
   void Suspend();
   void Resume();
 
+  // Returns the number of launches that have not completed yet. A launch
+  // cannot complete after the IO thread has stopped, so tests wait for this
+  // to be zero before the browser shuts down. Only for tests.
+  static int GetPendingLaunchCountForTesting();
+
  private:
   class Core;
 

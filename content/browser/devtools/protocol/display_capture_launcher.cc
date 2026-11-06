@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/protocol/display_capture_launcher.h"
 
+#include <atomic>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -19,6 +20,11 @@
 namespace content::protocol {
 
 namespace {
+
+// See GetPendingLaunchCountForTesting(). The UI thread increments it before it
+// posts the launch, and the IO thread decrements it when the launch completes
+// or cannot start.
+constinit std::atomic<int> g_pending_launch_count_for_testing{0};
 
 // Forwards the frames from the IO thread to a receiver on another thread.
 // The launcher needs a WeakPtr to the receiver on the IO thread.
@@ -62,6 +68,7 @@ class DisplayCaptureLauncher::Core {
       DLOG(ERROR) << "Cannot create the display capture device launcher.";
       receiver_.OnError(
           media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound);
+      --g_pending_launch_count_for_testing;
       return;
     }
     VideoCaptureDeviceLauncher* const launcher_ptr = launcher.get();
@@ -73,9 +80,15 @@ class DisplayCaptureLauncher::Core {
         receiver_.GetWeakPtr(), base::DoNothing(), callbacks_ptr,
         // The launcher and the callbacks must stay alive until the launch
         // completes, even if this object is destroyed before.
-        base::BindOnce([](std::unique_ptr<VideoCaptureDeviceLauncher>,
-                          std::unique_ptr<LauncherCallbacks>) {},
-                       std::move(launcher), std::move(callbacks)));
+        base::BindOnce(
+            [](std::unique_ptr<VideoCaptureDeviceLauncher>,
+               std::unique_ptr<LauncherCallbacks>) {
+              // This works only if the launcher runs `done_cb` for every
+              // launch, as VideoCaptureDeviceLauncher requires. If a launcher
+              // drops it instead, tests that wait for the count time out.
+              --g_pending_launch_count_for_testing;
+            },
+            std::move(launcher), std::move(callbacks)));
   }
 
   void RequestRefreshFrame() {
@@ -151,6 +164,10 @@ DisplayCaptureLauncher::DisplayCaptureLauncher(
     base::WeakPtr<media::VideoFrameReceiver> receiver)
     : core_(new Core(std::move(receiver))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Count the launch before it is posted, so that a test that waits for the
+  // count to be zero also waits for a launch that the IO thread has not
+  // started yet.
+  ++g_pending_launch_count_for_testing;
   // `core_` is deleted on the IO thread, after this task.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&Core::Launch, base::Unretained(core_.get()),
@@ -159,6 +176,11 @@ DisplayCaptureLauncher::DisplayCaptureLauncher(
 
 DisplayCaptureLauncher::~DisplayCaptureLauncher() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
+
+// static
+int DisplayCaptureLauncher::GetPendingLaunchCountForTesting() {
+  return g_pending_launch_count_for_testing;
 }
 
 void DisplayCaptureLauncher::RequestRefreshFrame() {

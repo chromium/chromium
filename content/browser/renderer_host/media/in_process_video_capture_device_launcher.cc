@@ -230,6 +230,8 @@ InProcessVideoCaptureDeviceLauncher::InProcessVideoCaptureDeviceLauncher(
 InProcessVideoCaptureDeviceLauncher::~InProcessVideoCaptureDeviceLauncher() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   CHECK(state_ == State::READY_TO_LAUNCH, base::NotFatalUntil::M158);
+  // OnDeviceStarted() runs `done_cb_` before the launcher can be destroyed.
+  DCHECK(!done_cb_);
 }
 
 void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
@@ -242,6 +244,8 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure done_cb) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   CHECK(state_ == State::READY_TO_LAUNCH, base::NotFatalUntil::M158);
+  CHECK(!done_cb_);
+  done_cb_ = std::move(done_cb);
 
   if (receiver_on_io_thread) {
     std::ostringstream string_stream;
@@ -258,10 +262,15 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       receiver_on_io_thread, GetIOThreadTaskRunner({}));
 
   base::OnceClosure start_capture_closure;
+  // If the IO thread has stopped when the device thread runs this callback, the
+  // callback is destroyed on the device thread. Thus it must not own objects
+  // that must be destroyed on the IO thread, like `done_cb_`. The WeakPtr is
+  // only a safeguard: `done_cb_` keeps the owner of `this` alive until the
+  // launch completes.
   ReceiveDeviceCallback after_start_capture_callback =
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &InProcessVideoCaptureDeviceLauncher::OnDeviceStarted,
-          weak_factory_.GetWeakPtr(), callbacks, std::move(done_cb)));
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&InProcessVideoCaptureDeviceLauncher::OnDeviceStarted,
+                         weak_factory_.GetWeakPtr(), callbacks));
 
   switch (stream_type) {
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
@@ -432,11 +441,14 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
 
 void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
     Callbacks* callbacks,
-    base::OnceClosure done_cb,
     std::unique_ptr<media::VideoCaptureDevice> device) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   State state_copy = state_;
   state_ = State::READY_TO_LAUNCH;
+  // Move `done_cb_` out before the callbacks run: they can call
+  // LaunchDeviceAsync() again, which sets `done_cb_`, and running `done_cb`
+  // can destroy `this`.
+  base::OnceClosure done_cb = std::move(done_cb_);
   if (!device) {
     switch (state_copy) {
       case State::DEVICE_START_IN_PROGRESS:
