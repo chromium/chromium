@@ -26,6 +26,8 @@ class ContextualTasksTabSubMenuModel : public ui::SimpleMenuModel,
   static constexpr int kMaxRecentThreadCommandId = 2105;
 
   ContextualTasksTabSubMenuModel(TabStripModel* tab_strip_model,
+                                 tabs::TabHandle context_tab);
+  ContextualTasksTabSubMenuModel(TabStripModel* tab_strip_model,
                                  int context_index);
   ContextualTasksTabSubMenuModel(const ContextualTasksTabSubMenuModel&) =
       delete;
@@ -42,7 +44,7 @@ class ContextualTasksTabSubMenuModel : public ui::SimpleMenuModel,
   std::vector<tabs::TabHandle> GetTargetTabHandles() const;
 
   const raw_ptr<TabStripModel> tab_strip_model_;
-  const int context_index_;
+  const tabs::TabHandle context_tab_;
   std::vector<ContextualTasksPanelController::RecentThreadInfo> recent_threads_;
 };
 

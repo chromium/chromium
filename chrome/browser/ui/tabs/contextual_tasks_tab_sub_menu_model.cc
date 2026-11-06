@@ -24,10 +24,10 @@ namespace contextual_tasks {
 
 ContextualTasksTabSubMenuModel::ContextualTasksTabSubMenuModel(
     TabStripModel* tab_strip_model,
-    int context_index)
+    tabs::TabHandle context_tab)
     : ui::SimpleMenuModel(this),
       tab_strip_model_(tab_strip_model),
-      context_index_(context_index) {
+      context_tab_(context_tab) {
   AddItem(TabStripModel::CommandAiModeCreateNewThread,
           l10n_util::GetStringUTF16(IDS_TAB_CXMENU_AI_MODE_START_NEW_THREAD));
 
@@ -58,6 +58,15 @@ ContextualTasksTabSubMenuModel::ContextualTasksTabSubMenuModel(
   }
 }
 
+ContextualTasksTabSubMenuModel::ContextualTasksTabSubMenuModel(
+    TabStripModel* tab_strip_model,
+    int context_index)
+    : ContextualTasksTabSubMenuModel(
+          tab_strip_model,
+          (tab_strip_model && tab_strip_model->ContainsIndex(context_index))
+              ? tab_strip_model->GetTabAtIndex(context_index)->GetHandle()
+              : tabs::TabHandle::Null()) {}
+
 ContextualTasksTabSubMenuModel::~ContextualTasksTabSubMenuModel() = default;
 
 bool ContextualTasksTabSubMenuModel::IsCommandIdChecked(int command_id) const {
@@ -65,7 +74,9 @@ bool ContextualTasksTabSubMenuModel::IsCommandIdChecked(int command_id) const {
 }
 
 bool ContextualTasksTabSubMenuModel::IsCommandIdEnabled(int command_id) const {
-  if (!tab_strip_model_ || !tab_strip_model_->ContainsIndex(context_index_)) {
+  if (!tab_strip_model_ || !context_tab_.Get() ||
+      tab_strip_model_->GetIndexOfTab(context_tab_.Get()) ==
+          TabStripModel::kNoTab) {
     return false;
   }
   if (command_id >= kMinRecentThreadCommandId &&
@@ -74,11 +85,10 @@ bool ContextualTasksTabSubMenuModel::IsCommandIdEnabled(int command_id) const {
         static_cast<size_t>(command_id - kMinRecentThreadCommandId);
     return thread_index < recent_threads_.size() &&
            tab_strip_model_->IsContextMenuCommandEnabled(
-               context_index_, TabStripModel::CommandAiModeShare);
+               context_tab_, TabStripModel::CommandAiModeShare);
   }
   return tab_strip_model_->IsContextMenuCommandEnabled(
-      context_index_,
-      static_cast<TabStripModel::ContextMenuCommand>(command_id));
+      context_tab_, static_cast<TabStripModel::ContextMenuCommand>(command_id));
 }
 
 void ContextualTasksTabSubMenuModel::ExecuteCommand(int command_id,
@@ -120,27 +130,22 @@ void ContextualTasksTabSubMenuModel::ExecuteCommand(int command_id,
 
 std::vector<tabs::TabHandle>
 ContextualTasksTabSubMenuModel::GetTargetTabHandles() const {
-  if (!tab_strip_model_->ContainsIndex(context_index_)) {
+  if (!tab_strip_model_) {
     return {};
   }
 
-  std::vector<tabs::TabInterface*> tabs;
-  if (tab_strip_model_->IsTabSelected(context_index_)) {
-    const auto& selected_tabs =
-        tab_strip_model_->selection_model().selected_tabs();
-    tabs.assign(selected_tabs.begin(), selected_tabs.end());
-  } else {
-    tabs = {tab_strip_model_->GetTabAtIndex(context_index_)};
-  }
+  const std::vector<tabs::TabHandle> tabs =
+      tab_strip_model_->GetTabsForCommand(context_tab_);
 
   std::vector<tabs::TabHandle> tab_handles;
-  for (tabs::TabInterface* tab : tabs) {
+  for (tabs::TabHandle tab_handle : tabs) {
+    tabs::TabInterface* tab = tab_handle.Get();
     if (!tab || !tab->GetContents()) {
       continue;
     }
     const GURL& url = tab->GetContents()->GetLastCommittedURL();
     if (IsUrlValidForContextSharing(url)) {
-      tab_handles.push_back(tab->GetHandle());
+      tab_handles.push_back(tab_handle);
     }
   }
   return tab_handles;

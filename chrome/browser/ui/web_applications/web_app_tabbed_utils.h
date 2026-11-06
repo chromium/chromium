@@ -9,6 +9,8 @@ class BrowserWindowInterface;
 class GURL;
 class TabStripModel;
 
+#include "components/tabs/public/tab_interface.h"
+
 namespace web_app {
 
 // Returns whether the web apps tab strip contains a pinned home tab.
@@ -16,6 +18,11 @@ bool HasPinnedHomeTab(const TabStripModel* tab_strip_model);
 
 // Returns whether the tab at the given index is the pinned home tab.
 bool IsPinnedHomeTab(const TabStripModel* tab_strip_model, int index);
+
+// Returns whether the tab is the pinned home tab.
+bool IsPinnedHomeTab(const TabStripModel* tab_strip_model, tabs::TabHandle tab);
+bool IsPinnedHomeTab(const TabStripModel* tab_strip_model,
+                     const tabs::TabInterface* tab);
 
 // Returns whether a tab is closable for tabbed apps.
 bool IsTabClosable(const TabStripModel* tab_strip_model, int index);

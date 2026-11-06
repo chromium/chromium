@@ -89,23 +89,36 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kFocusSelectionMenuItem);
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            TabMenuModelDelegate* tab_menu_model_delegate,
                            TabStripModel* tab_strip,
-                           int index)
+                           tabs::TabHandle context_tab)
     : ui::SimpleMenuModel(delegate),
       tab_strip_(tab_strip),
       tab_menu_model_delegate_(tab_menu_model_delegate),
-      tab_interface_(tab_strip_->GetTabAtIndex(index)->GetWeakPtr()) {
+      tab_interface_(context_tab.Get() ? context_tab.Get()->GetWeakPtr()
+                                       : nullptr) {
   CHECK(tab_strip_);
+  CHECK(context_tab.Get());
 
   if (tab_strip_->delegate()->IsForWebApp()) {
-    BuildForWebApp(index);
+    BuildForWebApp(context_tab);
   } else {
-    Build(index);
+    Build(context_tab);
   }
 }
 
+TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                           TabMenuModelDelegate* tab_menu_model_delegate,
+                           TabStripModel* tab_strip,
+                           int index)
+    : TabMenuModel(delegate,
+                   tab_menu_model_delegate,
+                   tab_strip,
+                   (tab_strip && tab_strip->ContainsIndex(index))
+                       ? tab_strip->GetTabAtIndex(index)->GetHandle()
+                       : tabs::TabHandle::Null()) {}
+
 TabMenuModel::~TabMenuModel() = default;
 
-void TabMenuModel::BuildForWebApp(int index) {
+void TabMenuModel::BuildForWebApp(tabs::TabHandle context_tab) {
   auto* browser = tab_strip_->delegate()->GetBrowserWindowInterface();
   auto* app_controller =
       browser ? web_app::AppBrowserController::From(browser) : nullptr;
@@ -151,15 +164,14 @@ void TabMenuModel::BuildForWebApp(int index) {
   const bool pinned_home_is_part_of_selection =
       has_pinned_home &&
       tab_strip_->selection_model().IsSelected(*tab_strip_->begin());
-  const bool is_pinned_home = web_app::IsPinnedHomeTab(tab_strip_, index);
+  const bool is_pinned_home = web_app::IsPinnedHomeTab(tab_strip_, context_tab);
   if (!is_pinned_home && !pinned_home_is_part_of_selection) {
     int num_tabs = tab_strip_->selection_model().size();
     if (commands.contains(tabs::CommandMoveToExistingWindow) &&
         ExistingWindowSubMenuModel::ShouldShowSubmenuForApp(
             tab_menu_model_delegate_)) {
       add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
-          delegate(), tab_menu_model_delegate_, tab_strip_,
-          tab_strip_->GetTabAtIndex(index)->GetHandle());
+          delegate(), tab_menu_model_delegate_, tab_strip_, context_tab);
       AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                  l10n_util::GetPluralStringFUTF16(
                      IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
@@ -203,17 +215,22 @@ void TabMenuModel::BuildForWebApp(int index) {
   }
 }
 
-void TabMenuModel::BuildSendTabToSelfItem(int index,
-                                          const std::vector<int>& indices) {
+void TabMenuModel::BuildSendTabToSelfItem(
+    tabs::TabHandle context_tab,
+    const std::vector<tabs::TabHandle>& tabs) {
   std::vector<content::WebContents*> web_contents_list;
-  web_contents_list.reserve(indices.size());
-  for (int i : indices) {
-    web_contents_list.push_back(tab_strip_->GetWebContentsAt(i));
+  web_contents_list.reserve(tabs.size());
+  for (tabs::TabHandle tab : tabs) {
+    tabs::TabInterface* t = tab.Get();
+    if (t) {
+      web_contents_list.push_back(t->GetContents());
+    }
   }
 
+  tabs::TabInterface* context_tab_ptr = context_tab.Get();
   send_tab_to_self_submenu_ =
       send_tab_to_self::SendTabToSelfSubMenuModel::MaybeCreateForMultipleTabs(
-          tab_strip_->GetWebContentsAt(index), web_contents_list,
+          context_tab_ptr->GetContents(), web_contents_list,
           send_tab_to_self::ShareEntryPoint::kTabMenu);
   if (send_tab_to_self_submenu_) {
     AddSubMenuWithStringId(TabStripModel::CommandSendTabToSelf,
@@ -237,12 +254,12 @@ void TabMenuModel::BuildSendTabToSelfItem(int index,
           ui::kColorMenuIcon, kTabMenuIconSize));
 }
 
-void TabMenuModel::AppendGlicItems(int index,
-                                   int num_tabs,
-                                   const std::vector<int>& indices) {
-  glic_tab_sub_menu_model_ = std::make_unique<glic::GlicTabSubMenuModel>(
-      tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle());
+void TabMenuModel::AppendGlicItems(tabs::TabHandle context_tab,
+                                   const std::vector<tabs::TabHandle>& tabs) {
+  glic_tab_sub_menu_model_ =
+      std::make_unique<glic::GlicTabSubMenuModel>(tab_strip_, context_tab);
 
+  const int num_tabs = tabs.size();
   if (features::IsMenuSimplificationEnabled()) {
     AddSubMenuWithIcon(TabStripModel::CommandGlicShare,
                        l10n_util::GetPluralStringFUTF16(
@@ -262,17 +279,16 @@ void TabMenuModel::AppendGlicItems(int index,
   auto* service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(tab_strip_->profile());
   CHECK(service);
-  if (std::ranges::any_of(indices, [&](int index) {
-        return service->instance_coordinator().IsTabPinnedToAnyInstance(
-            tab_strip_->GetTabAtIndex(index)->GetHandle());
+  if (std::ranges::any_of(tabs, [&](tabs::TabHandle tab) {
+        return service->instance_coordinator().IsTabPinnedToAnyInstance(tab);
       })) {
     AddItem(TabStripModel::CommandGlicUnshare,
             l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_UNSHARE));
   }
 }
 
-void TabMenuModel::AppendAiModeItems(int index,
-                                     int num_tabs,
+void TabMenuModel::AppendAiModeItems(tabs::TabHandle context_tab,
+                                     const std::vector<tabs::TabHandle>& tabs,
                                      bool show_share,
                                      bool show_unshare) {
   if (!show_share && !show_unshare) {
@@ -286,10 +302,10 @@ void TabMenuModel::AppendAiModeItems(int index,
   if (show_share) {
     contextual_tasks_tab_sub_menu_model_ =
         std::make_unique<contextual_tasks::ContextualTasksTabSubMenuModel>(
-            tab_strip_, index);
+            tab_strip_, context_tab);
     AddSubMenuWithIcon(TabStripModel::CommandAiModeShare,
                        l10n_util::GetPluralStringFUTF16(
-                           IDS_TAB_CXMENU_AI_MODE_SHARE, num_tabs),
+                           IDS_TAB_CXMENU_AI_MODE_SHARE, tabs.size()),
                        contextual_tasks_tab_sub_menu_model_.get(),
                        ai_mode_icon);
   }
@@ -305,26 +321,11 @@ void TabMenuModel::AppendAiModeItems(int index,
 // Native right-click tab context menus on macOS use Title Case (`_MAC` string
 // variants) to follow Apple Human Interface Guidelines (HIG), while other
 // platforms use sentence case.
-void TabMenuModel::Build(int index) {
-  std::vector<int> indices;
-  if (tab_strip_->IsTabSelected(index)) {
-    const ui::ListSelectionModel::SelectedIndices sel =
-        tab_strip_->selection_model()
-            .GetListSelectionModel()
-            .selected_indices();
-    indices = std::vector<int>(sel.begin(), sel.end());
-  } else {
-    indices = {index};
-  }
-
-  int num_tabs = indices.size();
-  const std::vector<tabs::TabInterface*> tabs =
-      tab_strip_->GetTabsAtIndices(indices);
-  std::vector<tabs::TabHandle> tab_handles;
-  tab_handles.reserve(tabs.size());
-  for (tabs::TabInterface* tab : tabs) {
-    tab_handles.push_back(tab->GetHandle());
-  }
+void TabMenuModel::Build(tabs::TabHandle context_tab) {
+  tabs::TabInterface* context_tab_ptr = context_tab.Get();
+  const std::vector<tabs::TabHandle> tabs =
+      tab_strip_->GetTabsForCommand(context_tab);
+  const int num_tabs = tabs.size();
 
   auto* controller = tabs::VerticalTabStripStateController::From(
       tab_strip_->delegate()->GetBrowserWindowInterface());
@@ -341,10 +342,10 @@ void TabMenuModel::Build(int index) {
   }
   SetElementIdentifierAt(GetItemCount() - 1, kAddNewTabAdjacentMenuItem);
 
-  if (!tab_strip_->GetSplitForTab(index).has_value()) {
+  if (!context_tab_ptr->IsSplit()) {
     if (tab_strip_->GetActiveTab()->IsSplit()) {
-      swap_with_split_submenu_ = std::make_unique<SplitTabSwapMenuModel>(
-          tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle());
+      swap_with_split_submenu_ =
+          std::make_unique<SplitTabSwapMenuModel>(tab_strip_, context_tab);
       AddSubMenuWithStringIdAndIcon(
           TabStripModel::CommandSwapWithActiveSplit,
           IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT, swap_with_split_submenu_.get(),
@@ -358,7 +359,7 @@ void TabMenuModel::Build(int index) {
     } else {
       AddItemWithStringIdAndIcon(
           TabStripModel::CommandAddToSplit,
-          index == tab_strip_->active_index()
+          context_tab_ptr == tab_strip_->GetActiveTab()
               ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
               : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
@@ -372,7 +373,7 @@ void TabMenuModel::Build(int index) {
   } else {
     arrange_split_view_submenu_ = std::make_unique<SplitTabMenuModel>(
         tab_strip_, SplitTabMenuModel::MenuSource::kTabContextMenu,
-        tab_strip_->GetTabAtIndex(index)->GetHandle());
+        context_tab);
     AddSubMenuWithStringIdAndIcon(
         TabStripModel::CommandArrangeSplit, IDS_TAB_CXMENU_ARRANGE_SPLIT,
         arrange_split_view_submenu_.get(),
@@ -385,10 +386,12 @@ void TabMenuModel::Build(int index) {
 
   if (tab_strip_->SupportsTabGroups() &&
       base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
-      std::ranges::none_of(
-          indices, [&](int idx) { return tab_strip_->IsTabPinned(idx); })) {
+      std::ranges::none_of(tabs, [](tabs::TabHandle tab) {
+        tabs::TabInterface* t = tab.Get();
+        return t && t->IsPinned();
+      })) {
     if (std::optional<tab_groups::TabGroupId> group =
-            tab_strip_->GetCommonGroupForTabs(tab_handles)) {
+            tab_strip_->GetCommonGroupForTabs(tabs)) {
       const bool is_focused = tab_strip_->GetFocusedGroup() == group;
       if (tab_strip_->IsEphemeralTabGroup(*group)) {
         const size_t group_tab_count =
@@ -410,7 +413,7 @@ void TabMenuModel::Build(int index) {
         }
       }
     } else if (base::FeatureList::IsEnabled(features::kNonGroupFocus) &&
-               tab_strip_->AreAllUngrouped(tab_handles)) {
+               tab_strip_->AreAllUngrouped(tabs)) {
       AddItem(TabStripModel::CommandToggleFocusGroup,
               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_FOCUS_TABS,
                                                num_tabs));
@@ -432,13 +435,11 @@ void TabMenuModel::Build(int index) {
   }
 
   if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
-          tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle(),
-          tab_menu_model_delegate_)) {
+          tab_strip_, context_tab, tab_menu_model_delegate_)) {
     // Create submenu with existing groups
     add_to_existing_group_submenu_ =
         std::make_unique<ExistingTabGroupSubMenuModel>(
-            delegate(), tab_menu_model_delegate_, tab_strip_,
-            tab_strip_->GetTabAtIndex(index)->GetHandle());
+            delegate(), tab_menu_model_delegate_, tab_strip_, context_tab);
     AddSubMenu(TabStripModel::CommandAddToExistingGroup,
                l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
                                                 num_tabs),
@@ -468,21 +469,23 @@ void TabMenuModel::Build(int index) {
     }
   }
 
-  for (const auto& selection : indices) {
-    std::optional<tab_groups::TabGroupId> group =
-        tab_strip_->GetTabGroupForTab(selection);
-    if (group.has_value() && !tab_strip_->IsEphemeralTabGroup(group.value())) {
-      AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
-                          IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
-      break;
+  for (tabs::TabHandle tab : tabs) {
+    tabs::TabInterface* t = tab.Get();
+    if (t) {
+      std::optional<tab_groups::TabGroupId> group = t->GetGroup();
+      if (group.has_value() &&
+          !tab_strip_->IsEphemeralTabGroup(group.value())) {
+        AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
+                            IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
+        break;
+      }
     }
   }
 
   if (ExistingWindowSubMenuModel::ShouldShowSubmenu(tab_strip_->profile())) {
     // Create submenu with existing windows
     add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
-        delegate(), tab_menu_model_delegate_, tab_strip_,
-        tab_strip_->GetTabAtIndex(index)->GetHandle());
+        delegate(), tab_menu_model_delegate_, tab_strip_, context_tab);
     AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                l10n_util::GetPluralStringFUTF16(
                    IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
@@ -516,8 +519,7 @@ void TabMenuModel::Build(int index) {
                       IDS_TAB_CXMENU_DUPLICATE);
   SetElementIdentifierAt(GetItemCount() - 1, kDuplicateMenuItem);
 
-  bool will_pin = tab_strip_->WillContextMenuPin(
-      tab_strip_->GetTabAtIndex(index)->GetHandle());
+  bool will_pin = tab_strip_->WillContextMenuPin(context_tab);
   AddItemWithStringId(
       TabStripModel::CommandTogglePinned,
       will_pin ? IDS_TAB_CXMENU_PIN_TAB : IDS_TAB_CXMENU_UNPIN_TAB);
@@ -536,25 +538,25 @@ void TabMenuModel::Build(int index) {
   // When the menu targets a single split, "Mute sites" opens a submenu that can
   // also mute the site in just one of the views.
   const std::optional<split_tabs::SplitTabId> split =
-      tab_strip_->GetSplitForTab(index);
+      context_tab_ptr->GetSplit();
   const bool is_single_split =
-      split.has_value() && std::ranges::all_of(indices, [&](int i) {
-        return tab_strip_->GetSplitForTab(i) == split;
+      split.has_value() && std::ranges::all_of(tabs, [&](tabs::TabHandle tab) {
+        tabs::TabInterface* t = tab.Get();
+        return t && t->GetSplit() == split;
       });
   // CommandToggleSiteMuted acts on every tab in a split, even when the split
   // isn't selected.
   const int num_mute_tabs =
       is_single_split ? tab_strip_->GetSplitData(*split)->ListTabs().size()
                       : num_tabs;
-  const bool will_mute = tab_strip_->WillContextMenuMuteSites(
-      tab_strip_->GetTabAtIndex(index)->GetHandle());
+  const bool will_mute = tab_strip_->WillContextMenuMuteSites(context_tab);
   const std::u16string mute_label = l10n_util::GetPluralStringFUTF16(
       will_mute ? IDS_TAB_CXMENU_SOUND_MUTE_SITE
                 : IDS_TAB_CXMENU_SOUND_UNMUTE_SITE,
       num_mute_tabs);
   if (is_single_split) {
     split_mute_submenu_ = std::make_unique<SplitTabMuteMenuModel>(
-        tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle(), *split);
+        tab_strip_, context_tab, *split);
     AddSubMenu(TabStripModel::CommandToggleSiteMuted, mute_label,
                split_mute_submenu_.get());
   } else {
@@ -577,19 +579,19 @@ void TabMenuModel::Build(int index) {
   const bool show_glic_items =
       glic::GlicEnabling::IsReadyForProfile(tab_strip_->profile());
   const bool show_ai_mode_share = tab_strip_->IsContextMenuCommandEnabled(
-      index, TabStripModel::CommandAiModeShare);
+      context_tab, TabStripModel::CommandAiModeShare);
   const bool show_ai_mode_unshare = tab_strip_->IsContextMenuCommandEnabled(
-      index, TabStripModel::CommandAiModeUnshare);
+      context_tab, TabStripModel::CommandAiModeUnshare);
   const bool show_ai_mode_items = show_ai_mode_share || show_ai_mode_unshare;
   bool glic_displayed = false;
   if (features::IsMenuSimplificationEnabled() &&
       (show_glic_items || show_ai_mode_items)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     if (show_glic_items) {
-      AppendGlicItems(index, num_tabs, indices);
+      AppendGlicItems(context_tab, tabs);
     }
     if (show_ai_mode_items) {
-      AppendAiModeItems(index, num_tabs, show_ai_mode_share,
+      AppendAiModeItems(context_tab, tabs, show_ai_mode_share,
                         show_ai_mode_unshare);
     }
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -597,8 +599,8 @@ void TabMenuModel::Build(int index) {
   }
 
   const bool display_read_later = tab_strip_->delegate()->SupportsReadLater();
-  const bool display_send_to_self = send_tab_to_self::ShouldDisplayEntryPoint(
-      tab_strip_->GetWebContentsAt(index));
+  const bool display_send_to_self =
+      send_tab_to_self::ShouldDisplayEntryPoint(context_tab_ptr->GetContents());
 
   if ((display_read_later || display_send_to_self) && !glic_displayed) {
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -614,19 +616,19 @@ void TabMenuModel::Build(int index) {
                                              ui::kColorMenuIcon,
                                              kTabMenuIconSize));
     SetEnabledAt(GetItemCount() - 1,
-                 tab_strip_->IsReadLaterSupportedForAny(tab_handles));
+                 tab_strip_->IsReadLaterSupportedForAny(tabs));
   }
 
   if (show_glic_items && !glic_displayed) {
-    AppendGlicItems(index, num_tabs, indices);
+    AppendGlicItems(context_tab, tabs);
   }
   if (show_ai_mode_items && !glic_displayed) {
-    AppendAiModeItems(index, num_tabs, show_ai_mode_share,
+    AppendAiModeItems(context_tab, tabs, show_ai_mode_share,
                       show_ai_mode_unshare);
   }
 
   if (display_send_to_self) {
-    BuildSendTabToSelfItem(index, indices);
+    BuildSendTabToSelfItem(context_tab, tabs);
   }
 
   if (controller) {
@@ -695,8 +697,7 @@ void TabMenuModel::Build(int index) {
   }
   SetEnabledAt(GetItemCount() - 1,
                tab_strip_->IsContextMenuCommandEnabled(
-                   index,
-                   TabStripModel::CommandCloseTabsToRight));
+                   context_tab, TabStripModel::CommandCloseTabsToRight));
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,

@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace web_app {
 
@@ -21,6 +22,17 @@ bool HasPinnedHomeTab(const TabStripModel* tab_strip_model) {
 
 bool IsPinnedHomeTab(const TabStripModel* tab_strip_model, int index) {
   return HasPinnedHomeTab(tab_strip_model) && index == 0;
+}
+
+bool IsPinnedHomeTab(const TabStripModel* tab_strip_model,
+                     const tabs::TabInterface* tab) {
+  return tab && HasPinnedHomeTab(tab_strip_model) &&
+         tab_strip_model->GetTabAtIndex(0) == tab;
+}
+
+bool IsPinnedHomeTab(const TabStripModel* tab_strip_model,
+                     tabs::TabHandle tab) {
+  return IsPinnedHomeTab(tab_strip_model, tab.Get());
 }
 
 bool IsTabClosable(const TabStripModel* tab_strip_model, int index) {
