@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -30,6 +33,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.CallbackUtils;
+import org.chromium.base.JniRepeatingRunnable;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
@@ -72,8 +77,10 @@ public class CoBrowseViewsUnitTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
                         Color.WHITE,
+                        /* placeholderElemColor= */ 0,
                         null,
-                        SupplierUtils.ofNull());
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
     }
 
     @Test
@@ -98,8 +105,10 @@ public class CoBrowseViewsUnitTest {
                         CoBrowseContainerType.SIDE_PANEL,
                         mWebUi,
                         Color.WHITE,
+                        /* placeholderElemColor= */ 0,
                         mMockContentProvider,
-                        SupplierUtils.ofNull());
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
 
         View view = coBrowseViews.getView();
         ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
@@ -164,8 +173,10 @@ public class CoBrowseViewsUnitTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
                         Color.WHITE,
+                        /* placeholderElemColor= */ 0,
                         mMockContentProvider,
-                        SupplierUtils.ofNull());
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
         assertEquals(mMockContentProvider, coBrowseViews.getContentProvider());
     }
 
@@ -193,8 +204,10 @@ public class CoBrowseViewsUnitTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
                         Color.WHITE,
+                        /* placeholderElemColor= */ 0,
                         mMockContentProvider,
-                        SupplierUtils.ofNull());
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
         assertTrue(coBrowseViews.isPlaceholderSetUp());
         verify(mMockContentProvider).setupPlaceholderView(any());
     }
@@ -210,8 +223,10 @@ public class CoBrowseViewsUnitTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
                         Color.WHITE,
+                        /* placeholderElemColor= */ 0,
                         mMockContentProvider,
-                        SupplierUtils.ofNull());
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
         assertTrue(!coBrowseViews.isPlaceholderSetUp());
         verify(mMockContentProvider).setupPlaceholderView(any());
     }
@@ -228,8 +243,10 @@ public class CoBrowseViewsUnitTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
                         Color.WHITE,
+                        /* placeholderElemColor= */ 0,
                         mMockContentProvider,
-                        SupplierUtils.ofNull());
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
 
         View placeholderView = rootView.findViewById(R.id.empty_placeholder_container);
         assertEquals(View.VISIBLE, placeholderView.getVisibility());
@@ -305,7 +322,147 @@ public class CoBrowseViewsUnitTest {
                 CoBrowseContainerType.BOTTOM_SHEET,
                 mWebUi,
                 Color.WHITE,
+                /* placeholderElemColor= */ 0,
                 null,
-                () -> remaining.isEmpty() ? null : remaining.remove(0));
+                () -> remaining.isEmpty() ? null : remaining.remove(0),
+                CallbackUtils.emptyRunnable());
+    }
+
+    @Test
+    public void testLoadingPlaceholder_MutualExclusionWithEmptyPlaceholderAndWebContents() {
+        View loadingPlaceholder = new View(mContext);
+        when(mMockContentProvider.setupPlaceholderView(any())).thenReturn(true);
+        when(mMockContentProvider.createLoadingPlaceholderView(
+                        any(), anyInt(), anyInt(), anyBoolean(), any()))
+                .thenReturn(loadingPlaceholder);
+
+        View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+        CoBrowseViews coBrowseViews =
+                new CoBrowseViews(
+                        rootView,
+                        TabBottomSheetClientType.GLIC,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        mWebUi,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        mMockContentProvider,
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
+
+        View emptyPlaceholder = rootView.findViewById(R.id.empty_placeholder_container);
+        ViewGroup webUiContainer = rootView.findViewById(R.id.web_ui_container);
+        ViewGroup loadingContainer = rootView.findViewById(R.id.loading_placeholder_container);
+        assertEquals(loadingPlaceholder, coBrowseViews.getLoadingPlaceholderViewForTesting());
+        assertEquals(loadingContainer, loadingPlaceholder.getParent());
+        assertEquals(View.GONE, loadingContainer.getVisibility());
+        assertEquals(View.VISIBLE, webUiContainer.getVisibility());
+
+        // Allow empty placeholder while WebContents is null: empty placeholder is visible.
+        coBrowseViews.setPlaceholderAllowedSupplier(ObservableSuppliers.createNullable(true));
+        assertEquals(View.VISIBLE, emptyPlaceholder.getVisibility());
+        assertEquals(View.GONE, loadingContainer.getVisibility());
+        assertEquals(View.VISIBLE, webUiContainer.getVisibility());
+
+        // Entering loading state shows loading placeholder, hides web_ui_container, and suppresses
+        // empty placeholder.
+        coBrowseViews.setIsLoading(true);
+        assertEquals(View.VISIBLE, loadingContainer.getVisibility());
+        assertEquals(View.INVISIBLE, webUiContainer.getVisibility());
+        assertEquals(View.GONE, emptyPlaceholder.getVisibility());
+
+        // Attaching non-null WebContents in <webview> mode while still loading keeps loading
+        // placeholder visible and web_ui_container hidden behind it.
+        coBrowseViews.setWebContents(mWebContents, false);
+        assertEquals(View.VISIBLE, loadingContainer.getVisibility());
+        assertEquals(View.INVISIBLE, webUiContainer.getVisibility());
+        assertEquals(View.GONE, emptyPlaceholder.getVisibility());
+
+        // Leaving loading state while WebContents is attached reveals web_ui_container and keeps
+        // empty placeholder hidden.
+        coBrowseViews.setIsLoading(false);
+        assertEquals(View.GONE, loadingContainer.getVisibility());
+        assertEquals(View.VISIBLE, webUiContainer.getVisibility());
+        assertEquals(View.GONE, emptyPlaceholder.getVisibility());
+
+        // Clearing WebContents while not loading restores empty placeholder.
+        coBrowseViews.setWebContents(null, false);
+        assertEquals(View.GONE, loadingContainer.getVisibility());
+        assertEquals(View.VISIBLE, webUiContainer.getVisibility());
+        assertEquals(View.VISIBLE, emptyPlaceholder.getVisibility());
+
+        // Bottom-sheet loading container matches web_ui_container's non-zero top margin.
+        assertEquals(
+                ((MarginLayoutParams) webUiContainer.getLayoutParams()).topMargin,
+                ((MarginLayoutParams) loadingContainer.getLayoutParams()).topMargin);
+
+        // Destroying detaches loading placeholder and restores web_ui_container visibility.
+        coBrowseViews.setIsLoading(true);
+        coBrowseViews.destroy();
+        assertNull(loadingPlaceholder.getParent());
+        assertEquals(View.GONE, loadingContainer.getVisibility());
+        assertEquals(View.VISIBLE, webUiContainer.getVisibility());
+    }
+
+    @Test
+    public void testLoadingPlaceholder_CloseCallbackPassedAndDestroyed() {
+        View loadingPlaceholder = new View(mContext);
+        final Runnable[] capturedCloseCallback = new Runnable[1];
+        when(mMockContentProvider.createLoadingPlaceholderView(
+                        any(), anyInt(), anyInt(), anyBoolean(), any()))
+                .thenAnswer(
+                        invocation -> {
+                            capturedCloseCallback[0] = invocation.getArgument(4);
+                            return loadingPlaceholder;
+                        });
+
+        JniRepeatingRunnable closeRunnable = mock(JniRepeatingRunnable.class);
+        View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+        CoBrowseViews coBrowseViews =
+                new CoBrowseViews(
+                        rootView,
+                        TabBottomSheetClientType.GLIC,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        mWebUi,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        mMockContentProvider,
+                        SupplierUtils.ofNull(),
+                        closeRunnable);
+
+        assertEquals(closeRunnable, capturedCloseCallback[0]);
+        capturedCloseCallback[0].run();
+        verify(closeRunnable).run();
+        verify(closeRunnable, never()).destroy();
+
+        // destroy() detaches the placeholder and releases the JNI-backed callback.
+        coBrowseViews.destroy();
+        assertNull(loadingPlaceholder.getParent());
+        verify(closeRunnable).destroy();
+    }
+
+    @Test
+    public void testLoadingPlaceholder_SidePanelZeroTopMargin() {
+        View loadingPlaceholder = new View(mContext);
+        when(mMockContentProvider.createLoadingPlaceholderView(
+                        any(), anyInt(), anyInt(), anyBoolean(), any()))
+                .thenReturn(loadingPlaceholder);
+
+        View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+        CoBrowseViews coBrowseViews =
+                new CoBrowseViews(
+                        rootView,
+                        TabBottomSheetClientType.GLIC,
+                        CoBrowseContainerType.SIDE_PANEL,
+                        mWebUi,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        mMockContentProvider,
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
+
+        View loadingContainer = rootView.findViewById(R.id.loading_placeholder_container);
+        assertEquals(loadingContainer, loadingPlaceholder.getParent());
+        assertEquals(0, ((MarginLayoutParams) loadingContainer.getLayoutParams()).topMargin);
+        coBrowseViews.destroy();
     }
 }

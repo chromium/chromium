@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -132,7 +133,8 @@ public class TabBottomSheetManagerTest {
                                     TabBottomSheetClientType.UNKNOWN,
                                     CoBrowseContainerType.BOTTOM_SHEET,
                                     /* requestFocus= */ false,
-                                    new TestCoBrowseComponentProvider());
+                                    new TestCoBrowseComponentProvider(),
+                                    CallbackUtils.emptyRunnable());
                     mManager =
                             (TabBottomSheetManagerImpl)
                                     tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
@@ -301,7 +303,8 @@ public class TabBottomSheetManagerTest {
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
                                         /* requestFocus= */ false,
-                                        new TestCoBrowseComponentProvider()));
+                                        new TestCoBrowseComponentProvider(),
+                                        CallbackUtils.emptyRunnable()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -357,7 +360,8 @@ public class TabBottomSheetManagerTest {
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
                                         /* requestFocus= */ false,
-                                        new TestCoBrowseComponentProvider()));
+                                        new TestCoBrowseComponentProvider(),
+                                        CallbackUtils.emptyRunnable()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -629,7 +633,8 @@ public class TabBottomSheetManagerTest {
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
                                         /* requestFocus= */ false,
-                                        new TestCoBrowseComponentProvider()));
+                                        new TestCoBrowseComponentProvider(),
+                                        CallbackUtils.emptyRunnable()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -15,6 +15,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -117,6 +118,8 @@ public class CoBrowseViewFactory {
      * @param clientType The client using coBrowseViews.
      * @param containerType The type of container hosting the views.
      * @param requestFocus Whether focus should be requested for the web contents.
+     * @param bottomSheetContentProvider The provider for bottom sheet content, or null.
+     * @param onCloseClicked Run when the loading placeholder close button is clicked.
      * @return The {@link CoBrowseViews} instance.
      */
     CoBrowseViews buildCoBrowseViews(
@@ -126,7 +129,8 @@ public class CoBrowseViewFactory {
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             boolean requestFocus,
-            @Nullable CoBrowseComponentProvider bottomSheetContentProvider) {
+            @Nullable CoBrowseComponentProvider bottomSheetContentProvider,
+            Runnable onCloseClicked) {
         View containerView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
 
@@ -147,8 +151,10 @@ public class CoBrowseViewFactory {
                 containerType,
                 webUi,
                 backgroundColor,
+                placeholderElemColor,
                 bottomSheetContentProvider,
-                () -> createPeekViewManagerIfNeeded(bottomSheetContentProvider));
+                () -> createPeekViewManagerIfNeeded(bottomSheetContentProvider),
+                onCloseClicked);
     }
 
     /**
@@ -162,6 +168,7 @@ public class CoBrowseViewFactory {
      * @param containerType The type of container hosting the views.
      * @param requestFocus Whether focus should be requested for the web contents.
      * @param bottomSheetContentProvider The provider for bottom sheet content, or null.
+     * @param onCloseClicked Run when the loading placeholder close button is clicked.
      * @return The {@link CoBrowseViews} instance, or null if the factory is unavailable.
      */
     @CalledByNative
@@ -173,11 +180,15 @@ public class CoBrowseViewFactory {
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             boolean requestFocus,
-            @Nullable CoBrowseComponentProvider bottomSheetContentProvider) {
+            @Nullable CoBrowseComponentProvider bottomSheetContentProvider,
+            @JniType("base::RepeatingClosure") Runnable onCloseClicked) {
         ThreadUtils.assertOnUiThread();
         @Nullable CoBrowseViewFactory factory =
                 TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
         if (factory == null) {
+            if (onCloseClicked instanceof Destroyable destroyable) {
+                destroyable.destroy();
+            }
             return null;
         }
 
@@ -188,7 +199,8 @@ public class CoBrowseViewFactory {
                 clientType,
                 containerType,
                 requestFocus,
-                bottomSheetContentProvider);
+                bottomSheetContentProvider,
+                onCloseClicked);
     }
 
     /**

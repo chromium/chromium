@@ -5,10 +5,13 @@
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 
 #include <cstdint>
+#include <utility>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_container_type.h"
@@ -49,13 +52,15 @@ CoBrowseViewsBridge::CoBrowseViewsBridge(
     const base::android::JavaRef<jobject>& bottom_sheet_content_provider,
     bool enable_pinch_to_zoom,
     ui::ColorId background_color_id,
-    ui::ColorId placeholder_elem_color_id)
+    ui::ColorId placeholder_elem_color_id,
+    base::RepeatingClosure close_callback)
     : tab_(tab),
       client_type_(client_type),
       container_type_(container_type),
       enable_pinch_to_zoom_(enable_pinch_to_zoom),
       background_color_id_(background_color_id),
       placeholder_elem_color_id_(placeholder_elem_color_id),
+      close_callback_(std::move(close_callback)),
       bottom_sheet_content_provider_(bottom_sheet_content_provider),
       tab_insert_subscription_(tab.RegisterDidInsert(
           base::BindRepeating(&CoBrowseViewsBridge::OnTabInserted,
@@ -110,7 +115,12 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
       env, window_android, web_contents, background_color,
       placeholder_elem_color, static_cast<int>(client_type_),
       static_cast<int>(container_type_), request_focus,
-      bottom_sheet_content_provider_));
+      bottom_sheet_content_provider_,
+      close_callback_ ? close_callback_ : base::DoNothing()));
+  if (is_loading_ && !java_co_browse_views_.is_null()) {
+    Java_CoBrowseViews_setIsLoading(env, java_co_browse_views_,
+                                    /*is_loading=*/true);
+  }
 
   return !java_co_browse_views_.is_null();
 }
@@ -147,6 +157,14 @@ void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents,
   JNIEnv* env = AttachCurrentThread();
   Java_CoBrowseViews_setWebContents(env, java_co_browse_views_, web_contents,
                                     request_focus);
+}
+
+void CoBrowseViewsBridge::SetIsLoading(bool is_loading) {
+  is_loading_ = is_loading;
+  if (!java_co_browse_views_.is_null()) {
+    JNIEnv* env = AttachCurrentThread();
+    Java_CoBrowseViews_setIsLoading(env, java_co_browse_views_, is_loading);
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>

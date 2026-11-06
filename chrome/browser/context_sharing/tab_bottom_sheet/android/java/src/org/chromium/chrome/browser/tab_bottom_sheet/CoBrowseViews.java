@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -17,6 +18,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -39,22 +41,27 @@ public class CoBrowseViews {
 
     private final @Nullable TabBottomSheetWebUi mWebUi;
     private final @ColorInt int mBackgroundColor;
+    private final @ColorInt int mPlaceholderElemColor;
     private final View mContainerView;
     private final @TabBottomSheetClientType int mClientType;
     private final @CoBrowseContainerType int mContainerType;
     private final @Nullable CoBrowseComponentProvider mContentProvider;
     private final Supplier<@Nullable PeekViewManager> mPeekViewManagerSupplier;
+    private final Runnable mOnCloseClicked;
     private final Callback<@Nullable Boolean> mPlaceholderAllowedCallback =
             this::onPlaceholderAllowedChanged;
     private final Callback<@Nullable WebContents> mWebContentsObserver = this::onWebContentsChanged;
 
     private final TabBottomSheetWebUiContainer mWebUiContainer;
     private final ViewGroup mPeekContainer;
+    private final ViewGroup mLoadingPlaceholderContainer;
 
     private @Nullable PeekViewManager mPeekViewManager;
     private @Nullable View mPeekView;
     private boolean mIsPlaceholderSetUp;
+    private boolean mIsLoading;
     private @Nullable View mPlaceholderView;
+    private @Nullable View mLoadingPlaceholderView;
     private @Nullable NullableObservableSupplier<Boolean> mPlaceholderAllowedSupplier;
 
     /**
@@ -65,8 +72,10 @@ public class CoBrowseViews {
      * @param containerType The type of container hosting the views.
      * @param webUi The web UI for the view.
      * @param backgroundColor The background color for the view.
+     * @param placeholderElemColor The fill color for loading skeleton items.
      * @param contentProvider The provider for custom sheet content implementations.
      * @param peekViewManagerSupplier Supplier for the manager for the peek view.
+     * @param onCloseClicked Run when the loading placeholder close button is clicked.
      */
     public CoBrowseViews(
             View containerView,
@@ -74,19 +83,25 @@ public class CoBrowseViews {
             @CoBrowseContainerType int containerType,
             @Nullable TabBottomSheetWebUi webUi,
             @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
             @Nullable CoBrowseComponentProvider contentProvider,
-            Supplier<@Nullable PeekViewManager> peekViewManagerSupplier) {
+            Supplier<@Nullable PeekViewManager> peekViewManagerSupplier,
+            Runnable onCloseClicked) {
         mClientType = clientType;
         mContainerType = containerType;
         mWebUi = webUi;
         mBackgroundColor = backgroundColor;
+        mPlaceholderElemColor = placeholderElemColor;
         mContainerView = containerView;
         mContentProvider = contentProvider;
         mPeekViewManagerSupplier = peekViewManagerSupplier;
+        mOnCloseClicked = onCloseClicked;
 
         // Cache view lookups.
         mWebUiContainer = assertNonNull(containerView.findViewById(R.id.web_ui_container));
         mPeekContainer = assertNonNull(containerView.findViewById(R.id.peek_view_container));
+        mLoadingPlaceholderContainer =
+                assertNonNull(containerView.findViewById(R.id.loading_placeholder_container));
 
         mWebContentsSupplier.set(getWebContents());
         populateViewHierarchy();
@@ -180,7 +195,20 @@ public class CoBrowseViews {
                 detachFromParent(newView);
                 mWebUiContainer.addView(newView);
             }
+        } else {
+            mWebContentsSupplier.set(webContents);
         }
+        updatePlaceholderVisibility();
+    }
+
+    /** Updates whether the native loading placeholder should be shown. */
+    @CalledByNative
+    public void setIsLoading(boolean isLoading) {
+        if (mIsLoading == isLoading) {
+            return;
+        }
+        mIsLoading = isLoading;
+        updatePlaceholderVisibility();
     }
 
     /**
@@ -211,6 +239,17 @@ public class CoBrowseViews {
         if (mPlaceholderAllowedSupplier != null) {
             mPlaceholderAllowedSupplier.removeObserver(mPlaceholderAllowedCallback);
         }
+        if (mLoadingPlaceholderView != null) {
+            mLoadingPlaceholderContainer.removeAllViews();
+            mLoadingPlaceholderContainer.setVisibility(View.GONE);
+            mLoadingPlaceholderView = null;
+            mWebUiContainer.setVisibility(View.VISIBLE);
+        }
+        // Release the native callback (if JNI-backed) now that the loading placeholder, the only
+        // holder of a click path to it, has been detached.
+        if (mOnCloseClicked instanceof Destroyable destroyable) {
+            destroyable.destroy();
+        }
         if (mWebUi != null) {
             mWebUiContainer.removeAllViews();
             mWebUi.destroy();
@@ -225,6 +264,10 @@ public class CoBrowseViews {
     /** Returns whether the placeholder view is set up. */
     boolean isPlaceholderSetUp() {
         return mIsPlaceholderSetUp;
+    }
+
+    @Nullable View getLoadingPlaceholderViewForTesting() {
+        return mLoadingPlaceholderView;
     }
 
     void setIgnoreClearFocus(boolean ignoreClearFocus) {
@@ -276,11 +319,15 @@ public class CoBrowseViews {
 
     private void updateForContainerType() {
         if (mContainerType == CoBrowseContainerType.SIDE_PANEL) {
-            MarginLayoutParams layoutParams =
-                    (MarginLayoutParams) mWebUiContainer.getLayoutParams();
-            layoutParams.topMargin = 0;
-            mWebUiContainer.setLayoutParams(layoutParams);
+            removeTopMargin(mWebUiContainer);
+            removeTopMargin(mLoadingPlaceholderContainer);
         }
+    }
+
+    private static void removeTopMargin(View view) {
+        MarginLayoutParams layoutParams = (MarginLayoutParams) view.getLayoutParams();
+        layoutParams.topMargin = 0;
+        view.setLayoutParams(layoutParams);
     }
 
     private void setupPlaceholder() {
@@ -291,6 +338,20 @@ public class CoBrowseViews {
             mIsPlaceholderSetUp =
                     mContentProvider.setupPlaceholderView(
                             (TextViewWithCompoundDrawables) mPlaceholderView);
+            mLoadingPlaceholderView =
+                    mContentProvider.createLoadingPlaceholderView(
+                            mContainerView.getContext(),
+                            mBackgroundColor,
+                            mPlaceholderElemColor,
+                            mContainerType == CoBrowseContainerType.SIDE_PANEL,
+                            mOnCloseClicked);
+            if (mLoadingPlaceholderView != null) {
+                mLoadingPlaceholderContainer.addView(
+                        mLoadingPlaceholderView,
+                        new FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
+            }
         }
         mWebContentsSupplier.addSyncObserverAndCallIfNonNull(mWebContentsObserver);
     }
@@ -304,13 +365,23 @@ public class CoBrowseViews {
     }
 
     private void updatePlaceholderVisibility() {
+        boolean webContentsNull = mWebContentsSupplier.get() == null;
+        boolean hasLoadingPlaceholder = mLoadingPlaceholderView != null;
+        boolean showLoading = hasLoadingPlaceholder && mIsLoading;
+        if (hasLoadingPlaceholder) {
+            int loadingVisibility = showLoading ? View.VISIBLE : View.GONE;
+            int webUiVisibility = showLoading ? View.INVISIBLE : View.VISIBLE;
+            mLoadingPlaceholderContainer.setVisibility(loadingVisibility);
+            mWebUiContainer.setVisibility(webUiVisibility);
+        }
+
         if (mPlaceholderView == null) return;
 
-        boolean webContentsNull = mWebContentsSupplier.get() == null;
         boolean isPlaceholderAllowed =
                 mPlaceholderAllowedSupplier == null
                         || Boolean.TRUE.equals(mPlaceholderAllowedSupplier.get());
-        boolean showPlaceholder = mIsPlaceholderSetUp && isPlaceholderAllowed && webContentsNull;
+        boolean showPlaceholder =
+                !showLoading && mIsPlaceholderSetUp && isPlaceholderAllowed && webContentsNull;
         mPlaceholderView.setVisibility(showPlaceholder ? View.VISIBLE : View.GONE);
     }
 }

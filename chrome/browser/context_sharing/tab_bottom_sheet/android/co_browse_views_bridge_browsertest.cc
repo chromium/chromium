@@ -7,6 +7,7 @@
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/command_line.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/android/tab_android.h"
@@ -161,6 +162,40 @@ IN_PROC_BROWSER_TEST_F(CoBrowseViewsBridgeBrowserTest,
 
   // 6. Verify Java views are still null after moving to the new window.
   EXPECT_TRUE(views_bridge.GetCoBrowseViews().is_null());
+}
+
+IN_PROC_BROWSER_TEST_F(CoBrowseViewsBridgeBrowserTest,
+                       LoadingPlaceholderCloseRunsCallback) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+  tabs::TabInterface* tab = tab_list->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  ASSERT_TRUE(base::test::RunUntil([tab]() {
+    return tab->GetContents()->GetTopLevelNativeWindow() != nullptr;
+  }));
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> provider =
+      Java_TestCoBrowseComponentProvider_Constructor(env);
+
+  int close_count = 0;
+  CoBrowseViewsBridge views_bridge(
+      *tab, TabBottomSheetClientType::kUnknown,
+      CoBrowseContainerType::kBottomSheet, provider,
+      /*enable_pinch_to_zoom=*/false, kColorSidePanelContentBackground,
+      ui::kColorSysSurface1,
+      base::BindLambdaForTesting([&close_count]() { ++close_count; }));
+
+  views_bridge.SetIsLoading(true);
+  views_bridge.SetWebContents(nullptr, /*request_focus=*/false);
+  ASSERT_FALSE(views_bridge.GetCoBrowseViews().is_null());
+
+  // Clicking close on the Java placeholder runs the native closure.
+  Java_TestCoBrowseComponentProvider_clickLoadingPlaceholderClose(env);
+  EXPECT_EQ(1, close_count);
+
+  views_bridge.SetIsLoading(false);
 }
 
 }  // namespace context_sharing

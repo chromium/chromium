@@ -40,6 +40,14 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/tab_bottom_sheet_web_ui_top_margin"/>
+
+        <!-- Native Loading Placeholder (shown above web_ui_container) -->
+        <FrameLayout
+            android:id="@+id/loading_placeholder_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/tab_bottom_sheet_web_ui_top_margin"
+            android:visibility="gone" />
     </FrameLayout>
 
     <!-- Peek View: Appears when BottomSheet is collapsed -->

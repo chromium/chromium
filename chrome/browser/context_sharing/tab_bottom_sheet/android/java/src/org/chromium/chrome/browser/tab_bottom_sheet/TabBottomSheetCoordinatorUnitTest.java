@@ -178,8 +178,10 @@ public class TabBottomSheetCoordinatorUnitTest {
                                 CoBrowseContainerType.BOTTOM_SHEET,
                                 mMockWebUi,
                                 0,
+                                /* placeholderElemColor= */ 0,
                                 mMockContentProvider,
-                                SupplierUtils.ofNull()));
+                                SupplierUtils.ofNull(),
+                                CallbackUtils.emptyRunnable()));
         assertNotNull(
                 "peek_view_container should be found in CoBrowseViews",
                 mView.findViewById(R.id.peek_view_container));
@@ -1507,8 +1509,10 @@ public class TabBottomSheetCoordinatorUnitTest {
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mMockWebUi,
                         0,
+                        /* placeholderElemColor= */ 0,
                         mMockContentProvider,
-                        SupplierUtils.ofNull());
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
         mCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,

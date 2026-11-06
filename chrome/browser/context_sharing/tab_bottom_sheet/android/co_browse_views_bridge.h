@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_container_type.h"
@@ -44,7 +45,8 @@ class CoBrowseViewsBridge : public content::WebContentsObserver {
       const base::android::JavaRef<jobject>& bottom_sheet_content_provider,
       bool enable_pinch_to_zoom,
       ui::ColorId background_color_id,
-      ui::ColorId placeholder_elem_color_id);
+      ui::ColorId placeholder_elem_color_id,
+      base::RepeatingClosure close_callback = {});
   ~CoBrowseViewsBridge() override;
 
   CoBrowseViewsBridge(const CoBrowseViewsBridge&) = delete;
@@ -57,6 +59,10 @@ class CoBrowseViewsBridge : public content::WebContentsObserver {
 
   // Sets the web contents for the view.
   void SetWebContents(content::WebContents* web_contents, bool request_focus);
+
+  // Updates whether the native loading placeholder is shown. While loading, the
+  // placeholder covers the web UI even if a `WebContents` is attached.
+  void SetIsLoading(bool is_loading);
 
   // Returns the Java CoBrowseViews object.
   base::android::ScopedJavaLocalRef<jobject> GetCoBrowseViews();
@@ -79,6 +85,8 @@ class CoBrowseViewsBridge : public content::WebContentsObserver {
   const bool enable_pinch_to_zoom_;
   const ui::ColorId background_color_id_;
   const ui::ColorId placeholder_elem_color_id_;
+  base::RepeatingClosure close_callback_;
+  bool is_loading_ = false;
   base::android::ScopedJavaGlobalRef<jobject> java_co_browse_views_;
   base::android::ScopedJavaGlobalRef<jobject> bottom_sheet_content_provider_;
   raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
