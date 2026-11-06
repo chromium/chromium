@@ -19,7 +19,9 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_utils.h"
 
 namespace {
 
@@ -91,14 +93,20 @@ bool IsSubmenuContainer(const actions::BaseAction* action) {
 
 // Extracts the display title for an item with fallback priority:
 // 1. Text override -> 2. ActionItem text -> 3. Tooltip text fallback.
-std::u16string_view ExtractItemTitle(actions::BaseAction* action) {
+// The returned title is plain display text: menu label mnemonic markers are
+// stripped and escaped ampersands ("&&") are collapsed to a literal "&".
+std::u16string ExtractItemTitle(actions::BaseAction* action) {
   const std::u16string* text_override =
       action->GetProperty(AppMenuActionItem::kTextOverrideKey);
-  const std::u16string_view raw_text = text_override
-                                           ? std::u16string_view(*text_override)
-                                           : action->GetActionItem()->GetText();
-  return raw_text.empty() ? action->GetActionItem()->GetTooltipText()
-                          : raw_text;
+  // Text overrides are menu labels and may contain mnemonics, whereas
+  // ActionItem::GetText() already has them removed.
+  const std::u16string text =
+      text_override ? gfx::RemoveAccelerator(*text_override)
+                    : std::u16string(action->GetActionItem()->GetText());
+  if (!text.empty()) {
+    return text;
+  }
+  return std::u16string(action->GetActionItem()->GetTooltipText());
 }
 
 }  // namespace
@@ -206,7 +214,7 @@ void AppMenuSearchController::FlattenHierarchyRecursive(
     return;
   }
 
-  const std::u16string_view title = ExtractItemTitle(action);
+  const std::u16string title = ExtractItemTitle(action);
 
   // Tab groups: only the groups are searchable, one result each.
   if (current_type == AppMenuSearchItem::Type::kTabGroup) {
@@ -352,12 +360,18 @@ AppMenuSearchController::BuildSearchResultsTree(SearchResults results) const {
       // Always show the title that matched, even when it's the action's own
       // text. Otherwise the row shows the action's text, which can differ
       // (e.g. a text override on the menu row) or be empty (icon-only
-      // buttons, which are titled by their tooltip).
-      indirect_item->SetProperty(AppMenuActionItem::kTextOverrideKey,
-                                 item.title);
+      // buttons, which are titled by their tooltip). The indexed title is
+      // plain text, so escape ampersands to keep the menu from treating them
+      // as mnemonic markers.
+      indirect_item->SetProperty(
+          AppMenuActionItem::kTextOverrideKey,
+          ui::EscapeMenuLabelAmpersands(std::u16string(item.title)));
       if (!item.breadcrumb.empty()) {
-        indirect_item->SetProperty(AppMenuActionItem::kSecondaryTextKey,
-                                   item.breadcrumb);
+        // MenuItemView draws the secondary title with the same mnemonic
+        // prefix handling as the title, so it needs escaping too.
+        indirect_item->SetProperty(
+            AppMenuActionItem::kSecondaryTextKey,
+            ui::EscapeMenuLabelAmpersands(std::u16string(item.breadcrumb)));
       }
       if (item.icon_override) {
         indirect_item->SetProperty(AppMenuActionItem::kIconOverrideKey,
