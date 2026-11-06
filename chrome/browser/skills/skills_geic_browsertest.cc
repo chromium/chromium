@@ -131,6 +131,11 @@ IN_PROC_BROWSER_TEST_F(SkillsGeicBrowserTest, SkillsPageShowsUnsupportedError) {
   EXPECT_EQ("skills-unsupported",
             content::EvalJs(web_contents(),
                             std::string(kErrorPageJs) + ".errorType"));
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_TITLE),
+            content::EvalJs(web_contents(),
+                            std::string(kErrorPageJs) +
+                                ".shadowRoot.querySelector('#errorTitle')"
+                                ".textContent"));
   EXPECT_EQ(
       l10n_util::GetStringFUTF8(
           IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_DESCRIPTION,
@@ -144,6 +149,11 @@ IN_PROC_BROWSER_TEST_F(SkillsGeicBrowserTest, SkillsPageShowsUnsupportedError) {
                             std::string(kErrorPageJs) +
                                 ".shadowRoot.querySelector('.body-text a')"
                                 ".href"));
+  EXPECT_EQ("Gemini Enterprise web app",
+            content::EvalJs(web_contents(),
+                            std::string(kErrorPageJs) +
+                                ".shadowRoot.querySelector('.body-text a')"
+                                ".textContent"));
 }
 
 }  // namespace

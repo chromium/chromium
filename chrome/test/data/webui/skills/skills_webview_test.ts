@@ -196,6 +196,10 @@ suite('SkillsWebviewTest', () => {
     assertTrue(loadingPage.hasAttribute('hidden'));
     assertFalse(errorPage.hasAttribute('hidden'));
     assertEquals(ErrorType.SKILLS_UNSUPPORTED, errorPage.errorType);
+    await errorPage.updateComplete;
+    assertEquals(
+        loadTimeData.getString('unsupportedErrorPageTitle'),
+        errorPage.shadowRoot?.querySelector('#errorTitle')?.textContent);
     assertEquals('true', webview.getAttribute('hidden'));
   });
 

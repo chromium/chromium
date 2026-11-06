@@ -89,9 +89,10 @@ export class ErrorPageElement extends CrLitElement {
     switch (this.errorType) {
       case ErrorType.GLIC_NOT_ENABLED:
       case ErrorType.SKILLS_DISABLED:
-      case ErrorType.SKILLS_UNSUPPORTED:
       case ErrorType.REMOTE_AUTHORITY_UNREACHABLE:
         return loadTimeData.getString('errorPageTitle');
+      case ErrorType.SKILLS_UNSUPPORTED:
+        return loadTimeData.getString('unsupportedErrorPageTitle');
       case ErrorType.NO_SEARCH_RESULTS:
         return loadTimeData.getString('noSearchResultsTitle');
       default:

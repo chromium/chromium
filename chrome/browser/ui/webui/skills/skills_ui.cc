@@ -217,6 +217,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui)
       {"signInToChrome", IDS_SKILLS_SIGN_IN_TO_CHROME},
       {"skillsTitle", IDS_SKILL_PAGE_TITLE},
       {"errorPageTitle", IDS_SKILLS_ERROR_PAGE_TITLE},
+      {"unsupportedErrorPageTitle", IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_TITLE},
       {"noSearchResultsTitle", IDS_SKILLS_NO_SEARCH_RESULT_TITLE},
       {"errorPageDescription", IDS_SKILLS_ERROR_PAGE_DESCRIPTION},
       {"noSearchResultsDescription", IDS_SKILLS_NO_SEARCH_RESULT_DESCRIPTION},
