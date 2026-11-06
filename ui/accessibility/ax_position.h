@@ -1985,7 +1985,9 @@ class AXPosition {
         // Since the equivalent leaf tree position is unignored, search for the
         // first unignored ancestor anchor and return that text position.
         if (!unignored_position->GetAnchor()->IsIgnored()) {
-          CHECK(!unignored_position->IsIgnored(), base::NotFatalUntil::M163);
+          // TODO(crbug.com/582551042): CHECK-exclusion: Convert to a CHECK once
+          // we are confident it won't be triggered.
+          DCHECK(!unignored_position->IsIgnored());
           return unignored_position;
         }
         unignored_position = unignored_position->CreateParentPosition();
