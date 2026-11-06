@@ -191,6 +191,10 @@
       [self.delegate composeboxMenuMediator:self
                                  didTapTool:ComposeboxMode::kCanvas];
       break;
+    case ComposeboxMenuItemType::kPTM:
+      [self.delegate composeboxMenuMediator:self
+                                 didTapTool:ComposeboxMode::kPTM];
+      break;
     case ComposeboxMenuItemType::kCurrentTab: {
       [self processCurrentTab];
       break;

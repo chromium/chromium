@@ -33,10 +33,14 @@ NSString* const kComposeboxAIMButtonAccessibilityIdentifier =
     @"kComposeboxAIMButtonAccessibilityIdentifier";
 NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier =
     @"kComposeboxImageGenerationButtonAccessibilityIdentifier";
+NSString* const kComposeboxPTMButtonAccessibilityIdentifier =
+    @"kComposeboxPTMButtonAccessibilityIdentifier";
 NSString* const kComposeboxAIMActionAccessibilityIdentifier =
     @"kComposeboxAIMActionAccessibilityIdentifier";
 NSString* const kComposeboxImageGenerationActionAccessibilityIdentifier =
     @"kComposeboxImageGenerationActionAccessibilityIdentifier";
+NSString* const kComposeboxPTMActionAccessibilityIdentifier =
+    @"kComposeboxPTMActionAccessibilityIdentifier";
 NSString* const kComposeboxAttachFileActionAccessibilityIdentifier =
     @"kComposeboxAttachFileActionAccessibilityIdentifier";
 NSString* const kComposeboxGalleryActionAccessibilityIdentifier =

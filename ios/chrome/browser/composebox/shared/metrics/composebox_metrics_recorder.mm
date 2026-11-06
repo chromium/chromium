@@ -120,6 +120,8 @@ omnibox::ToolMode ToolModeFromComposeboxMode(ComposeboxMode tool) {
       return omnibox::ToolMode::TOOL_MODE_CANVAS;
     case ComposeboxMode::kDeepSearch:
       return omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+    case ComposeboxMode::kPTM:
+      return omnibox::ToolMode::TOOL_MODE_GEMINI_PRO;
     case ComposeboxMode::kImageGeneration:
       return omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
     case ComposeboxMode::kAIM:

@@ -41,12 +41,16 @@ extern NSString* const kComposeboxSendButtonAccessibilityIdentifier;
 extern NSString* const kComposeboxAIMButtonAccessibilityIdentifier;
 // Accessibility identifier for the image generation button in the composebox.
 extern NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier;
+// Accessibility identifier for the PTM button in the composebox.
+extern NSString* const kComposeboxPTMButtonAccessibilityIdentifier;
 
 // ==== Actions in the plus menu.
 // Accessibility identifier for the AI mode action in the plus menu.
 extern NSString* const kComposeboxAIMActionAccessibilityIdentifier;
 // Accessibility identifier for the create image action in the plus menu.
 extern NSString* const kComposeboxImageGenerationActionAccessibilityIdentifier;
+// Accessibility identifier for the PTM action in the plus menu.
+extern NSString* const kComposeboxPTMActionAccessibilityIdentifier;
 // Accessibility identifier for the Attach File button in the plus menu.
 extern NSString* const kComposeboxAttachFileActionAccessibilityIdentifier;
 // Accessibility identifier for the Gallery button in the plus menu.

@@ -14,6 +14,8 @@ ComposeboxMenuItemType MenuItemTypeForTool(ComposeboxMode mode) {
       return ComposeboxMenuItemType::kDeepSearch;
     case ComposeboxMode::kCanvas:
       return ComposeboxMenuItemType::kCanvas;
+    case ComposeboxMode::kPTM:
+      return ComposeboxMenuItemType::kPTM;
     case ComposeboxMode::kRegularSearch:
       return ComposeboxMenuItemType::kUnknown;
   }

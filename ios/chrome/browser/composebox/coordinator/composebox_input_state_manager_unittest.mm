@@ -778,6 +778,37 @@ TEST_F(ComposeboxInputStateManagerTest,
   EXPECT_EQ(state.activeTool, ComposeboxMode::kCanvas);
 }
 
+// Tests that `ComposeboxMode::kPTM` is hidden without a server config and
+// becomes visible and activatable when `TOOL_MODE_GEMINI_PRO` is allowed by
+// the server `SearchboxConfig`.
+TEST_F(ComposeboxInputStateManagerTest,
+       PtmToolVisibleAndActivatableOnlyWhenGeminiProToolAllowedByServer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
+
+  ComposeboxUIInputState* initial_state =
+      [manager_ computeUIInputStateWithFavicon:nil attachedWebStateIDs:{}];
+  ASSERT_NE(initial_state, nil);
+  ASSERT_TRUE([initial_state isToolHidden:ComposeboxMode::kPTM]);
+
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set()->add_allowed_tools(
+      omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
+  omnibox::ToolConfig* tool_config = config.add_tool_configs();
+  tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+  mode_holder_.mode = ComposeboxMode::kPTM;
+
+  ComposeboxUIInputState* updated_state =
+      [manager_ computeUIInputStateWithFavicon:nil attachedWebStateIDs:{}];
+  ASSERT_NE(updated_state, nil);
+  EXPECT_FALSE([updated_state isToolHidden:ComposeboxMode::kPTM]);
+  EXPECT_EQ(updated_state.activeTool, ComposeboxMode::kPTM);
+}
+
 // Tests that setting a model results in that model being active in the UI
 // state.
 TEST_F(ComposeboxInputStateManagerTest,

@@ -222,6 +222,9 @@ UIImage* SendButtonImage(BOOL highlighted,
   UIButton* _canvasButton;
   /// The button to toggle deep search mode.
   UIButton* _deepSearchButton;
+  /// The button to toggle PTM mode.
+  UIButton* _ptmButton;
+  UIView* _ptmButtonXIndicator;
   /// The button to attach the current tab.
   UIButton* _askAboutThisPageButton;
   /// The glow effect around the input plate container.
@@ -336,6 +339,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   _imageGenerationButton = [self createImageGenerationButton];
   _canvasButton = [self createCanvasButton];
   _deepSearchButton = [self createDeepSearchButton];
+  _ptmButton = [self createPTMButton];
   _askAboutThisPageButton = [self createAskAboutThisPageButton];
   _plusButtonContainer = [self createPlusButtonContainer];
   [self setupLargeContentViewer];
@@ -696,6 +700,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   [self animateButton:_imageGenerationButton hidden:!(controls & kCreateImage)];
   [self animateButton:_canvasButton hidden:!(controls & kCanvas)];
   [self animateButton:_deepSearchButton hidden:!(controls & kDeepSearch)];
+  [self animateButton:_ptmButton hidden:!(controls & kPTM)];
   [self animateLeadingImageHidden:!(controls & kLeadingImage)];
 
   [self updateInputPlateStackViewPadding];
@@ -792,6 +797,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 
   if (uiConfigChanged) {
     [self updateCreateImageTitle];
+    [self updatePTMButton:_ptmButton];
   }
 
   // Always update menu items as it's safer and code is simpler.
@@ -854,6 +860,14 @@ UIImage* SendButtonImage(BOOL highlighted,
   [self.delegate
       composeboxViewController:self
                     didTapTool:ComposeboxMode::kDeepSearch
+              activationSource:AiModeActivationSource::kDedicatedButton];
+}
+
+// Called when the PTM button in the input plate is tapped.
+- (void)ptmButtonTapped {
+  [self.delegate
+      composeboxViewController:self
+                    didTapTool:ComposeboxMode::kPTM
               activationSource:AiModeActivationSource::kDedicatedButton];
 }
 
@@ -1102,7 +1116,8 @@ UIImage* SendButtonImage(BOOL highlighted,
 
   if (_state.activeTool == ComposeboxMode::kAIM ||
       _state.activeTool == ComposeboxMode::kImageGeneration ||
-      _state.activeTool == ComposeboxMode::kCanvas) {
+      _state.activeTool == ComposeboxMode::kCanvas ||
+      _state.activeTool == ComposeboxMode::kPTM) {
     // When turning on, ensure the glow is started. The view's state machine
     // will prevent it from restarting if it's already active.
     [_glowEffectView startGlow];
@@ -1346,7 +1361,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   _plusButton.largeContentTitle = _plusButton.accessibilityLabel;
   NSArray<UIButton*>* buttons = @[
     _plusButton, _aimButton, _imageGenerationButton, _canvasButton,
-    _deepSearchButton, _askAboutThisPageButton
+    _deepSearchButton, _ptmButton, _askAboutThisPageButton
   ];
   for (UIButton* button in buttons) {
     button.showsLargeContentViewer = YES;
@@ -1558,8 +1573,8 @@ UIImage* SendButtonImage(BOOL highlighted,
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
         _plusButtonContainer, _aimButton, _imageGenerationButton, _canvasButton,
-        _deepSearchButton, _askAboutThisPageButton, spacerView, _sendButton,
-        _micButton, _visualSearchButton
+        _deepSearchButton, _ptmButton, _askAboutThisPageButton, spacerView,
+        _sendButton, _micButton, _visualSearchButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
@@ -2036,6 +2051,77 @@ UIImage* SendButtonImage(BOOL highlighted,
   [self setupXMarkInButton:button];
 
   return button;
+}
+
+// Creates a new PTM button to be displayed in the input plate.
+- (UIButton*)createPTMButton {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.configurationUpdateHandler =
+      [self configurationUpdateHandlerForModeIndicator];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.accessibilityIdentifier = kComposeboxPTMButtonAccessibilityIdentifier;
+  [button addTarget:self
+                action:@selector(ptmButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.layer.borderWidth = 0;
+
+  UIButtonConfiguration* config = [self modeIndicatorButtonConfigWithTitle:@""
+                                                                     image:nil];
+  config.preferredSymbolConfigurationForImage = [UIImageSymbolConfiguration
+      configurationWithPointSize:kAIMButtonSymbolPointSize
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+  config.background.backgroundColor =
+      [_theme toolButtonBackgroundColorWithActiveState:YES];
+  config.baseForegroundColor = [_theme toolButtonTextColorWithActiveState:YES];
+  button.tintColor = [_theme toolButtonTextColorWithActiveState:YES];
+  button.configuration = config;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [button.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kAIMButtonBaseWidth]
+  ]];
+
+  [button
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  [self updatePTMButton:button];
+
+  return button;
+}
+
+// Updates `button` with the PTM title, icon, accessibility label, and close
+// indicator from the current UI configuration.
+- (void)updatePTMButton:(UIButton*)button {
+  if (!button) {
+    return;
+  }
+
+  UIButtonConfiguration* config = button.configuration;
+  NSString* title = [_state.uiConfig chipLabelForTool:ComposeboxMode::kPTM];
+  BOOL hasTitle = title.length > 0;
+  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
+                                   weight:UIFontWeightMedium];
+  config.attributedTitle =
+      [[NSAttributedString alloc] initWithString:title
+                                      attributes:@{NSFontAttributeName : font}];
+  config.image = [_state.uiConfig iconForTool:ComposeboxMode::kPTM];
+  NSDirectionalEdgeInsets insets = kModeIndicatorButtonInsets;
+  if (hasTitle) {
+    insets.trailing += kXButtonWidthInButton;
+  }
+  config.contentInsets = insets;
+
+  button.configuration = config;
+  button.accessibilityLabel = [_state.uiConfig
+      removeToolAccessibilityLabelForTool:ComposeboxMode::kPTM];
+
+  [_ptmButtonXIndicator removeFromSuperview];
+  _ptmButtonXIndicator = nil;
+  if (hasTitle) {
+    _ptmButtonXIndicator = [self setupXMarkInButton:button];
+  }
 }
 
 // Creates an 'ask about this page' tab button to be displayed in the input

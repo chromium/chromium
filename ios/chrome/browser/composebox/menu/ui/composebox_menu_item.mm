@@ -162,6 +162,8 @@ NSString* AccessibilityIdentifierForMenuItemType(ComposeboxMenuItemType type) {
       return kComposeboxAIMActionAccessibilityIdentifier;
     case ComposeboxMenuItemType::kCreateImage:
       return kComposeboxImageGenerationActionAccessibilityIdentifier;
+    case ComposeboxMenuItemType::kPTM:
+      return kComposeboxPTMActionAccessibilityIdentifier;
     case ComposeboxMenuItemType::kCurrentTab:
       return kComposeboxAttachCurrentTabActionAccessibilityIdentifier;
     case ComposeboxMenuItemType::kAttachmentTabs:

@@ -77,6 +77,8 @@ std::optional<ComposeboxMode> ModeForToolMode(omnibox::ToolMode tool_mode) {
       return kCanvas;
     case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
       return kDeepSearch;
+    case omnibox::ToolMode::TOOL_MODE_GEMINI_PRO:
+      return kPTM;
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_SELFIE:
@@ -96,6 +98,8 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode,
       return omnibox::ToolMode::TOOL_MODE_CANVAS;
     case ComposeboxMode::kDeepSearch:
       return omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+    case ComposeboxMode::kPTM:
+      return omnibox::ToolMode::TOOL_MODE_GEMINI_PRO;
     case ComposeboxMode::kImageGeneration:
       return hasImage ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
                       : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
@@ -1007,6 +1011,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
       }
       break;
     case ComposeboxMode::kAIM:
+    case ComposeboxMode::kPTM:
       break;
     case ComposeboxMode::kRegularSearch:
       if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
@@ -1230,7 +1235,9 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   BOOL canCreateImage = [self isToolAllowed:ComposeboxMode::kImageGeneration];
   BOOL canUseCanvas = [self isToolAllowed:ComposeboxMode::kCanvas];
   BOOL canUseDeepSearch = [self isToolAllowed:ComposeboxMode::kDeepSearch];
-  return canUseCanvas || canCreateImage || canUseDeepSearch || canSearchWithAI;
+  BOOL canUsePTM = [self isToolAllowed:ComposeboxMode::kPTM];
+  return canUseCanvas || canCreateImage || canUseDeepSearch || canUsePTM ||
+         canSearchWithAI;
 }
 
 #pragma mark - Attachment Rules
@@ -1350,6 +1357,9 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     case kDeepSearch:
       return std::ranges::contains(_inputState->allowed_tools,
                                    omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    case kPTM:
+      return std::ranges::contains(_inputState->allowed_tools,
+                                   omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
     case kAIM:
       return [self isEligibleToAIM];
     case kRegularSearch:
@@ -1372,6 +1382,8 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
       return _aimEligibilityService
                  ? _aimEligibilityService->IsDeepSearchEligible()
                  : NO;
+    case kPTM:
+      return NO;
     case kAIM:
       return [self isEligibleToAIM];
     case kRegularSearch:
@@ -1398,6 +1410,9 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     case kDeepSearch:
       return std::ranges::contains(_inputState->disabled_tools,
                                    omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    case kPTM:
+      return std::ranges::contains(_inputState->disabled_tools,
+                                   omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
     case kAIM:
     case kRegularSearch:
       return NO;

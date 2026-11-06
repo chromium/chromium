@@ -19,8 +19,10 @@ enum class ComposeboxMode {
   kDeepSearch = 3,
   // Generates a new canvas based on the input query.
   kCanvas = 4,
+  // Uses the PTM tool based on the input query.
+  kPTM = 5,
   // The maximum value for iteration.
-  kMaxValue = kCanvas,
+  kMaxValue = kPTM,
 };
 
 // A set of ComposeboxMode values used for iteration.

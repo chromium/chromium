@@ -163,3 +163,21 @@ TEST_F(ComposeboxUIConfigTest, TestUnknownToolFallback) {
   ComposeboxMode unknownTool = static_cast<ComposeboxMode>(999);
   EXPECT_NE([uiConfig iconForTool:unknownTool], nil);
 }
+
+// Tests that a server-only tool (`ComposeboxMode::kPTM`) returns empty local
+// fallback labels without crashing in `removeToolAccessibilityLabelForTool:`,
+// while providing a placeholder hint and fallback icon.
+TEST_F(ComposeboxUIConfigTest,
+       PtmLocalFallbackReturnsEmptyLabelsWithoutCrashing) {
+  ComposeboxUIConfig* ui_config = [ComposeboxUIConfig localFallbackUIConfig];
+
+  EXPECT_NSEQ([ui_config menuLabelForTool:ComposeboxMode::kPTM], @"");
+  EXPECT_NSEQ([ui_config chipLabelForTool:ComposeboxMode::kPTM], @"");
+  EXPECT_NSEQ(
+      [ui_config removeToolAccessibilityLabelForTool:ComposeboxMode::kPTM],
+      @"");
+  EXPECT_NSEQ(
+      [ui_config hintTextForTool:ComposeboxMode::kPTM],
+      l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER));
+  EXPECT_NE([ui_config iconForTool:ComposeboxMode::kPTM], nil);
+}

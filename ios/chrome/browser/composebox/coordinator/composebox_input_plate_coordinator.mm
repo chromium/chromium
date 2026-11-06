@@ -557,6 +557,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     case ComposeboxMode::kAIM:
     case ComposeboxMode::kCanvas:
     case ComposeboxMode::kDeepSearch:
+    case ComposeboxMode::kPTM:
       [self showMaxAttachmentSnackbarError];
       return;
     case ComposeboxMode::kImageGeneration:

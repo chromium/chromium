@@ -2133,6 +2133,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     case ComposeboxMode::kRegularSearch:
       return AutocompleteRequestType::kSearch;
     case ComposeboxMode::kAIM:
+    case ComposeboxMode::kPTM:
       return AutocompleteRequestType::kAIMode;
     case ComposeboxMode::kImageGeneration:
       return AutocompleteRequestType::kImageGeneration;
@@ -2575,6 +2576,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     case ComposeboxMode::kImageGeneration:
     case ComposeboxMode::kCanvas:
     case ComposeboxMode::kDeepSearch:
+    case ComposeboxMode::kPTM:
       [self sendText:[NSString cr_fromString16:text]];
       break;
   }
@@ -2711,6 +2713,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       break;
     case ComposeboxMode::kDeepSearch:
       modeSwitchButton = kDeepSearch;
+      break;
+    case ComposeboxMode::kPTM:
+      modeSwitchButton = kPTM;
       break;
   }
 
