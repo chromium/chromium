@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/strings/grit/components_strings.h"
@@ -609,8 +610,9 @@ TEST_F(PasswordDropdownExperimentTest, TrustedVaultErrorUiState) {
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(profile()), "test@email.com",
       signin::ConsentLevel::kSignin);
-  ON_CALL(*model_delegate_mock(), IsSavingBlockedByTrustedVaultError)
-      .WillByDefault(Return(true));
+  ON_CALL(*model_delegate_mock(), GetErrorBlockingSaving)
+      .WillByDefault(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
 
   CreateViewAndShow();
 
@@ -627,8 +629,9 @@ TEST_P(PasswordSaveUpdateViewTest, TrustedVaultErrorUiState) {
   base::test::ScopedFeatureList scoped_feature_list{
       password_manager::features::kPasswordSaveInContextErrorResolution};
   SimulateSignIn();
-  ON_CALL(*model_delegate_mock(), IsSavingBlockedByTrustedVaultError)
-      .WillByDefault(Return(true));
+  ON_CALL(*model_delegate_mock(), GetErrorBlockingSaving)
+      .WillByDefault(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
 
   CreateViewAndShow();
 

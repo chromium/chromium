@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_counter.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -328,9 +329,9 @@ void SaveUpdateBubbleController::ReportInteractions() {
         PasswordCounterFactory::GetForProfile(profile)
                 ->autofillable_passwords() == 0;
     std::optional<password_manager::ActionableError> saving_blocked_error;
-    if (IsSavingBlockedByTrustedVaultError()) {
-      saving_blocked_error =
-          password_manager::ActionableError::kTrustedVaultKeyNeeded;
+    const password_manager::ActionableError error = GetErrorBlockingSaving();
+    if (error != password_manager::ActionableError::kNoError) {
+      saving_blocked_error = error;
     }
     metrics_util::LogSaveUIDismissalReason(GetDismissalReason(), user_state,
                                            log_adoption_metric,
@@ -351,15 +352,24 @@ void SaveUpdateBubbleController::ReportInteractions() {
   }
 }
 
-bool SaveUpdateBubbleController::IsSavingBlockedByTrustedVaultError() const {
-  return delegate_ && delegate_->IsSavingBlockedByTrustedVaultError();
+password_manager::ActionableError
+SaveUpdateBubbleController::GetErrorBlockingSaving() const {
+  return delegate_ ? delegate_->GetErrorBlockingSaving()
+                   : password_manager::ActionableError::kNoError;
 }
 
-void SaveUpdateBubbleController::OnTrustedVaultUnlockClicked() {
+void SaveUpdateBubbleController::OnErrorResolutionClicked() {
   CHECK(GetState() == password_manager::ui::PENDING_PASSWORD_STATE ||
         GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
   SetDismissalReason(metrics_util::CLICKED_RESOLVE_ERROR);
-  delegate_->SavePasswordAfterTrustedVaultErrorResolution(
-      GetPendingPassword().username_value, GetPendingPassword().password_value);
-  delegate_->StartTrustedVaultErrorResolutionFlow();
+  if (delegate_) {
+    const password_manager::ActionableError error = GetErrorBlockingSaving();
+    delegate_->SavePasswordAfterErrorResolution(
+        GetPendingPassword().username_value,
+        GetPendingPassword().password_value);
+    // Saving can synchronously close the bubble and reset `delegate_`.
+    if (delegate_) {
+      delegate_->StartErrorResolutionFlow(error);
+    }
+  }
 }

@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -839,49 +840,99 @@ TEST_F(SaveUpdateBubbleControllerTest, ShowsUpdateEvenIfNoExistingCredential) {
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
 }
 
-TEST_F(SaveUpdateBubbleControllerTest, IsSavingBlockedByTrustedVaultError) {
+TEST_F(SaveUpdateBubbleControllerTest, GetErrorBlockingSaving) {
   PretendPasswordWaiting();
-  EXPECT_CALL(*delegate(), IsSavingBlockedByTrustedVaultError())
-      .WillOnce(Return(true));
-  EXPECT_TRUE(controller()->IsSavingBlockedByTrustedVaultError());
+  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+      .WillOnce(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+  EXPECT_EQ(controller()->GetErrorBlockingSaving(),
+            password_manager::ActionableError::kTrustedVaultKeyNeeded);
 
-  EXPECT_CALL(*delegate(), IsSavingBlockedByTrustedVaultError())
-      .WillOnce(Return(false));
-  EXPECT_FALSE(controller()->IsSavingBlockedByTrustedVaultError());
+  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+      .WillOnce(Return(password_manager::ActionableError::kNoError));
+  EXPECT_EQ(controller()->GetErrorBlockingSaving(),
+            password_manager::ActionableError::kNoError);
 }
 
-TEST_F(SaveUpdateBubbleControllerTest, OnTrustedVaultUnlockClicked) {
+TEST_F(SaveUpdateBubbleControllerTest, OnErrorResolutionClicked) {
   PretendPasswordWaiting();
-  EXPECT_CALL(*delegate(), StartTrustedVaultErrorResolutionFlow());
-  EXPECT_CALL(*delegate(), SavePasswordAfterTrustedVaultErrorResolution(
+  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+      .WillOnce(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+  EXPECT_CALL(*delegate(),
+              StartErrorResolutionFlow(
+                  password_manager::ActionableError::kTrustedVaultKeyNeeded));
+  EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(
                                pending_password().username_value,
                                pending_password().password_value));
-  controller()->OnTrustedVaultUnlockClicked();
+  controller()->OnErrorResolutionClicked();
 }
 
-TEST_F(SaveUpdateBubbleControllerTest, OnTrustedVaultUnlockClicked_Edited) {
+TEST_F(SaveUpdateBubbleControllerTest, OnErrorResolutionClicked_Edited) {
   PretendPasswordWaiting();
   const std::u16string kNewUsername = u"new_user";
   const password_manager::PasswordString kNewPassword =
       password_manager::PasswordString(u"new_password");
   controller()->OnCredentialEdited(kNewUsername, kNewPassword);
 
-  EXPECT_CALL(*delegate(), StartTrustedVaultErrorResolutionFlow());
-  EXPECT_CALL(*delegate(), SavePasswordAfterTrustedVaultErrorResolution(
-                               kNewUsername, kNewPassword));
-  controller()->OnTrustedVaultUnlockClicked();
+  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+      .WillOnce(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+  EXPECT_CALL(*delegate(),
+              StartErrorResolutionFlow(
+                  password_manager::ActionableError::kTrustedVaultKeyNeeded));
+  EXPECT_CALL(*delegate(),
+              SavePasswordAfterErrorResolution(kNewUsername, kNewPassword));
+  controller()->OnErrorResolutionClicked();
+}
+
+TEST_F(SaveUpdateBubbleControllerTest,
+       OnErrorResolutionClickedWhenErrorAlreadyResolved) {
+  PretendPasswordWaiting();
+  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+      .WillOnce(Return(password_manager::ActionableError::kNoError));
+  EXPECT_CALL(*delegate(), StartErrorResolutionFlow(
+                               password_manager::ActionableError::kNoError));
+  EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(
+                               pending_password().username_value,
+                               pending_password().password_value));
+  controller()->OnErrorResolutionClicked();
+}
+
+TEST_F(SaveUpdateBubbleControllerTest,
+       OnErrorResolutionClickedWithNullDelegate) {
+  PretendPasswordWaiting();
+  controller()->OnBubbleClosing();
+
+  EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(_, _)).Times(0);
+  EXPECT_CALL(*delegate(), StartErrorResolutionFlow(_)).Times(0);
+  controller()->OnErrorResolutionClicked();
+}
+
+TEST_F(SaveUpdateBubbleControllerTest,
+       OnErrorResolutionClickedWhenSavingClosesBubble) {
+  PretendPasswordWaiting();
+  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  EXPECT_CALL(*delegate(), SavePasswordAfterErrorResolution(
+                               pending_password().username_value,
+                               pending_password().password_value))
+      .WillOnce([this] { controller()->OnBubbleClosing(); });
+  EXPECT_CALL(*delegate(), StartErrorResolutionFlow(_)).Times(0);
+  controller()->OnErrorResolutionClicked();
 }
 
 TEST_F(SaveUpdateBubbleControllerTest,
        LogSaveUIDismissalReasonWhenBlockedByTrustedVaultError) {
   base::HistogramTester histogram_tester;
   PretendPasswordWaiting();
-  EXPECT_CALL(*delegate(), IsSavingBlockedByTrustedVaultError())
-      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*delegate(), GetErrorBlockingSaving())
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
   EXPECT_CALL(*mock_smart_bubble_stats_store(), AddSiteStats).Times(0);
   EXPECT_CALL(*delegate(), OnNoInteraction()).Times(0);
 
-  controller()->OnTrustedVaultUnlockClicked();
+  controller()->OnErrorResolutionClicked();
   DestroyModelAndVerifyControllerExpectations();
 
   histogram_tester.ExpectUniqueSample(

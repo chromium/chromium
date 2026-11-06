@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/token.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
@@ -76,6 +78,12 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   views::MdTextButton* GetCancelButtonForTesting() const;
 
  private:
+  struct ErrorResolutionUiStrings {
+    int subtitle_message_id;
+    int footer_text_message_id;
+    int footer_link_message_id;
+  };
+
   ~PasswordSaveUpdateView() override;
 
   // PasswordBubbleViewBase
@@ -97,7 +105,8 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   void AddedToWidget() override;
 
   bool IsSaveBubbleDropdownExperimentEnabled() const;
-  bool IsTrustedVaultErrorResolutionEnabled() const;
+  bool IsErrorResolutionEnabled() const;
+  std::optional<ErrorResolutionUiStrings> GetErrorResolutionUiStrings() const;
   void UpdateUsernameAndPasswordInModel();
   void UpdateBubbleUIElements();
   std::unique_ptr<views::View> CreateFooterView();

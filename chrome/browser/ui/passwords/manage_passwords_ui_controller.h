@@ -23,6 +23,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
@@ -225,16 +226,12 @@ class ManagePasswordsUIController
   void NavigateToPasswordChangeSettings() override;
   void OnMouseEntered() override;
   void OnMouseExited() override;
-  // Returns true if the only blocking error is a trusted vault error.
-  bool IsSavingBlockedByTrustedVaultError() const override;
-  // Ensures that the password will be saved after resolution of the trusted
-  // vault error (or saves the password immediately if the trusted vault error
-  // is already resolved).
-  void SavePasswordAfterTrustedVaultErrorResolution(
+  password_manager::ActionableError GetErrorBlockingSaving() const override;
+  void SavePasswordAfterErrorResolution(
       const std::u16string& username,
       const password_manager::PasswordString& password) override;
-  // Starts the UI flow that allows to fix the trusted vault error.
-  void StartTrustedVaultErrorResolutionFlow() override;
+  void StartErrorResolutionFlow(
+      password_manager::ActionableError error) override;
   // Skips user os level authentication during the life time of the returned
   // object. To be used in tests of flows that require user authentication.
   [[nodiscard]] std::unique_ptr<base::AutoReset<bool>>
@@ -363,20 +360,19 @@ class ManagePasswordsUIController
       password_manager::PasswordStoreInterface* store) const;
 
   // Returns true if the pending password should be (and can be) automatically
-  // saved after trusted vault error resolution.
+  // saved after error resolution.
   bool IsAutoSaveAfterErrorResolutionValid() const;
 
-  // Resets the state tracking automatic password saving after trusted vault
-  // error resolution and, if `outcome` is provided and an error-resolution save
-  // was pending, records `*outcome` to
-  // `PasswordManager.SaveWithTrustedVaultError.Outcome`.
+  // Resets the state tracking automatic password saving after error resolution
+  // and, if `outcome` is provided and an error-resolution save was pending,
+  // records `*outcome` to `PasswordManager.SaveWithTrustedVaultError.Outcome`.
   void ResetAutoSaveAfterErrorResolution(
       std::optional<
           password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome>
           outcome);
 
-  // Completes saving the password after the trusted vault error is resolved.
-  void CompleteSavePasswordAfterTrustedVaultErrorResolution();
+  // Completes saving the password after the blocking error is resolved.
+  void CompleteSavePasswordAfterErrorResolution();
 
   // Saves the pending password currently held in the form manager and performs
   // post-save actions.
@@ -480,16 +476,15 @@ class ManagePasswordsUIController
   // is cached when the bubble is requested to be shown.
   bool user_action_ = false;
 
-  // The current class observes the changes of the password manager's storage
-  // error state. If this bool is true, we will save the password upon receiving
-  // the notification that the error state is fixed (and the trusted vault error
-  // is resolved).
-  bool save_password_after_trusted_vault_error_resolution_ = false;
+  // The current class observes changes in the password store's error state. If
+  // this bool is true, the pending password will be saved upon receiving a
+  // notification that the blocking error state is resolved.
+  bool save_password_after_error_resolution_ = false;
 
-  // The account for which trusted vault error resolution was started. Used to
-  // verify that the primary account hasn't changed before automatically saving
-  // the password once the error is resolved.
-  CoreAccountId account_id_for_trusted_vault_error_resolution_;
+  // The account for which error resolution was started. Used to verify that the
+  // primary account hasn't changed before automatically saving the password
+  // once the error is resolved.
+  CoreAccountId account_id_for_error_resolution_;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   bool was_biometric_authentication_for_filling_promo_shown_ = false;

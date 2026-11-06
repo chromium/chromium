@@ -84,6 +84,7 @@
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -1631,39 +1632,52 @@ bool ManagePasswordsUIController::IsMouseHovered() const {
   return is_mouse_hovered_;
 }
 
-void ManagePasswordsUIController::StartTrustedVaultErrorResolutionFlow() {
-  CHECK_DEREF(passwords_data_.client())
-      .StartTrustedVaultKeyRetrieval(
-          trusted_vault::TrustedVaultUserActionTriggerForUMA::
-              kPasswordSavePrompt);
+void ManagePasswordsUIController::StartErrorResolutionFlow(
+    password_manager::ActionableError error) {
+  switch (error) {
+    case password_manager::ActionableError::kTrustedVaultKeyNeeded:
+      CHECK_DEREF(passwords_data_.client())
+          .StartTrustedVaultKeyRetrieval(
+              trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                  kPasswordSavePrompt);
+      break;
+    case password_manager::ActionableError::kNoError:
+    case password_manager::ActionableError::kInactionable:
+    case password_manager::ActionableError::kInactionableTemporaryError:
+    case password_manager::ActionableError::kSignInNeeded:
+    case password_manager::ActionableError::kKeychainError:
+    case password_manager::ActionableError::kNeedsPassphrase:
+      // Other errors either do not have an in-context resolution flow yet or
+      // the error already cleared (`kNoError`) before the click was handled.
+      break;
+  }
 }
 
-void ManagePasswordsUIController::SavePasswordAfterTrustedVaultErrorResolution(
+void ManagePasswordsUIController::SavePasswordAfterErrorResolution(
     const std::u16string& username,
     const password_manager::PasswordString& password) {
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
-  if (IsSavingBlockedByTrustedVaultError()) {
+  if (GetErrorBlockingSaving() != password_manager::ActionableError::kNoError) {
     // Defer saving the password until the password store error is fixed.
     const syncer::SyncService* sync_service =
         passwords_data_.client()->GetSyncService();
     CHECK(sync_service);
-    save_password_after_trusted_vault_error_resolution_ = true;
-    account_id_for_trusted_vault_error_resolution_ =
+    save_password_after_error_resolution_ = true;
+    account_id_for_error_resolution_ =
         sync_service->GetAccountInfo().account_id;
     return;
   }
 
-  // No trusted vault errors, so we can save the password immediately.
+  // No blocking errors, so we can save the password immediately.
   // TODO(crbug.com/574043872): Investigate whether the error blocking saving
   // can change during recovery in practice, and whether that case needs
   // handling beyond hiding the bubble.
-  CompleteSavePasswordAfterTrustedVaultErrorResolution();
+  CompleteSavePasswordAfterErrorResolution();
 }
 
-void ManagePasswordsUIController::
-    CompleteSavePasswordAfterTrustedVaultErrorResolution() {
-  if (save_password_after_trusted_vault_error_resolution_ &&
+void ManagePasswordsUIController::CompleteSavePasswordAfterErrorResolution() {
+  if (save_password_after_error_resolution_ &&
       !IsAutoSaveAfterErrorResolutionValid()) {
     ResetAutoSaveAfterErrorResolution(
         SaveWithTrustedVaultErrorOutcome::kErrorResolutionAbandoned);
@@ -1678,9 +1692,10 @@ void ManagePasswordsUIController::
     SavePendingPassword();
     password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
         SaveWithTrustedVaultErrorOutcome::kSavedSuccessfully);
-    // `SavePendingPassword()` sets bubble_status_ to SHOWN_PENDING_ICON_UPDATE.
+    // `SavePendingPassword()` sets `bubble_status_` to
+    // `SHOWN_PENDING_ICON_UPDATE`.
     // However, since the bubble was already closed when we started the error
-    // resolution flow, we must reset it to NOT_SHOWN.
+    // resolution flow, we must reset it to `NOT_SHOWN`.
     bubble_status_ = BubbleStatus::NOT_SHOWN;
     UpdateBubbleAndIconVisibility();
   } else {
@@ -1689,13 +1704,16 @@ void ManagePasswordsUIController::
   }
 }
 
-bool ManagePasswordsUIController::IsSavingBlockedByTrustedVaultError() const {
+password_manager::ActionableError
+ManagePasswordsUIController::GetErrorBlockingSaving() const {
   if (password_manager::PasswordFormManagerForUI* form_manager =
           passwords_data_.form_manager()) {
-    return password_manager_util::IsSavingBlockedByTrustedVaultError(
-        passwords_data_.client(), form_manager);
+    if (password_manager_util::IsSavingBlockedByTrustedVaultError(
+            passwords_data_.client(), form_manager)) {
+      return password_manager::ActionableError::kTrustedVaultKeyNeeded;
+    }
   }
-  return false;
+  return password_manager::ActionableError::kNoError;
 }
 
 void ManagePasswordsUIController::OnErrorStateChanged(
@@ -1703,7 +1721,7 @@ void ManagePasswordsUIController::OnErrorStateChanged(
     password_manager::ActionableError new_state) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordSaveInContextErrorResolution)) {
-    if (save_password_after_trusted_vault_error_resolution_ &&
+    if (save_password_after_error_resolution_ &&
         !IsAutoSaveAfterErrorResolutionValid()) {
       ResetAutoSaveAfterErrorResolution(
           SaveWithTrustedVaultErrorOutcome::kErrorResolutionAbandoned);
@@ -1717,9 +1735,9 @@ void ManagePasswordsUIController::OnErrorStateChanged(
       return;
     }
 
-    if (save_password_after_trusted_vault_error_resolution_ &&
+    if (save_password_after_error_resolution_ &&
         new_state == password_manager::ActionableError::kNoError) {
-      CompleteSavePasswordAfterTrustedVaultErrorResolution();
+      CompleteSavePasswordAfterErrorResolution();
     }
     if (IsShowingBubble()) {
       // If the error state of the store changed, the safest option is to hide
@@ -1757,8 +1775,8 @@ bool ManagePasswordsUIController::IsStoreUsedForSavingPendingCredentials(
 }
 
 bool ManagePasswordsUIController::IsAutoSaveAfterErrorResolutionValid() const {
-  if (!save_password_after_trusted_vault_error_resolution_ ||
-      account_id_for_trusted_vault_error_resolution_.empty()) {
+  if (!save_password_after_error_resolution_ ||
+      account_id_for_error_resolution_.empty()) {
     return false;
   }
   const syncer::SyncService* sync_service =
@@ -1766,14 +1784,13 @@ bool ManagePasswordsUIController::IsAutoSaveAfterErrorResolutionValid() const {
   return sync_service &&
          password_manager::sync_util::HasChosenToSyncPasswords(sync_service) &&
          sync_service->GetAccountInfo().account_id ==
-             account_id_for_trusted_vault_error_resolution_;
+             account_id_for_error_resolution_;
 }
 
 void ManagePasswordsUIController::ResetAutoSaveAfterErrorResolution(
     std::optional<SaveWithTrustedVaultErrorOutcome> outcome) {
-  account_id_for_trusted_vault_error_resolution_ = CoreAccountId();
-  if (std::exchange(save_password_after_trusted_vault_error_resolution_,
-                    false) &&
+  account_id_for_error_resolution_ = CoreAccountId();
+  if (std::exchange(save_password_after_error_resolution_, false) &&
       outcome.has_value()) {
     password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
         *outcome);
