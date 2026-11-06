@@ -69,6 +69,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
       item_view->SetTitle(std::u16string());
       item_view->SetHighlightWhenSelectedWithChildViews(true);
+      item_view->SetTriggerActionWithNonIconChildViews(true);
 
       // Set the name so that this is compatible with
       // `MenuItemView::GetAccessibleNodeData()`.
@@ -126,6 +127,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       // margins to 0.
       item_view->set_vertical_margin(0);
       item_view->SetHighlightWhenSelectedWithChildViews(true);
+      item_view->SetTriggerActionWithNonIconChildViews(true);
       item_view->GetViewAccessibility().SetName(label);
 
       // Creates a checkbox. The argument `button_width` is the minimum width of
