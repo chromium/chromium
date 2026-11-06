@@ -291,6 +291,34 @@ void GlicInstanceMetrics::MaybeRecordOptInImpression() {
   LogEvent(GlicInstanceEvent::kOptInImpression);
 }
 
+void GlicInstanceMetrics::OnTooltipImpression(
+    mojom::TooltipImpressionType impression) {
+  if (impression == mojom::TooltipImpressionType::kUnknown) {
+    return;
+  }
+  tooltip_shown_in_session_ = true;
+  last_tooltip_impression_time_ = base::TimeTicks::Now();
+  metric_reporter_.RecordEnumeration("Tooltip.MultiTab.Impression", impression);
+}
+
+void GlicInstanceMetrics::OnTooltipMultiTabPromptSubmitted() {
+  tooltip_shown_in_session_ = false;
+  metric_reporter_.RecordBoolean("Tooltip.MultiTab.MultiTabPromptSubmitted",
+                                 true);
+}
+
+void GlicInstanceMetrics::RecordTooltipPanelClosedWithin10s() {
+  tooltip_shown_in_session_ = false;
+  if (!last_tooltip_impression_time_.is_null()) {
+    const bool within_10s =
+        base::TimeTicks::Now() - last_tooltip_impression_time_ <=
+        base::Seconds(10);
+    last_tooltip_impression_time_ = base::TimeTicks();
+    metric_reporter_.RecordBoolean("Tooltip.MultiTab.PanelCloseWithin10s",
+                                   within_10s);
+  }
+}
+
 void GlicInstanceMetrics::OnGlicScrollAttempt() {
   CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
   ++scroll_attempt_count_;
@@ -340,6 +368,8 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
   FinalizePendingResponse(base::TimeTicks::Now());
 
   session_manager_.OnOwnerDestroyed();
+
+  RecordTooltipPanelClosedWithin10s();
 
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Destroyed"));
 
@@ -599,6 +629,7 @@ void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
 }
 
 void GlicInstanceMetrics::OnFloatyClosed() {
+  RecordTooltipPanelClosedWithin10s();
   if (floaty_open_time_.is_null()) {
     metric_reporter_.RecordEnumeration(
         "Instance.Metrics.Error",
@@ -652,6 +683,7 @@ void GlicInstanceMetrics::OnSidePanelClosed(
   MaybeRecordFirstSidePanelOpenMetrics(duration);
 
   if (reason != CloseReason::kTabSwitched) {
+    RecordTooltipPanelClosedWithin10s();
     std::erase(tabs_with_side_panel_, tab->GetHandle());
     if (tabs_with_side_panel_.empty() &&
         initial_invocation_source_ ==
@@ -1421,10 +1453,14 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
   metric_reporter_.RecordEnumeration("Turn.PromptType", prompt_type);
 
   if (sharing_manager_) {
+    const std::vector<raw_ptr<tabs::TabInterface>> pinned_tabs =
+        sharing_manager_->GetPinnedTabs();
     RecordSelectionOverlayMetrics(GetGlicProviderSpec(profile_).SupportsFeature(
                                       GlicFeature::kCaptureRegion),
-                                  sharing_manager_->GetPinnedTabs(),
-                                  metric_reporter_);
+                                  pinned_tabs, metric_reporter_);
+    if (tooltip_shown_in_session_ && pinned_tabs.size() >= 2) {
+      OnTooltipMultiTabPromptSubmitted();
+    }
   }
 
   // Reset turn data and start populating it for the new turn being started.
@@ -1749,6 +1785,7 @@ void GlicInstanceMetrics::OnSessionStarted() {
 }
 
 void GlicInstanceMetrics::OnSessionFinished() {
+  tooltip_shown_in_session_ = false;
   if (base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
     metric_reporter_.RecordCounts100("ScrollTo.SessionCount",
                                      scroll_attempt_count_);

@@ -8,16 +8,17 @@ import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-we
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
-import {                                       //
-  CaptureRegionObserverReceiver,               //
-  PinCandidatesObserverReceiver,               //
-  PromptType as PromptTypeMojo,                //
-  ResponseStopCause as ResponseStopCauseMojo,  //
-  SettingsPageField as SettingsPageFieldMojo,  //
-  TabDataHandlerReceiver,                      //
-  TabFaviconHandlerReceiver,                   //
-  WebClientHandlerRemote,                      //
-  WebClientReceiver,                           //
+import {                                               //
+  CaptureRegionObserverReceiver,                       //
+  PinCandidatesObserverReceiver,                       //
+  PromptType as PromptTypeMojo,                        //
+  ResponseStopCause as ResponseStopCauseMojo,          //
+  SettingsPageField as SettingsPageFieldMojo,          //
+  TabDataHandlerReceiver,                              //
+  TabFaviconHandlerReceiver,                           //
+  TooltipImpressionType as TooltipImpressionTypeMojo,  //
+  WebClientHandlerRemote,                              //
+  WebClientReceiver,                                   //
 } from '../glic.mojom-webui.js';
 import type {                                                          //
              AdditionalContext as AdditionalContextMojo,               //
@@ -80,6 +81,7 @@ import type {                            //
              TabContextOptions,          //
              TabContextResult,           //
              TabData,                    //
+             TooltipImpressionType,      //
              UnpinTabsOptions,           //
              UserProfileInfo,            //
              WebClientMode,              //
@@ -1271,6 +1273,11 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     // Since the frontend can contain a newer version than what Chrome is
     // built against, we use a sparse histogram.
     this.handler.recordSparseValue('Glic.Api.UseCounter', counter);
+  }
+
+  onTooltipImpression(impression: TooltipImpressionType): void {
+    this.handler.onTooltipImpression(
+        enumFromClient(impression) ?? TooltipImpressionTypeMojo.kUnknown);
   }
 }
 

@@ -1141,6 +1141,24 @@ struct SendTabToSelfDevice {
   mojo_base.mojom.Time? last_updated_time;
 };
 
+// @generate glic_api
+// Types of multi-tab sharing tooltip impressions.
+// LINT.IfChange(TooltipImpressionType)
+[Stable, Extensible]
+enum TooltipImpressionType {
+  // Default value for unknown or unrecognized tooltip variants.
+  [Default] kUnknown = 0,
+  // Step 1: Initial contextual tooltip shown when a tab is first shared.
+  kTooltip1 = 1,
+  // Step 2 (Copy A): Follow-up tooltip highlighting multi-tab comparison.
+  kTooltip2a = 2,
+  // Step 2 (Copy B): Follow-up tooltip highlighting managing shared tabs.
+  kTooltip2b = 3,
+  // Step 3: Tooltip shown inside the tab picker guiding multi-tab selection.
+  kTooltip3 = 4,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTooltipMultiTabImpression)
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -1511,6 +1529,13 @@ interface WebClientHandler {
   // Returns the list of target devices available for Send Tab to Self.
   [RuntimeFeature=glic.mojom.features.kGlicSendTabToSelf]
   GetSendTabToSelfDevices() => (array<SendTabToSelfDevice> devices);
+
+  // Reports when a multi-tab sharing tooltip is shown to the user in the web
+  // client. Records the impression timestamp to track whether the user closes
+  // the Glic panel or floaty window within 10 seconds of the tooltip
+  // impression.
+  // `impression`: The specific tooltip step and copy variant shown.
+  OnTooltipImpression(TooltipImpressionType impression);
 };
 
 // Accesses zero state suggestions from the web client.

@@ -349,6 +349,20 @@ export enum CancelActionsResult {
   FAILED = 3,
 }
 
+// Types of multi-tab sharing tooltip impressions.
+export enum TooltipImpressionType {
+  // Default value for unknown or unrecognized tooltip variants.
+  UNKNOWN = 0,
+  // Step 1: Initial contextual tooltip shown when a tab is first shared.
+  TOOLTIP1 = 1,
+  // Step 2 (Copy A): Follow-up tooltip highlighting multi-tab comparison.
+  TOOLTIP2A = 2,
+  // Step 2 (Copy B): Follow-up tooltip highlighting managing shared tabs.
+  TOOLTIP2B = 3,
+  // Step 3: Tooltip shown inside the tab picker guiding multi-tab selection.
+  TOOLTIP3 = 4,
+}
+
 // Reason for failure when switching a conversation.
 export enum SwitchConversationErrorReason {
   UNKNOWN = 0,

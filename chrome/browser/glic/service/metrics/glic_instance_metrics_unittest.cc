@@ -15,7 +15,9 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -47,6 +49,117 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace glic {
+namespace {
+
+class MockGlicSharingManager : public GlicSharingManagerInternal {
+ public:
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddFocusedTabChangedCallback,
+              (FocusedTabChangedCallback callback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddFocusedTabDataChangedCallback,
+              (FocusedTabDataChangedCallback callback),
+              (override));
+  FocusedTabData GetFocusedTabData() override {
+    return FocusedTabData("no focus", nullptr);
+  }
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddFocusedBrowserChangedCallback,
+              (FocusedBrowserChangedCallback callback),
+              (override));
+  MOCK_METHOD(BrowserWindowInterface*,
+              GetFocusedBrowser,
+              (),
+              (const, override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddTabPinningStatusChangedCallback,
+              (TabPinningStatusChangedCallback callback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddTabPinningStatusEventCallback,
+              (TabPinningStatusEventCallback callback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddPinnedTabsChangedCallback,
+              (PinnedTabsChangedCallback callback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddPinnedTabDataChangedCallback,
+              (PinnedTabDataChangedCallback callback),
+              (override));
+  MOCK_METHOD(bool,
+              PinTabs,
+              (base::span<const tabs::TabHandle> tab_handles,
+               GlicPinTrigger trigger),
+              (override));
+  MOCK_METHOD(void,
+              SetPinTrigger,
+              (tabs::TabHandle tab_handle, GlicPinTrigger trigger),
+              (override));
+  MOCK_METHOD(bool,
+              UnpinTabs,
+              (base::span<const tabs::TabHandle> tab_handles,
+               GlicUnpinTrigger trigger),
+              (override));
+  MOCK_METHOD(void, UnpinAllTabs, (GlicUnpinTrigger trigger), (override));
+  MOCK_METHOD(int32_t, GetMaxPinnedTabs, (), (const, override));
+  MOCK_METHOD(int32_t, GetNumPinnedTabs, (), (const, override));
+  MOCK_METHOD(int32_t,
+              SetMaxPinnedTabs,
+              (uint32_t max_pinned_tabs),
+              (override));
+  MOCK_METHOD(std::vector<raw_ptr<tabs::TabInterface>>,
+              GetPinnedTabs,
+              (),
+              (const, override));
+  MOCK_METHOD(bool,
+              IsTabPinned,
+              (tabs::TabHandle tab_handle),
+              (const, override));
+  MOCK_METHOD(bool, IsTabShared, (tabs::TabInterface * tab), (const, override));
+  MOCK_METHOD(bool,
+              IsTabFocused,
+              (tabs::TabHandle tab_handle),
+              (const, override));
+  MOCK_METHOD(std::optional<GlicPinnedTabUsage>,
+              GetPinnedTabUsage,
+              (tabs::TabHandle tab_handle),
+              (override));
+  MOCK_METHOD(std::optional<GlicGetContextError>,
+              CheckPreliminaryContextSharingEligibility,
+              (tabs::TabHandle tab_handle),
+              (const, override));
+  MOCK_METHOD(void,
+              GetContextFromTab,
+              (tabs::TabHandle tab_handle,
+               const mojom::TabContextOptions& options,
+               base::OnceCallback<void(GlicGetContextResult)> callback),
+              (override));
+  MOCK_METHOD(void,
+              GetContextForActorFromTab,
+              (tabs::TabHandle tab_handle,
+               const mojom::TabContextOptions& options,
+               base::OnceCallback<void(GlicGetContextResult)> callback),
+              (override));
+  MOCK_METHOD(void,
+              GetImageBytes,
+              (tabs::TabHandle tab_handle,
+               const std::string& document_id,
+               int32_t dom_node_id,
+               base::OnceCallback<void(GlicGetImageBytesResult)> callback),
+              (override));
+  MOCK_METHOD(void, OnConversationTurnSubmitted, (), (override));
+  base::WeakPtr<GlicSharingManagerInternal> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockGlicSharingManager> weak_ptr_factory_{this};
+};
+
+}  // namespace
+
 class GlicInstanceMetricsTest : public testing::Test {
  public:
   GlicInstanceMetricsTest() {
@@ -2767,6 +2880,318 @@ TEST_F(GlicInstanceMetricsTest, ReturnSource_RecordedCorrectly) {
       mojom::InvocationSource::kConversationSwitch, 1);
 
   histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, TooltipMetrics_Impression) {
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.Impression",
+                                       mojom::TooltipImpressionType::kTooltip1,
+                                       1);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip2a);
+  histogram_tester_.ExpectBucketCount("Glic.Tooltip.MultiTab.Impression",
+                                      mojom::TooltipImpressionType::kTooltip2a,
+                                      1);
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.Impression", 2);
+}
+
+TEST_F(GlicInstanceMetricsTest, TooltipMetrics_MultiTabPromptSubmitted) {
+  testing::NiceMock<MockGlicSharingManager> sharing_manager;
+  GlicInstanceMetrics metrics(&profile_metrics_service_, &sharing_manager,
+                              nullptr, &profile_);
+  tabs::MockTabInterface tab1;
+  tabs::MockTabInterface tab2;
+  std::vector<raw_ptr<tabs::TabInterface>> pinned_tabs = {&tab1, &tab2};
+  EXPECT_CALL(sharing_manager, GetPinnedTabs())
+      .WillRepeatedly(testing::ReturnPointee(&pinned_tabs));
+
+  metrics.OnVisibilityChanged(true);
+  metrics.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+
+  // First prompt in session synchronously triggers OnSessionStarted(); verify
+  // the pre-prompt tooltip impression is preserved and MultiTabPromptSubmitted
+  // is emitted when 2+ tabs are pinned.
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", true, 1);
+
+  metrics.OnResponseStarted();
+  metrics.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  // Follow-up prompts in the same session should NOT emit duplicate samples.
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", true, 1);
+  metrics.OnResponseStarted();
+  metrics.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  // Finish the session (via inactivity timeout) and verify tooltip state resets
+  // so a subsequent session without a new impression does not emit.
+  task_environment_.FastForwardBy(
+      features::kGlicMetricsSessionInactivityTimeout.Get());
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, TooltipMetrics_UnknownImpressionIgnored) {
+  testing::NiceMock<MockGlicSharingManager> sharing_manager;
+  GlicInstanceMetrics metrics(&profile_metrics_service_, &sharing_manager,
+                              nullptr, &profile_);
+  tabs::MockTabInterface tab1;
+  tabs::MockTabInterface tab2;
+  std::vector<raw_ptr<tabs::TabInterface>> pinned_tabs = {&tab1, &tab2};
+  EXPECT_CALL(sharing_manager, GetPinnedTabs())
+      .WillRepeatedly(testing::ReturnPointee(&pinned_tabs));
+
+  metrics.OnVisibilityChanged(true);
+  metrics.OnTooltipImpression(mojom::TooltipImpressionType::kUnknown);
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.Impression", 0);
+
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", 0);
+
+  metrics.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_MultiTabPromptSubmitted_RequiresTwoPinnedTabs) {
+  testing::NiceMock<MockGlicSharingManager> sharing_manager;
+  GlicInstanceMetrics metrics(&profile_metrics_service_, &sharing_manager,
+                              nullptr, &profile_);
+  tabs::MockTabInterface tab1;
+  std::vector<raw_ptr<tabs::TabInterface>> pinned_tabs = {&tab1};
+  EXPECT_CALL(sharing_manager, GetPinnedTabs())
+      .WillRepeatedly(testing::ReturnPointee(&pinned_tabs));
+
+  metrics.OnVisibilityChanged(true);
+  metrics.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_MultiTabPromptSubmitted_RequiresTooltipImpression) {
+  testing::NiceMock<MockGlicSharingManager> sharing_manager;
+  GlicInstanceMetrics metrics(&profile_metrics_service_, &sharing_manager,
+                              nullptr, &profile_);
+  tabs::MockTabInterface tab1;
+  tabs::MockTabInterface tab2;
+  std::vector<raw_ptr<tabs::TabInterface>> pinned_tabs = {&tab1, &tab2};
+  EXPECT_CALL(sharing_manager, GetPinnedTabs())
+      .WillRepeatedly(testing::ReturnPointee(&pinned_tabs));
+
+  metrics.OnVisibilityChanged(true);
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", 0);
+}
+
+TEST_F(
+    GlicInstanceMetricsTest,
+    TooltipMetrics_MultiTabPromptSubmitted_PreservedAcrossPendingTabSwitchAndUnfocus) {
+  testing::NiceMock<MockGlicSharingManager> sharing_manager;
+  GlicInstanceMetrics metrics(&profile_metrics_service_, &sharing_manager,
+                              nullptr, &profile_);
+  tabs::MockTabInterface tab1;
+  tabs::MockTabInterface tab2;
+  std::vector<raw_ptr<tabs::TabInterface>> pinned_tabs = {&tab1};
+  EXPECT_CALL(sharing_manager, GetPinnedTabs())
+      .WillRepeatedly(testing::ReturnPointee(&pinned_tabs));
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+
+  // Side Panel tab switch within the initial 5s pending window must NOT wipe
+  // `tooltip_shown_in_session_`.
+  ShowOptions side_panel_options{SidePanelShowOptions{mock_tab_}};
+  metrics.OnOpen(mojom::InvocationSource::kTopChromeButton, side_panel_options);
+  metrics.OnShowInSidePanel(&mock_tab_);
+  metrics.OnVisibilityChanged(true);
+  metrics.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+
+  metrics.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_),
+                            GlicInstanceMetrics::CloseReason::kTabSwitched);
+  metrics.OnVisibilityChanged(false);
+
+  // User switches back, pins a second tab, and submits within < 5s.
+  metrics.OnVisibilityChanged(true);
+  pinned_tabs.push_back(&tab2);
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", true, 1);
+
+  // Floaty focus loss (clicking browser window to pin a tab) within the
+  // pending window must also preserve `tooltip_shown_in_session_`.
+  pinned_tabs = {&tab1};
+  metrics.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip2a);
+  metrics.OnActivationChanged(false);
+  metrics.OnActivationChanged(true);
+  pinned_tabs.push_back(&tab2);
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", true, 2);
+}
+
+TEST_F(
+    GlicInstanceMetricsTest,
+    TooltipMetrics_MultiTabPromptSubmitted_ResetsOnExplicitCloseBeforeStart) {
+  testing::NiceMock<MockGlicSharingManager> sharing_manager;
+  GlicInstanceMetrics metrics(&profile_metrics_service_, &sharing_manager,
+                              nullptr, &profile_);
+  tabs::MockTabInterface tab1;
+  tabs::MockTabInterface tab2;
+  std::vector<raw_ptr<tabs::TabInterface>> pinned_tabs = {&tab1, &tab2};
+  EXPECT_CALL(sharing_manager, GetPinnedTabs())
+      .WillRepeatedly(testing::ReturnPointee(&pinned_tabs));
+
+  ShowOptions floaty_options{FloatingShowOptions{}};
+  metrics.OnOpen(mojom::InvocationSource::kTopChromeButton, floaty_options);
+  metrics.OnShowInFloaty(floaty_options);
+  metrics.OnVisibilityChanged(true);
+  metrics.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+
+  // Explicit panel close before session start clears
+  // `tooltip_shown_in_session_`.
+  metrics.OnFloatyClosed();
+  metrics.OnVisibilityChanged(false);
+
+  // Reopening later without a new tooltip impression does not credit the closed
+  // tooltip.
+  metrics.OnShowInFloaty(floaty_options);
+  metrics.OnVisibilityChanged(true);
+  metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                               mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.MultiTabPromptSubmitted", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_PanelCloseWithin10s_NoImpressionAndRefreshesTimestamp) {
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(8));
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip2a);
+  task_environment_.FastForwardBy(base::Seconds(5));
+  metrics_.OnInstanceDestroyed();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, TooltipMetrics_PanelCloseWithin10s_Emitted) {
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(5));
+  metrics_.OnInstanceDestroyed();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_PanelCloseWithin10s_After10sRecordsFalse) {
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(11));
+  metrics_.OnInstanceDestroyed();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", false, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_PanelCloseWithin10s_OnSidePanelClosedAfter10s) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  metrics_.OnSidePanelClosed(
+      static_cast<tabs::TabInterface*>(&mock_tab_),
+      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", false, 1);
+
+  // Subsequent destruction should NOT double-record.
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_PanelCloseWithin10s_OnSidePanelClosed) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(4));
+
+  metrics_.OnSidePanelClosed(
+      static_cast<tabs::TabInterface*>(&mock_tab_),
+      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+
+  // Subsequent destruction should NOT double-record.
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_PanelCloseWithin10s_NotEmittedOnTabSwitched) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // Tab switch is not an explicit side panel close.
+  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_),
+                             GlicInstanceMetrics::CloseReason::kTabSwitched);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_PanelCloseWithin10s_OnFloatyClosed) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnShowInFloaty(show_options);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+
+  // Subsequent destruction should NOT double-record.
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 1);
 }
 
 }  // namespace glic

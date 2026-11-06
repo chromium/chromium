@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
@@ -86,6 +87,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Called when the opt-in CTA is shown.
   void OnOptinImpression();
+
+  // Multi-tab tooltip metrics.
+  void OnTooltipImpression(mojom::TooltipImpressionType impression);
 
   // TODO(crbug.com/545714879): Remove OptInShownCallback once
   // OnFreOptInShown is logged directly or via direct profile helpers instead of
@@ -322,6 +326,13 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // by the number of attached tabs.
   void RecordResponseLatencyByAttachedTabCount(base::TimeDelta latency);
 
+  // Records whether a multi-tab prompt was submitted after a tooltip
+  // impression.
+  void OnTooltipMultiTabPromptSubmitted();
+
+  // Records whether the panel closed within 10s of a tooltip impression.
+  void RecordTooltipPanelClosedWithin10s();
+
   void RecordSkillsInvokeFunnelStep(SkillsInvokeFunnel invoke_funnel);
   void RecordAndResetAutoOpenPdfMetric();
   void MaybeRecordOptInImpression();
@@ -476,6 +487,13 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Incremented on user input when current_ui_mode_ is kSidePanel, and logged
   // when the side panel is closed or tab is switched for the first time.
   size_t side_panel_prompt_count_ = 0;
+
+  // Timestamp of the last tooltip impression, used to check whether the panel
+  // closes within 10s of a tooltip showing.
+  base::TimeTicks last_tooltip_impression_time_;
+
+  // Tracks if a tooltip was shown during the current session.
+  bool tooltip_shown_in_session_ = false;
 
   base::WeakPtrFactory<GlicInstanceMetrics> weak_ptr_factory_{this};
 };

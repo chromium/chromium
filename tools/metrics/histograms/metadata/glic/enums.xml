@@ -540,6 +540,7 @@ chromium-metrics-reviews@google.com.
   <int value="107" label="ClearClientStorage"/>
   <int value="108" label="GetSendTabToSelfDevices"/>
   <int value="109" label="OnInputFocused"/>
+  <int value="110" label="OnTooltipImpression"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->
@@ -1335,6 +1336,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicTabPinnedForSharingResult) -->
+
+<!-- LINT.IfChange(GlicTooltipMultiTabImpression) -->
+
+<enum name="GlicTooltipMultiTabImpression">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Tooltip 1"/>
+  <int value="2" label="Tooltip 2a"/>
+  <int value="3" label="Tooltip 2b"/>
+  <int value="4" label="Tooltip 3"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:TooltipImpressionType) -->
 
 <!-- LINT.IfChange(GlicTurnShowingOutcome) -->
 

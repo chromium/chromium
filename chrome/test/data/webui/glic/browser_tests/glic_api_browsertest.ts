@@ -21,6 +21,7 @@ import {                             //
   SbThreatType,                      //
   ScreenshotEncryptionScheme,        //
   ScrollToErrorReason,               //
+  TooltipImpressionType,             //
   WebClientMode,                     //
   WebUseCounter,                     //
 } from '/glic/glic_api/glic_api.js';
@@ -2902,6 +2903,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(metrics.onResponseStopped);
     assertDefined(metrics.onSessionTerminated);
     assertDefined(metrics.onClosedCaptionsShown);
+    assertDefined(metrics.onTooltipImpression);
     metrics.onResponseRated(true);
     metrics.onUserInputSubmitted(WebClientMode.TEXT);
     metrics.onContextUploadStarted();
@@ -2911,6 +2913,7 @@ class ApiTests extends ApiTestFixtureBase {
     metrics.onResponseStopped({cause: ResponseStopCause.USER});
     metrics.onSessionTerminated();
     metrics.onClosedCaptionsShown();
+    metrics.onTooltipImpression(TooltipImpressionType.TOOLTIP1);
   }
 
   async testUserInputSubmittedPromptType() {

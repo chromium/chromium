@@ -1607,6 +1607,11 @@ class GlicWebClientHandler
     host().instance_metrics().OnActionSubmitted(is_retry);
   }
 
+  void OnTooltipImpression(mojom::TooltipImpressionType impression) override {
+    LogApiRequest(GlicHostApiRequestId::kOnTooltipImpression);
+    host().instance_metrics().OnTooltipImpression(impression);
+  }
+
   void SetSyntheticExperimentState(const std::string& trial_name,
                                    const std::string& group_name) override {
     LogApiRequest(GlicHostApiRequestId::kSetSyntheticExperimentState);

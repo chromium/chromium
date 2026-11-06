@@ -78,6 +78,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OnResponseStarted"/>
   <variant name="OnResponseStopped"/>
   <variant name="OnSessionTerminated"/>
+  <variant name="OnTooltipImpression"/>
   <variant name="OnTurnCompleted"/>
   <variant name="OnUserInputSubmitted"/>
   <variant name="OpenContactInfoSettingsPage"/>
@@ -3756,6 +3757,42 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <summary>
     Records the number of tabs selected when pinning to a new conversation from
     the tab context menu. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Tooltip.MultiTab.Impression"
+    enum="GlicTooltipMultiTabImpression" expires_after="2027-10-01">
+  <owner>andreaxg@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Recorded when a multi-tab sharing tooltip is shown to the user. Logs the
+    specific tooltip variant or step displayed. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Tooltip.MultiTab.MultiTabPromptSubmitted"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>andreaxg@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Recorded at most once per tooltip showing in a session when the user first
+    submits a prompt with 2+ tabs attached (only true is recorded). Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Tooltip.MultiTab.PanelCloseWithin10s"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>andreaxg@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Emitted when the side panel, floaty window, or Glic instance closes after a
+    tooltip showing. Recorded as true if closed within 10 seconds of the
+    impression, or false if closed more than 10 seconds later. Scope:
+    {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>

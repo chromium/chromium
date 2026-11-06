@@ -5648,6 +5648,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testMetrics) {
       /*expected_bucket_count=*/1));
   ASSERT_OK(
       histogram_tester.WaitForTotalCount("Glic.TabContext.UploadTime", 1));
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Tooltip.MultiTab.Impression",
+      mojom::TooltipImpressionType::kTooltip1,
+      /*expected_bucket_count=*/1));
+  ASSERT_OK(histogram_tester.WaitForTotalCount(
+      "Glic.Api.RequestCounts.OnTooltipImpression", 1));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUserInputSubmittedPromptType) {

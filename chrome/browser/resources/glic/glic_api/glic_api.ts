@@ -165,6 +165,7 @@ export import SkillsWebClientEvent = generated.SkillsWebClientEvent;
 export import SwitchConversationErrorReason =
     generated.SwitchConversationErrorReason;
 export import TaskDuration = generated.TaskDuration;
+export import TooltipImpressionType = generated.TooltipImpressionType;
 export import UnpinTrigger = generated.UnpinTrigger;
 export import UserGrantedPermissionDuration =
     generated.UserGrantedPermissionDuration;
@@ -1695,6 +1696,9 @@ export declare interface GlicBrowserHostMetrics {
    * Called when we want to record an use counter metric.
    */
   onRecordUseCounter?(action: WebUseCounter): void;
+
+  /** Called when a multi-tab sharing tooltip is shown. */
+  onTooltipImpression?(impression: TooltipImpressionType): void;
 
   // Removed fields and methods :
   onModelChanged?(): never;  // Last seen on Canary 146.0.7639.0
