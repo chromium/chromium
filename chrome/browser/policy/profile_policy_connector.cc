@@ -232,7 +232,7 @@ class LocalTestInfoBarVisibilityManager :
   void AddInfobarsForActiveLocalTestPoliciesAllTabs() {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_ANDROID)
-    for (TabModel* model : TabModelList::models()) {
+    TabModelList::ForEachAll([this](TabModel* model) {
       for (int index = 0; index < model->GetTabCount(); ++index) {
         TabAndroid* tab = model->GetTabAt(index);
         if (tab && tab->web_contents()) {
@@ -240,7 +240,8 @@ class LocalTestInfoBarVisibilityManager :
         }
       }
       model->AddObserver(this);
-    }
+      return true;
+    });
 #else
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [this](BrowserWindowInterface* browser) {
@@ -285,7 +286,7 @@ class LocalTestInfoBarVisibilityManager :
   void DismissInfobarsForActiveLocalTestPoliciesAllTabs() {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_ANDROID)
-    for (TabModel* model : TabModelList::models()) {
+    TabModelList::ForEachAll([this](TabModel* model) {
       for (int index = 0; index < model->GetTabCount(); ++index) {
         TabAndroid* tab = model->GetTabAt(index);
         if (tab) {
@@ -293,7 +294,8 @@ class LocalTestInfoBarVisibilityManager :
         }
       }
       model->RemoveObserver(this);
-    }
+      return true;
+    });
 #else
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [this](BrowserWindowInterface* browser) {
