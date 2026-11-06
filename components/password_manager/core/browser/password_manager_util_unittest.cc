@@ -51,6 +51,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "base/strings/string_number_conversions.h"
+#endif
+
 namespace password_manager_util {
 namespace {
 
@@ -997,10 +1002,65 @@ class PasswordManagerUtilTrustedVaultErrorTest
   PasswordManagerUtilTrustedVaultErrorTest() {
     feature_list_.InitAndEnableFeature(
         password_manager::features::kPasswordSaveInContextErrorResolution);
+#if BUILDFLAG(IS_ANDROID)
+    base::android::device_info::set_gms_version_code_for_test(
+        base::NumberToString(
+            password_manager::features::
+                kPasswordSaveInContextErrorResolutionMinGmsVersion.Get()));
+#endif
+  }
+
+  ~PasswordManagerUtilTrustedVaultErrorTest() override {
+#if BUILDFLAG(IS_ANDROID)
+    base::android::device_info::set_gms_version_code_for_test(
+        base::NumberToString(
+            password_manager::features::kMinGmsVersionForInFlowZuulRecovery));
+#endif
   }
 
   base::test::ScopedFeatureList feature_list_;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
+       IsSavingBlockedByTrustedVaultError_GmsCoreVersionCheck) {
+  EnableSyncForTestAccount();
+
+  auto account_store =
+      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
+  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
+      .WillRepeatedly(Return(account_store.get()));
+  EXPECT_CALL(*account_store, GetError)
+      .WillRepeatedly(Return(ActionableError::kTrustedVaultKeyNeeded));
+
+  // Minimum supported version should succeed.
+  base::android::device_info::set_gms_version_code_for_test(
+      base::NumberToString(
+          password_manager::features::
+              kPasswordSaveInContextErrorResolutionMinGmsVersion.Get()));
+  EXPECT_TRUE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
+
+  // Higher version should succeed.
+  base::android::device_info::set_gms_version_code_for_test(
+      base::NumberToString(
+          password_manager::features::
+              kPasswordSaveInContextErrorResolutionMinGmsVersion.Get() +
+          1000));
+  EXPECT_TRUE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
+
+  // Lower version should fail.
+  base::android::device_info::set_gms_version_code_for_test(
+      base::NumberToString(
+          password_manager::features::
+              kPasswordSaveInContextErrorResolutionMinGmsVersion.Get() -
+          1));
+  EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
+
+  // Invalid / non-integer version should fail.
+  base::android::device_info::set_gms_version_code_for_test("invalid");
+  EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
        IsSavingBlockedByTrustedVaultError) {

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/android/device_info.h"
 #include "base/android/jni_android.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -297,6 +298,11 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
   ON_CALL(password_manager_client_, GetSyncService())
       .WillByDefault(Return(&sync_service_));
 
+  base::android::device_info::set_gms_version_code_for_test(
+      base::NumberToString(
+          password_manager::features::
+              kPasswordSaveInContextErrorResolutionMinGmsVersion.Get()));
+
   std::unique_ptr<TestDeviceLockBridge> device_lock_bridge =
       std::make_unique<TestDeviceLockBridge>();
   test_device_lock_bridge_ = device_lock_bridge.get();
@@ -316,6 +322,9 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TearDown() {
+  base::android::device_info::set_gms_version_code_for_test(
+      base::NumberToString(
+          password_manager::features::kMinGmsVersionForInFlowZuulRecovery));
   if (delegate_) {
     delegate_->DismissAllActiveUI();
   }
@@ -748,6 +757,43 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+// Tests that trusted vault error recovery flow is not started when GMS Core
+// version is below the minimum required version.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       TrustedVaultRecoveryNotStartedWhenGmsVersionTooLow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::android::device_info::set_gms_version_code_for_test(
+      base::NumberToString(
+          password_manager::features::
+              kPasswordSaveInContextErrorResolutionMinGmsVersion.Get() - 1));
+
+  std::unique_ptr<password_manager::FakePasswordStoreBackend>
+      fake_account_backend =
+          std::make_unique<password_manager::FakePasswordStoreBackend>();
+  fake_account_backend->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+  scoped_refptr<password_manager::PasswordStore> account_store =
+      base::MakeRefCounted<password_manager::PasswordStore>(
+          std::move(fake_account_backend));
+  account_store->Init();
+  ON_CALL(*GetClient(), GetAccountPasswordStore())
+      .WillByDefault(Return(account_store.get()));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  EXPECT_TRUE(is_password_saved());
 }
 
 // Tests that the save password message is reprompted when the trusted vault

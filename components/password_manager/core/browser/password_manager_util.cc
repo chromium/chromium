@@ -51,6 +51,11 @@
 #include "crypto/process_bound_string.h"
 #include "url/url_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "base/strings/string_number_conversions.h"
+#endif
+
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
 using password_manager::StoredCredential;
@@ -158,6 +163,73 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
   return profile_store && IsAbleToSavePasswords(profile_store->GetError());
 }
 
+namespace {
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+bool IsBlockingOnMobile(const password_manager::PasswordManagerClient* client) {
+  const password_manager::PasswordStoreInterface* account_store =
+      client->GetAccountPasswordStore();
+  if (!account_store ||
+      account_store->GetError() !=
+          password_manager::ActionableError::kTrustedVaultKeyNeeded ||
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordSaveInContextErrorResolution)) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  int gms_version = 0;
+  return base::StringToInt(base::android::device_info::gms_version_code(),
+                           &gms_version) &&
+         gms_version >=
+             password_manager::features::
+                 kPasswordSaveInContextErrorResolutionMinGmsVersion.Get();
+#elif BUILDFLAG(IS_IOS)
+  return true;
+#else
+  NOTREACHED();
+#endif
+}
+#else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+bool IsBlockingOnDesktop(
+    const password_manager::PasswordManagerClient* client,
+    const password_manager::PasswordFormManagerForUI* form_manager) {
+  bool has_trusted_vault_error = false;
+  bool has_other_blocking_errors = false;
+  // It might be that the credential is updated in both stores. In this case
+  // `store_for_saving` will be the enum value with both bits set (the account
+  // and the profile store bits).
+  password_manager::PasswordForm::Store store_for_saving =
+      form_manager->GetPasswordStoreForSaving(
+          form_manager->GetPendingCredentials());
+  for (password_manager::PasswordForm::Store store_type :
+       {password_manager::PasswordForm::Store::kProfileStore,
+        password_manager::PasswordForm::Store::kAccountStore}) {
+    if ((store_for_saving & store_type) != store_type) {
+      continue;
+    }
+    const password_manager::PasswordStoreInterface* store =
+        (store_type == password_manager::PasswordForm::Store::kAccountStore)
+            ? client->GetAccountPasswordStore()
+            : client->GetProfilePasswordStore();
+    if (!store) {
+      continue;
+    }
+    password_manager::ActionableError error = store->GetError();
+    if (error == password_manager::ActionableError::kTrustedVaultKeyNeeded) {
+      has_trusted_vault_error = true;
+    } else if (!IsAbleToSavePasswords(error)) {
+      has_other_blocking_errors = true;
+    }
+  }
+  return has_trusted_vault_error && !has_other_blocking_errors &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kPasswordSaveInContextErrorResolution);
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+}  // namespace
+
 bool IsSavingBlockedByTrustedVaultError(
     const password_manager::PasswordManagerClient* client,
     const password_manager::PasswordFormManagerForUI* form_manager) {
@@ -176,43 +248,9 @@ bool IsSavingBlockedByTrustedVaultError(
   }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  const password_manager::PasswordStoreInterface* account_store =
-      client->GetAccountPasswordStore();
-  return account_store &&
-         account_store->GetError() ==
-             password_manager::ActionableError::kTrustedVaultKeyNeeded &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordSaveInContextErrorResolution);
-#else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  bool has_trusted_vault_error = false;
-  bool has_other_blocking_errors = false;
-  // It might be that the credential is updated in both stores. In this case
-  // `store_for_saving` will be the enum value with both bits set (the account
-  // and the profile store bits).
-  password_manager::PasswordForm::Store store_for_saving =
-      form_manager->GetPasswordStoreForSaving(
-          form_manager->GetPendingCredentials());
-  for (password_manager::PasswordForm::Store store_type :
-       {kProfileStore, kAccountStore}) {
-    if ((store_for_saving & store_type) != store_type) {
-      continue;
-    }
-    const password_manager::PasswordStoreInterface* store =
-        (store_type == kAccountStore) ? client->GetAccountPasswordStore()
-                                      : client->GetProfilePasswordStore();
-    if (!store) {
-      continue;
-    }
-    password_manager::ActionableError error = store->GetError();
-    if (error == password_manager::ActionableError::kTrustedVaultKeyNeeded) {
-      has_trusted_vault_error = true;
-    } else if (!IsAbleToSavePasswords(error)) {
-      has_other_blocking_errors = true;
-    }
-  }
-  return has_trusted_vault_error && !has_other_blocking_errors &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordSaveInContextErrorResolution);
+  return IsBlockingOnMobile(client);
+#else
+  return IsBlockingOnDesktop(client, form_manager);
 #endif
 }
 

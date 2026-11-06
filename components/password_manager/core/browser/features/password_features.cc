@@ -173,6 +173,12 @@ BASE_FEATURE(kPasswordManualFallbackSkipOpaqueOrigins,
 
 BASE_FEATURE(kPasswordSaveInContextErrorResolution,
              base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+const base::FeatureParam<int>
+    kPasswordSaveInContextErrorResolutionMinGmsVersion = {
+        &kPasswordSaveInContextErrorResolution, "min_gms_version",
+        kMinGmsVersionForInFlowZuulRecovery};
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

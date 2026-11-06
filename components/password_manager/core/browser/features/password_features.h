@@ -182,6 +182,11 @@ BASE_DECLARE_FEATURE(kPasswordManualFallbackSkipOpaqueOrigins);
 // When enabled, the user can resolve actionable errors in context during a
 // password save flow.
 BASE_DECLARE_FEATURE(kPasswordSaveInContextErrorResolution);
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr int kMinGmsVersionForInFlowZuulRecovery = 263600000;
+extern const base::FeatureParam<int>
+    kPasswordSaveInContextErrorResolutionMinGmsVersion;
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
