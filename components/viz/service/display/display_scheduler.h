@@ -152,7 +152,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void OnBeginFrameDeadline();
   bool DrawAndSwap(const BeginFrameArgs& begin_frame_args);
   void MaybeStartObservingBeginFrames();
-  void StartObservingBeginFrames();
+  void StartObservingBeginFrames(bool post_missed_begin_frame);
   void StopObservingBeginFrames();
   bool ShouldDraw() const;
   bool CanDrawForPreviousFrame(const BeginFrameId& begin_frame_id) const;
@@ -177,7 +177,6 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   base::CancelableOnceClosure missed_begin_frame_task_;
   base::CancelableOnceClosure swap_for_previous_frame_task_;
-  bool inside_surface_damaged_;
 
   bool visible_;
   bool output_surface_lost_;

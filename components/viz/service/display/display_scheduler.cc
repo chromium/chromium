@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
@@ -85,7 +84,6 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       begin_frame_source_(begin_frame_source),
       task_runner_(task_runner),
       last_undrawn_begin_frame_args_(std::nullopt),
-      inside_surface_damaged_(false),
       visible_(false),
       output_surface_lost_(false),
       inside_begin_frame_deadline_interval_(false),
@@ -171,11 +169,6 @@ void DisplayScheduler::OnRootFrameMissing(bool missing) {
 
 void DisplayScheduler::OnDisplayDamaged(SurfaceId surface_id,
                                         BeginFrameId frame_id) {
-  // We may cause a new BeginFrame to be run inside this method, but to help
-  // avoid being reentrant to the caller of SurfaceDamaged, track when this is
-  // happening with |inside_surface_damaged_|.
-  base::AutoReset<bool> auto_reset(&inside_surface_damaged_, true);
-
   needs_draw_ = true;
 
   if (allow_multiple_swaps_per_vsync_ && CanDrawForPreviousFrame(frame_id)) {
@@ -413,22 +406,6 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
   TRACE_EVENT2("viz", "DisplayScheduler::BeginFrame", "args", args.AsValue(),
                "now", now);
 
-  if (inside_surface_damaged_) {
-    // Repost this so that we don't run a missed BeginFrame on the same
-    // callstack. Otherwise we end up running unexpected scheduler actions
-    // immediately while inside some other action (such as submitting a
-    // CompositorFrame for a SurfaceFactory).
-    DCHECK_EQ(args.type, BeginFrameArgs::MISSED);
-    DCHECK(missed_begin_frame_task_.IsCancelled());
-    missed_begin_frame_task_.Reset(
-        base::BindOnce(base::IgnoreResult(&DisplayScheduler::OnBeginFrame),
-                       // The CancelableOnceCallback will not run after it is
-                       // destroyed, which happens when |this| is destroyed.
-                       base::Unretained(this), args));
-    task_runner_->PostTask(FROM_HERE, missed_begin_frame_task_.callback());
-    return true;
-  }
-
   // Save the |BeginFrameArgs| as the callback (missed_begin_frame_task_) can be
   // destroyed if we StopObservingBeginFrames(), and it would take the |args|
   // with it. Instead save the args and cancel the |missed_begin_frame_task_|.
@@ -555,7 +532,7 @@ void DisplayScheduler::SetNeedsOneBeginFrame(const BeginFrameArgs& args,
                                              bool needs_draw) {
   // If we are not currently observing BeginFrames because needs_draw_ is false,
   // we will stop observing again after one BeginFrame in AttemptDrawAndSwap().
-  StartObservingBeginFrames();
+  StartObservingBeginFrames(/*post_missed_begin_frame=*/false);
   if (needs_draw)
     needs_draw_ = true;
   if (base::FeatureList::IsEnabled(features::kNoLateBeginFrames) &&
@@ -570,20 +547,33 @@ void DisplayScheduler::SetNeedsOneBeginFrame(const BeginFrameArgs& args,
 
 void DisplayScheduler::MaybeStartObservingBeginFrames() {
   if (ShouldDraw())
-    StartObservingBeginFrames();
+    StartObservingBeginFrames(/*post_missed_begin_frame=*/true);
 }
 
-void DisplayScheduler::StartObservingBeginFrames() {
+void DisplayScheduler::StartObservingBeginFrames(bool post_missed_begin_frame) {
   if (!observing_begin_frame_source_) {
+    observing_begin_frame_source_ = true;
     begin_frame_source_->AddObserver(&begin_frame_observer_);
     // TODO(crbug.com/40900977): Some tests still have reliance on Missed
     // begin frames. We should update the test helpers.
     auto args = begin_frame_observer_.LastUsedBeginFrameArgs();
     if (args.IsValid() && args.type == BeginFrameArgs::MISSED &&
         args.frame_time > current_begin_frame_args_.frame_time) {
-      OnBeginFrame(begin_frame_observer_.LastUsedBeginFrameArgs());
+      if (post_missed_begin_frame) {
+        // Post the missed begin frame to avoid running unexpected scheduler
+        // actions immediately while inside some other action.
+        DCHECK(missed_begin_frame_task_.IsCancelled());
+        missed_begin_frame_task_.Reset(
+            base::BindOnce(base::IgnoreResult(&DisplayScheduler::OnBeginFrame),
+                           // The CancelableOnceCallback will not run after it
+                           // is destroyed, which happens when |this| is
+                           // destroyed.
+                           base::Unretained(this), args));
+        task_runner_->PostTask(FROM_HERE, missed_begin_frame_task_.callback());
+      } else {
+        OnBeginFrame(args);
+      }
     }
-    observing_begin_frame_source_ = true;
   }
 }
 
