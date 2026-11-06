@@ -255,8 +255,9 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
         accessor energyEffectEnabled: boolean = false;
         accessor energyEffectAnimationEnabled: boolean = false;
-        accessor willFulfillInAim: boolean =
-            !getLoadTimeBoolean('dynamicAimFulfillmentEnabled', false);
+        dynamicAimFulfillmentEnabled: boolean =
+            getLoadTimeBoolean('dynamicAimFulfillmentEnabled', false);
+        accessor willFulfillInAim: boolean = !this.dynamicAimFulfillmentEnabled;
 
         browserTabContextAdded: boolean = false;
         pendingAutomaticActiveTabUrl: string = '';
@@ -1904,10 +1905,11 @@ export const ComposeboxEmbedderMixin =
             this.handleToolClick(mode, /*allowToggleOff=*/ false);
           }
 
-          if (!!this.inputState && model === ModelMode.kUnspecified &&
-              this.inputState.allowedModels.length > 0) {
-            model = this.inputState.allowedModels[0]!;
+          if (model === ModelMode.kUnspecified) {
+            model = this.getDefaultModel_(state.enterAimMode);
           }
+          // With dynamic AIM fulfillment, a model enters AI Mode and no model
+          // leaves it, including AI Mode left over from an outside-click close.
           this.getSearchboxHandler().setActiveModelMode(
               model, /*isSetByAim=*/ false);
           this.updateInputPlaceholder();
@@ -2407,17 +2409,28 @@ export const ComposeboxEmbedderMixin =
           this.hasCachedSubmittedTabsThisTurn = false;
         }
 
+        // Returns the default model if one should be selected: always without
+        // dynamic AIM fulfillment, otherwise only to enter AI Mode (e.g. from
+        // the AI Mode button).
+        private getDefaultModel_(enterAimMode: boolean = false): ModelMode {
+          if ((!this.dynamicAimFulfillmentEnabled || enterAimMode) &&
+              this.inputState && this.inputState.allowedModels.length > 0) {
+            return this.inputState.allowedModels[0]!;
+          }
+          return ModelMode.kUnspecified;
+        }
+
+        // Re-applies the active model, or selects the default if one should be
+        // auto-selected (not with dynamic AIM fulfillment).
         setDefaultModel() {
-          if (this.inputState?.activeModel &&
-              (this.inputState.activeModel as ModelMode) !==
-                  ModelMode.kUnspecified) {
+          const model = (this.inputState?.activeModel &&
+                         (this.inputState.activeModel as ModelMode) !==
+                             ModelMode.kUnspecified) ?
+              this.inputState.activeModel :
+              this.getDefaultModel_();
+          if (model !== ModelMode.kUnspecified) {
             this.getSearchboxHandler().setActiveModelMode(
-                this.inputState.activeModel, /*isSetByAim=*/ false);
-          } else if (
-              this.inputState?.allowedModels &&
-              this.inputState.allowedModels.length > 0) {
-            this.getSearchboxHandler().setActiveModelMode(
-                this.inputState.allowedModels[0]!, /*isSetByAim=*/ false);
+                model, /*isSetByAim=*/ false);
           }
         }
 
@@ -2445,6 +2458,8 @@ export const ComposeboxEmbedderMixin =
           this.resetModes();
           this.getSearchboxHandler().clearFiles(
               /*shouldBlockAutoSuggestedTabs=*/ false);
+          // With dynamic AIM fulfillment, clearing the model (after the files)
+          // leaves AI Mode.
           this.resetToolsAndModels();
           this.suggestInventory = null;
           // <if expr="not is_android">
@@ -3539,6 +3554,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   voiceSearchCoherenceEnabled: boolean;
   energyEffectEnabled: boolean;
   energyEffectAnimationEnabled: boolean;
+  dynamicAimFulfillmentEnabled: boolean;
   willFulfillInAim: boolean;
   updateComplete: Promise<boolean>;
   pendingAutomaticActiveTabUrl: string;

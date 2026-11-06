@@ -2186,26 +2186,54 @@ TEST_F(InputStateModelDynamicAimTest, DisabledKeepsAimBehavior) {
   EXPECT_TRUE(WillFulfillInAim());
 }
 
-TEST_F(InputStateModelDynamicAimTest, EnableComputesWillFulfillInAim) {
+TEST_F(InputStateModelDynamicAimTest, EnableRoutesToSrpWithoutModel) {
+  // A model set before opting in doesn't count as entering AI Mode.
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
   base::MockCallback<InputStateModel::Subscriber> subscriber;
   auto subscription = input_state_model_->Subscribe(subscriber.Get());
   EXPECT_CALL(subscriber,
               Run(testing::Field(&InputState::will_fulfill_in_aim, false)));
   input_state_model_->EnableDynamicAimFulfillment();
   EXPECT_FALSE(WillFulfillInAim());
-  // The model selection is unchanged.
-  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  // A config refresh keeps "no model".
+  AddModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, "nem", "143");
+  EXPECT_CALL(subscriber, Run).Times(testing::AnyNumber());
+  input_state_model_->UpdateConfig(config_);
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
 }
 
-TEST_F(InputStateModelDynamicAimTest, ToolsRouteByTheirParams) {
+TEST_F(InputStateModelDynamicAimTest, AimModeStaysOnUntilModelCleared) {
   input_state_model_->EnableDynamicAimFulfillment();
 
   input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   EXPECT_FALSE(WillFulfillInAim());
+
+  // Canvas goes to AIM and shows the default model...
   input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
   EXPECT_TRUE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  // ...and stays in AIM after Canvas is removed and through a config refresh.
   input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_TRUE(WillFulfillInAim());
+  AddModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, "nem", "143");
+  input_state_model_->UpdateConfig(config_);
+  EXPECT_TRUE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  // Clearing the model (e.g. on close) leaves AI Mode.
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
   EXPECT_FALSE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  // Picking a model enters AI Mode too.
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  EXPECT_TRUE(WillFulfillInAim());
 }
 
 TEST_F(InputStateModelDynamicAimTest, AttachmentsRouteByMode) {
@@ -2214,14 +2242,54 @@ TEST_F(InputStateModelDynamicAimTest, AttachmentsRouteByMode) {
   // Default mode (single image).
   SetInputs(/*images=*/1);
   EXPECT_FALSE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  // Two images go to AIM and show the default model; removing one stays in
+  // AIM.
   SetInputs(/*images=*/2);
   EXPECT_TRUE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   SetInputs(/*images=*/1);
-  EXPECT_FALSE(WillFulfillInAim());
-
-  // Tabs always go to AIM.
-  SetInputs(/*images=*/0, /*tabs=*/1);
   EXPECT_TRUE(WillFulfillInAim());
+
+  // Tabs always go to AIM, even right after the model is cleared.
+  SetInputs(/*images=*/0, /*tabs=*/1);
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_TRUE(WillFulfillInAim());
+}
+
+// Before the first server config, queries go to AI Mode without entering it.
+TEST_F(InputStateModelDynamicAimTest, ColdStartDoesNotEnterAimMode) {
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, omnibox::SearchboxConfig(), active_url_,
+      /*is_off_the_record=*/false, /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->EnableDynamicAimFulfillment();
+  EXPECT_TRUE(WillFulfillInAim());
+
+  input_state_model_->UpdateConfig(config_);
+  EXPECT_FALSE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+}
+
+// With no model shown, the default model's rule limits tools, since routing
+// picks that model if a tool switches the query to AI Mode.
+TEST_F(InputStateModelDynamicAimTest, DefaultModelRuleLimitsToolsWithoutModel) {
+  auto* model_rule = config_.mutable_model_configs(0)->mutable_rule();
+  model_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  model_rule->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  model_rule->set_allow_all_input_types(true);
+  for (auto& tool_config : *config_.mutable_tool_configs()) {
+    tool_config.mutable_rule()->set_tool(tool_config.tool());
+    tool_config.mutable_rule()->set_allow_all_input_types(true);
+  }
+  input_state_model_->UpdateConfig(config_);
+  input_state_model_->EnableDynamicAimFulfillment();
+
+  ASSERT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_THAT(input_state_model_->GetInputState().disabled_tools,
+              testing::ElementsAre(omnibox::ToolMode::TOOL_MODE_CANVAS));
 }
 
 // The copy made for the next surface doesn't keep the opt-in.

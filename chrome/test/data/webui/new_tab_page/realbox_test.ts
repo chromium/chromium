@@ -332,6 +332,7 @@ suite('NewTabPageRealboxNextTest', () => {
     // Assert.
     const event = await whenOpenComposeBox;
     assertEquals(ToolMode.kDeepSearch, event.detail.mode);
+    assertFalse(!!event.detail.enterAimMode);
     // Calling deep search should not be logged as context being added.
     assertEquals(
         0,
@@ -501,12 +502,41 @@ suite('NewTabPageRealboxNextTest', () => {
       composed: true,
     }));
 
-    await whenOpenComposeBox;
+    const event = await whenOpenComposeBox;
+    // Only set with dynamic AIM fulfillment.
+    assertFalse(!!event.detail.enterAimMode);
 
     const metricName = 'ContextualSearch.AiModeButtonClick.NtpRealbox';
     assertEquals(2, metrics.count(metricName));
     assertEquals(1, metrics.count(metricName, true));
   });
+
+  test(
+      'clicking composebox button enters AI Mode with dynamic AIM fulfillment',
+      async () => {
+        loadTimeData.overrideValues({dynamicAimFulfillmentEnabled: true});
+        realbox = createAndAppendRealbox({
+          composeButtonEnabled: true,
+          composeboxEnabled: true,
+          ntpRealboxNextEnabled: true,
+        });
+        await microtasksFinished();
+        const whenOpenComposeBox = eventToPromise<CustomEvent<ComposeboxState>>(
+            'open-composebox', realbox);
+
+        const composeButton =
+            realbox.shadowRoot.querySelector<HTMLElement>('#composeButton');
+        assertTrue(!!composeButton);
+        composeButton.dispatchEvent(new CustomEvent('compose-click', {
+          detail: {button: 0, ctrlKey: false, metaKey: false, shiftKey: false},
+          bubbles: true,
+          composed: true,
+        }));
+
+        const event = await whenOpenComposeBox;
+        assertTrue(!!event.detail.enterAimMode);
+        loadTimeData.overrideValues({dynamicAimFulfillmentEnabled: false});
+      });
 
   test('clicking composebox button with text records user action', () => {
     const inputEl = realbox.$.input;

@@ -207,6 +207,9 @@ export interface ComposeboxState {
   error?: DriveUploadError;
   mode: ToolMode;
   model: ModelMode;
+  // Whether to open in AI Mode (e.g. from the AI Mode button), which selects
+  // the default model. Only matters with dynamic AIM fulfillment.
+  enterAimMode?: boolean;
   suggestInventory?: SuggestInventory;
   // <if expr="not is_android">
   smartTabSharingActive: boolean;

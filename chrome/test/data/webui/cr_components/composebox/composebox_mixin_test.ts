@@ -1804,6 +1804,85 @@ suite('ComposeboxMixinTest', () => {
     assertFalse(searchboxHandler.getArgs('setActiveModelMode')[0][1]);
   });
 
+  test(
+      'setDefaultModel skips the default model with dynamic AIM fulfillment',
+      async () => {
+        const inputState = new MockInputState({
+          allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
+          activeModel: ModelMode.kUnspecified,
+        });
+        element.onInputStateChanged(inputState);
+        await element.updateComplete;
+
+        element.dynamicAimFulfillmentEnabled = false;
+        element.setDefaultModel();
+
+        assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
+        assertEquals(
+            ModelMode.kGeminiRegular,
+            searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+        assertFalse(searchboxHandler.getArgs('setActiveModelMode')[0][1]);
+
+        searchboxHandler.resetResolver('setActiveModelMode');
+        element.dynamicAimFulfillmentEnabled = true;
+        element.setDefaultModel();
+
+        assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+      });
+
+  test(
+      'updateState skips the default model with dynamic AIM fulfillment',
+      async () => {
+        const inputState = new MockInputState({
+          allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
+          activeModel: ModelMode.kUnspecified,
+        });
+        element.onInputStateChanged(inputState);
+        await element.updateComplete;
+
+        element.dynamicAimFulfillmentEnabled = true;
+        element.state = {
+          text: 'query',
+          files: [],
+          mode: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          // <if expr="not is_android">
+          smartTabSharingActive: false,
+          // </if>
+        };
+        await element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
+        assertEquals(
+            ModelMode.kUnspecified,
+            searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+        assertFalse(searchboxHandler.getArgs('setActiveModelMode')[0][1]);
+      });
+
+  test('updateState selects the default model to enter AI Mode', async () => {
+    element.onInputStateChanged(new MockInputState({
+      allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
+      activeModel: ModelMode.kUnspecified,
+    }));
+    await element.updateComplete;
+    element.dynamicAimFulfillmentEnabled = true;
+
+    await element.updateState({
+      text: '',
+      files: [],
+      mode: ToolMode.kUnspecified,
+      model: ModelMode.kUnspecified,
+      enterAimMode: true,
+      // <if expr="not is_android">
+      smartTabSharingActive: false,
+      // </if>
+    });
+    assertEquals(
+        ModelMode.kGeminiRegular,
+        searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+  });
+
   test('empty input computes canSubmitFilesAndInput as false', async () => {
     await simulateUserTextInput(element.getInputElement(), '');
     assertFalse(element.canSubmitFilesAndInput);
@@ -2069,6 +2148,29 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(0, element.aimThreadRestoredTabs.length);
         assertFalse(element.hasCachedSubmittedTabsThisTurn);
       });
+
+  // With dynamic AIM fulfillment, clearing the model leaves AI Mode, so
+  // clearing the inputs must keep the model and closing must clear it.
+  test('clearing keeps the model and closing clears it', async () => {
+    element.onInputStateChanged(new MockInputState({
+      allowedModels: [ModelMode.kGeminiRegular],
+      activeModel: ModelMode.kGeminiRegular,
+    }));
+    await element.updateComplete;
+
+    element.clearAllInputs(
+        /* querySubmitted= */ false,
+        /* shouldBlockAutoSuggestedTabs= */ false);
+    await microtasksFinished();
+    assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+
+    element.closeComposebox();
+    await microtasksFinished();
+    assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
+    assertEquals(
+        ModelMode.kUnspecified,
+        searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+  });
 
   test('Omnibox keepMenuOpenOnTabSelect returns false by default', () => {
     assertFalse(element.keepMenuOpenOnTabSelect);
