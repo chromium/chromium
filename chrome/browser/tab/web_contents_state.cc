@@ -362,7 +362,7 @@ bool WebContentsState::ExtractNavigationEntries(
 
   // Support for versions 0 and 1 is removed in M142/M143. Metrics suggests
   // in-the-wild usage is virtually non-existent (see crbug.com/41493935).
-  if (saved_state_version < 2) {
+  if (saved_state_version < kMinSupportedVersion) {
     LOG(ERROR) << "Unsupported saved_state_version: " << saved_state_version;
     return false;
   }
@@ -401,7 +401,7 @@ bool WebContentsState::ExtractMetadata(base::span<const uint8_t> buffer,
                                        bool* is_off_the_record,
                                        std::u16string* title,
                                        std::string* virtual_url) {
-  if (saved_state_version != 2) {
+  if (saved_state_version != kCurrentVersion) {
     return false;
   }
 

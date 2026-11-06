@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
                                                      GetActiveWebContents());
 
   WebContentsStateByteBuffer web_contents_state =
-      WebContentsStateByteBuffer(result, 2);
+      WebContentsStateByteBuffer(result, WebContentsState::kCurrentVersion);
 
   EXPECT_FALSE(web_contents_state.GetBuffer().empty());
 
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
                                                      GetActiveWebContents());
 
   WebContentsStateByteBuffer web_contents_state =
-      WebContentsStateByteBuffer(result, 2);
+      WebContentsStateByteBuffer(result, WebContentsState::kCurrentVersion);
   WebContentsStateByteBuffer* web_contents_state_ptr = &web_contents_state;
 
   ASSERT_DCHECK_DEATH_WITH(
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(HistoricalTabSaverBrowserTest,
                                                      GetActiveWebContents());
 
   WebContentsStateByteBuffer web_contents_state =
-      WebContentsStateByteBuffer(result, 2);
+      WebContentsStateByteBuffer(result, WebContentsState::kCurrentVersion);
   WebContentsStateByteBuffer* web_contents_state_ptr = &web_contents_state;
 
   ASSERT_DCHECK_DEATH_WITH(

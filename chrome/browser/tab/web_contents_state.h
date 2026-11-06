@@ -73,6 +73,12 @@ class WebContentsStateByteBuffer {
 // Stores state for a WebContents, including its navigation history.
 class WebContentsState {
  public:
+  // LINT.IfChange(WebContentsStateVersion)
+  static constexpr int kInvalidBufferVersion = -1;
+  static constexpr int kMinSupportedVersion = 2;
+  static constexpr int kCurrentVersion = 2;
+  // LINT.ThenChange(//chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/WebContentsState.java:WebContentsStateVersion)
+
   using DeletionPredicate = base::RepeatingCallback<bool(
       const sessions::SerializedNavigationEntry& entry)>;
 

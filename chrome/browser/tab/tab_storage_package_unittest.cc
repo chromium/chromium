@@ -10,6 +10,7 @@
 
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/protocol/token.pb.h"
+#include "chrome/browser/tab/web_contents_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tabs {
@@ -27,7 +28,7 @@ TEST(TabStoragePackageTest, SerializePayloadMatchesProto) {
   tab_state.set_tab_has_sensitive_content(true);
   tab_state.set_is_pinned(true);
   tab_state.set_opener_app_id("com.example.app");
-  tab_state.set_web_contents_state_version(2);
+  tab_state.set_web_contents_state_version(WebContentsState::kCurrentVersion);
   tab_state.set_web_contents_state_bytes("fake_serialized_bytes");
 
   tabs_pb::Token* tab_group_id = tab_state.mutable_tab_group_id();
@@ -48,7 +49,8 @@ TEST(TabStoragePackageTest, SerializePayloadMatchesProto) {
   EXPECT_TRUE(package.tab_state().tab_has_sensitive_content());
   EXPECT_TRUE(package.tab_state().is_pinned());
   EXPECT_EQ(package.tab_state().opener_app_id(), "com.example.app");
-  EXPECT_EQ(package.tab_state().web_contents_state_version(), 2);
+  EXPECT_EQ(package.tab_state().web_contents_state_version(),
+            WebContentsState::kCurrentVersion);
   EXPECT_EQ(package.tab_state().web_contents_state_bytes(),
             "fake_serialized_bytes");
   EXPECT_EQ(package.tab_state().tab_group_id().high(), 0x1234ULL);
@@ -73,7 +75,8 @@ TEST(TabStoragePackageTest, SerializePayloadMatchesProto) {
   EXPECT_TRUE(deserialized.tab_has_sensitive_content());
   EXPECT_TRUE(deserialized.is_pinned());
   EXPECT_EQ(deserialized.opener_app_id(), "com.example.app");
-  EXPECT_EQ(deserialized.web_contents_state_version(), 2);
+  EXPECT_EQ(deserialized.web_contents_state_version(),
+            WebContentsState::kCurrentVersion);
   EXPECT_EQ(deserialized.web_contents_state_bytes(), "fake_serialized_bytes");
   EXPECT_EQ(deserialized.tab_group_id().high(), 0x1234ULL);
   EXPECT_EQ(deserialized.tab_group_id().low(), 0x5678ULL);

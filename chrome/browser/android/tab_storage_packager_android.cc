@@ -50,7 +50,7 @@ struct TabStorageMetadata {
   std::optional<std::string> opener_app_id;
   bool has_pending_load_params = false;
   std::optional<std::string> web_contents_state_bytes;
-  int32_t saved_state_version = -1;
+  int32_t saved_state_version = WebContentsState::kInvalidBufferVersion;
 };
 
 static void JNI_TabStoragePackager_OnTabStorageMetadataFetched(
@@ -72,7 +72,8 @@ static void JNI_TabStoragePackager_OnTabStorageMetadataFetched(
   metadata->tab_has_sensitive_content = tab_has_sensitive_content;
   metadata->opener_app_id = std::move(opener_app_id);
   metadata->has_pending_load_params = has_pending_load_params;
-  if (web_contents_state_buffer && saved_state_version != -1) {
+  if (web_contents_state_buffer &&
+      saved_state_version != WebContentsState::kInvalidBufferVersion) {
     base::span<const uint8_t> buffer_span =
         base::android::JavaByteBufferToSpan(env, web_contents_state_buffer);
     if (!buffer_span.empty()) {
@@ -210,21 +211,25 @@ std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::Package(
   if (metadata.has_pending_load_params) {
     if (metadata.web_contents_state_bytes.has_value() &&
         !metadata.web_contents_state_bytes->empty() &&
-        metadata.saved_state_version != -1) {
+        metadata.saved_state_version !=
+            WebContentsState::kInvalidBufferVersion) {
       tab_state.set_web_contents_state_bytes(
           std::move(*metadata.web_contents_state_bytes));
       tab_state.set_web_contents_state_version(metadata.saved_state_version);
     } else {
       tab_state.clear_web_contents_state_bytes();
-      tab_state.set_web_contents_state_version(-1);
+      tab_state.set_web_contents_state_version(
+          WebContentsState::kInvalidBufferVersion);
     }
   } else if (content::WebContents* web_contents = tab_android->web_contents()) {
     if (WebContentsState::WriteContentsState(
             web_contents, tab_state.mutable_web_contents_state_bytes())) {
-      tab_state.set_web_contents_state_version(2);
+      tab_state.set_web_contents_state_version(
+          WebContentsState::kCurrentVersion);
     } else {
       tab_state.clear_web_contents_state_bytes();
-      tab_state.set_web_contents_state_version(-1);
+      tab_state.set_web_contents_state_version(
+          WebContentsState::kInvalidBufferVersion);
     }
   } else {
     std::unique_ptr<WebContentsStateByteBuffer> byte_buffer =
@@ -236,7 +241,8 @@ std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::Package(
           buffer_span.size());
       tab_state.set_web_contents_state_version(byte_buffer->state_version());
     } else {
-      tab_state.set_web_contents_state_version(-1);
+      tab_state.set_web_contents_state_version(
+          WebContentsState::kInvalidBufferVersion);
     }
   }
 

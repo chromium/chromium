@@ -23,8 +23,14 @@ import java.nio.ByteBuffer;
 /** Contains the state for a {@link WebContents}. */
 @NullMarked
 public class WebContentsState {
+    // LINT.IfChange(WebContentsStateVersion)
     /** Version number used to denote an invalid buffer. */
     public static final int INVALID_BUFFER_VERSION = -1;
+
+    /**
+     * Minimum supported version of WebContentsState (versions 0 and 1 are deprecated/unsupported).
+     */
+    public static final int MIN_SUPPORTED_VERSION = 2;
 
     /**
      * Version number of the format used to save the {@link WebContents} navigation history, as
@@ -38,6 +44,8 @@ public class WebContentsState {
      * </pre>
      */
     public static final int CONTENTS_STATE_CURRENT_VERSION = 2;
+
+    // LINT.ThenChange(//chrome/browser/tab/web_contents_state.h:WebContentsStateVersion)
 
     private static @Nullable WebContentsState sEmptyWebContentsState;
 

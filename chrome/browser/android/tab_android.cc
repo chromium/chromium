@@ -215,9 +215,9 @@ TabAndroid::GetWebContentsByteBuffer() const {
 
   int version = Java_TabImpl_getWebContentsStateSavedStateVersion(env, tab);
 
-  // If the web contents is null (denoted by saved_state_version being -1),
-  // return a nullptr.
-  if (version == -1) {
+  // If the web contents is null (denoted by saved_state_version being
+  // WebContentsState::kInvalidBufferVersion), return a nullptr.
+  if (version == WebContentsState::kInvalidBufferVersion) {
     return nullptr;
   }
 

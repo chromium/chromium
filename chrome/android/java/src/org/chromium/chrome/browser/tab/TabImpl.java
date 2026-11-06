@@ -2548,7 +2548,9 @@ class TabImpl implements Tab, TabInternal {
     @CalledByNative
     private int getWebContentsStateSavedStateVersion() {
         // Return an invalid saved state version if the state is null.
-        return mWebContentsState == null ? -1 : mWebContentsState.version();
+        return mWebContentsState == null
+                ? WebContentsState.INVALID_BUFFER_VERSION
+                : mWebContentsState.version();
     }
 
     private void setupContentView(WebContents webContents) {
