@@ -104,17 +104,12 @@ class AndroidNonZPSSection : public Section {
   // context.
   // When `show_only_search_suggestions` is set to `true`, URLs will not be
   // offered at any position other than position 0 (the Default Match).
+  // `num_visible_matches` specifies the number of matches that are at least
+  // 50% exposed while the software keyboard is visible (including the Default
+  // Match).
   explicit AndroidNonZPSSection(bool show_only_search_suggestions,
-                                const omnibox::GroupConfigMap& group_configs);
-
-  // Specify number of matches that are at least 50% exposed while the
-  // software keyboard is visible.
-  static void set_num_visible_matches(size_t num_visible_matches) {
-    num_visible_matches_ = num_visible_matches;
-  }
-
- private:
-  static size_t num_visible_matches_;
+                                const omnibox::GroupConfigMap& group_configs,
+                                size_t num_visible_matches = 6);
 };
 
 // Android section for a single default match suggestion when there is one or
@@ -122,12 +117,9 @@ class AndroidNonZPSSection : public Section {
 class AndroidComposeboxNonZPSSection : public Section {
  public:
   explicit AndroidComposeboxNonZPSSection(
-      const omnibox::GroupConfigMap& group_configs);
-
-  // TODO(crbug.com/464014032): split by mode.
-  // Number of contextual attachments
-  static size_t num_attachments_;
-  static omnibox::ToolMode tool_mode_;
+      const omnibox::GroupConfigMap& group_configs,
+      size_t num_contextual_attachments = 0,
+      omnibox::ToolMode tool_mode = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 };
 
 // Android prefix section for Hub search (ZPS).
@@ -320,10 +312,8 @@ class AndroidComposeboxZpsSection : public ZpsSection {
       const omnibox::GroupConfigMap& group_configs,
       size_t max_suggestions,
       size_t max_aim_suggestions,
-      size_t max_contextual_suggestions);
-
-  // Number of contextual attachments
-  static size_t num_attachments_;
+      size_t max_contextual_suggestions,
+      size_t num_contextual_attachments = 0);
 };
 
 class IOSComposeboxZpsSection : public ZpsSection {

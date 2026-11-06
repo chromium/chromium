@@ -978,6 +978,10 @@ void AutocompleteInput::Clear() {
   input_method_.reset();
   has_previous_submitted_thread_context_ = false;
   has_auto_suggested_tab_ = false;
+#if BUILDFLAG(IS_ANDROID)
+  num_visible_matches_ = 6;
+  num_contextual_attachments_ = 0;
+#endif
 }
 
 size_t AutocompleteInput::EstimateMemoryUsage() const {

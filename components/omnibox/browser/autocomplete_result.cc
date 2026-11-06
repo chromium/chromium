@@ -520,6 +520,7 @@ void AutocompleteResult::SortAndCull(
       sections.push_back(
           std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));
     } else if (is_android_any && omnibox::IsComposebox(page_classification)) {
+#if BUILDFLAG(IS_ANDROID)
       auto composebox_suggestion_limit_config =
           omnibox_feature_configs::ComposeboxSuggestionLimit::Get();
       size_t composebox_max_suggestions = 15u;
@@ -535,7 +536,9 @@ void AutocompleteResult::SortAndCull(
       }
       sections.push_back(std::make_unique<AndroidComposeboxZpsSection>(
           suggestion_groups_map_, composebox_max_suggestions,
-          max_aim_suggestions, max_contextual_suggestions));
+          max_aim_suggestions, max_contextual_suggestions,
+          input.num_contextual_attachments()));
+#endif
     } else if constexpr (is_android_mobile) {
       if (omnibox::IsNTPPage(page_classification)) {
         sections.push_back(std::make_unique<AndroidNTPZpsSection>(
@@ -766,17 +769,26 @@ void AutocompleteResult::SortAndCull(
       sections.push_back(std::make_unique<AndroidTabSearchNonZPSSection>(
           suggestion_groups_map_));
     } else if (is_android_any && omnibox::IsComposebox(page_classification)) {
+#if BUILDFLAG(IS_ANDROID)
       sections.push_back(std::make_unique<AndroidComposeboxNonZPSSection>(
-          suggestion_groups_map_));
+          suggestion_groups_map_, input.num_contextual_attachments(),
+          input.input_state().active_tool));
+#endif
     } else if (is_android_any &&
                omnibox::IsAndroidWidget(page_classification)) {
+#if BUILDFLAG(IS_ANDROID)
       sections.push_back(std::make_unique<AndroidNonZPSSection>(
-          /* show_only_search_suggestions= */ false, suggestion_groups_map_));
+          /* show_only_search_suggestions= */ false, suggestion_groups_map_,
+          input.num_visible_matches()));
+#endif
     } else if (is_android_mobile) {
+#if BUILDFLAG(IS_ANDROID)
       bool show_only_search_suggestions =
           omnibox::IsCustomTab(page_classification);
       sections.push_back(std::make_unique<AndroidNonZPSSection>(
-          show_only_search_suggestions, suggestion_groups_map_));
+          show_only_search_suggestions, suggestion_groups_map_,
+          input.num_visible_matches()));
+#endif
     } else {
       sections.push_back(
           std::make_unique<DesktopNonZpsSection>(suggestion_groups_map_));

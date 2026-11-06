@@ -170,16 +170,10 @@ void ZpsSectionWithLocalHistory::InitFromMatches(ACMatches& matches) {
   ZpsSection::InitFromMatches(matches);
 }
 
-// Number of matches that fit in the visible section of the screen.
-// This number includes the Default match, shown in the top section.
-// The default match needs to be kept separate, because it should not be
-// moved when we group suggestions by Search vs URL.
-// TODO(b/328617350): plumb the value via AutocompleteInput.
-/* static */ size_t AndroidNonZPSSection::num_visible_matches_{6};
-
 AndroidNonZPSSection::AndroidNonZPSSection(
     bool show_only_search_suggestions,
-    const omnibox::GroupConfigMap& group_configs)
+    const omnibox::GroupConfigMap& group_configs,
+    size_t num_visible_matches)
     : Section(15,
               {
                   // Default match Group, not part of the Grouping.
@@ -191,7 +185,7 @@ AndroidNonZPSSection::AndroidNonZPSSection(
                         },
                         /*is_zps=*/false),
                   // Top Group / above the keyboard.
-                  Group(num_visible_matches_ - 1,
+                  Group(std::max<size_t>(1u, num_visible_matches) - 1,
                         {
                             {omnibox::GROUP_SEARCH, 14},
                             {omnibox::GROUP_OTHER_NAVS,
@@ -219,13 +213,12 @@ AndroidNonZPSSection::AndroidNonZPSSection(
               },
               group_configs) {}
 
-/* static */ size_t AndroidComposeboxNonZPSSection::num_attachments_;
-/* static */ omnibox::ToolMode AndroidComposeboxNonZPSSection::tool_mode_;
-
 AndroidComposeboxNonZPSSection::AndroidComposeboxNonZPSSection(
-    const omnibox::GroupConfigMap& group_configs)
-    : Section(tool_mode_ == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
-                      num_attachments_ == 0
+    const omnibox::GroupConfigMap& group_configs,
+    size_t num_contextual_attachments,
+    omnibox::ToolMode tool_mode)
+    : Section(tool_mode == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
+                      num_contextual_attachments == 0
                   ? 15
                   : 1,
               {// Default match Group only, unless no attachments
@@ -668,32 +661,36 @@ DesktopLensMultimodalZpsSection::DesktopLensMultimodalZpsSection(
                  },
                  group_configs) {}
 
-/* static */ size_t AndroidComposeboxZpsSection::num_attachments_;
-
 AndroidComposeboxZpsSection::AndroidComposeboxZpsSection(
     const omnibox::GroupConfigMap& group_configs,
     size_t max_suggestions,
     size_t max_aim_suggestions,
-    size_t max_contextual_suggestions)
+    size_t max_contextual_suggestions,
+    size_t num_contextual_attachments)
     : ZpsSection(
           max_suggestions,
           {
               Group(max_suggestions,
                     {
                         {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
-                         num_attachments_ > 1 ? 0 : max_aim_suggestions},
+                         num_contextual_attachments > 1 ? 0
+                                                        : max_aim_suggestions},
                         {omnibox::GROUP_MIA_RECOMMENDATIONS,
-                         num_attachments_ > 1 ? 0 : max_aim_suggestions},
+                         num_contextual_attachments > 1 ? 0
+                                                        : max_aim_suggestions},
                     }),
               Group(max_suggestions,
                     {
                         {omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
-                         num_attachments_ > 1 ? 0 : max_aim_suggestions},
+                         num_contextual_attachments > 1 ? 0
+                                                        : max_aim_suggestions},
                     }),
               Group(max_suggestions,
                     {
                         {omnibox::GROUP_CONTEXTUAL_SEARCH,
-                         num_attachments_ > 1 ? 0 : max_contextual_suggestions},
+                         num_contextual_attachments > 1
+                             ? 0
+                             : max_contextual_suggestions},
                     }),
           },
           group_configs) {}

@@ -206,6 +206,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // WebContents associated with the most recent request.
   base::WeakPtr<content::WebContents> contextual_tasks_web_contents_;
 
+  // Number of matches that fit in the visible section of the screen while the
+  // software keyboard is active (including the default match).
+  size_t num_visible_matches_{6};
+
   // Factory used to create asynchronously invoked callbacks.
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.
   base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{this};

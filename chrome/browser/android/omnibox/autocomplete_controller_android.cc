@@ -50,7 +50,6 @@
 #include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
-#include "components/omnibox/browser/autocomplete_grouper_sections.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -187,11 +186,11 @@ void AutocompleteControllerAndroid::Start(
   input_.set_in_keyword_mode(in_keyword_mode);
   input_.set_allow_exact_keyword_match(allow_exact_keyword_match);
   input_.set_omit_asynchronous_matches(!want_asynchronous_matches);
+  input_.set_num_visible_matches(num_visible_matches_);
 
   auto* bridge = composebox_query_controller_bridge_.get();
   if (bridge) {
-    AndroidComposeboxNonZPSSection::num_attachments_ =
-        bridge->GetAttachmentCount();
+    input_.set_num_contextual_attachments(bridge->GetAttachmentCount());
 
     std::unique_ptr<lens::proto::LensOverlaySuggestInputs> inputs =
         bridge->CreateLensOverlaySuggestInputs();
@@ -299,13 +298,12 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   input_.set_current_url(current_url);
   input_.set_current_title(current_title);
   input_.set_focus_type(OFT::INTERACTION_FOCUS);
+  input_.set_num_visible_matches(num_visible_matches_);
 
   // Apply any AI Modes and Tools.
   auto* bridge = composebox_query_controller_bridge_.get();
   if (bridge) {
-    AndroidComposeboxZpsSection::num_attachments_ =
-        bridge->GetAttachmentCount();
-    AndroidComposeboxNonZPSSection::tool_mode_ = tool_mode;
+    input_.set_num_contextual_attachments(bridge->GetAttachmentCount());
 
     std::unique_ptr<lens::proto::LensOverlaySuggestInputs> inputs =
         bridge->CreateLensOverlaySuggestInputs();
@@ -564,7 +562,7 @@ void AutocompleteControllerAndroid::OnSuggestionDropdownHeightChanged(
     return;
   }
 
-  AndroidNonZPSSection::set_num_visible_matches(num_visible_matches);
+  num_visible_matches_ = num_visible_matches;
 }
 
 void AutocompleteControllerAndroid::CreateNavigationObserver(

@@ -2513,16 +2513,31 @@ TEST(AutocompleteGrouperSectionsTest,
              10, 9, 8, 7, 6, 5,  // top adaptive group.
          });
   }
+  {
+    SCOPED_TRACE("Custom num_visible_matches adjusts top group size.");
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<AndroidNonZPSSection>(
+        kSearchesAndUrls, group_configs, /*num_visible_matches=*/4u));
+    ACMatches matches{
+        make_url(20),    make_url(19),   make_url(18),
+        make_search(10), make_search(9),
+    };
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    // 20 (default), 10, 19, 18 (3 visible matches above fold), then 9 (bottom).
+    VerifyMatches(out_matches, {20, 10, 19, 18, 9});
+  }
 }
 
 TEST(AutocompleteGrouperSectionsTest, AndroidComposeboxZpsSection) {
-  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances,
+                 size_t num_contextual_attachments = 0) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
     sections.push_back(std::make_unique<AndroidComposeboxZpsSection>(
         group_configs, /*max_suggestions=*/5u,
         /*max_aim_suggestions=*/5u,
-        /*max_contextual_suggestions=*/5u));
+        /*max_contextual_suggestions=*/5u, num_contextual_attachments));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -2543,6 +2558,49 @@ TEST(AutocompleteGrouperSectionsTest, AndroidComposeboxZpsSection) {
         },
         // Nothing but personalized zero suggest and aim recommendations.
         {103, 102, 97, 101, 96});
+  }
+  {
+    SCOPED_TRACE("Multiple attachments suppress ZPS suggestions");
+    test(
+        {
+            CreateMatch(103, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(101, omnibox::GROUP_MIA_RECOMMENDATIONS),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        {}, /*num_contextual_attachments=*/2u);
+  }
+}
+
+TEST(AutocompleteGrouperSectionsTest, AndroidComposeboxNonZPSSection) {
+  omnibox::GroupConfigMap group_configs;
+  ACMatches matches = {
+      CreateMatch(100, omnibox::GROUP_SEARCH),
+      CreateMatch(99, omnibox::GROUP_SEARCH),
+      CreateMatch(98, omnibox::GROUP_SEARCH),
+  };
+
+  {
+    PSections sections;
+    sections.push_back(
+        std::make_unique<AndroidComposeboxNonZPSSection>(group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, {100, 99, 98});
+  }
+  {
+    PSections sections;
+    sections.push_back(std::make_unique<AndroidComposeboxNonZPSSection>(
+        group_configs, /*num_contextual_attachments=*/1u,
+        omnibox::ToolMode::TOOL_MODE_UNSPECIFIED));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, {100});
+  }
+  {
+    PSections sections;
+    sections.push_back(std::make_unique<AndroidComposeboxNonZPSSection>(
+        group_configs, /*num_contextual_attachments=*/0u,
+        omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, {100});
   }
 }
 

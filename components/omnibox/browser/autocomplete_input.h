@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "build/build_config.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/search_engines/search_terms_data.h"
@@ -419,6 +420,24 @@ class AutocompleteInput {
     has_auto_suggested_tab_ = has_auto_suggested_tab;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Number of matches that are at least 50% exposed while the software keyboard
+  // is visible (including the Default Match). Needed by Adaptive Suggestions to
+  // properly group and reorder suggestions above and below the soft keyboard.
+  size_t num_visible_matches() const { return num_visible_matches_; }
+  void set_num_visible_matches(size_t num_visible_matches) {
+    num_visible_matches_ = num_visible_matches;
+  }
+
+  // Number of contextual attachments currently added in Composebox.
+  size_t num_contextual_attachments() const {
+    return num_contextual_attachments_;
+  }
+  void set_num_contextual_attachments(size_t num_contextual_attachments) {
+    num_contextual_attachments_ = num_contextual_attachments;
+  }
+#endif
+
   // Resets all internal variables to the null-constructed state.
   void Clear();
 
@@ -516,6 +535,10 @@ class AutocompleteInput {
       input_method_;
   bool has_previous_submitted_thread_context_ = false;
   bool has_auto_suggested_tab_ = false;
+#if BUILDFLAG(IS_ANDROID)
+  size_t num_visible_matches_ = 6;
+  size_t num_contextual_attachments_ = 0;
+#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_
