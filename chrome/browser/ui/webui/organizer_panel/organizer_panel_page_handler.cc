@@ -65,8 +65,8 @@ void OrganizerPanelPageHandler::ClosePanel() {
 void OrganizerPanelPageHandler::GetSectionState(
     const std::string& section_id,
     GetSectionStateCallback callback) {
-  const organizer::SectionState state =
-      organizer::GetSectionState(GetPrefs(), section_id);
+  const organizer::SectionState state = organizer::GetSectionState(
+      GetPrefs(), organizer::GetSectionIdFromString(section_id));
   std::move(callback).Run(organizer_panel::mojom::SectionState::New(
       state.expanded, state.show_all));
 }
@@ -74,12 +74,14 @@ void OrganizerPanelPageHandler::GetSectionState(
 void OrganizerPanelPageHandler::SetSectionExpanded(
     const std::string& section_id,
     bool expanded) {
-  organizer::SetSectionExpanded(GetPrefs(), section_id, expanded);
+  organizer::SetSectionExpanded(
+      GetPrefs(), organizer::GetSectionIdFromString(section_id), expanded);
 }
 
 void OrganizerPanelPageHandler::SetSectionShowAll(const std::string& section_id,
                                                   bool show_all) {
-  organizer::SetSectionShowAll(GetPrefs(), section_id, show_all);
+  organizer::SetSectionShowAll(
+      GetPrefs(), organizer::GetSectionIdFromString(section_id), show_all);
 }
 
 void OrganizerPanelPageHandler::OnBrowserWindowInterfaceChanged() {
@@ -129,7 +131,7 @@ void OrganizerPanelPageHandler::OnSectionsStateChanged() {
           organizer::GetAllSectionStates(GetPrefs()), {},
           [](const organizer::SectionStateEntry& entry) {
             return std::make_pair(
-                std::string(entry.section_id),
+                std::string(organizer::GetSectionIdString(entry.section_id)),
                 organizer_panel::mojom::SectionState::New(
                     entry.state.expanded, entry.state.show_all));
           }));

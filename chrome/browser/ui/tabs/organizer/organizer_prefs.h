@@ -8,6 +8,7 @@
 #include <array>
 #include <cstddef>
 #include <string_view>
+#include <utility>
 
 class PrefService;
 
@@ -17,13 +18,18 @@ class PrefRegistrySyncable;
 
 namespace organizer {
 
-inline constexpr std::string_view kCrossDeviceTabsSectionId =
-    "cross-device-tabs";
-inline constexpr std::string_view kOpenTabsSectionId = "open-tabs";
-inline constexpr std::string_view kRecentlyClosedSectionId = "recently-closed";
-inline constexpr std::string_view kTabGroupsSectionId = "tab-groups";
+// LINT.IfChange(OrganizerSection)
+enum class SectionId {
+  kCrossDeviceTabs,
+  kOpenTabs,
+  kRecentlyClosed,
+  kTabGroups,
+  kMaxValue = kTabGroups,
+};
+// LINT.ThenChange(//chrome/browser/ui/tabs/organizer/organizer_panel_controller.cc:OrganizerSection)
 
-inline constexpr size_t kSectionCount = 4;
+inline constexpr size_t kSectionCount =
+    std::to_underlying(SectionId::kMaxValue) + 1;
 
 // Persisted display state for an organizer panel section.
 // Defaults match `SectionState` in organizer_panel.mojom.
@@ -34,16 +40,19 @@ struct SectionState {
 
 // Persisted display state and ID for an organizer panel section.
 struct SectionStateEntry {
-  std::string_view section_id;
+  SectionId section_id;
   SectionState state;
 };
 
 // Registers Organizer Panel specific prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-// Validates `section_id` and returns its persisted display state from `prefs`.
-SectionState GetSectionState(const PrefService& prefs,
-                             std::string_view section_id);
+// Converts between `SectionId` and its string representation.
+std::string_view GetSectionIdString(SectionId section_id);
+SectionId GetSectionIdFromString(std::string_view section_id);
+
+// Returns the persisted display state for `section_id` from `prefs`.
+SectionState GetSectionState(const PrefService& prefs, SectionId section_id);
 
 // Returns persisted display state for all organizer sections.
 std::array<SectionStateEntry, kSectionCount> GetAllSectionStates(
@@ -51,13 +60,11 @@ std::array<SectionStateEntry, kSectionCount> GetAllSectionStates(
 
 // Persists whether the section with `section_id` is expanded.
 void SetSectionExpanded(PrefService& prefs,
-                        std::string_view section_id,
+                        SectionId section_id,
                         bool expanded);
 
 // Persists whether the section with `section_id` shows all items.
-void SetSectionShowAll(PrefService& prefs,
-                       std::string_view section_id,
-                       bool show_all);
+void SetSectionShowAll(PrefService& prefs, SectionId section_id, bool show_all);
 
 }  // namespace organizer
 

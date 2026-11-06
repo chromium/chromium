@@ -79,6 +79,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Protected"/>
 </enum>
 
+<enum name="BooleanSectionExpanded">
+  <int value="0" label="Collapsed"/>
+  <int value="1" label="Expanded"/>
+</enum>
+
+<enum name="BooleanSectionShowAll">
+  <int value="0" label="ShowSome"/>
+  <int value="1" label="ShowAll"/>
+</enum>
+
 <!-- LINT.IfChange(DeviceType) -->
 
 <enum name="DeviceType">

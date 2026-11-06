@@ -6,19 +6,24 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/mock_vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_prefs.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_test.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -142,6 +147,132 @@ TEST_F(OrganizerPanelControllerTest, LazyWebContentsInitializationAndReuse) {
   controller()->SetOrganizerVisible(true);
   EXPECT_EQ(controller()->web_contents(), web_contents);
   EXPECT_NE(controller()->site_engagement_helper(), nullptr);
+}
+
+TEST_F(OrganizerPanelControllerTest, ResizingBlocksOpenAndMetrics) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*vertical_tab_strip_controller_, IsResizing())
+      .WillOnce(testing::Return(true));
+
+  controller()->SetOrganizerVisible(true);
+  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Tabs.Organizer.Section."),
+      testing::IsEmpty());
+}
+
+TEST_F(OrganizerPanelControllerTest, RecordsSectionStateMetricsOnOpen) {
+  base::HistogramTester histogram_tester;
+
+  controller()->SetOrganizerVisible(true);
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.Organizer.Section.OpenTabs.ExpandedStateOnOpen", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.Organizer.Section.OpenTabs.ShowAllStateOnOpen", false, 1);
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Tabs.Organizer.Section."),
+      testing::UnorderedElementsAre(
+          testing::Pair("Tabs.Organizer.Section.OpenTabs.ExpandedStateOnOpen",
+                        1),
+          testing::Pair("Tabs.Organizer.Section.OpenTabs.ShowAllStateOnOpen",
+                        1),
+          testing::Pair(
+              "Tabs.Organizer.Section.RecentlyClosed.ExpandedStateOnOpen", 1),
+          testing::Pair(
+              "Tabs.Organizer.Section.RecentlyClosed.ShowAllStateOnOpen", 1),
+          testing::Pair("Tabs.Organizer.Section.TabGroups.ExpandedStateOnOpen",
+                        1),
+          testing::Pair("Tabs.Organizer.Section.TabGroups.ShowAllStateOnOpen",
+                        1)));
+
+  // Re-opening with updated prefs records the new values without double-logging
+  // on redundant show or close calls.
+  controller()->SetOrganizerVisible(true);
+  controller()->SetOrganizerVisible(false);
+
+  organizer::SetSectionExpanded(*profile_.GetPrefs(),
+                                organizer::SectionId::kOpenTabs, false);
+  organizer::SetSectionShowAll(*profile_.GetPrefs(),
+                               organizer::SectionId::kOpenTabs, true);
+
+  controller()->SetOrganizerVisible(true);
+  histogram_tester.ExpectBucketCount(
+      "Tabs.Organizer.Section.OpenTabs.ExpandedStateOnOpen", false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Tabs.Organizer.Section.OpenTabs.ShowAllStateOnOpen", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.Section.OpenTabs.ExpandedStateOnOpen", 2);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.Section.OpenTabs.ShowAllStateOnOpen", 2);
+}
+
+TEST_F(OrganizerPanelControllerTest,
+       CrossDeviceTabsMetricsRequireFeatureAndSignIn) {
+  base::HistogramTester histogram_tester;
+
+  // Feature enabled while signed out does not record CrossDeviceTabs.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({organizer_panel::kOrganizerPanel,
+                                   organizer_panel::kOrganizerPanelForeignTabs},
+                                  {});
+    controller()->SetOrganizerVisible(true);
+    controller()->SetOrganizerVisible(false);
+  }
+
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(&profile_), "user@example.com",
+      signin::ConsentLevel::kSignin);
+
+  // Feature disabled while signed in does not record CrossDeviceTabs.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
+    controller()->SetOrganizerVisible(true);
+    controller()->SetOrganizerVisible(false);
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.Section.CrossDeviceTabs.ExpandedStateOnOpen", 0);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.Section.CrossDeviceTabs.ShowAllStateOnOpen", 0);
+
+  // Feature enabled while signed in records CrossDeviceTabs.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({organizer_panel::kOrganizerPanel,
+                                 organizer_panel::kOrganizerPanelForeignTabs},
+                                {});
+  controller()->SetOrganizerVisible(true);
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.Organizer.Section.CrossDeviceTabs.ExpandedStateOnOpen", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.Organizer.Section.CrossDeviceTabs.ShowAllStateOnOpen", false, 1);
+}
+
+TEST_F(OrganizerPanelControllerTest,
+       IncognitoSkipsRecentlyClosedAndCrossDeviceMetrics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({organizer_panel::kOrganizerPanel,
+                                 organizer_panel::kOrganizerPanelForeignTabs},
+                                {});
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(&profile_), "user@example.com",
+      signin::ConsentLevel::kSignin);
+
+  Profile* const incognito_profile =
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_CALL(mock_browser_window_interface_, GetProfile())
+      .WillRepeatedly(testing::Return(incognito_profile));
+
+  base::HistogramTester histogram_tester;
+  controller()->SetOrganizerVisible(true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.Organizer.Section.OpenTabs.ExpandedStateOnOpen", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.Section.RecentlyClosed.ExpandedStateOnOpen", 0);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.Section.CrossDeviceTabs.ExpandedStateOnOpen", 0);
 }
 
 // Test suite that ensures that the panel gets parented to the tray and the

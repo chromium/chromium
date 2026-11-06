@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TabGroups" summary="Tab groups"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section_delegate.ts:OrganizerSection) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section_delegate.ts:OrganizerSection, //chrome/browser/ui/tabs/organizer/organizer_panel_controller.cc:OrganizerSection) -->
 
 <variants name="RecentlyClosedType">
   <variant name="Bulk" summary="RecentlyClosedBulkEvent"/>
@@ -2624,6 +2624,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.Organizer.Section.{Section}.ExpandedStateOnOpen"
+    enum="BooleanSectionExpanded" expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records when the Organizer Panel opens whether the {Section} section is
+    expanded or collapsed.
+  </summary>
+  <token key="Section" variants="OrganizerSection"/>
+</histogram>
+
 <histogram name="Tabs.Organizer.Section.{Section}.MenuAction"
     enum="OrganizerSectionMenuOption" expires_after="2027-05-02">
   <owner>agale@chromium.org</owner>
@@ -2631,6 +2642,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the option selected by the user from the 3-dot action menu in the
     {Section} section header of the Organizer panel.
+  </summary>
+  <token key="Section" variants="OrganizerSection"/>
+</histogram>
+
+<histogram name="Tabs.Organizer.Section.{Section}.ShowAllStateOnOpen"
+    enum="BooleanSectionShowAll" expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records when the Organizer Panel opens whether the {Section} section
+    preference is set to show all items (ShowAll) or only the initial subset
+    (ShowSome), regardless of whether the section is currently collapsed.
   </summary>
   <token key="Section" variants="OrganizerSection"/>
 </histogram>

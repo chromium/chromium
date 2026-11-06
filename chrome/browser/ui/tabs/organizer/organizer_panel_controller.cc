@@ -4,23 +4,28 @@
 
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
@@ -32,6 +37,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/web_contents.h"
@@ -57,6 +65,61 @@ void OnVerticalTabStripAnimation(
   if (motion == TabStripAnimations::kCollapseOnHover ||
       motion == TabStripAnimations::kCollapse) {
     panel_controller->SetOrganizerVisible(false);
+  }
+}
+
+// LINT.IfChange(OrganizerSection)
+std::string_view GetHistogramSectionName(organizer::SectionId section_id) {
+  switch (section_id) {
+    case organizer::SectionId::kCrossDeviceTabs:
+      return "CrossDeviceTabs";
+    case organizer::SectionId::kOpenTabs:
+      return "OpenTabs";
+    case organizer::SectionId::kRecentlyClosed:
+      return "RecentlyClosed";
+    case organizer::SectionId::kTabGroups:
+      return "TabGroups";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:OrganizerSection)
+
+bool ShouldRecordSectionMetrics(Profile& profile,
+                                organizer::SectionId section_id) {
+  switch (section_id) {
+    case organizer::SectionId::kCrossDeviceTabs: {
+      if (!organizer_panel::IsOrganizerPanelForeignTabsEnabled()) {
+        return false;
+      }
+      signin::IdentityManager* const identity_manager =
+          IdentityManagerFactory::GetForProfile(&profile);
+      return identity_manager &&
+             identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+    }
+    case organizer::SectionId::kRecentlyClosed:
+      return !profile.IsIncognitoProfile();
+    case organizer::SectionId::kOpenTabs:
+    case organizer::SectionId::kTabGroups:
+      return true;
+  }
+}
+
+void RecordSectionStateMetricsOnOpen(Profile& profile) {
+  PrefService* const prefs = profile.GetPrefs();
+  CHECK(prefs);
+  for (const auto& entry : organizer::GetAllSectionStates(*prefs)) {
+    if (!ShouldRecordSectionMetrics(profile, entry.section_id)) {
+      continue;
+    }
+    const std::string_view section_name =
+        GetHistogramSectionName(entry.section_id);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Tabs.Organizer.Section.", section_name, ".ExpandedStateOnOpen"}),
+        entry.state.expanded);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Tabs.Organizer.Section.", section_name, ".ShowAllStateOnOpen"}),
+        entry.state.show_all);
   }
 }
 
@@ -245,7 +308,7 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
   is_visible_ = visible;
   base::RecordAction(base::UserMetricsAction(
       is_visible_ ? "OrganizerPanel.Open" : "OrganizerPanel.Close"));
-  if (visible) {
+  if (is_visible_) {
     if (auto* const interface =
             BrowserUserEducationInterface::From(&*browser_window_)) {
       const base::Feature& iph_feature =
@@ -257,9 +320,10 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
         interface->AbortFeaturePromo(iph_feature);
       }
     }
-  }
-  if (is_visible_) {
     UpdatePanelWebContents();
+    Profile* const profile = browser_window_->GetProfile();
+    CHECK(profile);
+    RecordSectionStateMetricsOnOpen(*profile);
   }
   if (immediate) {
     BrowserAnimationController::From(&*browser_window_)
