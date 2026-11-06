@@ -470,14 +470,12 @@ void LocationBarView::Init() {
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
       this, profile_, omnibox_controller_.get(), font_list));
 
-  SkColor icon_color = color_provider->GetColor(kColorOmniboxActionIcon);
-
   std::vector<std::unique_ptr<ContentSettingImageModel>> models =
       ContentSettingImageModel::GenerateContentSettingImageModels();
   for (auto& model : models) {
     auto image_view = std::make_unique<ContentSettingImageView>(
         std::move(model), this, this, browser_, page_action_font_list);
-    image_view->SetIconColor(icon_color);
+    image_view->SetIconColor(kColorOmniboxActionIcon);
     image_view->SetVisible(false);
     content_setting_views_.push_back(AddChildView(std::move(image_view)));
   }
@@ -1036,12 +1034,6 @@ void LocationBarView::OnThemeChanged() {
   // which will trigger an early theme change.
   if (!IsInitialized()) {
     return;
-  }
-
-  const SkColor icon_color =
-      GetColorProvider()->GetColor(kColorOmniboxActionIcon);
-  for (ContentSettingImageView* image_view : content_setting_views_) {
-    image_view->SetIconColor(icon_color);
   }
 
   RefreshBackground();

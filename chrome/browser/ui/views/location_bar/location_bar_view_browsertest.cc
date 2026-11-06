@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -1035,4 +1036,16 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewElevatedToolbarBrowserTest,
   EnsureLayout();
   EXPECT_TRUE(location_bar->page_action_container()->IsFirstVisibleViewChip());
   EXPECT_FALSE(location_bar->page_action_container()->IsCapsuleActive());
+}
+
+IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
+                       ContentSettingImageViewUsesSemanticColorId) {
+  LocationBarView* location_bar_view = GetLocationBarView();
+  ASSERT_TRUE(location_bar_view);
+
+  for (ContentSettingImageView* image_view :
+       location_bar_view->GetContentSettingViewsForTest()) {
+    EXPECT_EQ(image_view->GetIconColor(),
+              ui::ColorVariant(kColorOmniboxActionIcon));
+  }
 }
