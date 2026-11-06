@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -11,8 +12,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,8 +26,14 @@ import android.content.Intent;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.IntentUtils;
@@ -46,11 +56,28 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link ChromeTabCreator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeTabCreatorJUnitTest {
+    private static final String PRIMARY_URL = "https://primary.com";
+    private static final String URL_1 = "https://url1.com";
+    private static final String URL_2 = "https://url2.com";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabModel mTabModel;
+    @Mock private Tab mParentTab;
+    @Mock private Tab mFirstTab;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
+    @Captor private ArgumentCaptor<LoadUrlParams> mParamsCaptor;
+    @Captor private ArgumentCaptor<Integer> mLaunchTypeCaptor;
+    @Captor private ArgumentCaptor<Tab> mParentCaptor;
+    @Captor private ArgumentCaptor<Integer> mPositionCaptor;
+
     private ChromeTabCreator mTabCreator;
 
     @Before
@@ -103,12 +130,12 @@ public class ChromeTabCreatorJUnitTest {
         // mTabModel is null by default.
         assertNull(
                 mTabCreator.createNewTabs(
-                        new LoadUrlParams("https://primary.com"),
-                        List.of("https://url1.com", "https://url2.com"),
+                        new LoadUrlParams(PRIMARY_URL),
+                        List.of(URL_1, URL_2),
                         TabLaunchType.FROM_CHROME_UI,
-                        null,
-                        false,
-                        null));
+                        /* parent= */ null,
+                        /* openInTabGroup= */ false,
+                        /* intent= */ null));
     }
 
     @Test
@@ -116,12 +143,95 @@ public class ChromeTabCreatorJUnitTest {
         // mTabModel is null by default.
         assertNull(
                 mTabCreator.createNewTabs(
-                        new LoadUrlParams("https://primary.com"),
-                        List.of("https://url1.com", "https://url2.com"),
+                        new LoadUrlParams(PRIMARY_URL),
+                        List.of(URL_1, URL_2),
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
-                        null,
-                        true,
-                        null));
+                        /* parent= */ null,
+                        /* openInTabGroup= */ true,
+                        /* intent= */ null));
+    }
+
+    @Test
+    public void testCreateNewTabs_BookmarkBarBackground() {
+        when(mTabModel.indexOf(/* tab= */ null)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        ChromeTabCreator tabCreator = setupSpyTabCreatorForBatchTest(/* firstTabIndex= */ 2);
+
+        Tab result =
+                tabCreator.createNewTabs(
+                        new LoadUrlParams(PRIMARY_URL),
+                        List.of(URL_1, URL_2),
+                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
+                        /* parent= */ null,
+                        /* openInTabGroup= */ true,
+                        /* intent= */ null);
+
+        assertEquals(mFirstTab, result);
+        assertEquals(
+                List.of(PRIMARY_URL, URL_1, URL_2),
+                mParamsCaptor.getAllValues().stream().map(LoadUrlParams::getUrl).toList());
+        assertEquals(
+                List.of(
+                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
+                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
+                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND),
+                mLaunchTypeCaptor.getAllValues());
+        assertEquals(List.of(TabModel.INVALID_TAB_INDEX, 3, 4), mPositionCaptor.getAllValues());
+        assertEquals(Arrays.asList(null, null, null), mParentCaptor.getAllValues());
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab1, mTab2),
+                        mFirstTab,
+                        TabGroupMergeNotificationType.DONT_NOTIFY);
+    }
+
+    @Test
+    public void testCreateNewTabs_ForegroundLaunch() {
+        when(mTabModel.indexOf(mParentTab)).thenReturn(1);
+        ChromeTabCreator tabCreator = setupSpyTabCreatorForBatchTest(/* firstTabIndex= */ 2);
+
+        Tab result =
+                tabCreator.createNewTabs(
+                        new LoadUrlParams(PRIMARY_URL),
+                        List.of(URL_1, URL_2),
+                        TabLaunchType.FROM_CHROME_UI,
+                        /* parent= */ mParentTab,
+                        /* openInTabGroup= */ true,
+                        /* intent= */ null);
+
+        assertEquals(mFirstTab, result);
+        assertEquals(
+                List.of(PRIMARY_URL, URL_1, URL_2),
+                mParamsCaptor.getAllValues().stream().map(LoadUrlParams::getUrl).toList());
+        assertEquals(
+                List.of(
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP),
+                mLaunchTypeCaptor.getAllValues());
+        assertEquals(List.of(2, 3, 4), mPositionCaptor.getAllValues());
+        assertEquals(Arrays.asList(mParentTab, null, null), mParentCaptor.getAllValues());
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab1, mTab2),
+                        mFirstTab,
+                        TabGroupMergeNotificationType.DONT_NOTIFY);
+    }
+
+    private ChromeTabCreator setupSpyTabCreatorForBatchTest(int firstTabIndex) {
+        mTabCreator.setTabModel(mTabModel);
+        when(mTabModel.indexOf(mFirstTab)).thenReturn(firstTabIndex);
+        ChromeTabCreator tabCreator = spy(mTabCreator);
+        doReturn(mFirstTab, mTab1, mTab2)
+                .when(tabCreator)
+                .createNewTab(
+                        mParamsCaptor.capture(),
+                        /* title= */ isNull(),
+                        mLaunchTypeCaptor.capture(),
+                        mParentCaptor.capture(),
+                        mPositionCaptor.capture(),
+                        /* intent= */ any(),
+                        /* copyHistory= */ eq(false));
+        return tabCreator;
     }
 
     @Test

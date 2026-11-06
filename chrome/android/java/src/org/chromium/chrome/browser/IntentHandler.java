@@ -207,9 +207,10 @@ public class IntentHandler {
             "android.support.browser.extra.referrer_policy";
 
     /**
-     * Extra specifying additional urls that should each be opened in a new tab. If
-     * EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP is present and true, these will be opened in a tab
-     * group.
+     * Extra specifying additional URLs that should each be opened in a new background tab
+     * immediately following the primary URL from the intent data, ordered as they should appear in
+     * the tab strip. If {@link #EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP} is present and true, these
+     * will be opened in a tab group with the primary tab.
      */
     public static final String EXTRA_ADDITIONAL_URLS =
             "org.chromium.chrome.browser.additional_urls";

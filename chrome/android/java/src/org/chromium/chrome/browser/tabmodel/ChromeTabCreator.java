@@ -213,16 +213,30 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         }
 
         return createNewTab(
-                loadUrlParams, null, type, parent, position, intent, /* copyHistory= */ false);
+                loadUrlParams,
+                /* title= */ null,
+                type,
+                parent,
+                position,
+                intent,
+                /* copyHistory= */ false);
     }
 
     /**
      * Creates multiple tabs from a primary URL and an optional list of additional URLs.
      *
+     * <p>The primary tab is opened first using {@code type}, followed immediately by {@code
+     * additionalUrls} opened in the background in list order (resulting in {@code [firstTab,
+     * additionalUrls.get(0), additionalUrls.get(1), ...]}). {@code firstTabParams} is
+     * shallow-copied via {@link LoadUrlParams#copy} for each additional URL with its URL replaced.
+     * If creating the primary tab fails (returns {@code null}) or {@code mTabModel} is {@code
+     * null}, this returns immediately without opening {@code additionalUrls}.
+     *
      * @param firstTabParams Parameters of the primary URL load.
-     * @param additionalUrls Optional list of additional URLs to load as tabs.
-     * @param type Information about how the tab was launched.
-     * @param parent The parent tab, if present.
+     * @param additionalUrls Optional list of additional URLs to open in the background after the
+     *     primary tab, ordered as they should appear in the tab strip.
+     * @param type Information about how the primary tab was launched.
+     * @param parent The parent tab for the primary tab, if present.
      * @param openInTabGroup Whether additional URLs should be opened in a tab group with the first
      *     tab.
      * @param intent The source intent if present.
@@ -241,21 +255,38 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         if (additionalUrls != null && !additionalUrls.isEmpty()) {
             @TabLaunchType
             int additionalUrlLaunchType =
-                    openInTabGroup
-                            ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                            : TabLaunchType.FROM_LONGPRESS_BACKGROUND;
+                    type == TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND
+                            ? TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND
+                            : (openInTabGroup
+                                    ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                                    : TabLaunchType.FROM_LONGPRESS_BACKGROUND);
+            int firstTabIndex = mTabModel.indexOf(firstTab);
+            int position =
+                    firstTabIndex != TabModel.INVALID_TAB_INDEX
+                            ? firstTabIndex + 1
+                            : TabModel.INVALID_TAB_INDEX;
             List<Tab> additionalTabs = new ArrayList<>();
-            // Iterate backwards because background tabs are inserted immediately after the active
-            // tab, so inserting from last to first preserves the exact list order.
-            for (int i = additionalUrls.size() - 1; i >= 0; i--) {
+            for (String url : additionalUrls) {
                 LoadUrlParams copy = LoadUrlParams.copy(firstTabParams);
-                copy.setUrl(additionalUrls.get(i));
-                // Do not pass firstTab as parent; establishing a parent relationship
-                // causes issues during subsequent tab reparenting (e.g. crashing when
-                // dragging a tab group into a new window). Tabs are grouped explicitly below.
-                Tab tab = createNewTab(copy, additionalUrlLaunchType, parent, intent);
+                copy.setUrl(url);
+                // Do not pass a parent tab for additional URLs; establishing a parent relationship
+                // causes issues during subsequent tab reparenting (e.g. crashing when dragging a
+                // tab group into a new window), and passing firstTab's parent would resolve every
+                // additional tab to the same insertion index. Tabs are grouped explicitly below.
+                Tab tab =
+                        createNewTab(
+                                copy,
+                                /* title= */ null,
+                                additionalUrlLaunchType,
+                                /* parent= */ null,
+                                position,
+                                intent,
+                                /* copyHistory= */ false);
                 if (tab != null) {
-                    additionalTabs.add(0, tab);
+                    additionalTabs.add(tab);
+                    if (position != TabModel.INVALID_TAB_INDEX) {
+                        position++;
+                    }
                 }
             }
             if (openInTabGroup) {

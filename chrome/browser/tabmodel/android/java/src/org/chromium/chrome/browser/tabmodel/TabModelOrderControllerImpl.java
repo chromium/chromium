@@ -63,7 +63,9 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
 
         if (type == TabLaunchType.FROM_OMNIBOX_BACKGROUND) {
             position = mTabModelSelector.getModel(newTab.isIncognitoBranded()).getCount();
-        } else if (TabLaunchTypeUtils.shouldOpenAdjacent(type)) {
+        } else if (TabLaunchTypeUtils.shouldOpenAdjacent(type)
+                && (position == TabList.INVALID_TAB_INDEX
+                        || newTab.getParentId() != Tab.INVALID_TAB_ID)) {
             position = determineInsertionIndexIfMaybeAdjacent(type, newTab);
         }
 

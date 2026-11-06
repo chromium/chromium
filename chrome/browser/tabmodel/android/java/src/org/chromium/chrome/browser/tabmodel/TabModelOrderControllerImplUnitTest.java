@@ -450,6 +450,40 @@ public class TabModelOrderControllerImplUnitTest {
     }
 
     @Test
+    public void testDetermineInsertionIndex_AdjacentLaunchType_ExplicitPositionWithoutParent() {
+        addTab(mTabModel, /* id= */ 1, /* isPinned= */ false);
+        addTab(mTabModel, /* id= */ 2, /* isPinned= */ false);
+        addTab(mTabModel, /* id= */ 3, /* isPinned= */ false);
+        mTabModel.setIndex(/* i= */ 0, TabSelectionType.FROM_USER);
+
+        MockTab newTab = new MockTab(/* id= */ 4, mProfile);
+
+        int position =
+                mOrderController.determineInsertionIndex(
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND, /* position= */ 2, newTab);
+        assertEquals("Explicit position without a parent tab should be preserved", 2, position);
+    }
+
+    @Test
+    public void testDetermineInsertionIndex_AdjacentLaunchType_ExplicitPositionWithParent() {
+        MockTab parentTab = addTab(mTabModel, /* id= */ 1, /* isPinned= */ false);
+        addTab(mTabModel, /* id= */ 2, /* isPinned= */ false);
+        addTab(mTabModel, /* id= */ 3, /* isPinned= */ false);
+        mTabModel.setIndex(/* i= */ 0, TabSelectionType.FROM_USER);
+
+        MockTab newTab = new MockTab(/* id= */ 4, mProfile);
+        newTab.setParentId(parentTab.getId());
+
+        int position =
+                mOrderController.determineInsertionIndex(
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND, /* position= */ 2, newTab);
+        assertEquals(
+                "Adjacent insertion index should override position when a parent tab is set",
+                1,
+                position);
+    }
+
+    @Test
     public void testSameModelType() {
         MockTab regularTab = new MockTab(1, mProfile);
         MockTab incognitoTab = new MockTab(2, mIncognitoProfile);
