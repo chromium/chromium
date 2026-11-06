@@ -30,6 +30,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.test.core.app.ApplicationProvider;
@@ -49,6 +50,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -81,6 +83,8 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
@@ -108,6 +112,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -648,6 +653,27 @@ public class TabSwitcherPaneUnitTest {
                 mTabSwitcherPane
                         .createHideHubLayoutAnimatorProvider(mHubContainerView)
                         .getPlannedAnimationType());
+    }
+
+    @Test
+    public void testExpandAnimationBackgroundColor_usesColorOfSheetToReshow() {
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+        Tab tab = mock(Tab.class);
+        when(tab.getWindowAndroid()).thenReturn(windowAndroid);
+        @ColorInt int defaultColor = mTabSwitcherPane.getExpandAnimationBackgroundColor(tab);
+        @ColorInt int sheetColor = defaultColor ^ 0x00FFFFFF;
+
+        TabBottomSheetManager tabBottomSheetManager = mock(TabBottomSheetManager.class);
+        TabBottomSheetUtils.attachManagerToWindow(windowAndroid, tabBottomSheetManager);
+        when(tabBottomSheetManager.getSheetColorToReshowAfterTabSwitcher(tab))
+                .thenReturn(sheetColor);
+        assertEquals(sheetColor, mTabSwitcherPane.getExpandAnimationBackgroundColor(tab));
+
+        when(tabBottomSheetManager.getSheetColorToReshowAfterTabSwitcher(tab)).thenReturn(null);
+        assertEquals(defaultColor, mTabSwitcherPane.getExpandAnimationBackgroundColor(tab));
+
+        TabBottomSheetUtils.detachManagerFromWindow(windowAndroid);
     }
 
     @Test

@@ -38,6 +38,11 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
         mTab = tab;
     }
 
+    @Override
+    public @Nullable Tab getTab() {
+        return mTab;
+    }
+
     @CalledByNative
     private void destroy() {
         if (mNativeTabBottomSheetBridge != null) {

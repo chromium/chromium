@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -43,6 +44,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -97,6 +99,11 @@ public class TabBottomSheetManagerTest {
 
                 @Override
                 public void onBottomSheetSuppressed() {}
+
+                @Override
+                public @Nullable Tab getTab() {
+                    return null;
+                }
             };
 
     private CoBrowseViews mCoBrowseViews;
@@ -417,6 +424,29 @@ public class TabBottomSheetManagerTest {
         // Close tab switcher
         tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
 
+        blockUntilSheetFullyRestored();
+    }
+
+    @Test
+    @SmallTest
+    public void testSheetColorToReshowAfterTabSwitcher_onlyForTheSheetsTab() {
+        Tab sheetTab = ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getActivityTab());
+        NativeInterfaceDelegate delegate = mock(NativeInterfaceDelegate.class);
+        when(delegate.getTab()).thenReturn(sheetTab);
+        showBottomSheetAndBlockUntilReady(delegate);
+
+        RegularTabSwitcherStation tabSwitcher = mInitialStation.openRegularTabSwitcher();
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            (Integer) Color.WHITE,
+                            mManager.getSheetColorToReshowAfterTabSwitcher(sheetTab));
+                    assertNull(mManager.getSheetColorToReshowAfterTabSwitcher(mock(Tab.class)));
+                });
+
+        tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
         blockUntilSheetFullyRestored();
     }
 

@@ -16,6 +16,7 @@ include_rules = [
   "+chrome/browser/browser_controls/android",
   "+chrome/browser/collaboration",
   "+chrome/browser/commerce/price_tracking/android",
+  "+chrome/browser/context_sharing/tab_bottom_sheet",
   "+chrome/browser/contextual_tasks/android",
   "+chrome/browser/data_sharing",
   "+chrome/browser/feature_engagement",

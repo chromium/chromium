@@ -22,6 +22,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 
 import org.chromium.base.Log;
@@ -211,6 +212,12 @@ public class TabBottomSheetCoordinator {
 
     boolean isInPeekMode() {
         return mBottomSheetController.getSheetState() == BottomSheetController.SheetState.PEEK;
+    }
+
+    /** Returns the background color of the sheet. */
+    @ColorInt
+    int getBackgroundColor() {
+        return mCoBrowseViews.getBackgroundColor();
     }
 
     void destroy() {

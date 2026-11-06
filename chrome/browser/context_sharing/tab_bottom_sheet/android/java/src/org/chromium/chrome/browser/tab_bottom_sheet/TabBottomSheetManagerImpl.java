@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.Window;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -265,6 +266,24 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         return mTabBottomSheetCoordinator != null
                 && mTabBottomSheetCoordinator.isSheetShowing()
                 && mTabBottomSheetCoordinator.isInPeekMode();
+    }
+
+    @Override
+    public @Nullable @ColorInt Integer getSheetColorToReshowAfterTabSwitcher(Tab tab) {
+        // The sheet comes back through unsuppressBottomSheet() once the tab switcher suppression
+        // ends, as long as nothing else suppresses it. A sheet that is closing, or waiting behind
+        // another bottom sheet, won't come back then. The sheet belongs to one tab, so it doesn't
+        // come back when a different tab is opened from the tab switcher.
+        if (mTabBottomSheetCoordinator == null
+                || mNativeInterfaceDelegate == null
+                || mNativeInterfaceDelegate.getTab() != tab
+                || mState == SheetState.SHOWING
+                || mState == SheetState.CLOSING
+                || mSuppressedByBottomSheetController
+                || !mSuppressionController.isSuppressedOnlyByTabSwitcher()) {
+            return null;
+        }
+        return mTabBottomSheetCoordinator.getBackgroundColor();
     }
 
     @Override

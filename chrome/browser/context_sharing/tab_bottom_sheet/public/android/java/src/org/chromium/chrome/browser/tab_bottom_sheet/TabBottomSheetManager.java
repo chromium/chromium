@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Manager interface for the tab bottom sheet. */
@@ -23,6 +26,9 @@ public interface TabBottomSheetManager extends Destroyable {
 
         // Method called when the bottom sheet is suppressed.
         void onBottomSheetSuppressed();
+
+        /** Returns the tab the bottom sheet was shown for, or null if unknown. */
+        @Nullable Tab getTab();
     }
 
     /** Attempts to close the Tab BottomSheet. */
@@ -47,6 +53,14 @@ public interface TabBottomSheetManager extends Destroyable {
      * @return Whether the bottom sheet is currently in peek mode.
      */
     boolean isInPeekMode();
+
+    /**
+     * Returns the background color of the bottom sheet that will come back in peek mode on {@code
+     * tab} once the tab switcher finishes hiding, or null if no sheet will come back then.
+     */
+    @Nullable
+    @ColorInt
+    Integer getSheetColorToReshowAfterTabSwitcher(Tab tab);
 
     /**
      * Initializes the ReadAloud integration.

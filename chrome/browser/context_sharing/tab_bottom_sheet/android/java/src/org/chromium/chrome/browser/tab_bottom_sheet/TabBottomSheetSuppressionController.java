@@ -184,8 +184,16 @@ class TabBottomSheetSuppressionController {
     }
 
     boolean isInternallySuppressed() {
-        return mIsSuppressedOnTabSwitcher
-                || mIsSuppressedOnToolbarSwipe
+        return mIsSuppressedOnTabSwitcher || isSuppressedByNonTabSwitcherReason();
+    }
+
+    /** Returns whether the tab switcher is the only reason the sheet is suppressed. */
+    boolean isSuppressedOnlyByTabSwitcher() {
+        return mIsSuppressedOnTabSwitcher && !isSuppressedByNonTabSwitcherReason();
+    }
+
+    private boolean isSuppressedByNonTabSwitcherReason() {
+        return mIsSuppressedOnToolbarSwipe
                 || mIsSuppressedByReadAloud
                 || mIsSuppressedByIncognito
                 || mIsSuppressedByAutofill

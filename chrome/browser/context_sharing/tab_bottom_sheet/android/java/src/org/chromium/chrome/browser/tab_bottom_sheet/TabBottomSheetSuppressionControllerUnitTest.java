@@ -157,6 +157,31 @@ public class TabBottomSheetSuppressionControllerUnitTest {
     }
 
     @Test
+    public void testIsSuppressedOnlyByTabSwitcher() {
+        LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
+        assertFalse(mController.isSuppressedOnlyByTabSwitcher());
+
+        observer.onStartedShowing(LayoutType.HUB);
+        assertTrue(mController.isSuppressedOnlyByTabSwitcher());
+
+        // Another suppression keeps the sheet hidden after the tab switcher hides.
+        mOmniboxFocusStateSupplier.set(true);
+        assertFalse(mController.isSuppressedOnlyByTabSwitcher());
+        mOmniboxFocusStateSupplier.set(false);
+        assertTrue(mController.isSuppressedOnlyByTabSwitcher());
+
+        when(mLayoutStateProvider.getNextLayoutType()).thenReturn(LayoutType.BROWSING);
+        observer.onStartedHiding(LayoutType.HUB);
+        assertTrue(mController.isSuppressedOnlyByTabSwitcher());
+
+        observer.onFinishedHiding(LayoutType.HUB);
+        assertTrue(mController.isSuppressedOnlyByTabSwitcher());
+
+        observer.onStartedShowing(LayoutType.BROWSING);
+        assertFalse(mController.isSuppressedOnlyByTabSwitcher());
+    }
+
+    @Test
     public void testLayoutState_swipeSuppresses() {
         LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
         assertFalse(mController.isInternallySuppressed());
