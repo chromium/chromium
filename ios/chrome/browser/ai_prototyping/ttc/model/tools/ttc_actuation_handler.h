@@ -64,7 +64,9 @@ class TtcActuationHandler {
   // actuation request on `target_web_state` or `browser` (`target_web_state`
   // may be null even when `browser` has tabs, e.g., while the Tab Grid obscures
   // them), and invokes `callback` (which must be non-null) with the execution
-  // result, or `kTabWentAway` if `target_web_state` is null or off-the-record.
+  // result. Fails with `kTabWentAway` if `target_web_state` is off-the-record
+  // or is null for a tab-scoped tool, or `kWindowWentAway` if a window-scoped
+  // tool lacks a regular `Browser`.
   void ProcessToolCall(const ttc::ToolRequest& tool_request,
                        web::WebState* target_web_state,
                        Browser* browser,
@@ -72,10 +74,11 @@ class TtcActuationHandler {
 
   // Dispatches `request` for execution on `target_web_state` or `browser`,
   // lazily creating the session's Actor task if needed, and invokes `callback`
-  // (which must be non-null) upon completion, or with `kTabWentAway` if
-  // `target_web_state` is null or off-the-record. The underlying Actor task
-  // remains active to allow subsequent actuation requests until explicitly
-  // stopped or disconnected.
+  // (which must be non-null) upon completion. Fails with `kTabWentAway` if
+  // `target_web_state` is off-the-record or is null for an action that requires
+  // a tab, or `kWindowWentAway` if a `CreateTabAction` has no valid regular
+  // browser window ID. The underlying Actor task remains active to allow
+  // subsequent actuation requests until explicitly stopped or disconnected.
   void DispatchActuationRequest(const TtcActuationRequest& request,
                                 web::WebState* target_web_state,
                                 Browser* browser,
