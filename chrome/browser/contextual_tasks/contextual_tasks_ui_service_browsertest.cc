@@ -905,6 +905,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::WebContents* panel_contents = controller->GetActiveWebContents();
   ASSERT_TRUE(panel_contents);
+  content::WaitForLoadStop(panel_contents);
   std::optional<ContextualTask> initial_task = controller->GetCurrentTask();
   ASSERT_TRUE(initial_task.has_value());
 
