@@ -131,6 +131,26 @@ TEST(MemoryConsumerTest, EarlyDisabledMemoryConsumerIsRemoved) {
   EXPECT_EQ(test_registry.size(), 1u);
 }
 
+TEST(MemoryConsumerTest, LateRegistrationInheritsMemoryLimit) {
+  TestMemoryConsumerRegistry test_registry;
+
+  MockMemoryConsumer consumer1;
+  MemoryConsumerRegistration registration1("consumer1", kTestTraits,
+                                           &consumer1);
+
+  EXPECT_CALL(consumer1, OnUpdateMemoryLimit());
+  test_registry.NotifyUpdateMemoryLimit(MemoryLimit::FromPercent(20));
+
+  // A consumer registered afterwards starts at the current limit, without its
+  // callback being invoked.
+  MockMemoryConsumer consumer2;
+  EXPECT_CALL(consumer2, OnUpdateMemoryLimit()).Times(0);
+  MemoryConsumerRegistration registration2("consumer2", kTestTraits,
+                                           &consumer2);
+
+  EXPECT_EQ(consumer2.memory_limit(), MemoryLimit::FromPercent(20));
+}
+
 #if !BUILDFLAG(IS_IOS)
 TEST(MemoryConsumerTest, RegistrationWithoutRegistryAllowedInTests) {
   MockMemoryConsumer consumer;

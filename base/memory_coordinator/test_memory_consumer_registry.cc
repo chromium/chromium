@@ -32,6 +32,13 @@ void TestMemoryConsumerRegistry::OnMemoryConsumerAdded(
   CHECK(!memory_consumers_.HasObserver(consumer));
   memory_consumers_.AddObserver(consumer);
   size_++;
+
+  // The consumer's callbacks are suppressed during registration, so this only
+  // initializes its `memory_limit()`.
+  if (current_memory_limit_ != MemoryLimit::Default()) {
+    MemoryConsumerRegistry::NotifyUpdateMemoryLimit(consumer,
+                                                    current_memory_limit_);
+  }
 }
 
 void TestMemoryConsumerRegistry::OnMemoryConsumerRemoved(
@@ -44,6 +51,7 @@ void TestMemoryConsumerRegistry::OnMemoryConsumerRemoved(
 
 void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimit(
     MemoryLimit memory_limit) {
+  current_memory_limit_ = memory_limit;
   for (MemoryConsumer& consumer : memory_consumers_) {
     MemoryConsumerRegistry::NotifyUpdateMemoryLimit(&consumer, memory_limit);
   }

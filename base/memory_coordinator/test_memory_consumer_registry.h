@@ -32,7 +32,8 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   void OnMemoryConsumerRemoved(uint32_t consumer_id,
                                MemoryConsumer* consumer) override;
 
-  // Invokes UpdateMemoryLimit(memory_limit) on all consumers.
+  // Invokes UpdateMemoryLimit(memory_limit) on all consumers. The limit is also
+  // applied to consumers registered afterwards.
   void NotifyUpdateMemoryLimit(MemoryLimit memory_limit);
 
   // Invokes ReleaseMemory() on all consumers.
@@ -53,8 +54,13 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   size_t size() const { return size_; }
 
  private:
-  ObserverList<MemoryConsumer> memory_consumers_;
+  ObserverList<MemoryConsumer> memory_consumers_{
+      ObserverListPolicy::EXISTING_ONLY};
   size_t size_ = 0;
+
+  // The last limit passed to NotifyUpdateMemoryLimit(). Applied to consumers
+  // that register afterwards, like the production registries do.
+  MemoryLimit current_memory_limit_ = MemoryLimit::Default();
 
   WeakPtrFactory<TestMemoryConsumerRegistry> weak_ptr_factory_{this};
 };
