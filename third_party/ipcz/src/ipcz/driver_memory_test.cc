@@ -4,8 +4,12 @@
 
 #include "ipcz/driver_memory.h"
 
+#include <algorithm>
+#include <cstdint>
+
 #include "ipcz/driver_memory_mapping.h"
 #include "test/mock_driver.h"
+#include "test/multinode_test.h"
 #include "test/test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "util/ref_counted.h"
@@ -149,6 +153,26 @@ TEST_F(DriverMemoryTest, Map) {
 
   EXPECT_CALL(driver(), Close(kMapping, _, _));
   EXPECT_CALL(driver(), Close(kHandle, _, _));
+}
+
+using DriverMemoryMultinodeTestNode = test::TestNode;
+using DriverMemoryMultinodeTest =
+    test::MultinodeTest<DriverMemoryMultinodeTestNode>;
+
+MULTINODE_TEST(DriverMemoryMultinodeTest, ZeroInitialized) {
+  // Verifies that newly allocated shared memory is zero-initialized across all
+  // drivers, even after freeing a previously dirtied region of the same size.
+  constexpr size_t kSize = 64 * 1024;
+  for (int i = 0; i < 4; ++i) {
+    DriverMemory memory(GetDriver(), kSize);
+    ASSERT_TRUE(memory.is_valid());
+    DriverMemoryMapping mapping = memory.Map();
+    ASSERT_TRUE(mapping.is_valid());
+    for (uint8_t byte : mapping.bytes()) {
+      ASSERT_EQ(0u, byte);
+    }
+    std::ranges::fill(mapping.bytes(), 0xaa);
+  }
 }
 
 }  // namespace

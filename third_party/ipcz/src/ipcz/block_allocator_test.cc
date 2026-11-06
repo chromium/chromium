@@ -59,6 +59,20 @@ TEST_F(BlockAllocatorTest, Basic) {
   }
 }
 
+TEST_F(BlockAllocatorTest, InitializePrezeroedRegion) {
+  // Verifies that InitializePrezeroedRegion() only writes the last block's
+  // free-list terminator and does not zero-fill the preceding blocks.
+  absl::Span<uint8_t> prefix =
+      allocator().region().subspan(0, kPageSize - kBlockSize);
+  IPCZ_UNSAFE_TODO(memset(prefix.data(), 0xaa, prefix.size()));
+
+  allocator().InitializePrezeroedRegion();
+
+  for (uint8_t byte : prefix) {
+    ASSERT_EQ(0xaa, byte);
+  }
+}
+
 TEST_F(BlockAllocatorTest, AllocUseFreeRace) {
   // Spins up a worker thread to allocate new blocks and write to them
   // non-atomically, along with a separate worker thread to free them. This

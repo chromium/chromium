@@ -416,9 +416,9 @@ class IpczDriver {
       uint32_t flags,                  // in
       const void* options) const = 0;  // in
 
-  // Allocates a shared memory region and returns a driver handle in
-  // `driver_memory` which can be used to reference it in other calls to the
-  // driver.
+  // Allocates a zero-initialized shared memory region and returns a driver
+  // handle in `driver_memory` which can be used to reference it in other calls
+  // to the driver.
   virtual IpczResult AllocateSharedMemory(
       size_t num_bytes,                            // in
       uint32_t flags,                              // in

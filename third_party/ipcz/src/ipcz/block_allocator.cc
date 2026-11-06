@@ -82,7 +82,10 @@ void BlockAllocator::InitializeRegion() const {
   // immediate successor as the next free block. See comments on the `next`
   // field if BlockHeader.
   IPCZ_UNSAFE_TODO(memset(region_.data(), 0, region_.size()));
+  InitializePrezeroedRegion();
+}
 
+void BlockAllocator::InitializePrezeroedRegion() const {
   // Ensure that the last block points back to the unallocatable first block,
   // indicating the end of the free-list.
   free_block_at(last_block_index()).SetNextFreeBlock(kFrontBlockIndex);

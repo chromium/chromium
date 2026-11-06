@@ -57,6 +57,11 @@ class BlockAllocator {
   // allocate blocks.
   void InitializeRegion() const;
 
+  // Same as InitializeRegion(), but assumes the managed memory region is
+  // already zero-filled (e.g. freshly mapped OS shared memory), avoiding a
+  // redundant memset across the region.
+  void InitializePrezeroedRegion() const;
+
   // Allocates a block from the allocator's managed region of memory and returns
   // a pointer to its base address, where `block_size()` contiguous bytes are
   // then owned by the caller. May return null if out of blocks.
