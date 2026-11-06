@@ -27,7 +27,9 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
                        wtf_size_t max_decoded_bytes,
                        wtf_size_t reading_offset = kNoReadingOffset,
                        HighBitDepthDecodingOption bit_depth_option =
-                           HighBitDepthDecodingOption::kDefaultBitDepth);
+                           HighBitDepthDecodingOption::kDefaultBitDepth,
+                       const gfx::Size& desired_size = gfx::Size(),
+                       cc::AuxImage aux_image = cc::AuxImage::kDefault);
 
   SkiaImageDecoderBase(const SkiaImageDecoderBase&) = delete;
   SkiaImageDecoderBase& operator=(const SkiaImageDecoderBase&) = delete;
@@ -51,6 +53,10 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
 
   // Called after the codec size and common metadata are available.
   virtual void OnSkCodecCreated() {}
+
+  // Overrides can finalize incomplete output without resetting the active
+  // codec.
+  virtual SkCodec::Result OnIncrementalDecode(wtf_size_t);
 
   const SkCodec* codec() const { return codec_.get(); }
 

@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_rust_image_decoder.h"
 
+#include <algorithm>
 #include <array>
 
+#include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/experimental/rust_jpeg/decoder/SkJpegRustDecoder.h"
@@ -16,7 +18,29 @@
 
 namespace blink {
 
+JpegRustImageDecoder::JpegRustImageDecoder(AlphaOption alpha_option,
+                                           ColorBehavior color_behavior,
+                                           cc::AuxImage aux_image,
+                                           wtf_size_t max_decoded_bytes,
+                                           const gfx::Size& desired_size)
+    : SkiaImageDecoderBase(alpha_option,
+                           color_behavior,
+                           max_decoded_bytes,
+                           kNoReadingOffset,
+                           kDefaultBitDepth,
+                           desired_size,
+                           aux_image) {}
+
 JpegRustImageDecoder::~JpegRustImageDecoder() = default;
+
+gfx::Size JpegRustImageDecoder::DecodedSize() const {
+  return decoded_size_;
+}
+
+Vector<SkISize> JpegRustImageDecoder::GetSupportedDecodeSizes() const {
+  DCHECK(IsDecodedSizeAvailable());
+  return supported_decode_sizes_;
+}
 
 String JpegRustImageDecoder::FilenameExtension() const {
   return "jpg";
@@ -28,9 +52,40 @@ const AtomicString& JpegRustImageDecoder::MimeType() const {
 }
 
 void JpegRustImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
-  SkiaImageDecoderBase::OnSetData(data);
   allow_decode_to_yuv_ = false;
-  if (!data || !codec() || !IsAllDataReceived() ||
+  if (data && aux_image_ == cc::AuxImage::kGainmap) {
+    if (!gainmap_data_) {
+      // The gainmap may follow the main JPEG. Do not initialize a codec with
+      // the main image while the container is still arriving.
+      if (!IsAllDataReceived()) {
+        data_.reset();
+        SkiaImageDecoderBase::OnSetData(nullptr);
+        return;
+      }
+      auto encoded_data = data->GetAsSkData();
+      if (!encoded_data) {
+        SetFailed();
+        return;
+      }
+      auto metadata_decoder = SkJpegMetadataDecoder::Make(encoded_data);
+      if (!metadata_decoder) {
+        SetFailed();
+        return;
+      }
+      auto [gainmap_data, gainmap_info] =
+          metadata_decoder->findGainmapImage(encoded_data);
+      if (!gainmap_data) {
+        SetFailed();
+        return;
+      }
+      gainmap_data_ = SegmentReader::CreateFromSkData(std::move(gainmap_data));
+    }
+    data = gainmap_data_;
+    // RGB, YUV and metadata decoding must all use the selected JPEG.
+    data_ = data;
+  }
+  SkiaImageDecoderBase::OnSetData(data);
+  if (!data || !codec() || DecodedSize() != Size() || !IsAllDataReceived() ||
       NeedsDecodeTimeColorTransform()) {
     return;
   }
@@ -158,12 +213,92 @@ bool JpegRustImageDecoder::GetGainmapInfoAndData(
 std::unique_ptr<SkCodec> JpegRustImageDecoder::OnCreateSkCodec(
     std::unique_ptr<SkStream> stream,
     SkCodec::Result* result) {
-  std::unique_ptr<SkCodec> codec =
-      SkJpegRustDecoder::Decode(std::move(stream), result);
+  SkJpegRustDecoder::Metadata metadata;
+  codec_input_complete_ = IsAllDataReceived();
+  const auto input_state = codec_input_complete_
+                               ? SkJpegRustDecoder::InputState::kComplete
+                               : SkJpegRustDecoder::InputState::kGrowing;
+  std::unique_ptr<SkCodec> codec = SkJpegRustDecoder::Decode(
+      std::move(stream), result, input_state, &metadata);
+  if (codec) {
+    source_mcu_size_ = gfx::SkISizeToSize(metadata.fMCUSize);
+    if (source_mcu_size_.IsEmpty()) {
+      if (result) {
+        *result = SkCodec::kErrorInInput;
+      }
+      return nullptr;
+    }
+  }
   return codec;
 }
 
+SkCodec::Result JpegRustImageDecoder::OnIncrementalDecode(wtf_size_t index) {
+  SkCodec::Result result = SkiaImageDecoderBase::OnIncrementalDecode(index);
+  // Retry only when a codec created for growing input still reports
+  // kIncompleteInput after all data has arrived (e.g. missing EOI). Growing
+  // codecs treat EOF as temporary; a complete-input codec finalizes it.
+  if (result != SkCodec::kIncompleteInput || !IsAllDataReceived() ||
+      codec_input_complete_ || retried_complete_input_) {
+    return result;
+  }
+  retried_complete_input_ = true;
+  DCHECK_EQ(index, 0u);
+  DCHECK(data_);
+  auto encoded_data = data_->GetAsSkData();
+  if (!encoded_data) {
+    return SkCodec::kErrorInInput;
+  }
+
+  auto complete_codec = SkJpegRustDecoder::Decode(encoded_data, &result);
+  if (!complete_codec) {
+    return result;
+  }
+  ImageFrame& frame = frame_buffer_cache_[index];
+  frame.ZeroFillPixelData();
+  const SkImageInfo image_info =
+      frame.Bitmap()
+          .info()
+          .makeAlphaType(kOpaque_SkAlphaType)
+          .makeColorSpace(NeedsDecodeTimeColorTransform()
+                              ? ColorSpaceForSkImages()
+                              : nullptr);
+  result = complete_codec->startIncrementalDecode(
+      image_info, frame.Bitmap().getPixels(), frame.Bitmap().rowBytes());
+  if (result != SkCodec::kSuccess) {
+    return result;
+  }
+  return complete_codec->incrementalDecode();
+}
+
 void JpegRustImageDecoder::OnSkCodecCreated() {
+  constexpr unsigned kScaleDenominator = 8;
+  wtf_size_t target_bytes = max_decoded_bytes_;
+  if (!desired_size_.IsEmpty()) {
+    target_bytes = std::min(
+        target_bytes, static_cast<wtf_size_t>(desired_size_.Area64() * 4));
+  }
+  const unsigned max_numerator = JPEGImageDecoder::DesiredScaleNumerator(
+      target_bytes, static_cast<wtf_size_t>(Size().Area64() * 4),
+      kScaleDenominator);
+
+  supported_decode_sizes_.clear();
+  // Preserve native partial-MCU protection unless the budget forces
+  // downsampling.
+  if (max_numerator == kScaleDenominator &&
+      (Size().width() % source_mcu_size_.width() != 0 ||
+       Size().height() % source_mcu_size_.height() != 0)) {
+    supported_decode_sizes_.push_back(gfx::SizeToSkISize(Size()));
+  } else {
+    for (unsigned numerator = 1; numerator <= max_numerator; ++numerator) {
+      const SkISize size = codec()->getScaledDimensions(
+          static_cast<float>(numerator) / kScaleDenominator);
+      if (supported_decode_sizes_.empty() ||
+          supported_decode_sizes_.back() != size) {
+        supported_decode_sizes_.push_back(size);
+      }
+    }
+  }
+  decoded_size_ = gfx::SkISizeToSize(supported_decode_sizes_.back());
   DCHECK(data_);
   sk_sp<const SkData> encoded_data = data_->GetAsSkData();
   DCHECK(encoded_data);
@@ -174,7 +309,7 @@ void JpegRustImageDecoder::OnSkCodecCreated() {
   // helper to also compute Blink's density-corrected size; assigning the same
   // orientation again is harmless.
   ApplyExifMetadata(metadata_decoder->getExifMetadata(/*copyData=*/false).get(),
-                    Size());
+                    decoded_size_);
 }
 
 }  // namespace blink

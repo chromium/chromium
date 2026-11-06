@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,8 +29,11 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_decoder_factory.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_rust_image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "ui/base/test/skia_gold_matching_algorithm.h"  // nogncheck
@@ -41,6 +45,27 @@ namespace blink {
 static const size_t kLargeEnoughSize = 1000 * 1000;
 
 namespace {
+
+class SnapshotCountingReader final : public SegmentReader {
+ public:
+  explicit SnapshotCountingReader(scoped_refptr<SegmentReader> reader)
+      : reader_(std::move(reader)) {}
+
+  size_t size() const override { return reader_->size(); }
+  base::span<const uint8_t> GetSomeData(size_t position) const override {
+    return reader_->GetSomeData(position);
+  }
+  sk_sp<const SkData> GetAsSkData() const override {
+    ++snapshot_count_;
+    return reader_->GetAsSkData();
+  }
+  unsigned snapshot_count() const { return snapshot_count_; }
+
+ private:
+  ~SnapshotCountingReader() override = default;
+  const scoped_refptr<SegmentReader> reader_;
+  mutable unsigned snapshot_count_ = 0;
+};
 
 std::unique_ptr<JPEGImageDecoder> CreateJPEGDecoder(
     wtf_size_t max_decoded_bytes,
@@ -63,7 +88,20 @@ std::unique_ptr<ImageDecoder> CreateCppJPEGDecoder() {
 std::unique_ptr<ImageDecoder> CreateRustJPEGDecoder() {
   return std::make_unique<JpegRustImageDecoder>(
       ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
-      ImageDecoder::kNoDecodedImageByteLimit);
+      cc::AuxImage::kDefault, ImageDecoder::kNoDecodedImageByteLimit);
+}
+
+std::unique_ptr<ImageDecoder> CreateScaledRustJPEGDecoder() {
+  return std::make_unique<JpegRustImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      cc::AuxImage::kDefault, ImageDecoder::kNoDecodedImageByteLimit,
+      gfx::Size(4, 4));
+}
+
+std::unique_ptr<ImageDecoder> CreateMemoryBoundRustJPEGDecoder() {
+  return std::make_unique<JpegRustImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      cc::AuxImage::kDefault, 16 * 16 * 4);
 }
 
 std::unique_ptr<ImageDecoder> CreateFactoryJPEGDecoder() {
@@ -258,6 +296,114 @@ TEST(JPEGImageDecoderTest, RustFeaturePreservesDecodedMemoryBudget) {
   EXPECT_FALSE(decoder->Failed());
 }
 
+TEST(JPEGImageDecoderTest, RustDecodedMemoryBudgetMatchesNative) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  for (const char* path :
+       {"/fast/replaced/resources/compass.jpg",
+        "/images/resources/icc-v2-gbr-422-whole-mcus.jpg",
+        "/images/resources/icc-v2-gbr.jpg",
+        "/images/resources/ycbcr-420-progressive.jpg",
+        "/images/jpeg-suite/baseline/8x8x8_grayscale_white.jpg"}) {
+    SCOPED_TRACE(path);
+    auto data = ReadFileToSharedBuffer(path);
+    ASSERT_TRUE(data);
+    auto full_size = CreateJPEGDecoder(ImageDecoder::kNoDecodedImageByteLimit);
+    full_size->SetData(data.get(), true);
+    ASSERT_TRUE(full_size->IsSizeAvailable());
+    const wtf_size_t original_bytes =
+        static_cast<wtf_size_t>(full_size->Size().Area64()) * 4;
+    Vector<wtf_size_t> budgets = {
+        0,
+        1,
+        original_bytes - 1,
+        original_bytes,
+        original_bytes + 1,
+        static_cast<wtf_size_t>(std::numeric_limits<int>::max())};
+    for (unsigned numerator = 1; numerator < 8; ++numerator) {
+      const wtf_size_t boundary = static_cast<wtf_size_t>(
+          static_cast<uint64_t>(original_bytes) * numerator * numerator / 64);
+      budgets.push_back(boundary - 1);
+      budgets.push_back(boundary);
+      budgets.push_back(boundary + 1);
+    }
+    for (wtf_size_t budget : budgets) {
+      SCOPED_TRACE(budget);
+      for (const auto& desired : {gfx::Size(), gfx::Size(1, 1),
+                                  gfx::Size(50, 50), gfx::Size(600, 400)}) {
+        SCOPED_TRACE(desired.ToString());
+        auto reference = CreateJPEGDecoder(budget, desired);
+        std::unique_ptr<ImageDecoder> rust =
+            std::make_unique<JpegRustImageDecoder>(
+                ImageDecoder::kAlphaNotPremultiplied,
+                ColorBehavior::kTransformToSRGB, cc::AuxImage::kDefault, budget,
+                desired);
+        auto factory =
+            CreateJpegImageDecoder(ImageDecoder::kAlphaNotPremultiplied,
+                                   ColorBehavior::kTransformToSRGB,
+                                   cc::AuxImage::kDefault, budget, desired);
+        reference->SetData(data.get(), true);
+        const bool size_available = reference->IsSizeAvailable();
+        for (ImageDecoder* decoder : {rust.get(), factory.get()}) {
+          decoder->SetData(data.get(), true);
+          ASSERT_EQ(decoder->IsSizeAvailable(), size_available);
+          EXPECT_EQ(decoder->Failed(), reference->Failed());
+          if (!size_available) {
+            continue;
+          }
+          EXPECT_EQ(decoder->Size(), reference->Size());
+          EXPECT_EQ(decoder->FrameSizeAtIndex(0),
+                    reference->FrameSizeAtIndex(0));
+          EXPECT_EQ(decoder->DecodedSize(), reference->DecodedSize());
+          EXPECT_EQ(decoder->DensityCorrectedSize(),
+                    reference->DensityCorrectedSize());
+          EXPECT_EQ(decoder->GetSupportedDecodeSizes(),
+                    reference->GetSupportedDecodeSizes());
+          ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+          ASSERT_TRUE(frame);
+          ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+          EXPECT_EQ(frame->Bitmap().dimensions(),
+                    SkISize::Make(reference->DecodedSize().width(),
+                                  reference->DecodedSize().height()));
+          EXPECT_FALSE(decoder->Failed());
+          if (decoder->DecodedSize() != decoder->Size()) {
+            EXPECT_FALSE(decoder->CanDecodeToYUV());
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustFactoryUsesRustWithFiniteBudget) {
+  auto data = ReadFileToSharedBuffer(
+      "/images/jpeg-suite/extended_arithmetic/32x32x8_ycbcr.jpg");
+  ASSERT_TRUE(data);
+  for (bool use_rust : {false, true}) {
+    SCOPED_TRACE(use_rust);
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatureState(skia::kRustyJpegFeature, use_rust);
+    for (cc::AuxImage aux_image :
+         {cc::AuxImage::kDefault, cc::AuxImage::kGainmap}) {
+      SCOPED_TRACE(static_cast<int>(aux_image));
+      auto decoder = CreateJpegImageDecoder(
+          ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+          aux_image, 32 * 32 * 4);
+      decoder->SetData(data.get(), true);
+      ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+      // Bundled libjpeg-turbo rejects arithmetic JPEG; zune-jpeg decodes it.
+      if (use_rust && aux_image == cc::AuxImage::kDefault) {
+        ASSERT_TRUE(frame);
+        EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+        EXPECT_EQ(decoder->DecodedSize(), gfx::Size(32, 32));
+        EXPECT_FALSE(decoder->Failed());
+      } else {
+        EXPECT_TRUE(decoder->Failed());
+        EXPECT_FALSE(frame && frame->GetStatus() == ImageFrame::kFrameComplete);
+      }
+    }
+  }
+}
+
 // Tests that the JPEG decoder can downsample image whose width and height are
 // multiples of 8, to ensure we compute the correct DecodedSize and pass correct
 // parameters to libjpeg to output the image with the expected size.
@@ -374,6 +520,40 @@ TEST(JPEGImageDecoderTest, byteByByteProgressiveJPEGWithRustEnabled) {
   base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
   TestByteByByteDecode(&CreateFactoryJPEGDecoder,
                        "/images/resources/bug106024.jpg", 1u, kAnimationNone);
+}
+
+TEST(JPEGImageDecoderTest, RustScaledByteByByteBaselineAndProgressive) {
+  TestByteByByteDecode(&CreateScaledRustJPEGDecoder,
+                       "/images/resources/green.jpg", 1u, kAnimationNone);
+  TestByteByByteDecode(&CreateScaledRustJPEGDecoder,
+                       "/images/resources/ycbcr-420-progressive.jpg", 1u,
+                       kAnimationNone);
+}
+
+TEST(JPEGImageDecoderTest, RustMemoryBoundByteByByteBaselineAndProgressive) {
+  const struct {
+    const char* path;
+    gfx::Size decoded_size;
+  } cases[] = {
+      {"/images/jpeg-suite/baseline/"
+       "32x32x8_ycbcr_2x2_1x1_1x1_interleaved.jpg",
+       gfx::Size(16, 16)},
+      {"/images/resources/ycbcr-420-progressive.jpg", gfx::Size(13, 13)},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.path);
+    auto data = ReadFileToSharedBuffer(test.path);
+    ASSERT_TRUE(data);
+    // Keep every-byte retries inexpensive on sanitizer and flakiness bots.
+    ASSERT_LT(data->size(), 4096u);
+    auto decoder = CreateMemoryBoundRustJPEGDecoder();
+    decoder->SetData(data.get(), true);
+    ASSERT_TRUE(decoder->IsSizeAvailable());
+    ASSERT_EQ(decoder->DecodedSize(), test.decoded_size);
+    EXPECT_NE(decoder->DecodedSize(), decoder->Size());
+    TestByteByByteDecode(&CreateMemoryBoundRustJPEGDecoder, data.get(), 1u,
+                         kAnimationNone);
+  }
 }
 
 TEST(JPEGImageDecoderTest, byteByByteRGBJPEGWithAdobeMarkers) {
@@ -986,6 +1166,317 @@ TEST(JPEGImageDecoderTest,
   EXPECT_EQ(SkISize::Make(32, 32), frame->Bitmap().dimensions());
 }
 
+TEST(JPEGImageDecoderTest, RustFactoryAdvertisesReducedDecodeSizes) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  auto data = ReadFileToSharedBuffer("/fast/replaced/resources/compass.jpg");
+  ASSERT_TRUE(data);
+  auto decoder = CreateFactoryJPEGDecoder();
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  const Vector<SkISize> expected = {
+      SkISize::Make(16, 16),   SkISize::Make(32, 32),  SkISize::Make(48, 48),
+      SkISize::Make(64, 64),   SkISize::Make(80, 80),  SkISize::Make(96, 96),
+      SkISize::Make(112, 112), SkISize::Make(128, 128)};
+  EXPECT_EQ(decoder->GetSupportedDecodeSizes(), expected);
+  EXPECT_EQ(decoder->Size(), gfx::Size(128, 128));
+  EXPECT_EQ(decoder->DecodedSize(), decoder->Size());
+
+  auto desired_decoder = CreateJpegImageDecoder(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      cc::AuxImage::kDefault, ImageDecoder::kNoDecodedImageByteLimit,
+      gfx::Size(64, 64));
+  desired_decoder->SetData(data.get(), true);
+  ASSERT_TRUE(desired_decoder->IsSizeAvailable());
+  const Vector<SkISize> expected_desired_sizes = {
+      SkISize::Make(16, 16), SkISize::Make(32, 32), SkISize::Make(48, 48),
+      SkISize::Make(64, 64)};
+  EXPECT_EQ(desired_decoder->GetSupportedDecodeSizes(), expected_desired_sizes);
+  EXPECT_EQ(desired_decoder->DecodedSize(), gfx::Size(64, 64));
+  ImageFrame* frame = desired_decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+  EXPECT_EQ(frame->Bitmap().dimensions(), SkISize::Make(64, 64));
+}
+
+TEST(JPEGImageDecoderTest, RustDesiredSizeSelectsActualReducedOutput) {
+  auto data = ReadFileToSharedBuffer("/fast/replaced/resources/compass.jpg");
+  ASSERT_TRUE(data);
+  for (int desired : {1, 16, 31, 32, 47, 48, 63, 64, 70, 79, 80, 95, 96, 111,
+                      112, 127, 128, 129, 256}) {
+    SCOPED_TRACE(desired);
+    JpegRustImageDecoder decoder(ImageDecoder::kAlphaNotPremultiplied,
+                                 ColorBehavior::kIgnore, cc::AuxImage::kDefault,
+                                 ImageDecoder::kNoDecodedImageByteLimit,
+                                 gfx::Size(desired, desired));
+    decoder.SetData(data.get(), true);
+    ASSERT_TRUE(decoder.IsSizeAvailable());
+    const int side = 16 * std::clamp(desired / 16, 1, 8);
+    EXPECT_EQ(decoder.Size(), gfx::Size(128, 128));
+    EXPECT_EQ(decoder.DecodedSize(), gfx::Size(side, side));
+    EXPECT_EQ(decoder.GetSupportedDecodeSizes().back(),
+              SkISize::Make(side, side));
+    ImageFrame* frame = decoder.DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+    EXPECT_EQ(frame->Bitmap().dimensions(), SkISize::Make(side, side));
+    EXPECT_FALSE(decoder.Failed());
+    if (side < 128) {
+      EXPECT_FALSE(decoder.CanDecodeToYUV());
+    }
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustFactoryKeepsPartialMcusAtFullSize) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  for (const char* path :
+       {"/images/resources/ycbcr-420.jpg", "/images/resources/ycbcr-440.jpg",
+        "/images/resources/ycbcr-444.jpg"}) {
+    SCOPED_TRACE(path);
+    auto data = ReadFileToSharedBuffer(path);
+    ASSERT_TRUE(data);
+    auto decoder = CreateFactoryJPEGDecoder();
+    decoder->SetData(data.get(), true);
+    ASSERT_TRUE(decoder->IsSizeAvailable());
+    const Vector<SkISize> expected = {SkISize::Make(99, 99)};
+    EXPECT_EQ(decoder->GetSupportedDecodeSizes(), expected);
+    EXPECT_EQ(decoder->Size(), gfx::Size(99, 99));
+    EXPECT_EQ(decoder->DecodedSize(), decoder->Size());
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+    EXPECT_FALSE(decoder->Failed());
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustPartialMcusHonorExplicitDesiredSize) {
+  auto data = ReadFileToSharedBuffer("/images/resources/ycbcr-420.jpg");
+  ASSERT_TRUE(data);
+  JpegRustImageDecoder decoder(ImageDecoder::kAlphaNotPremultiplied,
+                               ColorBehavior::kIgnore, cc::AuxImage::kDefault,
+                               ImageDecoder::kNoDecodedImageByteLimit,
+                               gfx::Size(50, 50));
+  decoder.SetData(data.get(), true);
+  ASSERT_TRUE(decoder.IsSizeAvailable());
+  EXPECT_EQ(decoder.Size(), gfx::Size(99, 99));
+  EXPECT_EQ(decoder.DecodedSize(), gfx::Size(50, 50));
+  EXPECT_FALSE(decoder.CanDecodeToYUV());
+  ImageFrame* frame = decoder.DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+  EXPECT_EQ(frame->Bitmap().dimensions(), SkISize::Make(50, 50));
+  EXPECT_FALSE(decoder.Failed());
+}
+
+TEST(JPEGImageDecoderTest, RustFinalPackedProgressivePixelsMatchNative) {
+  auto data = ReadFileToSharedBuffer(
+      "/images/resources/non-interleaved_progressive.jpg");
+  ASSERT_TRUE(data);
+  auto native = CreateCppJPEGDecoder();
+  native->SetData(data.get(), true);
+  ASSERT_TRUE(native->IsSizeAvailable());
+  ImageFrame* expected = native->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(expected);
+  ASSERT_EQ(expected->GetStatus(), ImageFrame::kFramePartial);
+
+  for (bool grow_first : {false, true}) {
+    SCOPED_TRACE(grow_first);
+    auto rust = CreateRustJPEGDecoder();
+    if (grow_first) {
+      const Vector<char> bytes = data->CopyAs<Vector<char>>();
+      rust->SetData(
+          SharedBuffer::Create(base::span(bytes).first(bytes.size() / 2)),
+          false);
+      ASSERT_TRUE(rust->IsSizeAvailable());
+      rust->DecodeFrameBufferAtIndex(0);
+      EXPECT_FALSE(rust->Failed());
+      rust->SetData(scoped_refptr<SegmentReader>(), false);
+      rust->SetData(data.get(), false);
+      rust->DecodeFrameBufferAtIndex(0);
+      EXPECT_FALSE(rust->Failed());
+      rust->SetData(scoped_refptr<SegmentReader>(), false);
+    }
+    auto final_reader = base::MakeRefCounted<SnapshotCountingReader>(
+        SegmentReader::CreateFromSharedBuffer(data));
+    rust->SetData(final_reader, true);
+    ASSERT_TRUE(rust->IsSizeAvailable());
+    const unsigned snapshots_before_decode = final_reader->snapshot_count();
+    ImageFrame* actual = rust->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(actual);
+    ASSERT_EQ(actual->GetStatus(), ImageFrame::kFramePartial);
+    ASSERT_EQ(actual->Bitmap().dimensions(), expected->Bitmap().dimensions());
+    for (int y = 0; y < actual->Bitmap().height(); ++y) {
+      for (int x = 0; x < actual->Bitmap().width(); ++x) {
+        ASSERT_EQ(actual->Bitmap().getColor(x, y),
+                  expected->Bitmap().getColor(x, y))
+            << "x=" << x << " y=" << y;
+      }
+    }
+    EXPECT_EQ(rust->Failed(), native->Failed());
+    EXPECT_EQ(final_reader->snapshot_count(),
+              snapshots_before_decode + (grow_first ? 1u : 0u));
+    rust->DecodeFrameBufferAtIndex(0);
+    EXPECT_EQ(final_reader->snapshot_count(),
+              snapshots_before_decode + (grow_first ? 1u : 0u));
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustFinalInputMatchesOneShotAfterReaderDetach) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  for (const char* path : {"/images/jpeg-suite/baseline/"
+                           "32x32x8_ycbcr_2x2_1x1_1x1_interleaved.jpg",
+                           "/images/resources/ycbcr-420-progressive.jpg"}) {
+    SCOPED_TRACE(path);
+    for (bool truncate : {false, true}) {
+      SCOPED_TRACE(truncate);
+      Vector<char> bytes = ReadFile(path);
+      ASSERT_GT(bytes.size(), 2u);
+      ASSERT_EQ(static_cast<uint8_t>(bytes[bytes.size() - 2]), 0xff);
+      ASSERT_EQ(static_cast<uint8_t>(bytes.back()), 0xd9);
+      if (truncate) {
+        bytes.resize(bytes.size() - 2);
+      }
+      auto data = SharedBuffer::Create(bytes);
+      for (wtf_size_t budget :
+           {ImageDecoder::kNoDecodedImageByteLimit, wtf_size_t{16 * 16 * 4}}) {
+        SCOPED_TRACE(budget);
+        for (const gfx::Size& desired : {gfx::Size(), gfx::Size(16, 16)}) {
+          SCOPED_TRACE(desired.ToString());
+          for (bool use_factory : {false, true}) {
+            SCOPED_TRACE(use_factory);
+            auto create_decoder = [&]() -> std::unique_ptr<ImageDecoder> {
+              if (use_factory) {
+                return CreateJpegImageDecoder(
+                    ImageDecoder::kAlphaNotPremultiplied,
+                    ColorBehavior::kTransformToSRGB, cc::AuxImage::kDefault,
+                    budget, desired);
+              }
+              return std::make_unique<JpegRustImageDecoder>(
+                  ImageDecoder::kAlphaNotPremultiplied,
+                  ColorBehavior::kTransformToSRGB, cc::AuxImage::kDefault,
+                  budget, desired);
+            };
+            auto reference = create_decoder();
+            reference->SetData(data.get(), true);
+            auto* expected = reference->DecodeFrameBufferAtIndex(0);
+            ASSERT_TRUE(expected);
+
+            auto decoder = create_decoder();
+            decoder->SetData(
+                SharedBuffer::Create(base::span(bytes).first(bytes.size() / 2)),
+                false);
+            ASSERT_TRUE(decoder->IsSizeAvailable());
+            decoder->DecodeFrameBufferAtIndex(0);
+            ASSERT_FALSE(decoder->Failed());
+            decoder->SetData(scoped_refptr<SegmentReader>(), false);
+            auto final_reader = base::MakeRefCounted<SnapshotCountingReader>(
+                SegmentReader::CreateFromSharedBuffer(data));
+            decoder->SetData(final_reader, true);
+            // Receiving the last chunk must not replay or snapshot the input.
+            EXPECT_EQ(final_reader->snapshot_count(), 0u);
+            auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+            ASSERT_TRUE(frame);
+            EXPECT_EQ(frame->GetStatus(), expected->GetStatus());
+            EXPECT_EQ(decoder->Failed(), reference->Failed());
+            EXPECT_EQ(decoder->DecodedSize(), reference->DecodedSize());
+            ASSERT_EQ(frame->Bitmap().dimensions(),
+                      expected->Bitmap().dimensions());
+            EXPECT_EQ(HashBitmap(frame->Bitmap()),
+                      HashBitmap(expected->Bitmap()));
+            if (!truncate) {
+              EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+              EXPECT_FALSE(decoder->Failed());
+              EXPECT_EQ(final_reader->snapshot_count(), 0u);
+            } else {
+              EXPECT_EQ(final_reader->snapshot_count(), 1u);
+            }
+            const unsigned snapshots_after_decode =
+                final_reader->snapshot_count();
+            decoder->DecodeFrameBufferAtIndex(0);
+            EXPECT_EQ(final_reader->snapshot_count(), snapshots_after_decode);
+            EXPECT_EQ(HashBitmap(frame->Bitmap()),
+                      HashBitmap(expected->Bitmap()));
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST(JPEGImageDecoderTest,
+     RustBufferedSequentialKeepsCorruptFramesUnpublished) {
+  for (const char* path :
+       {"/images/resources/12-55.jpg", "/images/resources/23-55.jpg",
+        "/images/resources/182.jpg"}) {
+    SCOPED_TRACE(path);
+    auto data = ReadFileToSharedBuffer(path);
+    ASSERT_TRUE(data);
+    auto native = CreateCppJPEGDecoder();
+    auto rust = CreateRustJPEGDecoder();
+    native->SetData(data.get(), true);
+    rust->SetData(data.get(), true);
+    ASSERT_TRUE(native->IsSizeAvailable());
+    ASSERT_TRUE(rust->IsSizeAvailable());
+    ImageFrame* expected = native->DecodeFrameBufferAtIndex(0);
+    ImageFrame* actual = rust->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(expected);
+    ASSERT_TRUE(actual);
+    EXPECT_TRUE(native->Failed());
+    EXPECT_TRUE(rust->Failed());
+    EXPECT_EQ(expected->GetStatus(), ImageFrame::kFrameEmpty);
+    ASSERT_EQ(actual->GetStatus(), ImageFrame::kFramePartial);
+    ASSERT_EQ(actual->Bitmap().dimensions(), SkISize::Make(32, 29));
+    for (int y = 0; y < actual->Bitmap().height(); ++y) {
+      for (int x = 0; x < actual->Bitmap().width(); ++x) {
+        ASSERT_EQ(actual->Bitmap().getColor(x, y), SK_ColorTRANSPARENT)
+            << "x=" << x << " y=" << y;
+      }
+    }
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustScaledPixelsMatchNativeWithoutTolerance) {
+  const struct {
+    const char* path;
+    int side;
+  } cases[] = {
+      {"/fast/replaced/resources/compass.jpg", 128},
+      {"/images/resources/red-at-12-oclock-with-color-profile.jpg", 800},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.path);
+    auto data = ReadFileToSharedBuffer(test.path);
+    ASSERT_TRUE(data);
+    for (int numerator = 1; numerator < 8; ++numerator) {
+      SCOPED_TRACE(numerator);
+      const gfx::Size desired(test.side * numerator / 8,
+                              test.side * numerator / 8);
+      auto native =
+          CreateJPEGDecoder(ImageDecoder::kNoDecodedImageByteLimit, desired);
+      JpegRustImageDecoder rust(
+          ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+          cc::AuxImage::kDefault, ImageDecoder::kNoDecodedImageByteLimit,
+          desired);
+      native->SetData(data.get(), true);
+      rust.SetData(data.get(), true);
+      ASSERT_TRUE(native->IsSizeAvailable());
+      ASSERT_TRUE(rust.IsSizeAvailable());
+      ImageFrame* expected = native->DecodeFrameBufferAtIndex(0);
+      ImageFrame* actual = rust.DecodeFrameBufferAtIndex(0);
+      ASSERT_TRUE(expected);
+      ASSERT_TRUE(actual);
+      ASSERT_EQ(expected->GetStatus(), ImageFrame::kFrameComplete);
+      ASSERT_EQ(actual->GetStatus(), ImageFrame::kFrameComplete);
+      ASSERT_EQ(actual->Bitmap().dimensions(), expected->Bitmap().dimensions());
+      for (int y = 0; y < desired.height(); ++y) {
+        for (int x = 0; x < desired.width(); ++x) {
+          EXPECT_EQ(actual->Bitmap().getColor(x, y),
+                    expected->Bitmap().getColor(x, y));
+        }
+      }
+    }
+  }
+}
+
 TEST(JPEGImageDecoderTest, TooBigDesiredSize) {
   std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(
       ImageDecoder::kNoDecodedImageByteLimit, gfx::Size(100000, 100000));
@@ -1481,33 +1972,187 @@ TEST(JPEGImageDecoderTest, RustYuvPreservesExifOrientation) {
 }
 
 TEST(JPEGImageDecoderTest, Gainmap) {
-  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
   const char* jpeg_file = "/images/resources/gainmap-trattore0.jpg";
   scoped_refptr<SharedBuffer> full_data = ReadFileToSharedBuffer(jpeg_file);
   ASSERT_TRUE(full_data);
+  for (bool use_rust : {false, true}) {
+    SCOPED_TRACE(use_rust);
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatureState(skia::kRustyJpegFeature, use_rust);
+    auto base_decoder = CreateFactoryJPEGDecoder();
+    base_decoder->SetData(full_data.get(), true);
+    ASSERT_TRUE(base_decoder->IsSizeAvailable());
+    EXPECT_EQ(gfx::Size(134, 100), base_decoder->DecodedSize());
+    SkGainmapInfo gainmap_info;
+    scoped_refptr<SegmentReader> gainmap_data;
+    ASSERT_TRUE(
+        base_decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+    EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, 2.718f, 1.0e-3f);
+    ASSERT_TRUE(gainmap_data);
+    EXPECT_EQ(gainmap_data->size(), full_data->size());
+    auto* base_frame = base_decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(base_frame);
+    ASSERT_EQ(base_frame->GetStatus(), ImageFrame::kFrameComplete);
 
-  auto base_decoder = CreateFactoryJPEGDecoder();
-  base_decoder->SetData(full_data.get(), true);
-  ASSERT_TRUE(base_decoder->IsSizeAvailable());
-  EXPECT_EQ(gfx::Size(134, 100), base_decoder->DecodedSize());
+    auto gainmap_decoder = CreateJpegImageDecoder(
+        ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+        cc::AuxImage::kGainmap, ImageDecoder::kNoDecodedImageByteLimit);
+    EXPECT_EQ(gainmap_decoder->GetAuxImage(), cc::AuxImage::kGainmap);
+    gainmap_decoder->SetData(gainmap_data.get(), true);
+    ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
+    EXPECT_EQ(gfx::Size(33, 25), gainmap_decoder->DecodedSize());
+    auto* frame = gainmap_decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(frame);
+    ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+    EXPECT_FALSE(gainmap_decoder->Failed());
 
-  SkGainmapInfo gainmap_info;
-  scoped_refptr<SegmentReader> gainmap_data;
-  ASSERT_TRUE(base_decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+    auto encoded_data = gainmap_data->GetAsSkData();
+    auto metadata = SkJpegMetadataDecoder::Make(encoded_data);
+    ASSERT_TRUE(metadata);
+    auto [image, info] = metadata->findGainmapImage(encoded_data);
+    ASSERT_TRUE(image);
+    auto reference =
+        use_rust ? CreateRustJPEGDecoder() : CreateCppJPEGDecoder();
+    reference->SetData(SegmentReader::CreateFromSkData(std::move(image)), true);
+    auto* expected = reference->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(expected);
+    ASSERT_EQ(expected->GetStatus(), ImageFrame::kFrameComplete);
+    ASSERT_EQ(frame->Bitmap().dimensions(), expected->Bitmap().dimensions());
+    EXPECT_EQ(HashBitmap(frame->Bitmap()), HashBitmap(expected->Bitmap()));
+  }
+}
 
-  // Ensure that the gainmap information was extracted.
-  EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, 2.718f, 1.0e-3f);
+TEST(JPEGImageDecoderTest, RustGainmapMatchesStandaloneDecode) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  auto data = ReadFileToSharedBuffer("/images/resources/gainmap-trattore0.jpg");
+  ASSERT_TRUE(data);
+  auto encoded_data =
+      SegmentReader::CreateFromSharedBuffer(data)->GetAsSkData();
+  auto metadata = SkJpegMetadataDecoder::Make(encoded_data);
+  ASSERT_TRUE(metadata);
+  auto [image, info] = metadata->findGainmapImage(encoded_data);
+  ASSERT_TRUE(image);
+  auto image_data = SegmentReader::CreateFromSkData(std::move(image));
+  for (wtf_size_t budget :
+       {wtf_size_t{0}, wtf_size_t{1}, wtf_size_t{16 * 16 * 4},
+        ImageDecoder::kNoDecodedImageByteLimit}) {
+    SCOPED_TRACE(budget);
+    for (const auto& desired :
+         {gfx::Size(), gfx::Size(8, 8), gfx::Size(16, 16)}) {
+      SCOPED_TRACE(desired.ToString());
+      auto reference = std::make_unique<JpegRustImageDecoder>(
+          ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+          cc::AuxImage::kDefault, budget, desired);
+      reference->SetData(image_data, true);
+      const bool size_available = reference->IsSizeAvailable();
+      std::unique_ptr<ImageDecoder> rust =
+          std::make_unique<JpegRustImageDecoder>(
+              ImageDecoder::kAlphaNotPremultiplied,
+              ColorBehavior::kTransformToSRGB, cc::AuxImage::kGainmap, budget,
+              desired);
+      auto factory = CreateJpegImageDecoder(
+          ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+          cc::AuxImage::kGainmap, budget, desired);
+      for (ImageDecoder* decoder : {rust.get(), factory.get()}) {
+        EXPECT_EQ(decoder->GetAuxImage(), cc::AuxImage::kGainmap);
+        decoder->SetData(data.get(), true);
+        ASSERT_EQ(decoder->IsSizeAvailable(), size_available);
+        EXPECT_EQ(decoder->Failed(), reference->Failed());
+        if (!size_available) {
+          continue;
+        }
+        EXPECT_EQ(decoder->Size(), gfx::Size(33, 25));
+        EXPECT_EQ(decoder->FrameSizeAtIndex(0), reference->FrameSizeAtIndex(0));
+        EXPECT_EQ(decoder->DecodedSize(), reference->DecodedSize());
+        EXPECT_EQ(decoder->DensityCorrectedSize(),
+                  reference->DensityCorrectedSize());
+        EXPECT_EQ(decoder->GetSupportedDecodeSizes(),
+                  reference->GetSupportedDecodeSizes());
+        EXPECT_EQ(decoder->Orientation(), reference->Orientation());
+        EXPECT_EQ(decoder->CanDecodeToYUV(), reference->CanDecodeToYUV());
+        auto* expected = reference->DecodeFrameBufferAtIndex(0);
+        ASSERT_TRUE(expected);
+        ASSERT_EQ(expected->GetStatus(), ImageFrame::kFrameComplete);
+        auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+        ASSERT_TRUE(frame);
+        ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+        EXPECT_FALSE(decoder->Failed());
+        ASSERT_EQ(frame->Bitmap().dimensions(),
+                  expected->Bitmap().dimensions());
+        EXPECT_EQ(HashBitmap(frame->Bitmap()), HashBitmap(expected->Bitmap()));
+      }
+    }
+  }
+}
 
-  // Ensure that the extracted gainmap image contains an appropriately-sized
-  // image.
-  auto gainmap_decoder = CreateJpegImageDecoder(
+TEST(JPEGImageDecoderTest, RustGainmapWaitsForCompleteInput) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  Vector<char> data = ReadFile("/images/resources/gainmap-trattore0.jpg");
+  ASSERT_FALSE(data.empty());
+  auto decoder = CreateJpegImageDecoder(
       ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
       cc::AuxImage::kGainmap, ImageDecoder::kNoDecodedImageByteLimit);
+  for (wtf_size_t size :
+       {wtf_size_t{1}, data.size() / 2, data.size() - 1, data.size()}) {
+    decoder->SetData(SharedBuffer::Create(base::span(data).first(size)), false);
+    EXPECT_FALSE(decoder->IsSizeAvailable());
+    EXPECT_FALSE(decoder->DecodeFrameBufferAtIndex(0));
+    EXPECT_FALSE(decoder->CanDecodeToYUV());
+    EXPECT_FALSE(decoder->Failed());
+  }
+  decoder->SetData(scoped_refptr<SegmentReader>(), false);
+  EXPECT_FALSE(decoder->Failed());
+  decoder->SetData(SharedBuffer::Create(base::span(data)), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(decoder->DecodedSize(), gfx::Size(33, 25));
+  auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+  const uint32_t expected_hash = HashBitmap(frame->Bitmap());
+  decoder->ClearCacheExceptFrame(kNotFound);
+  decoder->SetData(scoped_refptr<SegmentReader>(), false);
+  EXPECT_FALSE(decoder->CanDecodeToYUV());
+  decoder->SetData(SharedBuffer::Create(base::span(data)), false);
+  frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+  EXPECT_EQ(HashBitmap(frame->Bitmap()), expected_hash);
+  decoder->ClearCacheExceptFrame(kNotFound);
+  decoder->SetData(scoped_refptr<SegmentReader>(), false);
+  decoder->SetData(SharedBuffer::Create(std::move(data)), true);
+  frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+  EXPECT_EQ(HashBitmap(frame->Bitmap()), expected_hash);
+  EXPECT_FALSE(decoder->Failed());
+}
 
-  gainmap_decoder->SetData(gainmap_data.get(), true);
-  ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
-  EXPECT_FALSE(gainmap_decoder->Failed());
-  EXPECT_EQ(gfx::Size(33, 25), gainmap_decoder->DecodedSize());
+TEST(JPEGImageDecoderTest, RustGainmapRejectsMissingOrTruncatedImage) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  Vector<char> gainmap_data =
+      ReadFile("/images/resources/gainmap-trattore0.jpg");
+  ASSERT_FALSE(gainmap_data.empty());
+  for (const auto& data :
+       {SharedBuffer::Create(),
+        ReadFileToSharedBuffer("/images/resources/green.jpg"),
+        SharedBuffer::Create(base::span(gainmap_data).first<4>()),
+        SharedBuffer::Create(
+            base::span(gainmap_data).first(gainmap_data.size() / 2))}) {
+    ASSERT_TRUE(data);
+    std::unique_ptr<ImageDecoder> rust = std::make_unique<JpegRustImageDecoder>(
+        ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+        cc::AuxImage::kGainmap, ImageDecoder::kNoDecodedImageByteLimit);
+    auto factory = CreateJpegImageDecoder(
+        ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+        cc::AuxImage::kGainmap, ImageDecoder::kNoDecodedImageByteLimit);
+    for (ImageDecoder* decoder : {rust.get(), factory.get()}) {
+      decoder->SetData(data.get(), true);
+      EXPECT_TRUE(decoder->Failed());
+      EXPECT_FALSE(decoder->IsSizeAvailable());
+      EXPECT_FALSE(decoder->DecodeFrameBufferAtIndex(0));
+      EXPECT_FALSE(decoder->CanDecodeToYUV());
+    }
+  }
 }
 
 TEST(JPEGImageDecoderTest, RustMetadataWithoutGainmap) {

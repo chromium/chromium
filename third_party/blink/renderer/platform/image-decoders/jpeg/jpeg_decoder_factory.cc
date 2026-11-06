@@ -16,13 +16,10 @@ std::unique_ptr<ImageDecoder> CreateJpegImageDecoder(
     cc::AuxImage aux_image,
     wtf_size_t max_decoded_bytes,
     const gfx::Size& desired_size) {
-  // TODO(crbug.com/493315750): The Skia-backed decoder does not yet support
-  // budget-driven downsampling or desired_size.
-  if (skia::IsRustyJpegEnabled() && aux_image == cc::AuxImage::kDefault &&
-      max_decoded_bytes == ImageDecoder::kNoDecodedImageByteLimit &&
-      desired_size.IsEmpty()) {
+  if (skia::IsRustyJpegEnabled()) {
     return std::make_unique<JpegRustImageDecoder>(alpha_option, color_behavior,
-                                                  max_decoded_bytes);
+                                                  aux_image, max_decoded_bytes,
+                                                  desired_size);
   }
 
   return std::make_unique<JPEGImageDecoder>(

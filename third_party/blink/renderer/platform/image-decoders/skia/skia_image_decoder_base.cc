@@ -53,12 +53,15 @@ SkiaImageDecoderBase::SkiaImageDecoderBase(
     ColorBehavior color_behavior,
     wtf_size_t max_decoded_bytes,
     wtf_size_t reading_offset,
-    HighBitDepthDecodingOption high_bit_depth_decoding_option)
+    HighBitDepthDecodingOption high_bit_depth_decoding_option,
+    const gfx::Size& desired_size,
+    cc::AuxImage aux_image)
     : ImageDecoder(alpha_option,
                    high_bit_depth_decoding_option,
                    color_behavior,
-                   cc::AuxImage::kDefault,
-                   max_decoded_bytes),
+                   aux_image,
+                   max_decoded_bytes,
+                   desired_size),
       reading_offset_(reading_offset) {}
 
 SkiaImageDecoderBase::~SkiaImageDecoderBase() = default;
@@ -271,6 +274,10 @@ void SkiaImageDecoderBase::InitializeNewFrame(wtf_size_t index) {
   }
 }
 
+SkCodec::Result SkiaImageDecoderBase::OnIncrementalDecode(wtf_size_t) {
+  return codec_->incrementalDecode();
+}
+
 void SkiaImageDecoderBase::Decode(wtf_size_t index) {
   struct FrameData {
     wtf_size_t index;
@@ -310,7 +317,9 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
       wtf_size_t required_previous_frame_index =
           frame.RequiredPreviousFrameIndex();
       if (required_previous_frame_index == kNotFound) {
-        const gfx::Size frame_size = FrameSizeAtIndex(current_frame_index);
+        const gfx::Size frame_size =
+            DecodedSize() != Size() ? DecodedSize()
+                                    : FrameSizeAtIndex(current_frame_index);
         if (!frame.AllocatePixelData(frame_size.width(), frame_size.height(),
                                      ColorSpaceForSkImages())) {
           SetFailedFrameIndex(current_frame_index);
@@ -427,7 +436,8 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
       already_started_frame_.emplace(current_frame_index);
     }
 
-    SkCodec::Result incremental_decode_result = codec_->incrementalDecode();
+    SkCodec::Result incremental_decode_result =
+        OnIncrementalDecode(current_frame_index);
     switch (incremental_decode_result) {
       case SkCodec::kSuccess: {
         already_started_frame_.reset();
