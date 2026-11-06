@@ -3070,6 +3070,10 @@ public class RootUiCoordinator
         return mAdaptiveToolbarUiCoordinator;
     }
 
+    public @Nullable ActionRegistry getActionRegistryForTesting() {
+        return mActionRegistry;
+    }
+
     public @Nullable DataSharingTabManager getDataSharingTabManager() {
         // TabbedRootUiCoordinator returns non-null.
         return null;

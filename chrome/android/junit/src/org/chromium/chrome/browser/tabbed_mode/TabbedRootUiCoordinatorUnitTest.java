@@ -47,6 +47,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -72,6 +73,8 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -149,7 +152,7 @@ public class TabbedRootUiCoordinatorUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         mProfileSupplier.set(mCurrentProfile);
-        mCoordinator = createCoordinator();
+        mCoordinator = createCoordinator(/* bottomBarHostManager= */ null);
         mCoordinator.setScrimManagerForTesting(mScrimManager);
     }
 
@@ -387,7 +390,8 @@ public class TabbedRootUiCoordinatorUnitTest {
                 ActionType.CLOSE_TAB, mCoordinator.getBackActionTypeForNonNavigableTab(linkTab));
     }
 
-    private TabbedRootUiCoordinator createCoordinator() {
+    private TabbedRootUiCoordinator createCoordinator(
+            @Nullable BottomBarHostManager bottomBarHostManager) {
         return new TabbedRootUiCoordinator(
                 mActivity,
                 /* onOmniboxFocusChangedListener= */ null,
@@ -441,11 +445,20 @@ public class TabbedRootUiCoordinatorUnitTest {
                 /* bookmarkManagerOpenerSupplier= */ ObservableSuppliers.alwaysNull(),
                 /* xrSpaceModeObservableSupplier= */ ObservableSuppliers.alwaysFalse(),
                 /* inactivityTrackerSupplier= */ new OneshotSupplierImpl<>(),
-                /* bottomBarHostManager= */ null,
+                bottomBarHostManager,
                 mVerticalTabsActionDelegate,
                 /* urlBarVisibleSupplier= */ () -> false,
                 /* onTabLayoutAvailable= */ CallbackUtils.emptyRunnable(),
                 mIsWarmOnResume::get);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testActionRegistry_nullHostManager_settingEnabled_noRegistry() {
+        BottomBarConfigUtils.setBottomBarUserEnabled(true);
+        mCoordinator = createCoordinator(/* bottomBarHostManager= */ null);
+
+        assertNull(mCoordinator.getActionRegistryForTesting());
     }
 
     private AtomicInteger attachLoadingStub() {

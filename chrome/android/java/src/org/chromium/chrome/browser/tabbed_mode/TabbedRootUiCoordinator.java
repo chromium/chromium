@@ -741,7 +741,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         multiInstanceManager),
                 bottomBarHostManager);
 
-        if (BottomBarConfigUtils.isBottomBarEnabled(activity)) {
+        // Match ToolbarManager, which builds the bottom bar only when the host manager exists.
+        if (bottomBarHostManager != null) {
             if (BottomBarConfigUtils.shouldShowOnGts()) {
                 Function<HubManager, NonNullObservableSupplier<Integer>> supplierGetter =
                         hubManager -> assumeNonNull(hubManager.getHubBottomOverviewColorSupplier());

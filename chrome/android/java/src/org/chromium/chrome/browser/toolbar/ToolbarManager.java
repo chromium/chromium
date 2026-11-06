@@ -2569,7 +2569,8 @@ public class ToolbarManager
     public void enableBottomControls() {
         enableTabGroupUiControls();
         BottomBarMetrics.maybeRecordEnabledState(mActivity);
-        if (BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
+        // Use the state from activity creation; the activity recreates if it changes later.
+        if (mBottomBarHostManager != null) {
             enableBottomBar();
         } else if (BottomBarConfigUtils.isEligibleForEducationDialog(mActivity)) {
             mBottomBarEducationDialogCoordinator =
