@@ -4411,7 +4411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpStreamPool.TlsHandshakeTime" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-12-16">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4747,14 +4747,6 @@ chromium-metrics-reviews@google.com.
   <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
 </histogram>
 
-<histogram name="Net.NetworkTransaction.NegotiatedProtocol2{HostType}"
-    enum="SSLNegotiatedAlpnProtocol" expires_after="2026-12-06">
-  <owner>bashi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>Deprecated. Replaced by NegotiatedProtocol3.</summary>
-  <token key="HostType" variants="HostType"/>
-</histogram>
-
 <histogram name="Net.NetworkTransaction.NegotiatedProtocol3{HostType}"
     enum="SSLNegotiatedAlpnProtocol" expires_after="2027-03-07">
   <owner>bashi@chromium.org</owner>
@@ -4911,19 +4903,6 @@ chromium-metrics-reviews@google.com.
     kMaxRetryAttemptsOnConnectionErrors (50). This is for {Protocol}.
   </summary>
   <token key="Protocol" variants="NetworkTransactionProtocol"/>
-</histogram>
-
-<histogram
-    name="Net.NetworkTransaction.{Protocol}StreamCreationTime2.{NewOrExisting}"
-    units="ms" expires_after="2026-12-16">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>Deprecated. Replaced by {Protocol}StreamCreationTime3.</summary>
-  <token key="Protocol" variants="NegotiatedProtocolCoalesced"/>
-  <token key="NewOrExisting">
-    <variant name="Existing"/>
-    <variant name="New"/>
-  </token>
 </histogram>
 
 <histogram
