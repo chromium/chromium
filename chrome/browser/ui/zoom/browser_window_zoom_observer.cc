@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 
-#include "chrome/browser/ui/browser_command_controller.h"  // nogncheck
+#include <utility>
+
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/zoom/zoom_controller.h"
@@ -19,7 +21,9 @@ BrowserWindowZoomObserver::BrowserWindowZoomObserver(
   browser_->GetTabStripModel()->AddObserver(this);
 }
 
-BrowserWindowZoomObserver::~BrowserWindowZoomObserver() = default;
+BrowserWindowZoomObserver::~BrowserWindowZoomObserver() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 // static
 BrowserWindowZoomObserver* BrowserWindowZoomObserver::From(
@@ -27,10 +31,22 @@ BrowserWindowZoomObserver* BrowserWindowZoomObserver::From(
   return Get(browser->GetUnownedUserDataHost());
 }
 
+// static
+const BrowserWindowZoomObserver* BrowserWindowZoomObserver::From(
+    const BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 base::CallbackListSubscription
 BrowserWindowZoomObserver::RegisterZoomChangedCallback(
     ZoomChangedCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return zoom_changed_callbacks_.Add(std::move(callback));
+}
+
+bool BrowserWindowZoomObserver::IsObservingZoomControllerForTesting(
+    zoom::ZoomController& zoom_controller) const {
+  return zoom_observations_.IsObservingSource(&zoom_controller);
 }
 
 void BrowserWindowZoomObserver::OnZoomControllerDestroyed(
@@ -42,12 +58,13 @@ void BrowserWindowZoomObserver::OnZoomControllerDestroyed(
 
 void BrowserWindowZoomObserver::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
-  if (data.web_contents ==
+  if (data.web_contents !=
       browser_->GetTabStripModel()->GetActiveWebContents()) {
-    zoom_changed_callbacks_.Notify(data.can_show_bubble);
-    // Update zoom commands state (zoom in/out/reset enabled/disabled).
-    chrome::BrowserCommandController::From(browser_)->ZoomStateChanged();
+    return;
   }
+  NotifyZoomChanged(data.can_show_bubble);
+  // Update zoom commands state (zoom in/out/reset enabled/disabled).
+  chrome::BrowserCommandController::From(browser_)->ZoomStateChanged();
 }
 
 void BrowserWindowZoomObserver::OnTabStripModelChanged(
@@ -88,6 +105,11 @@ void BrowserWindowZoomObserver::OnTabStripModelChanged(
 
   // Refresh zoom UI when the active tab changes.
   if (selection.active_tab_changed() && selection.new_contents) {
-    zoom_changed_callbacks_.Notify(/*can_show_bubble=*/false);
+    NotifyZoomChanged(/*can_show_bubble=*/false);
   }
+}
+
+void BrowserWindowZoomObserver::NotifyZoomChanged(bool can_show_bubble) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  zoom_changed_callbacks_.Notify(can_show_bubble);
 }
