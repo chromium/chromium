@@ -6,6 +6,7 @@ import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import {ComposeboxFile, GlifAnimationState, SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
@@ -36,7 +37,7 @@ import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-
 
 import {createCtComposeboxApp, fixtureUrl, getInputValue, getSubmitButton, getSubmitContainer, simulateUserInput} from './contextual_tasks_test_utils.js';
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {setupAutocompleteResults} from './test_searchbox_utils.js';
 
 declare global {
@@ -3025,6 +3026,7 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
 
           testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
           BrowserProxyImpl.setInstance(testProxy);
+          ToolbarBrowserProxyImpl.setInstance(new TestToolbarBrowserProxy());
 
           mockRecognition = null;
           windowProxy = TestMock.fromClass(WindowProxy);
@@ -3066,6 +3068,7 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
           parts = await createCtComposeboxApp();
           searchboxCallbackRouterRemote.onInputStateChanged(
               new MockInputState());
+          await searchboxCallbackRouterRemote.$.flushForTesting();
           await microtasksFinished();
         });
 
@@ -3082,6 +3085,11 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
           if (mockRecognition) {
             mockRecognition.flushEnd();
           }
+          // Unmount the app so active voice animation loops (<recording-wave>,
+          // <audio-wave>, and <search-animated-glow>) run disconnectedCallback
+          // and cancel requestAnimationFrame callbacks before JS coverage
+          // collection begins.
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
         });
 
         function getVoiceSearch() {

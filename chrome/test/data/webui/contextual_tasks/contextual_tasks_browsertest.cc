@@ -620,29 +620,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, UnboundedMenu) {
   RunTest("contextual_tasks/unbounded_menu_test.js", "mocha.run();");
 }
 
-// TODO(crbug.com/564474841): Flaky on Linux-js coverage.
-// Disabled on Linux after timing out during JS coverage collection, after all
-// Mocha assertions passed.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Composebox_Voice_SurfaceAndStartup_CoherenceTrue \
-  DISABLED_Composebox_Voice_SurfaceAndStartup_CoherenceTrue
-#define MAYBE_Composebox_Voice_SurfaceAndStartup_CoherenceFalse \
-  DISABLED_Composebox_Voice_SurfaceAndStartup_CoherenceFalse
-#else
-#define MAYBE_Composebox_Voice_SurfaceAndStartup_CoherenceTrue \
-  Composebox_Voice_SurfaceAndStartup_CoherenceTrue
-#define MAYBE_Composebox_Voice_SurfaceAndStartup_CoherenceFalse \
-  Composebox_Voice_SurfaceAndStartup_CoherenceFalse
-#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       MAYBE_Composebox_Voice_SurfaceAndStartup_CoherenceTrue) {
+                       Composebox_Voice_SurfaceAndStartup_CoherenceTrue) {
   RunTest("contextual_tasks/composebox_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkVoiceTest "
           "\\\\(coherence = true\\\\) SurfaceAndStartup')");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       MAYBE_Composebox_Voice_SurfaceAndStartup_CoherenceFalse) {
+                       Composebox_Voice_SurfaceAndStartup_CoherenceFalse) {
   RunTest("contextual_tasks/composebox_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkVoiceTest "
           "\\\\(coherence = false\\\\) SurfaceAndStartup')");
