@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -36,9 +37,12 @@ struct HttpRequest;
 class IntegrationTestCommands;
 
 // A test HTTP server that answers expected requests and fails the test on any
-// other request. Matchers and response body providers run on the server's IO
-// thread. Matchers must not call into the `ScopedServer`; response body
-// providers may.
+// other request. Expectations are served in the order they are registered,
+// except that entries registered by one `ExpectUnordered` call may be served
+// in any order among themselves. A request that matches no expectation due
+// next gets HTTP 500 and fails the test. Matchers and response body providers
+// run on the server's IO thread. Matchers must not call into the
+// `ScopedServer`; response body providers may.
 class ScopedServer {
  public:
   // An expected request and the response to it. A request matches if every
@@ -82,25 +86,25 @@ class ScopedServer {
     return test_server_.host_port_pair().ToString();
   }
 
-  // Registers an expected request with the server. Requests must match the
-  // expectation defined by applying all individual request matchers composing
-  // the `request_matcher_group` in the order the expectations were set.
-  // The server replies with an HTTP 200 and `response_body` to an expected
-  // request. It replies with HTTP 500 and fails the test if a request does
-  // not match the next expected `request_matcher_group`, or if there are no
-  // more expected requests. If the server does not receive every expected
-  // request, it will fail the test during destruction.
-  void ExpectOnce(request::MatcherGroup request_matcher_group,
+  // Registers one expected request. A request matches if every matcher in
+  // `matchers` succeeds; the server then replies with `response_status_code`
+  // and `response_body`.
+  void ExpectOnce(request::MatcherGroup matchers,
                   const std::string& response_body,
                   net::HttpStatusCode response_status_code = net::HTTP_OK);
 
-  // Similar to ExpectOnce, but accepts a callback that provides response
-  // bodies. The callback accepts a bool indicating whether the request is a
-  // protocol 4.0 request.
+  // Same as above, but `response_body_provider` returns the response body. It
+  // receives `true` for protocol 4.0 requests.
   void ExpectOnce(
-      request::MatcherGroup request_matcher_group,
+      request::MatcherGroup matchers,
       base::RepeatingCallback<std::string(bool)> response_body_provider,
       net::HttpStatusCode response_status_code = net::HTTP_OK);
+
+  // Registers `expectations` as one group whose requests may arrive in any
+  // order. Each request takes the first entry it matches, so list overlapping
+  // entries from most to least specific. Does nothing if `expectations` is
+  // empty.
+  void ExpectUnordered(std::vector<Expectation> expectations);
 
   GURL base_url() const { return test_server_.base_url(); }
 
@@ -152,15 +156,16 @@ class ScopedServer {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
 
-  // Removes and returns the next expectation if `request` matches it. Fails the
-  // test and returns `std::nullopt` otherwise.
+  // Removes and returns the first entry of the front expectation group that
+  // `request` matches. Fails the test and returns `std::nullopt` if no
+  // expectations remain or no entry in the front group matches.
   std::optional<Expectation> TakeMatchingExpectation(const HttpRequest& request)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   net::test_server::EmbeddedTestServer test_server_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::Lock lock_;
-  std::list<Expectation> expectations_ GUARDED_BY(lock_);
+  std::list<std::vector<Expectation>> expectation_groups_ GUARDED_BY(lock_);
   base::TimeDelta download_delay_ GUARDED_BY(lock_);
   bool gzip_response_ GUARDED_BY(lock_) = false;
 };

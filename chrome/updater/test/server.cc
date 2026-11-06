@@ -153,36 +153,43 @@ ScopedServer::~ScopedServer() {
   // stopping waits for an in-flight `HandleRequest`, which takes `lock_`.
   test_server_handle_ = net::test_server::EmbeddedTestServerHandle();
   base::AutoLock lock(lock_);
-  for (const Expectation& expectation : expectations_) {
-    // Probes each matcher with an empty request to collect failure messages.
-    std::vector<std::string> unmet_reasons;
-    for (const request::Matcher& matcher : expectation.matchers) {
-      if (testing::AssertionResult result = matcher.Run(HttpRequest());
-          !result) {
-        unmet_reasons.push_back(result.message());
+  for (const std::vector<Expectation>& group : expectation_groups_) {
+    for (const Expectation& expectation : group) {
+      // Probes each matcher with an empty request to collect failure messages.
+      std::vector<std::string> unmet_reasons;
+      for (const request::Matcher& matcher : expectation.matchers) {
+        if (testing::AssertionResult result = matcher.Run(HttpRequest());
+            !result) {
+          unmet_reasons.push_back(result.message());
+        }
       }
+      ADD_FAILURE() << "Unmet expectation:\n  "
+                    << base::JoinString(unmet_reasons, "\n  ");
     }
-    ADD_FAILURE() << "Unmet expectation:\n  "
-                  << base::JoinString(unmet_reasons, "\n  ");
   }
 }
 
-void ScopedServer::ExpectOnce(request::MatcherGroup request_matcher_group,
+void ScopedServer::ExpectOnce(request::MatcherGroup matchers,
                               const std::string& response_body,
                               net::HttpStatusCode response_status_code) {
-  base::AutoLock lock(lock_);
-  expectations_.emplace_back(std::move(request_matcher_group), response_body,
-                             response_status_code);
+  ExpectUnordered({{std::move(matchers), response_body, response_status_code}});
 }
 
 void ScopedServer::ExpectOnce(
-    request::MatcherGroup request_matcher_group,
+    request::MatcherGroup matchers,
     base::RepeatingCallback<std::string(bool)> response_body_provider,
     net::HttpStatusCode response_status_code) {
+  ExpectUnordered({{std::move(matchers), std::move(response_body_provider),
+                    response_status_code}});
+}
+
+void ScopedServer::ExpectUnordered(std::vector<Expectation> expectations) {
+  // An empty group would never be matched or removed.
+  if (expectations.empty()) {
+    return;
+  }
   base::AutoLock lock(lock_);
-  expectations_.emplace_back(std::move(request_matcher_group),
-                             std::move(response_body_provider),
-                             response_status_code);
+  expectation_groups_.push_back(std::move(expectations));
 }
 
 void ScopedServer::set_download_delay(base::TimeDelta delay) {
@@ -197,20 +204,29 @@ void ScopedServer::set_gzip_response(bool gzip_response) {
 
 std::optional<ScopedServer::Expectation> ScopedServer::TakeMatchingExpectation(
     const HttpRequest& request) {
-  if (expectations_.empty()) {
+  if (expectation_groups_.empty()) {
     ADD_FAILURE() << "Unexpected " << DebugStringForReq(request);
     return std::nullopt;
   }
-  if (testing::AssertionResult result =
-          MatchAll(expectations_.front().matchers, request);
-      !result) {
-    ADD_FAILURE() << "Unmatched " << DebugStringForReq(request) << "\n  "
-                  << result.message();
-    return std::nullopt;
+  std::vector<Expectation>& group = expectation_groups_.front();
+  std::vector<std::string> failures;
+  for (auto it = group.begin(); it != group.end(); ++it) {
+    if (testing::AssertionResult result = MatchAll(it->matchers, request);
+        !result) {
+      failures.push_back(result.message());
+      continue;
+    }
+    Expectation expectation = std::move(*it);
+    group.erase(it);
+    if (group.empty()) {
+      expectation_groups_.pop_front();
+    }
+    return expectation;
   }
-  Expectation expectation = std::move(expectations_.front());
-  expectations_.pop_front();
-  return expectation;
+  ADD_FAILURE() << "Unmatched " << DebugStringForReq(request)
+                << "\nCandidate expectation failures:\n  "
+                << base::JoinString(failures, "\n  ");
+  return std::nullopt;
 }
 
 std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(

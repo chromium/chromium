@@ -51,12 +51,19 @@ request::MatcherGroup PathIs(const std::string& path_regex) {
 // reports.
 class ScopedServerTest : public ::testing::Test {
  protected:
-  // Returns `server_`'s response to `request`.
-  std::unique_ptr<BasicHttpResponse> Handle(
+  // Returns `server`'s response to `request`.
+  static std::unique_ptr<BasicHttpResponse> Handle(
+      ScopedServer& server,
       const net::test_server::HttpRequest& request) {
     // `HandleRequest` returns only `BasicHttpResponse` or its subclasses.
     return base::WrapUnique(static_cast<BasicHttpResponse*>(
-        server_.HandleRequest(request).release()));
+        server.HandleRequest(request).release()));
+  }
+
+  // Returns `server_`'s response to `request`.
+  std::unique_ptr<BasicHttpResponse> Handle(
+      const net::test_server::HttpRequest& request) {
+    return Handle(server_, request);
   }
 
   // Fails the test on destruction if any expectation is unmet.
@@ -135,6 +142,93 @@ TEST_F(ScopedServerTest, ResponseBodyProviderCanCallIntoServer) {
   EXPECT_EQ(Handle(MakeRequest("/second"))->content(), "2");
 }
 
+TEST_F(ScopedServerTest, ExpectUnorderedAcceptsAnyOrder) {
+  server_.ExpectUnordered(
+      {{PathIs("/a"), "a"},
+       {PathIs("/b"), "b", net::HTTP_NOT_FOUND},
+       {PathIs("/c"),
+        base::BindRepeating([](bool /*is_v4*/) { return std::string("c"); })}});
+
+  std::unique_ptr<BasicHttpResponse> response = Handle(MakeRequest("/c"));
+  EXPECT_EQ(response->code(), net::HTTP_OK);
+  EXPECT_EQ(response->content(), "c");
+
+  response = Handle(MakeRequest("/b"));
+  EXPECT_EQ(response->code(), net::HTTP_NOT_FOUND);
+  EXPECT_EQ(response->content(), "b");
+
+  response = Handle(MakeRequest("/a"));
+  EXPECT_EQ(response->code(), net::HTTP_OK);
+  EXPECT_EQ(response->content(), "a");
+}
+
+TEST_F(ScopedServerTest, ExpectUnorderedTakesFirstMatch) {
+  server_.ExpectUnordered(
+      {{PathIs("/update"), "first"}, {PathIs("/update"), "second"}});
+
+  EXPECT_EQ(Handle(MakeRequest("/update"))->content(), "first");
+  EXPECT_EQ(Handle(MakeRequest("/update"))->content(), "second");
+}
+
+TEST_F(ScopedServerTest, ExpectUnorderedBroadEntryFirstTakesRequest) {
+  server_.ExpectUnordered(
+      {{PathIs("/update.*"), "broad"}, {PathIs(R"(/update\?x=1)"), "narrow"}});
+
+  // The broad entry takes the request the narrow entry needed.
+  EXPECT_EQ(Handle(MakeRequest("/update?x=1"))->content(), "broad");
+  std::unique_ptr<BasicHttpResponse> response;
+  EXPECT_NONFATAL_FAILURE(response = Handle(MakeRequest("/update?x=2")),
+                          "Unmatched");
+  EXPECT_EQ(response->code(), net::HTTP_INTERNAL_SERVER_ERROR);
+
+  EXPECT_EQ(Handle(MakeRequest("/update?x=1"))->content(), "narrow");
+}
+
+TEST_F(ScopedServerTest, ExpectUnorderedPrecedesLaterExpectations) {
+  server_.ExpectOnce(PathIs("/before"), "before");
+  server_.ExpectUnordered({{PathIs("/a"), "a"}, {PathIs("/b"), "b"}});
+  server_.ExpectOnce(PathIs("/after"), "after");
+
+  EXPECT_NONFATAL_FAILURE(Handle(MakeRequest("/a")), "Unmatched");
+  EXPECT_EQ(Handle(MakeRequest("/before"))->content(), "before");
+  EXPECT_NONFATAL_FAILURE(Handle(MakeRequest("/after")), "Unmatched");
+  EXPECT_EQ(Handle(MakeRequest("/b"))->content(), "b");
+  EXPECT_NONFATAL_FAILURE(Handle(MakeRequest("/after")), "Unmatched");
+  EXPECT_EQ(Handle(MakeRequest("/a"))->content(), "a");
+  EXPECT_EQ(Handle(MakeRequest("/after"))->content(), "after");
+}
+
+TEST_F(ScopedServerTest, ExpectUnorderedReportsEveryCandidateFailure) {
+  server_.ExpectUnordered({{PathIs("/alpha"), "a"}, {PathIs("/beta"), "b"}});
+
+  testing::TestPartResultArray failures;
+  {
+    testing::ScopedFakeTestPartResultReporter reporter(
+        testing::ScopedFakeTestPartResultReporter::
+            INTERCEPT_ONLY_CURRENT_THREAD,
+        &failures);
+    EXPECT_EQ(Handle(MakeRequest("/gamma"))->code(),
+              net::HTTP_INTERNAL_SERVER_ERROR);
+  }
+  ASSERT_EQ(failures.size(), 1);
+  const std::string message = failures.GetTestPartResult(0).message();
+  EXPECT_THAT(message, testing::HasSubstr("Candidate expectation failures"));
+  EXPECT_THAT(message, testing::HasSubstr("/alpha"));
+  EXPECT_THAT(message, testing::HasSubstr("/beta"));
+
+  // Meet the expectations so `server_`'s destructor passes.
+  Handle(MakeRequest("/alpha"));
+  Handle(MakeRequest("/beta"));
+}
+
+TEST_F(ScopedServerTest, ExpectUnorderedEmptyIsNoOp) {
+  server_.ExpectUnordered({});
+  server_.ExpectOnce(PathIs("/update"), "response");
+
+  EXPECT_EQ(Handle(MakeRequest("/update"))->content(), "response");
+  EXPECT_NONFATAL_FAILURE(Handle(MakeRequest("/update")), "Unexpected");
+}
+
 TEST_F(ScopedServerTest, DestructorReportsUnmetExpectation) {
   EXPECT_NONFATAL_FAILURE(
       {
@@ -142,6 +236,26 @@ TEST_F(ScopedServerTest, DestructorReportsUnmetExpectation) {
         server.ExpectOnce(PathIs("/update"), "response");
       },
       "Unmet expectation");
+}
+
+TEST_F(ScopedServerTest, DestructorReportsEachUnmetUnorderedExpectation) {
+  testing::TestPartResultArray failures;
+  {
+    testing::ScopedFakeTestPartResultReporter reporter(
+        testing::ScopedFakeTestPartResultReporter::
+            INTERCEPT_ONLY_CURRENT_THREAD,
+        &failures);
+    ScopedServer server;
+    server.ExpectUnordered({{PathIs("/alpha"), "a"},
+                            {PathIs("/beta"), "b"},
+                            {PathIs("/gamma"), "c"}});
+    Handle(server, MakeRequest("/beta"));
+  }
+  ASSERT_EQ(failures.size(), 2);
+  EXPECT_THAT(failures.GetTestPartResult(0).message(),
+              testing::HasSubstr("/alpha"));
+  EXPECT_THAT(failures.GetTestPartResult(1).message(),
+              testing::HasSubstr("/gamma"));
 }
 
 TEST_F(ScopedServerTest, GzipResponse) {
