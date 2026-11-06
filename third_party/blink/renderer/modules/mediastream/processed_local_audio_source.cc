@@ -310,7 +310,8 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   source_->Start();
 
   // Register this source with the WebRtcAudioDeviceImpl.
-  rtc_audio_device->AddAudioCapturer(this);
+  rtc_audio_device_ = rtc_audio_device;
+  rtc_audio_device_->AddAudioCapturer(this);
 
   return true;
 }
@@ -323,8 +324,9 @@ void ProcessedLocalAudioSource::EnsureSourceIsStopped() {
 
   scoped_refptr<media::AudioCapturerSource> source_to_stop(std::move(source_));
 
-  if (dependency_factory_) {
-    dependency_factory_->GetWebRtcAudioDevice()->RemoveAudioCapturer(this);
+  if (rtc_audio_device_) {
+    rtc_audio_device_->RemoveAudioCapturer(this);
+    rtc_audio_device_ = nullptr;
   }
 
   source_to_stop->Stop();

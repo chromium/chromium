@@ -54,6 +54,8 @@ WebRtcAudioDeviceImpl::WebRtcAudioDeviceImpl()
 WebRtcAudioDeviceImpl::~WebRtcAudioDeviceImpl() {
   SendLogMessage(base::StringPrintf("%s()", __func__));
   DCHECK(!initialized_) << "Terminate must have been called.";
+  DCHECK(capturers_.empty());
+  DCHECK(playout_sinks_.empty());
 }
 
 void WebRtcAudioDeviceImpl::RenderData(
@@ -231,7 +233,6 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
   {
     base::AutoLock auto_lock(lock_);
     renderer_to_disconnect = std::move(renderer_);
-    capturers_.clear();
     initialized_ = false;
   }
 

@@ -159,7 +159,7 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // in the browser process.  The last capturer in this list is considered the
   // "default capturer" by the methods implementing the
   // webrtc::AudioDeviceModule interface.
-  CapturerList capturers_;
+  CapturerList capturers_ GUARDED_BY(lock_);
 
   // Provides access to the audio renderer in the browser process.
   scoped_refptr<blink::WebRtcAudioRenderer> renderer_ GUARDED_BY(lock_);
@@ -182,8 +182,8 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // Cached value of the current audio delay on the output/renderer side.
   base::TimeDelta output_delay_ GUARDED_BY(lock_);
 
-  // Protects |renderer_|, |playout_sinks_|, |output_delay_|, |initialized_|,
-  // |playing_|, and |recording_|.
+  // Protects |capturers_|, |renderer_|, |playout_sinks_|, |output_delay_|,
+  // |initialized_|, |playing_|, and |recording_|.
   mutable base::Lock lock_;
 
   bool initialized_ GUARDED_BY(lock_);

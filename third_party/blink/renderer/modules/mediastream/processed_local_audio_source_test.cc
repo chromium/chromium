@@ -24,9 +24,12 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/testing_platform_support_with_mock_audio_capture_source.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
@@ -273,6 +276,40 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlow) {
   // when the track is stopped.
   EXPECT_CALL(*mock_audio_capturer_source(), Stop());
   MediaStreamAudioTrack::From(audio_track())->Stop();
+}
+
+// Verifies that an active ProcessedLocalAudioSource remains registered with
+// WebRtcAudioDeviceImpl across Terminate(), so subsequent
+// SetOutputDeviceForAec() calls continue to reach the capturer.
+TEST_P(ProcessedLocalAudioSourceTest,
+       SetOutputDeviceForAecSurvivesWebRtcAudioDeviceTerminate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (GetParam() == ProcessingLocation::kAudioService) {
+    scoped_feature_list.InitAndEnableFeature(
+        media::kChromeWideEchoCancellation);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        media::kChromeWideEchoCancellation);
+  }
+#endif
+
+  CreateProcessedLocalAudioSource(MediaStreamAudioProcessingLayout(
+      AudioProcessingProperties(), /*available_platform_effects=*/0,
+      /*channels=*/1));
+  ASSERT_TRUE(audio_source()->ConnectToInitializedTrack(audio_track()));
+
+  WebRtcAudioDeviceImpl* rtc_audio_device =
+      PeerConnectionDependencyFactory::From(
+          *MainFrame().GetFrame()->DomWindow())
+          .GetWebRtcAudioDevice();
+  webrtc::AudioDeviceModule* adm = rtc_audio_device;
+  adm->Init();
+  adm->Terminate();
+
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              SetOutputDeviceForAec("non_default_speaker_id"));
+  rtc_audio_device->SetOutputDeviceForAec("non_default_speaker_id");
 }
 
 // A capture error reported by the platform capturer (e.g. the Audio Service

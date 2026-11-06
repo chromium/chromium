@@ -31,6 +31,7 @@ class AudioServiceAudioProcessorProxy;
 class LocalFrame;
 class MediaStreamAudioProcessor;
 class PeerConnectionDependencyFactory;
+class WebRtcAudioDeviceImpl;
 
 // Represents a local source of audio data that is routed through the WebRTC
 // audio pipeline for post-processing (e.g., for echo cancellation during a
@@ -155,6 +156,12 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
 
   // The device created by the AudioDeviceFactory in EnsureSourceIsStarted().
   scoped_refptr<media::AudioCapturerSource> source_;
+
+  // The WebRtcAudioDeviceImpl that this source is registered with while
+  // started. Retained to guarantee RemoveAudioCapturer() is called in
+  // EnsureSourceIsStopped() even if |dependency_factory_| has already been
+  // garbage-collected.
+  scoped_refptr<WebRtcAudioDeviceImpl> rtc_audio_device_;
 
   // Used to calculate the signal level that shows in the UI.
   blink::MediaStreamAudioLevelCalculator level_calculator_;
