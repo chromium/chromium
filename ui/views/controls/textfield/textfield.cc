@@ -2147,8 +2147,9 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
 }
 
 void Textfield::SetTextEditCommandForNextKeyEvent(ui::TextEditCommand command) {
-  CHECK_EQ(ui::TextEditCommand::INVALID_COMMAND, scheduled_text_edit_command_,
-           base::NotFatalUntil::M163);
+  // TODO(crbug.com/582403114): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(ui::TextEditCommand::INVALID_COMMAND, scheduled_text_edit_command_);
   scheduled_text_edit_command_ = command;
 }
 
