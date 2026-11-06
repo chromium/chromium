@@ -22,6 +22,8 @@ import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HE
 import {domainQuestions, questionnaireBegin, questionnaireNotification} from './js/questionnaire.js';
 import {takeScreenshot} from './js/take_screenshot.js';
 
+// Set in FeedbackPrivateAPI::CreateFeedbackInfo().
+const EXTRA_DIAGNOSTICS_KEY = 'EXTRA_DIAGNOSTICS';
 const MAX_ATTACH_FILE_SIZE: number = 3 * 1024 * 1024;
 const MAX_SCREENSHOT_WIDTH: number = 100;
 
@@ -607,6 +609,11 @@ export class AppElement extends CrLitElement {
       // Send histograms along with system info.
       useHistograms = true;
       useSystemInfo = true;
+    } else {
+      // Extra diagnostics count as system info, so only send them on opt-in.
+      this.feedbackInfo.systemInformation =
+          this.feedbackInfo.systemInformation.filter(
+              entry => entry.key !== EXTRA_DIAGNOSTICS_KEY);
     }
 
     const autofillCheckbox = this.shadowRoot.querySelector<HTMLInputElement>(

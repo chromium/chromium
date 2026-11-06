@@ -8,6 +8,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
     FeedbackBrowserProxy {
   private dialogArugments_: string = '';
+  private lastLoadSystemInfo_: boolean|undefined = undefined;
   private systemLogs_: chrome.feedbackPrivate.LogsMapEntry[] = [];
   private userEmail_: string = '';
   private userMedia_: Promise<MediaStream|undefined> =
@@ -58,14 +59,19 @@ export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
   }
 
   sendFeedback(
-      feedback: chrome.feedbackPrivate.FeedbackInfo, _loadSystemInfo?: boolean,
+      feedback: chrome.feedbackPrivate.FeedbackInfo, loadSystemInfo?: boolean,
       _formOpenTime?: number):
       Promise<chrome.feedbackPrivate.SendFeedbackResult> {
+    this.lastLoadSystemInfo_ = loadSystemInfo;
     this.methodCalled('sendFeedback', feedback);
     return Promise.resolve({
       status: chrome.feedbackPrivate.Status.SUCCESS,
       landingPageType: chrome.feedbackPrivate.LandingPageType.NORMAL,
     });
+  }
+
+  getLastLoadSystemInfo(): boolean|undefined {
+    return this.lastLoadSystemInfo_;
   }
 
   showDialog() {

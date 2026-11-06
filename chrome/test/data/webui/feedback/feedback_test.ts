@@ -184,8 +184,30 @@ suite('FeedbackTest', function() {
     app.getRequiredElement('#send-report-button').click();
 
     const feedbackInfo = await browserProxy.whenCalled('sendFeedback');
+    assertEquals(true, browserProxy.getLastLoadSystemInfo());
     assertDeepEquals(feedbackInfo.systemInformation, [
       {key: 'EXTRA_DIAGNOSTICS', value: 'some diagnostics'},
+      {key: 'feedbackUserCtlConsent', value: 'false'},
+    ]);
+  });
+
+  test('StripsExtraDiagnosticsWhenSysInfoUnchecked', async function() {
+    browserProxy.setDialogArguments(JSON.stringify({
+      systemInformation: [
+        {key: 'EXTRA_DIAGNOSTICS', value: 'some diagnostics'},
+      ],
+    }));
+    app = await createAppElement();
+
+    app.getRequiredElement('#description-text').textContent = 'test';
+    app.getRequiredElement<HTMLInputElement>('#sys-info-checkbox').click();
+    assertFalse(
+        app.getRequiredElement<HTMLInputElement>('#sys-info-checkbox').checked);
+    app.getRequiredElement('#send-report-button').click();
+
+    const feedbackInfo = await browserProxy.whenCalled('sendFeedback');
+    assertEquals(false, browserProxy.getLastLoadSystemInfo());
+    assertDeepEquals(feedbackInfo.systemInformation, [
       {key: 'feedbackUserCtlConsent', value: 'false'},
     ]);
   });
