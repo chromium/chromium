@@ -4,6 +4,8 @@
 
 #import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 
+#import <utility>
+
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
@@ -30,15 +32,32 @@ IOSChromeTestWithWebState::IOSChromeTestWithWebState(
   }
   web_client_ =
       std::make_unique<web::ScopedTestingWebClient>(std::move(client));
-  profile_ = TestProfileIOS::Builder().Build();
-  web::WebState::CreateParams params(profile_.get());
-  web_state_ = web::WebState::Create(params);
 }
 
 IOSChromeTestWithWebState::~IOSChromeTestWithWebState() {
   web_state_.reset();
   profile_.reset();
   web_client_.reset();
+}
+
+void IOSChromeTestWithWebState::SetUp() {
+  PlatformTest::SetUp();
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactories(GetTestingFactories());
+  profile_ = std::move(builder).Build();
+  web::WebState::CreateParams params(profile_.get());
+  web_state_ = web::WebState::Create(params);
+}
+
+void IOSChromeTestWithWebState::TearDown() {
+  web_state_.reset();
+  profile_.reset();
+  PlatformTest::TearDown();
+}
+
+TestProfileIOS::TestingFactories
+IOSChromeTestWithWebState::GetTestingFactories() const {
+  return {};
 }
 
 void IOSChromeTestWithWebState::LoadHtml(NSString* html) {

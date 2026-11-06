@@ -41,6 +41,14 @@ class IOSChromeTestWithWebState : public PlatformTest {
   ~IOSChromeTestWithWebState() override;
 
  protected:
+  // PlatformTest:
+  void SetUp() override;
+  void TearDown() override;
+
+  // Returns a list of factories to use when creating the `TestProfileIOS`.
+  // Can be overridden by subclasses if needed.
+  virtual TestProfileIOS::TestingFactories GetTestingFactories() const;
+
   // Loads an HTML page into the WebState.
   void LoadHtml(NSString* html);
   void LoadHtml(std::string html);
@@ -48,6 +56,8 @@ class IOSChromeTestWithWebState : public PlatformTest {
   // within a timeout.
   bool LoadUrl(const GURL& url);
 
+  TestProfileIOS* profile() { return profile_.get(); }
+  const TestProfileIOS* profile() const { return profile_.get(); }
   web::WebState* web_state() const { return web_state_.get(); }
 
   // Gets the main frame for the WebState once it's loaded.
