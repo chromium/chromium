@@ -1268,6 +1268,90 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfoAtWithHeuristicEnhancements) {
   EXPECT_EQ(direction_enabled, AccessibilityTextDirection::kLeftToRight);
 }
 
+TEST_P(PDFiumPageTextTest,
+       TextRunBoundsAfterLinkAtLineEndWithHeuristicEnhancements) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("whitespace_after_link.pdf"));
+  ASSERT_TRUE(engine);
+
+  // The link "http://example.com" ends the first line, so the next run starts
+  // with the trailing space and line break: " \r\nNext line".
+  constexpr int kNextRunStartIndex = 24;
+  constexpr int kNextLineStartIndex = 27;
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  std::optional<AccessibilityTextRunInfo> text_run =
+      page.GetTextRunInfoAt(kNextRunStartIndex);
+  ASSERT_TRUE(text_run.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(kNextRunStartIndex), text_run->start_index);
+  EXPECT_EQ(12u, text_run->len);
+
+  // The run's bounds must cover only the second line, not reach back up to the
+  // trailing space on the first line.
+  const gfx::RectF next_line_char_bounds =
+      page.GetCharBounds(kNextLineStartIndex);
+  EXPECT_TRUE(text_run->bounds.Contains(next_line_char_bounds));
+  EXPECT_LT(text_run->bounds.height(), 2 * next_line_char_bounds.height());
+}
+
+TEST_P(PDFiumPageTextTest,
+       TextRunBoundsAfterLinkBeforeIndentedLineWithHeuristicEnhancements) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("whitespace_after_link.pdf"));
+  ASSERT_TRUE(engine);
+
+  // The link "http://example.com" ends the first line, and the second line
+  // starts with whitespace, so the next run is " \r\n \t Next line".
+  constexpr int kNextRunStartIndex = 24;
+  constexpr int kIndentStartIndex = 27;
+  constexpr int kNextLineTextStartIndex = 30;
+  PDFiumPage& page = GetPDFiumPage(*engine, 1);
+  std::optional<AccessibilityTextRunInfo> text_run =
+      page.GetTextRunInfoAt(kNextRunStartIndex);
+  ASSERT_TRUE(text_run.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(kNextRunStartIndex), text_run->start_index);
+  EXPECT_EQ(15u, text_run->len);
+
+  // The run's bounds must cover only the text on the second line. Like a run
+  // that starts a line without a link before it, the bounds skip the leading
+  // whitespace.
+  const gfx::RectF next_line_char_bounds =
+      page.GetCharBounds(kNextLineTextStartIndex);
+  EXPECT_TRUE(text_run->bounds.Contains(next_line_char_bounds));
+  EXPECT_FALSE(
+      text_run->bounds.Contains(page.GetCharBounds(kIndentStartIndex)));
+  EXPECT_LT(text_run->bounds.height(), 2 * next_line_char_bounds.height());
+}
+
+TEST_P(PDFiumPageTextTest,
+       TextRunBoundsAfterLinkMidLineWithHeuristicEnhancements) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("whitespace_after_link.pdf"));
+  ASSERT_TRUE(engine);
+
+  // The link "http://example.com" is followed by " now" on the same line, so
+  // the next run starts with a space that stays in its bounds.
+  constexpr int kNextRunStartIndex = 24;
+  PDFiumPage& page = GetPDFiumPage(*engine, 2);
+  std::optional<AccessibilityTextRunInfo> text_run =
+      page.GetTextRunInfoAt(kNextRunStartIndex);
+  ASSERT_TRUE(text_run.has_value());
+  EXPECT_EQ(static_cast<uint32_t>(kNextRunStartIndex), text_run->start_index);
+  EXPECT_EQ(4u, text_run->len);
+  EXPECT_TRUE(
+      base::IsUnicodeWhitespace(page.GetCharUnicode(kNextRunStartIndex)));
+  EXPECT_TRUE(
+      text_run->bounds.Contains(page.GetCharBounds(kNextRunStartIndex)));
+}
+
 TEST_P(PDFiumPageTextTest, GetTextRunInfoFontWeight) {
   // Test invalid weight (FPDFFont_GetWeight returns -1, which is mapped to 0).
   {

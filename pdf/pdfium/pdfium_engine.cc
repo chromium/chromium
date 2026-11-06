@@ -1497,15 +1497,7 @@ bool PDFiumEngine::IsSelecting() const {
 
 bool PDFiumEngine::IsSynthesizedNewline(const PageCharacterIndex& index) const {
   CHECK(PageIndexInBounds(index.page_index));
-  PDFiumPage* page = pages_[index.page_index].get();
-  CHECK(page->IsCharIndexInBounds(index.char_index));
-
-  if (FPDFText_IsGenerated(page->GetTextPage(), index.char_index) != 1) {
-    return false;
-  }
-
-  uint32_t char_code = GetCharUnicode(index);
-  return char_code == '\r' || char_code == '\n';
+  return pages_[index.page_index]->IsSynthesizedNewline(index.char_index);
 }
 
 bool PDFiumEngine::PageIndexInBounds(int index) const {

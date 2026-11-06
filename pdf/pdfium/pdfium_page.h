@@ -129,6 +129,10 @@ class PDFiumPage {
   // Get a unicode character from the page.
   uint32_t GetCharUnicode(int char_index);
 
+  // Returns whether the char at `char_index` is a line break that PDFium
+  // inserted between lines, i.e. a generated '\r' or '\n'.
+  bool IsSynthesizedNewline(int char_index);
+
   // Get the bounds of a character in page pixels.
   gfx::RectF GetCharBounds(int char_index);
 
