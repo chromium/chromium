@@ -273,13 +273,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         @Override
         public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs) {
             TabCollectionTabModelImpl.this.notifyOnFinishingMultipleTabClosure(
-                    tabs,
-                    /* saveToTabRestoreService= */ true,
-                    TabClosingSource.UNKNOWN,
-                    /* undoRunnable= */ null,
-                    /* isAllTabs= */ false,
-                    /* isUndoable= */ false,
-                    /* removeHidingGroups= */ true);
+                    tabs, /* saveToTabRestoreService= */ true);
         }
 
         @Override
@@ -400,7 +394,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public @TabDestroyStatus int destroy() {
         assertOnUiThread();
-        commitPendingClosures(/* notifyIfEmpty= */ false);
+        commitAllTabClosures();
 
         for (TabModelObserver obs : mTabModelObservers) obs.onDestroy();
 
@@ -565,13 +559,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public void commitAllTabClosures() {
-        assertOnUiThread();
-        // Under the rework, undoable closures on the regular model are finalized immediately, so
-        // there is usually nothing pending here. External callers still rely on this signal to
-        // dismiss any visible undo affordance, so notify even when nothing is pending.
-        commitPendingClosures(
-                /* notifyIfEmpty= */ ChromeFeatureList.sUndoableTabClosureRework.isEnabled()
-                        && !isArchivedTabModel());
+        if (!supportsPendingClosures() || !mPendingTabClosureManager.hasPendingClosures()) return;
+
+        mPendingTabClosureManager.commitAllTabClosures();
+        for (TabModelObserver obs : mTabModelObservers) obs.allTabsClosureCommitted(isIncognito());
     }
 
     @Override
@@ -1603,7 +1594,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     private void addTabInternal(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
-        commitPendingClosures(/* notifyIfEmpty= */ false);
+        commitAllTabClosures();
         assert mTabIdToTabs.indexOfKey(tab.getId()) < 0
                 : "Attempting to add a duplicate tab id=" + tab.getId();
         if (tab.isOffTheRecord() != isOffTheRecord()) {
@@ -1636,7 +1627,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         // TODO(crbug.com/437141942): Update the list of undoable tabs instead of
         // committing it.
-        commitPendingClosures(/* notifyIfEmpty= */ false);
+        commitAllTabClosures();
 
         Tab parentTab = getTabById(tab.getParentId());
         boolean groupWithParent = shouldGroupWithParent(tab, parentTab);
@@ -1786,21 +1777,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     private boolean closeTabsInternal(TabClosureParams params) {
         boolean allowUndo = !params.uponExit && params.allowUndo && supportsPendingClosures();
-        // Under the undoable closure rework, undoable closures on the regular model are finalized
-        // immediately rather than kept pending.
-        // TODO(crbug.com/557182836): Finalize undoable closures immediately on the archived tab
-        // model once SavedTabGroupUndoBarController stops relying on pending closures.
-        boolean finalizeUndoableClosure =
-                allowUndo
-                        && ChromeFeatureList.sUndoableTabClosureRework.isEnabled()
-                        && !isArchivedTabModel();
-        boolean isPendingClosure = allowUndo && !finalizeUndoableClosure;
 
         if (!allowUndo) {
             // The undo stacks assumes that previous actions in the stack are undoable. If an entry
             // is not undoable then the reversal of the operations may fail or yield an invalid
             // state. Commit the rest of the closures now to ensure that doesn't occur.
-            commitPendingClosures(/* notifyIfEmpty= */ false);
+            commitAllTabClosures();
         }
 
         if (mNativeTabCollectionTabModelImplPtr == 0) return false;
@@ -1840,17 +1822,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 });
         if (tabsToClose.isEmpty()) return false;
 
-        if (!isPendingClosure && !params.isAllTabs && tabsToClose.size() > 1) {
-            // Report and save the closure in model order regardless of the order of the request.
-            Set<Tab> tabsToCloseSet = new ArraySet<>(tabsToClose);
-            tabsToClose.clear();
-            for (Tab tab : getAllTabs()) {
-                if (tabsToCloseSet.contains(tab)) {
-                    tabsToClose.add(tab);
-                }
-            }
-        }
-
         addToClosingTabsCount(tabsToClose.size());
 
         for (Tab tab : tabsToClose) {
@@ -1861,8 +1832,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         // there to be a single event for each stage of tab closing regardless of how many tabs were
         // closed together.
         List<Token> closingTabGroupIds =
-                maybeSendCloseTabGroupEvent(
-                        tabsToClose, /* committing= */ false, /* removeHidingGroups= */ false);
+                maybeSendCloseTabGroupEvent(tabsToClose, /* committing= */ false);
         ObserverList.RewindableIterator<TabModelObserver> observers =
                 mTabModelObservers.rewindableIterator();
 
@@ -1905,17 +1875,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
         }
 
-        if (!isPendingClosure) {
-            // Keep closing groups marked as hiding until after didRemoveTabGroup so observers can
-            // still tell the group was hidden.
-            notifyOnFinishingMultipleTabClosure(
-                    tabsToClose,
-                    params.saveToTabRestoreService,
-                    params.tabClosingSource,
-                    params.undoRunnable,
-                    params.isAllTabs,
-                    finalizeUndoableClosure,
-                    /* removeHidingGroups= */ false);
+        if (!allowUndo) {
+            notifyOnFinishingMultipleTabClosure(tabsToClose, params.saveToTabRestoreService);
         }
 
         @TabSelectionType
@@ -1925,7 +1886,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 tabsToClose,
                 params.recommendedNextTab,
                 selectionType,
-                isPendingClosure,
+                allowUndo,
                 params.tabCloseType,
                 DetachReason.DELETE);
 
@@ -1936,7 +1897,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
         }
 
-        if (isPendingClosure) {
+        if (allowUndo) {
             assumeNonNull(mPendingTabClosureManager);
             mPendingTabClosureManager.addTabClosureEvent(
                     tabsToClose, params.undoRunnable, params.tabClosingSource);
@@ -1948,19 +1909,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
         } else {
             for (Tab tab : tabsToClose) {
-                finalizeTabClosure(tab, finalizeUndoableClosure, params.tabClosingSource);
+                finalizeTabClosure(
+                        tab, /* notifyTabClosureCommitted= */ false, params.tabClosingSource);
             }
         }
 
         for (Token tabGroupId : closingTabGroupIds) {
             for (TabGroupObserver obs : mTabGroupObservers) {
                 obs.didRemoveTabGroup(tabGroupId, DidRemoveTabGroupReason.CLOSE);
-            }
-        }
-
-        if (!isPendingClosure) {
-            for (Token tabGroupId : closingTabGroupIds) {
-                mHidingTabGroups.remove(tabGroupId);
             }
         }
 
@@ -2099,27 +2055,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         return mTabModelType == TabModelType.ARCHIVED;
     }
 
-    /**
-     * Commits every pending closure and notifies {@link TabModelObserver#allTabsClosureCommitted}
-     * if there was anything to commit or {@code notifyIfEmpty} is true. Internal operations must
-     * pass {@code false} for {@code notifyIfEmpty} so they do not dismiss active undo affordances
-     * when nothing is pending.
-     *
-     * @param notifyIfEmpty Whether to notify {@link TabModelObserver#allTabsClosureCommitted} even
-     *     when no closures are pending.
-     */
-    private void commitPendingClosures(boolean notifyIfEmpty) {
-        if (!supportsPendingClosures()) return;
-        if (mPendingTabClosureManager.hasPendingClosures()) {
-            mPendingTabClosureManager.commitAllTabClosures();
-        } else if (!notifyIfEmpty) {
-            return;
-        }
-        for (TabModelObserver obs : mTabModelObservers) {
-            obs.allTabsClosureCommitted(isIncognito());
-        }
-    }
-
     private boolean shouldGroupWithParent(Tab tab, @Nullable Tab parentTab) {
         if (parentTab == null) return false;
 
@@ -2192,7 +2127,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                                 /* uponExit= */ false,
                                 closeType);
 
-        if (updatePendingTabClosureManager) commitPendingClosures(/* notifyIfEmpty= */ false);
+        if (updatePendingTabClosureManager) commitAllTabClosures();
 
         Tab nearbyTab = null;
         boolean nextIsIncognito =
@@ -2542,7 +2477,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 : "Pinned and grouped tabs are mutually exclusive.";
 
         // TODO(crbug.com/437141942): Update the list of undoable tabs instead of committing it.
-        commitPendingClosures(/* notifyIfEmpty= */ false);
+        commitAllTabClosures();
 
         Token oldTabGroupId = tab.getTabGroupId();
         boolean isMovingWithinGroup = false;
@@ -2730,34 +2665,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 tabsInGroup, indexInGroup, tabsToExclude);
     }
 
-    /**
-     * Notifies observers that {@code tabs} are about to be destroyed and finishes closing any tab
-     * groups that close with them.
-     *
-     * @param removeHidingGroups Whether to stop treating the closing groups as hiding right away.
-     */
     private void notifyOnFinishingMultipleTabClosure(
-            List<Tab> tabs,
-            boolean saveToTabRestoreService,
-            @TabClosingSource int closingSource,
-            @Nullable Runnable undoRunnable,
-            boolean isAllTabs,
-            boolean isUndoable,
-            boolean removeHidingGroups) {
+            List<Tab> tabs, boolean saveToTabRestoreService) {
         for (TabModelObserver obs : mTabModelObservers) {
-            obs.onFinishingMultipleTabClosure(
-                    tabs,
-                    saveToTabRestoreService,
-                    closingSource,
-                    undoRunnable,
-                    isAllTabs,
-                    isUndoable);
+            obs.onFinishingMultipleTabClosure(tabs, saveToTabRestoreService);
         }
-        maybeSendCloseTabGroupEvent(tabs, /* committing= */ true, removeHidingGroups);
+        maybeSendCloseTabGroupEvent(tabs, /* committing= */ true);
     }
 
-    private List<Token> maybeSendCloseTabGroupEvent(
-            List<Tab> tabs, boolean committing, boolean removeHidingGroups) {
+    private List<Token> maybeSendCloseTabGroupEvent(List<Tab> tabs, boolean committing) {
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
                 getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ committing);
         Set<Token> processedTabGroups = new ArraySet<>();
@@ -2776,7 +2692,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             closingTabGroupIds.add(tabGroupId);
 
             if (committing) {
-                if (removeHidingGroups) mHidingTabGroups.remove(tabGroupId);
+                mHidingTabGroups.remove(tabGroupId);
                 if (detachedTabGroupExists(tabGroupId)) {
                     closeDetachedTabGroup(tabGroupId);
                 }

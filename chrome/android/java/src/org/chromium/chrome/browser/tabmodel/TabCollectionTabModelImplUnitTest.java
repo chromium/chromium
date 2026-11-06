@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -42,12 +41,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
-import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
-import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroidJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -117,9 +112,6 @@ public class TabCollectionTabModelImplUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJni);
-        // Pending closures pause media, which queries media capture state.
-        MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(
-                mock(MediaCaptureDevicesDispatcherAndroid.Natives.class));
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mProfile.isIncognitoBranded()).thenReturn(false);
@@ -773,195 +765,6 @@ public class TabCollectionTabModelImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCloseTabs_undoableClosureRework_finalizesInModelOrder() {
-        when(mTabModelDelegate.getModel(false)).thenReturn(mTabModel);
-        setMockPendingTabClosureManager(mTabModel);
-        // The mocked order controller inserts at index 0, so the model order is tab3, tab2, tab1.
-        MockTab tab1 = addTabAtFront(1);
-        MockTab tab2 = addTabAtFront(2);
-        MockTab tab3 = addTabAtFront(3);
-        assertEquals(List.of(tab3, tab2, tab1), mTabs);
-
-        mTabModel.closeTabs(
-                TabClosureParams.closeTabs(List.of(tab1, tab3)).allowUndo(true).build());
-
-        verify(mTabModelObserver)
-                .onFinishingMultipleTabClosure(
-                        eq(List.of(tab3, tab1)),
-                        eq(true),
-                        eq(TabClosingSource.UNKNOWN),
-                        isNull(),
-                        eq(false),
-                        eq(true));
-        verify(mPendingTabClosureManager, never()).addTabClosureEvent(any(), any(), anyInt());
-        assertEquals(List.of(tab2), mTabs);
-        assertTrue(tab1.isDestroyed());
-        assertTrue(tab3.isDestroyed());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCloseTabs_undoableClosureReworkDisabled_pendsInRequestOrder() {
-        when(mTabModelDelegate.getModel(false)).thenReturn(mTabModel);
-        setMockPendingTabClosureManager(mTabModel);
-        MockTab tab1 = addTabAtFront(1);
-        addTabAtFront(2);
-        MockTab tab3 = addTabAtFront(3);
-
-        mTabModel.closeTabs(
-                TabClosureParams.closeTabs(List.of(tab1, tab3)).allowUndo(true).build());
-
-        verify(mPendingTabClosureManager)
-                .addTabClosureEvent(
-                        eq(List.of(tab1, tab3)), isNull(), eq(TabClosingSource.UNKNOWN));
-        verify(mTabModelObserver, never())
-                .onFinishingMultipleTabClosure(
-                        any(), anyBoolean(), anyInt(), any(), anyBoolean(), anyBoolean());
-        verify(mTabModelObserver, never()).onFinishingMultipleTabClosure(any(), anyBoolean());
-        assertFalse(tab1.isDestroyed());
-        assertFalse(tab3.isDestroyed());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCloseTabs_undoableClosureRework_archivedModelStillPends() {
-        TabCollectionTabModelImpl archivedModel = createArchivedModel();
-        when(mTabModelDelegate.getModel(false)).thenReturn(archivedModel);
-        archivedModel.addObserver(mTabModelObserver);
-        setMockPendingTabClosureManager(archivedModel);
-        MockTab tab1 = createArchivedMockTab(1);
-        MockTab tab2 = createArchivedMockTab(2);
-        archivedModel.addTab(
-                tab1, 0, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
-        archivedModel.addTab(
-                tab2, 0, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
-
-        archivedModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(true).build());
-
-        verify(mPendingTabClosureManager)
-                .addTabClosureEvent(eq(List.of(tab1)), isNull(), eq(TabClosingSource.UNKNOWN));
-        verify(mTabModelObserver)
-                .onTabClosePending(eq(List.of(tab1)), eq(false), eq(TabClosingSource.UNKNOWN));
-        verify(mTabModelObserver, never())
-                .onFinishingMultipleTabClosure(
-                        any(), anyBoolean(), anyInt(), any(), anyBoolean(), anyBoolean());
-        verify(mTabModelObserver, never()).onFinishingMultipleTabClosure(any(), anyBoolean());
-        assertFalse(tab1.isDestroyed());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCommitAllTabClosures_undoableClosureRework_nothingPendingNotifies() {
-        mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
-
-        mTabModel.commitAllTabClosures();
-
-        verify(mPendingTabClosureManager, never()).commitAllTabClosures();
-        verify(mTabModelObserver).allTabsClosureCommitted(/* isIncognito= */ false);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCommitAllTabClosures_undoableClosureRework_pendingCommitsAndNotifiesOnce() {
-        mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
-        when(mPendingTabClosureManager.hasPendingClosures()).thenReturn(true, false);
-
-        mTabModel.commitAllTabClosures();
-
-        verify(mPendingTabClosureManager).commitAllTabClosures();
-        verify(mTabModelObserver).allTabsClosureCommitted(/* isIncognito= */ false);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCommitAllTabClosures_undoableClosureRework_noPendingSupportDoesNotNotify() {
-        assertFalse(mTabModel.supportsPendingClosures());
-
-        mTabModel.commitAllTabClosures();
-
-        verify(mTabModelObserver, never()).allTabsClosureCommitted(anyBoolean());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testCommitAllTabClosures_undoableClosureRework_archivedModelDoesNotNotify() {
-        TabCollectionTabModelImpl archivedModel = createArchivedModel();
-        archivedModel.addObserver(mTabModelObserver);
-        archivedModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
-
-        archivedModel.commitAllTabClosures();
-
-        verify(mPendingTabClosureManager, never()).commitAllTabClosures();
-        verify(mTabModelObserver, never()).allTabsClosureCommitted(anyBoolean());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void
-            testCommitAllTabClosures_undoableClosureReworkDisabled_nothingPendingDoesNotNotify() {
-        mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
-
-        mTabModel.commitAllTabClosures();
-
-        verify(mPendingTabClosureManager, never()).commitAllTabClosures();
-        verify(mTabModelObserver, never()).allTabsClosureCommitted(anyBoolean());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testInternalCommit_undoableClosureRework_nothingPendingDoesNotNotify() {
-        when(mTabModelDelegate.getModel(false)).thenReturn(mTabModel);
-        mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
-        MockTab tab1 = createMockTab(/* tabId= */ 1, mProfile);
-        MockTab tab2 = createMockTab(/* tabId= */ 2, mProfile);
-
-        mTabModel.addTab(
-                tab1,
-                /* index= */ 0,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_BACKGROUND);
-        mTabModel.addTab(
-                tab2,
-                /* index= */ 1,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_BACKGROUND);
-        mTabModel.moveTab(tab2.getId(), /* newIndex= */ 1);
-        mTabModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(false).build());
-        mTabModel.removeTab(tab2);
-        mTabModel.destroy();
-
-        verify(mPendingTabClosureManager, never()).commitAllTabClosures();
-        verify(mTabModelObserver, never()).allTabsClosureCommitted(anyBoolean());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
-    public void testInternalCommit_undoableClosureRework_pendingCommitsAndNotifiesOnce() {
-        when(mTabModelDelegate.getModel(false)).thenReturn(mTabModel);
-        mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
-        when(mPendingTabClosureManager.hasPendingClosures()).thenReturn(true, false);
-        MockTab tab = createMockTab(/* tabId= */ 1, mProfile);
-
-        mTabModel.addTab(
-                tab,
-                /* index= */ 0,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_BACKGROUND);
-
-        verify(mPendingTabClosureManager).commitAllTabClosures();
-        verify(mTabModelObserver).allTabsClosureCommitted(/* isIncognito= */ false);
-
-        reset(mPendingTabClosureManager, mTabModelObserver);
-        when(mPendingTabClosureManager.hasPendingClosures()).thenReturn(true, false);
-
-        mTabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
-
-        verify(mPendingTabClosureManager).commitAllTabClosures();
-        verify(mTabModelObserver).allTabsClosureCommitted(/* isIncognito= */ false);
-    }
-
-    @Test
     public void testIsClosingAllTabs() {
         when(mTabModelDelegate.getModel(false)).thenReturn(mTabModel);
 
@@ -1362,74 +1165,6 @@ public class TabCollectionTabModelImplUnitTest {
         MockTab tab = MockTab.createAndInitialize(tabId, profile);
         tab.setWebContentsOverrideForTesting(mock(WebContents.class));
         return tab;
-    }
-
-    private void setMockPendingTabClosureManager(TabCollectionTabModelImpl model) {
-        when(mPendingTabClosureManager.getRewoundList()).thenReturn(model);
-        model.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
-    }
-
-    /** Creates a tab without WebContents that reports the archived tab model type. */
-    private MockTab createArchivedMockTab(@TabId int tabId) {
-        MockTab tab =
-                new MockTab(tabId, mProfile) {
-                    @Override
-                    public @TabModelType int getTabModelType() {
-                        return TabModelType.ARCHIVED;
-                    }
-                };
-        tab.initialize(
-                /* parent= */ null,
-                /* creationState= */ null,
-                /* loadUrlParams= */ null,
-                /* title= */ null,
-                /* webContents= */ null,
-                /* delegateFactory= */ null,
-                /* initiallyHidden= */ false,
-                /* tabState= */ null,
-                /* initializeRenderer= */ false,
-                /* isPinned= */ false);
-        return tab;
-    }
-
-    private MockTab addTabAtFront(@TabId int tabId) {
-        MockTab tab = createMockTab(tabId, mProfile);
-        mTabModel.addTab(
-                tab,
-                /* index= */ 0,
-                TabLaunchType.FROM_CHROME_UI,
-                TabCreationState.LIVE_IN_BACKGROUND);
-        return tab;
-    }
-
-    /**
-     * Creates an archived model sharing the mocked natives with {@link #mTabModel}. It is not
-     * destroyed because {@link #tearDown()} verifies a single native destroy.
-     */
-    private TabCollectionTabModelImpl createArchivedModel() {
-        when(mTabModelJniBridgeJni.init(
-                        any(TabModelJniBridge.class),
-                        eq(mProfile),
-                        eq(ActivityType.TABBED),
-                        eq(null),
-                        eq(TabModelType.ARCHIVED)))
-                .thenReturn(TAB_MODEL_JNI_BRIDGE_PTR);
-        return new TabCollectionTabModelImpl(
-                mProfile,
-                ActivityType.TABBED,
-                /* customTabProfileType= */ null,
-                TabModelType.ARCHIVED,
-                mRegularTabCreator,
-                mIncognitoTabCreator,
-                mOrderController,
-                mTabContentManager,
-                mNextTabPolicySupplier,
-                mTabModelDelegate,
-                mAsyncTabParamsManager,
-                mTabRemover,
-                mTabUngrouper,
-                () -> mScopedStorageBatch,
-                /* supportUndo= */ false);
     }
 
     private TabCollectionTabModelImpl getModel(
