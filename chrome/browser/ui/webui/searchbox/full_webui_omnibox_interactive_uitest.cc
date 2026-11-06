@@ -1771,8 +1771,17 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
 // Verifies that focusing the omnibox on the NTP, which has no page favicon to
 // show, shows the default search provider icon in the input row.
-IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       InputIconOnNtpFocusShowsDefaultSearchProviderIcon) {
+// TODO(crbug.com/582497286): Failing on ChromeOS branded builds in dark mode.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InputIconOnNtpFocusShowsDefaultSearchProviderIcon \
+  DISABLED_InputIconOnNtpFocusShowsDefaultSearchProviderIcon
+#else
+#define MAYBE_InputIconOnNtpFocusShowsDefaultSearchProviderIcon \
+  InputIconOnNtpFocusShowsDefaultSearchProviderIcon
+#endif
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    MAYBE_InputIconOnNtpFocusShowsDefaultSearchProviderIcon) {
   RunTestSequence(
       // Opening an NTP focuses the omnibox.
       WaitForBrowserActive(), WaitForPopupTransitionLockout(),
@@ -1798,8 +1807,14 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // Verifies that the input row icon follows what the user types: the page
 // favicon gives way to the default search provider icon for a query, and to the
 // URL's favicon for a URL.
+// TODO(crbug.com/582497286): Failing on ChromeOS branded builds in dark mode.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InputIconUpdatesWhileTyping DISABLED_InputIconUpdatesWhileTyping
+#else
+#define MAYBE_InputIconUpdatesWhileTyping InputIconUpdatesWhileTyping
+#endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       InputIconUpdatesWhileTyping) {
+                       MAYBE_InputIconUpdatesWhileTyping) {
 #if BUILDFLAG(IS_LINUX) &&                                      \
     (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
      defined(THREAD_SANITIZER) || !defined(NDEBUG))
@@ -1831,8 +1846,15 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
 // Verifies that the input row icon follows the selection while arrowing
 // between a URL match and a search match.
+// TODO(crbug.com/582497286): Failing on ChromeOS branded builds in dark mode.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InputIconUpdatesWhileArrowing \
+  DISABLED_InputIconUpdatesWhileArrowing
+#else
+#define MAYBE_InputIconUpdatesWhileArrowing InputIconUpdatesWhileArrowing
+#endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       InputIconUpdatesWhileArrowing) {
+                       MAYBE_InputIconUpdatesWhileArrowing) {
   RunTestSequence(
       // Opening an NTP focuses the omnibox.
       WaitForBrowserActive(), WaitForPopupTransitionLockout(),
