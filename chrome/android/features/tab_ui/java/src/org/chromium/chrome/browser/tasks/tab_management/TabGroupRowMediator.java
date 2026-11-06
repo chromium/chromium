@@ -274,9 +274,7 @@ class TabGroupRowMediator {
             RecordUserAction.record("SyncedTabGroup.OpenExistingLocal");
         }
 
-        if (localGroupId == null
-                || (state == GroupWindowState.IN_ANOTHER
-                        && !mTabModel.containsTabGroup(localGroupId))) {
+        if (localGroupId == null || !mTabModel.containsTabGroup(localGroupId)) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.TabGroupSync.WindowStateOnFailedOpen", state, GroupWindowState.COUNT);
             return;

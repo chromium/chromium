@@ -490,6 +490,7 @@ public class TabGroupListMediatorUnitTest {
         MockitoHelper.doRunnable(
                         () -> {
                             group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
+                            when(mTabModel.containsTabGroup(LOCAL_GROUP_ID1)).thenReturn(true);
                         })
                 .when(mTabGroupUiActionHandler)
                 .openTabGroup(SYNC_GROUP_ID1);
@@ -514,6 +515,7 @@ public class TabGroupListMediatorUnitTest {
         when(mComprehensiveModel.getTabAtChecked(0)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab1.isClosing()).thenReturn(true);
+        when(mTabModel.containsTabGroup(LOCAL_GROUP_ID1)).thenReturn(true);
 
         createMediator();
 
@@ -539,6 +541,7 @@ public class TabGroupListMediatorUnitTest {
         when(mComprehensiveModel.getTabAtChecked(1)).thenReturn(mTab2);
         when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
         when(mTab2.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
+        when(mTabModel.containsTabGroup(LOCAL_GROUP_ID1)).thenReturn(true);
 
         createMediator();
         assertEquals(1, mModelList.size());

@@ -528,6 +528,30 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
+    public void testOpen_Hidden_NotInTabModel_RecordsHistogram() {
+        doAnswer(inv -> mSyncGroup.localId = new LocalTabGroupId(GROUP_ID1))
+                .when(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1);
+
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
+        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
+
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.TabGroupSync.WindowStateOnFailedOpen",
+                                GroupWindowState.HIDDEN)
+                        .build();
+
+        propertyModel.get(OPEN_RUNNABLE).run();
+        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verifyNoInteractions(mPaneManager);
+        verifyNoInteractions(mTabSwitcherPaneBase);
+        histograms.assertExpected();
+    }
+
+    @Test
     public void testOpen_Hidden_RemovesStaleLocalMapping() {
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
         when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
