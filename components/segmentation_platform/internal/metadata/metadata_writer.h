@@ -173,7 +173,7 @@ struct CustomInput {
 
 using BindValueType = proto::SqlFeature::BindValue::ParamType;
 using BindValue = std::pair<BindValueType, CustomInput>;
-using BindValues = std::vector<BindValue>;
+using BindValues = base::span<const BindValue>;
 
 // Defines a feature that can be one of UMA, SQL or CustomInput.
 struct Feature {
@@ -305,10 +305,8 @@ class MetadataWriter {
   // Appends the list of SQL features in order.
   proto::SqlFeature* AddSqlFeature(const SqlFeature& feature);
 
-  proto::SqlFeature* AddSqlFeature(
-      const SqlFeature& feature,
-      STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
-          const BindValues& bind_values);
+  proto::SqlFeature* AddSqlFeature(const SqlFeature& feature,
+                                   BindValues bind_values);
 
   void AddBindValueToSql(proto::SqlFeature* sql_feature);
 
