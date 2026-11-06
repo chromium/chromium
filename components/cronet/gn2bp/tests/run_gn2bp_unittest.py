@@ -238,6 +238,10 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             "//third_party/rust/chromium_crates_io/vendor/cxx-v1/include/cxx.h"
         )
         cxx_action.common.sources.add("//base/third_party/nspr/prtime.cc")
+        cxx_action.common.data.add("//net/data/")
+        cxx_action.common.data.add(
+            "//components/cronet/android/test/test_server/data/"
+        )
         cxx_action.common.inputs.add("//third_party/jdk/bin/java")
         cxx_action.common.inputs.add("//out/tmp/gen/generated.h")
         cxx_action.common.inputs.add("//components/prefs/prefs.gni")
@@ -246,7 +250,7 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
 
         top_bp = gen_android_bp.soong_ast.Blueprint()
         ctx = gen_android_bp.translation_context.TranslationContext("tot")
-        for extra_mod in gen_android_bp.create_extras_modules(ctx):
+        for extra_mod in gen_android_bp.create_extras_modules(gn, ctx):
             top_bp.add_module(extra_mod)
         mod = gen_android_bp.soong_ast.create_module(
             "cc_genrule", "tot_cronet_prefs_gen", "//components/prefs:gen", ctx
@@ -528,6 +532,171 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         self.assertNotIn("tot_cronet_test_empty_resources__testing", bp.modules)
         self.assertNotIn(
             "tot_cronet_test_prebuilt_jar_java__testing", bp.modules
+        )
+
+    def test_create_extras_modules_derives_from_gn(self):
+        gn = gn_utils.GnParser({}, {})
+
+        def _add_target(name, target_type, testonly=False, deps=(), data=()):
+            target = gn_utils.GnParser.Target(name, target_type)
+            target.testonly = testonly
+            target.common.deps.update(deps)
+            target.common.data.update(data)
+            gn.all_targets[name] = target
+            return target
+
+        _add_target("//components/cronet/android:cronet", "shared_library")
+        _add_target(
+            "//components/cronet/android:cronet_api_java", "java_library"
+        )
+        _add_target(
+            "//components/cronet/android:cronet_build_config_java",
+            "java_library",
+        )
+        _add_target(
+            "//components/cronet/android:cronet_impl_native_java",
+            "java_library",
+        )
+        _add_target(
+            "//components/cronet/android:cronet_final_jni_java", "java_library"
+        )
+        _add_target(
+            "//components/cronet/android:cronet_gn2bp_production_targets",
+            "group",
+            deps=[
+                "//components/cronet/android:cronet",
+                "//components/cronet/android:cronet_api_java",
+                "//components/cronet/android:cronet_build_config_java",
+                "//components/cronet/android:cronet_impl_native_java",
+                "//components/cronet/android:cronet_final_jni_java",
+            ],
+        )
+
+        _add_target(
+            "//components/cronet/android:cronet_tests_final_jni_java__testing",
+            "java_library",
+            testonly=True,
+        )
+        _add_target(
+            "//components/cronet/android:repackage_test_jars__testing",
+            "group",
+            testonly=True,
+            deps=[
+                "//components/cronet/android:cronet_tests_final_jni_java__testing",
+            ],
+        )
+
+        _add_target(
+            "//net/android:net_java__testing",
+            "java_library",
+            testonly=False,
+        )
+        _add_target(
+            "//net/android:net_java_test_support__testing",
+            "java_library",
+            testonly=True,
+        )
+        _add_target(
+            "//net/android:net_tests_java__testing",
+            "java_library",
+            testonly=True,
+        )
+        _add_target(
+            "//net/android:dummy_spnego_authenticator_java__testing",
+            "java_library",
+            testonly=True,
+        )
+        _add_target(
+            "//net:net_unittests__testing",
+            "group",
+            testonly=True,
+            deps=[
+                "//net/android:net_java__testing",
+                "//net/android:net_java_test_support__testing",
+                "//net/android:net_tests_java__testing",
+                "//net/android:dummy_spnego_authenticator_java__testing",
+            ],
+        )
+        _add_target(
+            "//net:net_unittests__library__testing",
+            "shared_library",
+            testonly=True,
+            data=[
+                "//net/data/ssl/",
+                "//net/data/test.html",
+            ],
+        )
+        _add_target(
+            "//components/cronet/android:cronet_javatests__testing",
+            "java_library",
+            testonly=True,
+            data=[
+                "//components/cronet/android/test/test_server/data/",
+                "//net/data/ssl/certificates/",
+            ],
+        )
+
+        ctx = gen_android_bp.translation_context.TranslationContext("tot")
+        mods = {
+            m.name: m for m in gen_android_bp.create_extras_modules(gn, ctx)
+        }
+
+        self.assertNotIn("tot_cronet_api_java", mods)
+        self.assertEqual(
+            mods["tot_cronet_java"].static_libs,
+            {
+                "tot_cronet_components_cronet_android_cronet_build_config_java",
+                "tot_cronet_components_cronet_android_cronet_impl_native_java",
+                "tot_cronet_components_cronet_android_cronet_final_jni_java",
+            },
+        )
+        self.assertEqual(
+            mods["tot_cronet_java__testing"].static_libs,
+            {
+                "tot_cronet_components_cronet_android_cronet_build_config_java__testing",
+                "tot_cronet_components_cronet_android_cronet_impl_native_java__testing",
+                "tot_cronet_components_cronet_android_cronet_final_jni_java__testing",
+                "tot_cronet_components_cronet_android_cronet_tests_final_jni_java__testing",
+            },
+        )
+        self.assertEqual(
+            mods["tot_cronet_for_testing_net_java"].static_libs,
+            {
+                "tot_cronet_net_android_net_java_test_support__testing",
+                "tot_cronet_net_android_net_tests_java__testing",
+                "tot_cronet_net_android_dummy_spnego_authenticator_java__testing",
+            },
+        )
+        self.assertEqual(
+            mods["tot_cronet_net_unittests_data"].srcs,
+            {
+                "net/data/ssl/**/*",
+                "net/data/test.html",
+            },
+        )
+        self.assertEqual(
+            mods["tot_cronet_javatests_resources"].srcs,
+            {
+                "components/cronet/android/test/test_server/data/**/*",
+                "net/data/ssl/certificates/**/*",
+            },
+        )
+        self.assertIn(
+            "tot_cronet_components_cronet_android_cronet_javatests__testing",
+            mods["tot_cronet_java_tests"].static_libs,
+        )
+        self.assertTrue(
+            mods["tot_cronet_java__testing"].static_libs.issubset(
+                mods["tot_cronet_java_tests"].static_libs
+            )
+        )
+        self.assertNotIn(
+            "tot_cronet_java__testing",
+            mods["tot_cronet_java_tests"].static_libs,
+        )
+        self.assertIn(
+            "tot_cronet_components_cronet_android_cronet_api_java",
+            mods["tot_cronet_java_tests"].libs,
         )
 
 

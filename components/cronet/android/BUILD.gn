@@ -1879,7 +1879,10 @@ android_library("cronet_javatests") {
     "//third_party/netty4:netty_all_java",
   ]
   deps += cronet_javatests_deps_to_package
-  data = [ "//components/cronet/android/test/test_server/data/" ]
+  data = [
+    "//components/cronet/android/test/test_server/data/",
+    "//net/data/ssl/certificates/",
+  ]
 }
 
 cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {

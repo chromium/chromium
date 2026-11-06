@@ -318,7 +318,19 @@ def setup_libcrypto_stripping(blueprint, context):
     blueprint.add_module(linker_script_genrule)
 
 
+def _data_to_soong_globs(data_paths: Iterable[str]) -> Set[str]:
+    globs = set()
+    for path in data_paths:
+        clean = gn_utils.label_to_path(path)
+        if clean.endswith("/"):
+            globs.add(f"{clean}**/*")
+        else:
+            globs.add(clean)
+    return globs
+
+
 def create_extras_modules(
+    gn: gn_utils.GnParser,
     context: translation_context.TranslationContext,
 ) -> List[soong_ast.Module]:
     """Creates top-level extra Soong modules for Cronet in AOSP."""
@@ -360,11 +372,23 @@ def create_extras_modules(
     }
     license_mod.license_text = {"LICENSE"}
 
+    repackage_test_target_name = f"//components/cronet/android:repackage_test_jars{gn_utils.TESTING_SUFFIX}"
+    tests_final_jni_modules = set()
+    if repackage_test_target_name in gn.all_targets:
+        repackage_test_target = gn.get_target(repackage_test_target_name)
+        tests_final_jni_modules = {
+            soong_ast.label_to_module_name(dep, context)
+            for dep in repackage_test_target.common.deps
+            if gn.get_target(dep).type == "java_library"
+            and dep.endswith(f"_final_jni_java{gn_utils.TESTING_SUFFIX}")
+        }
+
     # Redirect "jni_registration" to "final_jni". This module name is being referenced
     # in the top-level external/cronet/Android.bp file so we temporarily alias it to
     # avoid having to coordinate an Android-side change.
-    # TODO(https://crbug.com/542041778): once the "final_jni" name exists in both tot
-    # and stable, get rid of this and adjust ../Android.bp.
+    # TODO(https://crbug.com/542041778): once ag/43441839 lands in Android, get rid
+    # of `components_cronet_android_cronet_tests_jni_registration_java__testing`,
+    # `java`, `java__testing`, and `for_testing_net_java` below.
     jni_reg_testing = _new_extra_module(
         "java_library",
         "components_cronet_android_cronet_tests_jni_registration_java__testing",
@@ -374,29 +398,21 @@ def create_extras_modules(
         f"{context.module_prefix}java_framework_defaults"
     }
     jni_reg_testing.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
-    jni_reg_testing.static_libs = {
-        f"{context.module_prefix}components_cronet_android_cronet_tests_final_jni_java__testing"
-    }
+    jni_reg_testing.static_libs = set(tests_final_jni_modules)
     jni_reg_testing.visibility = {"//external/cronet:__pkg__"}
 
-    api_java = _new_extra_module("java_library", "api_java")
-    api_java.static_libs = {
-        f"{context.module_prefix}components_cronet_android_cronet_api_java"
-    }
-    api_java.sdk_version = "module_current"
-    api_java.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
-    api_java.visibility = {
-        "//packages/modules/Connectivity:__subpackages__",
-        "//external/cronet/android:__subpackages__",
-    }
-    api_java.apex_available = {common.tethering_apex}
-
     java_mod = _new_extra_module("java_library", "java")
-    java_mod.static_libs = {
-        f"{context.module_prefix}components_cronet_android_cronet_build_config_java",
-        f"{context.module_prefix}components_cronet_android_cronet_impl_native_java",
-        f"{context.module_prefix}components_cronet_android_cronet_final_jni_java",
-    }
+    prod_target_name = (
+        "//components/cronet/android:cronet_gn2bp_production_targets"
+    )
+    if prod_target_name in gn.all_targets:
+        prod_target = gn.get_target(prod_target_name)
+        java_mod.static_libs = {
+            soong_ast.label_to_module_name(dep, context)
+            for dep in prod_target.common.deps
+            if gn.get_target(dep).type == "java_library"
+            and dep != translation_config.java_api_target_name
+        }
     java_mod.sdk_version = "module_current"
     java_mod.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
     java_mod.visibility = {"//external/cronet:__subpackages__"}
@@ -404,11 +420,8 @@ def create_extras_modules(
 
     java_testing = _new_extra_module("java_library", "java__testing")
     java_testing.static_libs = {
-        f"{context.module_prefix}components_cronet_android_cronet_build_config_java__testing",
-        f"{context.module_prefix}components_cronet_android_cronet_impl_native_java__testing",
-        f"{context.module_prefix}components_cronet_android_cronet_final_jni_java__testing",
-        f"{context.module_prefix}components_cronet_android_cronet_tests_final_jni_java__testing",
-    }
+        f"{lib}{gn_utils.TESTING_SUFFIX}" for lib in java_mod.static_libs
+    } | tests_final_jni_modules
     java_testing.sdk_version = "module_current"
     java_testing.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
     java_testing.visibility = {"//external/cronet:__subpackages__"}
@@ -417,25 +430,36 @@ def create_extras_modules(
     for_testing_net_java = _new_extra_module(
         "java_library", "for_testing_net_java"
     )
-    for_testing_net_java.static_libs = {
-        f"{context.module_prefix}net_android_net_java_test_support__testing",
-        f"{context.module_prefix}net_android_net_tests_java__testing",
-        f"{context.module_prefix}net_android_dummy_spnego_authenticator_java__testing",
-    }
+    net_unittests_target_name = f"//net:net_unittests{gn_utils.TESTING_SUFFIX}"
+    if net_unittests_target_name in gn.all_targets:
+        net_unittests_target = gn.get_target(net_unittests_target_name)
+        for_testing_net_java.static_libs = {
+            soong_ast.label_to_module_name(dep, context)
+            for dep in net_unittests_target.common.deps
+            if dep.startswith("//net/android:")
+            and gn.get_target(dep).type == "java_library"
+            and gn.get_target(dep).testonly
+        }
 
     net_unittests_data = _new_extra_module("filegroup", "net_unittests_data")
-    net_unittests_data.srcs = {
-        "net/data/**/*",
-        "net/base/registry_controlled_domains/**/*",
-        "net/third_party/quiche/src/quiche/common/platform/api/testdir/**/*",
-        "third_party/anonymous_tokens/src/anonymous_tokens/testdata/**/*",
-    }
+    net_unittests_lib_name = (
+        f"//net:net_unittests__library{gn_utils.TESTING_SUFFIX}"
+    )
+    if net_unittests_lib_name in gn.all_targets:
+        net_unittests_lib = gn.get_target(net_unittests_lib_name)
+        net_unittests_data.srcs = _data_to_soong_globs(
+            net_unittests_lib.common.data
+        )
 
     javatests_resources = _new_extra_module("filegroup", "javatests_resources")
-    javatests_resources.srcs = {
-        "net/data/ssl/certificates/**/*",
-        "components/cronet/android/test/test_server/data/**/*",
-    }
+    cronet_javatests_target_name = (
+        f"//components/cronet/android:cronet_javatests{gn_utils.TESTING_SUFFIX}"
+    )
+    if cronet_javatests_target_name in gn.all_targets:
+        cronet_javatests_target = gn.get_target(cronet_javatests_target_name)
+        javatests_resources.srcs = _data_to_soong_globs(
+            cronet_javatests_target.common.data
+        )
     javatests_resources.visibility = {"//external/cronet:__subpackages__"}
 
     java_tests = _new_extra_module("android_library", "java_tests")
@@ -443,19 +467,26 @@ def create_extras_modules(
     java_tests.sdk_version = "module_current"
     java_tests.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
     java_tests.static_libs = {
-        f"{context.module_prefix}components_cronet_android_cronet_javatests__testing",
         "androidx.test.ext.junit",
         "androidx.test.rules",
-        f"{context.module_prefix}java__testing",
         "guava",
         "hamcrest-library",
         "junit",
         "net-tests-utils",
         "truth",
+        *java_testing.static_libs,
     }
+    if cronet_javatests_target_name in gn.all_targets:
+        java_tests.static_libs.add(
+            soong_ast.label_to_module_name(
+                cronet_javatests_target_name, context
+            )
+        )
     java_tests.libs = {
         "android.test.base.stubs.system",
-        f"{context.module_prefix}api_java",
+        soong_ast.label_to_module_name(
+            translation_config.java_api_target_name, context
+        ),
         "framework-connectivity.stubs.module_lib",
         "framework-connectivity-pre-jarjar",
         # android.net.TrafficStats apis
@@ -567,7 +598,7 @@ def create_blueprint_for_targets(gn, targets, test_targets, context):
         blueprint.add_module(module)
 
     setup_libcrypto_stripping(blueprint, context)
-    for module in create_extras_modules(context):
+    for module in create_extras_modules(gn, context):
         blueprint.add_module(module)
     return blueprint
 
@@ -883,8 +914,11 @@ def extract_copybara_paths(
             or raw_path.startswith((":", "//out/", "out/"))
         ):
             return
+        is_dir = raw_path.endswith("/")
         clean_path = os.path.normpath(raw_path.removeprefix("//"))
-        if clean_path.endswith("/**/*"):
+        if is_dir:
+            clean_path = f"{clean_path}/**"
+        elif clean_path.endswith("/**/*"):
             clean_path = clean_path.removesuffix("/*")
         if clean_path in ("", ".") or clean_path.startswith(("/", "../")):
             return
@@ -933,7 +967,7 @@ def extract_copybara_paths(
         ):
             _add_path(src)
         for arch in (target.common, *target.arch.values()):
-            for src in arch.sources:
+            for src in itertools.chain(arch.sources, arch.data):
                 _add_path(src)
 
     for src in getattr(gn, "jni_java_sources", ()):

@@ -292,6 +292,7 @@ class GnParser:
 
             def __init__(self):
                 self.sources = set()
+                self.data = set()
                 self.cflags = []
                 self.defines = set()
                 self.include_dirs = set()
@@ -422,7 +423,7 @@ class GnParser:
             )
 
         def update(self, other, arch):
-            for key in ('defines', 'deps', 'include_dirs'):
+            for key in ('defines', 'deps', 'include_dirs', 'data'):
                 getattr(self.common, key).update(getattr(other.common, key))
             for key in ('cflags', 'ldflags'):
                 getattr(self.common, key).extend(getattr(other.common, key))
@@ -431,7 +432,13 @@ class GnParser:
                 getattr(self, key).update(getattr(other, key))
 
             if arch in self.arch and arch in other.arch:
-                for key_in_arch in ('defines', 'include_dirs', 'deps', 'libs'):
+                for key_in_arch in (
+                    'defines',
+                    'include_dirs',
+                    'deps',
+                    'libs',
+                    'data',
+                ):
                     getattr(self.arch[arch], key_in_arch).update(
                         getattr(other.arch[arch], key_in_arch)
                     )
@@ -488,6 +495,7 @@ class GnParser:
 
             for key in (
                 'sources',
+                'data',
                 'cflags',
                 'defines',
                 'include_dirs',
@@ -1032,6 +1040,9 @@ class GnParser:
         public_headers = [x for x in desc.get('public', []) if x != '*']
         target.public_headers.update(public_headers)
         target.build_file_path = _get_build_path_from_label(target_name)
+        target.arch[arch].data.update(
+            d for d in desc.get('data', []) if not d.startswith("//out")
+        )
         target.arch[arch].cflags.extend(
             _filter_cflags(desc.get('cflags', []) + desc.get('cflags_cc', []))
         )
@@ -1220,3 +1231,4 @@ class GnParser:
                         dep.arch[arch].transitive_static_libs_deps
                     )
                     arch_obj.deps.update(arch_obj.transitive_static_libs_deps)
+                    arch_obj.data.update(dep.arch[arch].data)
