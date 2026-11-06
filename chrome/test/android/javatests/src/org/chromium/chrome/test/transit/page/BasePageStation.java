@@ -273,6 +273,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                                 activityTabElement, TriStateUtils.from(mIsIncognito)));
 
         declareEnterCondition(new PageInteractableOrHiddenCondition(loadedTabElement));
+        declareEnterCondition(new PageHitTestDataCondition(loadedTabElement));
 
         // URL substring is optional.
         if (config.mExpectedUrlSubstring != null) {

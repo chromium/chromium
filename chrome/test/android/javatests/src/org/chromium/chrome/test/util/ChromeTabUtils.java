@@ -217,7 +217,10 @@ public class ChromeTabUtils {
      * have completed.
      *
      * @param tab The tab to wait for interactability on.
+     * @deprecated Page Stations (e.g. {@code WebPageStation}, {@code CctPageStation}) wait for the
+     *     same Conditions when entered. Hop on to or travel to one instead.
      */
+    @Deprecated
     public static void waitForInteractable(final Tab tab) {
         Assert.assertFalse(ThreadUtils.runningOnUiThread());
 
