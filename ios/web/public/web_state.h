@@ -504,10 +504,6 @@ class WebState : public base::SupportsUserData {
   virtual void CreatePdf(const CreatePdfParams& params,
                          base::OnceCallback<void(NSData*)> callback) = 0;
 
-  // Deprecated: use `CreatePdf()` instead.
-  // TODO(crbug.com/582795698): Migrate callers to `CreatePdf()` and remove.
-  virtual void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback);
-
   // Tries to dismiss the presented states of the media (fullscreen or Picture
   // in Picture).
   virtual void CloseMediaPresentations() = 0;

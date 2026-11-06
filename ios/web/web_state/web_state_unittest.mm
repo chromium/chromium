@@ -343,9 +343,9 @@ TEST_F(WebStateTest, CreatePdfReturnsNilForEmptyDocumentRect) {
   EXPECT_FALSE(callback_data);
 }
 
-// Tests that the deprecated `CreateFullPagePdf()` forwarding wrapper returns
-// PDF data when the WebState content is a PDF file.
-TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
+// Tests that `CreatePdf()` returns PDF data when the WebState content is a PDF
+// file.
+TEST_F(WebStateTest, CreatePdfWebStatePdfContent) {
   [GetAnyKeyWindow() addSubview:web_state()->GetView()];
   CGRect fake_bounds = CGRectMake(0, 0, 100, 100);
   UIGraphicsPDFRenderer* pdf_renderer =
@@ -368,10 +368,10 @@ TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
 
   __block NSData* callback_data = nil;
   __block bool callback_called = false;
-  web_state()->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
-    callback_data = [pdf_document_data copy];
-    callback_called = true;
-  }));
+  web_state()->CreatePdf({}, base::BindOnce(^(NSData* pdf_document_data) {
+                           callback_data = [pdf_document_data copy];
+                           callback_called = true;
+                         }));
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
     return callback_called;

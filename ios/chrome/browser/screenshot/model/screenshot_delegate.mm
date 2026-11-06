@@ -80,7 +80,7 @@
     }
   }
 
-  webState->CreateFullPagePdf(std::move(callback));
+  webState->CreatePdf({}, std::move(callback));
 }
 
 @end

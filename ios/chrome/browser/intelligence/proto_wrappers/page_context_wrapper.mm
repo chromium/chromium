@@ -570,9 +570,10 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   if (_shouldGetFullPagePDF) {
     [_pageContextMetrics executionStartedForTask:PageContextTask::kPDF];
 
-    _webState->CreateFullPagePdf(base::BindOnce(^(NSData* PDFData) {
-      [weakSelf encodeAndSetFullPagePDF:PDFData barrier:pageContextBarrier];
-    }));
+    _webState->CreatePdf(
+        {}, base::BindOnce(^(NSData* PDFData) {
+          [weakSelf encodeAndSetFullPagePDF:PDFData barrier:pageContextBarrier];
+        }));
   }
 }
 

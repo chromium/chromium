@@ -163,7 +163,8 @@ constexpr size_t MASKED_TEXT_LENGTH = 7;
 // and custom snapshots.
 class FakeWebStateForFailureTest : public web::FakeWebState {
  public:
-  void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) override {
+  void CreatePdf(const web::WebState::CreatePdfParams& params,
+                 base::OnceCallback<void(NSData*)> callback) override {
     std::move(callback).Run(nil);
   }
 
