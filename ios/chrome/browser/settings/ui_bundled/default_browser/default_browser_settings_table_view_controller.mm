@@ -117,8 +117,12 @@ enum class DefaultBrowserSettingsPageUsage {
     return IsDefaultAppsPictureInPictureVariant();
   }
 
+  BOOL isFromOneTimeDefaultBrowserNotification =
+      self.source == DefaultBrowserSettingsPageSource::kTipsNotification &&
+      base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification);
   return IsDefaultAppsDestinationAvailable() &&
-         IsUseDefaultAppsDestinationForPromosEnabled();
+         (isFromOneTimeDefaultBrowserNotification ||
+          IsUseDefaultAppsDestinationForPromosEnabled());
 }
 
 // Responds to user action to go to default browser iOS settings.
