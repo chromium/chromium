@@ -107,9 +107,10 @@ class CodeCacheHostImplTest : public testing::Test,
             /*is_guest=*/false,
             /*is_fenced=*/false,
             /*is_fixed_storage_partition=*/false);
-    ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-        site_instance->GetIsolationContext(), process_id,
-        ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
+    p->LockProcess(process_id,
+                   ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
+    p->IncludeIsolationContext(process_id.value(),
+                               site_instance->GetIsolationContext());
 
     added_renderers_.push_back(process_id);
   }

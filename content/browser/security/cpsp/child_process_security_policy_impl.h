@@ -644,22 +644,18 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // Notifies process state of |child_id| about the IsolationContext it will
   // host.  The main side effect is proper setting of the lowest
-  // BrowsingInstanceId associated with the process state.
+  // BrowsingInstanceId associated with the process state. Must be called after
+  // LockProcess() has assigned a valid ProcessLock to the process.
   void IncludeIsolationContext(int child_id,
                                const IsolationContext& isolation_context);
 
   // Sets the process identified by |child_id| as only permitted to access data
-  // for the origin specified by |site_info|'s process_lock_url(). Most callers
+  // for the origin specified by |process_lock|. Most callers
   // should use RenderProcessHostImpl::SetProcessLock instead of calling this
-  // directly. |isolation_context| provides the context, such as
-  // BrowsingInstance, from which this process locked was created. This
-  // information is used when making isolation decisions for this process, such
-  // as determining which isolated origins pertain to it.
-  void LockProcess(const IsolationContext& isolation_context,
-                   ChildProcessId child_id,
-                   const ProcessLock& process_lock);
-  void LockProcess_Cpp(const IsolationContext& isolation_context,
-                       ChildProcessId child_id,
+  // directly. Call IncludeIsolationContext() separately to track the
+  // BrowsingInstances using this process.
+  void LockProcess(ChildProcessId child_id, const ProcessLock& process_lock);
+  void LockProcess_Cpp(ChildProcessId child_id,
                        const ProcessLock& process_lock);
 
   // Marks the process identified by |child_id| as "used", meaning that it has

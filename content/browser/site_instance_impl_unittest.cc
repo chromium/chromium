@@ -757,6 +757,8 @@ TEST_F(SiteInstanceTest, GetOrCreateProcess) {
       SiteInstanceImpl::Create(browser_context.get()));
   RenderProcessHost* host1 = instance->GetOrCreateProcessForTesting();
   EXPECT_TRUE(host1 != nullptr);
+  EXPECT_EQ(1u, ChildProcessSecurityPolicyImpl::GetInstance()
+                    ->BrowsingInstanceIdCountForTesting(host1->GetID()));
 
   // Ensure that GetOrCreateProcess returns a process.
   scoped_refptr<SiteInstanceImpl> instance2(
@@ -797,6 +799,8 @@ TEST_F(SiteInstanceTest, GetOrCreateProcessForGuest) {
 
   auto* host = instance->GetOrCreateProcessForTesting();
   EXPECT_TRUE(host != nullptr);
+  EXPECT_EQ(1u, ChildProcessSecurityPolicyImpl::GetInstance()
+                    ->BrowsingInstanceIdCountForTesting(host->GetID()));
 
   // The guest has an empty site URL, so the process should not be locked yet.
   EXPECT_TRUE(host->GetProcessLock().AllowsAnySite());

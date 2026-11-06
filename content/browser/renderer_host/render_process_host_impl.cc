@@ -3649,13 +3649,11 @@ bool RenderProcessHostImpl::IsSpare() const {
       SpareRenderProcessHostManagerImpl::Get().GetSpares(), this);
 }
 
-void RenderProcessHostImpl::SetProcessLock(
-    const IsolationContext& isolation_context,
-    const ProcessLock& process_lock) {
+void RenderProcessHostImpl::SetProcessLock(const ProcessLock& process_lock) {
   TRACE_EVENT_BEGIN("shutdown", "Lock process", tracing_track_,
                     ChromeTrackEvent::kRenderProcessHost, *this);
-  ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-      isolation_context, GetID(), process_lock);
+  ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(GetID(),
+                                                             process_lock);
 
   // Note that SetProcessLock is only called on ProcessLock state transitions.
   // (e.g. invalid -> allows_any_site and allows_any_site -> locked_to_site).

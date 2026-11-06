@@ -890,8 +890,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     return false;
   }
 
-  void SetProcessLock(const ProcessLock& lock_to_set,
-                      const IsolationContext& context) {
+  void SetProcessLock(const ProcessLock& lock_to_set) {
     CHECK(!lock_to_set.is_invalid());
     CHECK(lock_to_set.is_unused())
         << "Cannot lock a process to an already used lock: " << lock_to_set;
@@ -939,7 +938,6 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
       // Rust `ProcessLock<Locked>::new()`.
       SetProcessIsUsed(/*shard=*/std::nullopt);
     }
-    AddBrowsingInstanceInfo(context);
   }
 
   // Marks the process as used, and assigns or checks its shard (see
@@ -1290,17 +1288,19 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
     ChildProcessId child_id,
     BrowserContext* browser_context) {
   Add(child_id);
-  LockProcess(IsolationContext(
-                  BrowsingInstanceId(1), browser_context,
-                  /*is_guest=*/false, /*is_fenced=*/false,
-                  OriginAgentClusterIsolationState::CreateForDefaultIsolation(
-                      browser_context)),
-              child_id,
+  LockProcess(child_id,
               ProcessLock::CreateAllowAnySite(
                   StoragePartitionConfig::CreateDefault(browser_context),
                   WebExposedIsolationInfo::CreateNonIsolated(),
                   /*cross_origin_isolation_key=*/std::nullopt,
                   browser_context->UniqueToken()));
+  IncludeIsolationContext(
+      child_id.value(),
+      IsolationContext(
+          BrowsingInstanceId(1), browser_context,
+          /*is_guest=*/false, /*is_fenced=*/false,
+          OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+              browser_context)));
 }
 
 void ChildProcessSecurityPolicyImpl::Remove(ChildProcessId child_id) {
@@ -3268,6 +3268,8 @@ void ChildProcessSecurityPolicyImpl::IncludeIsolationContext(
     int child_id,
     const IsolationContext& isolation_context) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  // TODO(crbug.com/522872468): The Rust implementation does not yet track
+  // BrowsingInstance isolation state.
   base::AutoLock lock(lock_);
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   auto* state = process_states_.GetProcessStateForMutation(
@@ -3277,7 +3279,6 @@ void ChildProcessSecurityPolicyImpl::IncludeIsolationContext(
 }
 
 void ChildProcessSecurityPolicyImpl::LockProcess(
-    const IsolationContext& context,
     ChildProcessId child_id,
     const ProcessLock& process_lock) {
   // LockProcess should only be called on the UI thread (OTOH, it is okay to
@@ -3285,10 +3286,6 @@ void ChildProcessSecurityPolicyImpl::LockProcess(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
-    // TODO(crbug.com/522872468): The `IsolationContext` is currently ignored by
-    // the Rust implementation, which does not yet track BrowsingInstance
-    // isolation state (`browsing_instance_default_isolation_states_`). Support
-    // this in Rust (ideally decoupled from `LockProcess()`).
     rust::child_process_security_policy::lock_process(child_id, process_lock);
   }
 
@@ -3297,17 +3294,16 @@ void ChildProcessSecurityPolicyImpl::LockProcess(
   // partially been implemented by the Rust version so far. Once ProcessState
   // is fully supported in Rust, this should be combined into a
   // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
-  LockProcess_Cpp(context, child_id, process_lock);
+  LockProcess_Cpp(child_id, process_lock);
 }
 
 void ChildProcessSecurityPolicyImpl::LockProcess_Cpp(
-    const IsolationContext& context,
     ChildProcessId child_id,
     const ProcessLock& process_lock) {
   base::AutoLock lock(lock_);
   auto* state = process_states_.GetProcessStateForMutation(child_id);
   CHECK(state);
-  state->SetProcessLock(process_lock, context);
+  state->SetProcessLock(process_lock);
 }
 
 void ChildProcessSecurityPolicyImpl::SetProcessIsUsed(
@@ -3344,8 +3340,8 @@ void ChildProcessSecurityPolicyImpl::LockProcessForTesting(
     ChildProcessId child_id,
     const GURL& url) {
   SiteInfo site_info = SiteInfo::CreateForTesting(isolation_context, url);
-  LockProcess(isolation_context, child_id,
-              ProcessLock::FromSiteInfo(site_info));
+  LockProcess(child_id, ProcessLock::FromSiteInfo(site_info));
+  IncludeIsolationContext(child_id.value(), isolation_context);
 }
 
 ProcessLock ChildProcessSecurityPolicyImpl::GetProcessLock(

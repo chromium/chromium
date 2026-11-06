@@ -111,7 +111,6 @@ class Origin;
 namespace content {
 class BrowserContext;
 class BucketContext;
-class IsolationContext;
 class ProcessLock;
 class RenderFrameHost;
 class RenderProcessHostObserver;
@@ -669,8 +668,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // This method is public so that it can be called from within //content, and
   // used by MockRenderProcessHost. It isn't meant to be called outside of
   // //content.
-  virtual void SetProcessLock(const IsolationContext& isolation_context,
-                              const ProcessLock& process_lock) = 0;
+  virtual void SetProcessLock(const ProcessLock& process_lock) = 0;
 
   // Returns the ProcessLock associated with this process.
   // This method is public so that it can be called from within //content, and

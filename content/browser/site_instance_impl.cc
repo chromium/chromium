@@ -1528,13 +1528,13 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
           storage_partition->GetConfig(), GetWebExposedIsolationInfo(),
           /*cross_origin_isolation_key=*/std::nullopt,
           GetBrowserContext()->UniqueToken());
-      process->SetProcessLock(GetIsolationContext(), new_process_lock);
+      process->SetProcessLock(new_process_lock);
     } else {
       CHECK(process_lock.AllowsAnySite())
           << "Unexpected process lock " << process_lock.ToString();
-      policy->IncludeIsolationContext(process->GetDeprecatedID(),
-                                      GetIsolationContext());
     }
+    policy->IncludeIsolationContext(process->GetDeprecatedID(),
+                                    GetIsolationContext());
     TRACE_EVENT_INSTANT("navigation",
                         "SiteInstanceImpl::LockProcessIfNeeded_not_used");
     return;
@@ -1555,7 +1555,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
           "navigation",
           "SiteInstanceImpl::LockProcessIfNeeded_set_process_lock", "lock",
           lock_to_set.ToString());
-      process->SetProcessLock(GetIsolationContext(), lock_to_set);
+      process->SetProcessLock(lock_to_set);
     } else if (process_lock != lock_to_set) {
       // We should never attempt to reassign a different origin lock to a
       // process.
@@ -1588,7 +1588,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
           storage_partition->GetConfig(), GetWebExposedIsolationInfo(),
           /*cross_origin_isolation_key=*/std::nullopt,
           GetBrowserContext()->UniqueToken());
-      process->SetProcessLock(GetIsolationContext(), new_process_lock);
+      process->SetProcessLock(new_process_lock);
     } else {
       CHECK(process_lock.AllowsAnySite())
           << "Unexpected process lock " << process_lock.ToString();

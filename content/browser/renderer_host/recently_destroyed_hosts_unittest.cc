@@ -78,7 +78,7 @@ TEST_F(RecentlyDestroyedHostsTest, RecordSubframeMetric) {
 
   // Add a RenderProcessHost for |process_lock| to RecentlyDestroyedHosts.
   MockRenderProcessHost host(&browser_context_, /*is_for_guests_only=*/false);
-  host.SetProcessLock(isolation_context, process_lock);
+  host.SetProcessLock(process_lock);
   RecentlyDestroyedHosts::Add(
       &host, /*time_spent_running_unload_handlers=*/base::TimeDelta(),
       &browser_context_);
@@ -199,7 +199,7 @@ TEST_F(RecentlyDestroyedHostsTest, RecordMainFrameMetric) {
 
   // Add a host, advance time, and check for a hit.
   MockRenderProcessHost host(&browser_context_);
-  host.SetProcessLock(isolation_context, process_lock);
+  host.SetProcessLock(process_lock);
   RecentlyDestroyedHosts::Add(
       &host, /*time_spent_running_unload_handlers=*/base::TimeDelta(),
       &browser_context_);

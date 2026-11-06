@@ -347,8 +347,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   bool HostHasNotBeenUsed() override;
   bool IsSpare() const override;
-  void SetProcessLock(const IsolationContext& isolation_context,
-                      const ProcessLock& process_lock) override;
+  void SetProcessLock(const ProcessLock& process_lock) override;
   ProcessLock GetProcessLock() const override;
   bool IsProcessLockedToSiteForTesting() override;
   void BindCacheStorage(

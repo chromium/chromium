@@ -618,11 +618,9 @@ bool MockRenderProcessHost::IsSpare() const {
       SpareRenderProcessHostManagerImpl::Get().GetSpares(), this);
 }
 
-void MockRenderProcessHost::SetProcessLock(
-    const IsolationContext& isolation_context,
-    const ProcessLock& process_lock) {
-  ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-      isolation_context, GetID(), process_lock);
+void MockRenderProcessHost::SetProcessLock(const ProcessLock& process_lock) {
+  ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(GetID(),
+                                                             process_lock);
   if (process_lock.IsASiteOrOrigin())
     is_renderer_locked_to_site_ = true;
 }
