@@ -1,135 +1,127 @@
 ---
 name: chrome-releases
 description: >-
-  Queries Chrome commit, version, release, and milestone metadata. Use when
-  finding the first landed Chrome version of a commit, checking channel releases
-  across platforms, inspecting milestone schedules and branch refs, or checking
-  version containment.
+  Maps Git commits, version tags, channel releases, and milestone schedules. Use
+  when finding first landed versions of commits/CLs, channel releases, milestone
+  branches/dates, version containment, or commit ranges. Don't use for UMA/crash
+  metrics, installing Chrome, CI builders, bugs, or code diffs.
 ---
 
 # Chrome Releases & Commit Tracker
 
-Queries relationships between Chrome commits, versions, releases, and milestones
-using the Developer Graph API via `chrome_releases.py`.
+Queries commits, versions, releases, and milestones via `chrome_releases.py`
+(Developer Graph API).
 
 ## Capabilities & Commands
 
-### 1. Look Up a Commit (`commit`)
-
-Returns Git metadata, associated Gerrit changes, derived commit relations
-(cherry picks, reverts, relands), and the earliest version tag ("first landed"
-version).
+### 1. `commit`
 
 ```bash
-python3 agents/skills/chrome-releases/scripts/chrome_releases.py commit <COMMIT_HASH>
+python3 agents/skills/chrome-releases/scripts/chrome_releases.py commit {commit_hash}
 ```
 
-**Key Fields in Response:**
+- **Argument**: 40-char lowercase SHA from `chromium` (`chromium/src`, `v8/v8`,
+  `angle/angle`, `devtools/devtools-frontend`), `skia` (`skia`), `webrtc`
+  (`src`), `dawn` (`dawn`), `pdfium` (`pdfium`), or `boringssl` (`boringssl`);
+  unindexed repos like `chrome-internal`, `ios_internal`, and `chromiumos/*`
+  return HTTP 404—use their `chromium/src` `DEPS` roll commit.
 
-- `chromeMetadata.commitPosition`: The commit position number.
-- `chromeMetadata.versions`: Earliest version tags containing this commit.
-  - For Chromium commits: Contains the Chrome version (e.g. `136.0.7051.0`).
-  - For sub-repo commits (e.g. V8): Contains the sub-repo version and the first
-    Chromium version that rolled it in.
-- `sourceCommits` / `derivedCommits`: Related commits (`CHERRY_PICK`, `REVERT`,
-  `RELAND`, `DEPENDENCY_ADD`, `DEPENDENCY_REMOVE`).
-- `gerritChanges`: Change number, Change-Id, host, project, and branch.
+- **Resolve Gerrit CLs or short SHAs first** (`{query}` is `change:{cl_or_id}`
+  or `commit:{short_sha}`, or use `git rev-parse {short_sha}` locally):
 
-### 2. Look Up a Version (`version`)
+  ```bash
+  curl -s \
+    "https://{host}-review.googlesource.com/changes/?q={query}&o=CURRENT_REVISION" \
+    | tail -n +2
+  ```
 
-Returns the Git commit hash, parent version, minibranch info, and first release
-on each platform and channel.
+  Check `status`, `branch`, and `current_revision` in the JSON response.
+
+- **Response fields**: `chromeMetadata.commitPosition`,
+  `chromeMetadata.versions` (earliest `chrome` version tag, including for
+  rolled-in sub-repo commits), `sourceCommits` / `derivedCommits`
+  (`DEPENDENCY_ADD`, `DEPENDENCY_REMOVE`), `gerritChanges`.
+
+### 2. `version`
 
 ```bash
-python3 agents/skills/chrome-releases/scripts/chrome_releases.py version <VERSION_OR_ALIAS>
+python3 agents/skills/chrome-releases/scripts/chrome_releases.py version {version}
 ```
 
-**Aliases:**
+- **Argument**: Version string (e.g. `136.0.7051.0`; only default
+  `--product chrome` is supported—`v8` returns HTTP 404) or alias:
+  `latest-main`, `latest-{branch}` (e.g. `latest-7103`),
+  `latest-{branch}_{minibranch}` (e.g. `latest-7258_13`).
+- **Response fields**:
+  - `commitHash`: Git tag commit SHA.
+  - `chromeMetadata.parentVersion`: Preceding version.
+  - `chromeMetadata.minibranch`: Patch number on parent branch if on a
+    minibranch.
+  - `chromeMetadata.firstReleases`: First release per `{platform}/{channel}`
+    with `version` and `startTime` (resolves trunk versions across milestone
+    branch cuts). Full single-line JSON (~15 KB) may truncate; for specific
+    `{platform}/{channel}` lookups, pipe
+    `| grep -o '"name":"chrome/platforms/{platform}/channels/{channel}/[^}]*}' || true`.
 
-- `latest-main`: Latest version on the main trunk.
-- `latest-{branch}`: Latest version on a release branch (e.g. `latest-7103`).
-- `latest-{branch}_{minibranch}`: Latest version on a minibranch (e.g.
-  `latest-7103_160`).
-
-**Key Fields in Response:**
-
-- `chromeMetadata.parentVersion`: Immediately preceding version in the version
-  tree.
-- `chromeMetadata.minibranch`: Patch number on the parent branch if this version
-  is on a minibranch.
-- `chromeMetadata.firstReleases`: First releases of this version by platform and
-  channel (e.g. `mac/stable`, `android/beta`, `win/canary`), including release
-  version and start timestamp.
-
-### 3. Look Up a Milestone (`milestone`)
-
-Returns the release branch and scheduled lifecycle event dates for a major
-Chrome milestone.
+### 3. `milestone`
 
 ```bash
-python3 agents/skills/chrome-releases/scripts/chrome_releases.py milestone <MILESTONE>
+python3 agents/skills/chrome-releases/scripts/chrome_releases.py milestone {milestone_number}
 ```
 
-**Key Fields in Response:**
-
-- `branches`: Branch refs (e.g. `refs/branch-heads/6723`) and the main-branch
-  divergence commit hash.
-- `events`: Scheduled dates for milestone events:
-  - `branch_point`: Branch creation date.
-  - `final_beta_cut` / `stable_cut`: Code freeze/cut dates.
-  - `earliest_beta` / `final_beta`: Beta rollout dates.
-  - `early_stable`: Early stable rollout date (~0.5% users).
-  - `stable_date`: Stable release date (100% rollout).
-  - `stable_refresh_first`, `stable_refresh_second`, `stable_refresh_third`:
-    Bi-weekly refresh dates.
-  - `feature_freeze`, `late_stable_date`, `chromeos_*`: ChromeOS specific
-    milestone events.
+- **Response fields**: `branches` (e.g. `refs/branch-heads/6723` and divergence
+  `commitHash`), `events` (`branch_point`, `feature_freeze`, `earliest_beta`,
+  `final_beta_cut`, `final_beta`, `stable_cut`, `early_stable`, `stable_date`,
+  `late_stable_date`, `stable_refresh_first`/`second`/`third`, `chromeos_*`).
 
 ## Workflows
 
-### 1. Find Where a Commit Landed and Released
+1. **Commit/CL Landed Version, Release, Finch & Soak**: Resolve any CL or short
+   SHA, run `commit`, and read the `chrome` entry in `chromeMetadata.versions`
+   (trunk Finch `min_version`; sub-repo commits already emit this rolled-in
+   `chrome` version directly—skip running `commit` on `derivedCommits`). For
+   channel releases, run `version` on `{chrome_version}` and read
+   `firstReleases` (check `{platform}/canary` `startTime` for 24h merge soak).
 
-1. Run `commit` with `<commit_hash>`.
-2. Read `chromeMetadata.versions` to find the Chrome "First Landed" version
-   (e.g. `136.0.7051.0`).
-3. Run `version` with `<first_landed_version>` to read `firstReleases` for
-   target platforms/channels.
+2. **Version Containment (`A` in `B`, `Major.Minor.Build.Patch`)**: Get `A` from
+   `commit` (`chromeMetadata.versions`). If `A.Patch == 0`, check
+   `A.Build <= B.Build`. If `A.Patch > 0` and `A.Build == B.Build`, run
+   `version` on both `A` and `B` for `chromeMetadata.minibranch` (`0` if unset;
+   returned as a string, so compare numerically):
 
-### 2. Track a Subproject Commit (V8, Skia) into Chrome
+   - Branch (`A.Minibranch == 0`): `A.Patch <= B.Patch` when
+     `B.Minibranch == 0`, or `A.Patch <= B.Minibranch` when `B.Minibranch > 0`.
+   - Minibranch (`A.Minibranch > 0`): `A.Minibranch == B.Minibranch` and
+     `A.Patch <= B.Patch`.
 
-1. Run `commit` with `<subproject_commit_hash>`.
-2. Inspect `chromeMetadata.versions`. It lists:
-   - The subproject version (e.g. V8 `12.0.0.0`).
-   - The first Chrome version that included the dependency roll (e.g. Chrome
-     `120.0.6099.0`).
-3. Run `version` with the Chrome version to find the Chrome releases that
-   include the roll.
+3. **Changelog Between Versions**: Run `version` on both versions for
+   `commitHash` (`start_sha`, `end_sha`; avoids unfetched local Git tags and
+   release branches), then run:
 
-### 3. Determine if Commit Version A is in Release Version B
+   ```bash
+   curl -s \
+     "https://chromium.googlesource.com/chromium/src/+log/{start_sha}..{end_sha}?format=JSON&n=10000" \
+     | tail -n +2
+   ```
 
-Version numbers follow `Major.Minor.Build.Patch` (e.g. `136.0.7051.0`).
+4. **Milestone Branches & Deadlines**: Run `milestone` for `branches` (e.g.
+   `refs/branch-heads/7103` to `latest-7103`) and `events`, then `version` on
+   `latest-{branch}` (branch tip) or `latest-main` (trunk; changes after
+   `branch_point` need a cherry-pick).
 
-Use this rule to determine if version `A` is an ancestor of version `B`:
+5. **Currently Serving Channel Releases**: Only when asked what versions are
+   actively serving right now (`latest-*` returns the newest Git tag, which may
+   be unshipped), query the
+   [VersionHistory API](https://developer.chrome.com/docs/versionhistory/)
+   (`{platform}`: `win`, `win64`, `win_arm64`, `mac`, `mac_arm64`, `linux`,
+   `android`, `webview`, `ios`, `chromeos`, `all`; `{channel}`: `canary`, `dev`,
+   `beta`, `stable`, `extended`, `all`):
 
-- **Main branch (`A.Patch == 0`)**: `A` is in `B` if `A.Build <= B.Build`.
-- **Release branch (`A.Patch > 0`, no minibranch)**: `A` is in `B` if
-  `A.Build == B.Build` and `A.Patch <= B.Patch`.
-- **Minibranch (`A.Minibranch > 0`)**: `A` is in `B` if `B` is on the same
-  minibranch (`A.Build == B.Build`, `A.Minibranch == B.Minibranch`, and
-  `A.Patch <= B.Patch`).
+   ```bash
+   curl -s \
+     "https://versionhistory.googleapis.com/v1/chrome/platforms/{platform}/channels/{channel}/versions/all/releases?filter=endtime=none,fraction%3E0"
+   ```
 
-### 4. Find the Release Branch and Latest Version for a Milestone
-
-1. Run `milestone` with `<milestone>` to get the branch ref under `branches`
-   (e.g. `refs/branch-heads/7103` -> branch number `7103`).
-2. Run `version` with `latest-{branch_number}` (e.g. `latest-7103`) to find the
-   latest version on that release branch.
-
-### 5. Check Milestone Deadlines for a Pending Change
-
-1. Call `version` with `latest-main` to see the current main trunk build number.
-2. Call `milestone` with the upcoming `<milestone>` to read `events` dates
-   (`branch_point`, `stable_cut`, `stable_date`).
-3. If a change lands before the `branch_point` date, it lands in that milestone
-   automatically. If it lands after, it requires a cherry-pick to
-   `refs/branch-heads/{branch_number}`.
+   `fraction` is scoped per `fractionGroup`: on `win*`/`mac*`, `pinnable: false`
+   is the consumer rollout while `pinnable: true` (`fraction: 1`) is for
+   enterprise version-pinned clients.
