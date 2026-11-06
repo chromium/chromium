@@ -33,12 +33,12 @@ class MockBridge : public ExclusiveAccessBubbleAndroid::Bridge {
   MOCK_METHOD(void, Show, (), (override));
   MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(void, Update, (const std::u16string& text), (override));
-  MOCK_METHOD(bool, IsVisible, (), (const override));
-  MOCK_METHOD(bool, IsKeyboardConnected, (), (const override));
+  MOCK_METHOD(bool, IsVisible, (), (const, override));
+  MOCK_METHOD(bool, IsKeyboardConnected, (), (const, override));
   MOCK_METHOD(std::u16string,
               GetCustomFullscreenExitInstruction,
               (const std::optional<std::u16string>& origin),
-              (const override));
+              (const, override));
 };
 
 using ExclusiveAccessBubbleAndroidTest = ChromeRenderViewHostTestHarness;

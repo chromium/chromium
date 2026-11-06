@@ -25,7 +25,7 @@ class MockMediaEngagementService : public MediaEngagementService {
   MOCK_METHOD(bool,
               HasHighEngagement,
               (const url::Origin& origin),
-              (const override));
+              (const, override));
 };
 
 std::unique_ptr<KeyedService> BuildMockMediaEngagementService(
