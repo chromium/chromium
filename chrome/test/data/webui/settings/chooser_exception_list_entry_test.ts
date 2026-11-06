@@ -7,7 +7,6 @@ import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 import type {ChooserExceptionListEntryElement} from 'chrome://settings/lazy_load.js';
 import {ChooserType, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
@@ -141,12 +140,10 @@ suite('ChooserExceptionListEntry', function() {
         const siteListEntry =
             testElement.shadowRoot.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
-        assertTrue(!!siteListEntry.shadowRoot);
 
         const policyIndicator =
             siteListEntry.shadowRoot.querySelector('cr-policy-pref-indicator');
         assertTrue(!!policyIndicator);
-        assertTrue(!!policyIndicator.shadowRoot);
 
         const icon =
             policyIndicator.shadowRoot.querySelector('cr-tooltip-icon');
@@ -178,7 +175,6 @@ suite('ChooserExceptionListEntry', function() {
         const siteListEntry =
             testElement.shadowRoot.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
-        assertTrue(!!siteListEntry.shadowRoot);
 
         // Ensure that the action menu button is not visible.
         assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
@@ -227,10 +223,6 @@ suite('ChooserExceptionListEntryFocus', function() {
     let siteListEntries =
         testElement.$.listContainer.querySelectorAll('site-list-entry');
     assertEquals(2, siteListEntries.length);
-    await waitAfterNextRender(siteListEntries[0]!);
-    await waitAfterNextRender(siteListEntries[1]!);
-    assertTrue(!!siteListEntries[0]!.shadowRoot);
-    assertTrue(!!siteListEntries[1]!.shadowRoot);
     const resetButton1 =
         siteListEntries[1]!.shadowRoot.querySelector<HTMLElement>('#resetSite');
     assertTrue(!!resetButton1);
@@ -248,7 +240,6 @@ suite('ChooserExceptionListEntryFocus', function() {
         testElement.$.listContainer.querySelectorAll('site-list-entry');
     assertEquals(1, siteListEntries.length);
     assertEquals(siteListEntries[0], testElement.shadowRoot.activeElement);
-    assertTrue(!!siteListEntries[0]!.shadowRoot);
     assertEquals(
         siteListEntries[0]!.shadowRoot.querySelector('#resetSite'),
         siteListEntries[0]!.shadowRoot.activeElement);

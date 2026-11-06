@@ -4,20 +4,16 @@
 
 /** @fileoverview Suite of tests for site-list-entry. */
 
-// clang-format off
 import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SiteListEntryElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {assertTooltipIsHidden} from './test_util.js';
-
-// clang-format on
 
 suite('SiteListEntry', function() {
   let testElement: SiteListEntryElement;
@@ -44,11 +40,14 @@ suite('SiteListEntry', function() {
       origin: 'http://example.com',
       setting: ContentSetting.DEFAULT,
     };
-    flush();
-    const prefIndicator = testElement.$$('cr-policy-pref-indicator');
+    await microtasksFinished();
+    const prefIndicator =
+        testElement.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertTrue(!!prefIndicator);
-    const icon = prefIndicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
-    const crTooltip = icon.shadowRoot.querySelector('cr-tooltip')!;
+    const icon = prefIndicator.shadowRoot.querySelector('cr-tooltip-icon');
+    assertTrue(!!icon);
+    const crTooltip = icon.shadowRoot.querySelector('cr-tooltip');
+    assertTrue(!!crTooltip);
     // Never shown since site-list will show a common tooltip.
     assertTooltipIsHidden(crTooltip);
     const wait = eventToPromise('show-tooltip', document);
@@ -74,16 +73,17 @@ suite('SiteListEntry', function() {
     };
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
     const args = await browserProxy.whenCalled('isOriginValid');
+    await microtasksFinished();
     assertEquals('example.com', args);
-    flush();
-    const settingsRow =
-        testElement.shadowRoot!.querySelector<HTMLElement>('.settings-row')!;
-    assertFalse(settingsRow.hasAttribute('actionable'));
-    const subpageArrow = settingsRow.querySelector('.subpage-arrow');
-    assertTrue(!subpageArrow);
-    const separator = settingsRow.querySelector('.separator');
-    assertTrue(!separator);
-    settingsRow.click();
+    const originArea =
+        testElement.shadowRoot.querySelector<HTMLElement>('#originArea');
+    assertTrue(!!originArea);
+    assertFalse(originArea.hasAttribute('actionable'));
+    const subpageArrow = originArea.querySelector('.subpage-arrow');
+    assertNull(subpageArrow);
+    const separator = originArea.querySelector('.separator');
+    assertNull(separator);
+    originArea.click();
     assertEquals(
         routes.SITE_SETTINGS.path, Router.getInstance().getCurrentRoute().path);
   });
@@ -104,10 +104,10 @@ suite('SiteListEntry', function() {
     };
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
     const args = await browserProxy.whenCalled('isOriginValid');
+    await microtasksFinished();
     assertEquals('http://example.com', args);
-    flush();
     const originArea =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#originArea');
+        testElement.shadowRoot.querySelector<HTMLElement>('#originArea');
     assertTrue(!!originArea);
     assertTrue(originArea.hasAttribute('actionable'));
     assertTrue(isChildVisible(originArea, '.subpage-arrow', true));
@@ -120,7 +120,7 @@ suite('SiteListEntry', function() {
 
   // Verify that third-party exceptions in a combined list have an additional
   // description.
-  test('third-party exception in a combined exceptions list', function() {
+  test('third-party exception in a combined exceptions list', async function() {
     testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
     testElement.model = {
       category: ContentSettingsTypes.COOKIES,
@@ -134,8 +134,8 @@ suite('SiteListEntry', function() {
       origin: SITE_EXCEPTION_WILDCARD,
       setting: ContentSetting.DEFAULT,
     };
-    flush();
-    const siteDescription = testElement.$$('#siteDescription')!;
+    await microtasksFinished();
+    const siteDescription = testElement.$.siteDescription;
     assertEquals(
         loadTimeData.getString('siteSettingsCookiesThirdPartyExceptionLabel'),
         siteDescription.textContent);
@@ -143,28 +143,30 @@ suite('SiteListEntry', function() {
 
   // Verify that third-party exceptions in a third-party exceptions list don't
   // have an additional description.
-  test('third-party exception in a third-party exceptions list', function() {
-    testElement.cookiesExceptionType = CookiesExceptionType.THIRD_PARTY;
-    testElement.model = {
-      category: ContentSettingsTypes.COOKIES,
-      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
-      displayName: '',
-      embeddingOrigin: 'http://example.com',
-      description: '',
-      enforcement: null,
-      incognito: false,
-      isEmbargoed: false,
-      origin: SITE_EXCEPTION_WILDCARD,
-      setting: ContentSetting.DEFAULT,
-    };
-    flush();
-    const siteDescription = testElement.$$('#siteDescription')!;
-    assertEquals('', siteDescription.textContent);
-  });
+  test(
+      'third-party exception in a third-party exceptions list',
+      async function() {
+        testElement.cookiesExceptionType = CookiesExceptionType.THIRD_PARTY;
+        testElement.model = {
+          category: ContentSettingsTypes.COOKIES,
+          controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
+          displayName: '',
+          embeddingOrigin: 'http://example.com',
+          description: '',
+          enforcement: null,
+          incognito: false,
+          isEmbargoed: false,
+          origin: SITE_EXCEPTION_WILDCARD,
+          setting: ContentSetting.DEFAULT,
+        };
+        await microtasksFinished();
+        const siteDescription = testElement.$.siteDescription;
+        assertEquals('', siteDescription.textContent);
+      });
 
   // Verify that exceptions with both patterns have proper description for both
   // lists.
-  test('cookies exception with both patterns set', function() {
+  test('cookies exception with both patterns set', async function() {
     testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
     testElement.model = {
       category: ContentSettingsTypes.COOKIES,
@@ -178,22 +180,19 @@ suite('SiteListEntry', function() {
       origin: 'http://example2.com',
       setting: ContentSetting.DEFAULT,
     };
-    flush();
-    const siteDescription = testElement.$$('#siteDescription')!;
+    await microtasksFinished();
+    const siteDescription = testElement.$.siteDescription;
     assertEquals(
         loadTimeData.getStringF('embeddedOnHost', 'http://example1.com'),
         siteDescription.textContent);
 
-    // `cookiesExceptionType` is static, the element is only observing changes
-    // to the model.
     testElement.cookiesExceptionType = CookiesExceptionType.THIRD_PARTY;
-    testElement.model = {...testElement.model};
-    flush();
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getStringF('embeddedOnHost', 'http://example1.com'),
         siteDescription.textContent);
   });
-  test('chooser exception with website origin', function() {
+  test('chooser exception with website origin', async function() {
     testElement.model = {
       category: ContentSettingsTypes.USB_DEVICES,
       controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
@@ -206,11 +205,11 @@ suite('SiteListEntry', function() {
       origin: 'https://example.com',
       setting: ContentSetting.DEFAULT,
     };
-    flush();
-    const siteDescription = testElement.$$('#siteDescription')!;
+    await microtasksFinished();
+    const siteDescription = testElement.$.siteDescription;
     assertEquals('', siteDescription.textContent);
   });
-  test('extension shows id in description', function() {
+  test('extension shows id in description', async function() {
     testElement.model = {
       category: ContentSettingsTypes.USB_DEVICES,
       controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
@@ -223,13 +222,13 @@ suite('SiteListEntry', function() {
       origin: 'chrome-extension://mhabknllooicelmdboebjilbohdbihln',
       setting: ContentSetting.DEFAULT,
     };
-    flush();
-    const siteDescription = testElement.$$('#siteDescription')!;
+    await microtasksFinished();
+    const siteDescription = testElement.$.siteDescription;
     assertEquals(
         'ID: mhabknllooicelmdboebjilbohdbihln', siteDescription.textContent);
   });
 
-  test('description field applies and overrides others', function() {
+  test('description field applies and overrides others', async function() {
     testElement.model = {
       category: ContentSettingsTypes.GEOLOCATION,  // Usually has description.
       controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
@@ -242,37 +241,40 @@ suite('SiteListEntry', function() {
       origin: 'https://example.com',
       setting: ContentSetting.DEFAULT,
     };
-    flush();
-    const siteDescription = testElement.$$('#siteDescription')!;
+    await microtasksFinished();
+    const siteDescription = testElement.$.siteDescription;
     assertEquals('foo', siteDescription.textContent);
   });
 
-  test('the reset button aria-label includes the section header', function() {
-    testElement.model = {
-      category: ContentSettingsTypes.GEOLOCATION,
-      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
-      displayName: 'example.com',
-      embeddingOrigin: 'http://bar',
-      description: 'foo',
-      enforcement: null,
-      incognito: false,
-      isEmbargoed: true,
-      origin: 'https://example.com',
-      setting: ContentSetting.ALLOW,
-    };
-    testElement.setSectionHeaderForTest(
-        loadTimeData.getString('siteSettingsLocationAllowedExceptions'));
-    flush();
+  test(
+      'the reset button aria-label includes the section header',
+      async function() {
+        testElement.model = {
+          category: ContentSettingsTypes.GEOLOCATION,
+          controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
+          displayName: 'example.com',
+          embeddingOrigin: 'http://bar',
+          description: 'foo',
+          enforcement: null,
+          incognito: false,
+          isEmbargoed: true,
+          origin: 'https://example.com',
+          setting: ContentSetting.ALLOW,
+        };
+        testElement.sectionHeader =
+            loadTimeData.getString('siteSettingsLocationAllowedExceptions');
+        await microtasksFinished();
 
-    const resetSite = testElement.shadowRoot!.querySelector('#resetSite');
-    assertTrue(!!resetSite);
+        const resetSite = testElement.shadowRoot.querySelector('#resetSite');
+        assertTrue(!!resetSite);
 
-    assertEquals(
-        loadTimeData.getStringF(
-            'siteSettingsActionResetFromListA11y', 'example.com',
-            loadTimeData.getString('siteSettingsLocationAllowedExceptions')),
-        resetSite.getAttribute('aria-label'));
-  });
+        assertEquals(
+            loadTimeData.getStringF(
+                'siteSettingsActionResetFromListA11y', 'example.com',
+                loadTimeData.getString(
+                    'siteSettingsLocationAllowedExceptions')),
+            resetSite.getAttribute('aria-label'));
+      });
 
   test(
       'the view details button aria-label includes the section header',
@@ -290,18 +292,18 @@ suite('SiteListEntry', function() {
           origin: 'https://example.com',
           setting: ContentSetting.ALLOW,
         };
-        testElement.setSectionHeaderForTest(
-            loadTimeData.getString('siteSettingsLocationAllowedExceptions'));
+        testElement.sectionHeader =
+            loadTimeData.getString('siteSettingsLocationAllowedExceptions');
 
         Router.getInstance().navigateTo(routes.SITE_SETTINGS);
         // Wait for the `isOriginValid` call to set `allowNavigateToSiteDetail_`
         // to true, otherwise the subpage-arrow button will not be shown.
         const args = await browserProxy.whenCalled('isOriginValid');
+        await microtasksFinished();
         assertEquals('https://example.com', args);
-        flush();
 
         const subpageArrow =
-            testElement.shadowRoot!.querySelector('.subpage-arrow');
+            testElement.shadowRoot.querySelector('.subpage-arrow');
         assertTrue(!!subpageArrow);
 
         assertEquals(

@@ -333,7 +333,6 @@ suite('ChooserExceptionList', function() {
     const siteListEntry =
         chooserExceptionListEntry.shadowRoot.querySelector('site-list-entry');
     assertTrue(!!siteListEntry);
-    assertTrue(!!siteListEntry.shadowRoot);
 
     assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
 
@@ -475,7 +474,6 @@ suite('ChooserExceptionList', function() {
             chooserExceptionListEntry.shadowRoot.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
-        assertTrue(!!siteListEntry.shadowRoot);
         // Ensure that the incognito tooltip is hidden.
         const incognitoTooltip =
             siteListEntry.shadowRoot.querySelector('#incognitoTooltip');
@@ -509,7 +507,6 @@ suite('ChooserExceptionList', function() {
         // checks for incognito exception.
         for (const entry of Array.from(siteListEntries)
                  .filter(e => e.model.incognito)) {
-          assertTrue(!!entry.shadowRoot);
           const incognitoTooltip =
               entry.shadowRoot.querySelector('#incognitoTooltip');
           // Make sure it is not hidden if it is an incognito

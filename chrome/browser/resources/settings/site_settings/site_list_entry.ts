@@ -7,121 +7,158 @@
  * 'site-list-entry' shows an Allowed and Blocked site for a given category.
  */
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
-import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowMixinLit} from 'chrome://resources/cr_elements/focus_row_mixin_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-import {ChooserType, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {FocusRowMixin} from './focus_row_mixin.js';
-import {getTemplate} from './site_list_entry.html.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
+import {getCss} from './site_list_entry.css.js';
+import {getHtml} from './site_list_entry.html.js';
 import type {SiteException} from './site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
+
+export interface SiteListEntryElement {
+  $: {
+    siteDescription: HTMLElement,
+  };
+}
 
 const SiteListEntryElementBase =
-    FocusRowMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));
+    FocusRowMixinLit(SiteSettingsMixinLit(I18nMixinLit(CrLitElement)));
 
 export class SiteListEntryElement extends SiteListEntryElementBase {
   static get is() {
     return 'site-list-entry';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Some content types (like Location) do not allow the user to manually
        * edit the exception list from within Settings.
        */
-      readOnlyList: {
-        type: Boolean,
-        value: false,
-      },
+      readOnlyList: {type: Boolean},
 
       /** Site to display in the widget.*/
-      model: {
-        type: Object,
-        observer: 'onModelChanged_',
-      },
+      model: {type: Object},
 
       /** Whether this entry is the only entry in the Allowed/Blocked section.*/
-      singletonEntry: {
-        type: Boolean,
-      },
+      singletonEntry: {type: Boolean},
 
       /**
        * The header for the Allowed/Blocked section this entry is in. Used for
        * aria-label to fix cases where the screenreader hasn't already read it.
        */
-      sectionHeader: {
-        type: String,
-      },
+      sectionHeader: {type: String},
 
       /**
        * If the site represented is part of a chooser exception, the chooser
        * type will be stored here to allow the permission to be manipulated.
        */
-      chooserType: {
-        type: String,
-        value: ChooserType.NONE,
-      },
+      chooserType: {type: String},
 
       /**
        * If the site represented is part of a chooser exception, the chooser
        * object will be stored here to allow the permission to be manipulated.
        */
-      chooserObject: {
-        type: Object,
-        value: null,
-      },
+      chooserObject: {type: Object},
 
-      showPolicyPrefIndicator_: {
-        type: Boolean,
-        computed: 'computeShowPolicyPrefIndicator_(model)',
-      },
-
-      allowNavigateToSiteDetail_: {
-        type: Boolean,
-        value: false,
-      },
+      allowNavigateToSiteDetail_: {type: Boolean},
 
       /**
        * Type of cookies exceptions based on the use of wildcard in the
        * patterns. See `CookiesExceptionType`.
        */
-      cookiesExceptionType: String,
+      cookiesExceptionType: {type: String},
     };
   }
 
-  declare private readOnlyList: boolean;
-  declare model: SiteException;
-  declare private singletonEntry: boolean;
-  declare private sectionHeader: string;
-  declare private chooserType: ChooserType;
-  declare private chooserObject: object;
-  declare private showPolicyPrefIndicator_: boolean;
-  declare private allowNavigateToSiteDetail_: boolean;
-  declare cookiesExceptionType: CookiesExceptionType;
+  accessor readOnlyList: boolean = false;
+  accessor model: SiteException = {
+    category: ContentSettingsTypes.COOKIES,
+    embeddingOrigin: '',
+    incognito: false,
+    isEmbargoed: false,
+    origin: '',
+    displayName: '',
+    setting: ContentSetting.DEFAULT,
+    enforcement: null,
+    controlledBy: chrome.settingsPrivate.ControlledBy.PRIMARY_USER,
+  };
+  accessor singletonEntry: boolean = false;
+  accessor sectionHeader: string = '';
+  accessor chooserType: ChooserType = ChooserType.NONE;
+  accessor chooserObject: object|null = null;
+  protected accessor allowNavigateToSiteDetail_: boolean = false;
+  accessor cookiesExceptionType: CookiesExceptionType|undefined = undefined;
 
-  private onShowTooltip_() {
-    const indicator =
-        this.shadowRoot!.querySelector('cr-policy-pref-indicator');
-    assert(!!indicator);
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('model')) {
+      if (this.model.origin) {
+        this.browserProxy.isOriginValid(this.model.origin).then(valid => {
+          this.allowNavigateToSiteDetail_ = valid;
+        });
+      } else {
+        this.allowNavigateToSiteDetail_ = false;
+      }
+    }
+
+    // TODO(crbug.com/393471368): Remove once <site-list> no longer renders this
+    // element inside a Polymer <iron-list>. The row height depends on whether
+    // a site description is shown, and <iron-list> only re-measures rows when
+    // it receives 'iron-resize'.
+    if (changedProperties.has('model') ||
+        changedProperties.has('cookiesExceptionType')) {
+      this.fire('iron-resize');
+    }
+  }
+
+  /**
+   * <cr-policy-pref-indicator> only reads the |enforcement| and |controlledBy|
+   * fields, which SiteException shares with PrefObject.
+   */
+  protected getPolicyPref_(): chrome.settingsPrivate.PrefObject {
+    return {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+      enforcement: this.model.enforcement ?? undefined,
+      controlledBy: this.model.controlledBy,
+    };
+  }
+
+  protected onShowTooltipMouseenter_() {
+    this.showTooltip_();
+  }
+
+  protected onShowTooltipFocus_() {
+    this.showTooltip_();
+  }
+
+  private showTooltip_() {
+    const indicator = this.shadowRoot.querySelector('cr-policy-pref-indicator');
+    assert(indicator);
     // The tooltip text is used by an cr-tooltip contained inside the
     // cr-policy-pref-indicator. This text is needed here to send up to the
     // common tooltip component.
@@ -129,12 +166,19 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     this.fire('show-tooltip', {target: indicator, text});
   }
 
-  private onShowIncognitoTooltip_() {
-    const tooltip = this.shadowRoot!.querySelector('#incognitoTooltip');
-    // The tooltip text is used by an cr-tooltip contained inside the
-    // cr-policy-pref-indicator. The text is currently held in a private
-    // property. This text is needed here to send up to the common tooltip
-    // component.
+  protected onShowIncognitoTooltipMouseenter_() {
+    this.showIncognitoTooltip_();
+  }
+
+  protected onShowIncognitoTooltipFocus_() {
+    this.showIncognitoTooltip_();
+  }
+
+  private showIncognitoTooltip_() {
+    const tooltip = this.shadowRoot.querySelector('#incognitoTooltip');
+    assert(tooltip);
+    // The incognito <cr-tooltip-icon> does not show its own tooltip. Its text
+    // is sent up to the common tooltip component instead.
     const text = loadTimeData.getString('incognitoSiteExceptionDesc');
     this.fire('show-tooltip', {target: tooltip, text});
   }
@@ -153,21 +197,13 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
         !this.isIsolatedWebApp_();
   }
 
-  private shouldShowResetButton_(): boolean {
-    if (this.model === undefined) {
-      return false;
-    }
-
+  protected shouldShowResetButton_(): boolean {
     return this.model.enforcement !==
         chrome.settingsPrivate.Enforcement.ENFORCED &&
         !this.isUserEditable_();
   }
 
-  private shouldShowActionMenu_(): boolean {
-    if (this.model === undefined) {
-      return false;
-    }
-
+  protected shouldShowActionMenu_(): boolean {
     return this.model.enforcement !==
         chrome.settingsPrivate.Enforcement.ENFORCED &&
         this.isUserEditable_();
@@ -176,7 +212,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
   /**
    * A handler for selecting a site (by clicking on the origin).
    */
-  private onOriginClick_() {
+  protected onOriginClick_() {
     if (!this.allowNavigateToSiteDetail_) {
       return;
     }
@@ -190,7 +226,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    * This can, for example, be the website that is affected itself,
    * or the website whose third parties are also affected.
    */
-  private computeDisplayName_(): string {
+  protected getDisplayName_(): string {
     if (this.model.embeddingOrigin &&
         this.model.category === ContentSettingsTypes.COOKIES &&
         this.model.origin.trim() === SITE_EXCEPTION_WILDCARD) {
@@ -203,15 +239,15 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    * Returns an appropriate aria-label for this entry. The reset (trash can)
    * button has a different aria-label, see the HTML.
    */
-  private computeAriaLabel_(): string {
+  protected getAriaLabel_(): string {
     if (this.singletonEntry) {
       // Screen readers sometimes only read the grid's label (which is in
       // site_list.html) if the grid has more than 1 row. That contains the
       // important context of whether this site is allowed or blocked, so we
       // explicitly add it to the aria-label here to make sure it's read.
-      return `${this.computeDisplayName_()} ${this.sectionHeader}`;
+      return `${this.getDisplayName_()} ${this.sectionHeader}`;
     }
-    return this.computeDisplayName_();
+    return this.getDisplayName_();
   }
 
   /**
@@ -220,9 +256,9 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    * screenreader user understand that this button will remove the site from the
    * list. There are two lists, one for allowed sites and one for blocked sites.
    */
-  private computeRemoveButtonAriaLabel_(): string {
+  protected getRemoveButtonAriaLabel_(): string {
     return this.i18n(
-        'siteSettingsActionResetFromListA11y', this.computeDisplayName_(),
+        'siteSettingsActionResetFromListA11y', this.getDisplayName_(),
         this.sectionHeader);
   }
 
@@ -233,23 +269,25 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    * site from the list. There are two lists, one for allowed sites and one for
    * blocked sites.
    */
-    private computeViewButtonAriaLabel_(): string {
-      return this.i18n(
-          'siteSettingsActionViewFromListA11y', this.computeDisplayName_(),
-          this.sectionHeader);
-   }
+  protected getViewButtonAriaLabel_(): string {
+    return this.i18n(
+        'siteSettingsActionViewFromListA11y', this.getDisplayName_(),
+        this.sectionHeader);
+  }
 
   /**
    * Returns the appropriate origin that a favicon will be fetched for.
    */
-  private computeFaviconOrigin_(): string {
-    if (this.model.origin.trim() !== SITE_EXCEPTION_WILDCARD) {
+  protected getFaviconOrigin_(): string {
+    if (this.model.origin.trim() !== SITE_EXCEPTION_WILDCARD &&
+        this.model.origin.trim() !== '') {
       return this.model.origin.trim();
     }
-    if (this.model.embeddingOrigin.trim() !== SITE_EXCEPTION_WILDCARD) {
+    if (this.model.embeddingOrigin.trim() !== SITE_EXCEPTION_WILDCARD &&
+        this.model.embeddingOrigin.trim() !== '') {
       return this.model.embeddingOrigin.trim();
     }
-    assertNotReached();
+    return '';
   }
 
   /**
@@ -257,9 +295,8 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    * be blank, an 'embedded on <site>' string, or a third-party exception
    * description string.
    */
-  private computeSiteDescription_(): string {
+  protected getSiteDescription_(): string {
     let description = '';
-
     // If a description has been set by the handler, have it override others.
     // TODO(crbug.com/40276807): Move all possible descriptions in to this
     // field C++ side so this function can be greatly simplified.
@@ -286,23 +323,25 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     }
 
     try {
-      const url = new URL(this.model.origin);
-      if (url.protocol === 'chrome-extension:') {
-        description = loadTimeData.getStringF(
-            'siteSettingsExtensionIdDescription', url.hostname);
+      if (this.model.origin) {
+        const url = new URL(this.model.origin);
+        if (url.protocol === 'chrome-extension:') {
+          description = loadTimeData.getStringF(
+              'siteSettingsExtensionIdDescription', url.hostname);
+        }
       }
     } finally {
       return description;
     }
   }
 
-  private computeShowPolicyPrefIndicator_(): boolean {
+  protected shouldShowPolicyPrefIndicator_(): boolean {
     return this.model.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED &&
         !!this.model.controlledBy;
   }
 
-  private onResetButtonClick_() {
+  protected onResetButtonClick_() {
     this.fire('site-list-entry-reset-click');
 
     // Use the appropriate method to reset a chooser exception.
@@ -317,35 +356,21 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
         this.model.incognito);
   }
 
-  private onShowActionMenuClick_() {
+  protected onShowActionMenuClick_() {
     // Chooser exceptions do not support the action menu, so do nothing.
     if (this.chooserType !== ChooserType.NONE) {
       return;
     }
 
     this.fire('show-action-menu', {
-      anchor: this.shadowRoot!.querySelector('#actionMenuButton'),
+      anchor: this.shadowRoot.querySelector('#actionMenuButton'),
       model: this.model,
     });
   }
 
-  private onModelChanged_() {
-    if (!this.model) {
-      this.allowNavigateToSiteDetail_ = false;
-      return;
-    }
-    this.browserProxy.isOriginValid(this.model.origin).then((valid) => {
-      this.allowNavigateToSiteDetail_ = valid;
-    });
-  }
-
-  private getActionMenuButtonLabel_() {
+  protected getActionMenuButtonLabel_(): string {
     return this.i18n(
-        'siteDataPageAddSiteContextMenuLabel', this.computeDisplayName_());
-  }
-
-  setSectionHeaderForTest(sectionHeader: string) {
-    this.sectionHeader = sectionHeader;
+        'siteDataPageAddSiteContextMenuLabel', this.getDisplayName_());
   }
 }
 

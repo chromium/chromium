@@ -131,6 +131,15 @@ let prefsMixedCookiesExceptionTypes2: SiteSettingsPref;
  * this file. They are populated after test setup in order to access the
  * |settings| constants required.
  */
+/**
+ * Flushes the Polymer <iron-list> in <site-list> and then waits for the Lit
+ * <site-list-entry> children to finish their asynchronous render.
+ */
+async function flushList(): Promise<void> {
+  flush();
+  await microtasksFinished();
+}
+
 function populateTestExceptions() {
   prefsGeolocation = createSiteSettingsPrefs([], [
     createContentSettingTypeToValuePair(
@@ -494,7 +503,7 @@ suite('SiteListEmbargoedOrigin', function() {
     const contentType = ContentSettingsTypes.GEOLOCATION;
     setUpCategory(contentType, ContentSetting.BLOCK, prefsEmbargo);
     const result = await browserProxy.whenCalled('getExceptionList');
-    flush();
+    await flushList();
 
     assertEquals(contentType, result);
 
@@ -505,10 +514,12 @@ suite('SiteListEmbargoedOrigin', function() {
         testElement.sites[0]!.origin);
     assertTrue(testElement.sites[0]!.isEmbargoed);
     // Validate that embargoed site has correct subtitle.
+    const siteListEntry =
+        testElement.$.listContainer.querySelector('site-list-entry');
+    assertTrue(!!siteListEntry);
     assertEquals(
         loadTimeData.getString('siteSettingsSourceEmbargo'),
-        testElement.$.listContainer.querySelectorAll('site-list-entry')[0]!
-            .shadowRoot!.querySelector('#siteDescription')!.innerHTML);
+        siteListEntry.$.siteDescription.textContent.trim());
   });
 });
 
@@ -744,7 +755,7 @@ suite('DISABLED_SiteList', function() {
     assertEquals(contentType, actualContentType);
 
     // Required for firstItem to be found below.
-    flush();
+    await flushList();
 
     // Validate that the sites gets populated from pre-canned prefs.
     assertEquals(2, testElement.sites.length);
@@ -757,7 +768,7 @@ suite('DISABLED_SiteList', function() {
 
     // Validate that the sites are shown in UI and can be selected.
     const clickable = testElement.shadowRoot!.querySelector('site-list-entry')!
-                          .shadowRoot!.querySelector<HTMLElement>('.middle');
+                          .shadowRoot.querySelector<HTMLElement>('.middle');
     assertTrue(!!clickable);
     clickable.click();
 
@@ -803,15 +814,15 @@ suite('SiteList', function() {
    * @param index The index of the child element (which site) to
    *     open the action menu for.
    */
-  function openActionMenu(index: number) {
+  async function openActionMenu(index: number) {
     const siteListEntry =
         testElement.$.listContainer.querySelectorAll('site-list-entry')[index];
     assertTrue(!!siteListEntry);
     const actionMenuButton: HTMLElement|null =
-        siteListEntry.shadowRoot!.querySelector('#actionMenuButton');
+        siteListEntry.shadowRoot.querySelector('#actionMenuButton');
     assertTrue(!!actionMenuButton);
     actionMenuButton.click();
-    flush();
+    await flushList();
   }
 
   /** Closes the action menu. */
@@ -856,17 +867,17 @@ suite('SiteList', function() {
         ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW, prefsVarious);
     await browserProxy.whenCalled('getExceptionList');
     // Flush to be sure list container is populated.
-    flush();
+    await flushList();
     const siteListEntry =
         testElement.shadowRoot!.querySelector('site-list-entry');
     assertTrue(!!siteListEntry);
 
     assertTrue(isChildVisible(siteListEntry, '#actionMenuButton'));
     testElement.toggleAttribute('read-only-list', true);
-    flush();
+    await flushList();
     assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
     testElement.removeAttribute('read-only-list');
-    flush();
+    await flushList();
     assertTrue(isChildVisible(siteListEntry, '#actionMenuButton'));
   });
 
@@ -989,8 +1000,8 @@ suite('SiteList', function() {
         prefsGeolocation.exceptions[contentType][1]!.origin,
         testElement.sites[1]!.origin);
     assertEquals(ContentSetting.ALLOW, testElement.categorySubtype);
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     assertMenu(['Block', 'Edit', 'Remove']);
     assertFalse(testElement.$.category.hidden);
   });
@@ -1002,8 +1013,8 @@ suite('SiteList', function() {
     const actionMenu = testElement.shadowRoot!.querySelector('cr-action-menu')!;
 
     await browserProxy.whenCalled('getExceptionList');
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     assertTrue(actionMenu.open);
     browserProxy.resetResolver('getExceptionList');
 
@@ -1056,8 +1067,8 @@ suite('SiteList', function() {
     assertEquals(
         prefsGeolocation.exceptions[contentType][3]!.origin,
         testElement.sites[1]!.origin);
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     assertMenu(['Allow', 'Edit', 'Remove']);
 
     assertFalse(testElement.$.category.hidden);
@@ -1076,8 +1087,8 @@ suite('SiteList', function() {
         prefsSessionOnly.exceptions[contentType][2]!.origin,
         testElement.sites[0]!.origin);
 
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     assertMenu(['Allow', 'Block', 'Edit', 'Remove']);
 
     assertFalse(testElement.$.category.hidden);
@@ -1096,8 +1107,8 @@ suite('SiteList', function() {
         prefsIncognito.exceptions[contentType][0]!.origin,
         testElement.sites[0]!.origin);
 
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     // 'Clear on exit' is visible as this is not an incognito item.
     assertMenu(['Allow', 'Delete on exit', 'Edit', 'Remove']);
 
@@ -1129,14 +1140,14 @@ suite('SiteList', function() {
         prefsIncognito.exceptions[contentType][2]!.origin,
         testElement.sites[1]!.origin);
 
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     // 'Clear on exit' is hidden for incognito items.
     assertMenu(['Block', 'Edit', 'Remove']);
     closeActionMenu();
 
     // Select 'Remove' from menu on 'foo.com'.
-    openActionMenu(1);
+    await openActionMenu(1);
     const remove = testElement.shadowRoot!.querySelector<HTMLElement>('#reset');
     assertTrue(!!remove);
     remove.click();
@@ -1150,7 +1161,7 @@ suite('SiteList', function() {
 
   test('reset button works for read-only content types', async function() {
     testElement.readOnlyList = true;
-    flush();
+    await flushList();
 
     const contentType = ContentSettingsTypes.GEOLOCATION;
     const categorySubtype = ContentSetting.ALLOW;
@@ -1164,13 +1175,13 @@ suite('SiteList', function() {
         prefsOneEnabled.exceptions[contentType][0]!.origin,
         testElement.sites[0]!.origin);
 
-    flush();
+    await flushList();
 
     const item = testElement.shadowRoot!.querySelector('site-list-entry')!;
 
     assertFalse(isChildVisible(item, '#actionMenuButton'));
     const resetButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#resetSite');
+        item.shadowRoot.querySelector<HTMLElement>('#resetSite');
     assertTrue(!!resetButton);
     assertTrue(isVisible(resetButton));
 
@@ -1188,16 +1199,16 @@ suite('SiteList', function() {
         prefsSessionOnly);
 
     await browserProxy.whenCalled('getExceptionList');
-    flush();  // Populates action menu.
+    await flushList();  // Populates action menu.
 
-    openActionMenu(0);
+    await openActionMenu(0);
     assertMenu(['Allow', 'Block', 'Edit', 'Remove']);
     const menu = testElement.shadowRoot!.querySelector('cr-action-menu')!;
     assertTrue(menu.open);
     const edit = testElement.shadowRoot!.querySelector<HTMLElement>('#edit');
     assertTrue(!!edit);
     edit.click();
-    flush();
+    await flushList();
     assertFalse(menu.open);
     assertTrue(!!testElement.shadowRoot!.querySelector(
         'settings-edit-exception-dialog'));
@@ -1208,11 +1219,11 @@ suite('SiteList', function() {
         ContentSettingsTypes.COOKIES, ContentSetting.BLOCK, prefsSessionOnly);
 
     await browserProxy.whenCalled('getExceptionList');
-    flush();  // Populates action menu.
+    await flushList();  // Populates action menu.
 
-    openActionMenu(0);
+    await openActionMenu(0);
     testElement.shadowRoot!.querySelector<HTMLElement>('#edit')!.click();
-    flush();
+    await flushList();
 
     const dialog =
         testElement.shadowRoot!.querySelector('settings-edit-exception-dialog');
@@ -1297,7 +1308,7 @@ suite('SiteList', function() {
         prefsMixedEmbeddingOrigin);
     await browserProxy.whenCalled('getExceptionList');
     // Required for firstItem to be found below.
-    flush();
+    await flushList();
     // Validate that embeddingOrigin sites cannot be edited.
     const entries = testElement.shadowRoot!.querySelectorAll('site-list-entry');
     const firstItem = entries[0]!;
@@ -1316,7 +1327,7 @@ suite('SiteList', function() {
     await browserProxy.whenCalled('getExceptionList');
 
     // Required for firstItem to be found below.
-    flush();
+    await flushList();
 
     // Validate that IWAs cannot be edited.
     const entries = testElement.shadowRoot!.querySelectorAll('site-list-entry');
@@ -1326,8 +1337,8 @@ suite('SiteList', function() {
 
     // Validate that IWA displays app name and not origin.
     assertEquals(
-        firstItem.shadowRoot!.querySelector<HTMLElement>(
-                                 '.url-directionality')!.textContent.trim(),
+        firstItem.shadowRoot.querySelector<HTMLElement>(
+                                '.url-directionality')!.textContent.trim(),
         prefsIsolatedWebApp!.exceptions.notifications[0]!.displayName);
 
     // Validate that non-IWAs can be edited.
@@ -1338,9 +1349,8 @@ suite('SiteList', function() {
     // Validate that non-IWA displays the displayName (in most cases same as
     // the origin).
     assertEquals(
-        secondItem.shadowRoot!
-            .querySelector<HTMLElement>(
-                '.url-directionality')!.textContent.trim(),
+        secondItem.shadowRoot.querySelector<HTMLElement>(
+                                 '.url-directionality')!.textContent.trim(),
         prefsIsolatedWebApp!.exceptions.notifications[1]!.displayName);
   });
 
@@ -1359,8 +1369,8 @@ suite('SiteList', function() {
         ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW,
         prefsGeolocation);
     await browserProxy.whenCalled('getExceptionList');
-    flush();
-    openActionMenu(0);
+    await flushList();
+    await openActionMenu(0);
     const allow = testElement.shadowRoot!.querySelector<HTMLElement>('#allow');
     assertTrue(!!allow);
     allow.click();
@@ -1372,8 +1382,8 @@ suite('SiteList', function() {
         ContentSettingsTypes.JAVASCRIPT, ContentSetting.BLOCK,
         prefsChromeExtension);
     await browserProxy.whenCalled('getExceptionList');
-    flush();
-    openActionMenu(0);
+    await flushList();
+    await openActionMenu(0);
     assertMenu(['Allow', 'Edit', 'Remove']);
 
     const allow = testElement.shadowRoot!.querySelector<HTMLElement>('#allow');
@@ -1395,7 +1405,7 @@ suite('SiteList', function() {
             ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW,
             prefsGeolocation);
         await browserProxy.whenCalled('getExceptionList');
-        flush();
+        await flushList();
         const entry =
             testElement.$.listContainer.querySelector('site-list-entry')!;
         const tooltip = testElement.$.tooltip;
@@ -1427,7 +1437,7 @@ suite('SiteList', function() {
             ContentSettingsTypes.FILE_SYSTEM_WRITE, ContentSetting.ALLOW,
             prefsFileSystemWrite);
         await browserProxy.whenCalled('getExceptionList');
-        flush();
+        await flushList();
         assertTrue(testElement.$.addSite.hidden);
       });
 
@@ -1438,8 +1448,8 @@ suite('SiteList', function() {
     await browserProxy.whenCalled('getExceptionList');
 
     await microtasksFinished();
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     await microtasksFinished();
 
     // Select 'Remove' from menu.
@@ -1461,8 +1471,8 @@ suite('SiteList', function() {
     await browserProxy.whenCalled('getExceptionList');
 
     await microtasksFinished();
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     await microtasksFinished();
 
     // Select 'block' from menu.
@@ -1484,8 +1494,8 @@ suite('SiteList', function() {
     await browserProxy.whenCalled('getExceptionList');
 
     await microtasksFinished();
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     await microtasksFinished();
 
     // Select 'allow' from menu.
@@ -1507,8 +1517,8 @@ suite('SiteList', function() {
     await browserProxy.whenCalled('getExceptionList');
 
     await microtasksFinished();
-    flush();  // Populates action menu.
-    openActionMenu(0);
+    await flushList();  // Populates action menu.
+    await openActionMenu(0);
     await microtasksFinished();
 
     // Select 'Remove' from menu.
@@ -1535,8 +1545,8 @@ suite('SiteList', function() {
         await browserProxy.whenCalled('getExceptionList');
 
         await microtasksFinished();
-        flush();  // Populates action menu.
-        openActionMenu(0);
+        await flushList();  // Populates action menu.
+        await openActionMenu(0);
         await microtasksFinished();
 
         // Select 'block' from menu.
@@ -1564,8 +1574,8 @@ suite('SiteList', function() {
         await browserProxy.whenCalled('getExceptionList');
 
         await microtasksFinished();
-        flush();  // Populates action menu.
-        openActionMenu(0);
+        await flushList();  // Populates action menu.
+        await openActionMenu(0);
         await microtasksFinished();
 
         // Select 'allow' from menu.
@@ -1586,18 +1596,18 @@ suite('SiteList', function() {
 
   test('Reset the last Geolocation entry moves focus', async function() {
     testElement.readOnlyList = true;
-    flush();
+    await flushList();
 
     setUpCategory(
         ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW,
         prefsOneEnabled);
     await browserProxy.whenCalled('getExceptionList');
-    flush();
+    await flushList();
 
     const item = testElement.shadowRoot!.querySelector('site-list-entry')!;
 
     const resetButton =
-        item.shadowRoot!.querySelector<HTMLElement>('#resetSite');
+        item.shadowRoot.querySelector<HTMLElement>('#resetSite');
     assertTrue(!!resetButton);
     resetButton.click();
     await browserProxy.whenCalled('resetCategoryPermissionForPattern');
@@ -1648,7 +1658,7 @@ suite('SiteListSearchTests', function() {
         ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
         prefsMixedCookiesExceptionTypes2);
     await browserProxy.whenCalled('getExceptionList');
-    flush();
+    await flushList();
 
     // The mock data contains 4 allow exceptions.
     assertEquals(
@@ -1663,7 +1673,7 @@ suite('SiteListSearchTests', function() {
         ContentSettingsTypes.COOKIES, ContentSetting.ALLOW,
         prefsMixedCookiesExceptionTypes2);
     await browserProxy.whenCalled('getExceptionList');
-    flush();
+    await flushList();
 
     // The mock data contains 2 foo allow exceptions.
     assertEquals(
@@ -1722,7 +1732,7 @@ suite('EditExceptionDialog', function() {
     input.value = '  ';
     await input.updateComplete;
     input.fire('input');
-    flush();
+    await flushList();
     assertTrue(actionButton.disabled);
     assertTrue(input.invalid);
 
