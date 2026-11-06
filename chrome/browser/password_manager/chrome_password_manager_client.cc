@@ -192,10 +192,12 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/factories/password_counter_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/password_manager/core/browser/password_counter.h"
 #include "components/policy/core/common/features.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -1494,6 +1496,21 @@ void ChromePasswordManagerClient::OpenPasswordDetailsBubble(
   if (manage_passwords_ui_controller) {
     manage_passwords_ui_controller->OnOpenPasswordDetailsBubble(form);
   }
+}
+
+void ChromePasswordManagerClient::StartTrustedVaultKeyRetrieval(
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
+  if (IsOffTheRecord()) {
+    return;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  BrowserWindowInterface* browser =
+      tab ? tab->GetBrowserWindowInterface() : nullptr;
+  if (!browser) {
+    return;
+  }
+  OpenTabForSyncKeyRetrieval(browser, trigger);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

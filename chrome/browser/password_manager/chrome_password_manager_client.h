@@ -348,6 +348,8 @@ class ChromePasswordManagerClient
 #if !BUILDFLAG(IS_ANDROID)
   void OpenPasswordDetailsBubble(
       const password_manager::PasswordForm& form) override;
+  void StartTrustedVaultKeyRetrieval(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<
       password_manager::PasswordCrossDomainConfirmationPopupController>

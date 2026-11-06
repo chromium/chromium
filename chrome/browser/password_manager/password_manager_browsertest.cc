@@ -83,6 +83,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_user_settings.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -105,6 +106,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -4833,6 +4835,66 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerCredentiallessIframeTest,
   EXPECT_EQ("not found",
             content::EvalJs(iframe_normal,
                             "window.parent.check_password(document);"));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       StartTrustedVaultKeyRetrievalDelegatesToSyncUiUtil) {
+  base::HistogramTester histogram_tester;
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(WebContents());
+  ASSERT_NE(nullptr, client);
+
+  client->StartTrustedVaultKeyRetrieval(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerSettings);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultKeyRetrievalTrigger",
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerSettings,
+      1);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  content::WebContents* new_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_EQ(url::Origin::Create(GaiaUrls::GetInstance()->gaia_url()),
+            url::Origin::Create(new_tab->GetVisibleURL()));
+  EXPECT_EQ(GaiaUrls::GetInstance()
+                ->SigninChromeSyncKeysRetrievalUrl(/*account_index=*/0)
+                .path(),
+            new_tab->GetVisibleURL().path());
+
+  // Deactivate the new tab to verify the second call reactivates it.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_NE(new_tab, browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Triggering key retrieval again should reuse and reactivate the existing tab.
+  client->StartTrustedVaultKeyRetrieval(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerSettings);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(new_tab, browser()->tab_strip_model()->GetActiveWebContents());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultKeyRetrievalTrigger",
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerSettings,
+      2);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       StartTrustedVaultKeyRetrievalInIncognitoIsNoOp) {
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
+  base::HistogramTester histogram_tester;
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(
+          incognito->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_NE(nullptr, client);
+
+  client->StartTrustedVaultKeyRetrieval(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerSettings);
+
+  histogram_tester.ExpectTotalCount("Sync.TrustedVaultKeyRetrievalTrigger", 0);
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
 }
 
 }  // namespace

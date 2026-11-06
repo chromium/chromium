@@ -65,6 +65,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
@@ -157,6 +158,11 @@ class TestPasswordManagerClient
               (),
               (override));
 #endif
+
+  MOCK_METHOD(void,
+              StartTrustedVaultKeyRetrieval,
+              (trusted_vault::TrustedVaultUserActionTriggerForUMA),
+              (override));
 
   void SetAccountPasswordStore(
       scoped_refptr<MockPasswordStoreInterface> store) {
@@ -1044,6 +1050,15 @@ TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
       password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
           kErrorResolutionAbandoned,
       1);
+}
+
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       StartTrustedVaultErrorResolutionFlowDelegatesToClient) {
+  EXPECT_CALL(
+      client(),
+      StartTrustedVaultKeyRetrieval(
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::kPasswordSavePrompt));
+  controller()->StartTrustedVaultErrorResolutionFlow();
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {

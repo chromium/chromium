@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/containers/linear_find.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -101,6 +101,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -1631,12 +1632,10 @@ bool ManagePasswordsUIController::IsMouseHovered() const {
 }
 
 void ManagePasswordsUIController::StartTrustedVaultErrorResolutionFlow() {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          web_contents());
-  OpenTabForSyncKeyRetrieval(
-      browser,
-      trusted_vault::TrustedVaultUserActionTriggerForUMA::kPasswordSavePrompt);
+  CHECK_DEREF(passwords_data_.client())
+      .StartTrustedVaultKeyRetrieval(
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::
+              kPasswordSavePrompt);
 }
 
 void ManagePasswordsUIController::SavePasswordAfterTrustedVaultErrorResolution(

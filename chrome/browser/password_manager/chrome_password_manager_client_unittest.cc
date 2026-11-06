@@ -136,6 +136,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using ::autofill::CalculateFormSignature;
@@ -1824,6 +1825,38 @@ TEST_F(ChromePasswordManagerClientTest, GetActionableError) {
   EXPECT_EQ(password_manager::ActionableError::kNoError,
             GetClient()->GetActionableError());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromePasswordManagerClientTest,
+       StartTrustedVaultKeyRetrievalWithoutBrowserDoesNotCrash) {
+  base::HistogramTester histogram_tester;
+  GetClient()->StartTrustedVaultKeyRetrieval(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerSettings);
+  histogram_tester.ExpectTotalCount("Sync.TrustedVaultKeyRetrievalTrigger", 0);
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       StartTrustedVaultKeyRetrievalInIncognitoDoesNotRetrieve) {
+  std::unique_ptr<content::WebContents> incognito_web_contents(
+      content::WebContentsTester::CreateTestWebContents(
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
+  autofill::ChromeAutofillClient::CreateForWebContents(
+      incognito_web_contents.get());
+  ChromePasswordManagerClient::CreateForWebContents(
+      incognito_web_contents.get());
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(
+          incognito_web_contents.get());
+  ASSERT_NE(nullptr, client);
+
+  base::HistogramTester histogram_tester;
+  client->StartTrustedVaultKeyRetrieval(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerSettings);
+  histogram_tester.ExpectTotalCount("Sync.TrustedVaultKeyRetrievalTrigger", 0);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 class ChromePasswordManagerClientAndroidTest
