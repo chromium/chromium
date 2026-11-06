@@ -376,6 +376,16 @@ packager_builder(
                 "sdk_package_name": "system-images/android-37.2/google_apis_ps16k/x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.2/google_apis_ps16k/x86_64.yaml",
             },
+            {
+                "sdk_package_name": "system-images/android-canary-20261104/google_apis_ps16k/arm64-v8a",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-canary-20261104/google_apis_ps16k/arm64-v8a.yaml",
+                "sdk_channel": "CANARY",
+            },
+            {
+                "sdk_package_name": "system-images/android-canary-20261104/google_apis_ps16k/x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-canary-20261104/google_apis_ps16k/x86_64.yaml",
+                "sdk_channel": "CANARY",
+            },
         ],
     },
 )
