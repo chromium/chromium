@@ -62,6 +62,8 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
 
     void StartShortCircuiting();
 
+    void StopShortCircuiting();
+
    private:
     explicit Broker(RTCEncodedAudioStreamTransformer* transformer_);
     void ClearTransformer();
@@ -122,6 +124,10 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   scoped_refptr<Broker> GetBroker();
 
   void StartShortCircuiting();
+
+  // Undoes StartShortCircuiting(). Frames are then passed to the transformer
+  // callback again, or dropped until a callback is set.
+  void StopShortCircuiting();
 
  private:
   const scoped_refptr<Broker> broker_;

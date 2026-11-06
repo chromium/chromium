@@ -178,6 +178,15 @@ class MODULES_EXPORT RTCRtpSender final
   // encoded transform to 'short circuit', skipping calling the transform.
   void MaybeShortCircuitEncodedStreams();
 
+  // Tell the webrtc encoded transform to start or stop skipping calls to the
+  // transform.
+  void StartShortCircuiting();
+  void StopShortCircuiting();
+
+  // Returns true if frames should skip the transform, i.e. if the short circuit
+  // task has run and neither encoded streams nor a transform are set.
+  bool ShouldShortCircuit() const;
+
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpSenderPlatform> sender_;
   String kind_;
@@ -188,6 +197,9 @@ class MODULES_EXPORT RTCRtpSender final
   Member<RTCRtpSendParameters> last_returned_parameters_;
   Member<RTCRtpTransceiver> transceiver_;
   bool transform_shortcircuited_ = false;
+  // Set when MaybeShortCircuitEncodedStreams() runs. From then on, frames skip
+  // the transform whenever neither encoded streams nor a transform are set.
+  bool short_circuit_allowed_ = false;
   Member<RTCInsertableStreams> encoded_streams_;
   Member<RTCRtpScriptTransform> transform_;
 

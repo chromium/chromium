@@ -10,9 +10,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
@@ -49,6 +51,7 @@ class MockWebRtcTransformedFrameCallback
   MOCK_METHOD1(OnTransformedFrame,
                void(std::unique_ptr<webrtc::TransformableFrameInterface>));
   MOCK_METHOD0(StartShortCircuiting, void());
+  MOCK_METHOD0(StopShortCircuiting, void());
 };
 
 class MockTransformerCallbackHolder {
@@ -188,6 +191,28 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
       webrtc_callback_2, kSSRC + 1);
 }
 
+TEST_P(RTCEncodedVideoStreamTransformerTest, StopShortCircuitingPropagated) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+
+  EXPECT_CALL(*webrtc_callback_, StopShortCircuiting);
+  encoded_video_stream_transformer_.StopShortCircuiting();
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       ShortCircuitingNotSetOnLateRegisteredCallbackAfterStop) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  EXPECT_CALL(*webrtc_callback_, StopShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+  encoded_video_stream_transformer_.StopShortCircuiting();
+
+  webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
+      new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
+  EXPECT_CALL(*webrtc_callback_2, StartShortCircuiting).Times(0);
+  encoded_video_stream_transformer_.RegisterTransformedFrameSinkCallback(
+      webrtc_callback_2, kSSRC + 1);
+}
+
 TEST_P(RTCEncodedVideoStreamTransformerTest, WaitsForMetronomeTick) {
   if (!GetParam()) {
     return;
@@ -266,6 +291,37 @@ TEST_P(RTCEncodedVideoStreamTransformerTest,
 
   EXPECT_CALL(*webrtc_callback_, OnTransformedFrame);
   task_environment_.RunUntilIdle();
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       FramesBufferedAfterStoppingShortcircuiting) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  EXPECT_CALL(*webrtc_callback_, StopShortCircuiting);
+  encoded_video_stream_transformer_.StartShortCircuiting();
+  encoded_video_stream_transformer_.StopShortCircuiting();
+
+  // Frames passed to Transform after shortcircuiting stopped must not be
+  // passed straight back, but wait for the transform.
+  const size_t transform_count = 5;
+  for (size_t i = 0; i < transform_count; i++) {
+    PostCrossThreadTask(
+        *webrtc_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&webrtc::FrameTransformerInterface::Transform,
+                            encoded_video_stream_transformer_.Delegate(),
+                            CreateMockFrame()));
+  }
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame).Times(0);
+  base::RunLoop run_loop;
+  webrtc_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                        run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame)
+      .Times(transform_count);
+  encoded_video_stream_transformer_.SetTransformerCallback(
+      CrossThreadBindRepeating(
+          &MockTransformerCallbackHolder::OnEncodedFrame,
+          CrossThreadUnretained(&mock_transformer_callback_holder_)));
 }
 
 TEST_P(RTCEncodedVideoStreamTransformerTest,

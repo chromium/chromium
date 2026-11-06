@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -52,8 +53,9 @@ class RTCRtpTransceiver;
 class RTCStatsReport;
 
 // https://w3c.github.io/webrtc-pc/#rtcrtpreceiver-interface
-class RTCRtpReceiver final : public ScriptWrappable,
-                             public ExecutionContextLifecycleObserver {
+class MODULES_EXPORT RTCRtpReceiver final
+    : public ScriptWrappable,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -138,6 +140,15 @@ class RTCRtpReceiver final : public ScriptWrappable,
   // encoded transform to 'short circuit', skipping calling the transform.
   void MaybeShortCircuitEncodedStreams();
 
+  // Tell the webrtc encoded transform to start or stop skipping calls to the
+  // transform.
+  void StartShortCircuiting();
+  void StopShortCircuiting();
+
+  // Returns true if frames should skip the transform, i.e. if the short circuit
+  // task has run and neither encoded streams nor a transform are set.
+  bool ShouldShortCircuit() const;
+
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpReceiverPlatform> receiver_;
   Member<MediaStreamTrack> track_;
@@ -180,7 +191,10 @@ class RTCRtpReceiver final : public ScriptWrappable,
       video_to_decoder_underlying_sink_ GUARDED_BY(video_underlying_sink_lock_);
   const scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       encoded_video_transformer_;
-  bool transform_shortcircuited_;
+  bool transform_shortcircuited_ = false;
+  // Set when MaybeShortCircuitEncodedStreams() runs. From then on, frames skip
+  // the transform whenever neither encoded streams nor a transform are set.
+  bool short_circuit_allowed_ = false;
 };
 
 }  // namespace blink

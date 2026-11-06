@@ -155,6 +155,13 @@ void RTCEncodedAudioStreamTransformer::Broker::StartShortCircuiting() {
   }
 }
 
+void RTCEncodedAudioStreamTransformer::Broker::StopShortCircuiting() {
+  base::AutoLock locker(transformer_lock_);
+  if (transformer_) {
+    transformer_->StopShortCircuiting();
+  }
+}
+
 RTCEncodedAudioStreamTransformer::RTCEncodedAudioStreamTransformer(
     scoped_refptr<base::SingleThreadTaskRunner> realm_task_runner)
     : broker_(base::AdoptRef(new Broker(this))),
@@ -202,6 +209,14 @@ void RTCEncodedAudioStreamTransformer::StartShortCircuiting() {
   short_circuit_ = true;
   if (send_frame_to_sink_cb_) {
     send_frame_to_sink_cb_->StartShortCircuiting();
+  }
+}
+
+void RTCEncodedAudioStreamTransformer::StopShortCircuiting() {
+  base::AutoLock locker(sink_lock_);
+  short_circuit_ = false;
+  if (send_frame_to_sink_cb_) {
+    send_frame_to_sink_cb_->StopShortCircuiting();
   }
 }
 

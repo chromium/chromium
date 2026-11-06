@@ -293,6 +293,13 @@ void RTCEncodedVideoStreamTransformer::Broker::StartShortCircuiting() {
   }
 }
 
+void RTCEncodedVideoStreamTransformer::Broker::StopShortCircuiting() {
+  base::AutoLock locker(transformer_lock_);
+  if (transformer_) {
+    transformer_->StopShortCircuiting();
+  }
+}
+
 RTCEncodedVideoStreamTransformer::RTCEncodedVideoStreamTransformer(
     scoped_refptr<base::SingleThreadTaskRunner> realm_task_runner,
     std::unique_ptr<Metronome> metronome)
@@ -409,6 +416,14 @@ void RTCEncodedVideoStreamTransformer::StartShortCircuiting() {
                          buffered_frames.size()));
   for (auto& buffered_frame : buffered_frames) {
     SendFrameToSink(std::move(buffered_frame));
+  }
+}
+
+void RTCEncodedVideoStreamTransformer::StopShortCircuiting() {
+  base::AutoLock locker(sink_lock_);
+  short_circuit_ = false;
+  for (const auto& sink_callback : send_frame_to_sink_callbacks_) {
+    sink_callback.second->StopShortCircuiting();
   }
 }
 

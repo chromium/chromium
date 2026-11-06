@@ -516,6 +516,10 @@ void RTCRtpReceiver::setTransform(RTCRtpScriptTransform* transform,
   if (!transform) {
     transform_->Detach();
     transform_ = nullptr;
+    // Pass frames through untransformed instead of dropping them.
+    if (ShouldShortCircuit()) {
+      StartShortCircuiting();
+    }
     return;
   }
   if (transform->HasBeenUsed()) {
@@ -525,6 +529,10 @@ void RTCRtpReceiver::setTransform(RTCRtpScriptTransform* transform,
   }
   if (transform_) {
     transform_->Detach();
+  } else if (ShouldShortCircuit()) {
+    // Frames currently skip the transform. Without this, they would bypass the
+    // new transform too.
+    StopShortCircuiting();
   }
   transform_ = transform;
   transform_->AttachToReceiver(this);
@@ -586,16 +594,39 @@ void RTCRtpReceiver::SetVideoUnderlyingSink(
 
 void RTCRtpReceiver::MaybeShortCircuitEncodedStreams() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!encoded_streams_ && !transform_) {
-    transform_shortcircuited_ = true;
-    LogMessage("Starting short circuiting of transform");
-    if (kind() == MediaKind::kVideo) {
-      encoded_video_transformer_->StartShortCircuiting();
-    } else {
-      CHECK_EQ(kind(), MediaKind::kAudio);
-      encoded_audio_transformer_->StartShortCircuiting();
-    }
+  short_circuit_allowed_ = true;
+  if (ShouldShortCircuit()) {
+    StartShortCircuiting();
   }
+}
+
+void RTCRtpReceiver::StartShortCircuiting() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Encoded streams created after this point would never get any frames.
+  transform_shortcircuited_ = true;
+  LogMessage("Starting short circuiting of transform");
+  if (kind() == MediaKind::kVideo) {
+    encoded_video_transformer_->StartShortCircuiting();
+  } else {
+    CHECK_EQ(kind(), MediaKind::kAudio);
+    encoded_audio_transformer_->StartShortCircuiting();
+  }
+}
+
+void RTCRtpReceiver::StopShortCircuiting() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  LogMessage("Stopping short circuiting of transform");
+  if (kind() == MediaKind::kVideo) {
+    encoded_video_transformer_->StopShortCircuiting();
+  } else {
+    CHECK_EQ(kind(), MediaKind::kAudio);
+    encoded_audio_transformer_->StopShortCircuiting();
+  }
+}
+
+bool RTCRtpReceiver::ShouldShortCircuit() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return short_circuit_allowed_ && !encoded_streams_ && !transform_;
 }
 
 RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(

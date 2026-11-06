@@ -33,6 +33,7 @@ class MockWebRtcTransformedFrameCallback
   MOCK_METHOD1(OnTransformedFrame,
                void(std::unique_ptr<webrtc::TransformableFrameInterface>));
   MOCK_METHOD0(StartShortCircuiting, void());
+  MOCK_METHOD0(StopShortCircuiting, void());
 };
 
 class MockTransformerCallbackHolder {
@@ -119,6 +120,28 @@ TEST_F(RTCEncodedAudioStreamTransformerTest,
   webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
       new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
   EXPECT_CALL(*webrtc_callback_2, StartShortCircuiting);
+  encoded_audio_stream_transformer_.RegisterTransformedFrameCallback(
+      webrtc_callback_2);
+}
+
+TEST_F(RTCEncodedAudioStreamTransformerTest, StopShortCircuitingPropagated) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  encoded_audio_stream_transformer_.StartShortCircuiting();
+
+  EXPECT_CALL(*webrtc_callback_, StopShortCircuiting);
+  encoded_audio_stream_transformer_.StopShortCircuiting();
+}
+
+TEST_F(RTCEncodedAudioStreamTransformerTest,
+       ShortCircuitingNotSetOnLateRegisteredCallbackAfterStop) {
+  EXPECT_CALL(*webrtc_callback_, StartShortCircuiting);
+  EXPECT_CALL(*webrtc_callback_, StopShortCircuiting);
+  encoded_audio_stream_transformer_.StartShortCircuiting();
+  encoded_audio_stream_transformer_.StopShortCircuiting();
+
+  webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
+      new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
+  EXPECT_CALL(*webrtc_callback_2, StartShortCircuiting).Times(0);
   encoded_audio_stream_transformer_.RegisterTransformedFrameCallback(
       webrtc_callback_2);
 }

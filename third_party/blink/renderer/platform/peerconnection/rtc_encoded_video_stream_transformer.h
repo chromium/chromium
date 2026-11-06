@@ -67,6 +67,8 @@ class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
 
     void StartShortCircuiting();
 
+    void StopShortCircuiting();
+
    private:
     explicit Broker(RTCEncodedVideoStreamTransformer* transformer_);
     void ClearTransformer();
@@ -139,6 +141,10 @@ class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
   scoped_refptr<Broker> GetBroker();
 
   void StartShortCircuiting();
+
+  // Undoes StartShortCircuiting(). Frames are then passed to the transformer
+  // callback again, or buffered until a callback is set.
+  void StopShortCircuiting();
 
  private:
   void LogMessage(const std::string& message);

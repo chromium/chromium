@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -28,22 +29,28 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/encoded_audio_frame_injector_interface.h"
 #include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
+#include "third_party/webrtc/api/frame_transformer_interface.h"
+#include "third_party/webrtc/api/make_ref_counted.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
@@ -159,6 +166,16 @@ class RejectingFakeRTCRtpSenderPlatform : public FakeRTCRtpSenderPlatform {
     request->RequestFailed(webrtc::RTCError(
         webrtc::RTCErrorType::UNSUPPORTED_PARAMETER, "Native layer rejected"));
   }
+};
+
+class MockTransformedFrameCallback : public webrtc::TransformedFrameCallback {
+ public:
+  MOCK_METHOD(void,
+              OnTransformedFrame,
+              (std::unique_ptr<webrtc::TransformableFrameInterface>),
+              (override));
+  MOCK_METHOD(void, StartShortCircuiting, (), (override));
+  MOCK_METHOD(void, StopShortCircuiting, (), (override));
 };
 
 class RTCRtpSenderTest : public testing::Test {
@@ -484,6 +501,170 @@ TEST_F(RTCRtpSenderEncodedSourceTest,
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "OperationError");
   EXPECT_EQ(exception->message(), "Failed to create injector");
+}
+
+// Parameterized by the media kind of the sender.
+class RTCRtpSenderTransformTest
+    : public RTCRtpSenderTest,
+      public testing::WithParamInterface<const char*> {
+ public:
+  void TearDown() override {
+    // Release the transformer's reference to `sink_callback_`, so that the mock
+    // is verified when the fixture is destroyed rather than whenever the sender
+    // gets garbage collected.
+    if (!sender_) {
+      return;
+    }
+    if (IsAudio()) {
+      sender_->web_sender()
+          ->GetEncodedAudioStreamTransformer()
+          ->UnregisterTransformedFrameCallback();
+    } else {
+      sender_->web_sender()
+          ->GetEncodedVideoStreamTransformer()
+          ->UnregisterTransformedFrameSinkCallback(kSsrc);
+    }
+  }
+
+ protected:
+  static constexpr uint32_t kSsrc = 1;
+
+  bool IsAudio() const { return String(GetParam()) == "audio"; }
+
+  // Creates a sender of kind GetParam() with `sink_callback_` registered as the
+  // WebRTC sink of its encoded transformer.
+  RTCRtpSender* CreateSenderWithSinkCallback(
+      RTCPeerConnection* pc,
+      bool require_encoded_insertable_streams = false) {
+    auto platform = std::make_unique<FakeRTCRtpSenderPlatform>();
+    if (IsAudio()) {
+      platform->GetEncodedAudioStreamTransformer()
+          ->RegisterTransformedFrameCallback(sink_callback_);
+    } else {
+      platform->GetEncodedVideoStreamTransformer()
+          ->RegisterTransformedFrameSinkCallback(sink_callback_, kSsrc);
+    }
+    sender_ = MakeGarbageCollected<RTCRtpSender>(
+        pc, std::move(platform), GetParam(), /*track=*/nullptr,
+        MediaStreamVector(), require_encoded_insertable_streams,
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+    return sender_.Get();
+  }
+
+  const webrtc::scoped_refptr<testing::StrictMock<MockTransformedFrameCallback>>
+      sink_callback_ = webrtc::make_ref_counted<
+          testing::StrictMock<MockTransformedFrameCallback>>();
+  Persistent<RTCRtpSender> sender_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RTCRtpSenderTransformTest,
+                         testing::Values("audio", "video"));
+
+TEST_P(RTCRtpSenderTransformTest, LateTransformStopsShortCircuiting) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+  RTCRtpSender* sender = CreateSenderWithSinkCallback(pc);
+
+  // No transform is set when the short circuit task runs.
+  EXPECT_CALL(*sink_callback_, StartShortCircuiting);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(sink_callback_.get());
+
+  // Frames must not bypass a transform that is set later.
+  EXPECT_CALL(*sink_callback_, StopShortCircuiting);
+  auto* transform = MakeGarbageCollected<RTCRtpScriptTransform>();
+  sender->setTransform(transform, scope.GetExceptionState());
+  EXPECT_EQ(sender->transform(), transform);
+  testing::Mock::VerifyAndClearExpectations(sink_callback_.get());
+
+  // Replacing the transform keeps frames going through the transform.
+  sender->setTransform(MakeGarbageCollected<RTCRtpScriptTransform>(),
+                       scope.GetExceptionState());
+
+  // Without a transform, frames pass through untransformed.
+  EXPECT_CALL(*sink_callback_, StartShortCircuiting);
+  sender->setTransform(nullptr, scope.GetExceptionState());
+  EXPECT_FALSE(sender->transform());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_P(RTCRtpSenderTransformTest, NullTransformStartsShortCircuiting) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+  RTCRtpSender* sender = CreateSenderWithSinkCallback(pc);
+
+  // The transform is set before the short circuit task runs, so the task
+  // leaves the frames going through the transform.
+  sender->setTransform(MakeGarbageCollected<RTCRtpScriptTransform>(),
+                       scope.GetExceptionState());
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(sink_callback_.get());
+
+  EXPECT_CALL(*sink_callback_, StartShortCircuiting);
+  sender->setTransform(nullptr, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  // Encoded streams would not get any frames now.
+  EXPECT_FALSE(sender->createEncodedStreams(scope.GetScriptState(),
+                                            scope.GetExceptionState()));
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+}
+
+TEST_P(RTCRtpSenderTransformTest, TransformClearedBeforeShortCircuitTask) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+  RTCRtpSender* sender = CreateSenderWithSinkCallback(pc);
+
+  // Encoded streams can still be created until the short circuit task runs, so
+  // clearing the transform leaves short circuiting to that task.
+  sender->setTransform(MakeGarbageCollected<RTCRtpScriptTransform>(),
+                       scope.GetExceptionState());
+  sender->setTransform(nullptr, scope.GetExceptionState());
+  testing::Mock::VerifyAndClearExpectations(sink_callback_.get());
+
+  EXPECT_CALL(*sink_callback_, StartShortCircuiting);
+  test::RunPendingTasks();
+}
+
+TEST_P(RTCRtpSenderTransformTest,
+       NoShortCircuitingWhenEncodedInsertableStreamsAreRequired) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+  RTCRtpSender* sender = CreateSenderWithSinkCallback(
+      pc, /*require_encoded_insertable_streams=*/true);
+
+  // `sink_callback_` is a StrictMock, so any short circuiting request fails the
+  // test.
+  test::RunPendingTasks();
+  sender->setTransform(MakeGarbageCollected<RTCRtpScriptTransform>(),
+                       scope.GetExceptionState());
+  sender->setTransform(nullptr, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_P(RTCRtpSenderTransformTest,
+       CreateEncodedStreamsStaysTooLateAfterLateTransform) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+  RTCRtpSender* sender = CreateSenderWithSinkCallback(pc);
+
+  EXPECT_CALL(*sink_callback_, StartShortCircuiting);
+  test::RunPendingTasks();
+  EXPECT_CALL(*sink_callback_, StopShortCircuiting);
+  sender->setTransform(MakeGarbageCollected<RTCRtpScriptTransform>(),
+                       scope.GetExceptionState());
+
+  EXPECT_FALSE(sender->createEncodedStreams(scope.GetScriptState(),
+                                            scope.GetExceptionState()));
+  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
 }
 
 }  // namespace blink

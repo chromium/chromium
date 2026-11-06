@@ -606,6 +606,7 @@ source_set("unit_tests") {
     "peerconnection/rtc_peer_connection_handler_test.cc",
     "peerconnection/rtc_peer_connection_test.cc",
     "peerconnection/rtc_rtp_receiver_impl_test.cc",
+    "peerconnection/rtc_rtp_receiver_test.cc",
     "peerconnection/rtc_rtp_script_transformer_test.cc",
     "peerconnection/rtc_rtp_sender_impl_test.cc",
     "peerconnection/rtc_rtp_sender_test.cc",
