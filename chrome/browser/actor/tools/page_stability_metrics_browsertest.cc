@@ -123,7 +123,13 @@ class PageStabilityMetricsTest : public PageStabilityMetricsTestBase {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{::features::kGlicActor, {}},
          {kActorPageStability,
-          {// Do not use min wait.
+          {// Blink's IdlenessDetector uses a 2s watchdog timer and can take up
+           // to 4s to report idle after the network request finishes. Use a 7s
+           // timeout so preceding paint interactions plus the idle check do not
+           // race the default 4s timeout under load, while still keeping the
+           // timeout under `TestTimeouts::action_timeout()`.
+           {kActorPageStabilityTimeout.name, "7s"},
+           // Do not use min wait.
            {kActorPageStabilityMinWait.name, "0ms"},
            {kActorPaintStabilitySubsequentPaintTimeout.name, "100ms"}}}},
         {});
