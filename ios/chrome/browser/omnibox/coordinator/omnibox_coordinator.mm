@@ -276,6 +276,7 @@
   self.viewController = nil;
   [self.mediator disconnect];
   self.mediator.templateURLService = nullptr;  // Unregister the observer.
+  self.mediator.placeholderService = nullptr;
   if (self.keyboardAccessoryView) {
     // Unregister the observer.
     self.keyboardAccessoryView.templateURLService = nil;
