@@ -6,8 +6,10 @@
 #define NET_QUIC_QUIC_SESSION_POOL_PROXY_JOB_H_
 
 #include <memory>
+#include <vector>
 
 #include "net/base/http_user_agent_settings.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_session_attempt.h"
@@ -43,6 +45,9 @@ class QuicSessionPool::ProxyJob : public QuicSessionPool::Job {
   int Run(CompletionOnceCallback callback) override;
   void SetRequestExpectations(QuicSessionRequest* request) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
+
+  // QuicSessionAttempt::Delegate implementation.
+  std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;
 
  private:
   int DoLoop(int rv);

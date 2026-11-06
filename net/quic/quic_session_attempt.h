@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -42,7 +43,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
     handles::NetworkHandle network = handles::kInvalidNetworkHandle;
   };
 
-  class Delegate {
+  class NET_EXPORT_PRIVATE Delegate {
    public:
     virtual ~Delegate() = default;
 
@@ -55,6 +56,12 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
 
     // Returns the NetLogWithSource that the attempt should use.
     virtual const NetLogWithSource& GetNetLog() = 0;
+
+    // Returns all usable resolved IP endpoints for the attempt's destination,
+    // if available. Used for post-handshake IP pooling when a concurrent
+    // connection to another resolved IP address finishes while this attempt is
+    // in flight.
+    virtual std::vector<IPEndPoint> GetResolvedIpEndpoints() const = 0;
 
     // Called when the attempt is failed on the default network.
     virtual void OnConnectionFailedOnDefaultNetwork() {}

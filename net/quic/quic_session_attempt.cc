@@ -4,6 +4,9 @@
 
 #include "net/quic/quic_session_attempt.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -424,15 +427,27 @@ int QuicSessionAttempt::DoConfirmConnection(int rv) {
     return OK;
   }
 
-  // There may well now be an active session for this IP. The check above only
-  // covers exact session key matches (e.g. same-origin races). We still need
-  // to check for cross-origin IP pooling. If there is an active session for
-  // this IP with a matching certificate, use the existing session instead of
-  // establishing a new one.
+  // There may well now be an active session for this IP or another resolved IP
+  // for this destination. The check above only covers exact session key matches
+  // (e.g. same-origin races). We still need to check for cross-origin IP
+  // pooling. If there is an active session for any of the resolved IPs with a
+  // matching certificate, use the existing session instead of establishing a
+  // new one.
+  std::vector<IPEndPoint> ip_endpoints;
+  base::flat_set<std::string> dns_aliases;
+  if (base::FeatureList::IsEnabled(
+          features::kPostHandshakeIpPoolingAllEndpoints)) {
+    ip_endpoints = delegate_->GetResolvedIpEndpoints();
+    dns_aliases = dns_aliases_;
+  }
+  IPEndPoint peer_address =
+      ToIPEndPoint(session_->connection()->peer_address());
+  if (!std::ranges::contains(ip_endpoints, peer_address)) {
+    ip_endpoints.push_back(peer_address);
+  }
   if (QuicChromiumClientSession* matching_session =
-          pool()->HasMatchingIpSession(
-              key(), {ToIPEndPoint(session_->connection()->peer_address())},
-              /*aliases=*/{}, use_dns_aliases_)) {
+          pool()->HasMatchingIpSession(key(), ip_endpoints, dns_aliases,
+                                       use_dns_aliases_)) {
     QuicSessionPool::LogConnectionIpPooling(true);
     session_->connection()->CloseConnection(
         quic::QUIC_CONNECTION_IP_POOLED,

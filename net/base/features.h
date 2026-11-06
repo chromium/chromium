@@ -1124,6 +1124,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kCookieProcessBoundEncryptHttpOnly);
 // Enables the Rust implementation of the HTTP chunked decoder, called via FFI.
 NET_EXPORT BASE_DECLARE_FEATURE(kHttpChunkedDecoderInRust);
 
+// Enables checking all resolved IP endpoints (and preserving DNS aliases) for
+// post-handshake cross-origin IP pooling in QUIC and HTTP/2 when concurrent
+// connection attempts complete.
+NET_EXPORT BASE_DECLARE_FEATURE(kPostHandshakeIpPoolingAllEndpoints);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

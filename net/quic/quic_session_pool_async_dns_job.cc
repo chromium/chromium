@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
@@ -366,6 +367,11 @@ void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfHostResolution(int rv) {
 
 const std::vector<QuicSessionPool::AsyncDnsJob::UsableEndpoint>&
 QuicSessionPool::AsyncDnsJob::GetUsableEndpoints() const {
+  if (!service_endpoint_request_ ||
+      !service_endpoint_request_->EndpointsCryptoReady()) {
+    static const base::NoDestructor<std::vector<UsableEndpoint>> kEmpty;
+    return *kEmpty;
+  }
   if (usable_endpoints_.has_value()) {
     return *usable_endpoints_;
   }
@@ -1048,6 +1054,24 @@ bool QuicSessionPool::AsyncDnsJob::IsEndpointInFreshList(
     }
   }
   return false;
+}
+
+std::vector<IPEndPoint> QuicSessionPool::AsyncDnsJob::GetResolvedIpEndpoints()
+    const {
+  std::vector<IPEndPoint> endpoints;
+  for (const UsableEndpoint& usable : GetUsableEndpoints()) {
+    for (const IPEndPoint& endpoint : usable.endpoint.ipv6_endpoints) {
+      if (!std::ranges::contains(endpoints, endpoint)) {
+        endpoints.push_back(endpoint);
+      }
+    }
+    for (const IPEndPoint& endpoint : usable.endpoint.ipv4_endpoints) {
+      if (!std::ranges::contains(endpoints, endpoint)) {
+        endpoints.push_back(endpoint);
+      }
+    }
+  }
+  return endpoints;
 }
 
 std::optional<int>

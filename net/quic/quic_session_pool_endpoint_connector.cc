@@ -5,6 +5,7 @@
 #include "net/quic/quic_session_pool_endpoint_connector.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -130,6 +131,11 @@ const QuicSessionAliasKey& QuicSessionPool::EndpointConnector::GetKey() {
 
 const NetLogWithSource& QuicSessionPool::EndpointConnector::GetNetLog() {
   return job_->net_log();
+}
+
+std::vector<IPEndPoint>
+QuicSessionPool::EndpointConnector::GetResolvedIpEndpoints() const {
+  return job_->GetResolvedIpEndpoints();
 }
 
 void QuicSessionPool::EndpointConnector::OnConnectionFailedOnDefaultNetwork() {

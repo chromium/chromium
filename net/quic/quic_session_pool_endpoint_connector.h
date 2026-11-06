@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -103,6 +104,7 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   QuicSessionPool* GetQuicSessionPool() override;
   const QuicSessionAliasKey& GetKey() override;
   const NetLogWithSource& GetNetLog() override;
+  std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;
   void OnConnectionFailedOnDefaultNetwork() override;
   void OnQuicSessionCreationComplete(int rv) override;
 

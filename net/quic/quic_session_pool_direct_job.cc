@@ -4,6 +4,8 @@
 
 #include "net/quic/quic_session_pool_direct_job.h"
 
+#include <algorithm>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
@@ -107,6 +109,29 @@ void QuicSessionPool::DirectJob::PopulateNetErrorDetails(
   if (session_attempt_) {
     session_attempt_->PopulateNetErrorDetails(details);
   }
+}
+
+std::vector<IPEndPoint> QuicSessionPool::DirectJob::GetResolvedIpEndpoints()
+    const {
+  if (!resolve_host_request_ || !host_resolution_finished_) {
+    return {};
+  }
+  std::vector<IPEndPoint> endpoints;
+  const bool svcb_optional =
+      IsSvcbOptional(resolve_host_request_->GetEndpointResults());
+  for (const auto& endpoint : resolve_host_request_->GetEndpointResults()) {
+    quic::ParsedQuicVersion endpoint_quic_version = pool_->SelectQuicVersion(
+        quic_version_, endpoint.metadata, svcb_optional);
+    if (!endpoint_quic_version.IsKnown()) {
+      continue;
+    }
+    for (const IPEndPoint& ip_endpoint : endpoint.ip_endpoints) {
+      if (!std::ranges::contains(endpoints, ip_endpoint)) {
+        endpoints.push_back(ip_endpoint);
+      }
+    }
+  }
+  return endpoints;
 }
 
 int QuicSessionPool::DirectJob::DoLoop(int rv) {

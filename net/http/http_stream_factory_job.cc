@@ -967,9 +967,13 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
 
   establishing_tunnel_ = false;
 
-  // No need to continue waiting for a session, once a connection is
-  // established.
-  spdy_session_request_.reset();
+  if (!base::FeatureList::IsEnabled(
+          features::kPostHandshakeIpPoolingAllEndpoints)) {
+    // When post-handshake IP pooling is enabled, `spdy_session_request_` is
+    // kept alive until after `FindAvailableSession()` in `DoCreateStream()`, or
+    // reset in `RunLoop()` on all other exit paths.
+    spdy_session_request_.reset();
+  }
 
   // Determine the protocol (HTTP/1.1, HTTP/2, or HTTP/3) first so that
   // negotiated_protocol_ is populated before observers are notified.
@@ -1265,6 +1269,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
             spdy_session_key_, enable_ip_based_pooling_for_h2_,
             /* is_websocket = */ false, net_log_);
   }
+  spdy_session_request_.reset();
   if (existing_spdy_session_) {
     // If we have a session, and we have a connection management config, add
     // it to the session pool.

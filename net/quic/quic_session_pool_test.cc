@@ -53,6 +53,7 @@
 #include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/require_ct_delegate.h"
 #include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
@@ -239,6 +240,9 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
     return quic_session_alias_key_;
   }
   const NetLogWithSource& GetNetLog() override { return net_log_; }
+  std::vector<IPEndPoint> GetResolvedIpEndpoints() const override {
+    return {quic_endpoint.ip_endpoint};
+  }
 
   int Start() {
     return attempt_->Start(base::BindOnce(&SessionAttemptHelper::OnComplete,
@@ -21001,6 +21005,225 @@ TEST_P(QuicSessionPoolTest,
 
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, PostHandshakeIpPoolingAcrossAllResolvedEndpoints) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPostHandshakeIpPoolingAllEndpoints);
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+  Initialize();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  const GURL kUrl1(kDefaultUrl);
+  const GURL kUrl2(kServer2Url);
+  const url::SchemeHostPort kOrigin1(kUrl1);
+  const url::SchemeHostPort kOrigin2(kUrl2);
+
+  // Simulate two domains returning the same Anycast IPs in different orders:
+  // kOrigin1 connects to 192.168.0.1, while kOrigin2 connects to 192.168.0.2
+  // (and also has 192.168.0.1 in its resolved list).
+  host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(
+      kOrigin1.host(), "192.168.0.1,192.168.0.2",
+      std::vector<std::string>{"alias1.example.org"});
+  host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(
+      kOrigin2.host(), "192.168.0.2,192.168.0.1",
+      std::vector<std::string>{"alias2.example.org"});
+
+  scoped_refptr<X509Certificate> cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+  ASSERT_TRUE(cert->VerifyNameMatch(kOrigin1.host()));
+  ASSERT_TRUE(cert->VerifyNameMatch(kOrigin2.host()));
+
+  ProofVerifyDetailsChromium verify_details1;
+  verify_details1.cert_verify_result.verified_cert = cert;
+  verify_details1.cert_verify_result.is_issued_by_known_root = true;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+
+  ProofVerifyDetailsChromium verify_details2;
+  verify_details2.cert_verify_result.verified_cert = cert;
+  verify_details2.cert_verify_result.is_issued_by_known_root = true;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  client_maker_.Reset();
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  socket_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddConnectionCloseFrame(quic::QUIC_CONNECTION_IP_POOLED,
+                                   "An active session exists for the given IP.")
+          .Build());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder1(this);
+  builder1.destination = kOrigin1;
+  builder1.url = kUrl1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+
+  TestCompletionCallback callback2;
+  RequestBuilder builder2(this);
+  builder2.destination = kOrigin2;
+  builder2.url = kUrl2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+
+  // Wait for both DNS resolutions to finish and both QUIC handshakes to start.
+  crypto_client_stream_factory_.WaitForStreams(2);
+  ASSERT_EQ(2u, crypto_client_stream_factory_.streams().size());
+
+  // Complete the first handshake (connected to 192.168.0.1).
+  crypto_client_stream_factory_.streams()[0]->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  // Complete the second handshake (connected to 192.168.0.2). Even though its
+  // peer address is 192.168.0.2, it should pool onto the first session via its
+  // other resolved Anycast IP (192.168.0.1) and preserve its DNS aliases.
+  crypto_client_stream_factory_.streams()[1]->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+  std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
+  ASSERT_TRUE(stream1);
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
+  ASSERT_TRUE(stream2);
+
+  QuicChromiumClientSession::Handle* session1 =
+      QuicHttpStreamPeer::GetSessionHandle(stream1.get());
+  QuicChromiumClientSession::Handle* session2 =
+      QuicHttpStreamPeer::GetSessionHandle(stream2.get());
+  EXPECT_TRUE(session1->SharesSameSession(*session2));
+
+  EXPECT_THAT(stream1->GetDnsAliases(),
+              testing::ElementsAre("alias1.example.org"));
+  EXPECT_THAT(stream2->GetDnsAliases(),
+              testing::ElementsAre("alias2.example.org"));
+
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       PostHandshakeIpPoolingDeduplicatesSvcbAndFallbackEndpoints) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPostHandshakeIpPoolingAllEndpoints);
+
+  class AlwaysRequireCTDelegate : public RequireCTDelegate {
+   public:
+    CTRequirementLevel IsCTRequiredForHost(
+        std::string_view hostname,
+        const X509Certificate* chain,
+        const std::vector<SHA256HashValue>& hashes) const override {
+      return CTRequirementLevel::REQUIRED;
+    }
+
+   private:
+    ~AlwaysRequireCTDelegate() override = default;
+  };
+
+  auto require_ct_delegate = base::MakeRefCounted<AlwaysRequireCTDelegate>();
+  transport_security_state_.SetRequireCTDelegate(require_ct_delegate);
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+  Initialize();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  const GURL kUrl1(kDefaultUrl);
+  const GURL kUrl2(kServer2Url);
+  const url::SchemeHostPort kOrigin1(kUrl1);
+  const url::SchemeHostPort kOrigin2(kUrl2);
+  const IPEndPoint kIp1(*IPAddress::FromIPLiteral("192.168.0.1"), 443);
+  const IPEndPoint kIp2(*IPAddress::FromIPLiteral("192.168.0.2"), 443);
+
+  host_resolver_->rules()->AddIPLiteralRule(kOrigin1.host(), "192.168.0.1", "");
+
+  // Configure `kOrigin2` with both an HTTPS/SVCB endpoint advertising QUIC ALPN
+  // and a trailing empty-metadata fallback endpoint carrying overlapping IPs.
+  std::vector<HostResolverEndpointResult> endpoints(2);
+  endpoints[0].ip_endpoints = {kIp2, kIp1};
+  endpoints[0].metadata.supported_protocol_alpns = {
+      quic::AlpnForVersion(version_)};
+  endpoints[1].ip_endpoints = {kIp2, kIp1};
+  host_resolver_->rules()->AddRule(
+      kOrigin2.host(),
+      MockHostResolverBase::RuleResolver::RuleResult(std::move(endpoints)));
+
+  scoped_refptr<X509Certificate> cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+  ASSERT_TRUE(cert->VerifyNameMatch(kOrigin1.host()));
+  ASSERT_TRUE(cert->VerifyNameMatch(kOrigin2.host()));
+
+  ProofVerifyDetailsChromium verify_details1;
+  verify_details1.cert_verify_result.verified_cert = cert;
+  verify_details1.cert_verify_result.is_issued_by_known_root = true;
+  verify_details1.cert_verify_result.policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+
+  ProofVerifyDetailsChromium verify_details2;
+  verify_details2.cert_verify_result.verified_cert = cert;
+  verify_details2.cert_verify_result.is_issued_by_known_root = true;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  client_maker_.Reset();
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder1(this);
+  builder1.destination = kOrigin1;
+  builder1.url = kUrl1;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+
+  TestCompletionCallback callback2;
+  RequestBuilder builder2(this);
+  builder2.destination = kOrigin2;
+  builder2.url = kUrl2;
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+
+  crypto_client_stream_factory_.WaitForStreams(2);
+  ASSERT_EQ(2u, crypto_client_stream_factory_.streams().size());
+
+  crypto_client_stream_factory_.streams()[0]->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  // Measure `CanPool` invocations during `kOrigin2`'s post-handshake
+  // `HasMatchingIpSession()` call. With `kIp1` deduplicated, `CanPool` runs
+  // once in the `ip_endpoints` loop and once in the `active_sessions_` loop (2
+  // total, rather than 3 if `kIp1` were duplicated across SVCB + fallback).
+  base::HistogramTester histogram_tester;
+  crypto_client_stream_factory_.streams()[1]->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.CanPool.CTRequirementStatus",
+      ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET, 2);
+
+  transport_security_state_.SetRequireCTDelegate(nullptr);
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 }  // namespace net::test

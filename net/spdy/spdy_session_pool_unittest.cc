@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -22,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "net/base/features.h"
 #include "net/base/network_handle.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/session_usage.h"
@@ -2492,5 +2494,240 @@ TEST_F(SpdySessionPoolTest, IPPoolingDoesNotPoolDifferentTargetNetworks) {
   EXPECT_FALSE(TryCreateAliasedSpdySession(
       spdy_session_pool_, key_hostname_1_with_network_2, test_hosts[1].iplist));
 }
+
+TEST_F(SpdySessionPoolTest, OnHostResolutionCompleteDeduplicatesEndpoints) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostHandshakeIpPoolingAllEndpoints);
+  CreateNetworkSession();
+
+  constexpr int kTestPort = 443;
+  const IPEndPoint kIpv6(*IPAddress::FromIPLiteral("2001:db8::1"), kTestPort);
+  const IPEndPoint kIpv4_1(*IPAddress::FromIPLiteral("192.168.0.1"), kTestPort);
+  const IPEndPoint kIpv4_2(*IPAddress::FromIPLiteral("192.168.0.2"), kTestPort);
+
+  SpdySessionKey key1(HostPortPair("svcb1.example.org", kTestPort),
+                      PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                      SessionUsage::kDestination, SocketTag(),
+                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false,
+                      handles::kInvalidNetworkHandle);
+  SpdySessionKey key2(HostPortPair("svcb2.example.org", kTestPort),
+                      PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                      SessionUsage::kDestination, SocketTag(),
+                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false,
+                      handles::kInvalidNetworkHandle);
+
+  TestOnRequestDeletedCallback deleted_cb1;
+  TestRequestDelegate delegate1;
+  std::unique_ptr<SpdySessionPool::SpdySessionRequest> request1;
+  bool is_first1 = false;
+  EXPECT_FALSE(spdy_session_pool_->RequestSession(
+      key1, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false,
+      NetLogWithSource(), deleted_cb1.Callback(), &delegate1, &request1,
+      &is_first1));
+
+  // Simulate an HTTPS/SVCB "h2" endpoint followed by a fallback A/AAAA endpoint
+  // carrying overlapping IPs.
+  HostResolverEndpointResult h2_endpoint;
+  h2_endpoint.metadata.supported_protocol_alpns = {"h2"};
+  h2_endpoint.ip_endpoints = {kIpv6, kIpv4_1};
+  HostResolverEndpointResult fallback_endpoint;
+  fallback_endpoint.ip_endpoints = {kIpv6, kIpv4_1, kIpv4_2};
+
+  EXPECT_EQ(OnHostResolutionCallbackResult::kContinue,
+            spdy_session_pool_->OnHostResolutionComplete(
+                key1, /*is_websocket=*/false, {h2_endpoint, fallback_endpoint},
+                /*aliases=*/{}));
+
+  SpdySessionPoolPeer pool_peer(spdy_session_pool_);
+  EXPECT_THAT(pool_peer.GetRequestIpEndpoints(key1),
+              testing::ElementsAre(kIpv6, kIpv4_1, kIpv4_2));
+
+  // Verify the ServiceEndpoint overload deduplicates identically.
+  TestOnRequestDeletedCallback deleted_cb2;
+  TestRequestDelegate delegate2;
+  std::unique_ptr<SpdySessionPool::SpdySessionRequest> request2;
+  bool is_first2 = false;
+  EXPECT_FALSE(spdy_session_pool_->RequestSession(
+      key2, /*enable_ip_based_pooling_for_h2=*/true, /*is_websocket=*/false,
+      NetLogWithSource(), deleted_cb2.Callback(), &delegate2, &request2,
+      &is_first2));
+
+  ServiceEndpoint svcb_service_endpoint;
+  svcb_service_endpoint.metadata.supported_protocol_alpns = {"h2"};
+  svcb_service_endpoint.ipv6_endpoints = {kIpv6};
+  svcb_service_endpoint.ipv4_endpoints = {kIpv4_1};
+  ServiceEndpoint fallback_service_endpoint;
+  fallback_service_endpoint.ipv6_endpoints = {kIpv6};
+  fallback_service_endpoint.ipv4_endpoints = {kIpv4_1, kIpv4_2};
+
+  EXPECT_EQ(OnHostResolutionCallbackResult::kContinue,
+            spdy_session_pool_->OnHostResolutionComplete(
+                key2, /*is_websocket=*/false,
+                {svcb_service_endpoint, fallback_service_endpoint},
+                /*aliases=*/{}));
+  EXPECT_THAT(pool_peer.GetRequestIpEndpoints(key2),
+              testing::ElementsAre(kIpv6, kIpv4_1, kIpv4_2));
+}
+
+TEST_F(
+    SpdySessionPoolTest,
+    UpdatePendingRequestsDoesNotDrainDeferredCallbacksWhileBlockingRequestInFlight) {
+  constexpr int kTestPort = 443;
+  session_deps_.host_resolver->set_synchronous_mode(true);
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "www.example.org", "192.168.0.1", /*canonical_name=*/std::string());
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "mail.example.org", "192.168.0.1", /*canonical_name=*/std::string());
+
+  SpdySessionKey key_a(HostPortPair("www.example.org", kTestPort),
+                       PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                       SessionUsage::kDestination, SocketTag(),
+                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                       /*disable_cert_verification_network_fetches=*/false,
+                       handles::kInvalidNetworkHandle);
+  SpdySessionKey key_b(HostPortPair("mail.example.org", kTestPort),
+                       PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                       SessionUsage::kDestination, SocketTag(),
+                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                       /*disable_cert_verification_network_fetches=*/false,
+                       handles::kInvalidNetworkHandle);
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+
+  // Open an available session for `key_a` on 192.168.0.1.
+  base::WeakPtr<SpdySession> session_a =
+      CreateSpdySession(http_session_.get(), key_a, NetLogWithSource());
+  ASSERT_TRUE(session_a);
+
+  // Register a blocking request for `key_b` with IP-based pooling disabled
+  // (`enable_ip_based_pooling_for_h2 = false`), followed by a second request
+  // whose `deferred_callbacks` entry waits on `request1`.
+  TestOnRequestDeletedCallback deleted_cb1;
+  TestRequestDelegate delegate1;
+  std::unique_ptr<SpdySessionPool::SpdySessionRequest> request1;
+  bool is_first = false;
+  EXPECT_FALSE(spdy_session_pool_->RequestSession(
+      key_b, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false,
+      NetLogWithSource(), deleted_cb1.Callback(), &delegate1, &request1,
+      &is_first));
+  EXPECT_TRUE(is_first);
+
+  TestOnRequestDeletedCallback deleted_cb2;
+  TestRequestDelegate delegate2;
+  std::unique_ptr<SpdySessionPool::SpdySessionRequest> request2;
+  EXPECT_FALSE(spdy_session_pool_->RequestSession(
+      key_b, /*enable_ip_based_pooling_for_h2=*/false, /*is_websocket=*/false,
+      NetLogWithSource(), deleted_cb2.Callback(), &delegate2, &request2,
+      &is_first));
+  EXPECT_FALSE(is_first);
+
+  // Now simulate another IP-pooling-enabled resolution for `key_b` mapping
+  // `key_b` to `session_a` as an IP-pooled alias and posting
+  // `UpdatePendingRequests(key_b)`. Because `request1` and `request2` have
+  // `enable_ip_based_pooling_for_h2 == false`, neither matches `session_a`, so
+  // `request1` remains the active blocking request in flight.
+  HostResolverEndpointResult endpoint_result;
+  endpoint_result.ip_endpoints.emplace_back(
+      *IPAddress::FromIPLiteral("192.168.0.1"), kTestPort);
+  EXPECT_EQ(OnHostResolutionCallbackResult::kMayBeDeletedAsync,
+            spdy_session_pool_->OnHostResolutionComplete(
+                key_b, /*is_websocket=*/false, {endpoint_result},
+                /*aliases=*/{}));
+
+  // Pump the posted `UpdatePendingRequests(key_b)` task. `deleted_cb2` must NOT
+  // be invoked while `request1` (`has_blocking_request == true`) is still
+  // alive.
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_FALSE(deleted_cb2.invoked());
+
+  // Destroying the blocking `request1` should now fire `deleted_cb2`.
+  request1.reset();
+  deleted_cb2.WaitUntilInvoked();
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SpdySessionPoolTest,
+       FindAvailableSessionPostHandshakeSocketTagMismatchDoesNotRetag) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostHandshakeIpPoolingAllEndpoints);
+
+  constexpr int kTestPort = 443;
+  SocketTag tag1(SocketTag::UNSET_UID, 1);
+  SocketTag tag2(SocketTag::UNSET_UID, 2);
+  session_deps_.host_resolver->set_synchronous_mode(true);
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "www.example.org", "192.168.0.1", /*canonical_name=*/std::string());
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "mail.example.org", "192.168.0.1", /*canonical_name=*/std::string());
+
+  SpdySessionKey key_a_tag1(HostPortPair("www.example.org", kTestPort),
+                            PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                            SessionUsage::kDestination, tag1,
+                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                            /*disable_cert_verification_network_fetches=*/false,
+                            handles::kInvalidNetworkHandle);
+  SpdySessionKey key_b_tag2(HostPortPair("mail.example.org", kTestPort),
+                            PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                            SessionUsage::kDestination, tag2,
+                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                            /*disable_cert_verification_network_fetches=*/false,
+                            handles::kInvalidNetworkHandle);
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+
+  // Register an in-flight request for `key_b_tag2` and populate its cached
+  // `ip_endpoints` before `session1` exists.
+  TestOnRequestDeletedCallback request_deleted_callback;
+  TestRequestDelegate request_delegate;
+  std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request;
+  bool is_first_request_for_session = false;
+  EXPECT_FALSE(spdy_session_pool_->RequestSession(
+      key_b_tag2, /*enable_ip_based_pooling_for_h2=*/true,
+      /*is_websocket=*/false, NetLogWithSource(),
+      request_deleted_callback.Callback(), &request_delegate,
+      &spdy_session_request, &is_first_request_for_session));
+  HostResolverEndpointResult endpoint_result;
+  endpoint_result.ip_endpoints.emplace_back(
+      *IPAddress::FromIPLiteral("192.168.0.1"), kTestPort);
+  EXPECT_EQ(OnHostResolutionCallbackResult::kContinue,
+            spdy_session_pool_->OnHostResolutionComplete(
+                key_b_tag2, /*is_websocket=*/false, {endpoint_result},
+                /*aliases=*/{}));
+
+  // Open an inactive session for `key_a_tag1` (`!session1->is_active()`).
+  base::WeakPtr<SpdySession> session1 =
+      CreateSpdySession(http_session_.get(), key_a_tag1, NetLogWithSource());
+  ASSERT_TRUE(session1);
+  ASSERT_FALSE(session1->is_active());
+
+  // Post-handshake `FindAvailableSession()` for `key_b_tag2` must NOT retag
+  // `session1` from `tag1` to `tag2` or pool onto it.
+  EXPECT_FALSE(spdy_session_pool_->FindAvailableSession(
+      key_b_tag2, /*enable_ip_based_pooling_for_h2=*/true,
+      /*is_websocket=*/false, NetLogWithSource()));
+  EXPECT_EQ(key_a_tag1, session1->spdy_session_key());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace net

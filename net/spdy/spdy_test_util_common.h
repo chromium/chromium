@@ -262,6 +262,8 @@ class SpdySessionPoolPeer {
 
   void RemoveAliases(const SpdySessionKey& key);
   void SetEnableSendingInitialData(bool enabled);
+  std::vector<IPEndPoint> GetRequestIpEndpoints(
+      const SpdySessionKey& key) const;
 
  private:
   const raw_ptr<SpdySessionPool> pool_;

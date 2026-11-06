@@ -597,6 +597,15 @@ void SpdySessionPoolPeer::SetEnableSendingInitialData(bool enabled) {
   pool_->enable_sending_initial_data_ = enabled;
 }
 
+std::vector<IPEndPoint> SpdySessionPoolPeer::GetRequestIpEndpoints(
+    const SpdySessionKey& key) const {
+  auto it = pool_->spdy_session_request_map_.find(key);
+  if (it == pool_->spdy_session_request_map_.end()) {
+    return {};
+  }
+  return it->second.ip_endpoints;
+}
+
 SpdyTestUtil::SpdyTestUtil(bool use_priority_header)
     : headerless_spdy_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
       request_spdy_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),

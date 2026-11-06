@@ -49,6 +49,22 @@ enum SpdySessionGetTypes {
   SPDY_SESSION_GET_MAX        = 4
 };
 
+bool IsEndpointEligibleForH2(const ConnectionEndpointMetadata& metadata) {
+  // If there are no associated ALPN protocols, the endpoint is TCP-based and
+  // eligible for negotiating HTTP/2 via TLS ALPN.
+  return metadata.supported_protocol_alpns.empty() ||
+         std::ranges::contains(metadata.supported_protocol_alpns, "h2");
+}
+
+void AppendUniqueIpEndpoints(std::vector<IPEndPoint>& target,
+                             base::span<const IPEndPoint> source) {
+  for (const IPEndPoint& endpoint : source) {
+    if (!std::ranges::contains(target, endpoint)) {
+      target.push_back(endpoint);
+    }
+  }
+}
+
 }  // namespace
 
 SpdySessionPool::SpdySessionRequest::Delegate::Delegate() = default;
@@ -211,6 +227,24 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
     bool is_websocket,
     const NetLogWithSource& net_log) {
   auto it = LookupAvailableSessionByKey(key);
+  if (it == available_sessions_.end() && enable_ip_based_pooling_for_h2 &&
+      base::FeatureList::IsEnabled(
+          features::kPostHandshakeIpPoolingAllEndpoints)) {
+    // If there is an active request for `key` whose DNS resolution already
+    // completed, check whether a concurrent session to any of `key`'s resolved
+    // IPs was established while `key`'s connection attempt was in flight.
+    auto req_it = spdy_session_request_map_.find(key);
+    if (req_it != spdy_session_request_map_.end() &&
+        !req_it->second.ip_endpoints.empty()) {
+      if (TryPoolToExistingIpSession(
+              key, is_websocket, ConnectionEndpointMetadata(),
+              req_it->second.ip_endpoints, req_it->second.dns_aliases,
+              /*log_domain_match_failure=*/false,
+              /*allow_socket_tag_change=*/false)) {
+        it = LookupAvailableSessionByKey(key);
+      }
+    }
+  }
   if (it == available_sessions_.end() ||
       (is_websocket && !it->second->support_websocket())) {
     return base::WeakPtr<SpdySession>();
@@ -310,7 +344,8 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
     base::span<const HostResolverEndpointResult> endpoint_results,
     const base::flat_set<std::string>& aliases) {
   // If there are no pending requests for that alias, nothing to do.
-  if (spdy_session_request_map_.find(key) == spdy_session_request_map_.end()) {
+  auto req_it = spdy_session_request_map_.find(key);
+  if (req_it == spdy_session_request_map_.end()) {
     return OnHostResolutionCallbackResult::kContinue;
   }
 
@@ -329,10 +364,22 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
   }
 
   for (const auto& endpoint : endpoint_results) {
-    if (OnHostResolutionCompleteShared(key, is_websocket, endpoint.metadata,
-                                       endpoint.ip_endpoints, aliases)) {
+    if (TryPoolToExistingIpSession(key, is_websocket, endpoint.metadata,
+                                   endpoint.ip_endpoints, aliases)) {
       return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kPostHandshakeIpPoolingAllEndpoints)) {
+    req_it->second.ip_endpoints.clear();
+    for (const auto& endpoint : endpoint_results) {
+      if (IsEndpointEligibleForH2(endpoint.metadata)) {
+        AppendUniqueIpEndpoints(req_it->second.ip_endpoints,
+                                endpoint.ip_endpoints);
+      }
+    }
+    req_it->second.dns_aliases = aliases;
   }
   return OnHostResolutionCallbackResult::kContinue;
 }
@@ -343,7 +390,8 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
     base::span<const ServiceEndpoint> endpoint_results,
     const base::flat_set<std::string>& aliases) {
   // If there are no pending requests for that alias, nothing to do.
-  if (spdy_session_request_map_.find(key) == spdy_session_request_map_.end()) {
+  auto req_it = spdy_session_request_map_.find(key);
+  if (req_it == spdy_session_request_map_.end()) {
     return OnHostResolutionCallbackResult::kContinue;
   }
 
@@ -364,15 +412,29 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
   for (const auto& endpoint : endpoint_results) {
     // These calls do redundantly check that the metadata allows use of H2, but
     // that's not a huge cost.
-    if (OnHostResolutionCompleteShared(key, is_websocket, endpoint.metadata,
-                                       endpoint.ipv6_endpoints, aliases)) {
+    if (TryPoolToExistingIpSession(key, is_websocket, endpoint.metadata,
+                                   endpoint.ipv6_endpoints, aliases)) {
       return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
     }
 
-    if (OnHostResolutionCompleteShared(key, is_websocket, endpoint.metadata,
-                                       endpoint.ipv4_endpoints, aliases)) {
+    if (TryPoolToExistingIpSession(key, is_websocket, endpoint.metadata,
+                                   endpoint.ipv4_endpoints, aliases)) {
       return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kPostHandshakeIpPoolingAllEndpoints)) {
+    req_it->second.ip_endpoints.clear();
+    for (const auto& endpoint : endpoint_results) {
+      if (IsEndpointEligibleForH2(endpoint.metadata)) {
+        AppendUniqueIpEndpoints(req_it->second.ip_endpoints,
+                                endpoint.ipv6_endpoints);
+        AppendUniqueIpEndpoints(req_it->second.ip_endpoints,
+                                endpoint.ipv4_endpoints);
+      }
+    }
+    req_it->second.dns_aliases = aliases;
   }
   return OnHostResolutionCallbackResult::kContinue;
 }
@@ -771,8 +833,10 @@ void SpdySessionPool::UpdatePendingRequests(const SpdySessionKey& key) {
   }
 
   auto iter = spdy_session_request_map_.find(key);
-  if (iter == spdy_session_request_map_.end())
+  if (iter == spdy_session_request_map_.end() ||
+      iter->second.has_blocking_request) {
     return;
+  }
   // Remove all pending requests, if there are any. As a result, if one of these
   // callbacks triggers a new RequestSession() call,
   // |is_blocking_request_for_session| will be true.
@@ -821,7 +885,7 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindMatchingIpSession(
       const SpdySessionKey& alias_key = alias_it->second;
       if (alias_key.socket_tag() != key.socket_tag()) {
         // TODO(crbug.com/346835898): Consider changing session's socket tag
-        // if possible, in a way similar to OnHostResolutionCompleteShared().
+        // if possible, in a way similar to TryPoolToExistingIpSession().
         continue;
       }
 
@@ -901,16 +965,15 @@ void SpdySessionPool::NotifyOnConnectionFailure(
   }
 }
 
-bool SpdySessionPool::OnHostResolutionCompleteShared(
+bool SpdySessionPool::TryPoolToExistingIpSession(
     const SpdySessionKey& key,
     bool is_websocket,
     const ConnectionEndpointMetadata& metadata,
     base::span<const IPEndPoint> ip_endpoints,
-    const base::flat_set<std::string>& aliases) {
-  // If there are no associated ALPN protocols, it is TCP-based and thus would
-  // have been eligible for connecting with HTTP/2.
-  if (!metadata.supported_protocol_alpns.empty() &&
-      !std::ranges::contains(metadata.supported_protocol_alpns, "h2")) {
+    const base::flat_set<std::string>& dns_aliases,
+    bool log_domain_match_failure,
+    bool allow_socket_tag_change) {
+  if (!IsEndpointEligibleForH2(metadata)) {
     return false;
   }
   for (const auto& address : ip_endpoints) {
@@ -930,6 +993,16 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
         continue;
       }
 
+      // `CompareForAliasing()` sets `is_potentially_aliasable = true` even when
+      // `SocketTag`s differ so idle sessions can be retagged during host
+      // resolution. Callers that must not mutate existing sessions (such as
+      // post-handshake `FindAvailableSession()`) pass
+      // `allow_socket_tag_change = false`, so skip tag-mismatched sessions here
+      // before running domain authentication or `ChangeSocketTag()` below.
+      if (!compare_result.is_socket_tag_match && !allow_socket_tag_change) {
+        continue;
+      }
+
       if (is_websocket && !available_session_it->second->support_websocket()) {
         continue;
       }
@@ -942,7 +1015,9 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
       // |host_port_proxy_pair| too.
       if (!available_session->VerifyDomainAuthentication(
               key.host_port_pair().host())) {
-        UMA_HISTOGRAM_ENUMERATION("Net.SpdyIPPoolDomainMatch", 0, 2);
+        if (log_domain_match_failure) {
+          UMA_HISTOGRAM_ENUMERATION("Net.SpdyIPPoolDomainMatch", 0, 2);
+        }
         continue;
       }
 
@@ -1036,7 +1111,7 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
 
       if (adding_pooled_alias) {
         // Add this session to the map so that we can find it next time.
-        MapKeyToAvailableSession(key, available_session, aliases);
+        MapKeyToAvailableSession(key, available_session, dns_aliases);
         available_session->AddPooledAlias(key);
       }
 

@@ -5341,6 +5341,553 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   EXPECT_TRUE(first_socket.AllWriteDataConsumed());
 }
 
+TEST_F(HttpStreamFactoryJobControllerTest,
+       PostHandshakeIpPoolingAcrossAllResolvedEndpoints) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kPostHandshakeIpPoolingAllEndpoints);
+
+  // Simulate two domains returning the same Anycast IPs in different orders:
+  // www.example.org connects to 192.168.0.1, while other.example.org connects
+  // to 192.168.0.2 (and also has 192.168.0.1 in its resolved list).
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.org", "192.168.0.1,192.168.0.2",
+      std::vector<std::string>{"alias1.example.org"});
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "other.example.org", "192.168.0.2,192.168.0.1",
+      std::vector<std::string>{"alias2.example.org"});
+  session_deps_.host_resolver->set_synchronous_mode(false);
+
+  MockWrite writes1[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads1[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData first_socket(reads1, writes1);
+  first_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&first_socket);
+
+  SSLSocketDataProvider ssl_data1(ASYNC, OK);
+  ssl_data1.next_proto = NextProto::kProtoHTTP2;
+  ssl_data1.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
+
+  SequencedSocketData second_socket;
+  second_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&second_socket);
+
+  // Pause the second SSL handshake until the first HTTP/2 session is created.
+  MockConnectCompleter ssl_completer2;
+  SSLSocketDataProvider ssl_data2(&ssl_completer2);
+  ssl_data2.next_proto = NextProto::kProtoHTTP2;
+  ssl_data2.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
+
+  HttpRequestInfo request_info1;
+  request_info1.method = "GET";
+  request_info1.url = GURL("https://www.example.org");
+  Initialize(request_info1);
+
+  HttpRequestInfo request_info2;
+  request_info2.method = "GET";
+  request_info2.url = GURL("https://other.example.org");
+
+  // Start request 1 (www.example.org) and request 2 (other.example.org)
+  // concurrently so both complete DNS resolution before either finishes its
+  // TLS handshake.
+  std::unique_ptr<HttpStreamRequest> stream_request1 = job_controller_->Start(
+      request_delegate_.get(),
+      /*websocket_handshake_stream_create_helper=*/nullptr, NetLogWithSource(),
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(1).WillOnce([this]() {
+    job_factory_.main_job()->DoResume();
+  });
+
+  MockHttpStreamRequestDelegate request_delegate2;
+  TestJobFactory job_factory2;
+  auto job_controller2 = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &request_delegate2, session_.get(), &job_factory2,
+      request_info2, /*is_preconnect=*/false, /*is_websocket=*/false,
+      /*enable_ip_based_pooling_for_h2=*/true, enable_alternative_services_,
+      delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  auto* job_controller2_ptr = job_controller2.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller2));
+  std::unique_ptr<HttpStreamRequest> stream_request2 =
+      job_controller2_ptr->Start(
+          &request_delegate2,
+          /*websocket_handshake_stream_create_helper=*/nullptr,
+          NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory2.main_job(), Resume()).Times(1).WillOnce([&]() {
+    job_factory2.main_job()->DoResume();
+  });
+
+  // Wait for request 1 to finish its handshake and establish an H2 session on
+  // 192.168.0.1, while request 2 is paused in its TLS handshake on 192.168.0.2.
+  std::unique_ptr<HttpStream> stream1 = request_delegate_->WaitForHttpStream();
+  ASSERT_TRUE(stream1);
+
+  // Now complete request 2's TLS handshake. In DoCreateStream(),
+  // FindAvailableSession() should pool request 2 onto request 1's H2 session
+  // via the shared resolved IP (192.168.0.1) and disconnect the redundant
+  // second socket.
+  ssl_completer2.Complete(OK);
+  std::unique_ptr<HttpStream> stream2 = request_delegate2.WaitForHttpStream();
+  ASSERT_TRUE(stream2);
+
+  const SpdySessionKey key1(
+      HostPortPair::FromURL(request_info1.url), request_info1.privacy_mode,
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      request_info1.socket_tag, request_info1.network_anonymization_key,
+      request_info1.secure_dns_policy,
+      /*disable_cert_verification_network_fetches=*/false,
+      request_info1.target_network);
+  const SpdySessionKey key2(
+      HostPortPair::FromURL(request_info2.url), request_info2.privacy_mode,
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      request_info2.socket_tag, request_info2.network_anonymization_key,
+      request_info2.secure_dns_policy,
+      /*disable_cert_verification_network_fetches=*/false,
+      request_info2.target_network);
+  base::WeakPtr<SpdySession> session1 =
+      session_->spdy_session_pool()->FindAvailableSession(
+          key1, /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, NetLogWithSource());
+  base::WeakPtr<SpdySession> session2 =
+      session_->spdy_session_pool()->FindAvailableSession(
+          key2, /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, NetLogWithSource());
+  ASSERT_TRUE(session1);
+  ASSERT_TRUE(session2);
+  EXPECT_EQ(session1.get(), session2.get());
+  EXPECT_THAT(stream1->GetDnsAliases(),
+              testing::ElementsAre("alias1.example.org"));
+  EXPECT_THAT(stream2->GetDnsAliases(),
+              testing::ElementsAre("alias2.example.org"));
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       PostHandshakeIpPoolingDisabledByFeature) {
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kPostHandshakeIpPoolingAllEndpoints);
+
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.org", "192.168.0.1,192.168.0.2",
+      std::vector<std::string>{"alias1.example.org"});
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "other.example.org", "192.168.0.2,192.168.0.1",
+      std::vector<std::string>{"alias2.example.org"});
+  session_deps_.host_resolver->set_synchronous_mode(false);
+
+  MockWrite writes1[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads1[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData first_socket(reads1, writes1);
+  first_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&first_socket);
+
+  SSLSocketDataProvider ssl_data1(ASYNC, OK);
+  ssl_data1.next_proto = NextProto::kProtoHTTP2;
+  ssl_data1.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
+
+  MockWrite writes2[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads2[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData second_socket(reads2, writes2);
+  second_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&second_socket);
+
+  MockConnectCompleter ssl_completer2;
+  SSLSocketDataProvider ssl_data2(&ssl_completer2);
+  ssl_data2.next_proto = NextProto::kProtoHTTP2;
+  ssl_data2.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
+
+  HttpRequestInfo request_info1;
+  request_info1.method = "GET";
+  request_info1.url = GURL("https://www.example.org");
+  Initialize(request_info1);
+
+  HttpRequestInfo request_info2;
+  request_info2.method = "GET";
+  request_info2.url = GURL("https://other.example.org");
+
+  std::unique_ptr<HttpStreamRequest> stream_request1 = job_controller_->Start(
+      request_delegate_.get(),
+      /*websocket_handshake_stream_create_helper=*/nullptr, NetLogWithSource(),
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(1).WillOnce([this]() {
+    job_factory_.main_job()->DoResume();
+  });
+
+  MockHttpStreamRequestDelegate request_delegate2;
+  TestJobFactory job_factory2;
+  auto job_controller2 = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &request_delegate2, session_.get(), &job_factory2,
+      request_info2, /*is_preconnect=*/false, /*is_websocket=*/false,
+      /*enable_ip_based_pooling_for_h2=*/true, enable_alternative_services_,
+      delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  auto* job_controller2_ptr = job_controller2.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller2));
+  std::unique_ptr<HttpStreamRequest> stream_request2 =
+      job_controller2_ptr->Start(
+          &request_delegate2,
+          /*websocket_handshake_stream_create_helper=*/nullptr,
+          NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory2.main_job(), Resume()).Times(1).WillOnce([&]() {
+    job_factory2.main_job()->DoResume();
+  });
+
+  std::unique_ptr<HttpStream> stream1 = request_delegate_->WaitForHttpStream();
+  ASSERT_TRUE(stream1);
+
+  ssl_completer2.Complete(OK);
+  std::unique_ptr<HttpStream> stream2 = request_delegate2.WaitForHttpStream();
+  ASSERT_TRUE(stream2);
+
+  const SpdySessionKey key1(
+      HostPortPair::FromURL(request_info1.url), request_info1.privacy_mode,
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      request_info1.socket_tag, request_info1.network_anonymization_key,
+      request_info1.secure_dns_policy,
+      /*disable_cert_verification_network_fetches=*/false,
+      request_info1.target_network);
+  const SpdySessionKey key2(
+      HostPortPair::FromURL(request_info2.url), request_info2.privacy_mode,
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      request_info2.socket_tag, request_info2.network_anonymization_key,
+      request_info2.secure_dns_policy,
+      /*disable_cert_verification_network_fetches=*/false,
+      request_info2.target_network);
+  base::WeakPtr<SpdySession> session1 =
+      session_->spdy_session_pool()->FindAvailableSession(
+          key1, /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, NetLogWithSource());
+  base::WeakPtr<SpdySession> session2 =
+      session_->spdy_session_pool()->FindAvailableSession(
+          key2, /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, NetLogWithSource());
+  ASSERT_TRUE(session1);
+  ASSERT_TRUE(session2);
+  EXPECT_NE(session1.get(), session2.get());
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       PostHandshakeIpPoolingCertificateMismatch) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kPostHandshakeIpPoolingAllEndpoints);
+  base::HistogramTester histogram_tester;
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.org", "192.168.0.1,192.168.0.2",
+      std::vector<std::string>{"alias1.example.org"});
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "other.example.org", "192.168.0.2,192.168.0.1",
+      std::vector<std::string>{"alias2.example.org"});
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "third.example.org", "192.168.0.3,192.168.0.1",
+      std::vector<std::string>{"alias3.example.org"});
+  session_deps_.host_resolver->set_synchronous_mode(false);
+
+  // `spdy_pooling.pem` is valid for `www.example.org` (and `mail.example.org`),
+  // but NOT for `other.example.org` or `third.example.org`.
+  scoped_refptr<X509Certificate> cert1 =
+      ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
+  ASSERT_TRUE(cert1);
+  ASSERT_TRUE(cert1->VerifyNameMatch("www.example.org"));
+  ASSERT_FALSE(cert1->VerifyNameMatch("other.example.org"));
+  ASSERT_FALSE(cert1->VerifyNameMatch("third.example.org"));
+
+  MockWrite writes1[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads1[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData first_socket(reads1, writes1);
+  first_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&first_socket);
+
+  SSLSocketDataProvider ssl_data1(ASYNC, OK);
+  ssl_data1.next_proto = NextProto::kProtoHTTP2;
+  ssl_data1.ssl_info.cert = cert1;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
+
+  MockWrite writes2[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads2[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData second_socket(reads2, writes2);
+  second_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&second_socket);
+
+  MockConnectCompleter ssl_completer2;
+  SSLSocketDataProvider ssl_data2(&ssl_completer2);
+  ssl_data2.next_proto = NextProto::kProtoHTTP2;
+  ssl_data2.ssl_info.cert = cert1;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
+
+  MockWrite writes3[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads3[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData third_socket(reads3, writes3);
+  third_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&third_socket);
+
+  SSLSocketDataProvider ssl_data3(ASYNC, OK);
+  ssl_data3.next_proto = NextProto::kProtoHTTP2;
+  ssl_data3.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data3);
+
+  HttpRequestInfo request_info1;
+  request_info1.method = "GET";
+  request_info1.url = GURL("https://www.example.org");
+  Initialize(request_info1);
+
+  HttpRequestInfo request_info2;
+  request_info2.method = "GET";
+  request_info2.url = GURL("https://other.example.org");
+
+  std::unique_ptr<HttpStreamRequest> stream_request1 = job_controller_->Start(
+      request_delegate_.get(),
+      /*websocket_handshake_stream_create_helper=*/nullptr, NetLogWithSource(),
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(1).WillOnce([this]() {
+    job_factory_.main_job()->DoResume();
+  });
+
+  MockHttpStreamRequestDelegate request_delegate2;
+  TestJobFactory job_factory2;
+  auto job_controller2 = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &request_delegate2, session_.get(), &job_factory2,
+      request_info2, /*is_preconnect=*/false, /*is_websocket=*/false,
+      /*enable_ip_based_pooling_for_h2=*/true, enable_alternative_services_,
+      delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  auto* job_controller2_ptr = job_controller2.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller2));
+  std::unique_ptr<HttpStreamRequest> stream_request2 =
+      job_controller2_ptr->Start(
+          &request_delegate2,
+          /*websocket_handshake_stream_create_helper=*/nullptr,
+          NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory2.main_job(), Resume()).Times(1).WillOnce([&]() {
+    job_factory2.main_job()->DoResume();
+  });
+
+  std::unique_ptr<HttpStream> stream1 = request_delegate_->WaitForHttpStream();
+  ASSERT_TRUE(stream1);
+
+  ssl_completer2.Complete(OK);
+  std::unique_ptr<HttpStream> stream2 = request_delegate2.WaitForHttpStream();
+  ASSERT_TRUE(stream2);
+
+  // Neither request saw an existing session at DNS resolution time, and
+  // post-handshake re-checks do not emit duplicate domain-mismatch samples.
+  histogram_tester.ExpectTotalCount("Net.SpdyIPPoolDomainMatch", 0);
+
+  const SpdySessionKey key1(
+      HostPortPair::FromURL(request_info1.url), request_info1.privacy_mode,
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      request_info1.socket_tag, request_info1.network_anonymization_key,
+      request_info1.secure_dns_policy,
+      /*disable_cert_verification_network_fetches=*/false,
+      request_info1.target_network);
+  const SpdySessionKey key2(
+      HostPortPair::FromURL(request_info2.url), request_info2.privacy_mode,
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      request_info2.socket_tag, request_info2.network_anonymization_key,
+      request_info2.secure_dns_policy,
+      /*disable_cert_verification_network_fetches=*/false,
+      request_info2.target_network);
+  base::WeakPtr<SpdySession> session1 =
+      session_->spdy_session_pool()->FindAvailableSession(
+          key1, /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, NetLogWithSource());
+  base::WeakPtr<SpdySession> session2 =
+      session_->spdy_session_pool()->FindAvailableSession(
+          key2, /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, NetLogWithSource());
+  ASSERT_TRUE(session1);
+  ASSERT_TRUE(session2);
+  EXPECT_NE(session1.get(), session2.get());
+
+  // Now issue a request for `third.example.org` while `session1`
+  // (`192.168.0.1`) is already active. DNS resolution checks `session1` and
+  // logs bucket `0` once; when `third.example.org` finishes its own handshake
+  // and runs `FindAvailableSession()`, bucket `0` must NOT be double-counted.
+  HttpRequestInfo request_info3;
+  request_info3.method = "GET";
+  request_info3.url = GURL("https://third.example.org");
+  MockHttpStreamRequestDelegate request_delegate3;
+  TestJobFactory job_factory3;
+  auto job_controller3 = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &request_delegate3, session_.get(), &job_factory3,
+      request_info3, /*is_preconnect=*/false, /*is_websocket=*/false,
+      /*enable_ip_based_pooling_for_h2=*/true, enable_alternative_services_,
+      delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  auto* job_controller3_ptr = job_controller3.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller3));
+  std::unique_ptr<HttpStreamRequest> stream_request3 =
+      job_controller3_ptr->Start(
+          &request_delegate3,
+          /*websocket_handshake_stream_create_helper=*/nullptr,
+          NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory3.main_job(), Resume()).Times(1).WillOnce([&]() {
+    job_factory3.main_job()->DoResume();
+  });
+  std::unique_ptr<HttpStream> stream3 = request_delegate3.WaitForHttpStream();
+  ASSERT_TRUE(stream3);
+
+  histogram_tester.ExpectUniqueSample("Net.SpdyIPPoolDomainMatch", 0, 1);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       PostHandshakeIpPoolingWakesConcurrentUnthrottledRequest) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kPostHandshakeIpPoolingAllEndpoints);
+  // Cold-start requests (`GetSupportsSpdy() == false`) are unthrottled, so two
+  // concurrent requests to `other.example.org` both join `request_set` with
+  // `deferred_callbacks` empty. When the first `other.example.org` handshake
+  // finishes and pools onto `www.example.org`'s session in
+  // `FindAvailableSession()`, the second in-flight `other.example.org` job must
+  // be notified via `UpdatePendingRequests()`.
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.org", "192.168.0.1,192.168.0.2",
+      std::vector<std::string>{"alias1.example.org"});
+  session_deps_.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
+      "other.example.org", "192.168.0.2,192.168.0.1",
+      std::vector<std::string>{"alias2.example.org"});
+  session_deps_.host_resolver->set_synchronous_mode(false);
+
+  MockWrite writes1[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads1[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData first_socket(reads1, writes1);
+  first_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&first_socket);
+
+  SSLSocketDataProvider ssl_data1(ASYNC, OK);
+  ssl_data1.next_proto = NextProto::kProtoHTTP2;
+  ssl_data1.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
+
+  SequencedSocketData second_socket;
+  second_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&second_socket);
+
+  MockConnectCompleter ssl_completer2;
+  SSLSocketDataProvider ssl_data2(&ssl_completer2);
+  ssl_data2.next_proto = NextProto::kProtoHTTP2;
+  ssl_data2.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
+
+  SequencedSocketData third_socket;
+  third_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&third_socket);
+
+  // Never complete `ssl_completer3`; the third request must finish by being
+  // woken via `UpdatePendingRequests()` -> `OnSpdySessionAvailable()`.
+  MockConnectCompleter ssl_completer3;
+  SSLSocketDataProvider ssl_data3(&ssl_completer3);
+  ssl_data3.next_proto = NextProto::kProtoHTTP2;
+  ssl_data3.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data3);
+
+  HttpRequestInfo request_info1;
+  request_info1.method = "GET";
+  request_info1.url = GURL("https://www.example.org");
+  Initialize(request_info1);
+
+  HttpRequestInfo request_info2;
+  request_info2.method = "GET";
+  request_info2.url = GURL("https://other.example.org");
+
+  std::unique_ptr<HttpStreamRequest> stream_request1 = job_controller_->Start(
+      request_delegate_.get(),
+      /*websocket_handshake_stream_create_helper=*/nullptr, NetLogWithSource(),
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(1).WillOnce([this]() {
+    job_factory_.main_job()->DoResume();
+  });
+
+  MockHttpStreamRequestDelegate request_delegate2;
+  TestJobFactory job_factory2;
+  auto job_controller2 = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &request_delegate2, session_.get(), &job_factory2,
+      request_info2, /*is_preconnect=*/false, /*is_websocket=*/false,
+      /*enable_ip_based_pooling_for_h2=*/true, enable_alternative_services_,
+      delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  auto* job_controller2_ptr = job_controller2.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller2));
+  std::unique_ptr<HttpStreamRequest> stream_request2 =
+      job_controller2_ptr->Start(
+          &request_delegate2,
+          /*websocket_handshake_stream_create_helper=*/nullptr,
+          NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory2.main_job(), Resume()).Times(1).WillOnce([&]() {
+    job_factory2.main_job()->DoResume();
+  });
+
+  MockHttpStreamRequestDelegate request_delegate3;
+  TestJobFactory job_factory3;
+  auto job_controller3 = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &request_delegate3, session_.get(), &job_factory3,
+      request_info2, /*is_preconnect=*/false, /*is_websocket=*/false,
+      /*enable_ip_based_pooling_for_h2=*/true, enable_alternative_services_,
+      delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  auto* job_controller3_ptr = job_controller3.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller3));
+  std::unique_ptr<HttpStreamRequest> stream_request3 =
+      job_controller3_ptr->Start(
+          &request_delegate3,
+          /*websocket_handshake_stream_create_helper=*/nullptr,
+          NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_CALL(*job_factory3.main_job(), Resume()).Times(1).WillOnce([&]() {
+    job_factory3.main_job()->DoResume();
+  });
+
+  std::unique_ptr<HttpStream> stream1 = request_delegate_->WaitForHttpStream();
+  ASSERT_TRUE(stream1);
+
+  // Complete only the first `other.example.org` handshake; the second
+  // `other.example.org` request (`stream_request3`) should be woken via
+  // `UpdatePendingRequests()` without completing `ssl_completer3`.
+  ssl_completer2.Complete(OK);
+  std::unique_ptr<HttpStream> stream2 = request_delegate2.WaitForHttpStream();
+  std::unique_ptr<HttpStream> stream3 = request_delegate3.WaitForHttpStream();
+  ASSERT_TRUE(stream2);
+  ASSERT_TRUE(stream3);
+
+  const SpdySessionKey key1(
+      HostPortPair::FromURL(request_info1.url), request_info1.privacy_mode,
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      request_info1.socket_tag, request_info1.network_anonymization_key,
+      request_info1.secure_dns_policy,
+      /*disable_cert_verification_network_fetches=*/false,
+      request_info1.target_network);
+  const SpdySessionKey key2(
+      HostPortPair::FromURL(request_info2.url), request_info2.privacy_mode,
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      request_info2.socket_tag, request_info2.network_anonymization_key,
+      request_info2.secure_dns_policy,
+      /*disable_cert_verification_network_fetches=*/false,
+      request_info2.target_network);
+  base::WeakPtr<SpdySession> session1 =
+      session_->spdy_session_pool()->FindAvailableSession(
+          key1, /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, NetLogWithSource());
+  base::WeakPtr<SpdySession> session2 =
+      session_->spdy_session_pool()->FindAvailableSession(
+          key2, /*enable_ip_based_pooling_for_h2=*/true,
+          /*is_websocket=*/false, NetLogWithSource());
+  ASSERT_TRUE(session1);
+  ASSERT_TRUE(session2);
+  EXPECT_EQ(session1.get(), session2.get());
+  EXPECT_THAT(stream2->GetDnsAliases(),
+              testing::ElementsAre("alias2.example.org"));
+  EXPECT_THAT(stream3->GetDnsAliases(),
+              testing::ElementsAre("alias2.example.org"));
+}
+
 class JobControllerLimitMultipleH2Requests
     : public HttpStreamFactoryJobControllerTestBase {
  protected:

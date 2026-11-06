@@ -315,6 +315,14 @@ void MockCryptoClientStream::NotifySessionZeroRttComplete() {
   session()->OnNewEncryptionKeyAvailable(
       ENCRYPTION_ZERO_RTT,
       std::make_unique<TaggingEncrypter>(ENCRYPTION_ZERO_RTT));
+  // `OnNewEncryptionKeyAvailable()` may synchronously invoke the session's
+  // connect callback (e.g. `QuicSessionAttempt::DoConfirmConnection()`), which
+  // closes the connection if it is IP-pooled or superseded by an active
+  // session. Return early to avoid updating permanently cancelled alarms in
+  // `DiscardOldEncryptionKey()`.
+  if (!session()->connection()->connected()) {
+    return;
+  }
 
   session()->DiscardOldEncryptionKey(ENCRYPTION_INITIAL);
 }
@@ -358,8 +366,21 @@ void MockCryptoClientStream::NotifySessionOneRttKeyAvailable() {
         ENCRYPTION_FORWARD_SECURE,
         std::make_unique<TaggingEncrypter>(ENCRYPTION_FORWARD_SECURE));
   }
+  // Installing 1-RTT keys sends initial HTTP/3 data (e.g. SETTINGS), which may
+  // synchronously fail and close the connection.
+  if (!session()->connection()->connected()) {
+    return;
+  }
   SetConfigNegotiated();
   session()->OnTlsHandshakeComplete();
+  // `OnTlsHandshakeComplete()` runs the connect callback, which may
+  // synchronously close the connection (e.g. when IP-pooled in
+  // `QuicSessionAttempt::DoConfirmConnection()`). Return early to avoid
+  // updating permanently cancelled alarms when discarding keys or neutering
+  // handshake data.
+  if (!session()->connection()->connected()) {
+    return;
+  }
   session()->DiscardOldEncryptionKey(ENCRYPTION_INITIAL);
   session()->DiscardOldEncryptionKey(ENCRYPTION_ZERO_RTT);
   session()->NeuterHandshakeData();

@@ -397,6 +397,13 @@ class NET_EXPORT SpdySessionPool
 
     // Set of callbacks watching for the blocking request to be destroyed.
     std::list<base::RepeatingClosure> deferred_callbacks;
+
+    // HTTP/2-eligible IP endpoints and DNS aliases from the most recent host
+    // resolution for this key, used for post-handshake IP pooling when a
+    // concurrent session to another resolved IP is established while this key's
+    // connection attempt is in flight.
+    std::vector<IPEndPoint> ip_endpoints;
+    base::flat_set<std::string> dns_aliases;
   };
 
   using SpdySessionRequestMap = std::map<SpdySessionKey, RequestInfoForKey>;
@@ -489,19 +496,21 @@ class NET_EXPORT SpdySessionPool
                              bool was_ever_used_to_create_streams);
   void NotifyOnConnectionFailure(const SpdySessionKey& session_key);
 
-  // Shared logic for the two OnHostResolutionComplete() overloads. Checks if
-  // any of the passed in endpoints can be used to set up an aliased session for
-  // `key`. Returns true if it set up an alias, and the caller should thus
-  // return kMayBeDeletedAsync.
-  //
-  // TODO(crbug.com/484073410): Once TcpConnectJob ships and TransportConnectJob
-  // is removed, merge this back into OnHostResolutionComplete().
-  bool OnHostResolutionCompleteShared(
+  // Checks if any of `ip_endpoints` (with `metadata`) matches an existing
+  // available session that can serve `key`, and if so, maps `key` to that
+  // session (retagging an idle session's SocketTag first only when
+  // `allow_socket_tag_change` is true) and posts `UpdatePendingRequests(key)`.
+  // Called both during host resolution (`OnHostResolutionComplete()`) and
+  // post-handshake (`FindAvailableSession()`). Returns true if a matching
+  // session was mapped for `key`.
+  bool TryPoolToExistingIpSession(
       const SpdySessionKey& key,
       bool is_websocket,
       const ConnectionEndpointMetadata& metadata,
       base::span<const IPEndPoint> ip_endpoints,
-      const base::flat_set<std::string>& aliases);
+      const base::flat_set<std::string>& dns_aliases,
+      bool log_domain_match_failure = true,
+      bool allow_socket_tag_change = true);
 
   raw_ptr<HttpServerProperties> http_server_properties_;
 

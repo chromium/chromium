@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -137,6 +138,12 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
   QuicSessionPool* GetQuicSessionPool() override { return manager_->pool_; }
   const QuicSessionAliasKey& GetKey() override { return key_; }
   const NetLogWithSource& GetNetLog() override { return net_log_; }
+  std::vector<IPEndPoint> GetResolvedIpEndpoints() const override {
+    // TODO(crbug.com/578392846): Plumb usable QUIC IP endpoints from
+    // `HttpStreamPool::AttemptManager` for Happy Eyeballs v3.
+    NOTIMPLEMENTED();
+    return {};
+  }
 
  private:
   void OnAttemptComplete(QuicSessionAttempt* raw_attempt, int rv) {

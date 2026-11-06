@@ -107,6 +107,13 @@ void QuicSessionPool::ProxyJob::PopulateNetErrorDetails(
   }
 }
 
+std::vector<IPEndPoint> QuicSessionPool::ProxyJob::GetResolvedIpEndpoints()
+    const {
+  // Proxied QUIC jobs tunnel through a proxy and do not resolve destination IPs
+  // locally.
+  return {};
+}
+
 int QuicSessionPool::ProxyJob::DoLoop(int rv) {
   do {
     IoState state = io_state_;

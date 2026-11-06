@@ -170,6 +170,9 @@ class QuicSessionPool::AsyncDnsJob
                       RequestPriority new_priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
 
+  // QuicSessionAttempt::Delegate implementation.
+  std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;
+
   // HostResolver::ServiceEndpointRequest::Delegate implementation.
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;

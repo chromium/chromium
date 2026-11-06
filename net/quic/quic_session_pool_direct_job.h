@@ -5,6 +5,8 @@
 #ifndef NET_QUIC_QUIC_SESSION_POOL_DIRECT_JOB_H_
 #define NET_QUIC_QUIC_SESSION_POOL_DIRECT_JOB_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -54,6 +56,9 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
   void UpdatePriority(RequestPriority old_priority,
                       RequestPriority new_priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
+
+  // QuicSessionAttempt::Delegate implementation.
+  std::vector<IPEndPoint> GetResolvedIpEndpoints() const override;
 
  private:
   int DoLoop(int rv);
