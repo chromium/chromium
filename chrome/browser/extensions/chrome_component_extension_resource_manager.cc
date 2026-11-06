@@ -135,7 +135,9 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   if (base::FeatureList::IsEnabled(
-          extensions_features::kApiContextualTasksPrivate)) {
+          extensions_features::kApiContextualTasksPrivate) ||
+      base::FeatureList::IsEnabled(
+          extensions_features::kApiContextualTasksPrivateAba)) {
     AddComponentResourceEntries(kContextualTasksExtensionResources);
   }
 

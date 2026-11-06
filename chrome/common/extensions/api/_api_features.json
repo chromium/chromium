@@ -43,6 +43,9 @@
     "dependencies": ["permission:contextualTasksPrivate"],
     "feature_flag": "ApiContextualTasksPrivate"
   },
+  "contextualTasksPrivate.registerAimThreadForPromo": {
+    "feature_flag": "ApiContextualTasksPrivateAba"
+  },
   "experimentalActor": {
     "contexts": ["privileged_extension"],
     "dependencies": ["permission:experimentalActor"]

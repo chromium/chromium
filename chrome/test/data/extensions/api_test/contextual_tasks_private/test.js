@@ -50,6 +50,9 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
       const frame =
           await chrome.webNavigation.getFrame({frameId: 0, tabId: tabId});
       documentId = frame.documentId;
+    } else if (mode === 'aba_only_bindings') {
+      tests_runAbaOnlyBindings();
+      return;
     } else if (mode === 'register_promo_invalid_document_id') {
       documentId = 'not_a_document_id';
     } else if (mode === 'register_promo_subframe') {
@@ -300,6 +303,22 @@ function tests_runRegisterAimThreadForPromoRejected(
       await chrome.test.assertPromiseRejects(
           chrome.contextualTasksPrivate.registerAimThreadForPromo(details),
           expectedError);
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runAbaOnlyBindings() {
+  chrome.test.runTests([
+    function testAbaOnlyBindings() {
+      chrome.test.assertEq(
+          'function',
+          typeof chrome.contextualTasksPrivate.registerAimThreadForPromo);
+      chrome.test.assertEq(
+          'undefined', typeof chrome.contextualTasksPrivate.getState);
+      chrome.test.assertEq(
+          'undefined',
+          typeof chrome.contextualTasksPrivate.launchPanelInNewTab);
       chrome.test.succeed();
     },
   ]);

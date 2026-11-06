@@ -68,6 +68,11 @@ BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 // Controls the availability of the contextualTasksPrivate API.
 BASE_DECLARE_FEATURE(kApiContextualTasksPrivate);
 
+// Controls the availability of the
+// `contextualTasksPrivate.registerAimThreadForPromo` API for ABA search
+// journeys.
+BASE_DECLARE_FEATURE(kApiContextualTasksPrivateAba);
+
 // Controls the availability of the glicPrivate API.
 BASE_DECLARE_FEATURE(kApiGlicPrivate);
 

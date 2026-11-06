@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <optional>
+#include <vector>
 
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -80,6 +82,12 @@ class ContextualTasksExtensionMessagingTest : public ExtensionApiTest {
         extensions_features::kApiContextualTasksPrivate,
         contextual_tasks::kContextualTasks,
         contextual_tasks::kContextualTasksRearchitecture};
+    std::erase_if(enabled, [&](const base::test::FeatureRef& feature) {
+      return std::ranges::any_of(disabled_features,
+                                 [&](const base::test::FeatureRef& disabled) {
+                                   return &*disabled == &*feature;
+                                 });
+    });
     enabled.insert(enabled.end(), enabled_features.begin(),
                    enabled_features.end());
     feature_list_.InitWithFeatures(enabled, disabled_features);
@@ -847,7 +855,12 @@ class ContextualTasksExtensionMessagingAbaSearchJourneysTest
  public:
   ContextualTasksExtensionMessagingAbaSearchJourneysTest()
       : ContextualTasksExtensionMessagingTest(
-            /*enabled_features=*/{contextual_tasks::kABASearchJourneys}) {}
+            /*enabled_features=*/{extensions_features::
+                                      kApiContextualTasksPrivateAba,
+                                  contextual_tasks::kABASearchJourneys},
+            /*disabled_features=*/{
+                extensions_features::kApiContextualTasksPrivate,
+                contextual_tasks::kContextualTasksRearchitecture}) {}
 
  protected:
   // Registers restore parameters for the active tab's results page through the

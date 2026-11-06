@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <vector>
+
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -72,6 +75,12 @@ class ContextualTasksPrivateApiTest : public ExtensionApiTest {
       const std::vector<base::test::FeatureRef>& disabled_features = {}) {
     std::vector<base::test::FeatureRef> enabled = {
         extensions_features::kApiContextualTasksPrivate};
+    std::erase_if(enabled, [&](const base::test::FeatureRef& feature) {
+      return std::ranges::any_of(disabled_features,
+                                 [&](const base::test::FeatureRef& disabled) {
+                                   return &*disabled == &*feature;
+                                 });
+    });
     enabled.insert(enabled.end(), enabled_features.begin(),
                    enabled_features.end());
     feature_list_.InitWithFeatures(enabled, disabled_features);
@@ -355,7 +364,8 @@ class ContextualTasksPrivateApiAbaSearchJourneysDisabledTest
  public:
   ContextualTasksPrivateApiAbaSearchJourneysDisabledTest()
       : ContextualTasksPrivateApiTest(
-            /*enabled_features=*/{},
+            /*enabled_features=*/{extensions_features::
+                                      kApiContextualTasksPrivateAba},
             /*disabled_features=*/{contextual_tasks::kABASearchJourneys}) {}
 };
 
@@ -372,8 +382,22 @@ class ContextualTasksPrivateApiAbaSearchJourneysTest
     : public ContextualTasksPrivateApiTest {
  public:
   ContextualTasksPrivateApiAbaSearchJourneysTest()
-      : ContextualTasksPrivateApiTest({contextual_tasks::kABASearchJourneys}) {}
+      : ContextualTasksPrivateApiTest(
+            /*enabled_features=*/{extensions_features::
+                                      kApiContextualTasksPrivateAba,
+                                  contextual_tasks::kABASearchJourneys},
+            /*disabled_features=*/{
+                extensions_features::kApiContextualTasksPrivate}) {}
 };
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysTest,
+                       OnlyRegisterAimThreadForPromoIsBound) {
+  EXPECT_TRUE(RunExtensionTest(
+      "contextual_tasks_private",
+      {.extension_url = "test.html", .custom_arg = "aba_only_bindings"},
+      {.load_as_component = true}))
+      << message_;
+}
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysTest,
                        RegisterAimThreadForPromoMissingMstk) {

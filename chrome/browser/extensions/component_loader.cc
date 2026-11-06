@@ -595,7 +595,9 @@ void ComponentLoader::AddGlicExtension() {
 
 void ComponentLoader::AddContextualTasksExtension() {
   if (base::FeatureList::IsEnabled(
-          extensions_features::kApiContextualTasksPrivate)) {
+          extensions_features::kApiContextualTasksPrivate) ||
+      base::FeatureList::IsEnabled(
+          extensions_features::kApiContextualTasksPrivateAba)) {
     Add(IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST_JSON,
         base::FilePath(FILE_PATH_LITERAL("contextual_tasks_extension")));
   }
