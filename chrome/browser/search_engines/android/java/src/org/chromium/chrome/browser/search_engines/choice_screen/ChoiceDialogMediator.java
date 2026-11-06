@@ -18,10 +18,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshReason;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.ChoiceScope;
 import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
 
 import java.lang.annotation.Retention;
@@ -72,8 +74,8 @@ class ChoiceDialogMediator {
 
     /** See {@link #startObserving}. */
     interface Delegate {
-        /** Rebuilds the view tp match the requested {@code dialogType}. */
-        void updateDialogType(@DialogType int dialogType);
+        /** Rebuilds the view to match the requested {@code dialogType} and {@code choiceScope}. */
+        void updateDialogType(@DialogType int dialogType, @ChoiceScope int choiceScope);
 
         /** Triggers the dialog to be shown. */
         void showDialog();
@@ -301,7 +303,7 @@ class ChoiceDialogMediator {
 
         if (Boolean.TRUE.equals(isDeviceChoiceRequired) && !wasDialogDismissed) {
             changeDialogType(DialogType.CHOICE_LAUNCH);
-            mDelegate.updateDialogType(DialogType.CHOICE_LAUNCH);
+            mDelegate.updateDialogType(DialogType.CHOICE_LAUNCH, getChoiceScope());
 
             if (!wasDialogShown) {
                 mDelegate.showDialog();
@@ -323,7 +325,7 @@ class ChoiceDialogMediator {
                     && mDialogType == DialogType.CHOICE_LAUNCH) {
                 // This is the normal flow, showing confirmation after the choice has been made.
                 changeDialogType(DialogType.CHOICE_CONFIRM);
-                mDelegate.updateDialogType(DialogType.CHOICE_CONFIRM);
+                mDelegate.updateDialogType(DialogType.CHOICE_CONFIRM, getChoiceScope());
                 mSearchEngineChoiceService.notifyDeviceChoiceBlockCleared();
                 return;
             }
@@ -351,6 +353,12 @@ class ChoiceDialogMediator {
         }
         mDelegate.dismissDialog();
         destroy();
+    }
+
+    private @ChoiceScope int getChoiceScope() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
+                ? mSearchEngineChoiceService.getChoiceScope()
+                : ChoiceScope.DEFAULT;
     }
 
     private void changeDialogType(@DialogType int type) {

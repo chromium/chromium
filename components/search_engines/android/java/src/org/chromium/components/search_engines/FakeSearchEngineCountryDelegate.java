@@ -28,6 +28,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
 
     private final boolean mEnableLogging;
     private @MonotonicNonNull SettableNullableObservableSupplier<Boolean> mIsChoiceRequired;
+    private @ChoiceScope int mChoiceScope;
 
     /**
      * Supplier used as the main way to mock the search engine choice device backend.
@@ -38,14 +39,25 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
      */
     @MainThread
     public FakeSearchEngineCountryDelegate(boolean enableLogging) {
+        this(enableLogging, ChoiceScope.DEFAULT);
+    }
+
+    @MainThread
+    public FakeSearchEngineCountryDelegate(boolean enableLogging, @ChoiceScope int choiceScope) {
         ThreadUtils.assertOnUiThread();
 
         mEnableLogging = enableLogging;
+        mChoiceScope = choiceScope;
     }
 
     @VisibleForTesting
     public void setIsDeviceChoiceRequired(Boolean isRequired) {
         getSupplier().set(isRequired);
+    }
+
+    @VisibleForTesting
+    public void setChoiceScope(@ChoiceScope int choiceScope) {
+        mChoiceScope = choiceScope;
     }
 
     @Override
@@ -77,6 +89,17 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
             Log.i(TAG, "isDeviceChoiceDialogEligible() -> true");
         }
         return true;
+    }
+
+    @Override
+    @MainThread
+    public @ChoiceScope int getChoiceScope() {
+        ThreadUtils.assertOnUiThread();
+
+        if (mEnableLogging) {
+            Log.i(TAG, "getChoiceScope() -> %d", mChoiceScope);
+        }
+        return mChoiceScope;
     }
 
     @Override

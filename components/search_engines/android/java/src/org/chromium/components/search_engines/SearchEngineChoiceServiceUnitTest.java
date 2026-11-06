@@ -22,6 +22,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.chromium.base.test.util.Matchers.fulfilledPromise;
 import static org.chromium.base.test.util.Matchers.rejectedPromise;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -38,6 +40,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshReason;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.ChoiceScope;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DefaultBrowserPromoSuppressionDelayType;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
@@ -59,6 +62,13 @@ public class SearchEngineChoiceServiceUnitTest {
                 .getIsDeviceChoiceRequiredSupplier();
     }
 
+    @After
+    public void tearDown() {
+        CommandLine.getInstance()
+                .removeSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH);
+        SearchEngineChoiceService.setInstanceForTests(null);
+    }
+
     @Test
     public void testAbstractDelegate() {
         var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate() {});
@@ -69,6 +79,7 @@ public class SearchEngineChoiceServiceUnitTest {
         assertFalse(service.isDeviceChoiceDialogEligible());
         assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
         assertFalse(service.isDefaultBrowserPromoSuppressed());
+        assertEquals(ChoiceScope.DEFAULT, service.getChoiceScope());
 
         service.notifyDeviceChoiceBlockShown();
         service.launchDeviceChoiceScreens();
@@ -87,6 +98,7 @@ public class SearchEngineChoiceServiceUnitTest {
         assertThat(service.getDeviceCountry(), is(fulfilledPromise()));
 
         assertTrue(service.isDeviceChoiceDialogEligible());
+        assertEquals(ChoiceScope.DEFAULT, service.getChoiceScope());
 
         var supplier = service.getIsDeviceChoiceRequiredSupplier();
         RobolectricUtil.runAllBackgroundAndUi();
@@ -100,6 +112,19 @@ public class SearchEngineChoiceServiceUnitTest {
         service.refreshDeviceChoiceRequiredNow(RefreshReason.APP_RESUME);
         service.notifyDeviceChoiceBlockCleared();
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    @Test
+    public void testFakeDelegate_chromeSearchOnly() {
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH,
+                        String.valueOf(ChoiceScope.CHROME_SEARCH_ONLY));
+
+        var service = SearchEngineChoiceService.getInstance();
+
+        assertTrue(service.isDeviceChoiceDialogEligible());
+        assertEquals(ChoiceScope.CHROME_SEARCH_ONLY, service.getChoiceScope());
     }
 
     @Test
@@ -145,6 +170,19 @@ public class SearchEngineChoiceServiceUnitTest {
         doReturn(true).when(mDelegate).isDeviceChoiceDialogEligible();
         assertTrue(service.isDeviceChoiceDialogEligible());
         verify(mDelegate, times(2)).isDeviceChoiceDialogEligible();
+    }
+
+    @Test
+    public void testGetChoiceScope() {
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        doReturn(ChoiceScope.DEFAULT).when(mDelegate).getChoiceScope();
+        assertEquals(ChoiceScope.DEFAULT, service.getChoiceScope());
+        verify(mDelegate).getChoiceScope();
+
+        doReturn(ChoiceScope.CHROME_SEARCH_ONLY).when(mDelegate).getChoiceScope();
+        assertEquals(ChoiceScope.CHROME_SEARCH_ONLY, service.getChoiceScope());
+        verify(mDelegate, times(2)).getChoiceScope();
     }
 
     @Test
@@ -292,6 +330,8 @@ public class SearchEngineChoiceServiceUnitTest {
         clearInvocations(mDelegate);
         service.isDeviceChoiceDialogEligible();
         verify(mDelegate, never()).isDeviceChoiceDialogEligible();
+        assertEquals(ChoiceScope.DEFAULT, service.getChoiceScope());
+        verify(mDelegate, never()).getChoiceScope();
 
         // We still can check whether the default browser promo is suppressed.
         assertTrue(service.isDefaultBrowserPromoSuppressed());

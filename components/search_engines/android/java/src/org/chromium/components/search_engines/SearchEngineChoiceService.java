@@ -15,6 +15,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.ChoiceScope;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DefaultBrowserPromoSuppressionDelayType;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
@@ -78,8 +79,14 @@ public class SearchEngineChoiceService {
         ThreadUtils.checkUiThread();
         if (sInstance == null) {
             SearchEngineCountryDelegate delegate;
-            if (SearchEnginesFeatureUtils.getInstance().isChoiceApisFakeBackendEnabled()) {
-                delegate = new FakeSearchEngineCountryDelegate(/* enableLogging= */ true);
+            @Nullable
+            @ChoiceScope
+            Integer fakeBackendScope =
+                    SearchEnginesFeatureUtils.getInstance().choiceApisFakeBackendScope();
+            if (fakeBackendScope != null) {
+                delegate =
+                        new FakeSearchEngineCountryDelegate(
+                                /* enableLogging= */ true, fakeBackendScope);
             } else {
                 delegate = ServiceLoaderUtil.maybeCreate(SearchEngineCountryDelegate.class);
                 if (delegate == null) {
@@ -214,6 +221,18 @@ public class SearchEngineChoiceService {
         if (mDelegate == null) return false;
 
         return mDelegate.isDeviceChoiceDialogEligible();
+    }
+
+    /**
+     * Returns the {@link ChoiceScope} of the device choice flow (OS-wide default apps vs Chrome's
+     * default search engine only).
+     */
+    @MainThread
+    public @ChoiceScope int getChoiceScope() {
+        ThreadUtils.checkUiThread();
+        if (mDelegate == null) return ChoiceScope.DEFAULT;
+
+        return mDelegate.getChoiceScope();
     }
 
     /**

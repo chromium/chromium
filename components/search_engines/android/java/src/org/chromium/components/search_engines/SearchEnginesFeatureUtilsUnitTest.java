@@ -4,7 +4,9 @@
 
 package org.chromium.components.search_engines;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -13,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.ChoiceScope;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchEnginesFeatureUtilsUnitTest {
@@ -34,11 +37,35 @@ public class SearchEnginesFeatureUtilsUnitTest {
     }
 
     @Test
-    public void testIsChoiceApisFakeBackendEnabled() {
-        assertFalse(SearchEnginesFeatureUtils.getInstance().isChoiceApisFakeBackendEnabled());
+    public void testChoiceApisFakeBackendScope() {
+        var featureUtils = SearchEnginesFeatureUtils.getInstance();
+        assertNull(featureUtils.choiceApisFakeBackendScope());
 
         CommandLine.getInstance()
                 .appendSwitch(SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH);
-        assertTrue(SearchEnginesFeatureUtils.getInstance().isChoiceApisFakeBackendEnabled());
+        assertEquals(
+                Integer.valueOf(ChoiceScope.DEFAULT), featureUtils.choiceApisFakeBackendScope());
+
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH,
+                        String.valueOf(ChoiceScope.DEFAULT));
+        assertEquals(
+                Integer.valueOf(ChoiceScope.DEFAULT), featureUtils.choiceApisFakeBackendScope());
+
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH,
+                        String.valueOf(ChoiceScope.CHROME_SEARCH_ONLY));
+        assertEquals(
+                Integer.valueOf(ChoiceScope.CHROME_SEARCH_ONLY),
+                featureUtils.choiceApisFakeBackendScope());
+
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        SearchEnginesFeatureUtils.ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH,
+                        "invalid");
+        assertEquals(
+                Integer.valueOf(ChoiceScope.DEFAULT), featureUtils.choiceApisFakeBackendScope());
     }
 }

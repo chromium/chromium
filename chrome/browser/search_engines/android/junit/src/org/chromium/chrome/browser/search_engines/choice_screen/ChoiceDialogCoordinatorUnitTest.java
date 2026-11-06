@@ -20,8 +20,11 @@ import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Looper;
+import android.view.View;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,22 +36,28 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Holder;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator.DialogSuppressionStatus;
-import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
+import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator.ViewHolderImpl;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.LaunchChoiceScreenTapHandlingStatus;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.ChoiceScope;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -60,6 +69,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.stream.IntStream;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
 public class ChoiceDialogCoordinatorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     public @Rule FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
@@ -103,7 +113,11 @@ public class ChoiceDialogCoordinatorUnitTest {
                         eq(ModalDialogType.APP),
                         eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_dialog_illustration,
+                        R.string.blocking_choice_dialog_first_title,
+                        R.string.blocking_choice_dialog_first_message);
         assertEquals(
                 1,
                 ChromeSharedPreferences.getInstance()
@@ -113,7 +127,11 @@ public class ChoiceDialogCoordinatorUnitTest {
 
         shadowOf(Looper.getMainLooper()).idle();
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockCleared();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_CONFIRM));
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_confirmation_illustration,
+                        R.string.blocking_choice_dialog_second_title,
+                        R.string.blocking_choice_dialog_second_message);
 
         PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
@@ -122,6 +140,65 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
         assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
+    public void testMaybeShow_chromeSearchOnlyChoice() {
+        var shouldShowSupplier = ObservableSuppliers.createNullable(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+        doReturn(ChoiceScope.CHROME_SEARCH_ONLY).when(mSearchEngineChoiceService).getChoiceScope();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_dialog_illustration,
+                        R.string.blocking_choice_dialog_first_title_chrome_search_only,
+                        R.string.blocking_choice_dialog_first_message_chrome_search_only);
+
+        shouldShowSupplier.set(false);
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_confirmation_illustration,
+                        R.string.blocking_choice_dialog_second_title_chrome_search_only,
+                        R.string.blocking_choice_dialog_second_message_chrome_search_only);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
+    public void testMaybeShow_chromeSearchOnlyChoice_featureDisabled() {
+        var shouldShowSupplier = ObservableSuppliers.createNullable(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mSearchEngineChoiceService, never()).getChoiceScope();
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_dialog_illustration,
+                        R.string.blocking_choice_dialog_first_title,
+                        R.string.blocking_choice_dialog_first_message);
+
+        shouldShowSupplier.set(false);
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mSearchEngineChoiceService, never()).getChoiceScope();
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_confirmation_illustration,
+                        R.string.blocking_choice_dialog_second_title,
+                        R.string.blocking_choice_dialog_second_message);
     }
 
     @Test
@@ -247,14 +324,18 @@ public class ChoiceDialogCoordinatorUnitTest {
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder, never()).updateViewForType(anyInt());
+        verify(mViewHolder, never()).updateView(anyInt(), anyInt(), anyInt());
 
         pendingSupplier.set(true);
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
 
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_dialog_illustration,
+                        R.string.blocking_choice_dialog_first_title,
+                        R.string.blocking_choice_dialog_first_message);
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
     }
@@ -274,7 +355,7 @@ public class ChoiceDialogCoordinatorUnitTest {
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder, never()).updateViewForType(anyInt());
+        verify(mViewHolder, never()).updateView(anyInt(), anyInt(), anyInt());
 
         pendingSupplier.set(false);
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
@@ -282,7 +363,7 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
-        verify(mViewHolder, never()).updateViewForType(anyInt());
+        verify(mViewHolder, never()).updateView(anyInt(), anyInt(), anyInt());
         assertFalse(pendingSupplier.hasObservers());
     }
 
@@ -320,7 +401,11 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_dialog_illustration,
+                        R.string.blocking_choice_dialog_first_title,
+                        R.string.blocking_choice_dialog_first_message);
 
         shouldShowSupplier.set(null);
 
@@ -345,7 +430,11 @@ public class ChoiceDialogCoordinatorUnitTest {
                         eq(ModalDialogType.APP),
                         eq(ModalDialogPriority.VERY_HIGH));
         verify(mLifecycleDispatcher).register(mLifecycleObserverCaptor.capture());
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_dialog_illustration,
+                        R.string.blocking_choice_dialog_first_title,
+                        R.string.blocking_choice_dialog_first_message);
 
         PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
@@ -408,7 +497,11 @@ public class ChoiceDialogCoordinatorUnitTest {
                         eq(ModalDialogType.APP),
                         eq(ModalDialogPriority.VERY_HIGH));
         verify(mLifecycleDispatcher).register(mLifecycleObserverCaptor.capture());
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
+        verify(mViewHolder)
+                .updateView(
+                        R.drawable.blocking_choice_dialog_illustration,
+                        R.string.blocking_choice_dialog_first_title,
+                        R.string.blocking_choice_dialog_first_message);
 
         PropertyModel model = mModelCaptor.getValue();
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
@@ -442,6 +535,44 @@ public class ChoiceDialogCoordinatorUnitTest {
             // Calling is possible again.
             verify(mSearchEngineChoiceService, times(2)).launchDeviceChoiceScreens();
         }
+    }
+
+    @Test
+    public void testViewHolderImpl() {
+        var activityController = Robolectric.buildActivity(Activity.class).setup();
+        Activity activity = activityController.get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ViewHolderImpl viewHolder = new ViewHolderImpl(activity);
+        View view = viewHolder.getView();
+        TextView titleView = view.findViewById(R.id.choice_dialog_title);
+        TextView messageView = view.findViewById(R.id.choice_dialog_message);
+
+        viewHolder.updateView(
+                R.drawable.blocking_choice_dialog_illustration,
+                R.string.blocking_choice_dialog_first_title_chrome_search_only,
+                R.string.blocking_choice_dialog_first_message_chrome_search_only);
+        assertEquals(
+                activity.getString(R.string.blocking_choice_dialog_first_title_chrome_search_only),
+                titleView.getText().toString());
+        assertEquals(
+                activity.getString(
+                        R.string.blocking_choice_dialog_first_message_chrome_search_only),
+                messageView.getText().toString());
+
+        viewHolder.updateView(
+                R.drawable.blocking_choice_confirmation_illustration,
+                R.string.blocking_choice_dialog_second_title_chrome_search_only,
+                R.string.blocking_choice_dialog_second_message_chrome_search_only);
+        assertEquals(
+                activity.getString(R.string.blocking_choice_dialog_second_title_chrome_search_only),
+                titleView.getText().toString());
+        assertEquals(
+                activity.getString(
+                        R.string.blocking_choice_dialog_second_message_chrome_search_only),
+                messageView.getText().toString());
+
+        viewHolder.destroy();
+        activityController.pause().stop().destroy();
     }
 
     private ChoiceDialogCoordinator createCoordinatorWithMocks(

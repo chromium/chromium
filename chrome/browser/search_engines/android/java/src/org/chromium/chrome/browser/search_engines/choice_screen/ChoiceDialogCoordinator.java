@@ -16,7 +16,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.ChoiceScope;
 import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -58,7 +61,10 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     interface ViewHolder {
         View getView();
 
-        void updateViewForType(@DialogType int dialogType);
+        void updateView(
+                @DrawableRes int illustrationRes,
+                @StringRes int titleRes,
+                @StringRes int messageRes);
 
         void destroy();
     }
@@ -173,15 +179,22 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     }
 
     @Override
-    public void updateDialogType(@DialogType int dialogType) {
+    public void updateDialogType(@DialogType int dialogType, @ChoiceScope int choiceScope) {
         if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
-            Log.i(TAG, "updateDialogType(%d)", dialogType);
+            Log.i(TAG, "updateDialogType(%d, choiceScope=%d)", dialogType, choiceScope);
         }
 
-        mViewHolder.updateViewForType(dialogType);
-
+        boolean isChromeSearchOnly = choiceScope == ChoiceScope.CHROME_SEARCH_ONLY;
         switch (dialogType) {
             case DialogType.CHOICE_LAUNCH -> {
+                mViewHolder.updateView(
+                        R.drawable.blocking_choice_dialog_illustration,
+                        isChromeSearchOnly
+                                ? R.string.blocking_choice_dialog_first_title_chrome_search_only
+                                : R.string.blocking_choice_dialog_first_title,
+                        isChromeSearchOnly
+                                ? R.string.blocking_choice_dialog_first_message_chrome_search_only
+                                : R.string.blocking_choice_dialog_first_message);
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false);
                 mModel.set(
                         ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
@@ -193,6 +206,14 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                         mContext.getString(R.string.next));
             }
             case DialogType.CHOICE_CONFIRM -> {
+                mViewHolder.updateView(
+                        R.drawable.blocking_choice_confirmation_illustration,
+                        isChromeSearchOnly
+                                ? R.string.blocking_choice_dialog_second_title_chrome_search_only
+                                : R.string.blocking_choice_dialog_second_title,
+                        isChromeSearchOnly
+                                ? R.string.blocking_choice_dialog_second_message_chrome_search_only
+                                : R.string.blocking_choice_dialog_second_message);
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true);
                 mModel.set(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
@@ -292,7 +313,8 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 .removeKey(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
     }
 
-    private static class ViewHolderImpl implements ViewHolder {
+    @VisibleForTesting
+    static class ViewHolderImpl implements ViewHolder {
         private final View mContentView;
         private final View mView;
         private final View.OnLayoutChangeListener mLayoutChangeListener =
@@ -314,25 +336,18 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         }
 
         @Override
-        public void updateViewForType(@DialogType int dialogType) {
+        public void updateView(
+                @DrawableRes int illustrationRes,
+                @StringRes int titleRes,
+                @StringRes int messageRes) {
             ImageView illustration = mView.findViewById(R.id.illustration);
             TextView title = mView.findViewById(R.id.choice_dialog_title);
             TextView message = mView.findViewById(R.id.choice_dialog_message);
 
-            switch (dialogType) {
-                case DialogType.CHOICE_LAUNCH -> {
-                    illustration.setImageResource(R.drawable.blocking_choice_dialog_illustration);
-                    title.setText(R.string.blocking_choice_dialog_first_title);
-                    message.setText(R.string.blocking_choice_dialog_first_message);
-                }
-                case DialogType.CHOICE_CONFIRM -> {
-                    illustration.setImageResource(
-                            R.drawable.blocking_choice_confirmation_illustration);
-                    title.setText(R.string.blocking_choice_dialog_second_title);
-                    message.setText(R.string.blocking_choice_dialog_second_message);
-                }
-                case DialogType.UNKNOWN -> throw new IllegalStateException();
-            }
+            illustration.setImageResource(illustrationRes);
+            title.setText(titleRes);
+            message.setText(messageRes);
+
             // As the dialog states change the text, focus accessibility every time the state
             // changes.
             title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);

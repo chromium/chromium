@@ -73,6 +73,25 @@ public abstract class SearchEngineCountryDelegate {
         return false;
     }
 
+    @IntDef({
+        ChoiceScope.DEFAULT,
+        ChoiceScope.CHROME_SEARCH_ONLY,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ChoiceScope {
+        /** OS-wide default browser and search engine choice flow. */
+        int DEFAULT = 0;
+
+        /** Choice flow scoped only to Chrome's default search engine. */
+        int CHROME_SEARCH_ONLY = 1;
+    }
+
+    /** Proxy for {@link SearchEngineChoiceService#getChoiceScope()}. */
+    @MainThread
+    public @ChoiceScope int getChoiceScope() {
+        return ChoiceScope.DEFAULT;
+    }
+
     /** Proxy for {@link SearchEngineChoiceService#getIsDeviceChoiceRequiredSupplier()}. */
     @MainThread
     public NullableObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {

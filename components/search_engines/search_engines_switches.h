@@ -125,6 +125,12 @@ BASE_DECLARE_FEATURE(kSearchSettingsUpdateV2);
 // http://go/chrome-rcaps-dd/choice-engine-integration for more details.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kChoiceEngineStatusReporting);
+
+// Enables the CHROME_SEARCH_ONLY scope for the device choice dialog on
+// Android, displaying search-engine-specific strings instead of OS-wide
+// default app strings.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kChromeSearchOnlyClayScope);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

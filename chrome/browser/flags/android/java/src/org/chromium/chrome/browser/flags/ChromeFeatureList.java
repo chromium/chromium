@@ -538,6 +538,7 @@ public abstract class ChromeFeatureList {
     public static final String CHANGE_UNFOCUSED_PRIORITY = "ChangeUnfocusedPriority";
     public static final String CHOICE_ENGINE_STATUS_REPORTING = "ChoiceEngineStatusReporting";
     public static final String CHROME_NATIVE_URL_OVERRIDING = "ChromeNativeUrlOverriding";
+    public static final String CHROME_SEARCH_ONLY_CLAY_SCOPE = "ChromeSearchOnlyClayScope";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLAMP_AUTOMOTIVE_SCALING = "ClampAutomotiveScaling";
     public static final String CLANK_DEFAULT_SEARCH_API = "ClankDefaultSearchApi";
