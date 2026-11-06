@@ -126,4 +126,66 @@ TEST(FeaturesTest, IsContextualTasksUIEnabled_SidePanelRearchitectureEnabled) {
   EXPECT_TRUE(IsContextualTasksUIEnabled());
 }
 
+TEST(FeaturesTest, GetEphemeralButtonContextMenuOption_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(
+      kContextualTasksEphemeralButtonContextMenu);
+  EXPECT_EQ(EphemeralButtonContextMenuOption::kHideSidePanel,
+            GetEphemeralButtonContextMenuOption());
+}
+
+TEST(FeaturesTest, GetEphemeralButtonContextMenuOption_EnumOptions) {
+  struct TestCase {
+    const char* param_value;
+    EphemeralButtonContextMenuOption expected_option;
+  };
+  constexpr TestCase kTestCases[] = {
+      {"hide-side-panel", EphemeralButtonContextMenuOption::kHideSidePanel},
+      {"close-side-panel", EphemeralButtonContextMenuOption::kCloseSidePanel},
+      {"dismiss-active-search",
+       EphemeralButtonContextMenuOption::kDismissActiveSearch},
+      {"dismiss-active-search-in-tab",
+       EphemeralButtonContextMenuOption::kDismissActiveSearchInTab},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.param_value);
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndEnableFeatureWithParameters(
+        kContextualTasksEphemeralButtonContextMenu,
+        {{"ContextualTasksEphemeralButtonContextMenuOption",
+          test_case.param_value}});
+    EXPECT_EQ(test_case.expected_option, GetEphemeralButtonContextMenuOption());
+  }
+}
+
+TEST(FeaturesTest, GetEphemeralButtonContextMenuOption_LegacyBooleanFallback) {
+  {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndEnableFeatureWithParameters(
+        kContextualTasksEphemeralButtonContextMenu,
+        {{"ContextualTasksEphemeralButtonContextMenuCloseSidePanel", "true"}});
+    EXPECT_EQ(EphemeralButtonContextMenuOption::kCloseSidePanel,
+              GetEphemeralButtonContextMenuOption());
+  }
+  {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndEnableFeatureWithParameters(
+        kContextualTasksEphemeralButtonContextMenu,
+        {{"ContextualTasksEphemeralButtonContextMenuCloseSidePanel", "false"}});
+    EXPECT_EQ(EphemeralButtonContextMenuOption::kHideSidePanel,
+              GetEphemeralButtonContextMenuOption());
+  }
+  {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndEnableFeatureWithParameters(
+        kContextualTasksEphemeralButtonContextMenu,
+        {{"ContextualTasksEphemeralButtonContextMenuOption",
+          "dismiss-active-search"},
+         {"ContextualTasksEphemeralButtonContextMenuCloseSidePanel", "true"}});
+    EXPECT_EQ(EphemeralButtonContextMenuOption::kDismissActiveSearch,
+              GetEphemeralButtonContextMenuOption());
+  }
+}
+
 }  // namespace contextual_tasks

@@ -1163,6 +1163,36 @@ TEST_F(ContextualTasksUtilsTest, GetContextualTasksPinningStringId_UnmappedId) {
             GetContextualTasksPinningStringId(kUnmappedResourceId));
 }
 
+TEST_F(ContextualTasksUtilsTest,
+       GetContextualTasksEphemeralButtonContextMenuCloseTextId) {
+  struct TestCase {
+    const char* param_value;
+    int expected_id;
+  };
+  constexpr TestCase kTestCases[] = {
+      {"hide-side-panel",
+       IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE},
+      {"close-side-panel",
+       IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE},
+      {"dismiss-active-search",
+       IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_DISMISS_ACTIVE_SEARCH},
+      {"dismiss-active-search-in-tab",
+       IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_DISMISS_ACTIVE_SEARCH_IN_TAB},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.param_value);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        kContextualTasksEphemeralButtonContextMenu,
+        {{"ContextualTasksEphemeralButtonContextMenuOption",
+          test_case.param_value}});
+
+    EXPECT_EQ(test_case.expected_id,
+              GetContextualTasksEphemeralButtonContextMenuCloseTextId());
+  }
+}
+
 }  // namespace
 
 }  // namespace contextual_tasks

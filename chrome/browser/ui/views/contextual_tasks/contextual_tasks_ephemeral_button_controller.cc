@@ -165,11 +165,8 @@ ContextualTasksEphemeralButtonController::
                IsContextualTasksEphemeralPinButtonRefactorEnabled() &&
            base::FeatureList::IsEnabled(
                contextual_tasks::kContextualTasksEphemeralButtonContextMenu))) {
-        const int close_label_id =
-            contextual_tasks::
-                    ShouldUseCloseSidePanelForEphemeralButtonContextMenu()
-                ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE
-                : IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE;
+        const int close_label_id = contextual_tasks::
+            GetContextualTasksEphemeralButtonContextMenuCloseTextId();
         close_side_panel_action_item_ = action_item->AddChild(
             actions::ActionItem::Builder(
                 base::BindRepeating(

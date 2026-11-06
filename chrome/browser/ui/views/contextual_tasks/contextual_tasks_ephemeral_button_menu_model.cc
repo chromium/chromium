@@ -81,10 +81,8 @@ void ContextualTasksEphemeralButtonMenuModel::UpdateItems() {
 
   Clear();
   if (should_show_close_side_panel) {
-    const int close_label_id =
-        contextual_tasks::ShouldUseCloseSidePanelForEphemeralButtonContextMenu()
-            ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE
-            : IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE;
+    const int close_label_id = contextual_tasks::
+        GetContextualTasksEphemeralButtonContextMenuCloseTextId();
     AddItemWithStringIdAndIcon(
         kCommandRemoveForCurrentTask, close_label_id,
         ui::ImageModel::FromVectorIcon(
