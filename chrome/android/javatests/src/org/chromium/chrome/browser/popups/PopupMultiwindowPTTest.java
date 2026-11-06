@@ -38,7 +38,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.TransitAsserts;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -49,7 +48,6 @@ import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.popups.testhtmls.PopupLauncherPageStation;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -74,7 +72,6 @@ import java.util.function.Supplier;
 
 /** Tests whether popup windows appear as CCTs. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DoNotBatch(reason = "Safer to not batch as we are using multiple Android tasks")
 @EnableFeatures(BlinkFeatures.ANDROID_DESKTOP_WEB_PREFS_LARGE_DISPLAYS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)

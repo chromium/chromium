@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.ephemeraltab.EphemeralTabObserver;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabSheetContent;
 import org.chromium.chrome.browser.firstrun.DisableFirstRun;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
@@ -60,7 +59,6 @@ import java.util.function.Supplier;
  * FocusedEditableTextFieldZoomTest and TabsTest.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class PreviewTabTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

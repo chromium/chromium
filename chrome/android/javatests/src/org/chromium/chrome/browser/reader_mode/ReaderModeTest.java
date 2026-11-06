@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.download.DownloadTestRule;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -59,10 +58,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** End-to-end tests for Reader Mode (Simplified view). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(DeviceFormFactor.PHONE)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "--reader-mode-heuristics=alwaystrue"
-})
+@CommandLineFlags.Add("--reader-mode-heuristics=alwaystrue")
 @Batch(Batch.PER_CLASS)
 public class ReaderModeTest {
 

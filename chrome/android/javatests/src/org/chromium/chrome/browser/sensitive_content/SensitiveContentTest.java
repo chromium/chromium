@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -44,7 +43,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -77,7 +75,6 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT)
 @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SensitiveContentTest {
     private static final class TestSensitiveContentClientObserver
             implements SensitiveContentClient.Observer {

@@ -24,7 +24,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -59,10 +58,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the permission update message. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM
-})
+@CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
 public class PermissionUpdateMessageTest {
     private static final String GEOLOCATION_PAGE = "/chrome/test/data/geolocation/geolocation.html";
     private static final String MEDIASTREAM_PAGE = "/content/test/data/media/getusermedia.html";

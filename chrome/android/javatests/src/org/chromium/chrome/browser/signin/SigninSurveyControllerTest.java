@@ -44,10 +44,7 @@ import java.util.List;
 /** Instrumentation tests for {@link SigninSurveyController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Activity should be restarted")
-@CommandLineFlags.Add({
-    ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY,
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
-})
+@CommandLineFlags.Add(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)
 public class SigninSurveyControllerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

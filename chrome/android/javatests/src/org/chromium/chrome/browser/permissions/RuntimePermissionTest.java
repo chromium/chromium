@@ -25,7 +25,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.RuntimePromptResponse;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
@@ -40,10 +39,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Testing the interaction with the runtime permission prompt (Android level prompt). */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM
-})
+@CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
 @Batch(Batch.PER_CLASS)
 public class RuntimePermissionTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =

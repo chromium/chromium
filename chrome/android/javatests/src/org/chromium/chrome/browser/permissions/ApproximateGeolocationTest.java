@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.RuntimePromptResponse;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -56,10 +55,7 @@ import java.util.concurrent.TimeUnit;
 /** Test suite for Approximate Geolocation functionality. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-blink-features=ApproximateGeolocationWebVisibleAPI"
-})
+@CommandLineFlags.Add("enable-blink-features=ApproximateGeolocationWebVisibleAPI")
 @Features.EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
 @Batch(Batch.PER_CLASS)
 public class ApproximateGeolocationTest {
