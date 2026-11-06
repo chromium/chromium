@@ -238,6 +238,30 @@ public class CustomTabActivityTabControllerUnitTest {
     }
 
     @Test
+    public void doesntCreateTabAfterRestoreCookies_IfControllerDestroyed() {
+        env.isOffTheRecord = true;
+        mTabController = env.createTabController();
+        when(env.intentDataProvider.isOffTheRecord()).thenReturn(true);
+        when(env.cipherFactory.restoreFromBundle(any())).thenReturn(true);
+
+        CookiesFetcher mockFetcher = mock(CookiesFetcher.class);
+        mTabController.setCookiesFetcherForTesting(mockFetcher);
+
+        mTabController.setUpInitialTab(null);
+        clearInvocations(env.tabFactory);
+
+        mTabController.finishNativeInitialization();
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mockFetcher).restoreCookies(callbackCaptor.capture());
+
+        mTabController.destroy();
+        callbackCaptor.getValue().run();
+
+        verify(env.tabFactory, never()).createTab(any(), any(), any());
+        verify(env.tabModel, never()).addTab(any(), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
     public void doesntCreateNewTab_IfRestored() {
         Tab savedTab = env.prepareTab();
         env.saveTab(savedTab);

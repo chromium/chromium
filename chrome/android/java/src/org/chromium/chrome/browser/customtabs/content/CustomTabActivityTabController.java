@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
@@ -104,6 +105,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private final Intent mIntent;
     @Nullable private final CustomTabResumeManager mResumeManager;
     @MonotonicNonNull private CookiesFetcher mCookiesFetcher;
+    private final CallbackController mCallbackController = new CallbackController();
 
     public CustomTabActivityTabController(
             AppCompatActivity activity,
@@ -291,10 +293,15 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     @Override
     @SuppressWarnings("NullAway")
     public void destroy() {
+        mCallbackController.destroy();
         if (mCookiesFetcher != null) {
             mCookiesFetcher.destroy();
             mCookiesFetcher = null;
         }
+    }
+
+    void setCookiesFetcherForTesting(CookiesFetcher cookiesFetcher) {
+        mCookiesFetcher = cookiesFetcher;
     }
 
     public void finishNativeInitialization() {
@@ -315,7 +322,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             assumeNonNull(profileProvider);
             profileProvider.getOrCreateOffTheRecordProfile();
             ensureCookiesFetcher();
-            mCookiesFetcher.restoreCookies(this::finishTabInitializationPostNative);
+            mCookiesFetcher.restoreCookies(
+                    mCallbackController.makeCancelable(this::finishTabInitializationPostNative));
         } else {
             finishTabInitializationPostNative();
         }
