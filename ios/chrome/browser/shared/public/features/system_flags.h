@@ -253,6 +253,11 @@ bool IsWebExtensionLoadDelayDefault();
 // Whether App Switcher AI summarization external URL testing is enabled.
 bool IsAppSwitcherAISummarizationTestingExternalURLEnabled();
 
+// Whether the geolocation permission prompt frequency restriction should be
+// bypassed for the current app session. Returns true by default on Canary
+// channel.
+bool ShouldBypassGeolocationPromptRestriction();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

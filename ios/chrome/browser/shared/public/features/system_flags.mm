@@ -20,15 +20,19 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/variations/variations_associated_data.h"
+#import "components/version_info/channel.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/memory/model/features.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/channel_info.h"
 
 namespace {
 
 NSString* const kAlternateDiscoverFeedServerURL =
     @"AlternateDiscoverFeedServerURL";
+NSString* const kBypassGeolocationPromptRestriction =
+    @"BypassGeolocationPromptRestriction";
 NSString* const kEnableStartupCrash = @"EnableStartupCrash";
 NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
 NSString* const kFirstRunForceDisabled = @"FirstRunForceDisabled";
@@ -512,6 +516,19 @@ bool IsAppSwitcherAISummarizationTestingExternalURLEnabled() {
              boolForKey:kEnableAppSwitcherAISummarizationTestingExternalURL] ||
          command_line->HasSwitch(
              switches::kEnableAppSwitcherAISummarizationTestingExternalURL);
+}
+
+bool ShouldBypassGeolocationPromptRestriction() {
+  int value = [[NSUserDefaults standardUserDefaults]
+      integerForKey:kBypassGeolocationPromptRestriction];
+  switch (value) {
+    case 1:
+      return true;
+    case 2:
+      return false;
+    default:
+      return GetChannel() == version_info::Channel::CANARY;
+  }
 }
 
 }  // namespace experimental_flags

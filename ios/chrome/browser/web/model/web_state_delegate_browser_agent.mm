@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
@@ -190,6 +191,9 @@ void PostPermissionDecision(web::WebStatePermissionDecisionHandler handler,
       FROM_HERE, base::BindOnce(handler, decision));
 }
 
+// Tracks whether the geolocation system prompt was already shown during the
+// current app process session when the bypass experimental flag is enabled.
+bool g_geolocation_system_prompt_shown_this_session = false;
 
 }  // namespace
 
@@ -479,16 +483,27 @@ void WebStateDelegateBrowserAgent::RequestGeolocationPermission(
     handler(web::PermissionDecisionShowDefaultPrompt);
     return;
   }
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  const base::Time shown =
-      local_state->GetTime(prefs::kIosGeolocationSystemPromptLastShownTime);
 
-  if (!shown.is_null()) {
-    handler(web::PermissionDecisionDeny);
-    return;
+  // TODO(crbug.com/544803863): Clean up this bypass logic once the exact
+  // frequency and conditions for prompting the user are finalized.
+  if (experimental_flags::ShouldBypassGeolocationPromptRestriction()) {
+    if (g_geolocation_system_prompt_shown_this_session) {
+      handler(web::PermissionDecisionDeny);
+      return;
+    }
+    g_geolocation_system_prompt_shown_this_session = true;
+  } else {
+    PrefService* local_state = GetApplicationContext()->GetLocalState();
+    const base::Time shown =
+        local_state->GetTime(prefs::kIosGeolocationSystemPromptLastShownTime);
+
+    if (!shown.is_null()) {
+      handler(web::PermissionDecisionDeny);
+      return;
+    }
+    local_state->SetTime(prefs::kIosGeolocationSystemPromptLastShownTime,
+                         base::Time::Now());
   }
-  local_state->SetTime(prefs::kIosGeolocationSystemPromptLastShownTime,
-                       base::Time::Now());
 
   GeolocationSystemPermissionInfoBarDelegate::Create(source, handler);
 }
