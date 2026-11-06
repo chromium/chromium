@@ -266,7 +266,7 @@ public class RecentTabsPage
         mCoordinator.updateMargins(topMargin, bottomMargin, translationY);
     }
 
-    @Nullable Callback<Integer> getTabStripHeightChangeCallbackForTesting() {
+    Callback<Integer> getTabStripHeightChangeCallbackForTesting() {
         return mCoordinator.getTabStripHeightChangeCallbackForTesting(); // IN-TEST
     }
 

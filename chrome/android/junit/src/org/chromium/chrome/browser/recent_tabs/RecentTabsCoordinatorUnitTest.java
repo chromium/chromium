@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,6 +68,8 @@ public class RecentTabsCoordinatorUnitTest {
     @Mock private RecentTabsManager mRecentTabsManager;
     @Mock private NativePageNavigationDelegate mNavigationDelegate;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private Canvas mCanvas;
+    @Mock private ContextMenu mContextMenu;
 
     @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
     @Captor private ArgumentCaptor<RecentTabsManager.UpdatedCallback> mUpdatedCallbackCaptor;
@@ -174,8 +175,7 @@ public class RecentTabsCoordinatorUnitTest {
                 "Thumbnail should capture when view gains non-zero size.",
                 mCoordinator.shouldCaptureThumbnail());
 
-        Canvas canvas = mock(Canvas.class);
-        mCoordinator.captureThumbnail(canvas);
+        mCoordinator.captureThumbnail(mCanvas);
         assertFalse(
                 "SnapshotContentChanged should be reset after capture.",
                 mCoordinator.shouldCaptureThumbnail());
@@ -186,7 +186,7 @@ public class RecentTabsCoordinatorUnitTest {
                 "Thumbnail should capture after onUpdated data change.",
                 mCoordinator.shouldCaptureThumbnail());
 
-        mCoordinator.captureThumbnail(canvas);
+        mCoordinator.captureThumbnail(mCanvas);
         assertFalse(
                 "SnapshotContentChanged should be reset after second capture.",
                 mCoordinator.shouldCaptureThumbnail());
@@ -266,18 +266,17 @@ public class RecentTabsCoordinatorUnitTest {
 
     @Test
     public void testContextMenu() {
-        ContextMenu menu = mock(ContextMenu.class);
         View anchorView = new View(mActivity);
 
         // 1. Null menu info should clear menu and return cleanly.
-        mCoordinator.onCreateContextMenu(menu, mCoordinator.getView(), null);
-        verify(menu).clear();
+        mCoordinator.onCreateContextMenu(mContextMenu, mCoordinator.getView(), null);
+        verify(mContextMenu).clear();
 
         // 2. Out-of-bounds group position should clear menu and return cleanly without crashing.
         ExpandableListView.ExpandableListContextMenuInfo invalidInfo =
                 new ExpandableListView.ExpandableListContextMenuInfo(
                         anchorView, ExpandableListView.getPackedPositionForGroup(999), 0);
-        mCoordinator.onCreateContextMenu(menu, mCoordinator.getView(), invalidInfo);
+        mCoordinator.onCreateContextMenu(mContextMenu, mCoordinator.getView(), invalidInfo);
 
         // 3. Valid group position with loaded foreign sessions.
         List<ForeignSession> sessions = new ArrayList<>();
@@ -290,12 +289,12 @@ public class RecentTabsCoordinatorUnitTest {
         ExpandableListView.ExpandableListContextMenuInfo groupInfo =
                 new ExpandableListView.ExpandableListContextMenuInfo(
                         anchorView, ExpandableListView.getPackedPositionForGroup(0), 0);
-        mCoordinator.onCreateContextMenu(menu, mCoordinator.getView(), groupInfo);
+        mCoordinator.onCreateContextMenu(mContextMenu, mCoordinator.getView(), groupInfo);
 
         ExpandableListView.ExpandableListContextMenuInfo childInfo =
                 new ExpandableListView.ExpandableListContextMenuInfo(
                         anchorView, ExpandableListView.getPackedPositionForChild(0, 0), 0);
-        mCoordinator.onCreateContextMenu(menu, mCoordinator.getView(), childInfo);
+        mCoordinator.onCreateContextMenu(mContextMenu, mCoordinator.getView(), childInfo);
     }
 
     @Test
