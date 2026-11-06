@@ -198,6 +198,8 @@ class FakeDesktopSession : public mojom::DesktopSession {
     receiver_.set_disconnect_handler(close_callback_);
   }
 
+  void ResetReceiver() { receiver_.reset(); }
+
  private:
   int terminal_id_;
   raw_ptr<MockDesktopSessionManager> session_manager_;
@@ -1200,6 +1202,30 @@ TEST_F(IpcDesktopEnvironmentTest, OnTerminalDisconnectedWithError) {
 
   OnTerminalDisconnected(terminal_id_, ErrorCode::SESSION_REJECTED,
                          "Test rejection", FROM_HERE);
+
+  desktop_environment_factory_.reset();
+  DestroyDesktopProcess();
+}
+
+TEST_F(IpcDesktopEnvironmentTest, OnDesktopSessionRemoteDisconnected) {
+  auto clipboard_stub = std::make_unique<protocol::MockClipboardStub>();
+  EXPECT_CALL(*clipboard_stub, InjectClipboardEvent(_)).Times(0);
+  input_injector_->Start(std::move(clipboard_stub));
+
+  setup_run_loop_->Run();
+
+  base::test::TestFuture<void> disconnected_future;
+  EXPECT_CALL(
+      client_session_control_,
+      DisconnectSession(ErrorCode::INVALID_STATE,
+                        "DesktopSession control remote disconnected.", _))
+      .WillOnce([this, &disconnected_future]() {
+        DeleteDesktopEnvironment();
+        disconnected_future.SetValue();
+      });
+
+  fake_desktop_session_->ResetReceiver();
+  EXPECT_TRUE(disconnected_future.Wait());
 
   desktop_environment_factory_.reset();
   DestroyDesktopProcess();

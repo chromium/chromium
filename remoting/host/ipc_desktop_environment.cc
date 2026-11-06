@@ -434,7 +434,7 @@ void IpcDesktopEnvironmentFactory::Core::OnDesktopSessionRemoteDisconnected(
 
   DesktopSessionProxy* proxy = it->second->desktop_session_proxy;
   connections_.erase(it);
-  proxy->DisconnectSession(ErrorCode::CHANNEL_CONNECTION_ERROR,
+  proxy->DisconnectSession(ErrorCode::INVALID_STATE,
                            "DesktopSession control remote disconnected.",
                            FROM_HERE);
 }

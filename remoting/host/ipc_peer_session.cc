@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/signaling/signaling_id_util.h"
 
 namespace remoting {
@@ -49,7 +50,7 @@ void IpcPeerSession::Start(
   event_handler_ = event_handler;
   if (!remote_.is_bound()) {
     LOG(WARNING) << "Start called when PeerSession remote is not bound.";
-    NotifySessionClosed(protocol::ErrorCode::CHANNEL_CONNECTION_ERROR,
+    NotifySessionClosed(protocol::ErrorCode::INVALID_STATE,
                         "PeerSession remote is not bound.", FROM_HERE);
     return;
   }
@@ -195,7 +196,7 @@ void IpcPeerSession::OnPeerSessionDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "PeerSession remote dropped unexpectedly.";
   remote_.reset();
-  NotifySessionClosed(protocol::ErrorCode::CHANNEL_CONNECTION_ERROR,
+  NotifySessionClosed(protocol::ErrorCode::INVALID_STATE,
                       "PeerSession remote dropped unexpectedly.", FROM_HERE);
 }
 
@@ -203,7 +204,7 @@ void IpcPeerSession::OnEventHandlerDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "PeerSessionEventHandler remote dropped unexpectedly.";
   event_handler_receiver_.reset();
-  NotifySessionClosed(protocol::ErrorCode::CHANNEL_CONNECTION_ERROR,
+  NotifySessionClosed(protocol::ErrorCode::INVALID_STATE,
                       "PeerSessionEventHandler dropped unexpectedly.",
                       FROM_HERE);
 }
