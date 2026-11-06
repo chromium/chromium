@@ -992,6 +992,77 @@ TEST_F(AIPageContentAgentTest, Image) {
       image_node.content_attributes->image_info->source_origin->IsOpaque());
 }
 
+TEST_F(AIPageContentAgentTest, ImageWithC2PAManifest) {
+  // 1x1 JPEG containing an APP11 JUMBF C2PA manifest header.
+  constexpr char kSmallC2paImage[] =
+      "data:image/jpeg;base64,/9j/6wAeSlAAAQAAAAEAAAAUanVtYgAAAAxqdW1kYzJwYf/"
+      "gABBKRklGAAEBAAABAAEAAP/"
+      "bAEMAAwICAgICAwICAgMDAwMEBgQEBAQECAYGBQYJCAoKCQgJCQoMDwwKCw4LCQkNEQ0ODxA"
+      "QERAKDBITEhATDxAQEP/"
+      "bAEMBAwMDBAMECAQECBALCQsQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA"
+      "QEBAQEBAQEBAQEBAQEP/AABEIAAEAAQMBIgACEQEDEQH/"
+      "xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/"
+      "xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQz"
+      "YnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5"
+      "eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna"
+      "4eLj5OXm5+jp6vHy8/T19vf4+fr/"
+      "xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/"
+      "xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVi"
+      "ctEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4"
+      "eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY"
+      "2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP7+KKKKAP/Z";
+
+  constexpr char kSmallPngImage[] =
+      "data:image/png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGA"
+      "hKmMIQAAAABJRU5ErkJggg==";
+
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <img alt='c2pa'></img>"
+      "  <img alt='no-c2pa'></img>"
+      "  <img alt='png'></img>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  document.getElementsByTagName(AtomicString("img"))
+      ->item(0)
+      ->setAttribute(html_names::kSrcAttr, AtomicString(kSmallC2paImage));
+  document.getElementsByTagName(AtomicString("img"))
+      ->item(1)
+      ->setAttribute(html_names::kSrcAttr, AtomicString(kSmallImage));
+  document.getElementsByTagName(AtomicString("img"))
+      ->item(2)
+      ->setAttribute(html_names::kSrcAttr, AtomicString(kSmallPngImage));
+
+  test::RunPendingTasks();
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 3u);
+
+  const auto& c2pa_image_node = *root.children_nodes[0];
+  CheckImageNode(c2pa_image_node, "c2pa", KURL());
+  ASSERT_TRUE(c2pa_image_node.content_attributes->image_info);
+  EXPECT_EQ(c2pa_image_node.content_attributes->image_info->has_c2pa_manifest,
+            true);
+
+  const auto& non_c2pa_image_node = *root.children_nodes[1];
+  CheckImageNode(non_c2pa_image_node, "no-c2pa", KURL());
+  ASSERT_TRUE(non_c2pa_image_node.content_attributes->image_info);
+  EXPECT_EQ(
+      non_c2pa_image_node.content_attributes->image_info->has_c2pa_manifest,
+      false);
+
+  const auto& png_image_node = *root.children_nodes[2];
+  CheckImageNode(png_image_node, "png", KURL());
+  ASSERT_TRUE(png_image_node.content_attributes->image_info);
+  EXPECT_FALSE(png_image_node.content_attributes->image_info->has_c2pa_manifest
+                   .has_value());
+}
+
 TEST_F(AIPageContentAgentTest, ImageWithUrl) {
   url_test_helpers::RegisterMockedURLLoad(
       url_test_helpers::ToKURL("https://example.com/image.jpg"),
@@ -1014,6 +1085,8 @@ TEST_F(AIPageContentAgentTest, ImageWithUrl) {
   CheckImageNode(image_node, "hello alt text",
                  blink::KURL("https://example.com/image.jpg"));
   ASSERT_TRUE(image_node.content_attributes->image_info);
+  EXPECT_FALSE(
+      image_node.content_attributes->image_info->has_c2pa_manifest.has_value());
   ASSERT_TRUE(image_node.content_attributes->image_info->source_origin);
   EXPECT_EQ(
       image_node.content_attributes->image_info->source_origin->ToString(),

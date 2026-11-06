@@ -567,6 +567,10 @@ void ConvertImageInfo(
         proto_image_info->mutable_security_origin());
   }
   proto_image_info->set_url(mojom_image_info.url.spec());
+  if (mojom_image_info.has_c2pa_manifest.has_value()) {
+    proto_image_info->set_has_c2pa_manifest(
+        *mojom_image_info.has_c2pa_manifest);
+  }
 }
 
 void ConvertSvgRootData(

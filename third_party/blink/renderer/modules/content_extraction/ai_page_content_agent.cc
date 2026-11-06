@@ -113,6 +113,7 @@
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -1318,6 +1319,18 @@ mojom::blink::AIPageContentImageInfoPtr GetImageInfo(
     }
     if (!mime_type.empty()) {
       image_info->mime_type = mime_type;
+    }
+    if (image) {
+      switch (image->GetC2PAManifestStatus()) {
+        case C2PAManifestStatus::kDetected:
+          image_info->has_c2pa_manifest = true;
+          break;
+        case C2PAManifestStatus::kNotDetected:
+          image_info->has_c2pa_manifest = false;
+          break;
+        case C2PAManifestStatus::kUnknown:
+          break;
+      }
     }
   }
 

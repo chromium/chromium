@@ -403,6 +403,11 @@ struct AIPageContentImageInfo {
   // The MIME type of the image. Common MIME types include image/jpeg,
   // image/png, image/gif, image/webp, and image/svg+xml.
   string? mime_type;
+
+  // Whether the image contains an embedded C2PA manifest. If unset, it is
+  // unknown whether the image contains a C2PA manifest (for example, if C2PA
+  // manifest detection is not supported for the image format).
+  bool? has_c2pa_manifest;
 };
 
 struct AIPageContentSvgRootData {
