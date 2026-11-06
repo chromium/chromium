@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PASSWORD_MANAGER_UI_HANDLER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -22,6 +23,10 @@ class PasswordsPrivateDelegate;
 
 namespace content {
 class WebContents;
+}
+
+namespace password_manager {
+class PasswordManagerClient;
 }
 
 // This class acts as the IPC proxy between the Password Manager
@@ -41,12 +46,16 @@ class PasswordManagerUIHandler
     : public password_manager::mojom::PageHandler,
       public extensions::PasswordsPrivateDelegate::Observer {
  public:
+  // `web_contents` and `password_manager_client` are retained as raw pointers
+  // and must outlive `PasswordManagerUIHandler`. `web_contents` must be non-null.
+  // `password_manager_client` may be null in non-tab WebContents contexts.
   PasswordManagerUIHandler(
       mojo::PendingReceiver<password_manager::mojom::PageHandler> receiver,
       mojo::PendingRemote<password_manager::mojom::Page> page,
       scoped_refptr<extensions::PasswordsPrivateDelegate>
           passwords_private_delegate,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* password_manager_client);
 
   PasswordManagerUIHandler(const PasswordManagerUIHandler&) = delete;
   PasswordManagerUIHandler& operator=(const PasswordManagerUIHandler&) = delete;
@@ -144,6 +153,7 @@ class PasswordManagerUIHandler
       PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState state);
 
   raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<password_manager::PasswordManagerClient> password_manager_client_;
   scoped_refptr<extensions::PasswordsPrivateDelegate>
       passwords_private_delegate_;
 

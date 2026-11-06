@@ -32,8 +32,10 @@
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -145,6 +147,17 @@ class MockPasswordChangeService : public ChromePasswordChangeService {
               (override));
 };
 
+class MockPasswordManagerClient : public StubPasswordManagerClient {
+ public:
+  MockPasswordManagerClient() = default;
+  ~MockPasswordManagerClient() override = default;
+
+  MOCK_METHOD(void,
+              StartTrustedVaultKeyRetrieval,
+              (trusted_vault::TrustedVaultUserActionTriggerForUMA),
+              (override));
+};
+
 }  // namespace
 
 class PasswordManagerUIHandlerUnitTest : public testing::Test {
@@ -167,7 +180,8 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
     // Create the handler under test.
     handler_ = std::make_unique<PasswordManagerUIHandler>(
         mojo::PendingReceiver<mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), std::move(delegate), web_contents_);
+        mock_page_.BindAndGetRemote(), std::move(delegate), web_contents_,
+        &mock_client_);
 
     // Ensure the Mojo connection is established.
     mock_page_.FlushForTesting();
@@ -219,6 +233,7 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
   NiceMock<MockPasswordsPrivateDelegate>& mock_delegate() {
     return *mock_delegate_;
   }
+  NiceMock<MockPasswordManagerClient>& mock_client() { return mock_client_; }
 
  protected:
   // NOTE: The initialization order of these members matters for construction
@@ -229,6 +244,7 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
   // Weak ptr owned by factory_.
   raw_ptr<content::WebContents> web_contents_;
   NiceMock<MockPage> mock_page_;
+  NiceMock<MockPasswordManagerClient> mock_client_;
   scoped_refptr<TestPasswordStore> password_store_;
   std::unique_ptr<affiliations::FakeAffiliationService> affiliation_service_;
 
@@ -997,6 +1013,26 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 
   // Calling with non-existent credential ID should not crash.
   handler().StopPasswordChange(999);
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       StartTrustedVaultUnlock_DelegatesToClient) {
+  EXPECT_CALL(mock_client(),
+              StartTrustedVaultKeyRetrieval(
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordManagerSettings));
+  handler().StartTrustedVaultUnlock();
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       StartTrustedVaultUnlock_NullClient_NoOp) {
+  MockPage mock_page;
+  auto handler = std::make_unique<PasswordManagerUIHandler>(
+      mojo::PendingReceiver<mojom::PageHandler>(),
+      mock_page.BindAndGetRemote(),
+      base::MakeRefCounted<NiceMock<MockPasswordsPrivateDelegate>>(),
+      web_contents_, /*password_manager_client=*/nullptr);
+  handler->StartTrustedVaultUnlock();
 }
 
 }  // namespace password_manager

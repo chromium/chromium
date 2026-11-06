@@ -16,18 +16,17 @@
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/sync_ui_util.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -157,8 +156,10 @@ PasswordManagerUIHandler::PasswordManagerUIHandler(
     mojo::PendingRemote<password_manager::mojom::Page> page,
     scoped_refptr<extensions::PasswordsPrivateDelegate>
         passwords_private_delegate,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* password_manager_client)
     : web_contents_(web_contents),
+      password_manager_client_(password_manager_client),
       passwords_private_delegate_(std::move(passwords_private_delegate)),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
@@ -401,11 +402,10 @@ void PasswordManagerUIHandler::ContinueImport(
 }
 
 void PasswordManagerUIHandler::StartTrustedVaultUnlock() {
-  if (BrowserWindowInterface* browser =
-          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-              web_contents_)) {
-    OpenTabForSyncKeyRetrieval(
-        browser, trusted_vault::TrustedVaultUserActionTriggerForUMA::
-                     kPasswordManagerSettings);
+  if (!password_manager_client_) {
+    return;
   }
+  password_manager_client_->StartTrustedVaultKeyRetrieval(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerSettings);
 }

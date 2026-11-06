@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -899,7 +900,8 @@ void PasswordManagerUI::CreatePageHandler(
     mojo::PendingRemote<password_manager::mojom::Page> page,
     mojo::PendingReceiver<password_manager::mojom::PageHandler> receiver) {
   CHECK(page, base::NotFatalUntil::M162);
+  content::WebContents* web_contents = web_ui()->GetWebContents();
   password_manager_ui_handler_ = std::make_unique<PasswordManagerUIHandler>(
       std::move(receiver), std::move(page), passwords_private_delegate_,
-      web_ui()->GetWebContents());
+      web_contents, ChromePasswordManagerClient::FromWebContents(web_contents));
 }
