@@ -419,23 +419,23 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
 
   if (item->IsDangerous() && (item->GetState() != DownloadItem::CANCELLED)) {
     DownloadItemModel model{item};
-    bool dialog_shown = false;
+    bool warning_shown = false;
     if (item->GetDangerType() ==
         download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
-      dialog_shown = OnSensitiveDownload(item);
+      warning_shown = OnSensitiveDownload(item);
     } else if (isEnterpriseBlockDownloadDangerType(item->GetDangerType())) {
       // The download is deemed blocked by enterprise policy, do
       // nothing here so the download will fail the completion check.
     } else if (ShouldShowSafeBrowsingAndroidDownloadWarnings(
                    /*enable_for_telemetry=*/true)) {
-      dialog_shown = ShowDangerousDownloadWarning(model);
+      warning_shown = ShowDangerousDownloadWarning(model);
     } else {
       // Don't show notification for a dangerous download, as user can resume
       // the download after browser crash through notification.
-      dialog_shown = OnDangerousDownload(item);
+      warning_shown = OnDangerousDownload(item);
     }
 
-    if (dialog_shown) {
+    if (warning_shown) {
       MaybeRecordDangerousDownloadWarningShown(model);
     }
     return;
@@ -474,15 +474,19 @@ bool DownloadController::ShowDangerousDownloadWarning(DownloadUIModel& model) {
   download::DownloadItem* item = model.GetDownloadItem();
   CHECK(item);
   // Schedule the dangerous download to be canceled after a time delay.
-  if (DownloadCoreService* download_core_service =
-          DownloadCoreServiceFactory::GetForBrowserContext(
-              content::DownloadItemUtils::GetBrowserContext(item));
-      download_core_service && model.IsEphemeralWarning()) {
-    if (ChromeDownloadManagerDelegate* delegate =
-            download_core_service->GetDownloadManagerDelegate();
-        delegate) {
-      delegate->ScheduleCancelForEphemeralWarning(item->GetGuid());
+  if (!safe_browsing::kMaliciousApkDownloadCheckTelemetryOnly.Get() &&
+      model.IsEphemeralWarning()) {
+    if (DownloadCoreService* download_core_service =
+            DownloadCoreServiceFactory::GetForBrowserContext(
+                content::DownloadItemUtils::GetBrowserContext(item))) {
+      if (ChromeDownloadManagerDelegate* delegate =
+              download_core_service->GetDownloadManagerDelegate()) {
+        delegate->ScheduleCancelForEphemeralWarning(item->GetGuid());
+      }
     }
+    // This ephemeral warning will be shown as a download message rather than a
+    // dialog.
+    return true;
   }
 
   // For generic filetype warnings, fall back to the DangerousDownloadDialog.
