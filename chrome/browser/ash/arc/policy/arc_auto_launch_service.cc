@@ -9,7 +9,9 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_launcher.h"
@@ -84,19 +86,39 @@ bool IsArcEnabled(const PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kArcEnabled);
 }
 
-// Describes why `package_name` can't be launched, for logging.
-std::string_view GetLaunchFailureReason(const PrefService& pref_service,
-                                        const ArcAppListPrefs& app_list_prefs,
-                                        const std::string& package_name) {
+constexpr char kResultHistogram[] = "Arc.AutoLaunch.Result";
+
+// Returns why `package_name` can't be launched.
+ArcAutoLaunchService::Result GetLaunchFailure(
+    const PrefService& pref_service,
+    const ArcAppListPrefs& app_list_prefs,
+    const std::string& package_name) {
   // IsPackageInstalled() also returns false while ARC is disabled, so check
   // that first.
   if (!IsArcEnabled(pref_service)) {
-    return "ARC is disabled";
+    return ArcAutoLaunchService::Result::kArcDisabled;
   }
   if (!app_list_prefs.IsPackageInstalled(package_name)) {
-    return "the package is not installed";
+    return ArcAutoLaunchService::Result::kNotInstalled;
   }
-  return "the package has no launchable activity";
+  return ArcAutoLaunchService::Result::kNoLaunchableActivity;
+}
+
+// Describes a launch failure, for logging.
+std::string_view DescribeLaunchFailure(ArcAutoLaunchService::Result result) {
+  switch (result) {
+    case ArcAutoLaunchService::Result::kLaunched:
+    case ArcAutoLaunchService::Result::kSessionEndedBeforeTimeout:
+      NOTREACHED();
+    case ArcAutoLaunchService::Result::kArcDisabled:
+      return "ARC is disabled";
+    case ArcAutoLaunchService::Result::kNotInstalled:
+      return "the package is not installed";
+    case ArcAutoLaunchService::Result::kNoLaunchableActivity:
+      return "the package has no launchable activity";
+    case ArcAutoLaunchService::Result::kNotReady:
+      return "the app did not become ready";
+  }
 }
 
 }  // namespace
@@ -133,6 +155,16 @@ ArcAutoLaunchService::ArcAutoLaunchService(content::BrowserContext* context,
 ArcAutoLaunchService::~ArcAutoLaunchService() = default;
 
 void ArcAutoLaunchService::Shutdown() {
+  // If the session ends before the timeout, record whether the app was launched
+  // by then. Don't record a failure reason: the app might still have been
+  // launched in time, and ArcAppListPrefs is unreliable here since ARC is shut
+  // down first.
+  if (timeout_timer_.IsRunning()) {
+    base::UmaHistogramEnumeration(kResultHistogram,
+                                  HasLaunchedApp()
+                                      ? Result::kLaunched
+                                      : Result::kSessionEndedBeforeTimeout);
+  }
   pref_change_registrar_.Reset();
   StopLaunch();
 }
@@ -222,16 +254,18 @@ bool ArcAutoLaunchService::HasLaunchedApp() const {
 
 void ArcAutoLaunchService::OnTimeout() {
   if (HasLaunchedApp()) {
+    base::UmaHistogramEnumeration(kResultHistogram, Result::kLaunched);
     return;
   }
-  std::string_view reason = "the app did not become ready";
-  if (!app_launcher_) {
-    reason = GetLaunchFailureReason(*profile_->GetPrefs(),
-                                    CHECK_DEREF(ArcAppListPrefs::Get(profile_)),
-                                    package_name_);
-  }
+  const Result result =
+      app_launcher_
+          ? Result::kNotReady
+          : GetLaunchFailure(*profile_->GetPrefs(),
+                             CHECK_DEREF(ArcAppListPrefs::Get(profile_)),
+                             package_name_);
   LOG(WARNING) << "Timed out auto-launching " << package_name_ << ": "
-               << reason;
+               << DescribeLaunchFailure(result);
+  base::UmaHistogramEnumeration(kResultHistogram, result);
   StopLaunch();
 }
 

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
@@ -42,9 +43,12 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 
+using Result = ArcAutoLaunchService::Result;
+
 constexpr char kTestEmail[] = "user@example.com";
 constexpr char kTestPackageName[] = "com.example.app";
 constexpr char kTestActivity[] = "com.example.app.MainActivity";
+constexpr char kResultHistogram[] = "Arc.AutoLaunch.Result";
 
 class ArcAutoLaunchServiceTest : public testing::Test {
  public:
@@ -400,6 +404,119 @@ TEST_F(ArcAutoLaunchServiceTest, DynamicPolicyUpdate_PolicyCleared) {
   SetAutoLaunchApps({});
   SetInstalledApps({{kTestPackageName, kTestActivity}});
   EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+}
+
+TEST_F(ArcAutoLaunchServiceTest, RecordsLaunchedAtTimeout) {
+  base::HistogramTester histogram_tester;
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kTestPackageName));
+  histogram_tester.ExpectTotalCount(kResultHistogram, 0);
+
+  task_environment_.FastForwardBy(ArcAutoLaunchService::kLaunchTimeout);
+  histogram_tester.ExpectUniqueSample(kResultHistogram, Result::kLaunched, 1);
+}
+
+TEST_F(ArcAutoLaunchServiceTest, RecordsLaunchedAtShutdownBeforeTimeout) {
+  base::HistogramTester histogram_tester;
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  SetAutoLaunchApps({kTestPackageName});
+
+  ArcAutoLaunchService* service = CreateService();
+  service->Shutdown();
+
+  histogram_tester.ExpectUniqueSample(kResultHistogram, Result::kLaunched, 1);
+}
+
+TEST_F(ArcAutoLaunchServiceTest,
+       RecordsSessionEndedBeforeTimeout_NotInstalled) {
+  base::HistogramTester histogram_tester;
+  SetAutoLaunchApps({kTestPackageName});
+
+  ArcAutoLaunchService* service = CreateService();
+  service->Shutdown();
+
+  histogram_tester.ExpectUniqueSample(kResultHistogram,
+                                      Result::kSessionEndedBeforeTimeout, 1);
+}
+
+TEST_F(ArcAutoLaunchServiceTest, RecordsSessionEndedBeforeTimeout_NotReady) {
+  base::HistogramTester histogram_tester;
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  SetAutoLaunchApps({kTestPackageName});
+  arc_app_test_.StopArcInstance();
+
+  ArcAutoLaunchService* service = CreateService();
+  service->Shutdown();
+
+  histogram_tester.ExpectUniqueSample(kResultHistogram,
+                                      Result::kSessionEndedBeforeTimeout, 1);
+}
+
+TEST_F(ArcAutoLaunchServiceTest, RecordsOnceWhenShutdownAfterTimeout) {
+  base::HistogramTester histogram_tester;
+  SetAutoLaunchApps({kTestPackageName});
+
+  ArcAutoLaunchService* service = CreateService();
+  task_environment_.FastForwardBy(ArcAutoLaunchService::kLaunchTimeout);
+  service->Shutdown();
+
+  histogram_tester.ExpectUniqueSample(kResultHistogram, Result::kNotInstalled,
+                                      1);
+}
+
+TEST_F(ArcAutoLaunchServiceTest, RecordsNotInstalled) {
+  base::HistogramTester histogram_tester;
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+  task_environment_.FastForwardBy(ArcAutoLaunchService::kLaunchTimeout);
+
+  histogram_tester.ExpectUniqueSample(kResultHistogram, Result::kNotInstalled,
+                                      1);
+}
+
+TEST_F(ArcAutoLaunchServiceTest, RecordsNoLaunchableActivity) {
+  base::HistogramTester histogram_tester;
+  // The package is installed, but only has a non-launchable activity.
+  mojom::ArcPackageInfoPtr package = mojom::ArcPackageInfo::New();
+  package->package_name = kTestPackageName;
+  arc_app_test_.app_instance()->SendPackageAdded(std::move(package));
+  static_cast<mojom::AppHost*>(ArcAppListPrefs::Get(profile_.get()))
+      ->OnTaskCreated(/*task_id=*/1, kTestPackageName,
+                      "com.example.app.BackgroundActivity", "Background",
+                      /*intent_uri=*/std::nullopt, /*session_id=*/0);
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+  task_environment_.FastForwardBy(ArcAutoLaunchService::kLaunchTimeout);
+
+  histogram_tester.ExpectUniqueSample(kResultHistogram,
+                                      Result::kNoLaunchableActivity, 1);
+}
+
+TEST_F(ArcAutoLaunchServiceTest, RecordsNotReady) {
+  base::HistogramTester histogram_tester;
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  SetAutoLaunchApps({kTestPackageName});
+  arc_app_test_.StopArcInstance();
+
+  CreateService();
+  task_environment_.FastForwardBy(ArcAutoLaunchService::kLaunchTimeout);
+
+  histogram_tester.ExpectUniqueSample(kResultHistogram, Result::kNotReady, 1);
+}
+
+TEST_F(ArcAutoLaunchServiceTest, NoPolicy_RecordsNothing) {
+  base::HistogramTester histogram_tester;
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+
+  CreateService();
+  task_environment_.FastForwardBy(ArcAutoLaunchService::kLaunchTimeout);
+
+  histogram_tester.ExpectTotalCount(kResultHistogram, 0);
 }
 
 }  // namespace

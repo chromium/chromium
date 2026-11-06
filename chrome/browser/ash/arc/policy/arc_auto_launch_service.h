@@ -39,6 +39,21 @@ class ArcAutoLaunchService : public KeyedService,
   // session.
   static constexpr base::TimeDelta kLaunchTimeout = base::Minutes(5);
 
+  // The outcome of auto-launching the configured app, recorded to
+  // Arc.AutoLaunch.Result. These values are persisted to logs. Entries should
+  // not be renumbered and numeric values should never be reused.
+  // LINT.IfChange(ArcAutoLaunchResult)
+  enum class Result {
+    kLaunched = 0,
+    kArcDisabled = 1,
+    kNotInstalled = 2,
+    kNoLaunchableActivity = 3,
+    kNotReady = 4,
+    kSessionEndedBeforeTimeout = 5,
+    kMaxValue = kSessionEndedBeforeTimeout,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/arc/enums.xml:ArcAutoLaunchResult)
+
   static ArcAutoLaunchService* GetForBrowserContext(
       content::BrowserContext* context);
   static ArcAutoLaunchService* GetForBrowserContextForTesting(
@@ -77,7 +92,8 @@ class ArcAutoLaunchService : public KeyedService,
   void StopLaunch();
   // Returns true if the app has been launched.
   bool HasLaunchedApp() const;
-  // Gives up launching the app if it has not been launched yet.
+  // Records the result of the launch attempt, and gives up launching the app if
+  // it has not been launched yet.
   void OnTimeout();
   // Applies changes to the AutoLaunchAndroidApps policy.
   void OnPolicyChanged();

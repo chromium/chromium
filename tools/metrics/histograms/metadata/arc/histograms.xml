@@ -857,6 +857,20 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
+<histogram name="Arc.AutoLaunch.Result" enum="ArcAutoLaunchResult"
+    expires_after="2027-04-15">
+  <owner>fahadmansoor@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records the outcome of auto-launching the Android app configured by the
+    AutoLaunchAndroidApps policy. Recorded once per attempt, when the launch
+    timeout fires (5 minutes after sign-in, or after the policy changes). If the
+    session ends before that, it is recorded at the end of the session instead:
+    as launched if the app was launched by then, or as session ended before
+    timeout otherwise. That is best effort, since the browser might exit first.
+  </summary>
+</histogram>
+
 <histogram
     name="Arc.CloudDpc{TimedCloudDpcOp}.TimeDelta{SuccessFailure}{ArcUserTypes}"
     units="ms" expires_after="2027-03-21">
