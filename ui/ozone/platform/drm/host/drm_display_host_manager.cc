@@ -109,7 +109,8 @@ base::FilePath MapDevPathToSysPath(const base::FilePath& device_path) {
 
 std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
                                           const base::FilePath& sys_path,
-                                          bool is_primary_device) {
+                                          bool is_primary_device,
+                                          bool allow_unauthenticated) {
   // Security folks have requested that we assert the graphics device has the
   // expected path, so use a CHECK instead of a DCHECK. The sys_path is only
   // used a label and is otherwise unvalidated.
@@ -121,7 +122,13 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
   int num_auth_attempts = 0;
   bool is_authenticated = false;
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (num_auth_attempts < kMaxAuthAttempts) {
+  base::TimeTicks last_log_time = start_time;
+  // When `allow_unauthenticated` is false, wait until the current master (e.g.
+  // frecon on cold boot) releases the device so `open()` implicitly acquires
+  // DRM master; chronos lacks CAP_SYS_ADMIN to call `drmSetMaster()` later on
+  // an unauthenticated FD. Otherwise, bound retries to avoid blocking
+  // indefinitely.
+  while (!allow_unauthenticated || num_auth_attempts < kMaxAuthAttempts) {
     scoped_fd.reset();
     int fd = HANDLE_EINTR(open(dev_path.value().c_str(), O_RDWR | O_CLOEXEC));
     if (fd < 0) {
@@ -131,21 +138,24 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
     scoped_fd.reset(fd);
 
     num_auth_attempts++;
-    // To avoid spamming the logs, hold off before logging a warning (some
-    // failures are expected at first).
+    // To avoid spamming the logs (especially when `!allow_unauthenticated`
+    // waits indefinitely), hold off before logging an error and rate-limit
+    // subsequent logs to at most once per `kLogAuthFailDelayMs`.
+    const base::TimeTicks now = base::TimeTicks::Now();
     const bool should_log_error =
-        (base::TimeTicks::Now() - start_time).InMilliseconds() >=
-        kLogAuthFailDelayMs;
+        (now - last_log_time).InMilliseconds() >= kLogAuthFailDelayMs;
     drm_magic_t magic;
     UNSAFE_TODO(memset(&magic, 0, sizeof(magic)));
     // We need to make sure the DRM device has enough privilege. Use the DRM
     // authentication logic to figure out if the device has enough permissions.
     int drm_errno = drmGetMagic(fd, &magic);
     if (drm_errno) {
-      LOG_IF(ERROR, should_log_error)
-          << "Failed to get magic cookie to authenticate: " << dev_path.value()
-          << " with errno: " << drm_errno << " after " << num_auth_attempts
-          << " attempt(s)";
+      if (should_log_error) {
+        LOG(ERROR) << "Failed to get magic cookie to authenticate: "
+                   << dev_path.value() << " with errno: " << drm_errno
+                   << " after " << num_auth_attempts << " attempt(s)";
+        last_log_time = now;
+      }
       usleep(kAuthFailSleepMs * 1000);
       continue;
     }
@@ -158,10 +168,12 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
         is_authenticated = true;
         break;
       }
-      LOG_IF(ERROR, should_log_error)
-          << "Failed to authenticate: " << dev_path.value()
-          << " with errno: " << drm_errno << " after " << num_auth_attempts
-          << " attempt(s)";
+      if (should_log_error) {
+        LOG(ERROR) << "Failed to authenticate: " << dev_path.value()
+                   << " with errno: " << drm_errno << " after "
+                   << num_auth_attempts << " attempt(s)";
+        last_log_time = now;
+      }
       usleep(kAuthFailSleepMs * 1000);
       continue;
     }
@@ -170,6 +182,7 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
   }
 
   if (!is_authenticated) {
+    CHECK(allow_unauthenticated);
     LOG(WARNING) << "Failed to authenticate " << dev_path.value() << " after "
                  << num_auth_attempts
                  << " attempt(s); proceeding with unauthenticated device";
@@ -196,7 +209,8 @@ void OpenDeviceAsync(const base::FilePath& device_path,
   base::FilePath sys_path = MapDevPathToSysPath(device_path);
 
   std::unique_ptr<DrmWrapper> drm =
-      OpenDrmDevice(device_path, sys_path, /*is_primary_device=*/false);
+      OpenDrmDevice(device_path, sys_path, /*is_primary_device=*/false,
+                    /*allow_unauthenticated=*/true);
   reply_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), device_path, sys_path,
                                 std::move(drm)));
@@ -290,9 +304,14 @@ DrmDisplayHostManager::DrmDisplayHostManager(
     base::FilePath primary_graphics_card_path_sysfs =
         MapDevPathToSysPath(primary_graphics_card_path_);
 
+    // On cold boot, no GPU process exists yet and frecon may still hold DRM
+    // master during boot splash/hotplug rescans. Require authentication so
+    // Chrome does not start with an unauthenticated primary FD that can never
+    // acquire DRM master for modesetting.
     primary_drm_device_ = OpenDrmDevice(primary_graphics_card_path_,
                                         primary_graphics_card_path_sysfs,
-                                        /*is_primary_device=*/true);
+                                        /*is_primary_device=*/true,
+                                        /*allow_unauthenticated=*/false);
     if (!primary_drm_device_) {
       LOG(FATAL) << "Failed to open primary graphics card";
     }
@@ -544,10 +563,15 @@ void DrmDisplayHostManager::OnGpuProcessLaunched() {
         MapDevPathToSysPath(primary_graphics_card_path_);
 
     if (!primary_drm_device) {
+      // On GPU process restart, the previous crashing GPU process may still be
+      // tearing down its DRM master state. Allow falling back to an
+      // unauthenticated FD after bounded retries to avoid hanging or crashing
+      // the browser UI thread.
       primary_drm_device =
           OpenDrmDevice(primary_graphics_card_path_,
                         drm_devices_[primary_graphics_card_path_],
-                        /*is_primary_device=*/true);
+                        /*is_primary_device=*/true,
+                        /*allow_unauthenticated=*/true);
       if (!primary_drm_device) {
         LOG(FATAL) << "Failed to open the primary graphics card";
       }
