@@ -5276,6 +5276,7 @@
       // https://crbug.com/440387014
       name: "Prerender2CrossOriginIframes",
       origin_trial_feature_name: "Prerender2CrossOriginIframes",
+      status: "stable",
     },
     {
       // Used to allow prerender activation by form submission.
