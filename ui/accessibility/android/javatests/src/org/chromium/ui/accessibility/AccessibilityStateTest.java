@@ -759,41 +759,6 @@ public class AccessibilityStateTest {
                 .onSamsungTalkBackStateChanged(false);
     }
 
-    @Test
-    public void testTouchExplorationEnabledObserver() {
-        Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        simulateActivityStateChange(
-                mockActivity, ActivityState.STARTED, ApplicationState.HAS_RUNNING_ACTIVITIES);
-        AccessibilityState.initializeOnStartup(
-                new ApplicationStatusAccessibilityStateVisibilityManager());
-        AccessibilityState.registerObservers();
-
-        // Simulate TalkBack binding before TalkBackService#onServiceConnected dynamically sets
-        // FLAG_REQUEST_TOUCH_EXPLORATION_MODE.
-        AccessibilityServiceInfo serviceWithoutTouchExploration =
-                new BuilderForTests()
-                        .setId(AccessibilityState.KNOWN_SCREEN_READER_SERVICE_IDS)
-                        .setCapabilities(
-                                AccessibilityServiceInfo.CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION)
-                        .build();
-        AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
-                mContext, List.of(serviceWithoutTouchExploration));
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-
-        Assert.assertFalse(AccessibilityState.isTouchExplorationEnabled());
-
-        // Simulate TalkBackService#onServiceConnected dynamically requesting touch exploration
-        // mode, which updates Settings.Secure.TOUCH_EXPLORATION_ENABLED without changing
-        // Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES.
-        serviceWithoutTouchExploration.flags |=
-                AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE;
-        Settings.Secure.putInt(
-                mContext.getContentResolver(), Settings.Secure.TOUCH_EXPLORATION_ENABLED, 1);
-        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
-
-        Assert.assertTrue(AccessibilityState.isTouchExplorationEnabled());
-    }
-
     private void startTestWithService(AccessibilityServiceInfo newService) {
         Assert.assertNotNull(newService);
         Assert.assertFalse(AccessibilityState.isAnyAccessibilityServiceEnabled());

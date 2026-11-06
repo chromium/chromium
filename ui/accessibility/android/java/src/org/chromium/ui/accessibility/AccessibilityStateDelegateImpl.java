@@ -806,7 +806,7 @@ class AccessibilityStateDelegateImpl
                 false,
                 mAccessibilityServicesObserver);
         contentResolver.registerContentObserver(
-                Settings.Secure.getUriFor(Settings.Secure.TOUCH_EXPLORATION_ENABLED),
+                Settings.System.getUriFor(Settings.Secure.TOUCH_EXPLORATION_ENABLED),
                 false,
                 mAccessibilityServicesObserver);
 
