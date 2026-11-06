@@ -520,6 +520,15 @@ void OmniboxPopupViewFullWebUI::
   }
 }
 
+void OmniboxPopupViewFullWebUI::Blur() {
+  // This view always creates an `OmniboxPopupFullPresenter`.
+  if (auto* const full_presenter =
+          static_cast<OmniboxPopupFullPresenter*>(presenter())) {
+    full_presenter->DeactivatePopupAndKillFocus(
+        OmniboxPopupFullPresenter::FocusAfterBlur::kNone);
+  }
+}
+
 void OmniboxPopupViewFullWebUI::OnBlur() {
   focused_ = false;
   if (auto* popup_handler = GetPopupHandler()) {

@@ -110,6 +110,10 @@ class OmniboxPopupView {
   // Called when the omnibox loses focus.
   virtual void OnBlur() {}
 
+  // Blurs the omnibox, collapsing the dropdown and keeping the popup open only
+  // for a draft, like clicking into the page, but leaves nothing focused.
+  virtual void Blur() {}
+
   // Called when the WebUI omnibox reports a manual blur.
   virtual void OnManualBlur() {}
 

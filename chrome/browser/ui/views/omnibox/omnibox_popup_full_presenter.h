@@ -51,6 +51,25 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       delete;
   ~OmniboxPopupFullPresenter() override;
 
+  // Where keyboard focus goes when `DeactivatePopupAndKillFocus()` blurs the
+  // omnibox.
+  enum class FocusAfterBlur {
+    // The web contents, e.g. after the user clicked into the page.
+    kWebContents,
+    // Nowhere. Another window, such as a bubble, took activation, so only
+    // Views focus is cleared, as focusing the web contents would reactivate
+    // this window.
+    kNone,
+    // Wherever it already is. Another view in the browser window took focus,
+    // so it's left there.
+    kCurrent,
+  };
+
+  // Blurs the omnibox and closes the popup unless it holds a draft, i.e. user
+  // text or keyword mode. See `FocusAfterBlur` for what happens to the browser
+  // window's focus.
+  void DeactivatePopupAndKillFocus(FocusAfterBlur focus_after_blur);
+
   // OmniboxPopupPresenterBase:
   void Show() override;
   void Hide() override;
@@ -87,20 +106,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   OmniboxFullPopupWebUIContent* GetWebUIContent();
 
  private:
-  // Where keyboard focus goes when `DeactivatePopupAndKillFocus()` blurs the
-  // omnibox.
-  enum class FocusAfterBlur {
-    // The web contents, e.g. after the user clicked into the page.
-    kWebContents,
-    // Nowhere. Another window, such as a bubble, took activation, so only
-    // Views focus is cleared, as focusing the web contents would reactivate
-    // this window.
-    kNone,
-    // Wherever it already is. Another view in the browser window took focus,
-    // so it's left there.
-    kCurrent,
-  };
-
   // views::WidgetObserver:
   // Observes the browser widget's activation (to keep the location bar as its
   // stored focus view while the popup is active) and the popup widget's own
@@ -143,10 +148,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   // Focuses the native Views content, underlying WebContents, and DOM input.
   void FocusPopupContent();
-  // Blurs the omnibox and closes the popup unless it holds a draft, i.e. user
-  // text or keyword mode. See `FocusAfterBlur` for what happens to the browser
-  // window's focus.
-  void DeactivatePopupAndKillFocus(FocusAfterBlur focus_after_blur);
   // Blurs the omnibox unless the browser window, including the popup, is
   // active. Any other window taking activation, including a bubble anchored to
   // the browser window, blurs it, as with the Views omnibox.
