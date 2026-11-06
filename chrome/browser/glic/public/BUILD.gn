@@ -7,7 +7,29 @@ source_set("features") {
     "features.cc",
     "features.h",
   ]
+  public_deps = [ "//pdf:buildflags" ]
   deps = [
+    "//base",
+    "//build:android_buildflags",
+  ]
+}
+
+# Feature flags whose availability depends on the Glic provider. Production code
+# must check GlicProviderSpec::SupportsFeature() instead.
+source_set("provider_features") {
+  visibility = [
+    "//chrome/browser:core",  # about_flags.cc
+    "//chrome/browser/glic:provider_spec_impl",  # glic_provider_spec_impl.cc
+    "//chrome/test:test_support",  # testonly = true
+  ]
+  sources = [
+    "provider_features.cc",
+    "provider_features.h",
+  ]
+  public_deps = [ "//pdf:buildflags" ]
+  deps = [
+    ":features",
+    ":provider",
     "//base",
     "//build:android_buildflags",
   ]
@@ -34,6 +56,7 @@ source_set("provider") {
     "glic_provider_change.h",
     "glic_provider_latch.cc",
     "glic_provider_latch.h",
+    "glic_provider_spec.cc",
     "glic_provider_spec.h",
   ]
   public_deps = [

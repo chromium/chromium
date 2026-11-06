@@ -15,13 +15,13 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -99,7 +99,7 @@ class GeminiStepEligibilityCheckerTest : public testing::Test {
  private:
   // The checker is only created when this feature is enabled.
   base::test::ScopedFeatureList feature_list_{
-      switches::kFirstRunFeatureShowcaseGeminiStep};
+      features::kFirstRunFeatureShowcaseGeminiStep};
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedCommandLine scoped_command_line_;
   metrics::TestEnabledStateProvider metrics_enabled_state_provider_{false,

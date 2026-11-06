@@ -112,6 +112,7 @@ export class ViewerToolbarElement extends CrLitElement {
       viewportZoomPercent_: {type: Number},
 
       pdfGlicSummarizeEnabled_: {type: Boolean},
+      pdfGlicSummarizeUseLongButtonText_: {type: Boolean},
 
       // <if expr="enable_pdf_ink2">
       annotationAvailable: {type: Boolean},
@@ -156,6 +157,7 @@ export class ViewerToolbarElement extends CrLitElement {
   private accessor viewportZoomPercent_: number = 0;
 
   protected accessor pdfGlicSummarizeEnabled_: boolean = false;
+  private accessor pdfGlicSummarizeUseLongButtonText_: boolean = false;
 
   // <if expr="enable_pdf_save_to_drive">
   accessor pdfSaveToDriveEnabled: boolean = false;
@@ -234,6 +236,8 @@ export class ViewerToolbarElement extends CrLitElement {
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
     this.pdfGlicSummarizeEnabled_ =
         loadTimeData.getBoolean('pdfGlicSummarizeEnabled');
+    this.pdfGlicSummarizeUseLongButtonText_ =
+        loadTimeData.getBoolean('pdfGlicSummarizeUseLongButtonText');
     // <if expr="enable_pdf_ink2">
     this.pdfSignaturesEnabled_ =
         loadTimeData.getBoolean('pdfSignaturesEnabled');
@@ -261,6 +265,15 @@ export class ViewerToolbarElement extends CrLitElement {
     return loadTimeData.getString(
         this.fittingType_ === FittingType.FIT_TO_PAGE ? 'tooltipFitToPage' :
                                                         'tooltipFitToWidth');
+  }
+
+  protected getGlicSummarizeButtonLabel_(): string {
+    if (!this.strings) {
+      return '';
+    }
+    return loadTimeData.getString(
+        this.pdfGlicSummarizeUseLongButtonText_ ? 'glicSummarizeWithGemini' :
+                                                  'glicSummarize');
   }
 
   protected onGlicSummarizeClick_() {

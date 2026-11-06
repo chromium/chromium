@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -207,7 +208,7 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kGlicSelectionPrompt,
-      {{features::kGlicSelectionDefaultBlockedSites.name,
+      {{features::kGlicSelectionDefaultBlockedSitesParam,
         "https://default-blocked-1.com,https://default-blocked-2.com"}});
 
   // Set up preferences to true.

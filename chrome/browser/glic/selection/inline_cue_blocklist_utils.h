@@ -31,7 +31,8 @@ bool IsSiteBlockedForInlineCue(Profile* profile, const GURL& url);
 
 // Returns true if the `pattern_str` matches any site in the default blocklist
 // for the inline cue.
-bool IsSiteInDefaultBlocklistForInlineCue(const std::string& pattern_str);
+bool IsSiteInDefaultBlocklistForInlineCue(Profile* profile,
+                                          const std::string& pattern_str);
 
 // Returns the list of site patterns from the default blocklist that are not
 // overridden by a user rule for the inline cue.

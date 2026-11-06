@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/glic/selection/selection_context.h"
@@ -113,11 +114,12 @@ void InvokeGlicFromSelectionAffordance(
       CreateTextSelectionContext(&web_contents, selected_text,
                                  SelectionTextLength::kElided),
       content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
-  if (features::kGlicSelectionAutoSendPrompt.Get()) {
-    std::string cta = features::kGlicSelectionPromptCta.Get();
+  const GlicSelectionInlineCueFeatureParams params =
+      GetGlicProviderSpec(profile).GetSelectionInlineCueFeatureParams();
+  if (params.auto_send_prompt) {
     std::string prompt =
         l10n_util::GetStringUTF8(IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME);
-    if (cta == features::kGlicSelectionPromptCtaExplain) {
+    if (params.cta == GlicSelectionInlineCueFeatureParams::kCtaExplain) {
       prompt =
           l10n_util::GetStringUTF8(IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_EXPLAIN);
     }
@@ -296,7 +298,8 @@ GlicSelectionWidgetController::ShowResult GlicSelectionWidgetController::Show(
         CountWords(selected_text));
 
     widget_delegate_ = std::make_unique<GlicSelectionWidgetDelegate>(
-        *this, *bounds, std::u16string(selected_text));
+        *this, *bounds, std::u16string(selected_text),
+        GetGlicProviderSpec(profile).GetSelectionInlineCueFeatureParams());
     widget_delegate_->set_parent_window(platform_util::GetViewForWindow(
         web_contents()->GetTopLevelNativeWindow()));
     dismissal_recorded_ = false;

@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/test_support/glic_browser_interactive_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"

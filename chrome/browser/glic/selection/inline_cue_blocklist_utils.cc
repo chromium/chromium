@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -18,8 +18,11 @@
 
 namespace glic {
 
-bool IsSiteInDefaultBlocklistForInlineCue(const std::string& pattern_str) {
-  return features::GetGlicSelectionDefaultBlockedSites().contains(pattern_str);
+bool IsSiteInDefaultBlocklistForInlineCue(Profile* profile,
+                                          const std::string& pattern_str) {
+  return GetGlicProviderSpec(profile)
+      .GetSelectionInlineCueFeatureParams()
+      .default_blocked_sites.contains(pattern_str);
 }
 
 bool IsSiteBlockedForInlineCue(Profile* profile, const GURL& url) {
@@ -50,7 +53,9 @@ bool IsSiteBlockedForInlineCue(Profile* profile, const GURL& url) {
 
   // If matching the global default, fall back to the default blocklist.
   for (const std::string& site_str :
-       features::GetGlicSelectionDefaultBlockedSites()) {
+       GetGlicProviderSpec(profile)
+           .GetSelectionInlineCueFeatureParams()
+           .default_blocked_sites) {
     ContentSettingsPattern pattern =
         ContentSettingsPattern::FromString(site_str);
     if (pattern.IsValid() && pattern.Matches(url)) {
@@ -72,7 +77,9 @@ std::vector<std::string> GetActiveDefaultBlockedSitePatternsForInlineCue(
 
   std::vector<std::string> active_blocked_sites;
   for (const std::string& site_str :
-       features::GetGlicSelectionDefaultBlockedSites()) {
+       GetGlicProviderSpec(profile)
+           .GetSelectionInlineCueFeatureParams()
+           .default_blocked_sites) {
     ContentSettingsPattern pattern =
         ContentSettingsPattern::FromString(site_str);
     if (!pattern.IsValid()) {
@@ -93,7 +100,7 @@ std::vector<std::string> GetActiveDefaultBlockedSitePatternsForInlineCue(
 
 bool UnblockDefaultSiteForInlineCue(Profile* profile,
                                     const std::string& pattern_str) {
-  if (!profile || !IsSiteInDefaultBlocklistForInlineCue(pattern_str)) {
+  if (!profile || !IsSiteInDefaultBlocklistForInlineCue(profile, pattern_str)) {
     return false;
   }
 

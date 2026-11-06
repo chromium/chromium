@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_page_data.h"
@@ -515,7 +516,9 @@ ContextualCueingHelper::AutoOpenGlicSidePanel(
     // Check if enough time has passed since last prompt submission.
     auto* glic_instance = glic_service->GetInstanceForTab(tab_interface);
     if (glic_instance && glic_instance->GetTimeSinceLastPromptSubmission() <
-                             features::kAutoOpenGlicCooldown.Get()) {
+                             glic::GetGlicProviderSpec(profile)
+                                 .GetPdfAutoOpenFeatureParams()
+                                 .cooldown) {
       return RecordAutoOpenResult(GlicAutoOpenResult::kPreventedFromCooldown);
     }
 

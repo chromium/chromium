@@ -15,10 +15,10 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -351,7 +351,8 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
           contents->GetBrowserContext());
   CHECK(glic_service);
 
-  int arm = features::kPdfGlicSummarizeArm.Get();
+  int arm =
+      glic::GetGlicProviderSpec(profile).GetPdfSummarizeFeatureParams().arm;
   bool has_consented = glic::GlicEnabling::HasConsentedForProfile(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
 

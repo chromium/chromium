@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -32,7 +33,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -42,7 +42,6 @@
 #include "url/gurl.h"
 
 namespace glic {
-
 namespace {
 
 // Appended by `GetLocalizedGuestURL()` from Chrome's UI locale.
@@ -179,7 +178,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kFirstRunShowcase:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
         return base::FeatureList::IsEnabled(
-            switches::kFirstRunFeatureShowcaseGeminiStep);
+            features::kFirstRunFeatureShowcaseGeminiStep);
 #else
         return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -191,6 +190,23 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
         return base::FeatureList::IsEnabled(::features::kSkillsEnabled);
     }
     NOTREACHED();
+  }
+  GlicPdfAutoOpenFeatureParams GetPdfAutoOpenFeatureParams() const override {
+    return features::PopulatePdfAutoOpenFeatureParams(
+        features::kAutoOpenGlicForPdf);
+  }
+  GlicPdfSummarizeFeatureParams GetPdfSummarizeFeatureParams() const override {
+#if BUILDFLAG(ENABLE_PDF)
+    return features::PopulatePdfSummarizeFeatureParams(
+        features::kPdfGlicSummarize);
+#else
+    return {};
+#endif  // BUILDFLAG(ENABLE_PDF)
+  }
+  GlicSelectionInlineCueFeatureParams GetSelectionInlineCueFeatureParams()
+      const override {
+    return features::PopulateSelectionInlineCueFeatureParams(
+        features::kGlicSelectionPrompt);
   }
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGlicSsr);
@@ -264,6 +280,16 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
         return false;
     }
     NOTREACHED();
+  }
+  GlicPdfAutoOpenFeatureParams GetPdfAutoOpenFeatureParams() const override {
+    return {};
+  }
+  GlicPdfSummarizeFeatureParams GetPdfSummarizeFeatureParams() const override {
+    return {};
+  }
+  GlicSelectionInlineCueFeatureParams GetSelectionInlineCueFeatureParams()
+      const override {
+    return {};
   }
   // TODO(b/576365433): Enable `kGeicSsr` once the webapp supports it.
   bool SupportsSsr() const override {

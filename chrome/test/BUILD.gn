@@ -151,6 +151,7 @@ if (is_android) {
 group("test_support") {
   testonly = true
   public_deps = [
+    "//chrome/browser/glic/public:provider_features",
     "//chrome/browser/notifications:test_support",
     "//chrome/browser/origin_trials",
     "//chrome/browser/performance_manager:test_support",

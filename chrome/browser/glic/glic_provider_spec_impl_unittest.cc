@@ -6,16 +6,18 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/skills/features.h"
 #include "pdf/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -112,7 +114,7 @@ TEST(GlicProviderSpecImplTest, GeminiCaptureRegionFollowsGlicCaptureRegion) {
 TEST(GlicProviderSpecImplTest,
      GeminiFirstRunShowcaseFollowsFirstRunFeatureShowcaseGeminiStep) {
   ExpectGeminiFeatureFollowsFlag(GlicFeature::kFirstRunShowcase,
-                                 switches::kFirstRunFeatureShowcaseGeminiStep);
+                                 features::kFirstRunFeatureShowcaseGeminiStep);
 }
 #else
 TEST(GlicProviderSpecImplTest, GeminiDoesNotSupportFirstRunShowcase) {
@@ -150,6 +152,7 @@ TEST(GlicProviderSpecImplTest, GeminiSkillsFollowsSkillsEnabled) {
   ExpectGeminiFeatureFollowsFlag(GlicFeature::kSkills,
                                  ::features::kSkillsEnabled);
 }
+
 TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
   std::vector<base::test::FeatureRef> enabled_features = {
       features::kGlicLiveMode,
@@ -162,7 +165,7 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
       features::kPdfGlicSummarize,
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      switches::kFirstRunFeatureShowcaseGeminiStep,
+      features::kFirstRunFeatureShowcaseGeminiStep,
 #endif
   };
   base::test::ScopedFeatureList feature_list;
@@ -172,5 +175,85 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
     EXPECT_FALSE(spec->SupportsFeature(static_cast<GlicFeature>(i))) << i;
   }
 }
+
+TEST(GlicProviderSpecImplTest, PdfAutoOpenFeatureParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutoOpenGlicForPdf,
+      {{features::kAutoOpenGlicForPdfWithOnboardingParam, "false"},
+       {features::kAutoOpenGlicCooldownParam, "30m"}});
+
+  GlicPdfAutoOpenFeatureParams gemini_params =
+      CreateGlicProviderSpec(GlicProvider::kGemini, {})
+          ->GetPdfAutoOpenFeatureParams();
+  EXPECT_FALSE(gemini_params.with_onboarding);
+  EXPECT_EQ(gemini_params.cooldown, base::Minutes(30));
+
+  GlicPdfAutoOpenFeatureParams geic_params =
+      CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+          ->GetPdfAutoOpenFeatureParams();
+  EXPECT_TRUE(geic_params.with_onboarding);
+  EXPECT_EQ(geic_params.cooldown, base::Hours(1));
+}
+
+#if BUILDFLAG(ENABLE_PDF)
+TEST(GlicProviderSpecImplTest, PdfSummarizeFeatureParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kPdfGlicSummarize,
+      {{features::kPdfGlicSummarizeArmParam, "2"},
+       {features::kPdfGlicSummarizeUseLongButtonTextParam, "true"}});
+
+  GlicPdfSummarizeFeatureParams gemini_params =
+      CreateGlicProviderSpec(GlicProvider::kGemini, {})
+          ->GetPdfSummarizeFeatureParams();
+  EXPECT_EQ(gemini_params.arm, 2);
+  EXPECT_TRUE(gemini_params.use_long_button_text);
+
+  GlicPdfSummarizeFeatureParams geic_params =
+      CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+          ->GetPdfSummarizeFeatureParams();
+  EXPECT_EQ(geic_params.arm, 3);
+  EXPECT_FALSE(geic_params.use_long_button_text);
+}
+#else
+TEST(GlicProviderSpecImplTest, PdfSummarizeFeatureParamsWithoutPdf) {
+  GlicPdfSummarizeFeatureParams gemini_params =
+      CreateGlicProviderSpec(GlicProvider::kGemini, {})
+          ->GetPdfSummarizeFeatureParams();
+  EXPECT_EQ(gemini_params.arm, 3);
+  EXPECT_FALSE(gemini_params.use_long_button_text);
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+TEST(GlicProviderSpecImplTest, SelectionInlineCueFeatureParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionPrompt,
+      {{features::kGlicSelectionShowCopyButtonsParam, "true"},
+       {features::kGlicSelectionAutoSendPromptParam, "false"},
+       {features::kGlicSelectionCtaParam,
+        GlicSelectionInlineCueFeatureParams::kCtaTellMe},
+       {features::kGlicSelectionDefaultBlockedSitesParam,
+        "example.com, foo.org"}});
+
+  GlicSelectionInlineCueFeatureParams gemini_params =
+      CreateGlicProviderSpec(GlicProvider::kGemini, {})
+          ->GetSelectionInlineCueFeatureParams();
+  EXPECT_TRUE(gemini_params.show_copy_buttons);
+  EXPECT_FALSE(gemini_params.auto_send_prompt);
+  EXPECT_EQ(gemini_params.cta, GlicSelectionInlineCueFeatureParams::kCtaTellMe);
+  EXPECT_THAT(gemini_params.default_blocked_sites,
+              testing::UnorderedElementsAre("example.com", "foo.org"));
+
+  GlicSelectionInlineCueFeatureParams geic_params =
+      CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+          ->GetSelectionInlineCueFeatureParams();
+  EXPECT_FALSE(geic_params.show_copy_buttons);
+  EXPECT_TRUE(geic_params.auto_send_prompt);
+  EXPECT_EQ(geic_params.cta, GlicSelectionInlineCueFeatureParams::kCtaExplain);
+  EXPECT_TRUE(geic_params.default_blocked_sites.empty());
+}
+
 }  // namespace
 }  // namespace glic

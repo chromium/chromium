@@ -44,21 +44,7 @@ extern const base::FeatureParam<int> kGlicOSIconVariantParam;
 
 BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 
-BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
-extern const base::FeatureParam<bool> kAutoOpenGlicForPdfWithOnboarding;
-extern const base::FeatureParam<base::TimeDelta> kAutoOpenGlicCooldown;
-
 BASE_DECLARE_FEATURE(kGlicInvoke);
-
-// Controls inline cue for text selection.
-BASE_DECLARE_FEATURE(kGlicSelectionPrompt);
-extern const base::FeatureParam<bool> kGlicSelectionShowCopyButtons;
-extern const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt;
-extern const base::FeatureParam<std::string> kGlicSelectionPromptCta;
-inline constexpr char kGlicSelectionPromptCtaTellMe[] = "tell_me_about_this";
-inline constexpr char kGlicSelectionPromptCtaExplain[] = "explain";
-extern const base::FeatureParam<std::string> kGlicSelectionDefaultBlockedSites;
-base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites();
 
 BASE_DECLARE_FEATURE(kGlicSelectionOverlayPrompt);
 BASE_DECLARE_FEATURE(kGlicSelectionOverlayPromptBox);
@@ -294,6 +280,7 @@ BASE_DECLARE_FEATURE(kGlicWhatsNewLuminous);
 // TriggerActuationRequest messages without replying or acking, as if the FCM
 // message never arrived.
 BASE_DECLARE_FEATURE(kGlicForceFcmExperimentalTriggerFailure);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

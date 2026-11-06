@@ -97,11 +97,11 @@ import {AnnotationMode} from '../constants.js';
     <span id="glic-controls">
       <span class="vertical-separator"></span>
       <cr-button id="glic-summarize-button"
-          aria-label="$i18n{glicSummarize}"
+          aria-label="${this.getGlicSummarizeButtonLabel_()}"
           title="$i18n{glicSummarizeTooltip}"
           @click="${this.onGlicSummarizeClick_}">
         <cr-icon slot="prefix-icon" icon="pdf-glic:summarize-auto-2"></cr-icon>
-        $i18n{glicSummarize}
+        ${this.getGlicSummarizeButtonLabel_()}
       </cr-button>
     </span>` : ''}
   </div>

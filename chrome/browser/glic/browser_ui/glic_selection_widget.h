@@ -19,6 +19,8 @@ class Widget;
 
 namespace glic {
 
+struct GlicSelectionInlineCueFeatureParams;
+
 class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAskGeminiButtonElementId);
@@ -38,9 +40,11 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
     virtual ~ActionDelegate() = default;
   };
 
-  GlicSelectionWidgetDelegate(ActionDelegate& action_delegate,
-                              const gfx::Rect& anchor_rect,
-                              const std::u16string& selected_text);
+  GlicSelectionWidgetDelegate(
+      ActionDelegate& action_delegate,
+      const gfx::Rect& anchor_rect,
+      const std::u16string& selected_text,
+      const GlicSelectionInlineCueFeatureParams& feature_params);
   ~GlicSelectionWidgetDelegate() override;
 
   void ShowWidget();

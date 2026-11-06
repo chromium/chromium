@@ -390,6 +390,34 @@ source_set("glic_metrics") {
   }
 }
 
+# Kept in its own target so only glic_provider_spec_impl.cc (and not the rest of
+# :impl) has visibility to //chrome/browser/glic/public:provider_features.
+source_set("provider_spec_impl") {
+  visibility = [ ":impl" ]
+  sources = [
+    "glic_fre_store_impl.h",
+    "glic_provider_spec_impl.cc",
+  ]
+  deps = [
+    ":glic",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/public:provider",
+    "//chrome/browser/glic/public:provider_features",
+    "//chrome/browser/glic/resources:browser_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/common",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/skills:features",
+    "//net",
+    "//pdf:buildflags",
+    "//url",
+  ]
+}
+
 # TODO(b/430371855): This is the better target for resources only needed
 # by the Glic implementation. Prefer adding to this target any new sources or
 # dependencies that are only needed internally.
@@ -424,7 +452,6 @@ source_set("impl") {
     "gemini_act_on_web_settings_policy_handler.cc",
     "gemini_spark_settings_policy_handler.cc",
     "glic_fre_store_impl.cc",
-    "glic_fre_store_impl.h",
     "glic_gemini_web_warming_observer.cc",
     "glic_hotkey.cc",
     "glic_metrics.cc",
@@ -432,7 +459,6 @@ source_set("impl") {
     "glic_net_log.cc",
     "glic_pref_names.cc",
     "glic_profile_manager.cc",
-    "glic_provider_spec_impl.cc",
     "glic_settings_util.cc",
     "glic_tab_restore_data.cc",
     "glic_tab_restore_helper.cc",
@@ -577,6 +603,7 @@ source_set("impl") {
   deps = [
     ":glic",
     ":glic_metrics",
+    ":provider_spec_impl",
     ":selection_context",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",

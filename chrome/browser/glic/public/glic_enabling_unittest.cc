@@ -50,6 +50,7 @@
 #include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
@@ -1407,7 +1408,7 @@ class GlicEnablingGatedFeatureTest
       public testing::WithParamInterface<GatedFeatureParams> {
  public:
   void SetUpFeature(const base::Feature& feature,
-                    const base::FeatureParam<bool>& onboarding_param) {
+                    std::string_view onboarding_param_name) {
     GlicEnablingProfileReadyStateTestBase::SetUp();
     if (IsSkipped()) {
       return;
@@ -1424,7 +1425,7 @@ class GlicEnablingGatedFeatureTest
     if (GetParam().is_feature_enabled) {
       enabled_features.push_back(
           {feature,
-           {{onboarding_param.name,
+           {{std::string(onboarding_param_name),
              GetParam().is_onboarding_param_enabled ? "true" : "false"}}});
     } else {
       disabled_features.push_back(feature);
@@ -1453,7 +1454,7 @@ class GlicEnablingAutoOpenForPdfTest : public GlicEnablingGatedFeatureTest {
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     SetUpFeature(features::kAutoOpenGlicForPdf,
-                 features::kAutoOpenGlicForPdfWithOnboarding);
+                 features::kAutoOpenGlicForPdfWithOnboardingParam);
   }
 };
 

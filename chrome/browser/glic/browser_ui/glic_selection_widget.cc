@@ -12,6 +12,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -59,12 +60,11 @@ constexpr int kSmallChipCornerRadius = 15;
 constexpr int kSmallChipVerticalOffset = 4;
 constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(250);
 
-std::u16string GetCtaLabel() {
-  std::string cta = features::kGlicSelectionPromptCta.Get();
-  if (cta == features::kGlicSelectionPromptCtaTellMe) {
+std::u16string GetCtaLabel(std::string_view cta) {
+  if (cta == GlicSelectionInlineCueFeatureParams::kCtaTellMe) {
     return l10n_util::GetStringUTF16(IDS_GLIC_SELECTION_CTA_TELL_ME);
   }
-  if (cta == features::kGlicSelectionPromptCtaExplain) {
+  if (cta == GlicSelectionInlineCueFeatureParams::kCtaExplain) {
     return l10n_util::GetStringUTF16(IDS_GLIC_SELECTION_CTA_EXPLAIN);
   }
   return l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL);
@@ -82,8 +82,10 @@ class GlicSelectionContentsView : public views::View {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
 
  public:
-  GlicSelectionContentsView(GlicSelectionWidgetDelegate* widget_delegate,
-                            const std::u16string& selected_text)
+  GlicSelectionContentsView(
+      GlicSelectionWidgetDelegate* widget_delegate,
+      const std::u16string& selected_text,
+      const GlicSelectionInlineCueFeatureParams& feature_params)
       : widget_delegate_(widget_delegate) {
     const bool is_small_chip =
         base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip);
@@ -146,7 +148,8 @@ class GlicSelectionContentsView : public views::View {
     auto ask_gemini_tooltip = l10n_util::GetStringFUTF16(
         IDS_GLIC_SELECTION_ASK_ABOUT,
         base::StrCat({u"\"", truncated_text, u"\""}));
-    std::u16string cta_label = is_small_chip ? u"" : GetCtaLabel();
+    std::u16string cta_label =
+        is_small_chip ? u"" : GetCtaLabel(feature_params.cta);
     auto* ask_gemini_btn =
         ask_pill_->AddChildView(std::make_unique<views::MdTextButton>(
             base::BindRepeating(
@@ -195,7 +198,7 @@ class GlicSelectionContentsView : public views::View {
       ask_gemini_btn->SetCornerRadius(kBtnCornerRadius);
     }
 
-    if (features::kGlicSelectionShowCopyButtons.Get() && !is_small_chip) {
+    if (feature_params.show_copy_buttons && !is_small_chip) {
       // Copy Button
       auto copy_tooltip = gfx::LocateAndRemoveAcceleratorChar(
           l10n_util::GetStringUTF16(IDS_APP_COPY), nullptr, nullptr);
@@ -330,7 +333,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GlicSelectionWidgetDelegate,
 GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     ActionDelegate& action_delegate,
     const gfx::Rect& anchor_rect,
-    const std::u16string& selected_text)
+    const std::u16string& selected_text,
+    const GlicSelectionInlineCueFeatureParams& feature_params)
     : BubbleDialogDelegate(
           nullptr,
           base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)
@@ -342,8 +346,8 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
           /*autosize=*/true),
       action_delegate_(action_delegate),
       original_anchor_rect_(anchor_rect) {
-  SetContentsView(
-      std::make_unique<GlicSelectionContentsView>(this, selected_text));
+  SetContentsView(std::make_unique<GlicSelectionContentsView>(
+      this, selected_text, feature_params));
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(false);

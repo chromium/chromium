@@ -24,10 +24,8 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
@@ -346,10 +344,7 @@ void GlicHandler::HandleGetGlicSelectionShortcut(const base::ListValue& args) {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   ui::Accelerator accelerator =
-      glic::GetGlicProviderSpec(profile).SupportsFeature(
-          glic::GlicFeature::kCaptureRegion)
-          ? glic::GlicLauncherConfiguration::GetSelectionHotkey()
-          : ui::Accelerator();
+      glic::GlicLauncherConfiguration::GetSelectionHotkey(profile);
 
   AllowJavascript();
   ResolveJavascriptCallback(callback_id,

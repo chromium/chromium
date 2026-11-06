@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"

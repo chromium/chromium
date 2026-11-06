@@ -13,6 +13,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -149,8 +152,10 @@ ui::Accelerator GlicLauncherConfiguration::GetToggleHotkey() {
 }
 
 // static
-ui::Accelerator GlicLauncherConfiguration::GetSelectionHotkey() {
-  if (!base::FeatureList::IsEnabled(features::kGlicCaptureRegion)) {
+ui::Accelerator GlicLauncherConfiguration::GetSelectionHotkey(
+    Profile* profile) {
+  if (!GetGlicProviderSpec(profile).SupportsFeature(
+          GlicFeature::kCaptureRegion)) {
     return ui::Accelerator();
   }
   return GetAcceleratorFromPreference(prefs::kGlicSelectionHotkey);

@@ -1419,8 +1419,8 @@ bool GlicEnabling::IsChromeOSProfileEligible(Profile* profile) {
 
 // static
 bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
-  if (!GetGlicProviderSpec(profile).SupportsFeature(
-          GlicFeature::kPdfAutoOpen)) {
+  const GlicProviderSpec& spec = GetGlicProviderSpec(profile);
+  if (!spec.SupportsFeature(GlicFeature::kPdfAutoOpen)) {
     return false;
   }
 
@@ -1428,7 +1428,7 @@ bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
     return true;
   }
 
-  return features::kAutoOpenGlicForPdfWithOnboarding.Get();
+  return spec.GetPdfAutoOpenFeatureParams().with_onboarding;
 }
 
 // static

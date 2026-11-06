@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -15,7 +16,7 @@ class FeatureShowcaseBrowserTest : public WebUIMochaBrowserTest {
         {switches::kFirstRunDesktopRefresh,
          switches::kFirstRunDesktopChoiceScreenRefresh,
          switches::kFirstRunDesktopRevamp,
-         switches::kFirstRunFeatureShowcaseGeminiStep},
+         features::kFirstRunFeatureShowcaseGeminiStep},
         {});
     set_test_loader_host(chrome::kChromeUIFeatureShowcaseHost);
   }

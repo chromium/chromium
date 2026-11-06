@@ -14,6 +14,8 @@
 #include "components/version_info/channel.h"
 #include "ui/base/accelerators/accelerator.h"
 
+class Profile;
+
 namespace glic {
 
 // This class observes and reports changes to glic prefs such as the
@@ -37,7 +39,7 @@ class GlicLauncherConfiguration {
 
   static ui::Accelerator GetToggleHotkey();
 
-  static ui::Accelerator GetSelectionHotkey();
+  static ui::Accelerator GetSelectionHotkey(Profile* profile);
 
   // Checks if the browser is the default browser and enables the launcher if it
   // is.

@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/selection/explain_suggestion_fre.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"

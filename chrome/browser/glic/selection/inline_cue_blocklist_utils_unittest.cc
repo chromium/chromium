@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -25,7 +26,7 @@ class InlineCueBlocklistUtilsTest : public testing::Test {
   InlineCueBlocklistUtilsTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicSelectionPrompt,
-        {{features::kGlicSelectionDefaultBlockedSites.name,
+        {{features::kGlicSelectionDefaultBlockedSitesParam,
           "https://blocked-site-a.com,https://blocked-site-b.com"}});
   }
   ~InlineCueBlocklistUtilsTest() override = default;
@@ -42,12 +43,12 @@ class InlineCueBlocklistUtilsTest : public testing::Test {
 };
 
 TEST_F(InlineCueBlocklistUtilsTest, IsSiteInDefaultBlocklistForInlineCue) {
-  EXPECT_TRUE(
-      IsSiteInDefaultBlocklistForInlineCue("https://blocked-site-a.com"));
-  EXPECT_TRUE(
-      IsSiteInDefaultBlocklistForInlineCue("https://blocked-site-b.com"));
-  EXPECT_FALSE(
-      IsSiteInDefaultBlocklistForInlineCue("https://allowed-site.com"));
+  EXPECT_TRUE(IsSiteInDefaultBlocklistForInlineCue(
+      profile(), "https://blocked-site-a.com"));
+  EXPECT_TRUE(IsSiteInDefaultBlocklistForInlineCue(
+      profile(), "https://blocked-site-b.com"));
+  EXPECT_FALSE(IsSiteInDefaultBlocklistForInlineCue(
+      profile(), "https://allowed-site.com"));
 }
 
 TEST_F(InlineCueBlocklistUtilsTest, IsSiteBlockedByDefault) {

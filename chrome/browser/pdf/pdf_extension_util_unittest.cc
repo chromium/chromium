@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -308,7 +309,9 @@ TEST_F(PdfExtensionUtilTest, IsPdfSaveToDriveEnabled) {
 class PdfGlicSummarizeButtonTest : public ChromeRenderViewHostTestHarness {
  public:
   PdfGlicSummarizeButtonTest() {
-    feature_list_.InitAndEnableFeature(features::kPdfGlicSummarize);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPdfGlicSummarize,
+        {{features::kPdfGlicSummarizeUseLongButtonTextParam, "true"}});
   }
 
   // The button check doesn't need GlicKeyedService, which otherwise gets built
@@ -326,6 +329,11 @@ class PdfGlicSummarizeButtonTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(PdfGlicSummarizeButtonTest, ShownForConsumerGlic) {
   EXPECT_TRUE(ShouldShowGlicSummarizeButton(web_contents()));
+  base::DictValue additional_data = GetAdditionalData(web_contents());
+  EXPECT_THAT(additional_data.FindBool("pdfGlicSummarizeEnabled"),
+              testing::Optional(true));
+  EXPECT_THAT(additional_data.FindBool("pdfGlicSummarizeUseLongButtonText"),
+              testing::Optional(true));
 }
 
 // Profiles latched to Gemini Enterprise do not support the consumer-only PDF
@@ -341,6 +349,11 @@ TEST_F(PdfGlicSummarizeButtonGeminiEnterpriseTest, HiddenForGeminiEnterprise) {
   ASSERT_EQ(glic::GetGlicProviderSpec(profile()).GetSettingsSectionId(),
             glic::kGeminiEnterpriseSettingsSectionId);
   EXPECT_FALSE(ShouldShowGlicSummarizeButton(web_contents()));
+  base::DictValue additional_data = GetAdditionalData(web_contents());
+  EXPECT_THAT(additional_data.FindBool("pdfGlicSummarizeEnabled"),
+              testing::Optional(false));
+  EXPECT_THAT(additional_data.FindBool("pdfGlicSummarizeUseLongButtonText"),
+              testing::Optional(false));
 }
 
 }  // namespace

@@ -1126,6 +1126,7 @@ source_set("core") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/navigation_capture",
     "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/public:provider_features",
     "//chrome/browser/google",
     "//chrome/browser/gpu",
     "//chrome/browser/headless",

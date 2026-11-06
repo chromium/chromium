@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/strings/grit/components_strings.h"
@@ -96,7 +97,8 @@ TEST_F(GlicSelectionWidgetTest, CopyButtonsHiddenByDefault) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, selected_text);
+      *test_delegate, anchor_rect, selected_text,
+      GlicSelectionInlineCueFeatureParams{});
 
   views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
@@ -121,17 +123,14 @@ TEST_F(GlicSelectionWidgetTest, CopyButtonsHiddenByDefault) {
 }
 
 TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt,
-      {{features::kGlicSelectionShowCopyButtons.name, "true"}});
-
   gfx::Rect anchor_rect(10, 10, 100, 100);
   std::u16string selected_text = u"selected text";
 
+  GlicSelectionInlineCueFeatureParams feature_params;
+  feature_params.show_copy_buttons = true;
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, selected_text);
+      *test_delegate, anchor_rect, selected_text, feature_params);
 
   views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
@@ -186,7 +185,8 @@ TEST_F(GlicSelectionWidgetTest, ShowAndCloseWidget) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, selected_text);
+      *test_delegate, anchor_rect, selected_text,
+      GlicSelectionInlineCueFeatureParams{});
 
   EXPECT_FALSE(widget_delegate->GetWidget());
 
@@ -220,7 +220,8 @@ TEST_F(GlicSelectionWidgetTest, SmallChip) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, selected_text);
+      *test_delegate, anchor_rect, selected_text,
+      GlicSelectionInlineCueFeatureParams{});
 
   EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::BOTTOM_LEFT);
 
@@ -283,7 +284,8 @@ TEST_F(GlicSelectionWidgetTest, SmallChipBottom) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, selected_text);
+      *test_delegate, anchor_rect, selected_text,
+      GlicSelectionInlineCueFeatureParams{});
 
   EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::TOP_LEFT);
 
@@ -309,7 +311,8 @@ class GlicSelectionWidgetBoundsTest : public GlicSelectionWidgetTest {
       const gfx::Rect& selection) {
     test_delegate_.container_bounds = kContainerBounds;
     return std::make_unique<GlicSelectionWidgetDelegate>(
-        test_delegate_, selection, u"selected text");
+        test_delegate_, selection, u"selected text",
+        GlicSelectionInlineCueFeatureParams{});
   }
 
   TestWidgetActionDelegate test_delegate_;

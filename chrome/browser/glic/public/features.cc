@@ -37,24 +37,6 @@ const base::FeatureParam<int> kGlicOSIconVariantParam{&kGlicOSIconVariant,
 
 BASE_FEATURE(kGlicOrphanedReattachment, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicSelectionPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kGlicSelectionShowCopyButtons{
-    &kGlicSelectionPrompt, "show_copy_buttons", false};
-const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt{
-    &kGlicSelectionPrompt, "auto_send_prompt", true};
-const base::FeatureParam<std::string> kGlicSelectionPromptCta{
-    &kGlicSelectionPrompt, "cta", kGlicSelectionPromptCtaExplain};
-const base::FeatureParam<std::string> kGlicSelectionDefaultBlockedSites{
-    &kGlicSelectionPrompt, "GlicSelectionDefaultBlockedSites", ""};
-
-base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites() {
-  std::string sites_str = kGlicSelectionDefaultBlockedSites.Get();
-  std::vector<std::string> sites = base::SplitString(
-      sites_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return base::flat_set<std::string>(std::move(sites));
-}
-
 BASE_FEATURE(kGlicSelectionOverlayPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSelectionOverlayPromptBox, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSelectionOverlayDogfoodFeedback,
@@ -79,18 +61,6 @@ BASE_FEATURE(kGlicSuggestionContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicClearTurnIdOnPanelWillOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAutoOpenGlicForPdf, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kAutoOpenGlicForPdfWithOnboarding({
-    &kAutoOpenGlicForPdf,
-    "AutoOpenGlicForPdfWithOnboarding",
-    true,
-});
-const base::FeatureParam<base::TimeDelta> kAutoOpenGlicCooldown({
-    &kAutoOpenGlicForPdf,
-    "AutoOpenGlicCooldown",
-    base::Hours(1),
-});
 
 BASE_FEATURE(kGlicInvoke, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -389,4 +359,5 @@ BASE_FEATURE(kGlicWhatsNewLuminous, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicForceFcmExperimentalTriggerFailure,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
