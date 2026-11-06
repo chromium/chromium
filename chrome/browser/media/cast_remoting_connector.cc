@@ -74,7 +74,9 @@ void CastRemotingConnector::ResetRemotingPermission() {
 void CastRemotingConnector::ConnectWithMediaRemoter(
     mojo::PendingRemote<media::mojom::Remoter> remoter,
     mojo::PendingReceiver<media::mojom::RemotingSource> receiver) {
-  CHECK(!remoter_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/579993106): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!remoter_);
   CHECK(remoter, base::NotFatalUntil::M161);
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(2) << __func__;
