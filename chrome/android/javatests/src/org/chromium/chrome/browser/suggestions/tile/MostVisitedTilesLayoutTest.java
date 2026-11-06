@@ -149,9 +149,6 @@ public class MostVisitedTilesLayoutTest {
             ThreadUtils.runOnUiThreadBlocking(() -> mTileGroupDelegate.destroy());
             mTileGroupDelegate = null;
         }
-        // Since renderTiles() calls setContentView() on the Activity, the clean up causes an
-        // exception.
-        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Test
@@ -298,7 +295,14 @@ public class MostVisitedTilesLayoutTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setOfflinePageBridge(offlineUrls);
-                    activity.setContentView(contentView);
+                    // Overlay the content instead of replacing it with setContentView(), which
+                    // would break the hub when the test rule closes the tabs during cleanup.
+                    ViewGroup activityContent = activity.findViewById(android.R.id.content);
+                    activityContent.addView(
+                            contentView,
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT));
                     ViewGroup containerLayout =
                             (ViewGroup)
                                     LayoutInflater.from(contentView.getContext())
