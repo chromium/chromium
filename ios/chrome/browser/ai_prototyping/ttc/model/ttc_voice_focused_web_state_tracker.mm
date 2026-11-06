@@ -43,6 +43,11 @@ void TtcVoiceFocusedWebStateTracker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+Browser* TtcVoiceFocusedWebStateTracker::GetBrowser() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return bound_browser_.get();
+}
+
 web::WebState* TtcVoiceFocusedWebStateTracker::GetActiveWebState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WebStateList* web_state_list =

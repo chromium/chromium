@@ -53,6 +53,9 @@ class TtcVoiceFocusedWebStateTracker : public WebStateListObserver {
   // Removes `observer` from receiving active `WebState` changes.
   void RemoveObserver(Observer* observer);
 
+  // Returns the currently tracked regular `Browser`, or `nullptr` if none.
+  Browser* GetBrowser() const;
+
   // Returns the active `WebState` of the currently bound regular `Browser`, or
   // `nullptr` if there is no active tab.
   web::WebState* GetActiveWebState() const;

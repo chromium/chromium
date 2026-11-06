@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
+class Browser;
 @class TtcTaskInterventionHandler;
 
 namespace actor {
@@ -60,20 +61,24 @@ class TtcActuationHandler {
   void Disconnect();
 
   // Validates `tool_request` via `TtcToolValidator`, dispatches the resulting
-  // actuation request on `active_web_state`, and invokes `callback` (which must
-  // be non-null) with the execution result, or `kTabWentAway` if
-  // `active_web_state` is null or off-the-record.
+  // actuation request on `target_web_state` or `browser` (`target_web_state`
+  // may be null even when `browser` has tabs, e.g., while the Tab Grid obscures
+  // them), and invokes `callback` (which must be non-null) with the execution
+  // result, or `kTabWentAway` if `target_web_state` is null or off-the-record.
   void ProcessToolCall(const ttc::ToolRequest& tool_request,
-                       web::WebState* active_web_state,
+                       web::WebState* target_web_state,
+                       Browser* browser,
                        ActuationCallback callback);
 
-  // Dispatches `request` for execution on `active_web_state`, lazily creating
-  // the session's Actor task if needed, and invokes `callback` (which must be
-  // non-null) upon completion, or with `kTabWentAway` if `active_web_state` is
-  // null or off-the-record. The underlying Actor task remains active to allow
-  // subsequent actuation requests until explicitly stopped or disconnected.
+  // Dispatches `request` for execution on `target_web_state` or `browser`,
+  // lazily creating the session's Actor task if needed, and invokes `callback`
+  // (which must be non-null) upon completion, or with `kTabWentAway` if
+  // `target_web_state` is null or off-the-record. The underlying Actor task
+  // remains active to allow subsequent actuation requests until explicitly
+  // stopped or disconnected.
   void DispatchActuationRequest(const TtcActuationRequest& request,
-                                web::WebState* active_web_state,
+                                web::WebState* target_web_state,
+                                Browser* browser,
                                 ActuationCallback callback);
 
   // Stops the active Actor task (if any) with the specified `reason`. If an
@@ -93,10 +98,11 @@ class TtcActuationHandler {
 
   // Validates and executes an `open_url` tool call with `new_tab == true` by
   // inserting and activating a new foreground `WebState` in the regular
-  // `Browser` owning `active_web_state`, registering it as controlled in
+  // `Browser` owning `target_web_state`, registering it as controlled in
   // `actor_service_`, and invoking `callback`.
   void OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
-                       web::WebState* active_web_state,
+                       web::WebState* target_web_state,
+                       Browser* browser,
                        ActuationCallback callback);
 
   // Handles completion of `ActorService::PerformActions`.

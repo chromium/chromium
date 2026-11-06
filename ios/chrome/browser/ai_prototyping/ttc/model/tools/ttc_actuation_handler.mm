@@ -302,7 +302,8 @@ void TtcActuationHandler::Disconnect() {
 #pragma mark - Public Actuation
 
 void TtcActuationHandler::ProcessToolCall(const ttc::ToolRequest& tool_request,
-                                          web::WebState* active_web_state,
+                                          web::WebState* target_web_state,
+                                          Browser* browser,
                                           ActuationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback);
@@ -313,7 +314,8 @@ void TtcActuationHandler::ProcessToolCall(const ttc::ToolRequest& tool_request,
   }
 
   if (TtcToolValidator::IsOpenUrlInNewTab(tool_request)) {
-    OpenUrlInNewTab(tool_request, active_web_state, std::move(callback));
+    OpenUrlInNewTab(tool_request, target_web_state, browser,
+                    std::move(callback));
     return;
   }
 
@@ -327,12 +329,14 @@ void TtcActuationHandler::ProcessToolCall(const ttc::ToolRequest& tool_request,
     return;
   }
 
-  DispatchActuationRequest(*request, active_web_state, std::move(callback));
+  DispatchActuationRequest(*request, target_web_state, browser,
+                           std::move(callback));
 }
 
 void TtcActuationHandler::DispatchActuationRequest(
     const TtcActuationRequest& request,
-    web::WebState* active_web_state,
+    web::WebState* target_web_state,
+    Browser* browser,
     ActuationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback);
@@ -344,7 +348,7 @@ void TtcActuationHandler::DispatchActuationRequest(
   }
 
   web::BrowserState* browser_state =
-      active_web_state ? active_web_state->GetBrowserState() : nullptr;
+      target_web_state ? target_web_state->GetBrowserState() : nullptr;
   if (!browser_state || browser_state->IsOffTheRecord()) {
     FailWithError(std::move(callback),
                   actor::mojom::ActionResultCode::kTabWentAway);
@@ -364,7 +368,7 @@ void TtcActuationHandler::DispatchActuationRequest(
     return;
   }
 
-  SessionID window_id = GetBrowserIdForWebState(active_web_state);
+  SessionID window_id = GetBrowserIdForWebState(target_web_state);
   std::vector<optimization_guide::proto::Action> actions;
   actions.reserve(request.action_protos.size());
 
@@ -375,7 +379,7 @@ void TtcActuationHandler::DispatchActuationRequest(
                     actor::mojom::ActionResultCode::kArgumentsInvalid);
       return;
     }
-    InjectDataIntoAction(action, active_web_state, window_id);
+    InjectDataIntoAction(action, target_web_state, window_id);
     actions.push_back(std::move(action));
   }
 
@@ -463,7 +467,8 @@ void TtcActuationHandler::CloseSession(ActuationCallback callback) {
 }
 
 void TtcActuationHandler::OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
-                                          web::WebState* active_web_state,
+                                          web::WebState* target_web_state,
+                                          Browser* browser,
                                           ActuationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::expected<void, std::string> validation =
@@ -482,7 +487,7 @@ void TtcActuationHandler::OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
   }
 
   web::BrowserState* browser_state =
-      active_web_state ? active_web_state->GetBrowserState() : nullptr;
+      target_web_state ? target_web_state->GetBrowserState() : nullptr;
   if (!browser_state || browser_state->IsOffTheRecord()) {
     FailWithError(std::move(callback),
                   actor::mojom::ActionResultCode::kTabWentAway);
@@ -496,9 +501,10 @@ void TtcActuationHandler::OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
     return;
   }
 
-  Browser* browser = GetBrowserForWebState(active_web_state);
+  Browser* resolved_browser = GetBrowserForWebState(target_web_state);
   TabInsertionBrowserAgent* insertion_agent =
-      browser ? TabInsertionBrowserAgent::FromBrowser(browser) : nullptr;
+      resolved_browser ? TabInsertionBrowserAgent::FromBrowser(resolved_browser)
+                       : nullptr;
   if (!insertion_agent) {
     FailWithError(std::move(callback),
                   actor::mojom::ActionResultCode::kWindowWentAway);
@@ -526,7 +532,7 @@ void TtcActuationHandler::OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
       GURL(url_string ? *url_string : std::string()));
   TabInsertion::Params insertion_params;
   insertion_params.in_background = false;
-  insertion_params.parent = active_web_state;
+  insertion_params.parent = target_web_state;
   web::WebState* new_web_state =
       insertion_agent->InsertWebState(load_params, insertion_params);
   if (!new_web_state) {

@@ -154,12 +154,29 @@ TEST_F(TtcVoiceFocusedWebStateTrackerTest, CloseActiveTab) {
   EXPECT_THAT(observer.TakeChanges(), ElementsAre(nullptr));
 }
 
+// Tests that a tracked regular `Browser` with zero tabs exposes `GetBrowser`
+// while `GetActiveWebState` is `nullptr`, and clears `GetBrowser` on
+// `Disconnect()`.
+TEST_F(TtcVoiceFocusedWebStateTrackerTest,
+       BrowserRemainsAvailableWithZeroTabsUntilDisconnect) {
+  ASSERT_TRUE(first_browser_->GetWebStateList()->empty());
+  TtcVoiceFocusedWebStateTracker tracker(browser_list_);
+
+  EXPECT_EQ(tracker.GetActiveWebState(), nullptr);
+  EXPECT_EQ(tracker.GetBrowser(), first_browser_.get());
+
+  tracker.Disconnect();
+
+  EXPECT_EQ(tracker.GetBrowser(), nullptr);
+}
+
 // Tests that `Disconnect()` clears the tracked `WebState` and stops notifying
 // observers on subsequent tab changes, and that a `nullptr` `BrowserList` is
 // safe.
 TEST_F(TtcVoiceFocusedWebStateTrackerTest, DisconnectStopsObservation) {
   TtcVoiceFocusedWebStateTracker null_tracker(nullptr);
   EXPECT_EQ(null_tracker.GetActiveWebState(), nullptr);
+  EXPECT_EQ(null_tracker.GetBrowser(), nullptr);
 
   web::FakeWebState* first_tab = InsertActiveTab(first_browser_.get());
   TtcVoiceFocusedWebStateTracker tracker(browser_list_);

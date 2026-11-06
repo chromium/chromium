@@ -173,7 +173,11 @@ void TtcSessionController::OnToolCall(
     return;
   }
 
+  Browser* browser = voice_focused_web_state_tracker_
+                         ? voice_focused_web_state_tracker_->GetBrowser()
+                         : nullptr;
   actuation_handler_->ProcessToolCall(tool_request, GetVoiceFocusedWebState(),
+                                      browser,
                                       std::move(tool_response_callback));
 }
 

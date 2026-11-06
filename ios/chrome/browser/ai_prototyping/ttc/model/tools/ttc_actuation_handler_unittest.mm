@@ -123,7 +123,8 @@ TEST_F(TtcActuationHandlerTest, TestDispatchWithNullActorService) {
 
   base::test::TestFuture<ttc::ToolResponse> future;
   null_service_handler.DispatchActuationRequest(
-      request_result.value(), GetActiveWebState(), future.GetCallback());
+      request_result.value(), GetActiveWebState(), browser_.get(),
+      future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -143,7 +144,7 @@ TEST_F(TtcActuationHandlerTest,
   base::test::TestFuture<ttc::ToolResponse> future;
 
   handler->DispatchActuationRequest(request_result.value(), nullptr,
-                                    future.GetCallback());
+                                    browser_.get(), future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -165,8 +166,9 @@ TEST_F(TtcActuationHandlerTest,
   ASSERT_TRUE(request_result.has_value());
   base::test::TestFuture<ttc::ToolResponse> future;
 
-  handler->DispatchActuationRequest(
-      request_result.value(), incognito_web_state.get(), future.GetCallback());
+  handler->DispatchActuationRequest(request_result.value(),
+                                    incognito_web_state.get(), browser_.get(),
+                                    future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -182,7 +184,7 @@ TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestEmptyActionProtos) {
 
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->DispatchActuationRequest(request, GetActiveWebState(),
-                                    future.GetCallback());
+                                    browser_.get(), future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -207,11 +209,13 @@ TEST_F(TtcActuationHandlerTest,
 
   base::test::TestFuture<ttc::ToolResponse> future1;
   handler->DispatchActuationRequest(request_result_1.value(),
-                                    GetActiveWebState(), future1.GetCallback());
+                                    GetActiveWebState(), browser_.get(),
+                                    future1.GetCallback());
 
   base::test::TestFuture<ttc::ToolResponse> future2;
   handler->DispatchActuationRequest(request_result_2.value(),
-                                    GetActiveWebState(), future2.GetCallback());
+                                    GetActiveWebState(), browser_.get(),
+                                    future2.GetCallback());
 
   const ttc::ToolResponse& response2 = future2.Get();
   ASSERT_FALSE(response2.Ok());
@@ -230,7 +234,7 @@ TEST_F(TtcActuationHandlerTest, TestDispatchActuationRequestMalformedProto) {
 
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->DispatchActuationRequest(request, GetActiveWebState(),
-                                    future.GetCallback());
+                                    browser_.get(), future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -254,7 +258,7 @@ TEST_F(TtcActuationHandlerTest,
 
   base::test::TestFuture<ttc::ToolResponse> first_future;
   handler->DispatchActuationRequest(first_request_result.value(),
-                                    GetActiveWebState(),
+                                    GetActiveWebState(), browser_.get(),
                                     first_future.GetCallback());
   EXPECT_TRUE(first_future.Get().Ok());
   EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
@@ -272,7 +276,7 @@ TEST_F(TtcActuationHandlerTest,
 
   base::test::TestFuture<ttc::ToolResponse> second_future;
   handler->DispatchActuationRequest(second_request_result.value(),
-                                    GetActiveWebState(),
+                                    GetActiveWebState(), browser_.get(),
                                     second_future.GetCallback());
   EXPECT_TRUE(second_future.Get().Ok());
   EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
@@ -296,7 +300,7 @@ TEST_F(TtcActuationHandlerTest,
 
   base::test::TestFuture<ttc::ToolResponse> first_future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
-                                    first_future.GetCallback());
+                                    browser_.get(), first_future.GetCallback());
   EXPECT_TRUE(first_future.Get().Ok());
   EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
 
@@ -314,6 +318,7 @@ TEST_F(TtcActuationHandlerTest,
   // The next actuation request should create a replacement task.
   base::test::TestFuture<ttc::ToolResponse> second_future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
+                                    browser_.get(),
                                     second_future.GetCallback());
   EXPECT_TRUE(second_future.Get().Ok());
 
@@ -333,7 +338,7 @@ TEST_F(TtcActuationHandlerTest, TestExternalStopCancelsActiveActuation) {
   ASSERT_TRUE(request_result.has_value());
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
-                                    future.GetCallback());
+                                    browser_.get(), future.GetCallback());
 
   actor_service->StopAllTasks();
 
@@ -355,7 +360,7 @@ TEST_F(TtcActuationHandlerTest, TestStopTaskStopsActiveActorTask) {
   ASSERT_TRUE(request_result.has_value());
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
-                                    future.GetCallback());
+                                    browser_.get(), future.GetCallback());
   EXPECT_TRUE(future.Get().Ok());
   EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
 
@@ -376,7 +381,7 @@ TEST_F(TtcActuationHandlerTest, TestStopTaskCancelsActiveActuation) {
   ASSERT_TRUE(request_result.has_value());
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
-                                    future.GetCallback());
+                                    browser_.get(), future.GetCallback());
 
   handler->StopTask();
 
@@ -401,7 +406,7 @@ TEST_F(TtcActuationHandlerTest, TestDisconnectCancelsActiveTask) {
 
   base::test::TestFuture<ttc::ToolResponse> first_future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
-                                    first_future.GetCallback());
+                                    browser_.get(), first_future.GetCallback());
   EXPECT_TRUE(first_future.Get().Ok());
   EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
 
@@ -415,6 +420,7 @@ TEST_F(TtcActuationHandlerTest, TestDisconnectCancelsActiveTask) {
   // `kTaskWentAway`.
   base::test::TestFuture<ttc::ToolResponse> second_future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
+                                    browser_.get(),
                                     second_future.GetCallback());
 
   const ttc::ToolResponse& response = second_future.Get();
@@ -436,7 +442,7 @@ TEST_F(TtcActuationHandlerTest,
 
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
-                                    future.GetCallback());
+                                    browser_.get(), future.GetCallback());
 
   handler->Disconnect();
 
@@ -453,7 +459,7 @@ TEST_F(TtcActuationHandlerTest, TestProcessToolCallSuccess) {
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->ProcessToolCall(
       ttc::ToolRequest{ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")},
-      GetActiveWebState(), future.GetCallback());
+      GetActiveWebState(), browser_.get(), future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   EXPECT_TRUE(response.Ok());
@@ -467,7 +473,8 @@ TEST_F(TtcActuationHandlerTest, TestProcessToolCallUnknownTool) {
 
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->ProcessToolCall(ttc::ToolRequest{"unknown_tool", base::DictValue()},
-                           GetActiveWebState(), future.GetCallback());
+                           GetActiveWebState(), browser_.get(),
+                           future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -485,7 +492,7 @@ TEST_F(TtcActuationHandlerTest, TestProcessToolCallInvalidArguments) {
   base::test::TestFuture<ttc::ToolResponse> future;
   handler->ProcessToolCall(
       ttc::ToolRequest{ttc::kToolOpenUrl, base::DictValue()},
-      GetActiveWebState(), future.GetCallback());
+      GetActiveWebState(), browser_.get(), future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -504,7 +511,7 @@ TEST_F(TtcActuationHandlerTest,
 
   handler->ProcessToolCall(
       ttc::ToolRequest{ttc::kToolGoBack, base::DictValue()},
-      GetActiveWebState(), future.GetCallback());
+      GetActiveWebState(), browser_.get(), future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -538,7 +545,7 @@ TEST_F(TtcActuationHandlerTest,
 
   handler.ProcessToolCall(
       ttc::ToolRequest{ttc::kToolCloseSession, base::DictValue()},
-      /*active_web_state=*/nullptr, future.GetCallback());
+      /*target_web_state=*/nullptr, /*browser=*/nullptr, future.GetCallback());
 
   EXPECT_TRUE(future.Get().Ok());
   EXPECT_TRUE(close_session_called);
@@ -565,7 +572,7 @@ TEST_F(TtcActuationHandlerTest,
 
   handler.ProcessToolCall(
       ttc::ToolRequest{ttc::kToolCloseSession, base::DictValue()},
-      /*active_web_state=*/nullptr, future.GetCallback());
+      /*target_web_state=*/nullptr, /*browser=*/nullptr, future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -593,7 +600,8 @@ TEST_F(TtcActuationHandlerTest,
   base::test::TestFuture<ttc::ToolResponse> future;
 
   handler->ProcessToolCall(ttc::ToolRequest{ttc::kToolOpenUrl, std::move(args)},
-                           GetActiveWebState(), future.GetCallback());
+                           GetActiveWebState(), browser_.get(),
+                           future.GetCallback());
 
   EXPECT_TRUE(future.Get().Ok());
   EXPECT_EQ(browser_->GetWebStateList()->count(), 2);
@@ -626,7 +634,8 @@ TEST_F(TtcActuationHandlerTest,
   base::test::TestFuture<ttc::ToolResponse> future;
 
   handler->ProcessToolCall(ttc::ToolRequest{ttc::kToolOpenUrl, std::move(args)},
-                           /*active_web_state=*/nullptr, future.GetCallback());
+                           /*target_web_state=*/nullptr, /*browser=*/nullptr,
+                           future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -648,7 +657,8 @@ TEST_F(
   base::test::TestFuture<ttc::ToolResponse> future;
 
   handler->ProcessToolCall(ttc::ToolRequest{ttc::kToolOpenUrl, std::move(args)},
-                           incognito_web_state.get(), future.GetCallback());
+                           incognito_web_state.get(), browser_.get(),
+                           future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -670,7 +680,8 @@ TEST_F(
   base::test::TestFuture<ttc::ToolResponse> future;
 
   handler->ProcessToolCall(ttc::ToolRequest{ttc::kToolOpenUrl, std::move(args)},
-                           unattached_web_state.get(), future.GetCallback());
+                           unattached_web_state.get(), /*browser=*/nullptr,
+                           future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -690,7 +701,7 @@ TEST_F(TtcActuationHandlerTest,
 
   handler->ProcessToolCall(
       ttc::ToolRequest{ttc::kToolOpenUrl, std::move(invalid_args)},
-      GetActiveWebState(), future.GetCallback());
+      GetActiveWebState(), browser_.get(), future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -711,7 +722,7 @@ TEST_F(TtcActuationHandlerTest, ProcessToolCallCreatesAndClosesBrowserTabs) {
   base::test::TestFuture<ttc::ToolResponse> create_future;
   handler->ProcessToolCall(
       ttc::ToolRequest{ttc::kToolCreateTab, base::DictValue()},
-      GetActiveWebState(), create_future.GetCallback());
+      GetActiveWebState(), browser_.get(), create_future.GetCallback());
   EXPECT_TRUE(create_future.Get().Ok());
   ASSERT_EQ(web_state_list->count(), 2);
   web::WebState* created_tab = GetActiveWebState();
@@ -721,7 +732,7 @@ TEST_F(TtcActuationHandlerTest, ProcessToolCallCreatesAndClosesBrowserTabs) {
   base::test::TestFuture<ttc::ToolResponse> close_future;
   handler->ProcessToolCall(
       ttc::ToolRequest{ttc::kToolCloseCurrentTab, base::DictValue()},
-      GetActiveWebState(), close_future.GetCallback());
+      GetActiveWebState(), browser_.get(), close_future.GetCallback());
   EXPECT_TRUE(close_future.Get().Ok());
   EXPECT_EQ(web_state_list->count(), 1);
   EXPECT_EQ(GetActiveWebState(), initial_tab);
@@ -744,7 +755,7 @@ TEST_F(TtcActuationHandlerTest,
 
   handler->ProcessToolCall(
       ttc::ToolRequest{ttc::kToolScrollPage, std::move(args)},
-      GetActiveWebState(), future.GetCallback());
+      GetActiveWebState(), browser_.get(), future.GetCallback());
 
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
@@ -796,7 +807,7 @@ TEST_F(TtcActuationHandlerTest,
 
     handler->ProcessToolCall(
         ttc::ToolRequest{ttc::kToolScrollPage, std::move(args)},
-        GetActiveWebState(), future.GetCallback());
+        GetActiveWebState(), browser_.get(), future.GetCallback());
 
     ASSERT_TRUE(future.Wait());
     EXPECT_TRUE(actor::HasJournalEntryWithDetail(
