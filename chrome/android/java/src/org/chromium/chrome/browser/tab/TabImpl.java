@@ -198,7 +198,7 @@ class TabImpl implements Tab, TabInternal {
     /** The Profile associated with this tab. */
     private final Profile mProfile;
 
-    /** The tab model this tab is currently attached to. */
+    /** Supplies the current (active) tab in the TabModel this tab is currently attached to. */
     private @Nullable LookAheadObservableSupplier<Tab> mCurrentTabSupplier;
 
     /** Whether or not this tab is a part of multi selection. */
@@ -2339,8 +2339,8 @@ class TabImpl implements Tab, TabInternal {
 
         // Prefer reusing the NativePage when loading pdf. Never offer a frozen page as the reuse
         // candidate: it has no view, and NativePageFactory.createNativePageForCustomTab() would
-        // hand it straight back on URL match, leaving the tab frozen with a null view. See
-        // crbug.com/568278676.
+        // hand it straight back on URL match, leaving the tab with a frozen NativePage and a null
+        // view. See crbug.com/568278676.
         boolean loadPdf = PdfUtils.isReuseFragmentEnabled() && pdfInfo != null;
         NativePage currentPage = getNativePage();
         boolean canReuseCurrent =
@@ -3226,9 +3226,10 @@ class TabImpl implements Tab, TabInternal {
     }
 
     /**
-     * Set the last hidden timestamp.
+     * Sets the timestamp in milliseconds when a navigation was last committed in this tab.
      *
-     * @param lastNavigationCommittedTimestampMillis The timestamp when the tab was last interacted.
+     * @param lastNavigationCommittedTimestampMillis The timestamp when a navigation was last
+     *     committed in this tab.
      */
     @VisibleForTesting
     public void setLastNavigationCommittedTimestampMillis(
@@ -3648,11 +3649,17 @@ class TabImpl implements Tab, TabInternal {
             return null;
         }
 
-        /** Suppresses registering drag-and-drop target handlers on background frozen stubs. */
+        /**
+         * Suppresses registering drag-and-drop target handlers on uninflated background proxy
+         * views.
+         */
         @Override
         public void addOnDragListener(OnDragListener listener) {}
 
-        /** Suppresses unregistering drag-and-drop target handlers on background frozen stubs. */
+        /**
+         * Suppresses unregistering drag-and-drop target handlers on uninflated background proxy
+         * views.
+         */
         @Override
         public void removeOnDragListener(OnDragListener listener) {}
 

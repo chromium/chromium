@@ -66,10 +66,11 @@ public class TabModelUtils {
     }
 
     /**
-     * Get the currently selected {@link Tab} id.
+     * Gets the current (active) {@link Tab} id.
      *
      * @param model The {@link TabList} to act on.
-     * @return The id of the currently selected {@link Tab}.
+     * @return The id of the current (active) {@link Tab}, or {@link Tab#INVALID_TAB_ID} if no
+     *     {@link Tab} is active.
      */
     public static int getCurrentTabId(TabList model) {
         Tab tab = getCurrentTab(model);
@@ -79,10 +80,10 @@ public class TabModelUtils {
     }
 
     /**
-     * Get the currently selected {@link Tab}.
+     * Gets the current (active) {@link Tab}.
      *
      * @param model The {@link TabList} to act on.
-     * @return The current {@link Tab} or {@code null} if no {@link Tab} is selected
+     * @return The current {@link Tab} or {@code null} if no {@link Tab} is active.
      */
     public static @Nullable Tab getCurrentTab(TabList model) {
         int index = model.index();
@@ -93,8 +94,8 @@ public class TabModelUtils {
 
     /**
      * @param model The {@link TabList} to act on.
-     * @return The currently active {@link WebContents}, or {@code null} if no {@link Tab} is
-     *     selected or the selected {@link Tab} has no current {@link WebContents}.
+     * @return The currently active {@link WebContents}, or {@code null} if no {@link Tab} is active
+     *     or the current {@link Tab} has no {@link WebContents}.
      */
     public static @Nullable WebContents getCurrentWebContents(TabList model) {
         Tab tab = getCurrentTab(model);
@@ -104,11 +105,11 @@ public class TabModelUtils {
     }
 
     /**
-     * Selects a tab by its ID in the tab model selector.
+     * Activates a tab by its ID in the tab model selector (setting it as the current tab).
      *
      * @param selector The {@link TabModelSelector} to act on.
-     * @param tabId The tab ID to select.
-     * @param tabSelectionType {@link TabSelectionType} how the tab selection was initiated.
+     * @param tabId The tab ID to activate.
+     * @param tabSelectionType {@link TabSelectionType} how the tab activation was initiated.
      */
     public static void selectTabById(
             TabModelSelector selector, int tabId, @TabSelectionType int tabSelectionType) {
@@ -121,11 +122,12 @@ public class TabModelUtils {
     }
 
     /**
-     * A helper method that automatically passes {@link TabSelectionType#FROM_USER} as the selection
-     * type to {@link TabModel#setIndex(int, TabSelectionType)}.
+     * Activates a tab by its index (setting it as the current tab) and automatically passes {@link
+     * TabSelectionType#FROM_USER} as the selection type to {@link TabModel#setIndex(int,
+     * TabSelectionType)}.
      *
      * @param model The {@link TabModel} to act on.
-     * @param index The index of the {@link Tab} to select.
+     * @param index The index of the {@link Tab} to activate.
      */
     public static void setIndex(TabModel model, int index) {
         model.setIndex(index, TabSelectionType.FROM_USER);

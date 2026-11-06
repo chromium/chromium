@@ -298,12 +298,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     private final Set<Integer> mMultiSelectedTabs = new LinkedHashSet<>();
     private final Set<Token> mHidingTabGroups = new ArraySet<>();
 
-    // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
-    // objects are not GC'd as the C++ TabAndroid objects only hold weak references to their Java
-    // counterparts.
+    // Cache of all open (non-closing) tabs in the model keyed by tab ID for efficient lookup
+    // rather than by index (stored in C++). Also ensures the Java Tab objects are not GC'd as the
+    // C++ TabAndroid objects only hold weak references to their Java counterparts.
     private final SparseArray<Tab> mTabIdToTabs = new SparseArray<>();
 
-    // Actively-maintained cache of all active tabs in their correct order.
+    // Actively-maintained cache of all open (non-closing) tabs in the model in their correct order.
     // If null, the cache is dirty/invalid and must be re-populated from native on the next read.
     // All reads must go through getTabList() to ensure the cache is valid.
     // All modifications must call invalidateCache() to mark the cache as dirty.
@@ -1934,8 +1934,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         // change usually causes visibility changes, which updates service bindings of subframes at
         // the same time.
         try (ScopedServiceBindingBatch scope = ScopedServiceBindingBatch.scoped()) {
-            // When we select a tab in this model it should become the active model. This is the
-            // existing behavior of TabModelImpl.
+            // When activating a tab in this model it should become the active model.
             if (!isActiveModel()) mModelDelegate.selectModel(isIncognito());
 
             Tab oldSelectedTab = mCurrentTabSupplier.get();

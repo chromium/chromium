@@ -38,7 +38,7 @@ public interface TabObserver {
      * Called when a {@link Tab} is shown.
      *
      * @param tab The notifying {@link Tab}.
-     * @param type Specifies how the tab was selected.
+     * @param type Specifies how the tab was activated to be shown.
      */
     default void onShown(Tab tab, @TabSelectionType int type) {}
 

@@ -63,8 +63,8 @@ public interface TabModelSelector {
     /**
      * Convenience function to get the current tab id on the current model.
      *
-     * @return Id of the current tab or {@link Tab#INVALID_TAB_ID} if no tab is selected or the
-     *     model is not initialized.
+     * @return Id of the current tab or {@link Tab#INVALID_TAB_ID} if no tab is active or the model
+     *     is not initialized.
      */
     int getCurrentTabId();
 

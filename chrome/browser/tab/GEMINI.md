@@ -42,7 +42,33 @@ chrome/browser/android/             # Native TabAndroid (tabs::TabInterface), Ta
 
 ---
 
-## 2. Key Architectural Invariants
+## 2. Tab Terminology & State Definitions
+
+- **Current or Active (`Tab.isActivated()`, `TabModel.getCurrentTabSupplier()`, `TabList.index()`)**:
+  - The single tab currently activated in its `TabModel`. (Note: an inactive `TabModel` in `TabModelSelector` still maintains its own current/active tab).
+- **Selected (`Tab.isMultiSelected()`, `TabModel.isTabMultiSelected()`, `TabInterface::IsSelected()`)**:
+  - Present in the multi-selection set. Distinct from the current/active tab, though `Tab.isMultiSelected()`, `TabModel.isTabMultiSelected()`, and `TabInterface::IsSelected()` all implicitly include the current/active tab when attached to a `TabModel` (returning `false` when detached). Note that `TabCollectionTabModelImpl#getMultiSelectedTabsCount()` returns `0` whenever `getCurrentTabSupplier().get() == null` (including non-empty models with no active tab yet, such as during background restore before `completeInitialization()`), and in `ARCHIVED` models `index()` returns `INVALID_TAB_INDEX` (so `isTabMultiSelected()` returns `false` unless explicitly selected).
+- **Foreground vs. Background vs. Shown / Hidden (`TabLifecycle.show()`, `hide()`, `isHidden()`, `TabInterface::IsVisible()`)**:
+  - **Foreground**: Foreground in its window. Historically synonymous with Current/Active, but with split tabs (`crbug.com/480192698`) multiple tabs in a split are foreground simultaneously while only one is Current/Active.
+  - **Background**: Not foregrounded in its window.
+  - **Shown vs. Hidden (`!isHidden()` vs. `isHidden()`)**: Tracks whether the tab's view is shown. Distinct from window-level foreground/background because a foreground tab is also hidden (`isHidden() == true`) when the Activity is backgrounded (`TabHidingType.ACTIVITY_HIDDEN`) or when the Tab Switcher / Hub is shown (`TabHidingType.TAB_SWITCHER_SHOWN`). (Note: `TabHidingType.REPARENTED` is unused; reparenting toggles `Tab.isDetachedFromActivity()` rather than `isHidden()`).
+  - **Window Occluded (`WindowAndroid.getOcclusionSupplier()`) vs. Obscured (`TabObscuringHandler`) vs. User Interactable (`Tab.isUserInteractable()`)**:
+    - **Window Occluded**: OS-level window occlusion (`WindowAndroid.getOcclusionSupplier()`), which transitions `WebContents` to `Visibility.OCCLUDED`.
+    - **Obscured**: In-app UI covering tabs/toolbar (`TabObscuringHandler`), which hides views from accessibility (`IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS`), clears accessibility focus (`WebContentsAccessibilityImpl#setObscuredByAnotherView`), and blocks descendant Android view focus traversal on `CompositorViewHolder` (`FOCUS_BLOCK_DESCENDANTS`) while keeping `WebContents` `Visibility.VISIBLE`.
+    - **User Interactable (`Tab.isUserInteractable()`)**: True iff `!mIsHidden && !isFrozen() && mIsViewAttachedToWindow && !isDetachedFromActivity()`.
+- **Frozen (`Tab.isFrozen()`) vs. `FrozenNativePage` (`NativePage.isFrozen()`) vs. Discarded (`Tab.discard()`)**:
+  - **`Tab.isFrozen()` (`!isNativePage() && getWebContents() == null`)**: The tab has neither a `WebContents` nor a `NativePage`.
+  - **`FrozenNativePage` (`NativePage.isFrozen()` / `Tab.freezeNativePage()`)**: Separate mechanism replacing a backgrounded `NativePage` with a viewless stand-in; `Tab.isFrozen()` remains `false`.
+  - **Discarded (`Tab.discard()`)**: Discards `WebContents` in-place (`mWebContents != null`, `Tab.isFrozen() == false`, `needsReload() == true`).
+- **Window/Activity Detachment vs. Model/Collection Detachment**:
+  - **Window/Activity Detachment (`Tab.isDetachedFromActivity()`, `Tab.updateAttachment()`)**: Either `WindowAndroid` is null or has no `Activity` (`HiddenTabHolder`, spare tabs, `HEADLESS` model), or the tab was detached via `updateAttachment(null, null)` during reparenting (which clears `webContents.setTopLevelNativeWindow(null)` and sets `mIsDetachedFromActivity = true` while retaining a non-null `WindowAndroid` until re-attachment; see Section 3.E).
+  - **Model/Collection Detachment (`Tab.onRemovedFromTabModel()`, `Tab.hasParentCollection()`, `TabInterface::RegisterWillDetach`)**: Removed from its `TabModel` / `TabStripCollection`.
+- **Dormant Models (`ARCHIVED` & `HEADLESS`)**:
+  - `TabModel.isDormantTabModel()` models never hold `WebContents`; `HEADLESS` is intended to become strictly read-only in the future.
+
+---
+
+## 3. Key Architectural Invariants
 
 ### A. The 1:1 `Tab`-to-`WebContents` Invariant (Post-Unfreeze) & In-Place Discarding
 - Once a `Tab` transitions from frozen (`mWebContents == null`) to initialized (`TabImpl#initWebContents` / `TabAndroid::InitWebContents`), it maintains a **strict, permanent 1:1 relationship** with that exact `content::WebContents` instance until the `Tab` is destroyed (`TabImpl#destroyInternal`).

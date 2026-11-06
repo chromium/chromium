@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
 public @interface TabHidingType {
-    /** A tab was hidden due to other tab getting foreground. */
+    /** A tab was hidden due to another tab (or split tabs) being shown in the foreground. */
     int CHANGED_TABS = 0;
 
     /** A tab was hidden together with an activity. */

@@ -11,7 +11,7 @@ import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * A read only list of {@link Tab}s. This list understands the concept of an incognito list as well
- * as a currently selected tab (see {@link #index}).
+ * as a current (active) tab (see {@link #index}).
  */
 @MockedInTests // Needed due to R8's computeDelayedInterfaceMethodSyntheticBridges. b/147584922
 @NullMarked
@@ -46,7 +46,10 @@ public interface TabList extends Iterable<Tab> {
      */
     boolean isIncognitoBranded();
 
-    /** Returns the index of the current tab, or {@link #INVALID_TAB_INDEX} if there are no tabs. */
+    /**
+     * Returns the index of the current (active) tab, or {@link #INVALID_TAB_INDEX} if there are no
+     * tabs.
+     */
     int index();
 
     /** Returns the number of open tabs in this model. */

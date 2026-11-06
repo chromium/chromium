@@ -62,11 +62,11 @@ class TabModel : public TabListInterface {
     // tabs will never have a WebContents unless restored to another tab model.
     kArchived,
     // Similar to a standard tab model, but used for a set of tabs that are not
-    // associated with any open window. The tabs in this model are intended to
-    // be "read-only" and cannot be navigated or have a WebContents. If the
-    // window associated with this tab model is opened the headless tab model
-    // will be destroyed and the tabs will be re-created in a standard tab
-    // model.
+    // associated with any open window. Tabs in this model are dormant (never
+    // instantiate a WebContents and cannot be navigated), and this model is
+    // intended to become strictly read-only in the future. If the window
+    // associated with this tab model is opened the headless tab model will be
+    // destroyed and the tabs will be re-created in a standard tab model.
     kHeadless,
   };
 

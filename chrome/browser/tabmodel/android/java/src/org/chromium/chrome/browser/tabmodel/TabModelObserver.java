@@ -38,7 +38,8 @@ public interface TabModelObserver {
      * @param tab The newly added tab.
      * @param type The type of tab launch.
      * @param creationState How the tab was created.
-     * @param markedForSelection Indicates whether the added tab will be selected.
+     * @param markedForSelection Indicates whether the added tab will become the current (active)
+     *     tab.
      */
     default void didAddTab(
             Tab tab,
@@ -49,14 +50,15 @@ public interface TabModelObserver {
     // Tab Selection
 
     /**
-     * Called when a tab is selected. This may not be called in some cases if this model is not the
-     * active model. If observing the current tab in this model is desired consider using {@link
-     * TabModel#getCurrentTabSupplier()} and observing that instead.
+     * Called when a tab is activated to become the current tab in this model. This may not be
+     * called in some cases if this model is not the active model. If observing the current tab in
+     * this model is desired consider using {@link TabModel#getCurrentTabSupplier()} and observing
+     * that instead.
      *
-     * @param tab The newly selected tab.
+     * @param tab The newly activated (current) tab.
      * @param type The type of selection.
-     * @param lastId The ID of the last selected tab, or {@link Tab#INVALID_TAB_ID} if no tab was
-     *     selected.
+     * @param lastId The ID of the last activated (current) tab, or {@link Tab#INVALID_TAB_ID} if no
+     *     tab was active.
      */
     default void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {}
 

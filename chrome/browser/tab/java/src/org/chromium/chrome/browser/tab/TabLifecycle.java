@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.tab;
 import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 
-/**
- */
 @MockedInTests
 @NullMarked
 public interface TabLifecycle {
     /**
-     * @return Whether or not this Tab has a live native component.  This will be true prior to
-     *         {@link #initializeNative()} being called or after {@link #destroy()}.
+     * Returns whether this Tab has a live native component. This will be {@code false} prior to
+     * {@code initializeNative()} being called or after {@link #destroy()}.
      */
     boolean isInitialized();
 
@@ -28,7 +26,7 @@ public interface TabLifecycle {
      * displayed. It restores the ContentView if it is not available after the cold start and
      * reloads the tab if its renderer has crashed.
      *
-     * @param type Specifies how the tab was selected.
+     * @param type Specifies how the tab was activated to be shown.
      */
     void show(@TabSelectionType int type);
 
@@ -57,7 +55,10 @@ public interface TabLifecycle {
     boolean didCloseWhileDetached();
 
     /**
-     * @return Whether or not the tab is hidden.
+     * Returns whether the tab is hidden (either in the background of its window, or hidden because
+     * the activity is backgrounded or showing the tab switcher). Note that reparenting does not set
+     * {@code isHidden()} to {@code true}; see {@link Tab#isDetachedFromActivity()} for reparenting
+     * detachment state.
      */
     boolean isHidden();
 
