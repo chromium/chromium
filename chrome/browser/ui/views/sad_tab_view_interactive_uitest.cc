@@ -4,13 +4,11 @@
 
 #include "chrome/browser/ui/views/sad_tab_view.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -45,16 +43,6 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
   SadTabViewInteractiveUITest(const SadTabViewInteractiveUITest&) = delete;
   SadTabViewInteractiveUITest& operator=(const SadTabViewInteractiveUITest&) =
       delete;
-
-  void SetUp() override {
-    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
-    // enabled and then remove this.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup,
-                               omnibox::internal::kWebUIOmniboxAimPopup});
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -171,8 +159,6 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     sad_tab_controller->RecordFirstPaint();
     PressSpacebar();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_MAC)

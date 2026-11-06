@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/download/download_display.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -4517,20 +4516,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 
 class WebAppFrameToolbarUninstallButtonTest
     : public WebAppFrameToolbarBrowserTest_WindowControlsOverlay {
- public:
-  WebAppFrameToolbarUninstallButtonTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kWebAppInstallDialog},
-        /*disabled_features=*/
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-        // is enabled and then remove these two Features.
-        {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kWebAppInstallDialog};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest, ButtonExists) {

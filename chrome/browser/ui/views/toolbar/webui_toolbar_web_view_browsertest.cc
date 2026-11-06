@@ -68,7 +68,6 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -388,11 +387,7 @@ class WebUIToolbarWebViewPixelBrowserTest : public WebUIToolbarWebViewTestBase {
              ash::features::kBatterySaver,
 #endif
              features::kWebUIBatterySaverButton},
-            /*disabled=*/
-            // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
-            // Omnibox is enabled and then remove these two Features.
-            {omnibox::internal::kWebUIOmniboxPopup,
-             omnibox::internal::kWebUIOmniboxAimPopup}) {
+            /*disabled=*/{}) {
   }
 
   void SetUp() override {
@@ -1426,23 +1421,9 @@ class WebUIToolbarWebViewStabilityAboutBlankTest
  public:
   WebUIToolbarWebViewStabilityAboutBlankTest() {
     if (AllowAboutBlank()) {
-      param_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {features::kDebugTopChromeWebUI},
-          /*disabled_features=*/
-          // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
-          // Omnibox is enabled and then remove these two Features.
-          {omnibox::internal::kWebUIOmniboxPopup,
-           omnibox::internal::kWebUIOmniboxAimPopup});
+      param_feature_list_.InitAndEnableFeature(features::kDebugTopChromeWebUI);
     } else {
-      param_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/
-          // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
-          // Omnibox is enabled and then remove the two omnibox Features below.
-          {features::kDebugTopChromeWebUI,
-           omnibox::internal::kWebUIOmniboxPopup,
-           omnibox::internal::kWebUIOmniboxAimPopup});
+      param_feature_list_.InitAndDisableFeature(features::kDebugTopChromeWebUI);
     }
   }
 
