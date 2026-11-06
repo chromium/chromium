@@ -48,6 +48,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace glic {
 namespace {
@@ -267,8 +268,25 @@ class GlicButtonThemeTest : public GlicButtonTest {
                 }));
   }
 
+  void SetUpOnMainThread() override {
+    GlicButtonTest::SetUpOnMainThread();
+    // `TabStripGlicButton` selects between active- and inactive-frame colors
+    // based on `Widget::ShouldPaintAsActive()`, while the tests below assert
+    // active-frame theme colors. Lock active painting so parallel browser_tests
+    // windows stealing OS focus do not flip the button to inactive colors.
+    paint_as_active_lock_ = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->GetWidget()
+                                ->LockPaintAsActive();
+  }
+
+  void TearDownOnMainThread() override {
+    paint_as_active_lock_.reset();
+    GlicButtonTest::TearDownOnMainThread();
+  }
+
  private:
   base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicButtonThemeTest, CustomThemeFallback) {
@@ -348,6 +366,21 @@ class ToolbarGlicButtonThemeTest : public InProcessBrowserTest {
                 }));
   }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Keep the browser widget painting as active so parallel browser_tests
+    // windows stealing OS focus do not trigger `PaintAsActive` visual state
+    // changes mid-test.
+    paint_as_active_lock_ = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->GetWidget()
+                                ->LockPaintAsActive();
+  }
+
+  void TearDownOnMainThread() override {
+    paint_as_active_lock_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   GlicButtonTestAccessor glic_button() {
     return GlicButtonTestAccessor(browser());
@@ -363,6 +396,7 @@ class ToolbarGlicButtonThemeTest : public InProcessBrowserTest {
 
   GlicTestEnvironment glic_test_env_;
   base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
 };
 
 IN_PROC_BROWSER_TEST_F(ToolbarGlicButtonThemeTest, CustomThemeFallback) {
