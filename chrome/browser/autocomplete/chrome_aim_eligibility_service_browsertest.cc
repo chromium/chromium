@@ -360,9 +360,9 @@ INSTANTIATE_TEST_SUITE_P(,
                              // Values for Pdf server response eligibility.
                              ::testing::Values(true, false)));
 
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) || \
+#if BUILDFLAG(IS_CHROMEOS) || \
     (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/488467253): Fix and re-enable this test for all platforms.
+// TODO(crbug.com/488467253): Fix and re-enable this test on CrOS and win-asan.
 #define MAYBE_ComprehensiveEligibilityTest DISABLED_ComprehensiveEligibilityTest
 #else
 #define MAYBE_ComprehensiveEligibilityTest ComprehensiveEligibilityTest
@@ -734,10 +734,8 @@ class ChromeAimEligibilityServiceStartupRequestBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/473787329): Flaky on multiple platforms. Re-enable once
-// flakiness has been resolved.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
-                       DISABLED_RequestWhenOfflineAtStartup) {
+                       RequestWhenOfflineAtStartup) {
   base::HistogramTester histogram_tester;
 
   omnibox::AimEligibilityResponse response;
@@ -851,10 +849,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
       embedder_support::GetUserAgentMetadata().SerializeBrandFullVersionList());
 }
 
-// TODO(crbug.com/473787329): Flaky on multiple platforms. Re-enable once
-// flakiness has been resolved.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
-                       DISABLED_NoRequestOnSubsequentNetworkChanges) {
+                       NoRequestOnSubsequentNetworkChanges) {
   base::HistogramTester histogram_tester;
 
   omnibox::AimEligibilityResponse response;
@@ -1341,9 +1337,14 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   EXPECT_TRUE(request_handled_future.Get());
 }
 
-// TODO(crbug.com/488467253): Fix and re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/488467253): Fix and re-enable this test on CrOS and Mac.
+#define MAYBE_OTRRequestIsNotDropped DISABLED_OTRRequestIsNotDropped
+#else
+#define MAYBE_OTRRequestIsNotDropped OTRRequestIsNotDropped
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
-                       DISABLED_OTRRequestIsNotDropped) {
+                       MAYBE_OTRRequestIsNotDropped) {
   // Expectation: The request should include the Authorization header.
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);
