@@ -11,7 +11,7 @@
 namespace enterprise_net {
 
 BASE_FEATURE(kEnableDynamicRouteFetching,
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -19,7 +19,7 @@ BASE_FEATURE(kEnableDynamicRouteFetching,
 );
 
 BASE_FEATURE(kEnterpriseProxyErrorHandling,
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

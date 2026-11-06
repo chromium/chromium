@@ -1103,7 +1103,7 @@ TEST(UtilsTest, IsSecureGatewayEnabled) {
   base::ListValue domains;
   domains.Append("example.com");
   prefs.SetList(kProxyProvisioningDomains, std::move(domains));
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_TRUE(IsSecureGatewayEnabled(&prefs));
 #else
   EXPECT_FALSE(IsSecureGatewayEnabled(&prefs));
