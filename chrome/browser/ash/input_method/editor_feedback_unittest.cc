@@ -12,11 +12,12 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/feedback/proto/extension.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/version_info/version_string.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -141,7 +142,7 @@ TEST(EditorFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   userfeedback::ProductSpecificData chrome_version_data;
   chrome_version_data.set_key("CHROME VERSION");
   chrome_version_data.set_value(
-      chrome::GetVersionString(chrome::WithExtendedStable(true)));
+      version_info::GetVersionStringWithModifier(ash::GetChannelName()));
   userfeedback::ProductSpecificData chromeos_version_data;
   chromeos_version_data.set_key("CHROMEOS_RELEASE_VERSION");
   chromeos_version_data.set_value("42");

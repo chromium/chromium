@@ -42,7 +42,6 @@ specific_include_rules = {
   # The configuration layer.
   "(input_method_delegate_impl|input_method_persistence|browser_state_monitor)"
   "\\.(h|cc)": [
-    "+chrome/common",
     "+chrome/browser",
     "+chrome/test",
     "+content/public",
@@ -50,7 +49,7 @@ specific_include_rules = {
 
   # For testing.
   ".*(_browsertest|_browsertests|_unittest|_test_helper)\\.(h|cc)": [
-    "+chrome/common",
+    "+chrome/common/chrome_constants.h",
     "+chrome/browser",
     "+chrome/test",
     "+content/public",

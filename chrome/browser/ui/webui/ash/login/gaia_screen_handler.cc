@@ -77,10 +77,10 @@
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -546,9 +546,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   if (!platform_version->empty()) {
     params.Set("platformVersion", *platform_version);
   }
-  // Extended stable channel is not supported on Chrome OS Ash.
-  params.Set("releaseChannel",
-             chrome::GetChannelName(chrome::WithExtendedStable(false)));
+  params.Set("releaseChannel", GetChannelName());
   params.Set("endpointGen", kEndpointGen);
 
   std::string email_domain;

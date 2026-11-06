@@ -31,7 +31,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/ash/settings/services/settings_manager",
   "+chrome/browser/ui/webui/ash/settings/test_support",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",

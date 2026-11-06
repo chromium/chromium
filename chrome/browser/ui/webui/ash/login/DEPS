@@ -40,7 +40,6 @@ include_rules = [
   "+chrome/browser/ui/webui/metrics_handler.h",
   "+chrome/browser/ui/webui/signin",
   "+chrome/browser/ui/webui/theme_source.h",
-  "+chrome/common",
   "+chrome/grit",
   "+chrome/installer/util",
   "+chrome/test/base",

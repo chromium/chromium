@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/launcher_search/system_info/launcher_util.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/system_info/cpu_data.h"
@@ -424,8 +424,7 @@ void SystemInfoCardProvider::UpdateChromeOsVersion() {
                                       : IDS_VERSION_UI_UNOFFICIAL);
   std::u16string processor_variation = l10n_util::GetStringUTF16(
       sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT : IDS_VERSION_UI_32BIT);
-  std::u16string channel_name = base::UTF8ToUTF16(
-      chrome::GetChannelName(chrome::WithExtendedStable(true)));
+  std::u16string channel_name = base::UTF8ToUTF16(ash::GetChannelName());
 
   std::u16string version_string = l10n_util::GetStringFUTF16(
       IDS_ASH_VERSION_IN_LAUNCHER_MESSAGE, version, is_official, channel_name,

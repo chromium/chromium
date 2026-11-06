@@ -24,8 +24,8 @@
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -378,9 +378,7 @@ TEST_F(SystemInfoCardProviderTest, Version) {
   std::u16string version =
       u"Version " +
       base::UTF8ToUTF16(version_info::GetVersionStringWithModifier("")) +
-      u" (" + official + u") " +
-      base::UTF8ToUTF16(
-          chrome::GetChannelName(chrome::WithExtendedStable(true))) +
+      u" (" + official + u") " + base::UTF8ToUTF16(ash::GetChannelName()) +
       size;
 
   ASSERT_FALSE(results().empty());

@@ -26,8 +26,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -276,9 +276,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   params.Set("eduCoexistenceAccessToken", oauth_access_token_->token);
   params.Set("eduCoexistenceId", GetOrCreateEduCoexistenceUserId(pref_service));
   params.Set("platformVersion", base::SysInfo::OperatingSystemVersion());
-  // Extended stable channel is not supported on Chrome OS Ash.
-  params.Set("releaseChannel",
-             chrome::GetChannelName(chrome::WithExtendedStable(false)));
+  params.Set("releaseChannel", GetChannelName());
   params.Set("deviceId", GetDeviceIdForProfile(profile));
 
   params.Set(
