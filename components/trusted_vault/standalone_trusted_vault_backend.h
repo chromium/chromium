@@ -33,6 +33,8 @@ class AccountsInCookieJarInfo;
 
 namespace trusted_vault {
 
+class ChromeSyncEnrollmentHandler;
+
 // Provides interfaces to store/remove keys to/from file storage.
 // This class performs expensive operations and expected to be run from
 // dedicated sequence (using thread pool). Can be constructed on any thread/
@@ -156,6 +158,12 @@ class StandaloneTrustedVaultBackend
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceCallback<void(bool)> cb);
+
+  // Checks whether `account_info` can be enrolled in `security_domain` without
+  // user interaction.
+  void CanEnroll(const CoreAccountInfo& account_info,
+                 SecurityDomainId security_domain,
+                 base::OnceCallback<void(bool)> cb);
 
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
@@ -324,6 +332,10 @@ class StandaloneTrustedVaultBackend
   base::flat_map<SecurityDomainId,
                  std::unique_ptr<TrustedVaultConnection::Request>>
       ongoing_add_recovery_method_requests_;
+
+  // Handles enrollment into the `kChromeSync` security domain for
+  // `primary_account_`. Instance changes whenever `primary_account_` changes.
+  std::unique_ptr<ChromeSyncEnrollmentHandler> chrome_sync_enrollment_handler_;
 
   // Used to take care of polling the degraded recoverability state from the
   // server for the |primary_account|. Instance changes whenever

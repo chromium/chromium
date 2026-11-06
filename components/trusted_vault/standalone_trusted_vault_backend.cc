@@ -21,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/trusted_vault/chrome_sync_enrollment_handler.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/physical_device_recovery_factor.h"
@@ -398,6 +399,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   // This aborts all ongoing recoveries / registrations.
   local_recovery_factors_.clear();
   ongoing_registration_attempts_.clear();
+  chrome_sync_enrollment_handler_.reset();
   RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
   // Make sure to call pending callbacks, now that ongoing recoveries were
   // aborted.
@@ -420,6 +422,9 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
               connection_.get(), /*observer=*/this, storage_.get(),
               primary_account_.value(), domain);
     }
+    chrome_sync_enrollment_handler_ =
+        std::make_unique<ChromeSyncEnrollmentHandler>(
+            *primary_account_, storage_.get(), connection_.get());
   }
 
   // Process pending get recoverability degraded requests if they belong to
@@ -576,6 +581,23 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
           base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
               weak_ptr_factory_.GetWeakPtr(), security_domain, std::move(cb)));
+}
+
+void StandaloneTrustedVaultBackend::CanEnroll(
+    const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
+    base::OnceCallback<void(bool)> cb) {
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
+  if (security_domain == SecurityDomainId::kChromeSync &&
+      primary_account_.has_value() &&
+      primary_account_->gaia == account_info.gaia &&
+      refresh_token_error_state_ !=
+          RefreshTokenErrorState::kPersistentAuthError &&
+      chrome_sync_enrollment_handler_) {
+    chrome_sync_enrollment_handler_->CanEnroll(std::move(cb));
+    return;
+  }
+  std::move(cb).Run(false);
 }
 
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(

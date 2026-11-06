@@ -23,6 +23,8 @@ static_library("trusted_vault") {
 
   if (!is_android && !is_ios) {
     sources += [
+      "chrome_sync_enrollment_handler.cc",
+      "chrome_sync_enrollment_handler.h",
       "command_line_switches.cc",
       "command_line_switches.h",
       "download_keys_response_handler.cc",
@@ -105,6 +107,7 @@ if (!is_android && !is_ios) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "chrome_sync_enrollment_handler_unittest.cc",
       "download_keys_response_handler_unittest.cc",
       "legacy_standalone_trusted_vault_storage_adapter_unittest.cc",
       "legacy_standalone_trusted_vault_storage_unittest.cc",

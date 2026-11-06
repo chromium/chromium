@@ -77,9 +77,7 @@ void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
 void StandaloneTrustedVaultClient::CanEnroll(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  // TODO(crbug.com/579292788): Implement for desktop.
-  NOTIMPLEMENTED();
-  std::move(cb).Run(false);
+  frontend_->CanEnroll(account_info, security_domain_, std::move(cb));
 }
 
 void StandaloneTrustedVaultClient::Enroll(

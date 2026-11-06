@@ -21,6 +21,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -1933,6 +1934,134 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback> cb;
   EXPECT_CALL(cb, Run(testing::ElementsAre(kVaultKey)));
   backend()->FetchKeys(kAccountInfo, SecurityDomainId::kPasskeys, cb.Get());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldCanEnrollChromeSync) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  constexpr int kConstantKeyVersion = 5;
+  const std::vector<uint8_t> kValidPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+
+  StoreKeysAndMimicRecoveryFactorRegistration(
+      {GetConstantTrustedVaultKey()}, kConstantKeyVersion, kAccountInfo);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+
+  TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+      download_callback;
+  EXPECT_CALL(*connection(), DownloadGaiaPasswordPublicKey(Eq(kAccountInfo), _))
+      .WillOnce(
+          [&download_callback](
+              const CoreAccountInfo&,
+              TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                  callback) {
+            download_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  base::MockCallback<base::OnceCallback<void(bool)>> cb;
+  backend()->CanEnroll(kAccountInfo, SecurityDomainId::kChromeSync, cb.Get());
+  ASSERT_FALSE(download_callback.is_null());
+
+  EXPECT_CALL(cb, Run(true));
+  std::move(download_callback)
+      .Run(TrustedVaultDownloadPasswordPublicKeyStatus::kSuccess,
+           kValidPublicKey);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldReturnFalseIfCanEnrollPreconditionsNotMet) {
+  base::test::SingleThreadTaskEnvironment environment;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kTrustedVaultSharedRecoveryFactorsAndEncryption);
+
+  const CoreAccountInfo kPrimaryAccount = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kOtherAccount = MakeAccountInfoWithGaiaId("user2");
+
+  EXPECT_CALL(*connection(), DownloadGaiaPasswordPublicKey).Times(0);
+
+  // No primary account set yet.
+  {
+    base::test::TestFuture<bool> future;
+    backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kChromeSync,
+                         future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  // Primary account set, but no local keys stored yet.
+  SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
+  {
+    base::test::TestFuture<bool> future;
+    backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kChromeSync,
+                         future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  // Store constant key so storage precondition is met.
+  backend()->StoreKeys(kPrimaryAccount.gaia, SecurityDomainId::kChromeSync,
+                       {GetConstantTrustedVaultKey()}, /*last_key_version=*/1);
+
+  // Called for non-primary account.
+  {
+    base::test::TestFuture<bool> future;
+    backend()->CanEnroll(kOtherAccount, SecurityDomainId::kChromeSync,
+                         future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  // Called for unsupported security domain (`kPasskeys`).
+  {
+    base::test::TestFuture<bool> future;
+    backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kPasskeys,
+                         future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  // Persistent auth error present.
+  backend()->SetPrimaryAccount(
+      kPrimaryAccount, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+                           kPersistentAuthError);
+  {
+    base::test::TestFuture<bool> future;
+    backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kChromeSync,
+                         future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  // Non-constant key already present in storage.
+  SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
+  backend()->StoreKeys(kPrimaryAccount.gaia, SecurityDomainId::kChromeSync,
+                       {{1, 2, 3, 4}}, /*last_key_version=*/2);
+  {
+    base::test::TestFuture<bool> future;
+    backend()->CanEnroll(kPrimaryAccount, SecurityDomainId::kChromeSync,
+                         future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldAbortCanEnrollOnPrimaryAccountChange) {
+  const CoreAccountInfo kAccountInfo1 = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kAccountInfo2 = MakeAccountInfoWithGaiaId("user2");
+  StoreKeysAndMimicRecoveryFactorRegistration({GetConstantTrustedVaultKey()},
+                                              /*last_vault_key_version=*/1,
+                                              kAccountInfo1);
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo1);
+
+  EXPECT_CALL(*connection(),
+              DownloadGaiaPasswordPublicKey(Eq(kAccountInfo1), _))
+      .WillOnce([](const CoreAccountInfo&,
+                   TrustedVaultConnection::DownloadGaiaPasswordPublicKeyCallback
+                       callback) {
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::MockCallback<base::OnceCallback<void(bool)>> cb;
+  EXPECT_CALL(cb, Run).Times(0);
+  backend()->CanEnroll(kAccountInfo1, SecurityDomainId::kChromeSync, cb.Get());
+
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo2);
 }
 
 }  // namespace
