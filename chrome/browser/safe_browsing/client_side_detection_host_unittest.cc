@@ -88,6 +88,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
@@ -5172,10 +5173,12 @@ class ClientSideDetectionHostScamDetectionTest
       std::optional<bool> did_match_high_confidence_allowlist,
       bool is_invalid_ip,
       std::string inner_text,
-      const content::CopyFromSurfaceResult& result) {
-    csd_host_->OnScreenshotTaken(std::move(verdict),
-                                 did_match_high_confidence_allowlist,
-                                 is_invalid_ip, std::move(inner_text), result);
+      const content::CopyFromSurfaceResult& result,
+      std::optional<base::TimeTicks> capture_start_time = std::nullopt) {
+    csd_host_->OnScreenshotTaken(
+        std::move(verdict), did_match_high_confidence_allowlist, is_invalid_ip,
+        std::move(inner_text), capture_start_time.value_or(clock_.NowTicks()),
+        result);
   }
 
   void SetExampleUrl(GURL example_url) { example_url_ = example_url; }
@@ -5271,6 +5274,12 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureStatus", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureLatency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
   EXPECT_TRUE(Mock::VerifyAndClear(intelligent_scan_delegate_.get()));
 }
 
@@ -6018,19 +6027,31 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   viz::CopyOutputBitmapWithMetadata copy_result;
   copy_result.bitmap = bitmap;
 
-  OnScreenshotTaken(
-      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
-      /*is_invalid_ip=*/false, "Suspicious inner text", base::ok(copy_result));
+  const base::TimeTicks capture_start_time = clock_.NowTicks();
+  clock_.Advance(base::Milliseconds(42));
+  OnScreenshotTaken(std::move(verdict),
+                    /*did_match_high_confidence_allowlist=*/false,
+                    /*is_invalid_ip=*/false, "Suspicious inner text",
+                    base::ok(copy_result), capture_start_time);
   task_environment()->RunUntilIdle();
 
   VerifyExpectedCalls();
   ASSERT_TRUE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
                   .has_value());
-  SkBitmap decoded_bitmap = gfx::PNGCodec::Decode(base::as_byte_span(
-      *csd_host_->last_intelligent_scan_tab_screenshot_for_testing()));
+  const std::string& png_bytes =
+      *csd_host_->last_intelligent_scan_tab_screenshot_for_testing();
+  SkBitmap decoded_bitmap =
+      gfx::PNGCodec::Decode(base::as_byte_span(png_bytes));
   EXPECT_FALSE(decoded_bitmap.isNull());
   EXPECT_EQ(decoded_bitmap.width(), 10);
   EXPECT_EQ(decoded_bitmap.height(), 10);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+      MultimodalScreenshotCaptureStatus::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureLatency", 42, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", png_bytes.size(), 1);
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -6072,6 +6093,13 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyExpectedCalls();
   EXPECT_FALSE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
                    .has_value());
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+      MultimodalScreenshotCaptureStatus::kTabNotVisibleOrUrlChanged, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -6118,6 +6146,97 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyExpectedCalls();
   EXPECT_FALSE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
                    .has_value());
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+      MultimodalScreenshotCaptureStatus::kTabNotVisibleOrUrlChanged, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       MultimodalScreenshotCopyFromSurfaceFailureRecorded) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  SetIntelligentScanCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE)))
+      .WillOnce(Return(false));
+
+  web_contents()->WasShown();
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(example_url_.spec());
+  verdict->set_client_score(0.8f);
+  verdict->set_is_phishing(false);
+  verdict->set_client_side_detection_type(
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  OnScreenshotTaken(std::move(verdict),
+                    /*did_match_high_confidence_allowlist=*/false,
+                    /*is_invalid_ip=*/false, "Suspicious inner text",
+                    base::unexpected(content::CopyFromSurfaceError::kUnknown));
+
+  VerifyExpectedCalls();
+  EXPECT_FALSE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
+                   .has_value());
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+      MultimodalScreenshotCaptureStatus::kCopyFromSurfaceFailed, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       MultimodalScreenshotEmptyBitmapRecorded) {
+  SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
+  SetIntelligentScanCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
+                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE)))
+      .WillOnce(Return(false));
+
+  web_contents()->WasShown();
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(example_url_.spec());
+  verdict->set_client_score(0.8f);
+  verdict->set_is_phishing(false);
+  verdict->set_client_side_detection_type(
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  OnScreenshotTaken(std::move(verdict),
+                    /*did_match_high_confidence_allowlist=*/false,
+                    /*is_invalid_ip=*/false, "Suspicious inner text",
+                    base::ok(viz::CopyOutputBitmapWithMetadata{}));
+
+  VerifyExpectedCalls();
+  EXPECT_FALSE(csd_host_->last_intelligent_scan_tab_screenshot_for_testing()
+                   .has_value());
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+      MultimodalScreenshotCaptureStatus::kEmptyBitmap, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -6282,6 +6401,12 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
                         /*did_match_high_confidence_allowlist=*/false);
 
   VerifyExpectedCalls();
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureStatus", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureLatency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
 }
 
 class ClientSideDetectionHostPriorityTest

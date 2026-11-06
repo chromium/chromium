@@ -406,6 +406,7 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist,
       bool is_invalid_ip,
       std::string inner_text,
+      base::TimeTicks capture_start_time,
       const content::CopyFromSurfaceResult& result);
 
   // Called when the captured screenshot has been encoded into PNG bytes on a

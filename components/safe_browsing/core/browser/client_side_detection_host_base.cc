@@ -1794,6 +1794,11 @@ void ClientSideDetectionHostBase::StartIntelligentScan(
     std::string inner_text,
     std::optional<std::string> tab_screenshot) {
   last_intelligent_scan_tab_screenshot_for_testing_.reset();
+  if (tab_screenshot.has_value() && !tab_screenshot->empty()) {
+    base::UmaHistogramCounts10M(
+        "SBClientPhishing.Multimodal.ScreenshotCaptureSize",
+        tab_screenshot->size());
+  }
   if ((!tab_screenshot.has_value() || tab_screenshot->empty()) &&
       inner_text.size() <= kInnerTextMinThresholdBytes) {
     IntelligentScanInfo intelligent_scan_info;

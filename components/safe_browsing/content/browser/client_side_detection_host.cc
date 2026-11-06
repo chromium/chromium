@@ -1605,8 +1605,12 @@ void ClientSideDetectionHost::MaybeCaptureScreenshotAndStartIntelligentScan(
           base::BindOnce(&ClientSideDetectionHost::OnScreenshotTaken,
                          weak_factory_.GetWeakPtr(), std::move(verdict),
                          did_match_high_confidence_allowlist, is_invalid_ip,
-                         std::move(inner_text)));
+                         std::move(inner_text), tick_clock()->NowTicks()));
       return;
+    } else {
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+          MultimodalScreenshotCaptureStatus::kRenderWidgetHostViewUnavailable);
     }
   }
   StartIntelligentScan(std::move(verdict), did_match_high_confidence_allowlist,
@@ -1619,9 +1623,24 @@ void ClientSideDetectionHost::OnScreenshotTaken(
     std::optional<bool> did_match_high_confidence_allowlist,
     bool is_invalid_ip,
     std::string inner_text,
+    base::TimeTicks capture_start_time,
     const content::CopyFromSurfaceResult& result) {
-  if (!IsTabVisibleAndOnUrl(GURL(verdict->url())) || !result.has_value() ||
-      result->bitmap.drawsNothing()) {
+  base::UmaHistogramTimes(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureLatency",
+      tick_clock()->NowTicks() - capture_start_time);
+
+  std::optional<MultimodalScreenshotCaptureStatus> failure_status;
+  if (!IsTabVisibleAndOnUrl(GURL(verdict->url()))) {
+    failure_status =
+        MultimodalScreenshotCaptureStatus::kTabNotVisibleOrUrlChanged;
+  } else if (!result.has_value()) {
+    failure_status = MultimodalScreenshotCaptureStatus::kCopyFromSurfaceFailed;
+  } else if (result->bitmap.drawsNothing()) {
+    failure_status = MultimodalScreenshotCaptureStatus::kEmptyBitmap;
+  }
+  if (failure_status.has_value()) {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.Multimodal.ScreenshotCaptureStatus", *failure_status);
     StartIntelligentScan(std::move(verdict),
                          did_match_high_confidence_allowlist, is_invalid_ip,
                          std::move(inner_text),
@@ -1647,8 +1666,21 @@ void ClientSideDetectionHost::OnScreenshotEncoded(
     std::string inner_text,
     std::string png_bytes) {
   std::optional<std::string> tab_screenshot;
-  if (IsTabVisibleAndOnUrl(GURL(verdict->url())) && !png_bytes.empty()) {
-    tab_screenshot = std::move(png_bytes);
+  if (IsTabVisibleAndOnUrl(GURL(verdict->url()))) {
+    if (!png_bytes.empty()) {
+      tab_screenshot = std::move(png_bytes);
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+          MultimodalScreenshotCaptureStatus::kSuccess);
+    } else {
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+          MultimodalScreenshotCaptureStatus::kEncodingFailed);
+    }
+  } else {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.Multimodal.ScreenshotCaptureStatus",
+        MultimodalScreenshotCaptureStatus::kTabNotVisibleOrUrlChanged);
   }
   StartIntelligentScan(std::move(verdict), did_match_high_confidence_allowlist,
                        is_invalid_ip, std::move(inner_text),

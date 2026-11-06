@@ -483,6 +483,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/common/client_side_detection_enums.h:ForceRequestPingOrder) -->
 
+<!-- LINT.IfChange(SBClientPhishingMultimodalScreenshotCaptureStatus) -->
+
+<enum name="SBClientPhishingMultimodalScreenshotCaptureStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Tab not visible or URL changed"/>
+  <int value="2" label="RenderWidgetHostView unavailable"/>
+  <int value="3" label="CopyFromSurface failed"/>
+  <int value="4" label="Empty bitmap"/>
+  <int value="5" label="Encoding failed"/>
+  <int value="6" label="WebState unavailable (iOS)"/>
+  <int value="7" label="PageContext extraction failed (iOS)"/>
+  <int value="8" label="Snapshot missing from PageContext (iOS)"/>
+  <int value="9" label="Base64 decode failed (iOS)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/client_side_detection_enums.h:MultimodalScreenshotCaptureStatus) -->
+
 <enum name="SBClientPhishingScorerCreationStatus">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="MODEL_OPEN_FAIL"/>

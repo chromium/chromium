@@ -1552,6 +1552,7 @@ TEST_F(
 
 TEST_F(ClientSideDetectionHostBaseTest,
        StartIntelligentScan_SkipsWhenBothInnerTextAndScreenshotAreEmpty) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   auto verdict = std::make_unique<ClientPhishingRequest>();
   verdict->set_url(url.spec());
@@ -1582,10 +1583,13 @@ TEST_F(ClientSideDetectionHostBaseTest,
                               /*did_match_high_confidence_allowlist=*/false,
                               /*is_invalid_ip=*/false, /*inner_text=*/"",
                               /*tab_screenshot=*/std::nullopt);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
 }
 
 TEST_F(ClientSideDetectionHostBaseTest,
        StartIntelligentScan_SkipsWhenInnerTextTooShortAndScreenshotEmpty) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   auto verdict = std::make_unique<ClientPhishingRequest>();
   verdict->set_url(url.spec());
@@ -1616,10 +1620,13 @@ TEST_F(ClientSideDetectionHostBaseTest,
                               /*did_match_high_confidence_allowlist=*/false,
                               /*is_invalid_ip=*/false, /*inner_text=*/"text",
                               /*tab_screenshot=*/"");
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
 }
 
 TEST_F(ClientSideDetectionHostBaseTest,
        StartIntelligentScan_ProceedsWhenInnerTextEmptyAndScreenshotPresent) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   auto verdict = std::make_unique<ClientPhishingRequest>();
   verdict->set_url(url.spec());
@@ -1645,10 +1652,14 @@ TEST_F(ClientSideDetectionHostBaseTest,
                               /*tab_screenshot=*/"fake_png_bytes");
   EXPECT_EQ(host_->last_intelligent_scan_tab_screenshot_for_testing(),
             "fake_png_bytes");
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize",
+      std::string("fake_png_bytes").size(), 1);
 }
 
 TEST_F(ClientSideDetectionHostBaseTest,
        StartIntelligentScan_ProceedsWhenInnerTextTooShortAndScreenshotPresent) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   auto verdict = std::make_unique<ClientPhishingRequest>();
   verdict->set_url(url.spec());
@@ -1674,6 +1685,9 @@ TEST_F(ClientSideDetectionHostBaseTest,
                               /*tab_screenshot=*/"fake_png_bytes");
   EXPECT_EQ(host_->last_intelligent_scan_tab_screenshot_for_testing(),
             "fake_png_bytes");
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize",
+      std::string("fake_png_bytes").size(), 1);
 }
 
 TEST_F(ClientSideDetectionHostBaseTest,
