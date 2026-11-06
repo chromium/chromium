@@ -32,6 +32,7 @@ suite('Ink2SignatureDialogTest', () => {
     const dialog = getSignatureDialog();
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
+    assertTrue(isVisible(dialog.$.canvas));
     assertTrue(isVisible(dialog.$.clear));
     assertTrue(isVisible(dialog.$.create));
 

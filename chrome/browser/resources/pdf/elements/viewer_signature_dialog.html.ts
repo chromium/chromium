@@ -12,6 +12,14 @@ export function getHtml(this: ViewerSignatureDialogElement) {
 <cr-dialog id="dialog" show-on-attach show-close-button
     close-text="Close signature inkpad">
   <div slot="title">New signature or initials</div>
+  <div slot="body">
+    <div id="canvas-container">
+      <div id="guide" aria-hidden="true">
+        <cr-icon icon="cr:close"></cr-icon>
+      </div>
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
   <div slot="button-container">
     <cr-button id="clear" class="tonal-button" aria-label="Clear signature">
       Clear

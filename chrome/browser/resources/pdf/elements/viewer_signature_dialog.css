@@ -4,9 +4,31 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
+:host {
+  /* --cr-fallback-color-surface in dark mode */
+  --cr-dialog-background-color: rgb(31, 31, 31);
+  --cr-dialog-border-radius: 12px;
+  --cr-dialog-button-container-padding-bottom: var(--dialog-padding);
+  --cr-dialog-button-container-padding-horizontal: var(--dialog-padding);
+  --cr-dialog-title-font-size: 18px;
+  --cr-dialog-title-slot-padding-bottom: 8px;
+  --cr-dialog-width: 688px;
+  /* --cr-fallback-color-on-surface in dark mode */
+  --cr-primary-text-color: rgb(227, 227, 227);
+  --dialog-padding: 20px;
+}
+
+cr-dialog::part(dialog) {
+  background-image: none;
+  box-shadow: var(--cr-elevation-3);
+}
+
 cr-dialog::part(close-button) {
+  /* --cr-fallback-color-on-surface-subtle in dark mode */
+  --cr-icon-button-fill-color: rgb(199, 199, 199);
   /* TODO(crbug.com/579037662): Remove --cr-icon-image overrides once shared
      CSS url() works in chrome-extension:// UIs. */
   --cr-icon-image: url(chrome://resources/images/icon_clear_old.svg);
@@ -16,4 +38,49 @@ cr-dialog::part(close-button) {
   /* TODO(crbug.com/579037662): Remove --cr-icon-image overrides once shared
      CSS url() works in chrome-extension:// UIs. */
   --cr-icon-image: url(chrome://resources/images/icon_clear.svg);
+}
+
+[slot='title'] {
+  font-weight: 500;
+  line-height: 24px;
+}
+
+#canvas-container {
+  /* --cr-fallback-color-neutral-container in dark mode */
+  background-color: rgb(40, 40, 40);
+  display: flex;
+  height: 321px;
+  justify-content: center;
+  position: relative;
+}
+
+#guide {
+  border-bottom: 1px dashed currentColor;
+  /* --cr-fallback-color-primary in dark mode */
+  color: rgb(168, 199, 250);
+  height: 33px;
+  margin-top: 185px;
+  pointer-events: none;
+  width: 550px;
+}
+
+#canvas {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+#clear {
+  /* --cr-fallback-color-tonal-container in dark mode */
+  --cr-button-background-color: rgb(0, 74, 119);
+  /* --cr-fallback-color-on-tonal-container in dark mode */
+  --cr-button-text-color: rgb(194, 231, 255);
+  margin-inline-end: 8px;
+}
+
+#create {
+  /* --cr-fallback-color-primary in dark mode */
+  --cr-button-background-color: rgb(168, 199, 250);
+  /* --cr-fallback-color-on-primary in dark mode */
+  --cr-button-text-color: rgb(6, 46, 111);
 }
