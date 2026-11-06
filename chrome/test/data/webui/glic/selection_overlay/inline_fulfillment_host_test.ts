@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://glic/inline_fulfillment_host.js';
+import 'chrome-untrusted://glic/selection_overlay.js';
 
 import {GenericAssociatedInterface, GenericAssociatedInterfaceRemote} from '//resources/mojo/mojo/public/mojom/base/generic_pending_associated_receiver.mojom-webui.js';
 import type {GenericPendingAssociatedReceiver} from '//resources/mojo/mojo/public/mojom/base/generic_pending_associated_receiver.mojom-webui.js';
-import type {InlineFulfillmentHostElement, InlineFulfillmentModule, InlineFulfillmentRemote} from 'chrome-untrusted://glic/inline_fulfillment_host.js';
+import type {InlineFulfillmentHostElement, InlineFulfillmentModule, InlineFulfillmentRemote} from 'chrome-untrusted://glic/selection_overlay.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 class FakeRemote implements InlineFulfillmentRemote {

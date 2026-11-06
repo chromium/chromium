@@ -14,18 +14,11 @@ build_webui_tests("build") {
     "markdown_test.ts",
   ]
 
-  ts_path_mappings = [
-    "chrome-untrusted://glic/lens/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/lens/overlay/tsc/*",
-                    target_gen_dir),
-    "chrome-untrusted://glic/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/glic/selection_overlay/tsc/*",
-            target_gen_dir),
-  ]
-
+  ts_path_mappings = [ "chrome-untrusted://glic/selection_overlay.js|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/glic/selection_overlay/tsc/selection_overlay.d.ts",
+                           target_gen_dir) ]
   ts_deps = [
     "//chrome/browser/resources/glic/selection_overlay:build_ts",
-    "//chrome/browser/resources/lens/overlay:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

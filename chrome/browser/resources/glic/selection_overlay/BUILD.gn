@@ -24,6 +24,7 @@ build_webui("build") {
     "glic_selection_overlay.html.ts",
     "inline_fulfillment_host.ts",
     "markdown.ts",
+    "selection_overlay.ts",
     "selection_overlay_app.ts",
     "selection_overlay_app.html.ts",
     "selection_overlay_base_handler_impl.ts",
@@ -60,4 +61,13 @@ build_webui("build") {
   ts_composite = true
 
   webui_context_type = "untrusted"
+
+  if (optimize_webui) {
+    optimize_webui_host = "chrome-untrusted://glic"
+    optimize_webui_in_files = [ "selection_overlay.js" ]
+    optimize_webui_external_paths =
+        [ "/lens|" +
+          rebase_path("$root_gen_dir/chrome/browser/resources/lens/overlay/tsc",
+                      root_build_dir) ]
+  }
 }

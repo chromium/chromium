@@ -2,20 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://glic/glic_selection_overlay.js';
-
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {GenericAssociatedInterface, GenericAssociatedInterfaceRemote} from '//resources/mojo/mojo/public/mojom/base/generic_pending_associated_receiver.mojom-webui.js';
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import type {GlicSelectionOverlayElement} from 'chrome-untrusted://glic/glic_selection_overlay.js';
-import type {InlineFulfillmentHostElement} from 'chrome-untrusted://glic/inline_fulfillment_host.js';
-import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://glic/lens/screenshot_bitmap_browser_proxy.js';
-import {SelectionOverlayBaseHandler} from 'chrome-untrusted://glic/lens/selection_overlay_base_handler.js';
-import {browserProxyFactory, SelectionOverlayPageHandlerRemote, SuggestedActionIcon} from 'chrome-untrusted://glic/selection_overlay.mojom-webui.js';
-import type {SelectionOverlayPageRemote, SuggestedAction, SuggestedActionsListenerRemote} from 'chrome-untrusted://glic/selection_overlay.mojom-webui.js';
-import {SelectionOverlayBaseHandlerImpl} from 'chrome-untrusted://glic/selection_overlay_base_handler_impl.js';
+import {browserProxyFactory, ScreenshotBitmapBrowserProxyImpl, SelectionOverlayBaseHandler, SelectionOverlayBaseHandlerImpl, SelectionOverlayPageHandlerRemote, SuggestedActionIcon} from 'chrome-untrusted://glic/selection_overlay.js';
+import type {GlicSelectionOverlayElement, InlineFulfillmentHostElement, SelectionOverlayPageRemote, SuggestedAction, SuggestedActionsListenerRemote} from 'chrome-untrusted://glic/selection_overlay.js';
 import {assertEquals, assertFalse, assertLE, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
