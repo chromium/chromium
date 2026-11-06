@@ -7,9 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +43,6 @@ class WifiNetworkMetricsHelperTest : public testing::Test {
                   : LoginState::LoggedInState::LOGGED_IN_NONE,
         logged_in ? LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR
                   : LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
-    base::RunLoop().RunUntilIdle();
   }
 
  protected:
@@ -59,7 +56,6 @@ class WifiNetworkMetricsHelperTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
