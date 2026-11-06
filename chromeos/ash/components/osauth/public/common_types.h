@@ -59,6 +59,9 @@ enum class AshAuthFactor {
   kLegacyPin = 5,
   kLegacyFingerprint = 6,
   kLocalPassword = 7,
+  // Unshipped CryptohomeFingerprintEngine stub was removed in
+  // https://crrev.com/c/8742301; kept as enum values are persisted in
+  // LocalState.
   kFingerprint = 8,
   kMaxValue = kFingerprint,
 };

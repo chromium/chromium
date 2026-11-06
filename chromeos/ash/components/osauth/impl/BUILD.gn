@@ -50,8 +50,6 @@ component("impl") {
     "early_login_auth_policy_connector.h",
     "engines/cryptohome_based_engine.cc",
     "engines/cryptohome_based_engine.h",
-    "engines/cryptohome_fingerprint_engine.cc",
-    "engines/cryptohome_fingerprint_engine.h",
     "engines/cryptohome_password_engine.cc",
     "engines/cryptohome_password_engine.h",
     "engines/cryptohome_pin_engine.cc",
@@ -108,7 +106,6 @@ source_set("unit_tests") {
     "auth_hub_vector_lifecycle_unittest.cc",
     "auth_session_storage_impl_unittest.cc",
     "cryptohome_core_impl_unittest.cc",
-    "engines/cryptohome_fingerprint_engine_unittest.cc",
     "engines/cryptohome_pin_engine_unittest.cc",
     "engines/prefs_pin_engine_unittest.cc",
   ]
