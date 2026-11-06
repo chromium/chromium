@@ -49,7 +49,7 @@ export async function search<T>(
   }
   const searchStartTime = Date.now();
   const result = await exactSearch(input, records, options);
-  chrome.metricsPrivate?.recordTime?.(
+  chrome.histograms?.recordTime?.(
       'Tabs.TabSearch.WebUI.SearchAlgorithmDuration',
       Math.round(Date.now() - searchStartTime));
   return result;

@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/visibility.h"
@@ -570,4 +572,35 @@ TEST_F(WebUIContentsPreloadManagerTest,
   test_api().SetPreloadedContents(std::move(new_preloaded_contents));
   EXPECT_TRUE(old_preloaded_contents.WasInvalidated());
   EXPECT_FALSE(test_api().HasPendingPreload());
+}
+
+TEST_F(WebUIContentsPreloadManagerTest, NoPreloadWhenBrowserShuttingDown) {
+  std::unique_ptr<content::BrowserContext> browser_context =
+      std::make_unique<TestingProfile>();
+
+  // Schedule a delayed preload before shutdown starts, then begin shutdown
+  // before the deadline passes.
+  test_api().MaybePreloadForBrowserContextLater(browser_context.get(), nullptr,
+                                                base::Seconds(3));
+  EXPECT_TRUE(test_api().HasPendingPreload());
+
+  TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+  base::ScopedClosureRunner reset_shutting_down(base::BindOnce(
+      [](TestingBrowserProcess* browser_process) {
+        browser_process->SetShuttingDown(false);
+      },
+      TestingBrowserProcess::GetGlobal()));
+
+  FastForwardToTriggerPreload();
+  EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
+
+  // Neither immediate nor delayed preloads should be started during shutdown.
+  test_api().MaybePreloadForBrowserContext(browser_context.get());
+  EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
+
+  test_api().MaybePreloadForBrowserContextLater(browser_context.get(), nullptr,
+                                                base::Seconds(3));
+  EXPECT_FALSE(test_api().HasPendingPreload());
+  FastForwardToTriggerPreload();
+  EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
 }

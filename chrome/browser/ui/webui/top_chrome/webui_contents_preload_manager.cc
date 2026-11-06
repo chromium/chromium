@@ -19,6 +19,8 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -433,6 +435,10 @@ void WebUIContentsPreloadManager::MaybePreloadForBrowserContextLater(
     return;
   }
 
+  if (!ShouldPreloadForBrowserContext(browser_context)) {
+    return;
+  }
+
   pending_preload_ = std::make_unique<PendingPreload>(
       this, Profile::FromBrowserContext(browser_context),
       busy_web_contents_to_watch, preload_reason, deadline);
@@ -615,7 +621,9 @@ bool WebUIContentsPreloadManager::ShouldPreloadForBrowserContext(
     return false;
   }
 
-  if (browser_context->ShutdownStarted()) {
+  if (browser_context->ShutdownStarted() || !g_browser_process ||
+      g_browser_process->IsShuttingDown() ||
+      browser_shutdown::HasShutdownStarted()) {
     return false;
   }
 
