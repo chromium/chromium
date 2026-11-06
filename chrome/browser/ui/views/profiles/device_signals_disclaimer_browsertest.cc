@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/profiles/device_signals_disclaimer_test_utils.h"
+#include "chrome/browser/ui/views/profiles/managed_user_profile_notice_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -58,12 +58,12 @@
 
 namespace {
 
-using ::device_signals_disclaimer_test::GetSelectors;
-using ::device_signals_disclaimer_test::ManagedUserProfileNoticeSelectors;
-using ::device_signals_disclaimer_test::WaitForAndClickCancelButton;
-using ::device_signals_disclaimer_test::WaitForAndClickLearnMoreLink;
-using ::device_signals_disclaimer_test::WaitForAndClickProceedButton;
-using ::device_signals_disclaimer_test::WaitForWebContentsLoaded;
+using ::managed_user_profile_notice_test::GetSelectors;
+using ::managed_user_profile_notice_test::ManagedUserProfileNoticeSelectors;
+using ::managed_user_profile_notice_test::WaitForAndClickCancelButton;
+using ::managed_user_profile_notice_test::WaitForAndClickLearnMoreLink;
+using ::managed_user_profile_notice_test::WaitForAndClickProceedButton;
+using ::managed_user_profile_notice_test::WaitForWebContentsLoaded;
 
 std::string RefreshedUiParamToTestSuffix(
     const testing::TestParamInfo<bool>& info) {
@@ -142,8 +142,10 @@ class DeviceSignalsDisclaimerModalPixelTest
     content::WebContents* web_contents =
         SigninViewController::From(browser())
             ->GetModalDialogWebContentsForTesting();
-    ASSERT_TRUE(WaitForWebContentsLoaded(
-        web_contents, GetSelectors(GetParam().use_refreshed_ui)));
+    const ManagedUserProfileNoticeSelectors& selectors =
+        GetSelectors(GetParam().use_refreshed_ui);
+    ASSERT_TRUE(WaitForWebContentsLoaded(web_contents, selectors.app,
+                                         selectors.disclaimer));
   }
 
  private:
@@ -248,8 +250,10 @@ class DeviceSignalsDisclaimerProfilePickerPixelTest
     profile_picker_view_tracker_.SetView(view);
     view->ShowAndWait(GetParam().pixel_test_param.window_size);
 
-    ASSERT_TRUE(WaitForWebContentsLoaded(
-        view->active_contents(), GetSelectors(GetParam().use_refreshed_ui)));
+    const ManagedUserProfileNoticeSelectors& selectors =
+        GetSelectors(GetParam().use_refreshed_ui);
+    ASSERT_TRUE(WaitForWebContentsLoaded(view->active_contents(), selectors.app,
+                                         selectors.disclaimer));
   }
 
   bool VerifyUi() override {

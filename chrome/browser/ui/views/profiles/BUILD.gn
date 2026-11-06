@@ -667,12 +667,12 @@ if (toolkit_views) {
     ]
   }
 
-  source_set("device_signals_disclaimer_test_utils") {
+  source_set("managed_user_profile_notice_test_utils") {
     testonly = true
 
     sources = [
-      "device_signals_disclaimer_test_utils.cc",
-      "device_signals_disclaimer_test_utils.h",
+      "managed_user_profile_notice_test_utils.cc",
+      "managed_user_profile_notice_test_utils.h",
     ]
 
     public_deps = [ "//testing/gtest" ]
@@ -823,9 +823,9 @@ if (is_win || is_mac || is_linux) {
     ]
     deps = [
       ":avatar_toolbar_button",
-      ":device_signals_disclaimer_test_utils",
       ":dice_web_signin_interception_bubble_view",
       ":first_run_flow_controller",
+      ":managed_user_profile_notice_test_utils",
       ":profile_management_flow_controller",
       ":profile_menu_view",
       ":profile_menu_view_base",
@@ -1344,7 +1344,7 @@ source_set("browser_tests") {
     ]
     deps += [
       ":avatar_toolbar_button",
-      ":device_signals_disclaimer_test_utils",
+      ":managed_user_profile_notice_test_utils",
       ":profile_menu_view",
       ":profile_picker_test_base",
       ":profile_picker_utils",

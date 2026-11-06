@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/device_signals_disclaimer_test_utils.h"
+#include "chrome/browser/ui/views/profiles/managed_user_profile_notice_test_utils.h"
 
 #include <string>
 #include <string_view>
 
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
-namespace device_signals_disclaimer_test {
+namespace managed_user_profile_notice_test {
 
 namespace {
 // Waits for `button` in the shadow root of `app` to be visible and clicks it.
@@ -111,7 +112,8 @@ testing::AssertionResult WaitForAndClickLearnMoreLink(
 
 testing::AssertionResult WaitForWebContentsLoaded(
     content::WebContents* web_contents,
-    const ManagedUserProfileNoticeSelectors& selectors) {
+    std::string_view app,
+    std::string_view screen_selector) {
   if (!content::WaitForLoadStop(web_contents)) {
     return testing::AssertionFailure() << "WebContents failed to load";
   }
@@ -122,25 +124,26 @@ testing::AssertionResult WaitForWebContentsLoaded(
       const interval = setInterval(() => {
         const app = document.querySelector($1);
         if (app && app.shadowRoot) {
-          const disclaimer = app.shadowRoot.querySelector($2);
-          if (disclaimer && disclaimer.shadowRoot) {
+          const screen = app.shadowRoot.querySelector($2);
+          if (screen && screen.shadowRoot) {
             clearInterval(interval);
             Promise.all([
               app.updateComplete,
-              disclaimer.updateComplete
+              screen.updateComplete
             ]).then(() => resolve(true));
           }
         }
       }, 50);
     });
   )",
-                                          selectors.app, selectors.disclaimer);
+                                          app, screen_selector);
   testing::AssertionResult result = content::ExecJs(web_contents, script);
   if (!result) {
     return testing::AssertionFailure()
-           << "WaitForWebContentsLoaded failed: " << result.message();
+           << "WaitForWebContentsLoaded failed for " << app << " -> "
+           << screen_selector << ": " << result.message();
   }
   return result;
 }
 
-}  // namespace device_signals_disclaimer_test
+}  // namespace managed_user_profile_notice_test

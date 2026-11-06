@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_DEVICE_SIGNALS_DISCLAIMER_TEST_UTILS_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_DEVICE_SIGNALS_DISCLAIMER_TEST_UTILS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_MANAGED_USER_PROFILE_NOTICE_TEST_UTILS_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_MANAGED_USER_PROFILE_NOTICE_TEST_UTILS_H_
 
 #include <string_view>
 
@@ -13,10 +13,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace device_signals_disclaimer_test {
+namespace managed_user_profile_notice_test {
 
-// DOM selectors of the device signals disclaimer WebUI. They differ between
-// the legacy and the refreshed implementation of the screen.
+// DOM selectors of the managed user profile notice WebUI. They differ between
+// the legacy and the refreshed implementation of the screens.
 //
 // Instances are only meant to be obtained via `GetSelectors()`; the members
 // refer to string literals with static storage duration.
@@ -46,12 +46,13 @@ testing::AssertionResult WaitForAndClickLearnMoreLink(
     content::WebContents* web_contents,
     const ManagedUserProfileNoticeSelectors& selectors);
 
-// Waits for `web_contents` to finish loading and for the app and disclaimer
-// elements to be rendered.
+// Waits for `web_contents` to finish loading and for the app and the
+// `screen_selector` element in its shadow root to be rendered.
 testing::AssertionResult WaitForWebContentsLoaded(
     content::WebContents* web_contents,
-    const ManagedUserProfileNoticeSelectors& selectors);
+    std::string_view app,
+    std::string_view screen_selector);
 
-}  // namespace device_signals_disclaimer_test
+}  // namespace managed_user_profile_notice_test
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_DEVICE_SIGNALS_DISCLAIMER_TEST_UTILS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_MANAGED_USER_PROFILE_NOTICE_TEST_UTILS_H_

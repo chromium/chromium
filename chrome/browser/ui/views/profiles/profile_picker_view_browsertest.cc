@@ -97,7 +97,7 @@
 #include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "chrome/browser/ui/views/profiles/device_signals_disclaimer_test_utils.h"
+#include "chrome/browser/ui/views/profiles/managed_user_profile_notice_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -195,11 +195,11 @@
 
 namespace {
 
-using ::device_signals_disclaimer_test::GetSelectors;
-using ::device_signals_disclaimer_test::ManagedUserProfileNoticeSelectors;
-using ::device_signals_disclaimer_test::WaitForAndClickCancelButton;
-using ::device_signals_disclaimer_test::WaitForAndClickLearnMoreLink;
-using ::device_signals_disclaimer_test::WaitForAndClickProceedButton;
+using ::managed_user_profile_notice_test::GetSelectors;
+using ::managed_user_profile_notice_test::ManagedUserProfileNoticeSelectors;
+using ::managed_user_profile_notice_test::WaitForAndClickCancelButton;
+using ::managed_user_profile_notice_test::WaitForAndClickLearnMoreLink;
+using ::managed_user_profile_notice_test::WaitForAndClickProceedButton;
 using signin::constants::kNoHostedDomainFound;
 using testing::_;
 using testing::Eq;

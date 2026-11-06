@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
-#include "chrome/browser/ui/views/profiles/device_signals_disclaimer_test_utils.h"
+#include "chrome/browser/ui/views/profiles/managed_user_profile_notice_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_switches.h"
@@ -28,9 +28,9 @@
 
 namespace {
 
-using ::device_signals_disclaimer_test::GetSelectors;
-using ::device_signals_disclaimer_test::ManagedUserProfileNoticeSelectors;
-using ::device_signals_disclaimer_test::WaitForAndClickProceedButton;
+using ::managed_user_profile_notice_test::GetSelectors;
+using ::managed_user_profile_notice_test::ManagedUserProfileNoticeSelectors;
+using ::managed_user_profile_notice_test::WaitForAndClickProceedButton;
 
 }  // namespace
 
