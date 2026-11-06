@@ -237,7 +237,10 @@ if (enable_rust_api_from_cpp) {
   # `$crubit_src_dir/support/BUILD.gn`), because it depends on `:cc_std`
   # which is built by Chromium (via `rust_api_from_cpp("cc_std")` above).
   rust_static_library("cpp_std") {
-    crate_name = "cpp_std"
+    # Using `cpp_std` as the crate name for portability of Crubit-based code
+    # (e.g. `cpp_std::string_view` can be expected to work in other Crubit
+    # clients).
+    unsafe_globally_unique_crate_name = "cpp_std"
     crate_root = "${crubit_src_dir}/support/cpp_std.rs"
     sources = [ crate_root ]
     deps = [ ":cc_std" ]

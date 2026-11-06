@@ -15,6 +15,51 @@ if (enable_rust_cxx) {
   import("//third_party/rust/cxx/chromium_integration/rust_cxx.gni")
 }
 
+# Asserts that `crate_name` is allowed for the caller.
+# Templates such as `rust_static_library` or `rust_macro` call this when their
+# invoker sets `crate_name`.  First-party Chromium code should use the default
+# crate name and `chromium::import!` (or, in rare cases,
+# `unsafe_globally_unique_crate_name`).
+#
+# `crate_name` is still allowed in:
+# * Non-Chromium builds (e.g. V8, PDFium, or Open Screen builds that reuse
+#   Chromium's `//build`).
+# * `third_party` code (other than Blink), and a few other, big `DEPS`-ed
+#   directories.
+#
+# This is a template (rather than a function), because GN doesn't support
+# user-defined functions. The only purpose of this template is to assert-fail
+# if appropriate (it doesn't expand into GN targets like most GN templates).
+#
+# Usage:
+#   if (defined(invoker.crate_name)) {
+#     assert_crate_name_allowed(target_name) {
+#     }
+#   }
+template("assert_crate_name_allowed") {
+  not_needed([
+               "invoker",
+               "target_name",
+             ])
+  if (build_with_chromium) {
+    _dir = [ get_label_info(":$target_name", "dir") ]
+    _is_blink = filter_include(_dir, [ "//third_party/blink\b*" ]) != []
+    _is_third_party_or_deps = filter_include(_dir,
+                                             [
+                                               "*\bthird_party\b*",
+                                               "//clank\b*",
+                                               "//internal\b*",
+                                               "//ios_internal\b*",
+                                               "//v8\b*",
+                                             ]) != []
+    assert(_is_third_party_or_deps && !_is_blink,
+           get_label_info(":$target_name", "label_no_toolchain") +
+               ": Use `unsafe_globally_unique_crate_name` instead of " +
+               "`crate_name`. See //build/rust/rust_static_library.gni " +
+               "for more details.")
+  }
+}
+
 # Creates a Rust target (rlib, executable, proc macro etc.) with ability to
 # understand some handy variables such as "edition" and "features" and also to
 # build any associated unit tests.

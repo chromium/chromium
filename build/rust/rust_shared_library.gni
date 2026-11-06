@@ -11,6 +11,11 @@ if (is_component_build) {
   # available as a rust_static_library. See rust_static_library.gni for
   # documentation.
   template("rust_shared_library") {
+    if (defined(invoker.crate_name)) {
+      assert_crate_name_allowed(target_name) {
+      }
+    }
+
     rust_target(target_name) {
       forward_variables_from(invoker,
                              "*",

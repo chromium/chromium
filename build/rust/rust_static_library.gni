@@ -188,6 +188,11 @@ import("//build/rust/gni_impl/rust_target.gni")
 # This template is intended to serve the same purpose as 'rustc_library'
 # in Fuchsia.
 template("rust_static_library") {
+  if (defined(invoker.crate_name)) {
+    assert_crate_name_allowed(target_name) {
+    }
+  }
+
   _target_name = target_name
 
   _configs = []
@@ -221,8 +226,6 @@ template("rust_static_library") {
       if (defined(invoker.unsafe_globally_unique_crate_name)) {
         _crate_name = invoker.unsafe_globally_unique_crate_name
       } else if (defined(invoker.crate_name)) {
-        # TODO(https://crbug.com/576367377): Make `invoker.crate_name` a hard
-        # error after cleaning up remaining usages.
         _crate_name = invoker.crate_name
       } else {
         _dir_hash = string_hash(get_label_info(":${_target_name}", "dir"))
