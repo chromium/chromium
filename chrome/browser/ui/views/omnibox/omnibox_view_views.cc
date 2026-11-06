@@ -1390,7 +1390,7 @@ void OmniboxViewViews::HideImeIfNeeded() {
 
 int OmniboxViewViews::GetOmniboxTextLength() const {
   // TODO(oshima): Support IME.
-  return static_cast<int>(GetText().length());
+  return static_cast<int>(Textfield::GetText().length());
 }
 
 void OmniboxViewViews::SetEmphasis(bool emphasize, const gfx::Range& range) {
