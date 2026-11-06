@@ -14,6 +14,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -37,6 +39,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -462,6 +465,46 @@ class WebAppPublisherHelperNavigationCapturingTest
         apps::test::GetFeaturesToEnableLinkCapturingUX(version), {});
   }
 
+  // Enables default-on navigation capturing, and enables or disables the
+  // `kRespectUserLinkCapturingChoiceOnChromeOS` kill switch. If
+  // `forced_off_app_id` is not empty, it is put in the server-side
+  // `user_settings_forced_off_apps` list.
+  void SetUpDefaultOnFeatures(bool respect_user_choice,
+                              const webapps::AppId& forced_off_app_id = {}) {
+    base::FieldTrialParams params = {
+        {::features::kNavigationCapturingDefaultState.name,
+         "reimpl_default_on"}};
+    if (!forced_off_app_id.empty()) {
+      params[::features::kForcedOffCapturingAppsUserSetting.name] =
+          forced_off_app_id;
+    }
+    std::vector<base::test::FeatureRefAndParams> enabled = {
+        {::features::kPwaNavigationCapturing, params}};
+    std::vector<base::test::FeatureRef> disabled;
+    if (respect_user_choice) {
+      enabled.push_back(
+          {apps::features::kRespectUserLinkCapturingChoiceOnChromeOS, {}});
+    } else {
+      disabled.push_back(
+          apps::features::kRespectUserLinkCapturingChoiceOnChromeOS);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+
+  static std::unique_ptr<WebAppInstallInfo> CreateInstallInfo(
+      const GURL& start_url) {
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+    info->title = u"PWA Test App";
+    info->scope = start_url.GetWithoutFilename();
+    return info;
+  }
+
+  bool IsPreferred(const webapps::AppId& app_id) {
+    return apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->PreferredAppsList()
+        .IsPreferredAppForSupportedLinks(app_id);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -702,6 +745,42 @@ TEST_F(WebAppPublisherHelperNavigationCapturingTest,
   // The reinstalled app should be set to preferred for supported links.
   EXPECT_TRUE(proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(
       reinstalled_app_id));
+}
+
+// b/578641259: Install does not apply the default to an app that cannot
+// capture links (here, an app in the server-side
+// `user_settings_forced_off_apps` list). Other apps still get the default.
+TEST_F(WebAppPublisherHelperNavigationCapturingTest,
+       LinkCapturingDefaultOn_ForcedOffAppIsNotPreferred) {
+  auto forced_off_info =
+      CreateInstallInfo(GURL("https://forced-off.example/start"));
+  const webapps::AppId forced_off_app_id =
+      GenerateAppIdFromManifestId(forced_off_info->manifest_id());
+  SetUpDefaultOnFeatures(/*respect_user_choice=*/true, forced_off_app_id);
+
+  ASSERT_EQ(test::InstallWebApp(profile(), std::move(forced_off_info)),
+            forced_off_app_id);
+  webapps::AppId app_id = test::InstallWebApp(
+      profile(), CreateInstallInfo(GURL("https://example.com/start")));
+
+  EXPECT_FALSE(
+      provider().registrar_unsafe().CanCaptureLinksInScope(forced_off_app_id));
+  EXPECT_FALSE(IsPreferred(forced_off_app_id));
+  EXPECT_TRUE(IsPreferred(app_id));
+}
+
+// b/578641259: If the kill switch is off, install applies the default to an app
+// in `user_settings_forced_off_apps`, as before.
+TEST_F(WebAppPublisherHelperNavigationCapturingTest,
+       LinkCapturingDefaultOn_ForcedOffAppIsPreferredWithKillSwitchOff) {
+  auto info = CreateInstallInfo(GURL("https://forced-off.example/start"));
+  const webapps::AppId forced_off_app_id =
+      GenerateAppIdFromManifestId(info->manifest_id());
+  SetUpDefaultOnFeatures(/*respect_user_choice=*/false, forced_off_app_id);
+
+  ASSERT_EQ(test::InstallWebApp(profile(), std::move(info)), forced_off_app_id);
+
+  EXPECT_TRUE(IsPreferred(forced_off_app_id));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

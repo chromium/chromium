@@ -1502,6 +1502,7 @@ source_set("app_service_browser_tests") {
     ]
 
     deps += [
+      "//chrome/browser/apps/link_capturing",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications/test:test_support_ui",
     ]
@@ -1510,6 +1511,7 @@ source_set("app_service_browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps += [
+    ":features",
     ":web_applications",
     ":web_applications_test_support",
     "//base",

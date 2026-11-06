@@ -552,6 +552,27 @@ MigrationState GetTargetMigrationState() {
   NOTREACHED();
 }
 
+// On ChromeOS, App Service keeps the effective link capturing state in
+// `PreferredAppsList`. The last explicit user choice is recorded on the
+// `WebApp` by `apps::SetSupportedLinksPreferenceByUser()` (through
+// `WebAppCommandScheduler::SetUserLinkCapturingChoiceOnChromeOs()`), which the
+// App Management "Opening supported links" setting and the Intent Picker call.
+// These helpers only read that record and do not check `PreferredAppsList`.
+// Callers must use the record only when it agrees with the current App Service
+// state, because the state can change later without a new record (for
+// example, when an ARC app takes over the links). See b/578641259.
+bool UserChoseToNotCaptureLinks(const WebApp& web_app) {
+  return apps::features::ShouldRespectRecordedLinkCapturingChoice() &&
+         web_app.user_link_capturing_preference() ==
+             proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE;
+}
+
+bool UserChoseToCaptureLinks(const WebApp& web_app) {
+  return apps::features::ShouldRespectRecordedLinkCapturingChoice() &&
+         web_app.user_link_capturing_preference() ==
+             proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE;
+}
+
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
@@ -1489,8 +1510,18 @@ void WebAppPublisherHelper::MaybeSetSupportedLinksPreference(
   if (AreOtherAppsPreferredForLinks(proxy, app_id, intent_filters)) {
     return;
   }
+  // Keep the filters of a preferred app up to date. Only apply the default to
+  // an app that did not have supported links before, and only if the app can
+  // capture links. Like in the migration, an app cannot capture links if it is
+  // not installed in Chrome (for example, a `SUGGESTED_FROM_MIGRATION` app) or
+  // if it is in the server-side `user_settings_forced_off_apps` list of
+  // `kPwaNavigationCapturing`. A suggested app does not get the default after
+  // the user installs it either, because it already had supported links.
+  const bool cannot_capture_links =
+      apps::features::ShouldRespectRecordedLinkCapturingChoice() &&
+      !registrar().CanCaptureLinksInScope(app_id);
   if (proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
-      !app_had_supported_links) {
+      (!app_had_supported_links && !cannot_capture_links)) {
     proxy->SetSupportedLinksPreference(app_id);
   }
 }
@@ -2279,14 +2310,47 @@ void WebAppPublisherHelper::MaybeMigrateLinkCapturingPreferences() {
       }
     }
 
+    // If the kill switch is on, the rollback uses the App Service state from
+    // before the rollback. Take a snapshot before the loop, because the loop
+    // changes `PreferredAppsList`. Every app that the loop restores is already
+    // preferred, so `SetSupportedLinksPreference()` changes the list only if
+    // the filters of the app are out of date. With default-off every overlap
+    // is a conflict, so such a call can remove apps that the loop did not read
+    // yet.
+    base::flat_set<std::string> preferred_before_rollback;
+    if (apps::features::ShouldRespectRecordedLinkCapturingChoice()) {
+      for (const WebApp& web_app : registrar().GetApps()) {
+        if (!web_app.IsSystemApp() &&
+            proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(
+                web_app.app_id())) {
+          preferred_before_rollback.insert(web_app.app_id());
+        }
+      }
+    }
+
     for (const WebApp& web_app : registrar().GetApps()) {
       if (web_app.IsSystemApp()) {
         continue;
       }
       const std::string& app_id = web_app.app_id();
       // Restore if this app was previously set as preferred for handling
-      // supported links.
-      if (backup_apps.contains(app_id)) {
+      // supported links, but only if it is still preferred. The forward
+      // migration keeps the apps that were preferred. So a backed up app that
+      // is not preferred now was turned off, or another app took over its
+      // links later (for example, an ARC app from Android settings). Not all
+      // of these changes write a "do not capture" record, so the App Service
+      // state wins. Also keep an app that the user set to "Open in app" after
+      // the migration. If the kill switch is off, use only the backup.
+      // Two nested apps that are both preferred before the rollback (default-on
+      // allows this) both stay preferred, because
+      // `SetSupportedLinksPreference()` does not change an existing entry.
+      const bool was_preferred = preferred_before_rollback.contains(app_id);
+      const bool restore_as_preferred =
+          apps::features::ShouldRespectRecordedLinkCapturingChoice()
+              ? (was_preferred && (backup_apps.contains(app_id) ||
+                                   UserChoseToCaptureLinks(web_app)))
+              : backup_apps.contains(app_id);
+      if (restore_as_preferred) {
         proxy->SetSupportedLinksPreference(app_id);
       } else {
         proxy->RemoveSupportedLinksPreference(app_id);
@@ -2315,6 +2379,19 @@ void WebAppPublisherHelper::MaybeMigrateLinkCapturingPreferences() {
       continue;
     }
 
+    // Keep an explicit "Open in Chrome browser" choice of the user.
+    if (UserChoseToNotCaptureLinks(web_app)) {
+      continue;
+    }
+
+    // Do not migrate apps that cannot capture links (for example, apps that
+    // are not installed in Chrome, or apps in the server-side
+    // `user_settings_forced_off_apps` list of `kPwaNavigationCapturing`).
+    if (apps::features::ShouldRespectRecordedLinkCapturingChoice() &&
+        !registrar().CanCaptureLinksInScope(app_id)) {
+      continue;
+    }
+
     bool should_migrate = false;
     if (target_state == MigrationState::kDefaultOn) {
       should_migrate = true;
@@ -2328,8 +2405,10 @@ void WebAppPublisherHelper::MaybeMigrateLinkCapturingPreferences() {
       continue;
     }
 
-    // Check if a non-web app or system web app is already set as preferred for
-    // these filters.
+    // Check if a conflicting app is already set as preferred for these filters.
+    // TODO(b/578641259): `link_filters` is empty for an app that is not ready
+    // (for example, `kDisabledByPolicy`), so the conflict checks below do not
+    // run for it.
     apps::IntentFilters link_filters;
     proxy->AppRegistryCache().ForOneApp(
         app_id, [&app_id, &link_filters](const apps::AppUpdate& update) {
@@ -2345,6 +2424,20 @@ void WebAppPublisherHelper::MaybeMigrateLinkCapturingPreferences() {
     base::flat_set<std::string> preferred_apps =
         proxy->PreferredAppsList().FindPreferredAppsForFilters(app_id,
                                                                link_filters);
+    // `preferred_apps` has only the apps that cannot share these links with
+    // `app_id`: non-web apps, system web apps, and web apps with the same
+    // scope (see `AppServiceProxyBase::QueryConflict()`). Web apps with a
+    // nested scope are not in it. Do not take the links from a web app with
+    // the same scope, because the user can have chosen "Open in app" for it.
+    // This matches `AreOtherAppsPreferredForLinks()` in
+    // `MaybeSetSupportedLinksPreference()`.
+    if (apps::features::ShouldRespectRecordedLinkCapturingChoice() &&
+        !preferred_apps.empty()) {
+      continue;
+    }
+
+    // TODO(b/578641259): Remove this loop with the kill switch. If the kill
+    // switch is on, `preferred_apps` is always empty here.
     bool has_conflicting_preferred_app = false;
     for (const std::string& other_app_id : preferred_apps) {
       const WebApp* other_web_app = registrar().GetAppById(other_app_id);

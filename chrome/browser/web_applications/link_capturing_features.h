@@ -24,6 +24,25 @@ BASE_DECLARE_FEATURE(kPwaNavigationCapturingTestingOverride);
 extern const base::FeatureParam<::features::CapturingState>
     kNavigationCapturingTestingOverrideState;
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Kill switch, enabled by default. When enabled, the navigation capturing
+// migration and the rollback respect the explicit user choice for "Opening
+// supported links" that is recorded on the `WebApp`
+// (`WebApp::user_link_capturing_preference()`). The choice is always recorded;
+// this switch does not guard the write. It also guards these checks, which do
+// not read the recorded choice:
+// - The migration, and the install and update of web apps that are not IWAs
+//   and not `ChromeOsWebAppExperiments` apps, check `CanCaptureLinksInScope()`
+//   before they apply the default.
+// - The migration does not replace a preferred web app with the same scope.
+// - The rollback restores an app only if it is preferred before the rollback.
+// Please see b/578641259 for more information.
+BASE_DECLARE_FEATURE(kRespectUserLinkCapturingChoiceOnChromeOS);
+
+// Returns true if the recorded user link capturing choice must be respected.
+bool ShouldRespectRecordedLinkCapturingChoice();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Returns true if the updated UX for link capturing needs to be shown. Only set
 // to true on desktop platforms if kPwaNavigationCapturing is enabled, and
 // always on CrOS.
