@@ -6,6 +6,8 @@
 
 #include <cstdint>
 #include <functional>
+#include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -15,8 +17,11 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/content/renderer/custom_form_control_util.h"
@@ -35,11 +40,13 @@
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
+#include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
+#include "v8/include/v8-promise.h"
 #include "v8/include/v8-value.h"
 
 namespace autofill {
@@ -81,6 +88,52 @@ std::string WrapScript(std::string_view script) {
 bool IsManager(v8::Local<v8::Value> value) {
   return !value.IsEmpty() && value->IsObject() && !value->IsFunction() &&
          !value->IsArray() && !value->IsPromise();
+}
+
+// Maps the id of each call that waits for a promise to the executor that made
+// it. There is at most one such call per executor, but there is one executor
+// per frame, and several frames (e.g. same-site iframes) can share a renderer
+// process, so the map may have several entries.
+//
+// When the promise settles, V8 runs a reaction (`OnPromiseFulfilled()` or
+// `OnPromiseRejected()`) that only knows the call id, and uses this map to find
+// the executor. The reaction can't point to the executor directly, since the
+// executor may be destroyed before the promise settles. It can't hold a
+// `WeakPtr` either: its data can only be a V8 value, so the `WeakPtr` would
+// need a separate C++ allocation, which V8 doesn't free when it
+// garbage-collects the reaction (e.g. after the context is released). So the
+// map is static, outliving all executors, and executors erase their entry when
+// the call ends or when they are destroyed. A reaction for a call that ended
+// finds no entry and does nothing.
+//
+// Call ids come from `g_next_call_id`, which only increases, so an id is never
+// reused. The reactions get the id as a `Number`, which represents integers up
+// to 2^53 exactly. Both are only used on the renderer's main thread.
+std::map<uint64_t, base::WeakPtr<CustomFormControlScriptExecutor>>&
+GetCallsAwaitingPromise() {
+  static base::NoDestructor<
+      std::map<uint64_t, base::WeakPtr<CustomFormControlScriptExecutor>>>
+      calls;
+  return *calls;
+}
+uint64_t g_next_call_id = 1;
+
+// Returns the executor that waits for the call of a promise reaction, whose
+// data is the call id (see `SetCallbackForPromise()`), or null if the call has
+// ended.
+CustomFormControlScriptExecutor* GetWaitingExecutor(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  base::WeakPtr<CustomFormControlScriptExecutor>* executor = base::FindOrNull(
+      GetCallsAwaitingPromise(),
+      static_cast<uint64_t>(info.DataV2().As<v8::Number>()->Value()));
+  return executor ? executor->get() : nullptr;
+}
+
+// Returns the isolate of `render_frame`, or null if the frame is gone.
+v8::Isolate* GetIsolate(content::RenderFrame* render_frame) {
+  return render_frame
+             ? render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate()
+             : nullptr;
 }
 
 // Sets the Content Security Policy, origin and name of the isolated world, once
@@ -226,6 +279,13 @@ std::optional<CustomFormControl> ParseCustomFormControl(
 
 }  // namespace
 
+// A call whose promise hasn't settled yet.
+struct CustomFormControlScriptExecutor::PendingCall {
+  // The key of the call in `GetCallsAwaitingPromise()`.
+  uint64_t id;
+  ResultCallback callback;
+};
+
 CustomFormControlScriptExecutor::CustomFormControlScriptExecutor(
     content::RenderFrame& render_frame,
     int32_t world_id)
@@ -236,10 +296,26 @@ CustomFormControlScriptExecutor::CustomFormControlScriptExecutor(
   EnsureIsolatedWorldSetUp(world_id_);
 }
 
-CustomFormControlScriptExecutor::~CustomFormControlScriptExecutor() = default;
+CustomFormControlScriptExecutor::~CustomFormControlScriptExecutor() {
+  // The promise can no longer finish the call.
+  if (pending_call_) {
+    RunPendingCallback(nullptr, {}, {});
+  }
+}
 
 bool CustomFormControlScriptExecutor::LoadScript(std::string_view script) {
   manager_.Reset();
+  // The promise that `pending_call_` awaits belongs to the dropped manager, so
+  // the call fails.
+  if (pending_call_) {
+    base::WeakPtr<CustomFormControlScriptExecutor> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
+    RunPendingCallback(GetIsolate(render_frame()), {}, {});
+    // The callback may destroy the executor.
+    if (!weak_this) {
+      return false;
+    }
+  }
   if (!render_frame()) {
     return false;
   }
@@ -287,7 +363,7 @@ std::vector<CustomFormControl>
 CustomFormControlScriptExecutor::DetectCustomFormControls() {
   std::vector<CustomFormControl> controls;
   // TODO(crbug.com/581337039): Limit the number of custom form controls.
-  CallFunction("detectCustomFormControls", {},
+  CallFunction(MayReturnPromise(false), "detectCustomFormControls", {},
                base::BindOnce(
                    [](std::vector<CustomFormControl>& controls,
                       v8::Isolate* isolate, v8::Local<v8::Context> context,
@@ -351,6 +427,7 @@ v8::MaybeLocal<v8::Value> CustomFormControlScriptExecutor::ToV8Value(
 }
 
 void CustomFormControlScriptExecutor::CallFunction(
+    MayReturnPromise may_return_promise,
     std::string_view function_name,
     std::vector<Argument> arguments,
     ResultCallback callback) {
@@ -360,7 +437,9 @@ void CustomFormControlScriptExecutor::CallFunction(
   }
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
-  if (manager_.IsEmpty()) {
+  // Fails while a previous call of this executor still waits for its promise.
+  // `GetCallsAwaitingPromise()` has one such call for each executor (frame).
+  if (pending_call_ || manager_.IsEmpty()) {
     std::move(callback).Run(isolate, {}, {});
     return;
   }
@@ -421,10 +500,87 @@ void CustomFormControlScriptExecutor::CallFunction(
   }
   // Don't pass on the result of a call that failed, or a value of a context
   // that was released during the call (which drops the manager).
-  if (value.IsEmpty() || manager_.IsEmpty() || value->IsPromise()) {
+  if (value.IsEmpty() || manager_.IsEmpty()) {
     std::move(callback).Run(isolate, {}, {});
     return;
   }
+  if (value->IsPromise() && !may_return_promise) {
+    // Nothing waits for the promise, so don't report its rejection as
+    // unhandled (e.g. in the console).
+    value.As<v8::Promise>()->MarkAsHandled();
+    std::move(callback).Run(isolate, {}, {});
+    return;
+  }
+  if (value->IsPromise()) {
+    SetCallbackForPromise(isolate, context, value.As<v8::Promise>(),
+                          std::move(callback));
+    return;
+  }
+  std::move(callback).Run(isolate, context, value);
+}
+
+void CustomFormControlScriptExecutor::SetCallbackForPromise(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Promise> promise,
+    ResultCallback callback) {
+  if (promise->State() != v8::Promise::kPending) {
+    // The promise may already be settled, e.g. if an `async` method returned
+    // without awaiting anything. A rejection is handled here, so don't report
+    // it as unhandled (e.g. in the console).
+    promise->MarkAsHandled();
+    const bool fulfilled = promise->State() == v8::Promise::kFulfilled;
+    std::move(callback).Run(
+        isolate, fulfilled ? context : v8::Local<v8::Context>(),
+        fulfilled ? promise->Result() : v8::MaybeLocal<v8::Value>());
+    return;
+  }
+  const uint64_t call_id = g_next_call_id++;
+  // A `Number` represents the id exactly, since it is below 2^53.
+  CHECK_LT(call_id, uint64_t{1} << 53);
+  v8::Local<v8::Value> data =
+      v8::Number::New(isolate, static_cast<double>(call_id));
+  v8::Local<v8::Function> on_fulfilled;
+  v8::Local<v8::Function> on_rejected;
+  if (!v8::Function::New(context, &OnPromiseFulfilled, data)
+           .ToLocal(&on_fulfilled) ||
+      !v8::Function::New(context, &OnPromiseRejected, data)
+           .ToLocal(&on_rejected) ||
+      promise->Then(context, on_fulfilled, on_rejected).IsEmpty()) {
+    std::move(callback).Run(isolate, {}, {});
+    return;
+  }
+  pending_call_ = std::make_unique<PendingCall>(call_id, std::move(callback));
+  GetCallsAwaitingPromise()[call_id] = weak_ptr_factory_.GetWeakPtr();
+}
+
+// static
+void CustomFormControlScriptExecutor::OnPromiseFulfilled(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (CustomFormControlScriptExecutor* executor = GetWaitingExecutor(info)) {
+    // The reactions run in the isolated world's context.
+    executor->RunPendingCallback(
+        info.GetIsolate(), info.GetIsolate()->GetCurrentContext(), info[0]);
+  }
+}
+
+// static
+void CustomFormControlScriptExecutor::OnPromiseRejected(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (CustomFormControlScriptExecutor* executor = GetWaitingExecutor(info)) {
+    executor->RunPendingCallback(info.GetIsolate(), {}, {});
+  }
+}
+
+void CustomFormControlScriptExecutor::RunPendingCallback(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::MaybeLocal<v8::Value> value) {
+  GetCallsAwaitingPromise().erase(pending_call_->id);
+  // Reset before running the callback, which may make another call or, unless
+  // this runs from the destructor, destroy this executor.
+  ResultCallback callback = std::move(pending_call_->callback);
+  pending_call_.reset();
   std::move(callback).Run(isolate, context, value);
 }
 
@@ -433,16 +589,26 @@ void CustomFormControlScriptExecutor::WillReleaseScriptContext(
     int32_t world_id) {
   if (world_id == world_id_) {
     manager_.Reset();
+    // The promise of a pending call can no longer settle.
+    if (pending_call_) {
+      RunPendingCallback(GetIsolate(render_frame()), {}, {});
+    }
   }
 }
 
 void CustomFormControlScriptExecutor::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   manager_.Reset();
+  if (pending_call_) {
+    RunPendingCallback(GetIsolate(render_frame()), {}, {});
+  }
 }
 
 void CustomFormControlScriptExecutor::OnDestruct() {
   manager_.Reset();
+  if (pending_call_) {
+    RunPendingCallback(nullptr, {}, {});
+  }
 }
 
 }  // namespace autofill

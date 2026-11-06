@@ -16,6 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "components/autofill/content/renderer/custom_form_control_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -43,17 +44,19 @@ namespace autofill {
 class CustomFormControlScriptExecutorTestApi {
  public:
   using Argument = CustomFormControlScriptExecutor::Argument;
+  using MayReturnPromise = CustomFormControlScriptExecutor::MayReturnPromise;
   using ResultCallback = CustomFormControlScriptExecutor::ResultCallback;
 
   explicit CustomFormControlScriptExecutorTestApi(
       CustomFormControlScriptExecutor* executor)
       : executor_(CHECK_DEREF(executor)) {}
 
-  void CallFunction(std::string_view function_name,
+  void CallFunction(MayReturnPromise may_return_promise,
+                    std::string_view function_name,
                     std::vector<Argument> arguments,
                     ResultCallback callback) {
-    executor_->CallFunction(function_name, std::move(arguments),
-                            std::move(callback));
+    executor_->CallFunction(may_return_promise, function_name,
+                            std::move(arguments), std::move(callback));
   }
 
  private:
@@ -66,6 +69,8 @@ namespace {
 constexpr int32_t kWorldId = content::ISOLATED_WORLD_ID_CONTENT_END + 1;
 
 using Argument = CustomFormControlScriptExecutorTestApi::Argument;
+using MayReturnPromise =
+    CustomFormControlScriptExecutorTestApi::MayReturnPromise;
 
 // A minimal script that returns an empty manager.
 constexpr char kValidScript[] = R"(
@@ -122,31 +127,54 @@ class CustomFormControlScriptExecutorTest : public content::RenderViewTest {
     return ToUtf8(isolate, result.As<v8::String>());
   }
 
-  // Calls `function_name` and returns the result converted to a string, or
-  // `std::nullopt` if the call or the conversion failed.
-  std::optional<std::string> Call(std::string_view function_name,
-                                  std::vector<Argument> arguments = {}) {
-    std::optional<std::string> result;
-    bool called = false;
+  struct CallResult {
+    bool done = false;
+    // Whether the callback got an isolate.
+    bool had_isolate = false;
+    // The result converted to a string, or `std::nullopt` if the call or the
+    // conversion failed.
+    std::optional<std::string> value;
+  };
+
+  // Starts a call. `result` is updated when the call finishes.
+  void StartCall(MayReturnPromise may_return_promise,
+                 std::string_view function_name,
+                 CallResult& result,
+                 std::vector<Argument> arguments = {}) {
     CustomFormControlScriptExecutorTestApi(executor_.get())
         .CallFunction(
-            function_name, std::move(arguments),
-            base::BindLambdaForTesting([&](v8::Isolate* isolate,
-                                           v8::Local<v8::Context> context,
-                                           v8::MaybeLocal<v8::Value> value) {
-              called = true;
-              // Converting the value may run script (e.g. `toString()`), which
-              // may throw.
-              v8::TryCatch try_catch(isolate);
-              v8::Local<v8::Value> local;
-              v8::Local<v8::String> string;
-              if (value.ToLocal(&local) &&
-                  local->ToString(context).ToLocal(&string)) {
-                result = ToUtf8(isolate, string);
-              }
-            }));
-    EXPECT_TRUE(called);
-    return result;
+            may_return_promise, function_name, std::move(arguments),
+            base::BindLambdaForTesting(
+                [&result](v8::Isolate* isolate, v8::Local<v8::Context> context,
+                          v8::MaybeLocal<v8::Value> value) {
+                  result.done = true;
+                  result.had_isolate = isolate;
+                  // The call failed if the frame is gone.
+                  if (!isolate) {
+                    return;
+                  }
+                  // Converting the value may run script (e.g. `toString()`),
+                  // which may throw.
+                  v8::TryCatch try_catch(isolate);
+                  v8::Local<v8::Value> local;
+                  v8::Local<v8::String> string;
+                  if (value.ToLocal(&local) &&
+                      local->ToString(context).ToLocal(&string)) {
+                    result.value = ToUtf8(isolate, string);
+                  }
+                }));
+  }
+
+  // Makes a call that may return a promise and is expected to finish
+  // synchronously. Returns the result converted to a string, or `std::nullopt`
+  // if the call or the conversion failed.
+  std::optional<std::string> Call(std::string_view function_name,
+                                  std::vector<Argument> arguments = {}) {
+    CallResult result;
+    StartCall(MayReturnPromise(true), function_name, result,
+              std::move(arguments));
+    EXPECT_TRUE(result.done);
+    return result.value;
   }
 
   blink::WebNode GetTarget() {
@@ -430,8 +458,8 @@ TEST_F(CustomFormControlScriptExecutorTest, ReplacesManager) {
 }
 
 // Tests that calls fail if there is no manager or no such method, if an
-// argument is a null node, or if the method throws or returns a promise, and
-// that later calls still work.
+// argument is a null node, or if the method throws, and that later calls still
+// work.
 TEST_F(CustomFormControlScriptExecutorTest, CallFails) {
   EXPECT_EQ(Call("anything"), std::nullopt);  // No manager.
   ASSERT_TRUE(executor_->LoadScript(R"(
@@ -439,7 +467,6 @@ TEST_F(CustomFormControlScriptExecutorTest, CallFails) {
       return {
         notAFunction: 1,
         throws() { throw new Error('error'); },
-        async isAsync() { return 1; },
         works() { return 'ok'; },
       };
     }
@@ -447,7 +474,6 @@ TEST_F(CustomFormControlScriptExecutorTest, CallFails) {
   EXPECT_EQ(Call("missing"), std::nullopt);
   EXPECT_EQ(Call("notAFunction"), std::nullopt);
   EXPECT_EQ(Call("throws"), std::nullopt);
-  EXPECT_EQ(Call("isAsync"), std::nullopt);
   EXPECT_EQ(Call("works", {blink::WebNode()}), std::nullopt);  // Null node.
   EXPECT_EQ(Call("works"), "ok");
 }
@@ -507,7 +533,7 @@ TEST_F(CustomFormControlScriptExecutorTest, CallFailsIfFrameIsDetached) {
   bool called = false;
   CustomFormControlScriptExecutorTestApi(&child_executor)
       .CallFunction(
-          "detach", {},
+          MayReturnPromise(true), "detach", {},
           base::BindLambdaForTesting([&](v8::Isolate* isolate,
                                          v8::Local<v8::Context> context,
                                          v8::MaybeLocal<v8::Value> value) {
@@ -525,7 +551,7 @@ TEST_F(CustomFormControlScriptExecutorTest, FailedCallPassesIsolate) {
   bool called = false;
   CustomFormControlScriptExecutorTestApi(executor_.get())
       .CallFunction(
-          "anything", {},
+          MayReturnPromise(true), "anything", {},
           base::BindLambdaForTesting([&](v8::Isolate* isolate,
                                          v8::Local<v8::Context> context,
                                          v8::MaybeLocal<v8::Value> value) {
@@ -636,6 +662,188 @@ TEST_F(CustomFormControlScriptExecutorTest,
   )"));
 
   EXPECT_TRUE(executor_->DetectCustomFormControls().empty());
+}
+
+constexpr char kAsyncScript[] = R"(
+  function createCustomFormControlManager() {
+    return {
+      async pending() { await null; return 'later'; },
+      later() { return new Promise(r => setTimeout(() => r('later'), 0)); },
+      rejectLater() {
+        return new Promise((_, r) => setTimeout(() => r(new Error()), 0));
+      },
+      never() { return new Promise(() => {}); },
+      async succeedNow() { return 'now'; },
+      async failNow() { throw new Error(); },
+      sync() { return 'sync'; },
+    };
+  }
+)";
+
+// Tests that calls that may return a promise wait for it and finish with the
+// value it is fulfilled with, or fail if it is rejected.
+TEST_F(CustomFormControlScriptExecutorTest, CallsWaitForPromises) {
+  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
+  CallResult later;
+  StartCall(MayReturnPromise(true), "later", later);
+  EXPECT_FALSE(later.done);
+  ASSERT_TRUE(base::test::RunUntil([&] { return later.done; }));
+  EXPECT_EQ(later.value, "later");
+
+  CallResult rejected;
+  StartCall(MayReturnPromise(true), "rejectLater", rejected);
+  ASSERT_TRUE(base::test::RunUntil([&] { return rejected.done; }));
+  EXPECT_TRUE(rejected.had_isolate);
+  EXPECT_EQ(rejected.value, std::nullopt);
+}
+
+// Tests that calls that may not return a promise fail if they do.
+TEST_F(CustomFormControlScriptExecutorTest, OnlySomeCallsMayReturnPromises) {
+  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
+  CallResult result;
+  StartCall(MayReturnPromise(false), "pending", result);
+  EXPECT_TRUE(result.done);
+  EXPECT_EQ(result.value, std::nullopt);
+}
+
+// Tests that other calls fail while a call waits for a promise, and work again
+// afterwards.
+TEST_F(CustomFormControlScriptExecutorTest, CallsFailWhileWaiting) {
+  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
+  CallResult later;
+  StartCall(MayReturnPromise(true), "later", later);
+  CallResult sync;
+  StartCall(MayReturnPromise(false), "sync", sync);
+  EXPECT_TRUE(sync.done);
+  EXPECT_EQ(sync.value, std::nullopt);
+  ASSERT_TRUE(base::test::RunUntil([&] { return later.done; }));
+  EXPECT_EQ(later.value, "later");
+  EXPECT_EQ(Call("sync"), "sync");
+}
+
+// Tests that loading a script fails a call that waits for a promise of the
+// previous manager.
+TEST_F(CustomFormControlScriptExecutorTest, LoadScriptFailsPendingCall) {
+  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
+  CallResult never;
+  StartCall(MayReturnPromise(true), "never", never);
+  EXPECT_FALSE(never.done);
+  EXPECT_TRUE(executor_->LoadScript(kValidScript));
+  EXPECT_TRUE(never.done);
+  EXPECT_TRUE(never.had_isolate);
+  EXPECT_EQ(never.value, std::nullopt);
+  EXPECT_TRUE(executor_->has_manager());
+}
+
+// Tests that a call waiting for a promise fails when a new document is
+// committed, since the promise can no longer settle. The frame is still alive,
+// so the callback gets the isolate.
+TEST_F(CustomFormControlScriptExecutorTest, FailsPendingCallOnNavigation) {
+  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
+  CallResult never;
+  StartCall(MayReturnPromise(true), "never", never);
+  EXPECT_FALSE(never.done);
+  LoadHTML("<div>Another document</div>");
+  EXPECT_TRUE(never.done);
+  EXPECT_TRUE(never.had_isolate);
+  EXPECT_EQ(never.value, std::nullopt);
+}
+
+// Tests that destroying the executor while a call waits for a promise fails the
+// call, and that the promise settling afterwards is ignored.
+TEST_F(CustomFormControlScriptExecutorTest, DestroyedWhileWaiting) {
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return {
+        later() {
+          return new Promise(r => setTimeout(() => {
+            window.resolved = true;
+            r('later');
+          }, 0));
+        },
+      };
+    }
+  )"));
+  CallResult later;
+  StartCall(MayReturnPromise(true), "later", later);
+  executor_.reset();
+  EXPECT_TRUE(later.done);
+  EXPECT_FALSE(later.had_isolate);
+  EXPECT_EQ(later.value, std::nullopt);
+  // The promise's reaction finds no executor.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return EvaluateInIsolatedWorld("String(window.resolved === true)") ==
+           "true";
+  }));
+}
+
+// Tests that calls finish right away if their promise is already fulfilled
+// when the call returns.
+TEST_F(CustomFormControlScriptExecutorTest, FinishesOnFulfilledPromise) {
+  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
+  CallResult result;
+  StartCall(MayReturnPromise(true), "succeedNow", result);
+  EXPECT_TRUE(result.done);
+  EXPECT_EQ(result.value, "now");
+}
+
+// Tests that calls fail if their promise is already rejected when the call
+// returns.
+TEST_F(CustomFormControlScriptExecutorTest, FailsOnRejectedPromise) {
+  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
+  for (MayReturnPromise may_return_promise :
+       {MayReturnPromise(true), MayReturnPromise(false)}) {
+    CallResult result;
+    StartCall(may_return_promise, "failNow", result);
+    EXPECT_TRUE(result.done);
+    EXPECT_TRUE(result.had_isolate);
+    EXPECT_EQ(result.value, std::nullopt);
+  }
+}
+
+// Tests that the callback of a call that waited for a promise may make another
+// call.
+TEST_F(CustomFormControlScriptExecutorTest, CallbackMayMakeAnotherCall) {
+  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
+  std::optional<std::string> nested;
+  bool done = false;
+  CustomFormControlScriptExecutorTestApi(executor_.get())
+      .CallFunction(
+          MayReturnPromise(true), "later", {},
+          base::BindLambdaForTesting(
+              [this, &nested, &done](v8::Isolate*, v8::Local<v8::Context>,
+                                     v8::MaybeLocal<v8::Value>) {
+                nested = Call("sync");
+                done = true;
+              }));
+  ASSERT_TRUE(base::test::RunUntil([&] { return done; }));
+  EXPECT_EQ(nested, "sync");
+}
+
+// Tests that a call waiting for a promise fails when its frame is detached, and
+// that the callback still gets the isolate, since it runs while the frame's
+// script contexts are released.
+TEST_F(CustomFormControlScriptExecutorTest, FailsPendingCallOnFrameDetach) {
+  LoadHTML("<iframe src='about:blank'></iframe>");
+  blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
+  CustomFormControlScriptExecutor child_executor(
+      *content::RenderFrame::FromWebFrame(child), kWorldId);
+  ASSERT_TRUE(child_executor.LoadScript(kAsyncScript));
+  CallResult never;
+  CustomFormControlScriptExecutorTestApi(&child_executor)
+      .CallFunction(
+          MayReturnPromise(true), "never", {},
+          base::BindLambdaForTesting([&never](v8::Isolate* isolate,
+                                              v8::Local<v8::Context> context,
+                                              v8::MaybeLocal<v8::Value> value) {
+            never.done = true;
+            never.had_isolate = isolate;
+            EXPECT_TRUE(value.IsEmpty());
+          }));
+  EXPECT_FALSE(never.done);
+  ExecuteJavaScriptForTests("document.querySelector('iframe').remove();");
+  EXPECT_TRUE(never.done);
+  EXPECT_TRUE(never.had_isolate);
 }
 
 }  // namespace
