@@ -25,8 +25,19 @@ public final class MostVisitedTilesProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Integer> HORIZONTAL_EDGE_PADDINGS =
             new WritableObjectPropertyKey<>(true);
 
+    /**
+     * Whether the MVT container wraps its tiles instead of filling the width left over by the AI
+     * Mode card in the beside-MVT layout, so the AI Mode card and MVT container are centered
+     * together as one unit. Only set on large form factor (LFF) devices.
+     */
+    public static final PropertyModel.WritableBooleanPropertyKey CONTAINER_WRAPS_TILES =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                IS_VISIBLE, HORIZONTAL_INTERVAL_PADDINGS, HORIZONTAL_EDGE_PADDINGS,
+                IS_VISIBLE,
+                HORIZONTAL_INTERVAL_PADDINGS,
+                HORIZONTAL_EDGE_PADDINGS,
+                CONTAINER_WRAPS_TILES,
             };
 }

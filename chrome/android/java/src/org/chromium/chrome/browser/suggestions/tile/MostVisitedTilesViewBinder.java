@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.CONTAINER_WRAPS_TILES;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
 
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -36,6 +39,18 @@ final class MostVisitedTilesViewBinder {
             viewHolder.mvTilesLayout.setIntervalMargins(model.get(HORIZONTAL_INTERVAL_PADDINGS));
         } else if (HORIZONTAL_EDGE_PADDINGS == propertyKey) {
             viewHolder.mvTilesLayout.setEdgeMargins(model.get(HORIZONTAL_EDGE_PADDINGS));
+        } else if (CONTAINER_WRAPS_TILES == propertyKey) {
+            // False keeps the container's XML layout params, which are correct for every parent.
+            if (!model.get(CONTAINER_WRAPS_TILES)) return;
+
+            // Replace the XML's 0dp/weight 1 so the container hugs its tiles instead of filling the
+            // row, and stop the tiles from expanding their edge padding to the full width.
+            LinearLayout.LayoutParams layoutParams =
+                    (LinearLayout.LayoutParams) viewHolder.mvContainerLayout.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            layoutParams.weight = 0;
+            viewHolder.mvContainerLayout.setLayoutParams(layoutParams);
+            viewHolder.mvTilesLayout.setForceWrapTiles(true);
         }
     }
 }

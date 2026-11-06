@@ -34,6 +34,7 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
     private final @Px int mIntervalPaddingsTablet;
     private final @Px int mEdgePaddingsTablet;
     private final @Px int mTileViewDividerWidth;
+    private boolean mForceWrapTiles;
     private @Nullable Integer mTileToMoveInViewIdx;
     private @Nullable Runnable mTriggerIphTask;
     private @Nullable SuggestionsTileVerticalDivider mDivider;
@@ -123,18 +124,29 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
     }
 
     /**
+     * Sets whether this layout is forced to wrap its tiles on large form factor (LFF) devices,
+     * keeping the fixed tablet edge padding even when the tiles would fit with room to spare.
+     * Defaults to {@code false}. Bound from {@link
+     * MostVisitedTilesProperties#CONTAINER_WRAPS_TILES}.
+     */
+    void setForceWrapTiles(boolean forceWrapTiles) {
+        mForceWrapTiles = forceWrapTiles;
+    }
+
+    /**
      * Adjusts the edge margin of the tile elements when they are displayed in the center of the NTP
      * on large form factor (LFF) devices.
      *
      * @param totalWidth The width of the mv tiles container.
      */
     void updateEdgeMarginLff(int totalWidth) {
-        // If content fits within `totalWidth`, then return the required margin to center it. Else
-        // scrolling would be needed, so return a fixed margin for the scrolled content.
+        // Use the fixed padding if we're forced to wrap the tiles, or if there are too many tiles
+        // to fit (so scrolling is needed). Else there is free space to expand into, so expand the
+        // margin to center the content.
         int edgeMargin =
-                contentFitsOnLff(totalWidth)
-                        ? (totalWidth - getTabletContentWidth()) / 2
-                        : mEdgePaddingsTablet;
+                mForceWrapTiles || !contentFitsOnLff(totalWidth)
+                        ? mEdgePaddingsTablet
+                        : (totalWidth - getTabletContentWidth()) / 2;
         setEdgeMargins(edgeMargin);
     }
 

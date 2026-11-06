@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.CONTAINER_WRAPS_TILES;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
@@ -102,6 +103,9 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet);
 
         maybeSetPortraitIntervalPaddings();
+
+        // Only tablets in the beside-MVT layout wrap the container around its tiles.
+        mModel.set(CONTAINER_WRAPS_TILES, mIsLff && NewTabPageUtils.isBesideMvtModuleEnabled());
 
         addMostVisitedTilesVisibilityListener();
     }
