@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOv
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeActivitySnackbarHelperUnitTest {
@@ -222,6 +223,7 @@ public class ChromeActivitySnackbarHelperUnitTest {
         BottomSheetContent mockContent = mock(BottomSheetContent.class);
         when(mockContent.allowInSheetContentSnackbars()).thenReturn(true);
         when(mockContent.hasCustomScrimLifecycle()).thenReturn(false);
+        when(mockContent.getSheetType()).thenReturn(new BottomSheetType.Builder().build());
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mockContent);
 
         // HALF state -> push override
@@ -257,6 +259,8 @@ public class ChromeActivitySnackbarHelperUnitTest {
         BottomSheetContent mockContent = mock(BottomSheetContent.class);
         when(mockContent.allowInSheetContentSnackbars()).thenReturn(false);
         when(mockContent.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mockContent.getSheetType())
+                .thenReturn(new BottomSheetType.Builder().setModal(false).build());
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mockContent);
 
         // HALF state -> should not push override because not allowed
@@ -277,6 +281,8 @@ public class ChromeActivitySnackbarHelperUnitTest {
 
         BottomSheetContent mockContent = mock(BottomSheetContent.class);
         when(mockContent.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mockContent.getSheetType())
+                .thenReturn(new BottomSheetType.Builder().setModal(false).build());
         when(mockContent.allowInSheetContentSnackbars()).thenReturn(true);
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.HALF);
@@ -288,6 +294,8 @@ public class ChromeActivitySnackbarHelperUnitTest {
         // Switch to not allowed content -> pop override
         BottomSheetContent mockContent2 = mock(BottomSheetContent.class);
         when(mockContent2.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mockContent2.getSheetType())
+                .thenReturn(new BottomSheetType.Builder().setModal(false).build());
         when(mockContent2.allowInSheetContentSnackbars()).thenReturn(false);
         observer.onSheetContentChanged(mockContent2);
         verify(mSnackbarManager).popParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET));
