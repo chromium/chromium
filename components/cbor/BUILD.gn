@@ -6,6 +6,10 @@ import("//build/buildflag_header.gni")
 import("//build/config/cronet/config.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 buildflag_header("buildflags") {
   header = "cbor_buildflags.h"
 
@@ -94,10 +98,20 @@ source_set("unit_tests") {
   if (!is_cronet_build) {
     deps += [ "//components/cbor/rust:cbor_rust_unittests" ]
   }
+  if (is_ios) {
+    deps += [ ":unit_tests_bundle_data" ]
+  }
 
   data = [ "reader_fuzzer_corpus/" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("unit_tests_bundle_data") {
+    testonly = true
+    filelist_name = "unit_tests_bundle_data.filelist"
+  }
 }
