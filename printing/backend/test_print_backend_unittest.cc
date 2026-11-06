@@ -105,7 +105,6 @@ TEST_F(TestPrintBackendTest, EnumeratePrinters) {
 }
 
 TEST_F(TestPrintBackendTest, EnumeratePrintersNoneFound) {
-  const PrinterList kPrinterList{kAlternatePrinterInfo, kDefaultPrinterInfo};
   PrinterList printer_list;
 
   // Should return true even when there are no printers in the environment.
