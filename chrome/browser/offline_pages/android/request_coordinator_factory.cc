@@ -42,20 +42,21 @@ class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
   ~ActiveTabInfo() override = default;
   bool DoesActiveTabMatch(const GURL& url) override {
     // Loop through to find the active tab and report whether the URL matches.
-    for (const TabModel* model : TabModelList::models()) {
-      if (model->GetProfile() == profile_) {
-        content::WebContents* contents = model->GetActiveWebContents();
-        // Check visibility to make sure Chrome is in the foreground.
-        if (contents &&
-            contents->GetVisibility() == content::Visibility::VISIBLE) {
-          if (contents->GetVisibleURL() == url)
-            return true;
-          if (contents->GetLastCommittedURL() == url)
-            return true;
+    bool matched = false;
+    TabModelList::ForEach(profile_, [&](TabModel* model) {
+      content::WebContents* contents = model->GetActiveWebContents();
+      // Check visibility to make sure Chrome is in the foreground.
+      if (contents &&
+          contents->GetVisibility() == content::Visibility::VISIBLE) {
+        if (contents->GetVisibleURL() == url ||
+            contents->GetLastCommittedURL() == url) {
+          matched = true;
+          return false;
         }
       }
-    }
-    return false;
+      return true;
+    });
+    return matched;
   }
 
  private:
