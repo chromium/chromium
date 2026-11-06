@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -1462,6 +1463,55 @@ TEST(ListContainerTest, RefactorInternalAllocatorPointersRegression) {
   EXPECT_EQ(1u, list.size());
   EXPECT_EQ(42, list.front()->int_values[0]);
   EXPECT_EQ(42, list.back()->int_values[0]);
+}
+
+// The death tests below erase the same position twice, as happens when a
+// caller commits the same QuadList iterator twice. The second erase must hit a
+// CHECK instead of underflowing the std::copy() in InnerList::Erase() into a
+// wild memmove over the heap.
+//
+// They use NonDerivedElement because EraseAndInvalidateAllPointers() runs the
+// element's destructor before erasing. For a polymorphic element, the second
+// erase would make a virtual call on an already destroyed object, which MSan
+// reports (use-after-dtor) before the CHECK is reached. They also leave spare
+// capacity in the inner list, so that dereferencing the stale iterator doesn't
+// hit the DCHECK in InnerList::ElementAtOffset() first.
+TEST(ListContainerDeathTest, EraseFromEmptyListDies) {
+  ListContainer<NonDerivedElement> list(alignof(NonDerivedElement),
+                                        sizeof(NonDerivedElement), 2);
+  list.AllocateAndConstruct<NonDerivedElement>();
+  auto it = list.begin();
+  list.EraseAndInvalidateAllPointers(it);
+  ASSERT_TRUE(list.empty());
+  EXPECT_CHECK_DEATH(list.EraseAndInvalidateAllPointers(it));
+}
+
+TEST(ListContainerDeathTest, EraseFromEmptyInnerListDies) {
+  // The first inner list holds one element, so the second element goes into a
+  // second inner list, which this test empties while the list is not empty.
+  ListContainer<NonDerivedElement> list(alignof(NonDerivedElement),
+                                        sizeof(NonDerivedElement), 1);
+  list.AllocateAndConstruct<NonDerivedElement>();
+  list.AllocateAndConstruct<NonDerivedElement>();
+  auto it = list.begin();
+  ++it;
+  list.EraseAndInvalidateAllPointers(it);
+  ASSERT_EQ(1u, list.size());
+  EXPECT_CHECK_DEATH(list.EraseAndInvalidateAllPointers(it));
+}
+
+TEST(ListContainerDeathTest, ErasePastLastElementDies) {
+  ListContainer<NonDerivedElement> list(alignof(NonDerivedElement),
+                                        sizeof(NonDerivedElement), 4);
+  list.AllocateAndConstruct<NonDerivedElement>();
+  list.AllocateAndConstruct<NonDerivedElement>();
+  list.AllocateAndConstruct<NonDerivedElement>();
+  auto it = list.begin();
+  ++it;
+  ++it;
+  list.EraseAndInvalidateAllPointers(it);
+  ASSERT_EQ(2u, list.size());
+  EXPECT_CHECK_DEATH(list.EraseAndInvalidateAllPointers(it));
 }
 
 }  // namespace

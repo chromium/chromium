@@ -84,9 +84,12 @@ ConstOverlayProposedCandidateIterator MaybeAppendOccludingMaskCandidates(
       const auto& keys = test_candidates[i].occluding_mask_keys;
 
       // Append candidates with masks if they occludes any other overlay
-      // candidate in `test_candidates`.
+      // candidate in `test_candidates`. Append each mask candidate at most
+      // once: appending one copy per occluded candidate would make the
+      // commit loop erase the same quad from the QuadList multiple times.
       if (keys.contains(mask_key)) {
         test_candidates.push_back(*it);
+        break;
       }
     }
   }
