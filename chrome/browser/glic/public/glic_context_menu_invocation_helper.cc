@@ -134,14 +134,7 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
     return;
   }
-  tabs::PageContextEligibilityHelper* helper =
-      tabs::PageContextEligibilityHelper::From(
-          tabs::TabInterface::MaybeGetFromContents(web_contents));
-  if (!helper ||
-      helper->IsPageContextEligible() !=
-          optimization_guide::PageContextEligibilityStatus::kEligible) {
-    return;
-  }
+  // `ShowWithSelection()` checks page context eligibility.
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   if (!controller) {

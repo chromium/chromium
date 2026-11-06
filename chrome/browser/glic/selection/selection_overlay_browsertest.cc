@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/scoped_page_context_eligibility.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/selection/features.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,6 +44,7 @@
 #include "chrome/test/mojom/echo.test-mojom.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -71,6 +74,7 @@
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/network_change_notifier.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -256,6 +260,149 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   listener.WaitForBatches(1);
   EXPECT_TRUE(listener.actions().empty());
 }
+
+namespace {
+
+class SelectionOverlayEligibilityBrowserTest
+    : public SelectionOverlayBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    SelectionOverlayBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+ protected:
+  tabs::TabInterface* CreateTabWithEligibility(
+      const GURL& url,
+      optimization_guide::PageContextEligibilityStatus expected) {
+    tabs::TabInterface* tab = CreateAndActivateTab(url);
+    CHECK(content::ExecJs(
+        tab->GetContents(),
+        content::JsReplace("const f = document.createElement('iframe');"
+                           "f.src = $1;"
+                           "document.body.appendChild(f);",
+                           url)));
+    CHECK(content::WaitForLoadStop(tab->GetContents()));
+    auto* helper = tabs::PageContextEligibilityHelper::From(tab);
+    CHECK(helper);
+    CHECK(base::test::RunUntil([helper, expected]() {
+      return helper->IsPageContextEligible() == expected;
+    }));
+    return tab;
+  }
+
+  // Updates the subframe URL to an ineligible path and appends a child frame so
+  // `PageContextEligibilityObserver::RenderFrameCreated` re-evaluates
+  // eligibility immediately without navigating the primary main frame.
+  void MakePageIneligible(tabs::TabInterface* tab) {
+    content::ExecuteScriptAsync(
+        tab->GetContents(),
+        "window[0].history.replaceState(null, '', '/ineligible');"
+        "document.body.appendChild(document.createElement('iframe'));");
+  }
+
+ private:
+  ScopedPageContextEligibilityForTesting scoped_eligibility_;
+};
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayEligibilityBrowserTest,
+                       ShowRejectedOnIneligiblePage) {
+  tabs::TabInterface* tab = CreateTabWithEligibility(
+      embedded_test_server()->GetURL("ineligible.example.com", "/title1.html"),
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayEligibilityBrowserTest,
+                       ClosesWhenEligibilityLostDuringFetch) {
+  tabs::TabInterface* tab = CreateTabWithEligibility(
+      GetSimpleTestUrl(),
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+
+  optimization_guide::NoResponseAIPageContentAgent slow_apc_agent(
+      tab->GetContents()->GetPrimaryMainFrame());
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_EQ(controller->state(),
+            SelectionOverlayController::State::kScreenshot);
+  ASSERT_FALSE(controller->HasPageContextForTesting());
+
+  MakePageIneligible(tab);
+
+  EXPECT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOff;
+  }));
+  EXPECT_FALSE(controller->HasPageContextForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayEligibilityBrowserTest,
+                       ClosesWhenEligibilityLostAfterFetch) {
+  tabs::TabInterface* tab = CreateTabWithEligibility(
+      GetSimpleTestUrl(),
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOverlay &&
+           controller->HasPageContextForTesting();
+  }));
+
+  MakePageIneligible(tab);
+
+  EXPECT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOff;
+  }));
+}
+
+// The helper stops observing a backgrounded tab, so a page that becomes
+// ineligible in the background is caught when the tab is activated again.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayEligibilityBrowserTest,
+                       ClosesWhenIneligibleOnReturnFromBackground) {
+  tabs::TabInterface* tab = CreateTabWithEligibility(
+      GetSimpleTestUrl(),
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOverlay &&
+           controller->HasPageContextForTesting();
+  }));
+
+  CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_EQ(controller->state(),
+            SelectionOverlayController::State::kBackground);
+  ASSERT_TRUE(content::ExecJs(
+      tab->GetContents(),
+      "window[0].history.replaceState(null, '', '/ineligible');"));
+  ASSERT_EQ(controller->state(),
+            SelectionOverlayController::State::kBackground);
+
+  GetTabListInterface()->ActivateTab(tab->GetHandle());
+
+  EXPECT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOff;
+  }));
+}
+
+}  // namespace
 
 class SelectionOverlayPromptBrowserTest : public GlicBrowserTest {
  public:
@@ -2255,6 +2402,12 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
   EXPECT_FALSE(controller->GetPrewarmInteractionOptions());
 
   GetTabListInterface()->ActivateTab(tab->GetHandle());
+  auto* eligibility_helper = tabs::PageContextEligibilityHelper::From(tab);
+  ASSERT_TRUE(eligibility_helper);
+  ASSERT_TRUE(base::test::RunUntil([eligibility_helper]() {
+    return eligibility_helper->IsPageContextEligible() ==
+           optimization_guide::PageContextEligibilityStatus::kEligible;
+  }));
   base::WeakPtr<content::WebContents> prewarmed =
       PrewarmAndWait(controller, options);
   ASSERT_TRUE(prewarmed);

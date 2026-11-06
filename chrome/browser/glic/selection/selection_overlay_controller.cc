@@ -40,12 +40,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
@@ -363,6 +365,18 @@ void SelectionOverlayController::ObserveSidePanelState() {
   session_->side_panel_state_subscription = coordinator->AddStateCallback(
       base::BindRepeating(&SelectionOverlayController::OnSidePanelStateChanged,
                           session_weak_factory_.GetWeakPtr()));
+}
+
+void SelectionOverlayController::ObservePageContextEligibility() {
+  auto* helper = tabs::PageContextEligibilityHelper::From(tab_);
+  if (!helper) {
+    session_->eligibility_subscription = base::CallbackListSubscription();
+    return;
+  }
+  session_->eligibility_subscription =
+      helper->RegisterEligibilityChangeCallback(base::BindRepeating(
+          &SelectionOverlayController::OnPageContextEligibilityChanged,
+          session_weak_factory_.GetWeakPtr()));
 }
 
 void SelectionOverlayController::OnSidePanelStateChanged(
@@ -717,6 +731,10 @@ bool SelectionOverlayController::CanStartSession() {
     LOG(ERROR) << "Tab has active actuation task: " << web_contents->GetURL();
     return false;
   }
+  if (!IsPageContextEligible()) {
+    LOG(ERROR) << "Page context is not eligible for " << web_contents->GetURL();
+    return false;
+  }
   // `ShowModalUI()` silently returns when this fails, which would leave the
   // state staged by the caller behind while the controller is still `kOff`.
   if (!CanShowModalUI()) {
@@ -762,6 +780,7 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
   }
   ObserveActiveTabChanges();
   ObserveSidePanelState();
+  ObservePageContextEligibility();
   if (GlicSidePanelCoordinator::IsShowing(tab_)) {
     // The panel is already open (e.g. the context menu doesn't check), so it
     // won't open mid-session. Hand the session to it now.
@@ -1041,6 +1060,23 @@ void SelectionOverlayController::SetScreenshot(const SkBitmap& screenshot,
   session_->initial_rgb_screenshot = std::move(rgb_screenshot);
   session_->screenshot_available = true;
   InitializeOverlay();
+}
+
+bool SelectionOverlayController::IsPageContextEligible() const {
+  auto* helper = tabs::PageContextEligibilityHelper::From(tab_);
+  return helper &&
+         helper->IsPageContextEligible() ==
+             optimization_guide::PageContextEligibilityStatus::kEligible;
+}
+
+void SelectionOverlayController::OnPageContextEligibilityChanged(
+    optimization_guide::PageContextEligibilityStatus status) {
+  // `kUnknown` comes from tab switches and navigations, which
+  // `TabDeactivated()` and `NotifyPageNavigated()` already handle.
+  if (status ==
+      optimization_guide::PageContextEligibilityStatus::kNotEligible) {
+    Close();
+  }
 }
 
 bool SelectionOverlayController::IsResultsSidePanelShowing() {

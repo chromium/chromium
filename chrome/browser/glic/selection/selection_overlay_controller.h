@@ -49,6 +49,10 @@ class WebView;
 
 class BrowserWindowInterface;
 
+namespace optimization_guide {
+enum class PageContextEligibilityStatus;
+}  // namespace optimization_guide
+
 namespace glic {
 
 class FocusedTabData;
@@ -167,6 +171,9 @@ class SelectionOverlayController
   // Subscribes to the Glic side panel state for `tab_` for the length of the
   // session, and forwards changes to the overlay.
   void ObserveSidePanelState();
+  // Subscribes to page context eligibility for `tab_` for the length of the
+  // session. See `OnPageContextEligibilityChanged()`.
+  void ObservePageContextEligibility();
   void OnSidePanelStateChanged(GlicSidePanelCoordinator::State state);
   // Binds the web client's end of the session. See
   // `Session::capture_region_observer`.
@@ -240,6 +247,9 @@ class SelectionOverlayController
       base::expected<glic::mojom::GetContextResultPtr,
                      page_content_annotations::FetchPageContextErrorDetails>
           fetch_result);
+  bool IsPageContextEligible() const;
+  void OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus status);
 
   void SetScreenshot(const SkBitmap& screenshot, SkBitmap rgb_screenshot);
 
@@ -392,6 +402,8 @@ class SelectionOverlayController
     // Subscription to the Glic side panel state for `tab_`, so the overlay
     // learns when the panel opens or closes.
     base::CallbackListSubscription side_panel_state_subscription;
+    // Closes the session if the page becomes ineligible for context sharing.
+    base::CallbackListSubscription eligibility_subscription;
   };
   // Never null.
   std::unique_ptr<Session> session_ = std::make_unique<Session>(this);
