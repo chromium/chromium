@@ -799,7 +799,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     payments_churned_users_bubble_controller_ =
         GetUserDataFactory()
             .CreateInstance<autofill::PaymentsChurnedUsersBubbleController>(
-                tab, tab, tab.GetContents());
+                tab, &tab);
   }
 
   if (page_action_controller_->ActionExists(kActionWalletReminderNotice)) {
@@ -1747,7 +1747,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     payments_churned_users_bubble_controller_ =
         GetUserDataFactory()
             .CreateInstance<autofill::PaymentsChurnedUsersBubbleController>(
-                *tab, *tab, new_contents);
+                *tab, tab);
   }
 
   if (wallet_reminder_notice_bubble_controller_) {

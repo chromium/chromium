@@ -32,8 +32,7 @@ class PaymentsChurnedUsersBubbleController
   DECLARE_USER_DATA(PaymentsChurnedUsersBubbleController);
 
   explicit PaymentsChurnedUsersBubbleController(
-      tabs::TabInterface& tab_interface,
-      content::WebContents* web_contents);
+      tabs::TabInterface* tab_interface);
   PaymentsChurnedUsersBubbleController(
       const PaymentsChurnedUsersBubbleController&) = delete;
   PaymentsChurnedUsersBubbleController& operator=(
@@ -55,7 +54,7 @@ class PaymentsChurnedUsersBubbleController
   void OnAcceptButton();
   void ShowConfirmationBubbleView();
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-  GetConfirmationUiParams() const;
+  GetConfirmationUiParams();
   base::OnceCallback<void(PaymentsUiClosedReason)>
   GetConfirmationBubbleClosedCallback();
   base::WeakPtr<PaymentsChurnedUsersBubbleController> GetWeakPtr();

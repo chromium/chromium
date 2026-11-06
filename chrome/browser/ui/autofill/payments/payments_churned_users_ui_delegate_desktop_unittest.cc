@@ -25,9 +25,8 @@ class MockPaymentsChurnedUsersBubbleController
     : public PaymentsChurnedUsersBubbleController {
  public:
   explicit MockPaymentsChurnedUsersBubbleController(
-      tabs::TabInterface& tab_interface,
-      content::WebContents* web_contents)
-      : PaymentsChurnedUsersBubbleController(tab_interface, web_contents) {}
+      tabs::TabInterface* tab_interface)
+      : PaymentsChurnedUsersBubbleController(tab_interface) {}
   ~MockPaymentsChurnedUsersBubbleController() override = default;
 
   MOCK_METHOD(void,
@@ -49,12 +48,14 @@ class PaymentsChurnedUsersUiDelegateDesktopTest
 
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                          &mock_tab_interface_);
+    ON_CALL(mock_tab_interface_, GetContents())
+        .WillByDefault(testing::Return(web_contents()));
     ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(tab_unowned_user_data_host_));
 
     bubble_controller_ =
         std::make_unique<MockPaymentsChurnedUsersBubbleController>(
-            mock_tab_interface_, web_contents());
+            &mock_tab_interface_);
 
     client_ = std::make_unique<TestContentAutofillClient>(web_contents());
     delegate_ =

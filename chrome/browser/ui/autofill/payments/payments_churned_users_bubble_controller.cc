@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -26,11 +27,11 @@ namespace autofill {
 DEFINE_USER_DATA(PaymentsChurnedUsersBubbleController);
 
 PaymentsChurnedUsersBubbleController::PaymentsChurnedUsersBubbleController(
-    tabs::TabInterface& tab_interface,
-    content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
-      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
-}
+    tabs::TabInterface* tab_interface)
+    : AutofillBubbleControllerBase(tab_interface),
+      scoped_unowned_user_data_(
+          CHECK_DEREF(tab_interface).GetUnownedUserDataHost(),
+          *this) {}
 
 PaymentsChurnedUsersBubbleController::~PaymentsChurnedUsersBubbleController() {
   HideBubble(/*initiated_by_bubble_manager=*/false);
@@ -139,20 +140,18 @@ void PaymentsChurnedUsersBubbleController::ShowConfirmationBubbleView() {
 }
 
 SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-PaymentsChurnedUsersBubbleController::GetConfirmationUiParams() const {
+PaymentsChurnedUsersBubbleController::GetConfirmationUiParams() {
   return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
       CreateForChurnedUsersAcceptanceSuccess(base::BindRepeating(
-          [](content::WebContents* web_contents) {
+          [](tabs::TabInterface* tab) {
 #if !BUILDFLAG(IS_ANDROID)
-            tabs::TabInterface* tab =
-                tabs::TabInterface::GetFromContents(web_contents);
             if (tab && tab->GetBrowserWindowInterface()) {
               chrome::ShowSettingsSubPage(tab->GetBrowserWindowInterface(),
                                           chrome::kPaymentsSubPage);
             }
 #endif
           },
-          web_contents()));
+          GetTabInterface()));
 }
 
 base::OnceCallback<void(PaymentsUiClosedReason)>
