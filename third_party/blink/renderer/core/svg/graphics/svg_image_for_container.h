@@ -157,7 +157,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
 
   void DestroyDecodedData() override {}
 
-  SVGImage& image_;
+  const scoped_refptr<SVGImage> image_;
   Persistent<const SVGImageViewInfo> viewinfo_;
   const gfx::SizeF container_size_;
   const float zoom_;
