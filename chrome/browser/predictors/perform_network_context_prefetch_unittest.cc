@@ -14,7 +14,6 @@
 
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_command_line.h"
@@ -163,9 +162,6 @@ class PerformNetworkContextPrefetchRecorderTest : public testing::Test {
   // IO_MAINLOOP is needed for the EmbeddedTestServer.
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
-  // Silences warnings about a missing registry, which impedes tests using
-  // MockLog.
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<TestingProfile> profile_;

@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
@@ -609,7 +608,6 @@ class FrameSchedulerImplTest : public testing::Test {
         {GetUnreportedTaskTime()});
   }
 
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList feature_list_;
   TaskEnvironmentWithMockMainThreadScheduler task_environment_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;

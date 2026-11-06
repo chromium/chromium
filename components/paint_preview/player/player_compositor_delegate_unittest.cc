@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -279,8 +278,6 @@ class PlayerCompositorDelegateTest : public testing::Test {
         }));
     loop.Run();
   }
-
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::TaskEnvironment env{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
