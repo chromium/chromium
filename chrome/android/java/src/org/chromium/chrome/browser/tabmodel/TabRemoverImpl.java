@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.background_tabs.ActorServiceTabUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
@@ -407,10 +408,16 @@ public class TabRemoverImpl implements TabRemover {
                         if (params.undoRunnable != null) {
                             params.undoRunnable.run();
                         }
+                        // Under the undoable closure rework, undo is served from recently closed
+                        // entries, so closing the placeholders must not add a recently closed
+                        // entry of its own.
+                        boolean savePlaceholders =
+                                !ChromeFeatureList.sUndoableTabClosureRework.isEnabled();
                         tabModel.getTabRemover()
                                 .forceCloseTabs(
                                         TabClosureParams.closeTabs(placeholderTabs)
                                                 .allowUndo(false)
+                                                .saveToTabRestoreService(savePlaceholders)
                                                 .build());
                     };
         }

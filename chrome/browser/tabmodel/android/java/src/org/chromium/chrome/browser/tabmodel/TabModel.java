@@ -135,7 +135,10 @@ public interface TabModel extends TabList {
      */
     boolean isClosurePending(@TabId int tabId);
 
-    /** Commits all pending closures, closing all tabs that had a chance to be undone. */
+    /**
+     * Commits all pending closures, closing all tabs that had a chance to be undone, and notifies
+     * observers to dismiss any active undo affordances.
+     */
     void commitAllTabClosures();
 
     /**
