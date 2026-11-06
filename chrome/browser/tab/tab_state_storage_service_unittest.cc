@@ -11,17 +11,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/node_hash_cache.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/storage_collection_synchronizer.h"
 #include "chrome/browser/tab/storage_id.h"
-#include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -87,31 +83,6 @@ class TestTabStoragePackager : public TabStoragePackager {
   int package_tab_strip_count_ = 0;
 };
 
-class TestRestoreEntityTracker : public RestoreEntityTracker {
- public:
-  TestRestoreEntityTracker() = default;
-  ~TestRestoreEntityTracker() override = default;
-
-  void SetLoadingContext(StorageLoadingContext* context) override {}
-  void RegisterCollection(StorageId storage_id,
-                          TabStorageType type,
-                          const tabs_pb::Children& children,
-                          std::optional<base::Token> collection_specific_id,
-                          base::PassKey<TabStateStorageDatabase>) override {}
-  void RegisterTab(StorageId storage_id,
-                   const tabs_pb::TabState& tab_state,
-                   base::PassKey<TabStateStorageDatabase>) override {}
-  bool AssociateTab(const TabInterface* tab) override { return true; }
-  bool AssociateCollection(const TabCollection* collection) override {
-    return true;
-  }
-  bool HasTabBeenAssociated(const TabInterface* tab) override { return true; }
-  bool HasCollectionBeenAssociated(TabCollection::Handle handle) override {
-    return true;
-  }
-  bool HasNothingToAssociate() override { return true; }
-};
-
 class TabStateStorageServiceTest : public ::testing::Test {
  public:
   TabStateStorageServiceTest() = default;
@@ -124,7 +95,7 @@ class TabStateStorageServiceTest : public ::testing::Test {
     RestoreEntityTrackerFactory tracker_factory = base::BindRepeating(
         [](OnTabAssociation,
            OnCollectionAssociation) -> std::unique_ptr<RestoreEntityTracker> {
-          return std::make_unique<TestRestoreEntityTracker>();
+          return nullptr;
         });
 
     service_ = std::make_unique<TabStateStorageService>(
@@ -459,32 +430,6 @@ TEST_F(TabStateStorageServiceTest,
   FlushOperations();
   EXPECT_TRUE(batched_callback_executed);
   EXPECT_EQ(1, packager()->package_tab_strip_count());
-}
-
-TEST_F(TabStateStorageServiceTest, LoadAllNodes_RunsBackgroundTransform) {
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner =
-      base::SingleThreadTaskRunner::GetCurrentDefault();
-  base::RunLoop run_loop;
-  bool ran_off_ui_thread = false;
-  bool ui_closure_executed = false;
-
-  service()->LoadAllNodes(
-      "test_window", /*is_off_the_record=*/false,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<StorageLoadedData> loaded_data)
-              -> base::OnceClosure {
-            ran_off_ui_thread = !ui_task_runner->BelongsToCurrentThread();
-            EXPECT_NE(nullptr, loaded_data);
-            return base::BindLambdaForTesting([&]() {
-              EXPECT_TRUE(ui_task_runner->BelongsToCurrentThread());
-              ui_closure_executed = true;
-              run_loop.Quit();
-            });
-          }));
-  run_loop.Run();
-
-  EXPECT_TRUE(ran_off_ui_thread);
-  EXPECT_TRUE(ui_closure_executed);
 }
 
 }  // namespace

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 
-#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -99,10 +98,10 @@ void TabStateStorageBackend::LoadAllNodes(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::LoadAllNodes,
                      base::Unretained(database_.get()), std::string(window_tag),
-                     is_off_the_record, std::move(builder))
-          .Then(std::move(on_storage_loaded_data)),
+                     is_off_the_record, std::move(builder)),
       base::BindOnce(&TabStateStorageBackend::OnLoadDone,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(on_storage_loaded_data)));
 }
 
 void TabStateStorageBackend::CountTabsForWindow(
@@ -217,11 +216,11 @@ void TabStateStorageBackend::DecrementBoostCounter() {
   }
 }
 
-void TabStateStorageBackend::OnLoadDone(base::OnceClosure on_load_done) {
+void TabStateStorageBackend::OnLoadDone(
+    OnStorageLoadedData on_storage_loaded_data,
+    std::unique_ptr<StorageLoadedData> storage_loaded_data) {
   DecrementBoostCounter();
-  if (on_load_done) {
-    std::move(on_load_done).Run();
-  }
+  std::move(on_storage_loaded_data).Run(std::move(storage_loaded_data));
 }
 
 }  // namespace tabs

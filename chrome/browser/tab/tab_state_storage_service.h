@@ -45,7 +45,8 @@ class TabStateStorageService : public KeyedService,
                                public base::SupportsUserData,
                                public StorageIdMapping {
  public:
-  using LoadDataCallback = TabStateStorageBackend::OnStorageLoadedData;
+  using LoadDataCallback =
+      base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
   using CountTabsForWindowCallback = base::OnceCallback<void(int)>;
 
   // A scoped helper to batch storage operations. All operations performed on
@@ -124,9 +125,6 @@ class TabStateStorageService : public KeyedService,
   void Remove(const TabCollection* collection);
   void Remove(StorageId id);
 
-  // Loads all nodes for `window_tag` and `is_off_the_record`. `callback` runs
-  // on the background DB sequence to package the loaded data and returns a
-  // closure that runs on the UI sequence once loading completes.
   void LoadAllNodes(std::string_view window_tag,
                     bool is_off_the_record,
                     LoadDataCallback callback);

@@ -67,10 +67,12 @@ public class TabStateExtractor {
         LoadUrlParams pendingLoadParams = tab.getPendingLoadParams();
 
         // Case 1: The tab is still frozen we can just use the existing state.
-        WebContentsState existingState = tab.getWebContentsState();
-        if (existingState != null) {
+        if (tab.getWebContentsState() != null) {
             assert pendingLoadParams == null;
-            return existingState;
+            // Instantiate a new reference-counted handle to the underlying PackedData so the
+            // extracted state's lifecycle is decoupled from the source tab. Otherwise, destroying
+            // the source tab (e.g. on close or unarchive) would free the shared native buffer.
+            return new WebContentsState(tab.getWebContentsState());
         }
 
         // The tab is not frozen we need to create a new state. This may be null if buffer
@@ -90,13 +92,12 @@ public class TabStateExtractor {
         // Case 3: There was a pending load, and we have a state from the WebContents, we can append
         // the pending load to the state and use it.
         if (webContentsState != null) {
-            WebContentsState appendedState =
-                    webContentsState.appendPendingNavigation(
-                            tab.getProfile(),
-                            tab.getTitle(),
-                            pendingLoadParams,
-                            /* trackLastEntryWasPending= */ false);
-            return appendedState != null ? appendedState : webContentsState;
+            webContentsState.appendPendingNavigation(
+                    tab.getProfile(),
+                    tab.getTitle(),
+                    pendingLoadParams,
+                    /* trackLastEntryWasPending= */ false);
+            return webContentsState;
         }
 
         // Case 4: We have a pending load but no state from the WebContents, we can create a new

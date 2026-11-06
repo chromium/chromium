@@ -83,7 +83,7 @@ public class ColdBackgroundTabTest {
     }
 
     @Test
-    public void testAttachTab_createsFrozenTabWithOriginalTabIdAndClearsPlaceholderState() {
+    public void testAttachTab_createsFrozenTabWithOriginalTabIdAndDestroysPlaceholderState() {
         Token placeholderGroupToken = new Token(3L, 4L);
         TabState placeholderState = new TabState();
         placeholderState.contentsState = mPlaceholderContentsState;
@@ -109,7 +109,7 @@ public class ColdBackgroundTabTest {
         verify(mTabCreator)
                 .createFrozenTab(
                         eq(mBackgroundTabState), eq(ORIGINAL_TAB_ID), eq(DESTINATION_INDEX));
-        assertNull(placeholderState.contentsState);
+        verify(mPlaceholderContentsState).destroy();
     }
 
     @Test
@@ -135,7 +135,7 @@ public class ColdBackgroundTabTest {
     }
 
     @Test
-    public void testDestroy_clearsWebContentsState() {
+    public void testDestroy_destroysWebContentsState() {
         ColdBackgroundTab tab =
                 new ColdBackgroundTab(
                         mBackgroundTabPool,
@@ -145,6 +145,7 @@ public class ColdBackgroundTabTest {
 
         tab.destroy();
 
+        verify(mBackgroundContentsState).destroy();
         assertNull(mBackgroundTabState.contentsState);
     }
 

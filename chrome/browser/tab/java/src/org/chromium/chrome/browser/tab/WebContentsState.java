@@ -10,6 +10,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,7 +25,7 @@ import java.nio.ByteBuffer;
 
 /** Contains the state for a {@link WebContents}. */
 @NullMarked
-public class WebContentsState {
+public class WebContentsState implements Destroyable {
     /** Version number used to denote an invalid buffer. */
     public static final int INVALID_BUFFER_VERSION = -1;
 
@@ -41,19 +44,88 @@ public class WebContentsState {
 
     private static @Nullable WebContentsState sEmptyWebContentsState;
 
-    /**
-     * mBuffer should not be modified once it is set. Also, it is required to be a "direct" buffer
-     * which is allocated outside the JVM heap, so that it can be accessed via the JNI direct buffer
-     * methods, which means it has to be allocated with ByteBuffer.allocateDirect() or similar.
-     */
-    private final ByteBuffer mBuffer;
+    /** A packed (pickle) representation of the navigation entries for a {@link WebContents}. */
+    private static class PackedData implements Destroyable {
+        private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+        private int mRefCount = 1;
 
-    private final int mVersion;
-    private final boolean mLastEntryWasPending;
-    private boolean mMetadataLoaded;
-    // Cached metadata extracted from the buffer. Accessed only on the UI thread.
-    private @Nullable WebContentsStateMetadata mMetadata;
-    private @Nullable String mFallbackUrlForRestorationFailure;
+        /**
+         * mBuffer should not be modified once it is set. Also, it is required to be a "direct"
+         * buffer which is allocated outside the JVM heap, so that it can be accessed via the JNI
+         * direct buffer methods, which means it has to be allocated with
+         * ByteBuffer.allocateDirect() or similar.
+         */
+        private final ByteBuffer mBuffer;
+
+        private final int mVersion;
+        private final boolean mLastEntryWasPending;
+        private long mNativeStringPointer;
+
+        /**
+         * @param buffer The buffer for the WebContentsState.
+         * @param version The version of the WebContentsState.
+         * @param nativeStringPointer The native string pointer for the buffer, may be 0 if the
+         *     buffer is allocated in Java.
+         * @param lastEntryWasPending Whether the last entry in the WebContentsState was for a
+         *     pending load.
+         */
+        public PackedData(
+                ByteBuffer buffer,
+                int version,
+                boolean lastEntryWasPending,
+                long nativeStringPointer) {
+            assert buffer.isDirect();
+            mBuffer = buffer;
+            mVersion = version;
+            mLastEntryWasPending = lastEntryWasPending;
+            mNativeStringPointer = nativeStringPointer;
+            // There is no need to assert here as the buffer is allocated in Java.
+            if (mNativeStringPointer == 0) {
+                LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+            }
+        }
+
+        /** Returns the buffer for the WebContentsState. */
+        public ByteBuffer buffer() {
+            return mBuffer;
+        }
+
+        /** Returns the version of the WebContentsState. */
+        public int version() {
+            return mVersion;
+        }
+
+        /** Returns whether the last entry in the WebContentsState was a pending load. */
+        public boolean lastEntryWasPending() {
+            return mLastEntryWasPending;
+        }
+
+        /** Increments reference count for shared instances. */
+        public void acquire() {
+            ThreadUtils.assertOnUiThread();
+            assert mRefCount > 0 : "Cannot acquire a destroyed PackedData";
+            mRefCount++;
+        }
+
+        /** Destroys the native string pointer. */
+        @Override
+        public void destroy() {
+            ThreadUtils.assertOnUiThread();
+            assert mRefCount > 0 : "Underflow in PackedData ref count";
+            mRefCount--;
+            if (mRefCount == 0) {
+                if (mNativeStringPointer != 0) {
+                    WebContentsStateJni.get().freeStringPointer(mNativeStringPointer);
+                    mNativeStringPointer = 0;
+                    LifetimeAssert.destroy(mLifetimeAssert);
+                }
+            }
+        }
+
+        int getRefCountForTesting() {
+            return mRefCount;
+        }
+    }
 
     /**
      * Metadata extracted from the serialized WebContentsState buffer. Contains essential
@@ -99,6 +171,14 @@ public class WebContentsState {
             boolean isOffTheRecord) {
         return new WebContentsStateMetadata(title, virtualUrl, isOffTheRecord);
     }
+
+    // Cached metadata extracted from the buffer. Access is restricted to the UI thread.
+    private @Nullable WebContentsStateMetadata mMetadata;
+    private boolean mMetadataLoaded;
+    private PackedData mPackedData;
+    private boolean mIsDestroyed;
+
+    private @Nullable String mFallbackUrlForRestorationFailure;
 
     /**
      * Returns the {@link WebContents}' state as a {@link WebContentsState}.
@@ -147,53 +227,89 @@ public class WebContentsState {
     }
 
     /**
-     * Creates a {@link WebContentsState} wrapping {@code buffer}.
-     *
-     * @param buffer The buffer to use for the {@link WebContentsState}. Must be a direct buffer
-     *     whose contents are never mutated in place once wrapped.
+     * @param buffer The buffer to use for the {@link WebContentsState}.
      * @param version The version of the {@link WebContentsState}.
      */
     public WebContentsState(ByteBuffer buffer, int version) {
-        this(buffer, version, /* lastEntryWasPending= */ false, /* fallbackUrl= */ null);
-    }
-
-    private WebContentsState(
-            ByteBuffer buffer,
-            int version,
-            boolean lastEntryWasPending,
-            @Nullable String fallbackUrl) {
-        assert buffer.isDirect();
-        mBuffer = buffer;
-        mVersion = version;
-        mLastEntryWasPending = lastEntryWasPending;
-        mFallbackUrlForRestorationFailure = fallbackUrl;
+        mPackedData =
+                new PackedData(
+                        buffer,
+                        version,
+                        /* lastEntryWasPending= */ false,
+                        /* nativeStringPointer= */ 0);
     }
 
     /**
-     * Returns the direct buffer for the {@link WebContentsState}. Callers must treat the buffer as
-     * immutable, never mutating underlying bytes or cursor/order state ({@code position()}, {@code
-     * limit()}, {@code order()}), as background persistence threads read the backing memory
-     * concurrently via JNI ({@code asReadOnlyBuffer()} cannot be used because Android ART's {@code
-     * GetDirectBufferAddress} rejects read-only direct buffers).
+     * @param buffer The buffer to use for the {@link WebContentsState}.
+     * @param version The version of the {@link WebContentsState}.
+     * @param nativeStringPointer The native string pointer for the buffer, may be 0 if the buffer
+     *     is allocated in Java.
      */
+    public WebContentsState(ByteBuffer buffer, int version, long nativeStringPointer) {
+        mPackedData =
+                new PackedData(
+                        buffer, version, /* lastEntryWasPending= */ false, nativeStringPointer);
+    }
+
+    /**
+     * Copy constructor that creates a new {@link WebContentsState} sharing the underlying {@link
+     * PackedData} buffer with reference counting.
+     *
+     * @param other The existing WebContentsState to copy.
+     */
+    public WebContentsState(WebContentsState other) {
+        ThreadUtils.assertOnUiThread();
+        assert !other.mIsDestroyed : "Cannot copy a destroyed WebContentsState";
+        mPackedData = other.mPackedData;
+        mPackedData.acquire();
+        mFallbackUrlForRestorationFailure = other.mFallbackUrlForRestorationFailure;
+        if (other.mMetadataLoaded) {
+            mMetadata = other.mMetadata;
+            mMetadataLoaded = true;
+        }
+    }
+
+    /** Destroys the {@link WebContentsState}. */
+    @Override
+    public void destroy() {
+        ThreadUtils.assertOnUiThread();
+        if (mIsDestroyed) {
+            return;
+        }
+        mIsDestroyed = true;
+        mPackedData.destroy();
+    }
+
+    /** Returns whether this {@link WebContentsState} has been destroyed. */
+    public boolean isDestroyed() {
+        return mIsDestroyed;
+    }
+
+    /** Returns the current reference count of the underlying packed data for testing. */
+    public int getRefCountForTesting() {
+        return mPackedData.getRefCountForTesting();
+    }
+
+    /** Returns the buffer for the {@link WebContentsState}. */
     public ByteBuffer buffer() {
-        return mBuffer;
+        return mPackedData.buffer();
     }
 
     /** Returns the version of the {@link WebContentsState}. */
     public int version() {
-        return mVersion;
+        return mPackedData.version();
     }
 
     /**
      * Returns the metadata for the {@link WebContentsState}, or null if it fails to extract. The
-     * metadata is extracted lazily on the first call and cached (must be called on the UI thread).
+     * metadata is extracted lazily on the first call and cached. Access is restricted to the UI
+     * thread.
      *
      * @return The extracted metadata, or null.
      */
     public @Nullable WebContentsStateMetadata getMetadata() {
-        if (!mMetadataLoaded && mVersion != INVALID_BUFFER_VERSION) {
-            mMetadata = WebContentsStateJni.get().getMetadata(mBuffer, mVersion);
+        if (!mMetadataLoaded && version() != INVALID_BUFFER_VERSION) {
+            mMetadata = WebContentsStateJni.get().getMetadata(buffer(), version());
             mMetadataLoaded = true;
         }
         return mMetadata;
@@ -218,7 +334,6 @@ public class WebContentsState {
 
     /** Set the URL to be loaded if restoring the serialized web content state fails. */
     public void setFallbackUrlForRestorationFailure(String fallbackUrlForRestorationFailure) {
-        assert this != sEmptyWebContentsState;
         mFallbackUrlForRestorationFailure = fallbackUrlForRestorationFailure;
     }
 
@@ -247,34 +362,32 @@ public class WebContentsState {
     public @Nullable WebContents restoreWebContents(
             Profile profile, boolean isHidden, boolean noRenderer) {
         return WebContentsStateJni.get()
-                .restoreContentsFromByteBuffer(profile, mBuffer, mVersion, isHidden, noRenderer);
+                .restoreContentsFromByteBuffer(profile, buffer(), version(), isHidden, noRenderer);
     }
 
     /**
-     * Returns a new {@link WebContentsState} without navigation entries matching the predicate, or
-     * null if no deletions happened.
+     * Deletes navigation entries from this {@link WebContentsState} matching the predicate.
      *
      * @param predicate Handle for a deletion predicate interpreted by native code. Only valid
      *     during this call frame.
-     * @return The updated {@link WebContentsState}, or null if no entries were deleted.
+     * @return Whether any deletions happened.
      */
-    public @Nullable WebContentsState deleteNavigationEntries(long predicate) {
+    public boolean deleteNavigationEntries(long predicate) {
         ByteBuffer newBuffer =
-                WebContentsStateJni.get().deleteNavigationEntries(mBuffer, mVersion, predicate);
-        return maybeCreateUpdatedState(newBuffer, mLastEntryWasPending);
+                WebContentsStateJni.get().deleteNavigationEntries(buffer(), version(), predicate);
+        return maybeSwapPackedData(newBuffer, mPackedData.lastEntryWasPending());
     }
 
     /**
-     * Returns a new {@link WebContentsState} with a pending navigation appended, or null if the
-     * operation failed.
+     * Appends a pending navigation to the {@link WebContentsState}.
      *
      * @param profile The profile used for the tab.
      * @param title The title to display.
      * @param loadUrlParams The load url params to use.
-     * @param trackLastEntryWasPending Whether to track whether the last entry was pending load.
-     * @return The updated {@link WebContentsState}, or null if appending failed.
+     * @param trackLastEntryWasPending Whether to track whether if the last entry was pending load.
+     * @return Whether the operation was successful.
      */
-    public @Nullable WebContentsState appendPendingNavigation(
+    public boolean appendPendingNavigation(
             Profile profile,
             @Nullable String title,
             LoadUrlParams loadUrlParams,
@@ -290,25 +403,30 @@ public class WebContentsState {
                 WebContentsStateJni.get()
                         .appendPendingNavigation(
                                 profile,
-                                mBuffer,
-                                mVersion,
-                                mLastEntryWasPending && trackLastEntryWasPending,
+                                buffer(),
+                                version(),
+                                mPackedData.lastEntryWasPending() && trackLastEntryWasPending,
                                 title,
                                 url,
                                 referrerUrl,
                                 referrerPolicy,
                                 initiatorOrigin);
-        return maybeCreateUpdatedState(buffer, /* lastEntryWasPending= */ trackLastEntryWasPending);
+        return maybeSwapPackedData(buffer, /* lastEntryWasPending= */ trackLastEntryWasPending);
     }
 
-    private @Nullable WebContentsState maybeCreateUpdatedState(
-            @Nullable ByteBuffer buffer, boolean lastEntryWasPending) {
-        if (buffer == null) return null;
-        return new WebContentsState(
-                buffer,
-                CONTENTS_STATE_CURRENT_VERSION,
-                lastEntryWasPending,
-                mFallbackUrlForRestorationFailure);
+    @VisibleForTesting
+    boolean maybeSwapPackedData(@Nullable ByteBuffer buffer, boolean lastEntryWasPending) {
+        if (buffer == null) return false;
+        mPackedData.destroy();
+        mPackedData =
+                new PackedData(
+                        buffer,
+                        CONTENTS_STATE_CURRENT_VERSION,
+                        lastEntryWasPending,
+                        /* nativeStringPointer= */ 0);
+        mMetadata = null;
+        mMetadataLoaded = false;
+        return true;
     }
 
     private static @Nullable WebContentsState maybeCreateNewWebContentsState(
@@ -354,5 +472,7 @@ public class WebContentsState {
                 @JniType("std::optional<url::Origin>") @Nullable Origin initiatorOrigin);
 
         @Nullable WebContentsStateMetadata getMetadata(ByteBuffer buffer, int version);
+
+        void freeStringPointer(long stringPointer);
     }
 }

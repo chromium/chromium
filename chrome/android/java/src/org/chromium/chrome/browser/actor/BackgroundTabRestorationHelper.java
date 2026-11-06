@@ -151,8 +151,8 @@ public final class BackgroundTabRestorationHelper {
      * @param selector The {@link TabModelSelector} managing tab models.
      * @param placeholderTabId The placeholder tab ID of the background tab to restore.
      * @param index The index to insert the restored tab into the model.
-     * @param tabState Optional placeholder {@link TabState} whose WebContentsState reference will
-     *     be cleared upon attachment.
+     * @param tabState Optional placeholder {@link TabState} whose WebContentsState will be
+     *     destroyed upon attachment.
      * @param isAuthoritativeStore Whether the caller is an authoritative store.
      * @return The restored {@link Tab}, or null if not found or restoration failed.
      */
@@ -186,7 +186,8 @@ public final class BackgroundTabRestorationHelper {
                             ? backgroundTab.attachTab(model, index, tabState)
                             : backgroundTab.attachTab(model, index);
             long durationMs = TimeUtils.uptimeMillis() - startTimeMs;
-            if (tabState != null) {
+            if (tabState != null && tabState.contentsState != null) {
+                tabState.contentsState.destroy();
                 tabState.contentsState = null;
             }
             if (restoredTab != null) {

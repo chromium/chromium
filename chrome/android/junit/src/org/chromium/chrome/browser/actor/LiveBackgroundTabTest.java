@@ -112,7 +112,7 @@ public class LiveBackgroundTabTest {
     }
 
     @Test
-    public void testAttachTab_withPlaceholderState_clearsContentsStateAndTransfersMetadata() {
+    public void testAttachTab_withPlaceholderState_destroysContentsStateAndTransfersMetadata() {
         mLiveBackgroundTab =
                 new LiveBackgroundTab(
                         mPool,
@@ -131,6 +131,7 @@ public class LiveBackgroundTabTest {
 
         assertSame(mTab, attached);
         verify(mTab).setTabGroupId(placeholderGroupToken);
+        verify(mPlaceholderContentsState).destroy();
         assertNull(placeholderState.contentsState);
         verify(mTabModel).pinTab(TAB_ID, /* showUngroupDialog= */ false);
         verify(mTabModel).moveTab(TAB_ID, 2);

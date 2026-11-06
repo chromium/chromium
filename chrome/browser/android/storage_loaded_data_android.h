@@ -20,34 +20,26 @@ namespace tabs {
 // Android wrapper for StorageLoadedData.
 class StorageLoadedDataAndroid {
  public:
+  explicit StorageLoadedDataAndroid(JNIEnv* env,
+                                    std::unique_ptr<StorageLoadedData> data);
   ~StorageLoadedDataAndroid();
 
   StorageLoadedDataAndroid(const StorageLoadedDataAndroid&) = delete;
   StorageLoadedDataAndroid& operator=(const StorageLoadedDataAndroid&) = delete;
 
-  // Marshals `data` into a new Java `StorageLoadedData` owning a
-  // `StorageLoadedDataAndroid` peer via `JniUniquePtr`.
-  static base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
-      JNIEnv* env,
-      std::unique_ptr<StorageLoadedData> data);
+  void OnTabRejected(JNIEnv* env, int tab_android_id);
 
-  // Destroys the Java StorageLoadedData (and its owned C++ peer) if an
-  // in-flight background load is cancelled before reaching Java.
-  static void DestroyJavaObject(const jni_zero::JavaRef<jobject>& j_object);
-
-  // Note: loaded_tabs and loaded_groups are moved out during
-  // CreateJavaObject(); only loading context and node metadata remain
-  // populated.
   StorageLoadedData* GetData() const;
+
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
   static StorageLoadedDataAndroid* FromJavaObject(
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& obj);
 
  private:
-  explicit StorageLoadedDataAndroid(std::unique_ptr<StorageLoadedData> data);
-
   std::unique_ptr<StorageLoadedData> data_;
+  base::android::ScopedJavaGlobalRef<jobject> j_object_;
 };
 
 base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
@@ -65,6 +57,20 @@ base::android::ScopedJavaLocalRef<jobject> CreateTabGroupCollectionData(
 }  // namespace tabs
 
 namespace jni_zero {
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<tabs::StorageLoadedDataAndroid>(
+    JNIEnv* env,
+    const tabs::StorageLoadedDataAndroid& input) {
+  return input.GetJavaObject();
+}
+
+template <>
+inline tabs::StorageLoadedDataAndroid*
+FromJniType<tabs::StorageLoadedDataAndroid*>(JNIEnv* env,
+                                             const JavaRef<jobject>& obj) {
+  return tabs::StorageLoadedDataAndroid::FromJavaObject(env, obj);
+}
 
 template <>
 inline ScopedJavaLocalRef<jobject>
@@ -105,10 +111,9 @@ inline tabs::StorageLoadedData* FromJniType<tabs::StorageLoadedData*>(
   if (!j_storage_loaded_data) {
     return nullptr;
   }
-  tabs::StorageLoadedDataAndroid* android_data =
-      tabs::StorageLoadedDataAndroid::FromJavaObject(env,
-                                                     j_storage_loaded_data);
-  return android_data ? android_data->GetData() : nullptr;
+  return tabs::StorageLoadedDataAndroid::FromJavaObject(env,
+                                                        j_storage_loaded_data)
+      ->GetData();
 }
 
 }  // namespace jni_zero

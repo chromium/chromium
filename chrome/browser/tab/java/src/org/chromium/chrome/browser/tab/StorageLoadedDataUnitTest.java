@@ -5,85 +5,140 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.jni_zero.JniUniquePtr;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.StorageLoadedData.StorageLoadWarning;
 
-import java.nio.ByteBuffer;
-
 /** Unit tests for {@link StorageLoadedData} and {@link LoadedTabState}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class StorageLoadedDataUnitTest {
+    @Rule public final MockitoRule mMockito = MockitoJUnit.rule();
+
     @Test
-    public void testStorageLoadedData_Destroy() {
-        LoadedTabState loadedState1 = new LoadedTabState(1, new TabState());
-        LoadedTabState loadedState2 = new LoadedTabState(2, new TabState());
+    public void testLoadedTabState_Claim() {
+        TabState tabState = new TabState();
+        LoadedTabState loadedTabState = new LoadedTabState(1, tabState);
+
+        assertFalse(loadedTabState.isClaimedOrDestroyed());
+
+        TabState claimed = loadedTabState.claim();
+        assertEquals(tabState, claimed);
+        assertTrue(loadedTabState.isClaimedOrDestroyed());
+
+        // Subsequent claim calls must return null.
+        assertNull(loadedTabState.claim());
+        assertTrue(loadedTabState.isClaimedOrDestroyed());
+    }
+
+    @Test
+    public void testLoadedTabState_DestroyUnclaimed() {
+        TabState tabState = new TabState();
+        WebContentsState webContentsState = mock(WebContentsState.class);
+        tabState.contentsState = webContentsState;
+        LoadedTabState loadedTabState = new LoadedTabState(1, tabState);
+
+        assertFalse(loadedTabState.isClaimedOrDestroyed());
+
+        loadedTabState.destroy();
+
+        assertTrue(loadedTabState.isClaimedOrDestroyed());
+        verify(webContentsState).destroy();
+        assertNull(tabState.contentsState);
+
+        // Subsequent claim calls must return null after destruction.
+        assertNull(loadedTabState.claim());
+    }
+
+    @Test
+    public void testLoadedTabState_DestroyClaimedPreservesWebContentsState() {
+        TabState tabState = new TabState();
+        WebContentsState webContentsState = mock(WebContentsState.class);
+        tabState.contentsState = webContentsState;
+        LoadedTabState loadedTabState = new LoadedTabState(1, tabState);
+
+        TabState claimed = loadedTabState.claim();
+        assertNotNull(claimed);
+        assertTrue(loadedTabState.isClaimedOrDestroyed());
+
+        loadedTabState.destroy();
+
+        assertTrue(loadedTabState.isClaimedOrDestroyed());
+        verify(webContentsState, never()).destroy();
+        assertEquals(webContentsState, tabState.contentsState);
+    }
+
+    @Test
+    public void testLoadedTabState_DestroyWithNullContentsState() {
+        TabState tabState = new TabState();
+        tabState.contentsState = null;
+        LoadedTabState loadedTabState = new LoadedTabState(1, tabState);
+
+        // Should not throw or crash.
+        loadedTabState.destroy();
+        assertTrue(loadedTabState.isClaimedOrDestroyed());
+        assertNull(tabState.contentsState);
+    }
+
+    @Test
+    public void testStorageLoadedData_DestroyCleansUnclaimedOnly() {
+        TabState tabStateClaimed = new TabState();
+        WebContentsState contentsStateClaimed = mock(WebContentsState.class);
+        tabStateClaimed.contentsState = contentsStateClaimed;
+        LoadedTabState loadedStateClaimed = new LoadedTabState(1, tabStateClaimed);
+        loadedStateClaimed.claim();
+
+        TabState tabStateUnclaimed = new TabState();
+        WebContentsState contentsStateUnclaimed = mock(WebContentsState.class);
+        tabStateUnclaimed.contentsState = contentsStateUnclaimed;
+        LoadedTabState loadedStateUnclaimed = new LoadedTabState(2, tabStateUnclaimed);
+
+        TabState tabStateNullContents = new TabState();
+        tabStateNullContents.contentsState = null;
+        LoadedTabState loadedStateNullContents = new LoadedTabState(3, tabStateNullContents);
 
         TabGroupCollectionData groupData = mock(TabGroupCollectionData.class);
 
         StorageLoadedData storageLoadedData =
                 StorageLoadedData.createData(
                         JniUniquePtr.createForTesting(12345L),
-                        new LoadedTabState[] {loadedState1, loadedState2},
+                        new LoadedTabState[] {
+                            loadedStateClaimed, loadedStateUnclaimed, loadedStateNullContents
+                        },
                         new TabGroupCollectionData[] {groupData},
                         /* activeTabIndex= */ 0,
                         new StorageLoadWarning[0]);
 
         storageLoadedData.destroy();
 
+        // Claimed state must not be destroyed.
+        verify(contentsStateClaimed, never()).destroy();
+        assertEquals(contentsStateClaimed, tabStateClaimed.contentsState);
+        assertTrue(loadedStateClaimed.isClaimedOrDestroyed());
+
+        // Unclaimed state must be destroyed and nulled out.
+        verify(contentsStateUnclaimed).destroy();
+        assertNull(tabStateUnclaimed.contentsState);
+        assertTrue(loadedStateUnclaimed.isClaimedOrDestroyed());
+
+        // Null contents state must be marked claimed or destroyed.
+        assertTrue(loadedStateNullContents.isClaimedOrDestroyed());
+
         // Native pointer must be destroyed.
         assertNull(storageLoadedData.getNativePtr());
-    }
-
-    @Test
-    public void testCreateTabState() {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(4);
-        TabState state =
-                StorageLoadedData.createTabState(
-                        /* parentTabId= */ 1,
-                        /* timestampMillis= */ 100L,
-                        buffer,
-                        WebContentsState.CONTENTS_STATE_CURRENT_VERSION,
-                        /* openerAppId= */ "app",
-                        /* themeColor= */ 0,
-                        TabLaunchType.FROM_LINK,
-                        TabUserAgent.DEFAULT,
-                        /* lastNavigationCommittedTimestampMillis= */ 200L,
-                        /* tabGroupId= */ null,
-                        /* tabHasSensitiveContent= */ false,
-                        /* isPinned= */ true,
-                        "https://example.com");
-        assertNotNull(state.contentsState);
-        assertEquals(buffer, state.contentsState.buffer());
-        assertEquals(
-                WebContentsState.CONTENTS_STATE_CURRENT_VERSION, state.contentsState.version());
-        assertNotNull(state.url);
-        assertEquals("https://example.com/", state.url.getSpec());
-
-        TabState emptyState =
-                StorageLoadedData.createTabState(
-                        /* parentTabId= */ Tab.INVALID_TAB_ID,
-                        /* timestampMillis= */ 0L,
-                        /* webContentsStateBuffer= */ null,
-                        WebContentsState.INVALID_BUFFER_VERSION,
-                        /* openerAppId= */ null,
-                        /* themeColor= */ 0,
-                        TabLaunchType.UNSET,
-                        TabUserAgent.DEFAULT,
-                        /* lastNavigationCommittedTimestampMillis= */ 0L,
-                        /* tabGroupId= */ null,
-                        /* tabHasSensitiveContent= */ false,
-                        /* isPinned= */ false,
-                        "not a valid url");
-        assertNull(emptyState.contentsState);
-        assertNull(emptyState.url);
     }
 }
