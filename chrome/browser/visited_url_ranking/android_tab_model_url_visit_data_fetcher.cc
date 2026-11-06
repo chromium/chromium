@@ -144,11 +144,7 @@ void AndroidTabModelURLVisitDataFetcher::FetchURLVisitData(
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
           ? syncer::DeviceInfo::FormFactor::kTablet
           : syncer::DeviceInfo::FormFactor::kPhone;
-  for (TabModel* model : TabModelList::models()) {
-    if (profile_ != model->GetProfile()) {
-      continue;
-    }
-
+  TabModelList::ForEach(profile_, [&](TabModel* model) {
     int count = model->GetTabCount();
     for (int i = 0; i < count; ++i) {
       auto* tab_android = model->GetTabAt(i);
@@ -189,7 +185,8 @@ void AndroidTabModelURLVisitDataFetcher::FetchURLVisitData(
       tab_data.pinned = false;
       tab_data.in_group = tab_data.in_group || tab_android->GetGroup();
     }
-  }
+    return true;
+  });
 
   std::map<URLMergeKey, URLVisitVariant> url_visit_variant_map;
   std::transform(

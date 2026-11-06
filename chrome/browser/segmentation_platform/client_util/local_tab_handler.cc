@@ -69,10 +69,7 @@ base::TimeDelta GetLocalTimeSinceModified(const TabFetcher::Tab& tab) {
 // Returns a list of all tabs from tab model.
 std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
   std::vector<TabFetcher::TabEntry> tabs;
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() != profile) {
-      continue;
-    }
+  TabModelList::ForEach(profile, [&](TabModel* model) {
     // Store count in local variable since it makes expensive JNI call.
     int count = model->GetTabCount();
     for (int i = 0; i < count; ++i) {
@@ -81,16 +78,15 @@ std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
       auto tab_id = tab_android->GetSyncedTabDelegate()->GetSessionId();
       tabs.emplace_back(tab_id, web_contents, tab_android);
     }
-  }
+    return true;
+  });
   return tabs;
 }
 
 TabFetcher::Tab FindLocalTabAndroid(const Profile* profile,
                                     const TabFetcher::TabEntry& entry) {
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() != profile) {
-      continue;
-    }
+  TabFetcher::Tab result = {};
+  TabModelList::ForEach(profile, [&](TabModel* model) {
     // Store count in local variable since it makes expensive JNI call.
     int count = model->GetTabCount();
     for (int i = 0; i < count; ++i) {
@@ -99,15 +95,15 @@ TabFetcher::Tab FindLocalTabAndroid(const Profile* profile,
       if (id != entry.tab_id) {
         continue;
       }
-      TabFetcher::Tab result;
       result.webcontents = model->GetWebContentsAt(i);
       result.tab_android = tab_android;
       result.time_since_modified = GetLocalTimeSinceModified(result);
       result.tab_url = GetLocalTabURL(result);
-      return result;
+      return false;
     }
-  }
-  return TabFetcher::Tab();
+    return true;
+  });
+  return result;
 }
 
 #else  // BUILDFLAG(IS_ANDROID)
