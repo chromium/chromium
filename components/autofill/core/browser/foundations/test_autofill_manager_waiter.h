@@ -27,7 +27,6 @@ namespace autofill {
 // One constant `kFoo` for each event
 // `AutofillManager::Observer::On{Before,After}Foo()`.
 enum class AutofillManagerEvent {
-  kLanguageDetermined,
   kFormsSeen,
   kCaretMovedInFormField,
   kTextFieldValueChanged,
@@ -171,9 +170,6 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
       AutofillManager& manager,
       AutofillManager::LifecycleState old_state,
       AutofillManager::LifecycleState new_state) override;
-
-  void OnBeforeLanguageDetermined(AutofillManager& manager) override;
-  void OnAfterLanguageDetermined(AutofillManager& manager) override;
 
   void OnBeforeFormsSeen(AutofillManager& manager,
                          base::span<const FormGlobalId> updated_forms,
@@ -449,12 +445,6 @@ class TestAutofillManagerSingleEventWaiter::Impl
       AutofillManager::LifecycleState new_state) override {
     MaybeQuit(&Observer::OnAutofillManagerStateChanged, manager, old_state,
               new_state);
-  }
-  void OnBeforeLanguageDetermined(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnBeforeLanguageDetermined, manager);
-  }
-  void OnAfterLanguageDetermined(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnAfterLanguageDetermined, manager);
   }
   void OnBeforeFormsSeen(
       AutofillManager& manager,

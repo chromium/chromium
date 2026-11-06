@@ -30,7 +30,9 @@ class AutofillDriver;
 //   }
 //
 //   // AutofillManager::Observer:
-//   void OnAfterLanguageDetermined(AutofillManager& manager) {
+//   void OnAfterFormsSeen(AutofillManager& manager,
+//                         base::span<const FormGlobalId> updated_forms,
+//                         base::span<const FormGlobalId> removed_forms) {
 //     // Do something.
 //   }
 //

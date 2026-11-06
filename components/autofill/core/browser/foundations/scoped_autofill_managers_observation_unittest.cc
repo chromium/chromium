@@ -37,10 +37,10 @@ TEST_F(ScopedAutofillManagersObservationTest, SingleFrameObservation) {
 
   EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(autofill_manager()),
                                                       kInactive, kActive));
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager())));
+  EXPECT_CALL(observer, OnBeforeFocusOnNonFormField(Ref(autofill_manager())));
   ActivateAutofillDriver(autofill_driver());
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeLanguageDetermined);
+      &AutofillManager::Observer::OnBeforeFocusOnNonFormField);
 }
 
 TEST_F(ScopedAutofillManagersObservationTest,
@@ -64,9 +64,9 @@ TEST_F(ScopedAutofillManagersObservationTest,
                       ScopedAutofillManagersObservation::InitializationPolicy::
                           kObservePreexistingManagers);
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager())));
+  EXPECT_CALL(observer, OnBeforeFocusOnNonFormField(Ref(autofill_manager())));
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeLanguageDetermined);
+      &AutofillManager::Observer::OnBeforeFocusOnNonFormField);
 }
 
 TEST_F(ScopedAutofillManagersObservationTest, NoObservationsAfterReset) {
@@ -75,14 +75,14 @@ TEST_F(ScopedAutofillManagersObservationTest, NoObservationsAfterReset) {
   observation.Observe(&autofill_client());
   CreateAutofillDriver();
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager())));
+  EXPECT_CALL(observer, OnBeforeFocusOnNonFormField(Ref(autofill_manager())));
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeLanguageDetermined);
+      &AutofillManager::Observer::OnBeforeFocusOnNonFormField);
 
   observation.Reset();
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined).Times(0);
+  EXPECT_CALL(observer, OnBeforeFocusOnNonFormField).Times(0);
   autofill_manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeLanguageDetermined);
+      &AutofillManager::Observer::OnBeforeFocusOnNonFormField);
 }
 
 TEST_F(ScopedAutofillManagersObservationTest, MultipleFrameObservation) {
@@ -92,13 +92,13 @@ TEST_F(ScopedAutofillManagersObservationTest, MultipleFrameObservation) {
   CreateAutofillDriver();
   CreateAutofillDriver();
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager(0))));
+  EXPECT_CALL(observer, OnBeforeFocusOnNonFormField(Ref(autofill_manager(0))));
   autofill_manager(0).NotifyObservers(
-      &AutofillManager::Observer::OnBeforeLanguageDetermined);
+      &AutofillManager::Observer::OnBeforeFocusOnNonFormField);
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager(1))));
+  EXPECT_CALL(observer, OnBeforeFocusOnNonFormField(Ref(autofill_manager(1))));
   autofill_manager(1).NotifyObservers(
-      &AutofillManager::Observer::OnBeforeLanguageDetermined);
+      &AutofillManager::Observer::OnBeforeFocusOnNonFormField);
 }
 
 TEST_F(ScopedAutofillManagersObservationTest,

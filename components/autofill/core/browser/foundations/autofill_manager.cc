@@ -206,21 +206,13 @@ void AutofillManager::OnLanguageDetermined(
     return;
   }
   if (details.adopted_language == language_detection::kUnknownLanguageCode ||
-      !driver_->IsActive()) {
+      !driver_->IsActive() || driver_->GetParent() || driver_->IsEmbedded()) {
+    // OnLanguageDetermined() is fired on all frames. To avoid redundant
+    // reextraction, we extract only on the primary main frame.
     return;
   }
 
-  NotifyObservers(&Observer::OnBeforeLanguageDetermined);
-
-  // TODO(crbug.com/360322019): Consider using
-  // `TriggerFormExtractionInAllFrames()` instead.
-  ParseFormsAsync(
-      base::ToVector(form_structures_,
-                     [](const auto& p) { return p.second->ToFormData(); }),
-      base::BindOnce(
-          [](AutofillManager& self, const std::vector<FormData>& parsed_forms) {
-            self.NotifyObservers(&Observer::OnAfterLanguageDetermined);
-          }));
+  TriggerFormExtractionInAllFrames(/*force=*/true, base::DoNothing());
 }
 
 void AutofillManager::OnTranslateDriverDestroyed(

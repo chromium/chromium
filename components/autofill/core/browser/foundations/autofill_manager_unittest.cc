@@ -473,8 +473,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, OnFormsSeen) {
   std::move(run_loop).Run();
 }
 
-// Tests that determining the page language fires OnBeforeLanguageDetermined(),
-// OnAfterLanguageDetermined(), and re-determines field types for known forms.
+// Tests that determining the page language triggers form extraction and
+// re-determines field types for known forms.
 TEST_F(AutofillManagerTest_ObserverCalls, OnLanguageDetermined) {
   std::vector<FormData> forms = CreateTestForms(2);
   SeeForms(forms);
@@ -486,22 +486,24 @@ TEST_F(AutofillManagerTest_ObserverCalls, OnLanguageDetermined) {
   auto small_forms_parsing = Eq(autofill_client().IsTabInActorMode());
 
   base::RunLoop run_loop;
-  EXPECT_CALL(observer(), OnBeforeLanguageDetermined(m));
+  EXPECT_CALL(observer(),
+              OnBeforeFormsSeen(m, UnorderedElementsAre(f, g), IsEmpty()));
   EXPECT_CALL(observer(),
               OnBeforeLoadedServerPredictions(m, UnorderedElementsAre(f, g)));
   EXPECT_CALL(observer(),
               OnAfterLoadedServerPredictions(m, UnorderedElementsAre(f, g)));
+  EXPECT_CALL(observer(),
+              OnFieldTypesDetermined(m, f, heuristics, small_forms_parsing));
+  EXPECT_CALL(observer(),
+              OnFieldTypesDetermined(m, g, heuristics, small_forms_parsing));
+  EXPECT_CALL(observer(),
+              OnAfterFormsSeen(m, UnorderedElementsAre(f, g), IsEmpty()))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
   autofill_manager().OnLanguageDetermined([] {
     translate::LanguageDetectionDetails details;
     details.adopted_language = "en";
     return details;
   }());
-  EXPECT_CALL(observer(), OnAfterLanguageDetermined(m))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(observer(),
-              OnFieldTypesDetermined(m, f, heuristics, small_forms_parsing));
-  EXPECT_CALL(observer(),
-              OnFieldTypesDetermined(m, g, heuristics, small_forms_parsing));
   std::move(run_loop).Run();
 }
 

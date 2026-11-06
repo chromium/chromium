@@ -124,16 +124,6 @@ void TestAutofillManagerWaiter::OnAutofillManagerStateChanged(
   }
 }
 
-void TestAutofillManagerWaiter::OnBeforeLanguageDetermined(
-    AutofillManager& manager) {
-  OnBefore(Event::kLanguageDetermined);
-}
-
-void TestAutofillManagerWaiter::OnAfterLanguageDetermined(
-    AutofillManager& manager) {
-  OnAfter(Event::kLanguageDetermined);
-}
-
 void TestAutofillManagerWaiter::OnBeforeFormsSeen(
     AutofillManager& manager,
     base::span<const FormGlobalId> updated_forms,

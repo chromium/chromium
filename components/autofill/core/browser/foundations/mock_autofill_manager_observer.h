@@ -27,9 +27,6 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
                AutofillManager::LifecycleState),
               (override));
 
-  MOCK_METHOD(void, OnBeforeLanguageDetermined, (AutofillManager&), (override));
-  MOCK_METHOD(void, OnAfterLanguageDetermined, (AutofillManager&), (override));
-
   MOCK_METHOD(void,
               OnBeforeFormsSeen,
               (AutofillManager&,

@@ -124,9 +124,6 @@ class AutofillManager
                                                LifecycleState previous,
                                                LifecycleState new_state) {}
 
-    virtual void OnBeforeLanguageDetermined(AutofillManager& manager) {}
-    virtual void OnAfterLanguageDetermined(AutofillManager& manager) {}
-
     // Unlike other events, OnFormsSeen() determines both heuristic and server
     // types. OnAfterFormsSeen() is fired after the heuristic type detection is
     // complete (if it started at all). Whether the server types have been

@@ -48,12 +48,6 @@ class TestAutofillManagerTemplate : public T {
   // AutofillManager overrides.
   // The overrides ensure that the thread is blocked until the form has been
   // parsed.
-  void OnLanguageDetermined(
-      const translate::LanguageDetectionDetails& details) override {
-    AutofillManager::OnLanguageDetermined(details);
-    ASSERT_TRUE(waiter_.Wait(0));
-  }
-
   void OnFormsSeen(std::vector<FormData> updated_forms,
                    std::vector<FormGlobalId> removed_forms,
                    T::RendererEventPassKey pass_key) override {
