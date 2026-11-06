@@ -5,9 +5,14 @@
 #include "components/metrics/stability_metrics_provider.h"
 
 #include <string>
+#include <utility>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/stability_metrics_helper.h"
@@ -26,6 +31,19 @@
 namespace metrics {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+// Runs on a blocking thread-pool sequence. SystemSessionAnalyzer reads the
+// Windows System event log via EvtQuery/EvtNext, a synchronous ALPC round-trip
+// to the Event Log service that can take 100+ ms, so it must not run on the UI
+// thread. Log traversal can be expensive, so the analyzer is limited to
+// reaching back three previous system sessions to bound the cost.
+bool ComputeUncleanSystemSession(base::Time last_live_timestamp) {
+  SystemSessionAnalyzer analyzer(3);
+  return analyzer.IsSessionUnclean(last_live_timestamp) ==
+         SystemSessionAnalyzer::UNCLEAN;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 bool HasGmsCoreVersionChanged(PrefService* local_state) {
@@ -50,7 +68,12 @@ void UpdateGmsCoreVersionPref(PrefService* local_state) {
 }  // namespace
 
 StabilityMetricsProvider::StabilityMetricsProvider(PrefService* local_state)
-    : local_state_(local_state) {}
+    : local_state_(local_state) {
+#if BUILDFLAG(IS_WIN)
+  is_unclean_system_session_callback_ =
+      base::BindRepeating(&ComputeUncleanSystemSession);
+#endif
+}
 
 StabilityMetricsProvider::~StabilityMetricsProvider() = default;
 
@@ -90,6 +113,8 @@ void StabilityMetricsProvider::ClearSavedStabilityMetrics() {
   local_state_->SetInteger(prefs::kStabilityLaunchCount, 0);
 #endif
 #if BUILDFLAG(IS_WIN)
+  // Prevent pre-clear replies from restoring discarded metrics.
+  weak_factory_.InvalidateWeakPtrs();
   local_state_->SetInteger(prefs::kStabilitySystemCrashCount, 0);
 #endif
 }
@@ -165,28 +190,42 @@ void StabilityMetricsProvider::LogLaunch() {
 }
 
 #if BUILDFLAG(IS_WIN)
-bool StabilityMetricsProvider::IsUncleanSystemSession(
-    base::Time last_live_timestamp) {
-  DCHECK_NE(base::Time(), last_live_timestamp);
-  // There's a non-null last live timestamp, see if this occurred in
-  // a Windows system session that ended uncleanly. The expectation is that
-  // |last_live_timestamp| will have occurred in the immediately previous system
-  // session, but if the system has been restarted many times since Chrome last
-  // ran, that's not necessarily true. Log traversal can be expensive, so we
-  // limit the analyzer to reaching back three previous system sessions to bound
-  // the cost of the traversal.
-  SystemSessionAnalyzer analyzer(3);
-
-  SystemSessionAnalyzer::Status status =
-      analyzer.IsSessionUnclean(last_live_timestamp);
-
-  return status == SystemSessionAnalyzer::UNCLEAN;
+void StabilityMetricsProvider::SetIsUncleanSystemSessionCallbackForTesting(
+    IsUncleanSystemSessionCallback callback) {
+  is_unclean_system_session_callback_ = std::move(callback);
 }
 
 void StabilityMetricsProvider::MaybeLogSystemCrash(
     base::Time last_live_timestamp) {
-  if (last_live_timestamp != base::Time() &&
-      IsUncleanSystemSession(last_live_timestamp)) {
+  if (last_live_timestamp == base::Time()) {
+    return;
+  }
+  // Determining whether `last_live_timestamp` fell in an unclean Windows system
+  // session reads the System event log via SystemSessionAnalyzer, a synchronous
+  // operation that can take 100+ ms. MaybeLogSystemCrash() is reached from
+  // LogCrash() on the UI thread during MetricsService::InitializeMetricsState()
+  // at startup, so run the check on a blocking thread-pool sequence and
+  // increment the (persisted) counter back on this sequence. The counter is
+  // eventually-consistent across sessions, so incrementing it after this
+  // session's first stability log merely defers the bump by at most one
+  // session.
+  //
+  // The task is CONTINUE_ON_SHUTDOWN so that a slow or hung Event Log query
+  // (EvtQuery() takes no timeout) never blocks shutdown. If this provider is
+  // destroyed before the reply runs, the system crash is simply not counted.
+  // The task only uses its own SystemSessionAnalyzer and `last_live_timestamp`,
+  // so it is safe to keep running during shutdown.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(is_unclean_system_session_callback_, last_live_timestamp),
+      base::BindOnce(&StabilityMetricsProvider::OnSystemSessionChecked,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void StabilityMetricsProvider::OnSystemSessionChecked(bool unclean) {
+  if (unclean) {
     IncrementPrefValue(prefs::kStabilitySystemCrashCount);
   }
 }

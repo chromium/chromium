@@ -4,9 +4,15 @@
 
 #include "components/metrics/stability_metrics_provider.h"
 
+#include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,36 +87,41 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
 #if BUILDFLAG(IS_WIN)
 namespace {
 
-class TestingStabilityMetricsProvider : public StabilityMetricsProvider {
- public:
-  TestingStabilityMetricsProvider(PrefService* local_state,
-                                  base::Time unclean_session_time)
-      : StabilityMetricsProvider(local_state),
-        unclean_session_time_(unclean_session_time) {}
-
-  bool IsUncleanSystemSession(base::Time last_live_timestamp) override {
-    return last_live_timestamp == unclean_session_time_;
-  }
-
- private:
-  const base::Time unclean_session_time_;
-};
+void WaitForSystemSessionChecks(base::test::TaskEnvironment& task_environment) {
+  // Workers post their replies before the flush completes. Queue the quit
+  // behind those replies, rather than quitting directly on a worker.
+  base::ThreadPoolInstance::Get()->FlushAsyncForTesting(
+      base::BindPostTask(task_environment.GetMainThreadTaskRunner(),
+                         task_environment.QuitClosure()));
+  task_environment.RunUntilQuit();
+}
 
 }  // namespace
 
 TEST_F(StabilityMetricsProviderTest, RecordSystemCrashMetrics) {
+  base::test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   {
-    base::Time unclean_time = base::Time::Now();
-    TestingStabilityMetricsProvider recorder(&prefs_, unclean_time);
+    const base::Time unclean_time = base::Time::Now();
+    StabilityMetricsProvider recorder(&prefs_);
 
-    // Any crash with a last_live_timestamp equal to unclean_time will
-    // be logged as a system crash as per the implementation of
-    // TestingStabilityMetricsProvider, so this will log a system crash.
+    // Stub out the System event-log traversal: treat a crash whose
+    // last_live_timestamp equals `unclean_time` as an unclean system session.
+    recorder.SetIsUncleanSystemSessionCallbackForTesting(base::BindRepeating(
+        [](base::Time unclean_time, base::Time last_live_timestamp) {
+          return last_live_timestamp == unclean_time;
+        },
+        unclean_time));
+
+    // Logs a system crash.
     recorder.LogCrash(unclean_time);
 
-    // Record a crash with no system crash.
+    // Logs a crash that is not a system crash.
     recorder.LogCrash(unclean_time - base::Minutes(1));
+
+    // Wait for both thread-pool checks and their replies on this sequence.
+    WaitForSystemSessionChecks(task_environment);
+    EXPECT_EQ(1, prefs_.GetInteger(prefs::kStabilitySystemCrashCount));
   }
 
   {
@@ -125,6 +136,38 @@ TEST_F(StabilityMetricsProviderTest, RecordSystemCrashMetrics) {
     histogram_tester.ExpectTotalCount("Stability.Internals.SystemCrashCount",
                                       1);
   }
+}
+
+TEST_F(StabilityMetricsProviderTest, DropsSystemCrashAfterProviderDestruction) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  {
+    StabilityMetricsProvider recorder(&prefs_);
+    recorder.SetIsUncleanSystemSessionCallbackForTesting(
+        base::BindRepeating([](base::Time) { return true; }));
+    recorder.LogCrash(base::Time::Now());
+  }
+
+  WaitForSystemSessionChecks(task_environment);
+  EXPECT_EQ(0, prefs_.GetInteger(prefs::kStabilitySystemCrashCount));
+}
+
+TEST_F(StabilityMetricsProviderTest, DropsSystemCrashWhenMetricsAreCleared) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  StabilityMetricsProvider recorder(&prefs_);
+  recorder.SetIsUncleanSystemSessionCallbackForTesting(
+      base::BindRepeating([](base::Time) { return true; }));
+  recorder.LogCrash(base::Time::Now());
+
+  MetricsProvider* provider = &recorder;
+  provider->ClearSavedStabilityMetrics();
+  WaitForSystemSessionChecks(task_environment);
+  EXPECT_EQ(0, prefs_.GetInteger(prefs::kStabilitySystemCrashCount));
+
+  recorder.LogCrash(base::Time::Now());
+  WaitForSystemSessionChecks(task_environment);
+  EXPECT_EQ(1, prefs_.GetInteger(prefs::kStabilitySystemCrashCount));
 }
 
 #endif

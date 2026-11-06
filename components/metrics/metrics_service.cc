@@ -376,8 +376,10 @@ MetricsService::MetricsService(MetricsStateManager* state_manager,
           base::BindOnce(&MetricsService::OnClonedInstallDetected,
                          self_ptr_factory_.GetWeakPtr()));
 
-  RegisterMetricsProvider(
-      std::make_unique<StabilityMetricsProvider>(local_state_));
+  auto stability_metrics_provider =
+      std::make_unique<StabilityMetricsProvider>(local_state_);
+  stability_metrics_provider_ = stability_metrics_provider.get();
+  RegisterMetricsProvider(std::move(stability_metrics_provider));
 
   RegisterMetricsProvider(state_manager_->GetProvider());
 }
@@ -896,7 +898,7 @@ void MetricsService::InitializeMetricsState() {
 
   session_id_ = local_state_->GetInteger(prefs::kMetricsSessionID);
 
-  StabilityMetricsProvider provider(local_state_);
+  StabilityMetricsProvider& provider = *stability_metrics_provider_;
   const bool was_last_shutdown_clean = WasLastShutdownClean();
   if (!was_last_shutdown_clean) {
     provider.LogCrash(

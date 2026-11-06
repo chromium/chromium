@@ -5,6 +5,7 @@
 #include "components/metrics/system_session_analyzer/system_session_analyzer_win.h"
 
 #include "base/logging.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 
 namespace metrics {
@@ -207,6 +208,10 @@ bool SystemSessionAnalyzer::EnsureInitialized() {
 }
 
 bool SystemSessionAnalyzer::EnsureHandlesOpened() {
+  // The first Evt*() call below loads wevtapi.dll, and callers may run this on
+  // a background-priority thread.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   // Create the event query.
   // Note: requesting events from newest to oldest.
   if (!query_handle_.get()) {

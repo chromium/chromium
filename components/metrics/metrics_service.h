@@ -61,6 +61,7 @@ class MetricsRotationScheduler;
 class MetricsServiceClient;
 class MetricsServiceObserver;
 class MetricsStateManager;
+class StabilityMetricsProvider;
 
 // See metrics_service.cc for a detailed description.
 class MetricsService {
@@ -650,6 +651,9 @@ class MetricsService {
   // Registered metrics providers.
   DelegatingProvider delegating_provider_;
 
+  // Owned by `delegating_provider_`; retained for asynchronous startup checks.
+  raw_ptr<StabilityMetricsProvider> stability_metrics_provider_ = nullptr;
+
   raw_ptr<PrefService> local_state_;
 
   base::ActionCallback action_callback_;
@@ -708,6 +712,8 @@ class MetricsService {
 
   FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, ActiveFieldTrialsReported);
   FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, IsPluginProcess);
+  FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest,
+                           SystemCrashRecordedAfterInitialization);
   FRIEND_TEST_ALL_PREFIXES(::ChromeMetricsServiceClientTest,
                            TestRegisterMetricsServiceProviders);
   FRIEND_TEST_ALL_PREFIXES(::IOSChromeMetricsServiceClientTest,

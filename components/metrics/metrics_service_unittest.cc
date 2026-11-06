@@ -25,6 +25,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -39,6 +40,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_upload_scheduler.h"
 #include "components/metrics/stability_metrics_helper.h"
+#include "components/metrics/stability_metrics_provider.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_provider.h"
@@ -1172,6 +1174,36 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kBrowserCrash, 1);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(MetricsServiceTest, SystemCrashRecordedAfterInitialization) {
+  EnableMetricsReporting();
+  ASSERT_TRUE(
+      base::WriteFile(user_data_dir_path().Append(kCleanExitBeaconFilename),
+                      CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                          /*exited_cleanly=*/false, /*crash_streak=*/1)));
+
+  PrefService* local_state = GetLocalState();
+  local_state->SetTime(prefs::kStabilityBrowserLastLiveTimeStamp,
+                       base::Time::Now());
+  TestMetricsServiceClient client;
+  EnvironmentRecorder(local_state)
+      .SetBuildtimeAndVersion(MetricsLog::GetBuildTime(),
+                              client.GetVersionString());
+  TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
+                             &client, local_state);
+  service.stability_metrics_provider_
+      ->SetIsUncleanSystemSessionCallbackForTesting(
+          base::BindRepeating([](base::Time) { return true; }));
+  service.InitializeMetricsRecordingState();
+
+  EXPECT_EQ(0, local_state->GetInteger(prefs::kStabilitySystemCrashCount));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return local_state->GetInteger(prefs::kStabilitySystemCrashCount) == 1;
+  }));
+  EXPECT_EQ(1, local_state->GetInteger(prefs::kStabilitySystemCrashCount));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
   EnableMetricsReporting();
