@@ -4,8 +4,10 @@
 
 #include "chromeos/ash/experiences/arc/sensor/arc_iio_sensor_bridge.h"
 
-#include "base/run_loop.h"
+#include <utility>
+
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_iio_sensor_instance.h"
@@ -13,6 +15,24 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
+
+namespace {
+
+class TestPowerManagerClient : public chromeos::FakePowerManagerClient {
+ public:
+  void GetSwitchStates(
+      chromeos::DBusMethodCallback<SwitchStates> callback) override {
+    chromeos::FakePowerManagerClient::GetSwitchStates(
+        std::move(callback).Then(switch_states_processed_.GetCallback()));
+  }
+
+  bool WaitForSwitchStates() { return switch_states_processed_.Wait(); }
+
+ private:
+  base::test::TestFuture<void> switch_states_processed_;
+};
+
+}  // namespace
 
 class ArcIioSensorBridgeTest : public testing::Test {
  public:
@@ -22,10 +42,12 @@ class ArcIioSensorBridgeTest : public testing::Test {
   ArcIioSensorBridgeTest& operator=(const ArcIioSensorBridgeTest&) = delete;
 
   void SetUp() override {
-    chromeos::PowerManagerClient::InitializeFake();
+    auto* power_manager_client = new TestPowerManagerClient();
     bridge_ = std::make_unique<ArcIioSensorBridge>(nullptr /* context */,
                                                    &bridge_service_);
-    base::RunLoop().RunUntilIdle();
+    // Finish the initial tablet-mode query before tests send newer mode events,
+    // so the queued snapshot cannot overwrite them.
+    ASSERT_TRUE(power_manager_client->WaitForSwitchStates());
   }
 
   void TearDown() override {
