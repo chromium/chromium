@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://contextual-tasks/strings.m.js';
+import 'chrome://webui-test/strings.m.js';
 import 'chrome://resources/cr_components/composebox/current_tab_chip.js';
 
 import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';

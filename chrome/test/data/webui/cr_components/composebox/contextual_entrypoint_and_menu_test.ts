@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://contextual-tasks/strings.m.js';
+import 'chrome://webui-test/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 
 import {TabSuggestionsState} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
+import {MojoPluralStringProxy} from 'chrome://resources/cr_components/search/mojo_plural_string_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createValidInputState} from './composebox_test_utils.js';
@@ -35,6 +37,7 @@ suite('ContextualEntrypointAndMenu', () => {
   }
 
   setup(async () => {
+    MojoPluralStringProxy.setInstance(new TestPluralStringProxy());
     loadTimeData.overrideValues({
       composeboxContextMenuEnableMultiTabSelection: true,
       contextualMenuUsePecApi: true,

@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import("//chrome/test/data/webui/build_webui_tests.gni")
-import("//ui/webui/webui_features.gni")
 
-assert((!is_android && !is_ios) || enable_webui_contextual_tasks_composebox)
+assert(!is_android || is_desktop_android)
+assert(!is_ios)
 
 build_webui_tests("build") {
   cc_test_files = [
@@ -58,7 +58,7 @@ build_webui_tests("build") {
   ts_tsconfig_base = "tsconfig_base.json"
 
   ts_path_mappings = [
-    "chrome://contextual-tasks/strings.m.js|" +
+    "chrome://webui-test/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
                     target_gen_dir),
     "chrome://webui-test/cr_components/searchbox/*|" + rebase_path(

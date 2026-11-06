@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://contextual-tasks/strings.m.js';
-import './test_composebox_mixin.js';
+import 'chrome://webui-test/strings.m.js';
 import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
+import './test_composebox_mixin.js';
 
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -53,6 +53,13 @@ suite('ComposeboxVoiceSearchFlags', () => {
   });
 
   setup(async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: false,
+      voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
+      voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
+      isSystemVoiceSearchEnabled: false,
+      androidSpeechRecognition: false,
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         PageHandlerRemote,
@@ -89,14 +96,6 @@ suite('ComposeboxVoiceSearchFlags', () => {
     windowProxy.setResultMapperFor(
         'matchMedia', (query: string) => new FakeMediaQueryList(query));
     windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
-
-    loadTimeData.overrideValues({
-      voiceSearchCoherenceComposeboxesEnabled: false,
-      voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
-      voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
-      isSystemVoiceSearchEnabled: false,
-      androidSpeechRecognition: false,
-    });
 
     windowProxy.setResultMapperFor(
         'createSpeechRecognition',

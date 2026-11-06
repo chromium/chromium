@@ -2,21 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://contextual-tasks/strings.m.js';
+import 'chrome://webui-test/strings.m.js';
 import 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
 
 import {RichImageSuggestBatchLoadStatus} from 'chrome://resources/cr_components/composebox/common.js';
+import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
-import {createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SecondaryTextPlacement, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {installMock} from './composebox_test_utils.js';
 
 suite('ComposeboxDropdown', () => {
   let dropdown: ComposeboxDropdownElement;
@@ -25,6 +29,13 @@ suite('ComposeboxDropdown', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+    const searchboxHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    installMock(
+        PageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+            mock as unknown as PageHandlerRemote,
+            searchboxHandler as unknown as SearchboxPageHandlerRemote,
+            new SearchboxPageCallbackRouter())));
     metrics = fakeMetricsPrivate();
     dropdown = document.createElement('cr-composebox-dropdown');
     document.body.appendChild(dropdown);
