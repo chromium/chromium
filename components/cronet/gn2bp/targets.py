@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 DEFAULT_TARGETS = [
-    "//components/cronet/android:cronet_gn2bp_production_targets",
+    "//components/cronet/android:gn2bp_production_targets",
 ]
 
 DEFAULT_TESTS = [
-    "//components/cronet/android:cronet_gn2bp_test_targets",
+    "//components/cronet/android:gn2bp_test_targets",
 ]
 
 # Usually, README.chromium lives next to the BUILD.gn. However, some cases are

@@ -575,7 +575,7 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             "//components/cronet/android:cronet_final_jni_java", "java_library"
         )
         _add_target(
-            "//components/cronet/android:cronet_gn2bp_production_targets",
+            "//components/cronet/android:gn2bp_production_targets",
             "group",
             deps=[
                 "//components/cronet/android:cronet",
@@ -669,7 +669,11 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             m.name: m for m in gen_android_bp.create_extras_modules(gn, ctx)
         }
 
-        self.assertNotIn("tot_cronet_api_java", mods)
+        self.assertIn("tot_cronet_api_java", mods)
+        self.assertEqual(
+            mods["tot_cronet_api_java"].static_libs,
+            {"tot_cronet_components_cronet_android_cronet_api_java"},
+        )
         self.assertEqual(mods["tot_cronet_java_tests"].type, "java_library")
         self.assertIsNone(
             getattr(mods["tot_cronet_java_tests"], "manifest", None)
@@ -736,7 +740,7 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             mods["tot_cronet_java_tests"].static_libs,
         )
         self.assertIn(
-            "tot_cronet_components_cronet_android_cronet_api_java",
+            "tot_cronet_api_java",
             mods["tot_cronet_java_tests"].libs,
         )
 

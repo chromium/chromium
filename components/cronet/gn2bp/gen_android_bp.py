@@ -377,9 +377,6 @@ def create_extras_modules(
     # Redirect "jni_registration" to "final_jni". This module name is being referenced
     # in the top-level external/cronet/Android.bp file so we temporarily alias it to
     # avoid having to coordinate an Android-side change.
-    # TODO(https://crbug.com/542041778): once ag/43441839 lands in Android, get rid
-    # of `components_cronet_android_cronet_tests_jni_registration_java__testing`,
-    # `java`, `java__testing`, and `for_testing_net_java` below.
     jni_reg_testing = _new_extra_module(
         "java_library",
         "components_cronet_android_cronet_tests_jni_registration_java__testing",
@@ -392,10 +389,22 @@ def create_extras_modules(
     jni_reg_testing.static_libs = set(tests_final_jni_modules)
     jni_reg_testing.visibility = {"//external/cronet:__pkg__"}
 
+    api_java = _new_extra_module("java_library", "api_java")
+    api_java.static_libs = {
+        soong_ast.label_to_module_name(
+            translation_config.java_api_target_name, context
+        )
+    }
+    api_java.sdk_version = "module_current"
+    api_java.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
+    api_java.visibility = {
+        "//packages/modules/Connectivity:__subpackages__",
+        "//external/cronet/android:__subpackages__",
+    }
+    api_java.apex_available = {common.tethering_apex}
+
     java_mod = _new_extra_module("java_library", "java")
-    prod_target_name = (
-        "//components/cronet/android:cronet_gn2bp_production_targets"
-    )
+    prod_target_name = "//components/cronet/android:gn2bp_production_targets"
     if prod_target_name in gn.all_targets:
         prod_target = gn.get_target(prod_target_name)
         java_mod.static_libs = {
@@ -474,9 +483,7 @@ def create_extras_modules(
         )
     java_tests.libs = {
         "android.test.base.stubs.system",
-        soong_ast.label_to_module_name(
-            translation_config.java_api_target_name, context
-        ),
+        f"{context.module_prefix}api_java",
         "framework-connectivity.stubs.module_lib",
         "framework-connectivity-pre-jarjar",
         # android.net.TrafficStats apis
@@ -878,6 +885,10 @@ _CPP_SOURCE_EXTENSIONS = (
     ".m",
     ".mm",
 )
+# This is a naive regex that does not understand conditional includes
+# (i.e. #ifdef XXX #include), and therefore may report false positives.
+# Ideally we should ask the compiler to dump the list of included files after
+# preprocessing, but that may be significantly more complicated and slower.
 _CPP_INCLUDE_REGEX = re.compile(
     r'^\s*#\s*(?:include|import)\s+[<"]([^>"]+)[>"]', re.MULTILINE
 )

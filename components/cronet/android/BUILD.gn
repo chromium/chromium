@@ -2425,7 +2425,7 @@ script_test("generate_build_script_test") {
                root_build_dir) + ")" ]
 }
 
-group("cronet_gn2bp_production_targets") {
+group("gn2bp_production_targets") {
   deps = [
     ":cronet",
     ":cronet_api_java",
@@ -2436,12 +2436,12 @@ group("cronet_gn2bp_production_targets") {
   ]
 }
 
-group("cronet_gn2bp_test_targets") {
+group("gn2bp_test_targets") {
   testonly = true
   deps = [
-    ":cronet_gn2bp_production_targets",
     ":cronet_test_instrumentation_apk",
     ":cronet_unittests_android",
+    ":gn2bp_production_targets",
     ":repackage_test_jars",
     "//build/rust/tests/bindgen_static_fns_test",
     "//build/rust/tests/bindgen_test",
@@ -2468,9 +2468,9 @@ action("cronet_gn2bp_aosp_feedback_loop") {
     # bot to pointlessly build Cronet. Surely there is a cleaner way.
     # This is still prone to failure if we decide to run GN2BP against
     # a change that does not affect these particular targets.
-    ":cronet_gn2bp_production_targets",
-    ":cronet_gn2bp_test_targets",
     ":cronet_non_test_package",
+    ":gn2bp_production_targets",
+    ":gn2bp_test_targets",
   ]
   _stamp_path = "$target_gen_dir/$target_name.stamp"
   args = [

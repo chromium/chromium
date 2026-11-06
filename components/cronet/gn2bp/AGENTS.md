@@ -11,7 +11,7 @@ This tool is especially tailored for Cronet's import into Android, meaning it co
 The entry point for the process is typically `run_gn2bp.py`. The overall pipeline looks like this:
 
 1. **Release Validation**: `run_gn2bp.py` fetches known breakages from `breakages.json` and verifies that the current Git history doesn't contain a bad commit without its corresponding fix (can be skipped locally with `--skip-release-validation`).
-2. **GN Config and Build Scripts Execution**: `generate_build_scripts_output.py` is invoked to compile and run any Rust build scripts (`build.rs`) for the root GN target groups (`//components/cronet/android:cronet_gn2bp_production_targets` and `//components/cronet/android:cronet_gn2bp_test_targets`). Soong does not support executing Rust build scripts dynamically at build time, so Chromium pre-evaluates them and saves the resulting `cargo_flags` and other generated Rust code into `gn2bp_rust_build_script_outputs/`.
+2. **GN Config and Build Scripts Execution**: `generate_build_scripts_output.py` is invoked to compile and run any Rust build scripts (`build.rs`) for the root GN target groups (`//components/cronet/android:gn2bp_production_targets` and `//components/cronet/android:gn2bp_test_targets`). Soong does not support executing Rust build scripts dynamically at build time, so Chromium pre-evaluates them and saves the resulting `cargo_flags` and other generated Rust code into `gn2bp_rust_build_script_outputs/`.
 3. **GN Desc Evaluation**: `gn desc ... --format=json` is run for each architecture (`x86`, `x64`, `arm`, `arm64`, `riscv64`) plus `host` to extract the full GN dependency graph and target properties.
 4. **Target Translation & Copybara Path Generation**: `gen_android_bp.py` processes the GN descriptions using `gn_utils.py`, creates an in-memory `Blueprint` and `Module` representation of each target (`soong_ast.py`, `translators.py`, `action_sanitizers.py`, `translation_config.py`, `context.py`), applies customizations, and writes all generated outputs into `out/gn2bp/`:
    * `out/gn2bp/**/Android.bp`: The generated Soong build files split per directory.
@@ -26,8 +26,8 @@ The driver script. It handles concurrency for `gn desc` generation across differ
 
 ### `targets.py` & `components/cronet/android/BUILD.gn`
 * `components/cronet/android/BUILD.gn` defines the two single-entry-point GN groups evaluated by `gn2bp`:
-  * `//components/cronet/android:cronet_gn2bp_production_targets`
-  * `//components/cronet/android:cronet_gn2bp_test_targets`
+  * `//components/cronet/android:gn2bp_production_targets`
+  * `//components/cronet/android:gn2bp_test_targets`
 * `targets.py` references those two root groups (`DEFAULT_TARGETS` and `DEFAULT_TESTS`) and maps the leaf GN targets to their stable top-level Soong module names in `GN_TO_AOSP_TARGET_NAMES`.
 
 ### `gn_utils.py`
@@ -247,3 +247,6 @@ The following architectural limitations and remaining hardcoded workarounds in `
 5. **Rust `build.rs` Output Handling (`b/447592983`) & GN `public` Header Visibility (`gn_utils.py`)**:
    * `translators.py` / `gen_android_bp.py` currently hardcode the `arm64` subdirectory (`gn2bp_rust_build_script_outputs/arm64/...`) when referencing pre-generated `build.rs` outputs (`b/447592983` / `b/447593242`), assuming `build.rs` outputs do not vary across architectures.
    * `gn_utils.py` treats all `.h` files in a target's `sources` as exported headers even when GN's `public` attribute is specified, which can leak internal headers across targets in Soong.
+6. **Heuristic GN Action and APK Unwrapping in `gn_utils.py`**:
+   * `gn_utils.py` currently inspects script names (e.g. `generate_android_wrapper.py`, `write_build_config.py`) and hardcodes internal template suffixes (e.g. `__build_config_crbug_908819`, `__write_deps`) to unwrap Java libraries, shared native libraries, and test manifests from complex GN targets.
+   * This reverse-engineering of template internals could be simplified by defining explicit GN `metadata` keys on the upstream templates to expose packaged test shared libraries, Java dependencies, and manifests directly.
