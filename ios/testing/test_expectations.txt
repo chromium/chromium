@@ -30,9 +30,25 @@
 #   - Sanitizer: ASan
 #   - Platform: Catalyst
 #
-# Expectations: Failure, Pass, Skip, Crash
-# (Multiple expectations can be combined, e.g., [ Pass Failure ] denotes a flaky
-# test that sometimes passes and sometimes fails.)
+# Expectations: Failure, Pass, Crash, Skip
+#
+# - [ Failure ]: The test runs and fails 100% of the time. This is a strict
+#   expectation: if the test ever passes, the run is reported as a failure
+#   ("unmet test expectation"), which prompts the gardener to remove the entry.
+#   Because of this, scoped [ Failure ] entries are self-cleaning and preferred
+#   over [ Pass Failure ] whenever the failure is deterministic.
+# - [ Pass Failure ]: The test is flaky; it passes and fails intermittently on
+#   the SAME configuration. Do not use this for a test that fails reliably on
+#   one configuration and passes reliably on others. Always scope flaky
+#   expectations with tags to the configurations where the flakiness was
+#   actually observed (e.g. [ iPad Simulator ] ... [ Pass Failure ]) to keep
+#   the other configurations reporting.
+# - [ Crash ]: The test crashes 100% of the time (uncaught exception or app
+#   crash). Combine with Pass and/or Failure for intermittent crashes
+#   (e.g. [ Pass Crash ], [ Pass Failure Crash ]).
+# - [ Skip ]: The test is not run at all. Reserve this for tests that hang,
+#   time out, or consume excessive resources. Skip takes precedence over any
+#   other expectation on the same line.
 #
 # Examples:
 # crbug.com/123456 [ iOS26 Simulator Debug ] MyTestCase/testAppStoreSearch [ Failure ]
@@ -44,6 +60,9 @@
 # crbug.com/234567 [ iPhone16,1 ASan ] CrashingTestCase/testMethod [ Crash ]
 #     -> Expects CrashingTestCase/testMethod to crash every time on ASAN builds running on
 #        iPhone16,1 (iPhone 15 Pro) devices and simulators.
+# crbug.com/345678 [ Device ] HangingTestCase/testMethod [ Skip ]
+#     -> Never runs HangingTestCase/testMethod on physical devices (e.g. because it hangs
+#        until the test runner times out).
 #
 
 # Smoke test to verify expectations functionality. Do not remove.
