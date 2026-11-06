@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -322,11 +321,6 @@ AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
   if (sync_service_observer_.GetSource()->GetTransportState() ==
       syncer::SyncService::TransportState::DISABLED) {
     return ProfileUpdateBlockReason::kUserSignedOut;
-  }
-
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-      !sync_service_observer_.GetSource()->IsSyncFeatureEnabled()) {
-    return ProfileUpdateBlockReason::kSyncDisabled;
   }
 
   if (!sync_service_observer_.GetSource()
