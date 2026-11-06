@@ -564,8 +564,8 @@ void TabGroupHeader::VisualsChanged() {
       const bool frame_active =
           GetWidget() && GetWidget()->ShouldPaintAsActive();
       const SkColor normal_bg = GetColorProvider()->GetColor(
-          frame_active ? ui::kColorSysOnHeaderDivider
-                       : ui::kColorSysOnHeaderDividerInactive);
+          frame_active ? kColorTabGroupEphemeralHeaderBackgroundFrameActive
+                       : kColorTabGroupEphemeralHeaderBackgroundFrameInactive);
       if (editor_bubble_tracker_.is_open()) {
         const SkColor press_ink =
             GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
@@ -714,8 +714,8 @@ void TabGroupHeader::UpdateTitleView() {
       const bool frame_active =
           GetWidget() && GetWidget()->ShouldPaintAsActive();
       title_->SetEnabledColor(GetColorProvider()->GetColor(
-          frame_active ? ui::kColorSysOnSurfacePrimary
-                       : ui::kColorSysOnSurfacePrimaryInactive));
+          frame_active ? kColorTabGroupEphemeralHeaderForegroundFrameActive
+                       : kColorTabGroupEphemeralHeaderForegroundFrameInactive));
     } else {
       title_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color_));
     }

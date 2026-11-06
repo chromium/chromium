@@ -218,6 +218,14 @@ void AddNativeHighContrastColors(ui::ColorMixer& mixer) {
       kColorTabForegroundActiveFrameActive};
   mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
       kColorTabForegroundActiveFrameActive};
+  mixer[kColorTabGroupEphemeralHeaderBackgroundFrameActive] = {
+      kColorTabBackgroundActiveFrameActive};
+  mixer[kColorTabGroupEphemeralHeaderBackgroundFrameInactive] = {
+      kColorTabBackgroundActiveFrameInactive};
+  mixer[kColorTabGroupEphemeralHeaderForegroundFrameActive] = {
+      kColorTabForegroundActiveFrameActive};
+  mixer[kColorTabGroupEphemeralHeaderForegroundFrameInactive] = {
+      kColorTabForegroundActiveFrameActive};
   mixer[kColorNewTabButtonInkDropFrameActive] = {kColorToolbarText};
   mixer[kColorNewTabButtonInkDropFrameInactive] = {kColorToolbarText};
   mixer[kColorTabStripControlButtonInkDrop] = {kColorToolbarText};

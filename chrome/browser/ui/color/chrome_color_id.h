@@ -1071,6 +1071,10 @@
   E_CPONLY(kColorTabGroupTabStripFrameInactivePurple) \
   E_CPONLY(kColorTabGroupTabStripFrameInactiveCyan) \
   E_CPONLY(kColorTabGroupTabStripFrameInactiveOrange) \
+  E_CPONLY(kColorTabGroupEphemeralHeaderBackgroundFrameActive) \
+  E_CPONLY(kColorTabGroupEphemeralHeaderBackgroundFrameInactive) \
+  E_CPONLY(kColorTabGroupEphemeralHeaderForegroundFrameActive) \
+  E_CPONLY(kColorTabGroupEphemeralHeaderForegroundFrameInactive) \
   E_CPONLY(kColorTabStrokeFrameActive) \
   E_CPONLY(kColorTabStrokeFrameInactive) \
   E_CPONLY(kColorTabstripScrollContainerShadow) \

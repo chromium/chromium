@@ -722,15 +722,15 @@ SkColor TabGroupHeaderView::GetBackgroundColor() const {
   }
   const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
   if (IsEphemeralGroup()) {
-    const SkColor normal_bg = GetColorProvider()->GetColor(
-        frame_active ? ui::kColorSysOnHeaderDivider
-                     : ui::kColorSysOnHeaderDividerInactive);
+    const SkColor bg_color = GetColorProvider()->GetColor(
+        frame_active ? kColorTabGroupEphemeralHeaderBackgroundFrameActive
+                     : kColorTabGroupEphemeralHeaderBackgroundFrameInactive);
     if (editor_bubble_tracker_.is_open()) {
       const SkColor press_ink =
           GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
-      return color_utils::GetResultingPaintColor(press_ink, normal_bg);
+      return color_utils::GetResultingPaintColor(press_ink, bg_color);
     }
-    return normal_bg;
+    return bg_color;
   }
   return GetColorProvider()->GetColor(
       GetTabGroupTabStripColorId(tab_group_visual_data_.color(), frame_active));
@@ -743,8 +743,8 @@ SkColor TabGroupHeaderView::GetForegroundColor() const {
   if (IsEphemeralGroup()) {
     const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
     const SkColor fg_color = GetColorProvider()->GetColor(
-        frame_active ? ui::kColorSysOnSurfacePrimary
-                     : ui::kColorSysOnSurfacePrimaryInactive);
+        frame_active ? kColorTabGroupEphemeralHeaderForegroundFrameActive
+                     : kColorTabGroupEphemeralHeaderForegroundFrameInactive);
     if (focus_content_opacity_ >= 1.0f) {
       return fg_color;
     }

@@ -118,18 +118,20 @@ SkColor TabGroupUnfocusButton::GetBackgroundColor() const {
     return gfx::kPlaceholderColor;
   }
   const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
-  SkColor bg = is_ephemeral_
-                   ? GetColorProvider()->GetColor(
-                         frame_active ? ui::kColorSysOnHeaderDivider
-                                      : ui::kColorSysOnHeaderDividerInactive)
-                   : GetColorProvider()->GetColor(
-                         GetTabGroupTabStripColorId(color_id_, frame_active));
+  SkColor bg_color =
+      is_ephemeral_
+          ? GetColorProvider()->GetColor(
+                frame_active
+                    ? kColorTabGroupEphemeralHeaderBackgroundFrameActive
+                    : kColorTabGroupEphemeralHeaderBackgroundFrameInactive)
+          : GetColorProvider()->GetColor(
+                GetTabGroupTabStripColorId(color_id_, frame_active));
   if (IsMouseHovered()) {
     const SkColor hover_ink =
         GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
-    bg = color_utils::GetResultingPaintColor(hover_ink, bg);
+    bg_color = color_utils::GetResultingPaintColor(hover_ink, bg_color);
   }
-  return bg;
+  return bg_color;
 }
 
 SkColor TabGroupUnfocusButton::GetForegroundColor() const {
@@ -139,8 +141,8 @@ SkColor TabGroupUnfocusButton::GetForegroundColor() const {
   const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
   if (is_ephemeral_) {
     return GetColorProvider()->GetColor(
-        frame_active ? ui::kColorSysOnSurfacePrimary
-                     : ui::kColorSysOnSurfacePrimaryInactive);
+        frame_active ? kColorTabGroupEphemeralHeaderForegroundFrameActive
+                     : kColorTabGroupEphemeralHeaderForegroundFrameInactive);
   }
   const SkColor bg = GetColorProvider()->GetColor(
       GetTabGroupTabStripColorId(color_id_, frame_active));

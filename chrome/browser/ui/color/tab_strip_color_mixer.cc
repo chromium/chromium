@@ -211,6 +211,22 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
       kColorNewTabButtonCRForegroundFrameActive};
   mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
       kColorNewTabButtonCRForegroundFrameInactive};
+  mixer[kColorTabGroupEphemeralHeaderBackgroundFrameActive] = {
+      kColorTabBackgroundInactiveFrameActive};
+  mixer[kColorTabGroupEphemeralHeaderBackgroundFrameInactive] = {
+      kColorTabBackgroundInactiveFrameInactive};
+  mixer[kColorTabGroupEphemeralHeaderForegroundFrameActive] =
+      ui::BlendForMinContrast(
+          kColorTabForegroundInactiveFrameActive,
+          kColorTabGroupEphemeralHeaderBackgroundFrameActive,
+          ui::GetColorWithMaxContrast(
+              kColorTabGroupEphemeralHeaderBackgroundFrameActive));
+  mixer[kColorTabGroupEphemeralHeaderForegroundFrameInactive] =
+      ui::BlendForMinContrast(
+          kColorTabForegroundInactiveFrameInactive,
+          kColorTabGroupEphemeralHeaderBackgroundFrameInactive,
+          ui::GetColorWithMaxContrast(
+              kColorTabGroupEphemeralHeaderBackgroundFrameInactive));
   mixer[kColorTabStripComboButtonSeparator] = {ui::kColorSeparator};
   mixer[kColorTabStripControlButtonInkDrop] = ui::SetAlpha(
       kColorNewTabButtonInkDropFrameActive, std::ceil(0.16f * 255.0f));

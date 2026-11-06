@@ -90,4 +90,17 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfacePrimary};
   mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
       ui::kColorSysOnSurfacePrimaryInactive};
+
+  mixer[kColorTabGroupEphemeralHeaderBackgroundFrameActive] = {
+      ui::kColorSysOnHeaderDivider};
+  mixer[kColorTabGroupEphemeralHeaderBackgroundFrameInactive] = {
+      ui::kColorSysOnHeaderDividerInactive};
+  mixer[kColorTabGroupEphemeralHeaderForegroundFrameActive] =
+      ui::BlendForMinContrast(
+          {ui::kColorSysOnSurfacePrimary},
+          {kColorTabGroupEphemeralHeaderBackgroundFrameActive});
+  mixer[kColorTabGroupEphemeralHeaderForegroundFrameInactive] =
+      ui::BlendForMinContrast(
+          {ui::kColorSysOnSurfacePrimaryInactive},
+          {kColorTabGroupEphemeralHeaderBackgroundFrameInactive});
 }
