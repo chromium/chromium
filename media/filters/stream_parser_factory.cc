@@ -51,31 +51,31 @@ typedef bool (*CodecIDValidatorFunction)(std::string_view codecs_id,
 struct CodecInfo {
   enum Type { UNKNOWN, AUDIO, VIDEO };
 
-  // Update tools/metrics/histograms/metadata/media/enums.xml if new values are
-  // added.
+  // Update tools/metrics/histograms/metadata/media/enums.xml (MSECodec) if new
+  // values are added.
   // LINT.IfChange(MSECodec)
   enum HistogramTag {
-    HISTOGRAM_UNKNOWN,
-    HISTOGRAM_VP8,
-    HISTOGRAM_VP9,
-    HISTOGRAM_VORBIS,
-    HISTOGRAM_H264,
-    HISTOGRAM_MPEG2AAC,
-    HISTOGRAM_MPEG4AAC,
-    HISTOGRAM_EAC3,
-    HISTOGRAM_MP3,
-    HISTOGRAM_OPUS,
-    HISTOGRAM_HEVC,
-    HISTOGRAM_AC3,
-    HISTOGRAM_DOLBYVISION,
-    HISTOGRAM_FLAC,
-    HISTOGRAM_AV1,
-    HISTOGRAM_MPEG_H_AUDIO,
-    HISTOGRAM_DTS,
-    HISTOGRAM_DTSXP2,
-    HISTOGRAM_DTSE,
-    HISTOGRAM_AC4,
-    HISTOGRAM_IAMF,
+    HISTOGRAM_UNKNOWN = 0,
+    HISTOGRAM_VP8 = 1,
+    HISTOGRAM_VP9 = 2,
+    HISTOGRAM_VORBIS = 3,
+    HISTOGRAM_H264 = 4,
+    HISTOGRAM_MPEG2AAC = 5,
+    HISTOGRAM_MPEG4AAC = 6,
+    HISTOGRAM_EAC3 = 7,
+    HISTOGRAM_MP3 = 8,
+    HISTOGRAM_OPUS = 9,
+    HISTOGRAM_HEVC = 10,
+    HISTOGRAM_AC3 = 11,
+    HISTOGRAM_DOLBYVISION = 12,
+    HISTOGRAM_FLAC = 13,
+    HISTOGRAM_AV1 = 14,
+    HISTOGRAM_MPEG_H_AUDIO = 15,
+    HISTOGRAM_DTS = 16,
+    HISTOGRAM_DTSXP2 = 17,
+    HISTOGRAM_DTSE = 18,
+    HISTOGRAM_AC4 = 19,
+    HISTOGRAM_IAMF = 20,
     HISTOGRAM_MAX = HISTOGRAM_IAMF  // Must be equal to largest logged entry.
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MSECodec)
