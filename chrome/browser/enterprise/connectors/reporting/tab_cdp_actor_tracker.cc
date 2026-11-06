@@ -37,10 +37,6 @@ size_t GetMaxActorsPerTab() {
   return static_cast<size_t>(std::max(1, kCdpAttributionMaxActorsPerTab.Get()));
 }
 
-base::TimeDelta GetDetachedActorTtl() {
-  return std::max(base::TimeDelta(), kCdpAttributionDetachedActorTtl.Get());
-}
-
 }  // namespace
 
 CdpActorBuffer::ExternalActorEntry::ExternalActorEntry() = default;
@@ -53,7 +49,7 @@ CdpActorBuffer::ExternalActorEntry::ExternalActorEntry(
       peer_endpoint(std::move(peer_endpoint)),
       leaf_pid(GetLeafPid(process_tree)),
       process_tree(std::move(process_tree)),
-      active_sessions(1) {}
+      last_command_at(base::TimeTicks::Now()) {}
 
 CdpActorBuffer::ExternalActorEntry::ExternalActorEntry(
     const ExternalActorEntry&) = default;
@@ -70,10 +66,10 @@ CdpActorBuffer::ExternalActorEntry::~ExternalActorEntry() = default;
 CdpActorBuffer::CdpActorBuffer() = default;
 CdpActorBuffer::~CdpActorBuffer() = default;
 
-void CdpActorBuffer::OnExternalActorAttached(
+void CdpActorBuffer::OnExternalActorCommandHandled(
     TransportType transport_type,
     std::optional<net::IPEndPoint> peer_endpoint,
-    ProcessTree process_tree) {
+    const ProcessTree& process_tree) {
   if (transport_type != chrome::cros::reporting::proto::ExternalProcessInfo::
                             TRANSPORT_TYPE_PIPE &&
       transport_type != chrome::cros::reporting::proto::ExternalProcessInfo::
@@ -87,14 +83,13 @@ void CdpActorBuffer::OnExternalActorAttached(
   const base::ProcessId leaf_pid = GetLeafPid(process_tree);
   auto it = FindMatchingActor(transport_type, peer_endpoint, leaf_pid);
   if (it != external_actors_.end()) {
-    ++it->active_sessions;
-    it->detached_at.reset();
+    it->last_command_at = now;
     if (peer_endpoint.has_value() && !it->peer_endpoint.has_value()) {
       it->peer_endpoint = std::move(peer_endpoint);
     }
-    if (!process_tree.empty()) {
+    if (it->process_tree.empty() && !process_tree.empty()) {
       it->leaf_pid = leaf_pid;
-      it->process_tree = std::move(process_tree);
+      it->process_tree = process_tree;
     }
     return;
   }
@@ -105,55 +100,19 @@ void CdpActorBuffer::OnExternalActorAttached(
   }
 
   external_actors_.emplace_back(transport_type, std::move(peer_endpoint),
-                                std::move(process_tree));
+                                process_tree);
 }
 
-void CdpActorBuffer::OnExternalActorAttached(TransportType transport_type,
-                                             ProcessTree process_tree) {
-  OnExternalActorAttached(transport_type, std::nullopt,
-                          std::move(process_tree));
-}
-
-void CdpActorBuffer::OnExternalActorDetached(
+void CdpActorBuffer::OnExternalActorCommandHandled(
     TransportType transport_type,
-    std::optional<net::IPEndPoint> peer_endpoint,
-    base::ProcessId pid) {
-  const base::TimeTicks now = base::TimeTicks::Now();
-  PruneExpiredEntries(now);
-
-  auto it = FindMatchingActor(transport_type, peer_endpoint, pid);
-  if (it == external_actors_.end() && !peer_endpoint.has_value() &&
-      pid == base::kNullProcessId) {
-    // Fallback for detaching an unattributed endpoint-less actor (e.g., a
-    // WebSocket session whose remote endpoint was unavailable) without
-    // conflating distinct unextracted actors during attachment.
-    it = std::ranges::find_if(
-        external_actors_, [transport_type](const ExternalActorEntry& entry) {
-          return entry.transport_type == transport_type &&
-                 entry.active_sessions > 0 &&
-                 !entry.peer_endpoint.has_value() &&
-                 entry.leaf_pid == base::kNullProcessId;
-        });
-  }
-  if (it == external_actors_.end() || it->active_sessions == 0) {
-    return;
-  }
-
-  --it->active_sessions;
-  if (it->active_sessions == 0) {
-    it->detached_at = now;
-  }
-}
-
-void CdpActorBuffer::OnExternalActorDetached(TransportType transport_type,
-                                             base::ProcessId pid) {
-  OnExternalActorDetached(transport_type, std::nullopt, pid);
+    const ProcessTree& process_tree) {
+  OnExternalActorCommandHandled(transport_type, std::nullopt, process_tree);
 }
 
 void CdpActorBuffer::UpdateExternalActorProcessTree(
     TransportType transport_type,
     std::optional<net::IPEndPoint> peer_endpoint,
-    ProcessTree process_tree) {
+    const ProcessTree& process_tree) {
   const base::TimeTicks now = base::TimeTicks::Now();
   PruneExpiredEntries(now);
   if (process_tree.empty()) {
@@ -167,7 +126,7 @@ void CdpActorBuffer::UpdateExternalActorProcessTree(
   }
 
   it->leaf_pid = leaf_pid;
-  it->process_tree = std::move(process_tree);
+  it->process_tree = process_tree;
 }
 
 void CdpActorBuffer::OnDevToolsUiAttached() {
@@ -184,7 +143,8 @@ void CdpActorBuffer::OnDevToolsUiDetached() {
 
 std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
 CdpActorBuffer::BuildEventInitiatorInfo() {
-  PruneExpiredEntries(base::TimeTicks::Now());
+  const base::TimeTicks now = base::TimeTicks::Now();
+  PruneExpiredEntries(now);
 
   if (!external_actors_.empty()) {
     chrome::cros::reporting::proto::EventInitiatorInfo initiator;
@@ -231,11 +191,8 @@ CdpActorBuffer::GetExternalActorsForTesting() {
 }
 
 void CdpActorBuffer::PruneExpiredEntries(base::TimeTicks now) {
-  const base::TimeDelta ttl = GetDetachedActorTtl();
-
   std::erase_if(external_actors_, [&](const ExternalActorEntry& entry) {
-    return !entry.IsAttached() && entry.detached_at.has_value() &&
-           (now - *entry.detached_at >= ttl);
+    return !entry.IsWithinTtl(now);
   });
 }
 
@@ -267,8 +224,7 @@ CdpActorBuffer::FindMatchingActor(TransportType transport_type,
     }
     // `--remote-debugging-pipe` is a single browser-wide channel without a
     // socket endpoint, so an unresolved placeholder (`kNullProcessId`) and a
-    // resolved Pipe entry (or a detach call omitting `pid`) refer to the same
-    // pipe actor.
+    // resolved Pipe entry refer to the same pipe actor.
     if (!peer_endpoint.has_value() && !it->peer_endpoint.has_value() &&
         transport_type == chrome::cros::reporting::proto::ExternalProcessInfo::
                               TRANSPORT_TYPE_PIPE &&
@@ -285,13 +241,9 @@ void CdpActorBuffer::EvictOneEntryForInsert() {
     return;
   }
 
-  // Evict the oldest detached entry first; if all entries are still attached,
-  // all map to `(true, std::nullopt)` so `std::ranges::min_element()` selects
-  // `begin()` (the oldest attached entry).
-  auto victim = std::ranges::min_element(
-      external_actors_, {}, [](const ExternalActorEntry& entry) {
-        return std::make_pair(entry.IsAttached(), entry.detached_at);
-      });
+  // Evict the entry with the oldest `last_command_at`.
+  auto victim = std::ranges::min_element(external_actors_, {},
+                                         &ExternalActorEntry::last_command_at);
   external_actors_.erase(victim);
 }
 

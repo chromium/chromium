@@ -22,7 +22,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -65,13 +64,6 @@ void RecordProcessTreeWalkLatency(base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(
       "Enterprise.CdpAttribution.ProcessTreeWalk.Latency", duration,
       base::Milliseconds(1), base::Milliseconds(500), 50);
-}
-
-base::ProcessId GetLeafPidFromTree(const ProcessTree& tree) {
-  if (tree.process_nodes.empty()) {
-    return base::kNullProcessId;
-  }
-  return tree.process_nodes.front().process_id;
 }
 
 size_t GetMaxPendingExtractions() {
@@ -243,29 +235,17 @@ std::optional<EventInitiatorInfo> CdpActorSessionTracker::GetEventInitiatorInfo(
       "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency",
       now - build_start, base::Milliseconds(1), base::Milliseconds(100), 50);
 
-  if (TabCdpActorTracker* tab_tracker =
-          TabCdpActorTracker::FromWebContents(web_contents)) {
-    const auto& external_actors = tab_tracker->buffer().external_actors();
-    if (!external_actors.empty()) {
-      base::UmaHistogramExactLinear(
-          "Enterprise.CdpAttribution.ActorCollisionCount",
-          info->external_process_info().external_processes_size(),
-          /*exclusive_max=*/10);
-      const bool has_empty_tree = std::ranges::any_of(
-          info->external_process_info().external_processes(),
-          [](const auto& process) { return process.process_nodes().empty(); });
-      base::UmaHistogramBoolean(
-          "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree",
-          has_empty_tree);
-      for (const auto& entry : external_actors) {
-        if (!entry.IsAttached() && entry.detached_at.has_value()) {
-          base::UmaHistogramCustomTimes(
-              "Enterprise.CdpAttribution.PostDetachEventDelay",
-              now - *entry.detached_at, base::Milliseconds(1),
-              base::Seconds(60), 50);
-        }
-      }
-    }
+  if (info->has_external_process_info()) {
+    base::UmaHistogramExactLinear(
+        "Enterprise.CdpAttribution.ActorCollisionCount",
+        info->external_process_info().external_processes_size(),
+        /*exclusive_max=*/10);
+    const bool has_empty_tree = std::ranges::any_of(
+        info->external_process_info().external_processes(),
+        [](const auto& process) { return process.process_nodes().empty(); });
+    base::UmaHistogramBoolean(
+        "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree",
+        has_empty_tree);
   }
   return info;
 }
@@ -313,7 +293,6 @@ void CdpActorSessionTracker::OnClientAttached(
     case SessionCategory::kIgnored:
       break;
     case SessionCategory::kDevToolsUi:
-      it->second.has_handled_command = true;
       TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
           ->buffer()
           .OnDevToolsUiAttached();
@@ -344,7 +323,7 @@ void CdpActorSessionTracker::OnCommandHandled(
   }
 
   auto it = active_channels_.find(channel);
-  if (it == active_channels_.end() || it->second.has_handled_command) {
+  if (it == active_channels_.end()) {
     return;
   }
 
@@ -361,8 +340,7 @@ void CdpActorSessionTracker::OnCommandHandled(
       break;
     case SessionCategory::kExternalPipe:
     case SessionCategory::kExternalWebSocket:
-      it->second.has_handled_command = true;
-      ActivateExternalSession(it->second, web_contents);
+      RecordExternalSessionCommand(it->second, web_contents);
       break;
   }
 }
@@ -384,25 +362,13 @@ void CdpActorSessionTracker::OnClientDetached(
 
   switch (tracked.category) {
     case SessionCategory::kIgnored:
+    case SessionCategory::kExternalPipe:
       break;
     case SessionCategory::kDevToolsUi:
       if (content::WebContents* web_contents = tracked.web_contents.get()) {
         if (auto* tab_tracker =
                 TabCdpActorTracker::FromWebContents(web_contents)) {
           tab_tracker->buffer().OnDevToolsUiDetached();
-        }
-      }
-      break;
-    case SessionCategory::kExternalPipe:
-      if (!tracked.has_handled_command) {
-        break;
-      }
-      if (content::WebContents* web_contents = tracked.web_contents.get()) {
-        if (auto* tab_tracker =
-                TabCdpActorTracker::FromWebContents(web_contents)) {
-          tab_tracker->buffer().OnExternalActorDetached(
-              ExternalProcessInfo::TRANSPORT_TYPE_PIPE, std::nullopt,
-              tracked.resolved_leaf_pid);
         }
       }
       break;
@@ -413,17 +379,6 @@ void CdpActorSessionTracker::OnClientDetached(
         if (cache_it != websocket_cache_.end() &&
             !cache_it->second.extraction_in_flight) {
           websocket_cache_.erase(cache_it);
-        }
-      }
-      if (!tracked.has_handled_command) {
-        break;
-      }
-      if (content::WebContents* web_contents = tracked.web_contents.get()) {
-        if (auto* tab_tracker =
-                TabCdpActorTracker::FromWebContents(web_contents)) {
-          tab_tracker->buffer().OnExternalActorDetached(
-              ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
-              tracked.remote_endpoint, tracked.resolved_leaf_pid);
         }
       }
       break;
@@ -463,9 +418,11 @@ bool CdpActorSessionTracker::HasCachedWebSocketProcessTreeForTesting(
   return it != websocket_cache_.end() && it->second.cached_tree.has_value();
 }
 
-void CdpActorSessionTracker::ActivateExternalSession(
+void CdpActorSessionTracker::RecordExternalSessionCommand(
     TrackedChannel& tracked,
     content::WebContents* web_contents) {
+  const bool is_first_command =
+      !std::exchange(tracked.has_handled_command, true);
   const bool is_websocket =
       tracked.category == SessionCategory::kExternalWebSocket;
   const ExternalProcessInfo::TransportType transport_type =
@@ -475,28 +432,31 @@ void CdpActorSessionTracker::ActivateExternalSession(
   if (is_websocket && !tracked.remote_endpoint.has_value()) {
     TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
         ->buffer()
-        .OnExternalActorAttached(transport_type);
+        .OnExternalActorCommandHandled(transport_type);
     return;
   }
 
   ProcessTreeCacheEntry& entry =
       is_websocket ? websocket_cache_[*tracked.remote_endpoint] : pipe_cache_;
   if (entry.cached_tree.has_value()) {
-    RecordDeferredHoldTime(base::TimeDelta());
-    const ProcessTree& tree = *entry.cached_tree;
-    tracked.resolved_leaf_pid = GetLeafPidFromTree(tree);
+    if (is_first_command) {
+      RecordDeferredHoldTime(base::TimeDelta());
+    }
     TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
         ->buffer()
-        .OnExternalActorAttached(transport_type, tracked.remote_endpoint, tree);
+        .OnExternalActorCommandHandled(transport_type, tracked.remote_endpoint,
+                                       *entry.cached_tree);
     return;
   }
 
-  // Register placeholder immediately while background extraction runs.
+  // Register or refresh placeholder while background extraction runs.
   TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
       ->buffer()
-      .OnExternalActorAttached(transport_type, tracked.remote_endpoint);
-  entry.waiting_tabs.emplace_back(web_contents->GetWeakPtr(),
-                                  base::TimeTicks::Now());
+      .OnExternalActorCommandHandled(transport_type, tracked.remote_endpoint);
+  if (is_first_command) {
+    entry.waiting_tabs.emplace_back(web_contents->GetWeakPtr(),
+                                    base::TimeTicks::Now());
+  }
   StartExtraction(tracked.remote_endpoint);
 }
 
@@ -583,13 +543,11 @@ void CdpActorSessionTracker::OnExtractionCompleted(
       remote_endpoint.has_value()
           ? ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET
           : ExternalProcessInfo::TRANSPORT_TYPE_PIPE;
-  const base::ProcessId leaf_pid = GetLeafPidFromTree(tree);
 
   base::flat_set<content::WebContents*> updated_tabs;
   for (auto& [channel, tracked] : active_channels_) {
     if (tracked.category == expected_category && tracked.has_handled_command &&
         tracked.remote_endpoint == remote_endpoint) {
-      tracked.resolved_leaf_pid = leaf_pid;
       if (content::WebContents* tracked_wc = tracked.web_contents.get()) {
         if (updated_tabs.insert(tracked_wc).second) {
           if (auto* tab_tracker =

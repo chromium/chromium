@@ -491,7 +491,7 @@ TEST_F(EventInitiatorUtilsTest,
                                   "/tmp/agent.js");
   TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
       ->buffer()
-      .OnExternalActorAttached(
+      .OnExternalActorCommandHandled(
           ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
           net::IPEndPoint(net::IPAddress::IPv4Localhost(), 51234),
           std::move(tree));
@@ -557,7 +557,7 @@ TEST_F(EventInitiatorUtilsTest,
                                   "");
   TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
       ->buffer()
-      .OnExternalActorAttached(
+      .OnExternalActorCommandHandled(
           ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
           net::IPEndPoint(net::IPAddress::IPv4Localhost(), 51234),
           std::move(tree));
@@ -592,7 +592,7 @@ TEST_F(EventInitiatorUtilsTest,
                                   "/tmp/agent.js");
   TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
       ->buffer()
-      .OnExternalActorAttached(
+      .OnExternalActorCommandHandled(
           ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
           net::IPEndPoint(net::IPAddress::IPv4Localhost(), 51234),
           std::move(tree));

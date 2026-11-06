@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_TAB_CDP_ACTOR_TRACKER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_TAB_CDP_ACTOR_TRACKER_H_
 
+#include <algorithm>
 #include <cstddef>
 #include <optional>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/process_extractor.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/ip_endpoint.h"
@@ -22,18 +24,19 @@ class WebContents;
 
 namespace enterprise_connectors {
 
-// Bounded buffer of active and recently detached CDP actors for a target tab's
-// WebContents, with detached entries evicted first when at capacity.
+// Bounded buffer of external and built-in CDP actors for a target tab's
+// WebContents.
 //
 // Maintains up to `kCdpAttributionMaxActorsPerTab` unique external actors
 // (`TRANSPORT_TYPE_PIPE` or `TRANSPORT_TYPE_WEBSOCKET`), deduplicated by
-// transport + endpoint or leaf PID, with session reference counting and
-// post-detach retention for `kCdpAttributionDetachedActorTtl`. Also tracks
-// active built-in DevTools UI (`FEATURE_TYPE_DEVTOOLS_UI`) attachments.
+// transport + endpoint or leaf PID, with attribution retention for
+// `kCdpAttributionActorIdleTtl` from the last handled CDP command
+// (`last_command_at`). Also tracks active built-in DevTools UI
+// (`FEATURE_TYPE_DEVTOOLS_UI`) attachments.
 class CdpActorBuffer {
  public:
   // Represents a tracked external CDP actor in the buffer, holding its
-  // transport metadata, resolved OS process tree, and active session refcount.
+  // transport metadata, resolved OS process tree, and last command timestamp.
   struct ExternalActorEntry {
     ExternalActorEntry();
     ExternalActorEntry(
@@ -47,7 +50,10 @@ class CdpActorBuffer {
     ExternalActorEntry& operator=(ExternalActorEntry&&) noexcept;
     ~ExternalActorEntry();
 
-    bool IsAttached() const { return active_sessions > 0; }
+    bool IsWithinTtl(base::TimeTicks now) const {
+      return now - last_command_at <
+             std::max(base::TimeDelta(), kCdpAttributionActorIdleTtl.Get());
+    }
 
     chrome::cros::reporting::proto::ExternalProcessInfo::TransportType
         transport_type = chrome::cros::reporting::proto::ExternalProcessInfo::
@@ -55,8 +61,7 @@ class CdpActorBuffer {
     std::optional<net::IPEndPoint> peer_endpoint;
     base::ProcessId leaf_pid = base::kNullProcessId;
     ProcessTree process_tree;
-    size_t active_sessions = 0;
-    std::optional<base::TimeTicks> detached_at;
+    base::TimeTicks last_command_at;
   };
 
   CdpActorBuffer();
@@ -65,38 +70,22 @@ class CdpActorBuffer {
   CdpActorBuffer(const CdpActorBuffer&) = delete;
   CdpActorBuffer& operator=(const CdpActorBuffer&) = delete;
 
-  // Records an external CDP session attachment (`PIPE` or `WEBSOCKET`).
-  // Deduplicates against existing entries and increments `active_sessions`, or
-  // inserts a new entry (evicting the oldest detached entry first, or oldest
-  // attached entry if full).
-  void OnExternalActorAttached(
+  // Records an external CDP actor (`PIPE` or `WEBSOCKET`) upon handling a
+  // command. Deduplicates against existing entries and refreshes
+  // `last_command_at`, or inserts a new entry (evicting the entry with the
+  // oldest `last_command_at` if at capacity).
+  void OnExternalActorCommandHandled(
       chrome::cros::reporting::proto::ExternalProcessInfo::TransportType
           transport_type,
       std::optional<net::IPEndPoint> peer_endpoint = std::nullopt,
-      ProcessTree process_tree = {});
+      const ProcessTree& process_tree = {});
 
-  // Records an external CDP session attachment for the given `transport_type`
-  // and `process_tree` without a socket endpoint.
-  void OnExternalActorAttached(
+  // Records an external CDP actor for the given `transport_type` and
+  // `process_tree` without a socket endpoint.
+  void OnExternalActorCommandHandled(
       chrome::cros::reporting::proto::ExternalProcessInfo::TransportType
           transport_type,
-      ProcessTree process_tree);
-
-  // Decrements `active_sessions` for the matching external actor; when the
-  // count reaches 0, records `detached_at = base::TimeTicks::Now()` for the
-  // post-detach grace window.
-  void OnExternalActorDetached(
-      chrome::cros::reporting::proto::ExternalProcessInfo::TransportType
-          transport_type,
-      std::optional<net::IPEndPoint> peer_endpoint = std::nullopt,
-      base::ProcessId pid = base::kNullProcessId);
-
-  // Decrements `active_sessions` for the external actor matching
-  // `transport_type` and `pid` without a socket endpoint.
-  void OnExternalActorDetached(
-      chrome::cros::reporting::proto::ExternalProcessInfo::TransportType
-          transport_type,
-      base::ProcessId pid);
+      const ProcessTree& process_tree);
 
   // Updates the `ProcessTree` of a matching external actor in the buffer when
   // an asynchronous OS process tree extraction completes.
@@ -104,19 +93,20 @@ class CdpActorBuffer {
       chrome::cros::reporting::proto::ExternalProcessInfo::TransportType
           transport_type,
       std::optional<net::IPEndPoint> peer_endpoint,
-      ProcessTree process_tree);
+      const ProcessTree& process_tree);
 
   // Records a built-in DevTools UI (`"DevTools"`) attachment or detachment.
   void OnDevToolsUiAttached();
   void OnDevToolsUiDetached();
 
-  // Lazily prunes expired detached entries and builds `EventInitiatorInfo`,
-  // deduplicating resolved external actors that share the same
-  // `(transport_type, leaf_pid)`. External CDP actors (`PIPE` / `WEBSOCKET`)
-  // take precedence over built-in DevTools UI (`FEATURE_TYPE_DEVTOOLS_UI`)
-  // because `EventInitiatorInfo.actor` is a `oneof`. Returns `std::nullopt` if
-  // no external actor is currently attached or within the post-detach TTL
-  // window and no DevTools UI session is active.
+  // Lazily prunes expired entries and builds `EventInitiatorInfo` from
+  // external actors within the command TTL (`IsWithinTtl()`), deduplicating
+  // resolved external actors that share the same `(transport_type, leaf_pid)`.
+  // External CDP actors (`PIPE` / `WEBSOCKET`) take precedence over built-in
+  // DevTools UI (`FEATURE_TYPE_DEVTOOLS_UI`) because
+  // `EventInitiatorInfo.initiator` is a `oneof`. Returns `std::nullopt` if no
+  // external actor is within the command TTL window and no DevTools UI session
+  // is active.
   std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
   BuildEventInitiatorInfo();
 
@@ -128,7 +118,7 @@ class CdpActorBuffer {
   }
 
  private:
-  // Prunes detached entries whose age exceeds the post-detach TTL.
+  // Prunes entries whose time since `last_command_at` exceeds the TTL.
   void PruneExpiredEntries(base::TimeTicks now);
 
   // Returns an iterator to the entry matching `transport_type`,
@@ -140,8 +130,7 @@ class CdpActorBuffer {
       std::optional<net::IPEndPoint> peer_endpoint,
       base::ProcessId leaf_pid);
 
-  // Evicts the oldest detached entry, or the oldest attached entry if all
-  // entries are active.
+  // Evicts the entry with the oldest `last_command_at`.
   void EvictOneEntryForInsert();
 
   std::vector<ExternalActorEntry> external_actors_;

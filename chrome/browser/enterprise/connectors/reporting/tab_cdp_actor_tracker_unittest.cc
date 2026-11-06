@@ -79,7 +79,7 @@ TEST_F(TabCdpActorTrackerTest, FeatureDisabledReturnsNullopt) {
   disabled_feature.InitAndDisableFeature(kEventReportingCdpAttribution);
 
   TabCdpActorTracker* tracker = GetOrCreateTracker();
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_PIPE, MakeProcessTree(1001, 500));
   EXPECT_TRUE(tracker->buffer().BuildEventInitiatorInfo().has_value());
   EXPECT_EQ(std::nullopt,
@@ -88,17 +88,17 @@ TEST_F(TabCdpActorTrackerTest, FeatureDisabledReturnsNullopt) {
 
 TEST_F(TabCdpActorTrackerTest, FeatureParamsDefaultValues) {
   EXPECT_EQ(5, kCdpAttributionMaxActorsPerTab.Get());
-  EXPECT_EQ(base::Seconds(30), kCdpAttributionDetachedActorTtl.Get());
+  EXPECT_EQ(base::Seconds(30), kCdpAttributionActorIdleTtl.Get());
 }
 
 TEST_F(TabCdpActorTrackerTest, ExternalPipeAndWebSocketProtoSerialization) {
   TabCdpActorTracker* tracker = GetOrCreateTracker();
 
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_PIPE,
       MakeProcessTree(1001, 500, "/usr/local/bin/node",
                       "/Users/<USER>/puppeteer.js"));
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
       MakeLoopbackEndpoint(51001),
       MakeProcessTree(2002, 0, "/usr/bin/python3", "/Users/<USER>/cdp.py"));
@@ -135,52 +135,34 @@ TEST_F(TabCdpActorTrackerTest, ExternalPipeAndWebSocketProtoSerialization) {
 }
 
 TEST_F(TabCdpActorTrackerTest,
-       MultiTargetRefCountingAndDetachedActorTtlExpiration) {
+       MultiTargetDeduplicationAndActorIdleTtlExpiration) {
   TabCdpActorTracker* tracker = GetOrCreateTracker();
   const net::IPEndPoint endpoint = MakeLoopbackEndpoint(52000);
   const ProcessTree tree = MakeProcessTree(3001, 100);
 
   // Simulate root page session + two child frame/worker auto-attached sessions
-  // from the same WebSocket connection.
-  tracker->buffer().OnExternalActorAttached(
+  // from the same WebSocket connection: all deduplicate onto a single actor
+  // entry.
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint, tree);
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint, tree);
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint, tree);
 
   ASSERT_EQ(1u, tracker->buffer().GetExternalActorsForTesting().size());
-  EXPECT_EQ(3u,
-            tracker->buffer().GetExternalActorsForTesting()[0].active_sessions);
-  EXPECT_TRUE(tracker->buffer().GetExternalActorsForTesting()[0].IsAttached());
 
-  // Detaching two child sessions leaves the actor actively attached (refcount
-  // 1), so advancing time past 30s does not expire it.
-  tracker->buffer().OnExternalActorDetached(
+  // Handling a command at t=15s refreshes `last_command_at` so the entry is
+  // still within the 30s TTL at t=44s (29s after the last command).
+  task_environment()->FastForwardBy(base::Seconds(15));
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint);
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint);
-  EXPECT_EQ(1u,
-            tracker->buffer().GetExternalActorsForTesting()[0].active_sessions);
 
-  task_environment()->FastForwardBy(base::Seconds(60));
-  EXPECT_TRUE(
-      TabCdpActorTracker::GetEventInitiatorInfo(web_contents()).has_value());
-
-  // Detaching the final session starts the 30s post-detach grace window.
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint);
-  ASSERT_EQ(1u, tracker->buffer().GetExternalActorsForTesting().size());
-  EXPECT_EQ(0u,
-            tracker->buffer().GetExternalActorsForTesting()[0].active_sessions);
-  EXPECT_FALSE(tracker->buffer().GetExternalActorsForTesting()[0].IsAttached());
-
-  // At 29 seconds post-detach, the actor is still reported.
   task_environment()->FastForwardBy(base::Seconds(29));
   EXPECT_TRUE(
       TabCdpActorTracker::GetEventInitiatorInfo(web_contents()).has_value());
 
-  // At 30 seconds post-detach, the entry is lazily pruned.
+  // At 30 seconds after the last command, the entry is lazily pruned.
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(std::nullopt,
             TabCdpActorTracker::GetEventInitiatorInfo(web_contents()));
@@ -188,32 +170,32 @@ TEST_F(TabCdpActorTrackerTest,
 }
 
 TEST_F(TabCdpActorTrackerTest,
-       CircularBufferCapacityEvictsOldestDetachedBeforeActive) {
+       CircularBufferCapacityEvictsOldestLastCommandAt) {
   TabCdpActorTracker* tracker = GetOrCreateTracker();
 
-  // Attach 5 distinct WebSocket actors (reaching the default capacity of 5).
+  // Record 5 distinct WebSocket actors (reaching the default capacity of 5).
   for (int i = 1; i <= 5; ++i) {
-    tracker->buffer().OnExternalActorAttached(
+    tracker->buffer().OnExternalActorCommandHandled(
         ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
         MakeLoopbackEndpoint(53000 + i), MakeProcessTree(4000 + i, 1));
     task_environment()->FastForwardBy(base::Seconds(1));
   }
   ASSERT_EQ(5u, tracker->buffer().GetExternalActorsForTesting().size());
 
-  // Detach actor 3 first, then detach actor 2 one second later. Actors 1, 4, 5
-  // remain actively attached.
-  tracker->buffer().OnExternalActorDetached(
+  // Refresh `last_command_at` on actors 1 and 2 so actor 3 now has the oldest
+  // `last_command_at`, followed by actor 4.
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
-      MakeLoopbackEndpoint(53003));
+      MakeLoopbackEndpoint(53001));
   task_environment()->FastForwardBy(base::Seconds(1));
-  tracker->buffer().OnExternalActorDetached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
       MakeLoopbackEndpoint(53002));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  // Attach actor 6 while all 5 slots are within TTL. Actor 3 (oldest detached)
-  // must be evicted first, keeping actors {1, 2, 4, 5, 6}.
-  tracker->buffer().OnExternalActorAttached(
+  // Record actor 6 while all 5 slots are within TTL. Actor 3 (oldest
+  // `last_command_at`) must be evicted first, keeping actors {1, 2, 4, 5, 6}.
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
       MakeLoopbackEndpoint(53006), MakeProcessTree(4006, 1));
   {
@@ -226,31 +208,31 @@ TEST_F(TabCdpActorTrackerTest,
     EXPECT_EQ(4006, actors[4].leaf_pid);
   }
 
-  // Attach actor 7. Actor 2 (the remaining detached entry) must be evicted
-  // before any active entry, leaving active actors {1, 4, 5, 6, 7}.
-  tracker->buffer().OnExternalActorAttached(
+  // Record actor 7. Actor 4 (next oldest `last_command_at`) must be evicted,
+  // leaving {1, 2, 5, 6, 7}.
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
       MakeLoopbackEndpoint(53007), MakeProcessTree(4007, 1));
   {
     const auto& actors = tracker->buffer().GetExternalActorsForTesting();
     ASSERT_EQ(5u, actors.size());
     EXPECT_EQ(4001, actors[0].leaf_pid);
-    EXPECT_EQ(4004, actors[1].leaf_pid);
+    EXPECT_EQ(4002, actors[1].leaf_pid);
     EXPECT_EQ(4005, actors[2].leaf_pid);
     EXPECT_EQ(4006, actors[3].leaf_pid);
     EXPECT_EQ(4007, actors[4].leaf_pid);
   }
 
-  // Now all 5 slots are actively attached. Attaching actor 8 must evict the
-  // oldest attached entry (actor 1), leaving {4, 5, 6, 7, 8}.
-  tracker->buffer().OnExternalActorAttached(
+  // Record actor 8. Actor 5 (next oldest `last_command_at`) must be evicted,
+  // leaving {1, 2, 6, 7, 8}.
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
       MakeLoopbackEndpoint(53008), MakeProcessTree(4008, 1));
   {
     const auto& actors = tracker->buffer().GetExternalActorsForTesting();
     ASSERT_EQ(5u, actors.size());
-    EXPECT_EQ(4004, actors[0].leaf_pid);
-    EXPECT_EQ(4005, actors[1].leaf_pid);
+    EXPECT_EQ(4001, actors[0].leaf_pid);
+    EXPECT_EQ(4002, actors[1].leaf_pid);
     EXPECT_EQ(4006, actors[2].leaf_pid);
     EXPECT_EQ(4007, actors[3].leaf_pid);
     EXPECT_EQ(4008, actors[4].leaf_pid);
@@ -272,9 +254,9 @@ TEST_F(TabCdpActorTrackerTest, DevToolsUiTrackingAndExternalActorPrecedence) {
               initiator->browser_feature_info().feature_type());
   }
 
-  // 2. External Pipe actor attaches while DevTools UI is open -> external
-  // actor takes precedence over `FEATURE_TYPE_DEVTOOLS_UI`.
-  tracker->buffer().OnExternalActorAttached(
+  // 2. External Pipe actor handles a command while DevTools UI is open ->
+  // external actor takes precedence over `FEATURE_TYPE_DEVTOOLS_UI`.
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_PIPE, MakeProcessTree(5001, 5000));
   {
     std::optional<EventInitiatorInfo> initiator =
@@ -284,10 +266,8 @@ TEST_F(TabCdpActorTrackerTest, DevToolsUiTrackingAndExternalActorPrecedence) {
     EXPECT_FALSE(initiator->has_browser_feature_info());
   }
 
-  // 3. External Pipe actor detaches and its 30s TTL expires while DevTools UI
-  // remains open -> falls back to `FEATURE_TYPE_DEVTOOLS_UI`.
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
+  // 3. External Pipe actor's 30s command TTL expires while DevTools UI remains
+  // open -> falls back to `FEATURE_TYPE_DEVTOOLS_UI`.
   task_environment()->FastForwardBy(base::Seconds(30));
   {
     std::optional<EventInitiatorInfo> initiator =
@@ -318,7 +298,7 @@ TEST_F(TabCdpActorTrackerTest, UpdateExternalActorProcessTreeInPlace) {
 
   // Register actor initially with an empty `ProcessTree` (while async
   // extraction is in flight).
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint);
   ASSERT_EQ(1u, tracker->buffer().GetExternalActorsForTesting().size());
   EXPECT_TRUE(
@@ -350,19 +330,17 @@ TEST_F(TabCdpActorTrackerTest, UpdateExternalActorProcessTreeInPlace) {
   EXPECT_EQ(6001, tracker->buffer().GetExternalActorsForTesting()[0].leaf_pid);
 }
 
-TEST_F(TabCdpActorTrackerTest, PipeRefCountingUpdateAndDetach) {
+TEST_F(TabCdpActorTrackerTest, PipeDeduplicationUpdateAndTtlExpiration) {
   TabCdpActorTracker* tracker = GetOrCreateTracker();
 
-  // Attach root and child pipe sessions initially with empty `ProcessTree`s
+  // Record root and child pipe sessions initially with empty `ProcessTree`s
   // (`kNullProcessId`) while async extraction is in flight; both deduplicate
   // onto the single browser-wide pipe channel.
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
   ASSERT_EQ(1u, tracker->buffer().GetExternalActorsForTesting().size());
-  EXPECT_EQ(2u,
-            tracker->buffer().GetExternalActorsForTesting()[0].active_sessions);
   EXPECT_EQ(base::kNullProcessId,
             tracker->buffer().GetExternalActorsForTesting()[0].leaf_pid);
   EXPECT_TRUE(
@@ -374,79 +352,53 @@ TEST_F(TabCdpActorTrackerTest, PipeRefCountingUpdateAndDetach) {
       ExternalProcessInfo::TRANSPORT_TYPE_PIPE, std::nullopt,
       MakeProcessTree(4001, 4000));
   ASSERT_EQ(1u, tracker->buffer().GetExternalActorsForTesting().size());
-  EXPECT_EQ(2u,
-            tracker->buffer().GetExternalActorsForTesting()[0].active_sessions);
   EXPECT_EQ(4001, tracker->buffer().GetExternalActorsForTesting()[0].leaf_pid);
   EXPECT_FALSE(
       tracker->buffer().GetExternalActorsForTesting()[0].process_tree.empty());
 
-  // Detach once omitting `pid` -> matches via pipe fallback and decrements
-  // `active_sessions` to 1.
-  tracker->buffer().OnExternalActorDetached(
+  // Refresh command timestamp via pipe fallback -> expires 30s after the
+  // refreshed command.
+  task_environment()->FastForwardBy(base::Seconds(10));
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
-  ASSERT_EQ(1u, tracker->buffer().GetExternalActorsForTesting().size());
-  EXPECT_EQ(1u,
-            tracker->buffer().GetExternalActorsForTesting()[0].active_sessions);
+  task_environment()->FastForwardBy(base::Seconds(29));
   EXPECT_TRUE(
       TabCdpActorTracker::GetEventInitiatorInfo(web_contents()).has_value());
 
-  // Detach final session with the resolved `pid` -> transitions to detached and
-  // expires after the 30s TTL.
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_PIPE, 4001);
-  ASSERT_EQ(1u, tracker->buffer().GetExternalActorsForTesting().size());
-  EXPECT_FALSE(tracker->buffer().GetExternalActorsForTesting()[0].IsAttached());
-  task_environment()->FastForwardBy(base::Seconds(30));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(std::nullopt,
             TabCdpActorTracker::GetEventInitiatorInfo(web_contents()));
   EXPECT_TRUE(tracker->buffer().GetExternalActorsForTesting().empty());
 }
 
-TEST_F(TabCdpActorTrackerTest, EndpointlessWebSocketsDoNotConflateOnAttach) {
+TEST_F(TabCdpActorTrackerTest, EndpointlessWebSocketsDoNotConflateOnCommand) {
   TabCdpActorTracker* tracker = GetOrCreateTracker();
 
   // Two unextracted WebSocket sessions without endpoints remain distinct
-  // actors instead of conflating, while each detaches cleanly.
-  tracker->buffer().OnExternalActorAttached(
+  // actors instead of conflating, and both expire after the 30s TTL.
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET);
-  tracker->buffer().OnExternalActorAttached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET);
-  ASSERT_EQ(2u, tracker->buffer().GetExternalActorsForTesting().size());
-  EXPECT_EQ(1u,
-            tracker->buffer().GetExternalActorsForTesting()[0].active_sessions);
-  EXPECT_EQ(1u,
-            tracker->buffer().GetExternalActorsForTesting()[1].active_sessions);
-
-  tracker->buffer().OnExternalActorDetached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET);
   ASSERT_EQ(2u, tracker->buffer().GetExternalActorsForTesting().size());
-  EXPECT_EQ(0u,
-            tracker->buffer().GetExternalActorsForTesting()[0].active_sessions);
-  EXPECT_EQ(1u,
-            tracker->buffer().GetExternalActorsForTesting()[1].active_sessions);
 
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET);
-  EXPECT_EQ(0u,
-            tracker->buffer().GetExternalActorsForTesting()[1].active_sessions);
   task_environment()->FastForwardBy(base::Seconds(30));
   EXPECT_TRUE(tracker->buffer().GetExternalActorsForTesting().empty());
 }
 
-TEST_F(
-    TabCdpActorTrackerTest,
-    SameProcessSecondWebSocketUpdatesExactEndpointAndNulloptWebSocketDetaches) {
+TEST_F(TabCdpActorTrackerTest,
+       SameProcessSecondWebSocketUpdatesExactEndpointAndDeduplicatesProto) {
   TabCdpActorTracker* tracker = GetOrCreateTracker();
   const net::IPEndPoint ep1 = MakeLoopbackEndpoint(54321);
   const net::IPEndPoint ep2 = MakeLoopbackEndpoint(54322);
 
   // First WebSocket connection from PID 2000 resolves immediately.
-  tracker->buffer().OnExternalActorAttached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1,
       MakeProcessTree(2000, 1000));
-  // Second WebSocket connection from the same process attaches as a placeholder
-  // before its background extraction finishes.
-  tracker->buffer().OnExternalActorAttached(
+  // Second WebSocket connection from the same process handles a command as a
+  // placeholder before its background extraction finishes.
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2, ProcessTree{});
   ASSERT_EQ(2u, tracker->buffer().GetExternalActorsForTesting().size());
   EXPECT_TRUE(
@@ -462,37 +414,9 @@ TEST_F(
   EXPECT_FALSE(
       tracker->buffer().GetExternalActorsForTesting()[1].process_tree.empty());
 
-  // Detach both `ep1` and `ep2` by endpoint only (without passing PID), then
-  // attach and detach a `std::nullopt`-endpoint WebSocket session to verify
-  // that both distinct endpoints and `std::nullopt`-endpoint WebSocket entries
-  // detach cleanly and expire after the 30s TTL without leaking
-  // `active_sessions`.
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1);
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2);
-  tracker->buffer().OnExternalActorAttached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, std::nullopt,
-      ProcessTree{});
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, std::nullopt);
-
-  task_environment()->FastForwardBy(base::Seconds(30));
-  EXPECT_EQ(std::nullopt,
-            TabCdpActorTracker::GetEventInitiatorInfo(web_contents()));
-
-  // Also verify that if two distinct WebSocket endpoints from the same process
-  // both attach with a resolved `ProcessTree` (e.g. from the endpoint cache),
-  // they do not merge into a single endpoint entry, are deduplicated by
-  // `(transport_type, leaf_pid)` in `BuildEventInitiatorInfo()`, and both
-  // detach cleanly by endpoint.
-  tracker->buffer().OnExternalActorAttached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1,
-      MakeProcessTree(2000, 1000));
-  tracker->buffer().OnExternalActorAttached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2,
-      MakeProcessTree(2000, 1000));
-  ASSERT_EQ(2u, tracker->buffer().GetExternalActorsForTesting().size());
+  // Verify that two distinct WebSocket endpoints from the same process are
+  // deduplicated by `(transport_type, leaf_pid)` in `BuildEventInitiatorInfo()`
+  // while tracking independent `last_command_at` timestamps per endpoint.
   {
     std::optional<EventInitiatorInfo> initiator =
         TabCdpActorTracker::GetEventInitiatorInfo(web_contents());
@@ -503,13 +427,11 @@ TEST_F(
                         .process_nodes(0)
                         .process_id());
   }
-  tracker->buffer().OnExternalActorDetached(
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1);
   task_environment()->FastForwardBy(base::Seconds(10));
-  tracker->buffer().OnExternalActorDetached(
+  tracker->buffer().OnExternalActorCommandHandled(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2);
-  // 25s after `ep1` detached (15s after `ep2` detached), `ep2` is still within
-  // its 30s TTL even after `ep1` expires at 30s.
+  // 35s after `ep1`'s command (25s after `ep2`'s last command), `ep2` is still
+  // within its 30s TTL even after `ep1` expires at 30s.
   task_environment()->FastForwardBy(base::Seconds(25));
   EXPECT_TRUE(
       TabCdpActorTracker::GetEventInitiatorInfo(web_contents()).has_value());

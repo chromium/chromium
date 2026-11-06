@@ -87,7 +87,7 @@ BASE_FEATURE_PARAM(int,
                    /*default_value=*/5);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
-                   kCdpAttributionDetachedActorTtl,
+                   kCdpAttributionActorIdleTtl,
                    &kEventReportingCdpAttribution,
                    /*default_value=*/base::Seconds(30));
 

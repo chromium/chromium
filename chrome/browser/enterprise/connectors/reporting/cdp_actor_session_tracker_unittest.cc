@@ -447,7 +447,7 @@ TEST_F(CdpActorSessionTrackerTest,
                    .has_value());
 
   // First handled command records `TRANSPORT_TYPE_PIPE`; subsequent commands on
-  // the same channel are idempotent.
+  // the same channel refresh `last_command_at` without re-extracting.
   tracker_->OnCommandHandled(&pipe_channel);
   tracker_->OnCommandHandled(&pipe_channel);
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -473,7 +473,7 @@ TEST_F(CdpActorSessionTrackerTest,
                 .process_id(),
             7001);
 
-  // Detaching keeps the pipe actor within the 30s post-detach TTL and evicts it
+  // Detaching keeps the pipe actor within the 30s command TTL and evicts it
   // once the TTL expires.
   tracker_->OnClientDetached(&pipe_channel);
   task_environment()->FastForwardBy(base::Seconds(20));
@@ -651,7 +651,7 @@ TEST_F(CdpActorSessionTrackerTest,
   // Attach a queue-shed Pipe session on a second tab while queue is full, then
   // let the first 16 finish and trigger a Pipe extraction on `web_contents()`
   // to verify both Pipe tabs receive the resolved ProcessTree and detach
-  // cleanly without leaking `active_sessions`.
+  // cleanly.
   std::unique_ptr<content::WebContents> second_tab = CreateTestWebContents();
   auto second_host =
       base::MakeRefCounted<FakeDevToolsAgentHost>(second_tab.get(), profile());
@@ -682,8 +682,7 @@ TEST_F(CdpActorSessionTrackerTest,
     tracker_->OnClientDetached(channel.get());
   }
 
-  // After the 30s detached TTL expires, both tabs must evict cleanly (proving
-  // `pipe_channel_shed` matched `resolved_leaf_pid` on `second_tab`).
+  // After the 30s command TTL expires, both tabs must evict cleanly.
   task_environment()->FastForwardBy(base::Seconds(31));
   EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(second_tab.get())
                    .has_value());
@@ -721,6 +720,12 @@ TEST_F(CdpActorSessionTrackerTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return tracker_->GetPendingExtractionsCountForTesting() == 0u;
   }));
+
+  // Because `TaskEnvironment` uses `MOCK_TIME`, waiting in `RunUntil()` for the
+  // real background OS extractor thread can auto-advance mock time past the 30s
+  // command TTL. Issue a command at the current mock timestamp before querying.
+  tracker_->OnCommandHandled(&pipe_channel);
+  tracker_->OnCommandHandled(&ws_channel);
 
   EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
   EXPECT_TRUE(tracker_->HasCachedPipeProcessTreeForTesting());
@@ -822,7 +827,7 @@ TEST_F(CdpActorSessionTrackerTest,
   // Detaching all channels for `ws_ep` immediately evicts the endpoint cache so
   // a new connection reusing the same ip:port cannot pick up the previous
   // connection's process tree, while `TabCdpActorTracker` still retains the
-  // detached actor on the tab for the 30s post-detach window.
+  // actor on the tab for the 30s command TTL window.
   tracker_->OnClientDetached(&ws_reattach_channel);
   tracker_->OnClientDetached(&ws_root_channel);
   EXPECT_FALSE(tracker_->HasCachedWebSocketProcessTreeForTesting(ws_ep));
@@ -838,8 +843,8 @@ TEST_F(CdpActorSessionTrackerTest,
   task_environment()->FastForwardBy(base::Seconds(31));
 
   // If the last WebSocket channel detaches while background extraction is still
-  // in flight, `OnExtractionCompleted` still populates the detached actor's
-  // `ProcessTree` on the tab for the 30s post-detach grace window and then
+  // in flight, `OnExtractionCompleted` still populates the actor's
+  // `ProcessTree` on the tab for the 30s command TTL window and then
   // immediately evicts the endpoint from `websocket_cache_`.
   FakeDevToolsChannel ws_inflight_detach_channel(tab_host.get(),
                                                  &ws_root_client);
@@ -970,7 +975,7 @@ TEST_F(CdpActorSessionTrackerTest,
 }
 
 TEST_F(CdpActorSessionTrackerTest,
-       RecordsUmaHistogramsForWalksCollisionsAndPostDetachLookups) {
+       RecordsUmaHistogramsForWalksCollisionsAndCommandTtlLookups) {
   base::HistogramTester histograms;
   auto manual_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   bool return_empty_ws_tree = false;
@@ -1073,8 +1078,7 @@ TEST_F(CdpActorSessionTrackerTest,
 
   // Querying `EventInitiatorInfo` with 2 resolved active external actors
   // records `BuildLatency`, `ActorCollisionCount` (sample = 2), and
-  // `HasEmptyProcessTree` (false), with no `PostDetachEventDelay` while both
-  // actors remain attached.
+  // `HasEmptyProcessTree` (false).
   std::optional<EventInitiatorInfo> active_info =
       CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
   ASSERT_TRUE(active_info.has_value());
@@ -1085,23 +1089,19 @@ TEST_F(CdpActorSessionTrackerTest,
   histograms.ExpectBucketCount(
       "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree",
       false, 1);
-  histograms.ExpectTotalCount("Enterprise.CdpAttribution.PostDetachEventDelay",
-                              0);
 
   // 4. Detach the WebSocket actor, advance mock time by 5 seconds (within the
-  // post-detach retention window), and query `EventInitiatorInfo` again.
+  // 30s command TTL window), and query `EventInitiatorInfo` again.
   tracker_->OnClientDetached(&ws_channel);
   task_environment()->FastForwardBy(base::Seconds(5));
 
-  std::optional<EventInitiatorInfo> post_detach_info =
+  std::optional<EventInitiatorInfo> ttl_info =
       CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
-  ASSERT_TRUE(post_detach_info.has_value());
+  ASSERT_TRUE(ttl_info.has_value());
   histograms.ExpectTotalCount(
       "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency", 3);
   histograms.ExpectBucketCount("Enterprise.CdpAttribution.ActorCollisionCount",
                                2, 2);
-  histograms.ExpectUniqueTimeSample(
-      "Enterprise.CdpAttribution.PostDetachEventDelay", base::Seconds(5), 1);
 
   // 5. Attach a WebSocket actor whose walk returns an empty ProcessTree and
   // verify `ProcessTreeWalk.IsEmpty` (true) and `HasEmptyProcessTree` (true).
@@ -1128,6 +1128,76 @@ TEST_F(CdpActorSessionTrackerTest,
   tracker_->OnClientDetached(&empty_ws_channel);
   tracker_->OnClientDetached(&pipe_child_channel);
   tracker_->OnClientDetached(&pipe_channel);
+}
+
+TEST_F(CdpActorSessionTrackerTest,
+       IdleAttachedExternalSessionExpiresAfterTtlAndReactivatesOnCommand) {
+  auto tab_host =
+      base::MakeRefCounted<FakeDevToolsAgentHost>(web_contents(), profile());
+  const net::IPEndPoint endpoint = MakeLoopbackEndpoint(55000);
+  const PeerMetadata ws_meta = {
+      .transport_type = PeerMetadata::TransportType::kWebSocket,
+      .peer_address = endpoint};
+  FakeDevToolsAgentHostClient ws_client("RemoteDebugger", ws_meta);
+  FakeDevToolsChannel ws_channel(tab_host.get(), &ws_client);
+  FakeDevToolsChannel ws_channel_2(tab_host.get(), &ws_client);
+
+  // 1. Attach -> handle command -> attributes.
+  tracker_->OnClientAttached(&ws_channel);
+  tracker_->OnClientAttached(&ws_channel_2);
+  tracker_->OnCommandHandled(&ws_channel);
+  ASSERT_TRUE(base::test::RunUntil([this, &endpoint]() {
+    return tracker_->HasCachedWebSocketProcessTreeForTesting(endpoint);
+  }));
+  EXPECT_EQ(websocket_extractor_calls_, 1);
+  TabCdpActorTracker* tab_tracker =
+      TabCdpActorTracker::FromWebContents(web_contents());
+  ASSERT_NE(nullptr, tab_tracker);
+  EXPECT_EQ(1u, tab_tracker->buffer().GetExternalActorsForTesting().size());
+  EXPECT_TRUE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                  .has_value());
+
+  // 2. While the channel remains attached and idle, attribution remains active
+  // at t=29s and is pruned at t=30s.
+  task_environment()->FastForwardBy(base::Seconds(29));
+  EXPECT_TRUE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                  .has_value());
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                   .has_value());
+  EXPECT_TRUE(tab_tracker->buffer().GetExternalActorsForTesting().empty());
+
+  // 3. Handling another command on the same channel after inactivity
+  // re-inserts the actor from the endpoint cache and attributes again without
+  // a second OS walk.
+  task_environment()->FastForwardBy(base::Seconds(90));
+  tracker_->OnCommandHandled(&ws_channel);
+  EXPECT_EQ(websocket_extractor_calls_, 1);
+  EXPECT_EQ(1u, tab_tracker->buffer().GetExternalActorsForTesting().size());
+  EXPECT_TRUE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                  .has_value());
+
+  // 4. Detach `ws_channel` -> wait 30s so the entry is pruned -> handle
+  // command on `ws_channel_2` -> re-inserted and attributed again.
+  task_environment()->FastForwardBy(base::Seconds(20));
+  tracker_->OnCommandHandled(&ws_channel);
+  tracker_->OnClientDetached(&ws_channel);
+
+  task_environment()->FastForwardBy(base::Seconds(29));
+  EXPECT_TRUE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                  .has_value());
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                   .has_value());
+  EXPECT_TRUE(tab_tracker->buffer().GetExternalActorsForTesting().empty());
+
+  tracker_->OnCommandHandled(&ws_channel_2);
+  EXPECT_EQ(websocket_extractor_calls_, 1);
+  EXPECT_EQ(1u, tab_tracker->buffer().GetExternalActorsForTesting().size());
+  EXPECT_TRUE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                  .has_value());
+  tracker_->OnClientDetached(&ws_channel_2);
 }
 
 }  // namespace

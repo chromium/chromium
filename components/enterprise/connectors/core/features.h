@@ -80,8 +80,8 @@ BASE_DECLARE_FEATURE(kEventReportingCdpAttribution);
 // tracked per tab.
 BASE_DECLARE_FEATURE_PARAM(int, kCdpAttributionMaxActorsPerTab);
 
-// Post-detach TTL retention window for external CDP actors on a tab.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kCdpAttributionDetachedActorTtl);
+// Command-inactivity TTL retention window for external CDP actors on a tab.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kCdpAttributionActorIdleTtl);
 
 // Maximum number of concurrent pending OS process tree extraction tasks before
 // new attachment extractions are shed.
