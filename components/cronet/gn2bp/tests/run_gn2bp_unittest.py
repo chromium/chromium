@@ -354,6 +354,170 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
                 content,
             )
 
+    def test_parse_gn_desc_unwraps_wrapper_targets(self):
+        tc = "//build/toolchain/android:android_clang_arm64"
+        gn_desc = {
+            "//test:root_group": {
+                "type": "group",
+                "toolchain": tc,
+                "deps": [
+                    "//test:gtest_wrapper",
+                    "//test:instrumentation_apk",
+                    "//test:repackage_jars",
+                ],
+            },
+            "//test:gtest_wrapper": {
+                "type": "action",
+                "script": "//build/util/generate_wrapper.py",
+                "toolchain": tc,
+                "deps": ["//test:gtest_wrapper__apk"],
+            },
+            "//test:gtest_wrapper__apk": {
+                "type": "group",
+                "toolchain": tc,
+                "deps": [
+                    "//test:gtest_wrapper__library",
+                    "//test:gtest_wrapper__apk__java",
+                ],
+            },
+            "//test:gtest_wrapper__library": {
+                "type": "shared_library",
+                "toolchain": tc,
+                "sources": ["//test/unittest.cc"],
+                "deps": [],
+            },
+            "//test:gtest_wrapper__apk__java": {
+                "type": "group",
+                "toolchain": tc,
+                "metadata": {"java_library_deps": []},
+                "deps": [
+                    "//test:helper_java",
+                    "//test:empty_resources",
+                    "//test:gtest_wrapper__apk__java_single_jar_java",
+                    "//test:gtest_wrapper__apk__java__dex",
+                ],
+            },
+            "//test:gtest_wrapper__apk__java__dex": {
+                "type": "action",
+                "script": "//build/android/gyp/dex.py",
+                "toolchain": tc,
+                "deps": [],
+            },
+            "//test:helper_java": {
+                "type": "group",
+                "toolchain": tc,
+                "metadata": {
+                    "java_library_inputs": ["//test/Helper.java"],
+                    "java_library_deps": [],
+                },
+                "deps": [],
+            },
+            "//test:empty_resources": {
+                "type": "group",
+                "toolchain": tc,
+                "metadata": {
+                    "java_library_inputs": [],
+                    "java_library_deps": [],
+                },
+                "deps": [],
+            },
+            "//test:instrumentation_apk": {
+                "type": "action",
+                "script": "//build/android/gyp/generate_android_wrapper.py",
+                "toolchain": tc,
+                "deps": ["//test:instrumentation_apk__write_deps"],
+            },
+            "//test:instrumentation_apk__write_deps": {
+                "type": "group",
+                "toolchain": tc,
+                "deps": ["//test:instrumentation_apk__test_apk"],
+            },
+            "//test:instrumentation_apk__test_apk": {
+                "type": "group",
+                "toolchain": tc,
+                "deps": ["//test:native_test_so"],
+            },
+            "//test:native_test_so": {
+                "type": "shared_library",
+                "toolchain": tc,
+                "sources": ["//test/native_test.cc"],
+                "deps": [],
+            },
+            "//test:repackage_jars": {
+                "type": "action",
+                "script": "//build/android/gyp/rename_java_classes.py",
+                "toolchain": tc,
+                "deps": ["//test:repackage_jars_zip"],
+            },
+            "//test:repackage_jars_zip": {
+                "type": "action",
+                "script": "//build/android/gyp/zip.py",
+                "toolchain": tc,
+                "deps": [
+                    "//test:prebuilt_jar_java",
+                    "//test:repackage_jars_zip__build_config_crbug_908819",
+                ],
+            },
+            "//test:prebuilt_jar_java": {
+                "type": "group",
+                "toolchain": tc,
+                "metadata": {
+                    "java_library_inputs": ["//out/Release/gen/repackaged.jar"],
+                    "java_library_deps": ["//test:packaged_java"],
+                },
+                "deps": [],
+            },
+            "//test:packaged_java": {
+                "type": "group",
+                "toolchain": tc,
+                "metadata": {
+                    "java_library_inputs": ["//test/Packaged.java"],
+                    "java_library_deps": [],
+                },
+                "deps": [],
+            },
+        }
+
+        gn = gn_utils.GnParser({}, {})
+        gn.parse_gn_desc(gn_desc, "//test:root_group", is_test_target=True)
+        gn.propagate_properties()
+
+        ctx = gen_android_bp.translation_context.TranslationContext("tot")
+        bp = gen_android_bp.soong_ast.Blueprint()
+        with unittest.mock.patch.object(
+            gen_android_bp.translators,
+            "_parse_pydeps",
+            return_value=["build/android/gyp/filter_zip.py"],
+        ):
+            modules = gen_android_bp.translators.create_modules_from_target(
+                bp,
+                gn,
+                "//test:root_group__testing",
+                None,
+                is_test_target=True,
+                context=ctx,
+            )
+        root_module_names = {m.name for m in modules}
+        self.assertEqual(
+            root_module_names,
+            {
+                "tot_cronet_test_gtest_wrapper__library__testing",
+                "tot_cronet_test_helper_java__testing",
+                "tot_cronet_test_native_test_so__testing",
+                "tot_cronet_test_packaged_java__testing",
+            },
+        )
+        self.assertIn(
+            "tot_cronet_test_gtest_wrapper__library__testing", bp.modules
+        )
+        self.assertIn("tot_cronet_test_helper_java__testing", bp.modules)
+        self.assertIn("tot_cronet_test_native_test_so__testing", bp.modules)
+        self.assertIn("tot_cronet_test_packaged_java__testing", bp.modules)
+        self.assertNotIn("tot_cronet_test_empty_resources__testing", bp.modules)
+        self.assertNotIn(
+            "tot_cronet_test_prebuilt_jar_java__testing", bp.modules
+        )
+
 
 if __name__ == '__main__':
     # This allows you to run the file directly

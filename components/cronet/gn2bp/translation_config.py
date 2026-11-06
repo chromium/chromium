@@ -222,6 +222,12 @@ _builtin_deps = {
     '//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps': always_disable,
     '//build/rust/crubit:cpp_api_from_rust_bindings_rs_deps': always_disable,
     '//build/rust/std:std_bindings': always_disable,
+    # Chromium-internal GTest unittest Java support libraries pulled in by
+    # `test()`/`cronet_test()` APK wrapper targets (`__apk__java`). AOSP runs
+    # GTests via `//testing/android/native_test:native_test_java`, so these
+    # APK-wrapper-only Java targets are not used in Soong.
+    '//base/test:test_support_java': always_disable,
+    '//base:base_unittest_support_java': always_disable,
 }
 
 builtin_deps = {

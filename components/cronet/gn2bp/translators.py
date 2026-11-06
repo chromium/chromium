@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import List, Dict, Set, Union, Iterable  # noqa: F401
 
 import gn_utils
-import targets as gn2bp_targets  # noqa: F401
 import build.gn_helpers
 import components.cronet.tools.utils as cronet_utils
 import soong_ast
@@ -51,7 +50,10 @@ def _parse_pydeps(repo_path):
     Parses a .pydeps file, returning a list of paths relative to REPOSITORY_ROOT.
     '''
     repo_dir_path = os.path.dirname(repo_path)
-    with open(f"{REPOSITORY_ROOT}/{repo_path}", encoding='utf-8') as file:
+    full_path = os.path.join(REPOSITORY_ROOT, repo_path)
+    if not os.path.exists(full_path):
+        return []
+    with open(full_path, encoding='utf-8') as file:
         return [
             os.path.normpath(f"{repo_dir_path}/{line.strip()}")
             for line in file
@@ -2283,6 +2285,27 @@ def create_modules_from_target(
     """
     bp_module_name = soong_ast.label_to_module_name(gn_target_name, context)
     target = gn.get_target(gn_target_name)
+
+    if target.type == "group":
+        group_deps = {
+            dep
+            for arch in target.arch.values()
+            for dep in arch.direct_deps
+            if dep not in translation_config.builtin_deps
+        }
+        return tuple(
+            dep_module
+            for dep_name in sorted(group_deps)
+            for dep_module in create_modules_from_target(
+                blueprint,
+                gn,
+                dep_name,
+                parent_gn_type,
+                is_test_target,
+                context,
+            )
+            if dep_module is not None
+        )
 
     # Append __java suffix to actions reachable from java_library. This is necessary
     # to differentiate them from cc actions.

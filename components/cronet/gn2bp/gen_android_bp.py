@@ -418,7 +418,6 @@ def create_extras_modules(
         "java_library", "for_testing_net_java"
     )
     for_testing_net_java.static_libs = {
-        f"{context.module_prefix}net_android_net_test_support_provider_java__testing",
         f"{context.module_prefix}net_android_net_java_test_support__testing",
         f"{context.module_prefix}net_android_net_tests_java__testing",
         f"{context.module_prefix}net_android_dummy_spnego_authenticator_java__testing",

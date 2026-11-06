@@ -3,35 +3,11 @@
 # found in the LICENSE file.
 
 DEFAULT_TARGETS = [
-    "//components/cronet/android:cronet_api_java",
-    '//components/cronet/android:cronet',
-    '//components/cronet/android:cronet_impl_native_java',
-    '//components/cronet/android:cronet_build_config_java',
-    '//components/cronet/android:cronet_final_jni_java',
+    "//components/cronet/android:cronet_gn2bp_production_targets",
 ]
 
 DEFAULT_TESTS = [
-    '//components/cronet/android:cronet_unittests_android__library',
-    '//net:net_unittests__library',
-    '//components/cronet/android:cronet_tests',
-    '//components/cronet/android:cronet',
-    '//components/cronet/android:cronet_javatests',
-    '//components/cronet/android:cronet_build_config_java',
-    '//components/cronet/android:cronet_final_jni_java',
-    '//components/cronet/android:cronet_tests_final_jni_java',
-    '//testing/android/native_test:native_test_java',
-    '//net/android:net_test_support_provider_java',
-    '//net/android:net_tests_java',
-    '//third_party/netty-tcnative:netty-tcnative-so',
-    '//third_party/netty4:netty_all_java',
-    "//build/rust/tests/test_rust_static_library:test_rust_static_library",  # Added to make sure that rust still compiles
-    "//build/rust/tests/bindgen_test:bindgen_test",  # Added to make sure that rust still compiles
-    '//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test',  # Added to make sure that rust still compiles
-    "//net/android:dummy_spnego_authenticator_java",  # Required for net::HttpAuthHandlerNegotiateTest::SetUp() to work, due to https://crbug.com/389069158
-    # Added to ensure Crubit C++ bindings from Rust (including direct and
-    # transitive stdlib bindings) continue to compile in Soong.
-    "//build/rust/tests/test_cpp_api_from_rust:target_depending_only_on_bindings",
-    "//build/rust/tests/test_cpp_api_from_rust:test_cpp_api_from_rust",
+    "//components/cronet/android:cronet_gn2bp_test_targets",
 ]
 
 # Usually, README.chromium lives next to the BUILD.gn. However, some cases are

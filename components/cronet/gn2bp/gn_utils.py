@@ -164,7 +164,30 @@ def _determine_target_type(target_name, desc):
         metadata_key in metadata
         for metadata_key in ("java_library_deps", "java_library_sources")
     ):
+        inputs = metadata.get("java_library_inputs", [])
+        if inputs and all(
+            inp.startswith("//out/") and inp.endswith(".jar") for inp in inputs
+        ):
+            # `android_java_prebuilt` targets wrapping generated `//out/*.jar`
+            # files (e.g. `repackage_test_jars_without_jni_java`) have no Java
+            # sources of their own and only forward dependencies.
+            return 'group'
+        if not inputs and not metadata.get("java_library_deps", []):
+            # Empty `android_resources` group targets have `java_library_deps`
+            # metadata with neither inputs nor dependencies.
+            return 'group'
         return 'java_library'
+
+    if script in (
+        "//build/util/generate_wrapper.py",
+        "//build/android/gyp/generate_android_wrapper.py",
+        "//build/android/gyp/rename_java_classes.py",
+        "//build/android/gyp/zip.py",
+    ):
+        # High-level GN test/packaging wrapper actions (`test`/`cronet_test`,
+        # `cronet_instrumentation_test_apk`, `repackage_jars`, `dist_jar`) are
+        # unwrapped as groups into their underlying C++ and Java targets.
+        return 'group'
 
     if type_ == "executable" and desc.get("crate_root", None):
         return "rust_executable"
@@ -707,8 +730,81 @@ class GnParser:
                 # Don't continue the dependencies exploration.
                 return target
         elif target.type == 'group':
-            # Group targets are bubbled upward without creating an equivalent GN target.
-            pass
+            # Group targets (including unwrapped high-level test/packaging
+            # wrappers) are bubbled upward without creating an equivalent Soong
+            # module.
+            script = desc.get("script", "")
+            if script == "//build/util/generate_wrapper.py":
+                # GTest wrapper (`test` / `cronet_test`): unwrap `<target>__apk`
+                # into its C++ test shared_library (`<target>__library`) and the
+                # Java libraries attached to `<target>__apk__java`.
+                unwrapped_deps = []
+                for d in deps:
+                    if gn2bp_common.label_without_toolchain(d).endswith(
+                        "__apk"
+                    ):
+                        apk_deps = gn_desc.get(d, {}).get("deps", [])
+                        for ad in apk_deps:
+                            ad_desc = gn_desc.get(ad, {})
+                            ad_no_tc = gn2bp_common.label_without_toolchain(ad)
+                            if ad_desc.get("type") == "shared_library":
+                                unwrapped_deps.append(ad)
+                            elif ad_no_tc.endswith("__apk__java"):
+                                for jd in ad_desc.get("deps", []):
+                                    jd_no_tc = (
+                                        gn2bp_common.label_without_toolchain(jd)
+                                    )
+                                    if (
+                                        jd in gn_desc
+                                        and _determine_target_type(
+                                            jd_no_tc, gn_desc[jd]
+                                        )
+                                        == "java_library"
+                                        and not jd_no_tc.endswith(
+                                            "_single_jar_java"
+                                        )
+                                    ):
+                                        unwrapped_deps.append(jd)
+                deps = unwrapped_deps
+            elif script == "//build/android/gyp/generate_android_wrapper.py":
+                # Instrumentation APK wrapper (`cronet_instrumentation_test_apk`):
+                # unwrap into the native test shared libraries it packages.
+                unwrapped_deps = []
+                candidate_deps = list(deps)
+                for d in deps:
+                    if gn2bp_common.label_without_toolchain(d).endswith(
+                        "__write_deps"
+                    ):
+                        candidate_deps.extend(
+                            gn_desc.get(d, {}).get("deps", [])
+                        )
+                for d in candidate_deps:
+                    d_desc = gn_desc.get(d, {})
+                    if d_desc.get("type") == "shared_library":
+                        unwrapped_deps.append(d)
+                    elif gn2bp_common.label_without_toolchain(d).endswith(
+                        "__test_apk"
+                    ):
+                        for td in d_desc.get("deps", []):
+                            if (
+                                gn_desc.get(td, {}).get("type")
+                                == "shared_library"
+                            ):
+                                unwrapped_deps.append(td)
+                deps = unwrapped_deps
+            elif script == "//build/android/gyp/zip.py":
+                deps = [
+                    d
+                    for d in deps
+                    if not gn2bp_common.label_without_toolchain(d).endswith(
+                        "__build_config_crbug_908819"
+                    )
+                ]
+            elif any(
+                k in metadata
+                for k in ("java_library_deps", "java_library_sources")
+            ):
+                deps = list(metadata.get("java_library_deps", []))
         elif target.type == 'generated_file':
             # generated_file() targets are evaluated by GN at `gn gen` time:
             # they write a file (e.g. jni_zero's `*__type_catalogs.json`) by

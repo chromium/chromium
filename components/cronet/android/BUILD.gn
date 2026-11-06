@@ -2422,6 +2422,32 @@ script_test("generate_build_script_test") {
                root_build_dir) + ")" ]
 }
 
+group("cronet_gn2bp_production_targets") {
+  deps = [
+    ":cronet",
+    ":cronet_api_java",
+    ":cronet_build_config_java",
+    ":cronet_final_jni_java",
+    ":cronet_impl_native_java",
+  ]
+}
+
+group("cronet_gn2bp_test_targets") {
+  testonly = true
+  deps = [
+    ":cronet_gn2bp_production_targets",
+    ":cronet_test_instrumentation_apk",
+    ":cronet_unittests_android",
+    ":repackage_test_jars",
+    "//build/rust/tests/bindgen_static_fns_test",
+    "//build/rust/tests/bindgen_test",
+    "//build/rust/tests/test_cpp_api_from_rust",
+    "//build/rust/tests/test_cpp_api_from_rust:target_depending_only_on_bindings",
+    "//build/rust/tests/test_rust_static_library",
+    "//net:net_unittests",
+  ]
+}
+
 action("cronet_gn2bp_aosp_feedback_loop") {
   # This is only added here to allow GN2BP to depend on
   # test-only libraries. See below for more information
@@ -2438,8 +2464,9 @@ action("cronet_gn2bp_aosp_feedback_loop") {
     # bot to pointlessly build Cronet. Surely there is a cleaner way.
     # This is still prone to failure if we decide to run GN2BP against
     # a change that does not affect these particular targets.
+    ":cronet_gn2bp_production_targets",
+    ":cronet_gn2bp_test_targets",
     ":cronet_non_test_package",
-    ":repackage_test_jars",
   ]
   _stamp_path = "$target_gen_dir/$target_name.stamp"
   args = [

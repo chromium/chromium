@@ -9,9 +9,6 @@ import os  # noqa: F401
 import re
 from typing import List, Dict, Set, Union  # noqa: F401
 
-import gn_utils
-import targets as gn2bp_targets
-
 NEWLINE = ' " +\n         "'
 
 
@@ -446,18 +443,6 @@ class Module:
                 raise AttributeError(
                     f"Module '{self.name}' of type '{self.type}' does not support shared_libs"
                 )
-
-    def is_test(self):
-        if gn_utils.TESTING_SUFFIX in self.name:
-            name_without_prefix = self.name[
-                : self.name.find(gn_utils.TESTING_SUFFIX)
-            ]
-            return any(
-                name_without_prefix
-                == label_to_module_name(target, self.context)
-                for target in gn2bp_targets.DEFAULT_TESTS
-            )
-        return False
 
     def _output_field(
         self, output, name, sort=True, list_to_multiline_string=False
