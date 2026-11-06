@@ -149,6 +149,9 @@
 // Number of times `updateState:forItemWithIdentifier:` was called.
 @property(nonatomic, readonly) NSUInteger updateStateCallCount;
 
+// Whether a send is pending, as last set by the mediator.
+@property(nonatomic, assign) BOOL sendPending;
+
 // Whether the given control(s) are shown.
 - (BOOL)showsControls:(ComposeboxInputPlateControls)controls;
 
@@ -2494,6 +2497,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_FALSE(item.isAutoAdded);
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);
   EXPECT_FALSE(create_search_url_called);
+  EXPECT_TRUE(consumer.sendPending);
 
   EXPECT_CALL(*raw_mock_session,
               StartTabContextUploadFlow(testing::Eq(expected_server_token),
@@ -2510,6 +2514,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);
   EXPECT_EQ(item.serverToken, expected_server_token);
   EXPECT_FALSE(create_search_url_called);
+  EXPECT_TRUE(consumer.sendPending);
 
   [mediator
       onContextUploadStatusChanged:expected_server_token
@@ -2520,6 +2525,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoaded);
   EXPECT_TRUE(base::test::RunUntil([&]() { return create_search_url_called; }));
+  EXPECT_FALSE(consumer.sendPending);
 }
 
 // Tests that `sendText:` still proceeds if lazy page context extraction for an
@@ -2568,11 +2574,13 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   [mediator sendText:@"test query"];
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);
   EXPECT_FALSE(create_search_url_called);
+  EXPECT_TRUE(consumer.sendPending);
 
   [mediator handleFailedAttachment:identifier];
 
   EXPECT_EQ(consumer.items.count, 0U);
   EXPECT_TRUE(base::test::RunUntil([&]() { return create_search_url_called; }));
+  EXPECT_FALSE(consumer.sendPending);
 }
 
 // Tests that `sendAIMFollowup:` promotes an auto-added tab, starts lazy
@@ -2619,14 +2627,17 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   ComposeboxInputItem* item = consumer.items.firstObject;
   ASSERT_TRUE(item.isAutoAdded);
   ASSERT_EQ(item.state, ComposeboxInputItemState::kDeferred);
+  EXPECT_FALSE(consumer.sendPending);
 
   [mediator sendAIMFollowup:@"followup query"];
 
   // 1. Extraction is in flight (`kLoading`);
-  // `prepareLoadWithClientToAimMessage:` must not be called yet.
+  // `prepareLoadWithClientToAimMessage:` must not be called yet, and the send
+  // is pending.
   EXPECT_FALSE(item.isAutoAdded);
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);
   EXPECT_FALSE(fake_loader.prepareLoadCalled);
+  EXPECT_TRUE(consumer.sendPending);
 
   EXPECT_CALL(*raw_mock_session,
               StartTabContextUploadFlow(testing::Eq(expected_server_token),
@@ -2645,6 +2656,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);
   EXPECT_EQ(item.serverToken, expected_server_token);
   EXPECT_FALSE(fake_loader.prepareLoadCalled);
+  EXPECT_TRUE(consumer.sendPending);
 
   // 3. Server upload succeeds (`kLoaded`); `CreateClientToAimRequest` and
   // `prepareLoadWithClientToAimMessage:` now execute.
@@ -2658,6 +2670,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoaded);
   EXPECT_TRUE(fake_loader.prepareLoadCalled);
+  EXPECT_FALSE(consumer.sendPending);
 }
 
 // Tests that `sendAIMFollowup:` still proceeds if the lazy upload for an
@@ -2705,6 +2718,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   [mediator sendAIMFollowup:@"followup query"];
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);
   EXPECT_FALSE(fake_loader.prepareLoadCalled);
+  EXPECT_TRUE(consumer.sendPending);
 
   auto page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
@@ -2714,6 +2728,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
                            identifier:item.identifier];
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);
   EXPECT_FALSE(fake_loader.prepareLoadCalled);
+  EXPECT_TRUE(consumer.sendPending);
 
   EXPECT_CALL(mock_controller, CreateClientToAimRequest(testing::_)).Times(1);
   [mediator onContextUploadStatusChanged:expected_server_token
@@ -2724,6 +2739,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   EXPECT_EQ(consumer.items.count, 0U);
   EXPECT_TRUE(fake_loader.prepareLoadCalled);
+  EXPECT_FALSE(consumer.sendPending);
 }
 
 // Tests that `sendAIMFollowup:` records a follow-up submission on the

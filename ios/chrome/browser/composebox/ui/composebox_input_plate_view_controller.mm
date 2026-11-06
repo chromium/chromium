@@ -296,6 +296,9 @@ UIImage* SendButtonImage(BOOL highlighted,
 
   // Whether to force disable sending.
   BOOL _disableSending;
+
+  // Whether a send is pending, i.e. held until attachments finish uploading.
+  BOOL _sendPending;
 }
 
 /// ComposeboxAnimationContext
@@ -642,7 +645,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 }
 
 - (void)updateSendButtonStateIfNeeded {
-  if (_disableSending) {
+  if (_disableSending || _sendPending) {
     [self enableSendButton:NO];
     return;
   }
@@ -661,7 +664,9 @@ UIImage* SendButtonImage(BOOL highlighted,
 
 - (void)enableSendButton:(BOOL)enableSending {
   _sendButton.enabled = enableSending;
-  _sendButton.alpha = enableSending ? 1 : kSendButtonDisabledOpacity;
+  // Keep the activity indicator of a pending send fully visible.
+  _sendButton.alpha =
+      (enableSending || _sendPending) ? 1 : kSendButtonDisabledOpacity;
   BOOL isCobrowse = _entrypoint == ComposeboxEntrypoint::kCobrowse;
   [self enableKeyboardSendButton:enableSending
       allowsReturnKeyWithEmptyText:!isCobrowse];
@@ -800,6 +805,15 @@ UIImage* SendButtonImage(BOOL highlighted,
 
 - (void)disableSending:(BOOL)disableSending {
   _disableSending = disableSending;
+  [self updateSendButtonStateIfNeeded];
+}
+
+- (void)setSendPending:(BOOL)sendPending {
+  if (_sendPending == sendPending) {
+    return;
+  }
+  _sendPending = sendPending;
+  [_sendButton setNeedsUpdateConfiguration];
   [self updateSendButtonStateIfNeeded];
 }
 
@@ -1403,10 +1417,16 @@ UIImage* SendButtonImage(BOOL highlighted,
 
 /// Returns the send button.
 - (UIButton*)createSendButton {
+  __weak __typeof(self) weakSelf = self;
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfig.image = SendButtonImage(/*highlighted=*/NO, _theme, _entrypoint);
   buttonConfig.contentInsets = NSDirectionalEdgeInsetsZero;
+  // Match the activity indicator to the arrow it replaces.
+  buttonConfig.activityIndicatorColorTransformer = ^UIColor*(UIColor* color) {
+    return [[weakSelf currentTheme] sendButtonForegroundColorHighlighted:NO]
+               ?: color;
+  };
 
   UIButton* sendButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
@@ -1415,7 +1435,6 @@ UIImage* SendButtonImage(BOOL highlighted,
   sendButton.layer.cornerRadius = kSendButtonDimension / 2;
   sendButton.clipsToBounds = YES;
 
-  __weak __typeof(self) weakSelf = self;
   sendButton.configurationUpdateHandler = ^(UIButton* button) {
     [weakSelf sendButtonDidUpdateConfiguration];
   };
@@ -1442,8 +1461,12 @@ UIImage* SendButtonImage(BOOL highlighted,
 // Called when the configuration of the send button is updated.
 - (void)sendButtonDidUpdateConfiguration {
   UIButtonConfiguration* updatedConfig = _sendButton.configuration;
+  updatedConfig.showsActivityIndicator = _sendPending;
   BOOL isHighlighted = _sendButton.state == UIControlStateHighlighted;
-  updatedConfig.image = SendButtonImage(isHighlighted, _theme, _entrypoint);
+  // Remove the full-button arrow image while pending so the activity indicator
+  // uses its default size instead of scaling to the 36 pt symbol.
+  updatedConfig.image =
+      _sendPending ? nil : SendButtonImage(isHighlighted, _theme, _entrypoint);
   _sendButton.configuration = updatedConfig;
   CGFloat scale = isHighlighted ? 0.95 : 1.0;
   __weak UIButton* weakSendButton = _sendButton;
