@@ -72,7 +72,6 @@ include_rules = [
   "+chrome/browser/ui/ash/session",
   "+chrome/browser/ui/webui/ash/config",
   "+chrome/browser/ui/webui/ash/emoji",
-  "+chrome/common/logging_chrome.h",
 ]
 
 specific_include_rules = {
