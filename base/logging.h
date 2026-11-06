@@ -212,6 +212,12 @@ inline bool InitLogging(const LoggingSettings& settings) {
   return BaseInitLoggingImpl(settings);
 }
 
+// Returns the current logging destination, which is a bitmask of
+// `LoggingDestination` (see base/logging/logging_settings.h). Note that the
+// value may differ from the one originally set by InitLogging(), e.g.
+// `LOG_TO_FILE` is cleared if the log file is closed and cannot be reopened.
+BASE_EXPORT uint32_t GetLoggingDestination();
+
 // Sets the log level. Anything at or above this level will be written to the
 // log file/displayed to the user (if applicable). Anything below this level
 // will be silently ignored. The log level defaults to 0 (everything is logged

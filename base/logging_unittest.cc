@@ -236,6 +236,17 @@ TEST_F(LoggingTest, LogToStdErrFlag) {
   LOG(INFO) << mock_log_source_stderr.Log();
 }
 
+TEST_F(LoggingTest, GetLoggingDestination) {
+  LoggingSettings settings;
+  settings.logging_dest = LOG_NONE;
+  InitLogging(settings);
+  EXPECT_EQ(LOG_NONE, GetLoggingDestination());
+
+  settings.logging_dest = LOG_TO_STDERR | LOG_TO_SYSTEM_DEBUG_LOG;
+  InitLogging(settings);
+  EXPECT_EQ(LOG_TO_STDERR | LOG_TO_SYSTEM_DEBUG_LOG, GetLoggingDestination());
+}
+
 // Check that messages with severity ERROR or higher are always logged to
 // stderr if no log-destinations are set, other than LOG_TO_FILE.
 // This test is currently only POSIX-compatible.

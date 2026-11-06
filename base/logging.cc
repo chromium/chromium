@@ -556,6 +556,10 @@ int GetMinLogLevel() {
   return g_min_log_level;
 }
 
+uint32_t GetLoggingDestination() {
+  return g_logging_destination;
+}
+
 bool ShouldCreateLogMessage(int severity) {
   if (severity < g_min_log_level) {
     return false;
