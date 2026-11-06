@@ -8,8 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/test/test_simple_task_runner.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -134,9 +132,7 @@ class ProximityAuthSystemTest : public testing::Test {
  protected:
   ProximityAuthSystemTest()
       : user1_local_device_(CreateRemoteDevice(kUser1, "user1_local_device")),
-        user2_local_device_(CreateRemoteDevice(kUser2, "user2_local_device")),
-        task_runner_(new base::TestSimpleTaskRunner()),
-        thread_task_runner_current_default_handle_(task_runner_) {}
+        user2_local_device_(CreateRemoteDevice(kUser2, "user2_local_device")) {}
 
   void TearDown() override {
     UnlockScreen();
@@ -194,7 +190,6 @@ class ProximityAuthSystemTest : public testing::Test {
   void SimulateSuspend() {
     proximity_auth_system_->OnSuspend();
     proximity_auth_system_->OnSuspendDone();
-    task_runner_->RunUntilIdle();
   }
 
   FakeRemoteDeviceLifeCycle* life_cycle() {
@@ -216,10 +211,6 @@ class ProximityAuthSystemTest : public testing::Test {
 
   ash::multidevice::RemoteDeviceRefList user1_remote_devices_;
   ash::multidevice::RemoteDeviceRefList user2_remote_devices_;
-
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::SingleThreadTaskRunner::CurrentDefaultHandle
-      thread_task_runner_current_default_handle_;
 
  private:
   ash::multidevice::ScopedDisableLoggingForTesting disable_logging_;
