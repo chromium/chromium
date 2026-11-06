@@ -14,60 +14,6 @@
 
 namespace blink {
 
-class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
- public:
-  ExternalCanvasResource(
-      scoped_refptr<gpu::ClientSharedImage> client_si,
-      const gpu::SyncToken& sync_token,
-      viz::TransferableResource::ResourceSource resource_source,
-      const gfx::HDRMetadata& hdr_metadata,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
-
-  void NotifyResourceLost() override { resource_is_lost_ = true; }
-  void WaitSyncToken(const gpu::SyncToken&) override;
-
-  const gfx::HDRMetadata& GetHdrMetadata() const override {
-    return hdr_metadata_;
-  }
-
-  viz::TransferableResource::ResourceSource GetTransferableResourceSource()
-      const final {
-    return resource_source_;
-  }
-  bool UsesAcceleratedRaster() const final { return true; }
-
-  ~ExternalCanvasResource() override = default;
-
-  const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-      context_provider_wrapper_;
-  viz::TransferableResource::ResourceSource resource_source_;
-  const gfx::HDRMetadata hdr_metadata_;
-  bool resource_is_lost_ = false;
-
-  // SyncToken to wait on at destruction.
-  gpu::SyncToken destruction_sync_token_;
-};
-
-void ExternalCanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  if (sync_token.HasData()) {
-    destruction_sync_token_ = sync_token;
-  }
-}
-
-ExternalCanvasResource::ExternalCanvasResource(
-    scoped_refptr<gpu::ClientSharedImage> client_si,
-    const gpu::SyncToken& sync_token,
-    viz::TransferableResource::ResourceSource resource_source,
-    const gfx::HDRMetadata& hdr_metadata,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
-    : CanvasResource(std::move(client_si)),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
-      resource_source_(resource_source),
-      hdr_metadata_(hdr_metadata) {
-  CHECK(GetSharedImage());
-  SetReleaseSyncToken(sync_token);
-}
-
 ExportedCanvasResource::ExportedCanvasResource(
     scoped_refptr<gpu::ClientSharedImage> client_si,
     const gpu::SyncToken& sync_token,
