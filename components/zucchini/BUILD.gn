@@ -67,6 +67,7 @@ static_library("zucchini_lib") {
     "heuristic_ensemble_matcher.h",
     "image_index.cc",
     "image_index.h",
+    "image_utils.cc",
     "image_utils.h",
     "imposed_ensemble_matcher.cc",
     "imposed_ensemble_matcher.h",
