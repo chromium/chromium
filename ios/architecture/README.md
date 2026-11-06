@@ -190,7 +190,7 @@ feature, a **coordinator** encapsulates the feature, a **mediator** implements
 its business logic over **deep models**, and an **isolated view controller**
 manages its views. Features are connected to each other by **UI commands**.
 
-![Coordinator, Mediator, and View Controller triad](coordinator_triad.png){width=520}
+![Coordinator, Mediator, and View Controller triad](coordinator_triad.png)
 
 [SVG source](coordinator_triad.svg)
 
@@ -328,7 +328,7 @@ ______________________________________________________________________
 This section summarizes how the objects in a feature are owned and how they
 communicate, for reference while reading the pattern documents.
 
-![Feature object graph](coordinator_object_graph.png){width=600}
+![Feature object graph](coordinator_object_graph.png)
 
 [SVG source](coordinator_object_graph.svg)
 

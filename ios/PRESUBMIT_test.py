@@ -929,7 +929,7 @@ class CheckSvgHasUpdatedPngTest(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual('error', results[0].type)
         self.assertIn(
-            'rsvg-convert --zoom=2 --background-color=white '
+            'rsvg-convert --background-color=white '
             'ios/docs/diagram.svg | '
             'magick - -strip -depth 8 ios/docs/diagram.png',
             results[0].message,

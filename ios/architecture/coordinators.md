@@ -42,7 +42,7 @@ At a high level, a coordinator forms a partnership with its **mediator** and
 **view controller**, dividing the roles that traditional UIKit architectures
 place entirely inside a view controller:
 
-![Coordinator, Mediator, and View Controller triad](coordinator_triad.png){width=520}
+![Coordinator, Mediator, and View Controller triad](coordinator_triad.png)
 
 [SVG source](coordinator_triad.svg)
 
@@ -165,7 +165,7 @@ Child objects created by a coordinator must not depend directly on each other's
 concrete classes. Instead, their interactions are defined through Objective-C
 protocols, and the coordinator wires them together during `-start`:
 
-![Feature object graph](coordinator_object_graph.png){width=600}
+![Feature object graph](coordinator_object_graph.png)
 
 [SVG source](coordinator_object_graph.svg)
 
@@ -539,7 +539,7 @@ logical feature hierarchy. The coordinator hierarchy preserves the logical
 structure of the UI while hiding UIKit containment and presentation mechanics as
 implementation details:
 
-![Coordinator vs. ViewController hierarchy](coordinator_hierarchy.png){width=640}
+![Coordinator vs. ViewController hierarchy](coordinator_hierarchy.png)
 
 [SVG source](coordinator_hierarchy.svg)
 

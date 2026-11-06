@@ -874,7 +874,7 @@ def _CheckSvgHasUpdatedPng(input_api, output_api):
         return []
 
     commands = [
-        '  rsvg-convert --zoom=2 --background-color=white %s | '
+        '  rsvg-convert --background-color=white %s | '
         'magick - -strip -depth 8 %s' % (svg_path, png_path)
         for svg_path, png_path in stale_svgs
     ]
@@ -894,9 +894,11 @@ def _CheckSvgHasUpdatedPng(input_api, output_api):
                 'rsvg-convert is required because ImageMagick\'s built-in SVG '
                 'renderer drops arrowheads and dash patterns. Install it with '
                 '`sudo apt install librsvg2-bin` (Linux) or '
-                '`brew install librsvg` (macOS). Reference a new PNG from '
-                'Markdown at its 1x width, e.g. '
-                '`![Alt text](diagram.png){width=640}`.',
+                '`brew install librsvg` (macOS). The PNG is rendered at the '
+                'SVG\'s native size because Gitiles has no image sizing '
+                'syntax. Reference it from Markdown as '
+                '`![Alt text](diagram.png)` followed by '
+                '`[SVG source](diagram.svg)`.',
             ]
         )
         + '\n'
