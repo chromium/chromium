@@ -441,6 +441,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-raster.hh",
       "src/src/hb-style.cc",
       "src/src/hb-style.h",
+      "src/src/hb-subset-cff2-round.hh",
       "src/src/hb-subset-cff2-to-cff1.hh",
       "src/src/hb-subset-depend.h",
       "src/src/hb-uniscribe.cc",
@@ -513,7 +514,8 @@ if (use_system_harfbuzz) {
       "HB_NO_DRAW",
 
       # Don't ship experimental extensions.
-      "HB_NO_BORING_EXPANSION",
+      "HB_NO_BEYOND_64K",
+      "HB_NO_CUBIC_GLYF",
 
       # Don't ship VARC yet.
       "HB_NO_VAR_COMPOSITES",
