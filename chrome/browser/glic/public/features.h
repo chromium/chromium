@@ -62,8 +62,6 @@ BASE_DECLARE_FEATURE(kGlicSuggestionContextMenu);
 
 BASE_DECLARE_FEATURE(kGlicCreateTabAdjacent);
 
-BASE_DECLARE_FEATURE(kGlicDynamicChromeTools);
-
 BASE_DECLARE_FEATURE(kGlicLiveMode);
 
 BASE_DECLARE_FEATURE(kGlicSummarizeVideoSuggestion);

@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
-#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -32,7 +32,8 @@ class GlicToolsHolderImpl : public GlicToolsHolder {
 std::unique_ptr<GlicToolsHolder> CreateAiOverlayToolsForGlic(
     Profile* profile,
     mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver) {
-  if (!base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools)) {
+  if (!GetGlicProviderSpec(profile).SupportsFeature(
+          GlicFeature::kDynamicChromeTools)) {
     return nullptr;
   }
   BrowserWindowInterface* active_browser = nullptr;

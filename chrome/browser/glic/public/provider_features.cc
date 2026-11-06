@@ -111,4 +111,6 @@ glic::GlicIndigoFeatureParams PopulateIndigoFeatureParams(
   return params;
 }
 
+BASE_FEATURE(kGlicDynamicChromeTools, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

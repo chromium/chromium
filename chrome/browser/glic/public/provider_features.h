@@ -88,6 +88,11 @@ inline constexpr char kIndigoGlicTriggerDelayParam[] =
 glic::GlicIndigoFeatureParams PopulateIndigoFeatureParams(
     const base::Feature& feature);
 
+// Dynamic Chrome tools offered to the Glic web client
+// (`HostCapability::kChromeTools` and `AiOverlayTools`). See
+// GlicFeature::kDynamicChromeTools.
+BASE_DECLARE_FEATURE(kGlicDynamicChromeTools);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_PROVIDER_FEATURES_H_
