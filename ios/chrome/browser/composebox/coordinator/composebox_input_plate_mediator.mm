@@ -818,14 +818,18 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                   title:[self
                                             attachmentEventTitleForItem:item]]];
 
+  // Delete the item's server-side file before removing the item, as removing it
+  // can synchronously send a pending query (see
+  // `-composeboxInputItemCollectionDidUpdateItems:`), which must not reference
+  // the file. Attachments removed before their server upload starts have no
+  // server token, and so no server-side file to delete.
+  if (_contextualSearchSession && !item.serverToken.is_empty()) {
+    _contextualSearchSession->DeleteFile(item.serverToken);
+  }
+
   [_items removeItem:item];
 
   if (_contextualSearchSession) {
-    // Attachments removed before their server upload starts have no server
-    // token, and so no server-side file to delete.
-    if (!item.serverToken.is_empty()) {
-      _contextualSearchSession->DeleteFile(item.serverToken);
-    }
     [self reloadSuggestions];
   }
 

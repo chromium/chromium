@@ -432,6 +432,32 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
         setPageContextWrapperFactoryForTesting:page_context_wrapper_factory_];
   }
 
+  // Makes `session` reference the context token it creates in queries until the
+  // token is deleted, like the real
+  // `ContextualSearchSessionHandle::CreateContextToken()`.
+  void TrackUploadedContextToken(TestContextualSearchSessionHandle* session,
+                                 const base::UnguessableToken& token) {
+    ON_CALL(*session, CreateContextToken()).WillByDefault([session, token]() {
+      session->GetUploadedContextTokensForTesting().push_back(token);
+      return token;
+    });
+  }
+
+  // Expects `controller` to create one Client to AIM request, whose file tokens
+  // don't include `token`.
+  void ExpectClientToAimRequestWithoutToken(
+      contextual_search::MockContextualSearchContextController& controller,
+      const base::UnguessableToken& token) {
+    EXPECT_CALL(controller, CreateClientToAimRequest(testing::_))
+        .WillOnce([token](const std::unique_ptr<
+                          contextual_search::ContextualSearchContextController::
+                              CreateClientToAimRequestInfo>& info) {
+          EXPECT_THAT(info->file_tokens,
+                      testing::Not(testing::Contains(token)));
+          return lens::ClientToAimMessage();
+        });
+  }
+
   // Returns whether the `index`-th `PageContextWrapper` recorded by
   // `StubPageContextExtraction()` is still alive.
   bool IsPageContextWrapperAlive(size_t index) const {
@@ -2714,6 +2740,14 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   [mediator setOmniboxFocused:YES];
   ASSERT_EQ(consumer.items.count, 1U);
   ComposeboxInputItem* item = consumer.items.firstObject;
+  TestComposeboxInputPlateMediatorDelegate* delegate =
+      [[TestComposeboxInputPlateMediatorDelegate alloc] init];
+  mediator.delegate = delegate;
+  TrackUploadedContextToken(raw_mock_session, expected_server_token);
+  contextual_search::FileInfo file_info;
+  file_info.file_token = expected_server_token;
+  ON_CALL(mock_controller, GetFileInfo(expected_server_token))
+      .WillByDefault(testing::Return(&file_info));
 
   [mediator sendAIMFollowup:@"followup query"];
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);
@@ -2730,14 +2764,21 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_FALSE(fake_loader.prepareLoadCalled);
   EXPECT_TRUE(consumer.sendPending);
 
-  EXPECT_CALL(mock_controller, CreateClientToAimRequest(testing::_)).Times(1);
+  // The failed upload is deleted before the follow-up is sent, so that the
+  // follow-up doesn't reference it.
+  EXPECT_CALL(mock_controller, DeleteFile(expected_server_token))
+      .WillOnce(testing::Return(true));
+  ExpectClientToAimRequestWithoutToken(mock_controller, expected_server_token);
   [mediator onContextUploadStatusChanged:expected_server_token
                                 mimeType:lens::MimeType::kAnnotatedPageContent
                      contextUploadStatus:contextual_search::
                                              ContextUploadStatus::kUploadFailed
                                errorType:std::nullopt];
 
+  // The tab is dropped with the error snackbar, and the follow-up is sent
+  // without it.
   EXPECT_EQ(consumer.items.count, 0U);
+  EXPECT_TRUE(delegate.showedSnackbarForItemUploadDidFail);
   EXPECT_TRUE(fake_loader.prepareLoadCalled);
   EXPECT_FALSE(consumer.sendPending);
 }
