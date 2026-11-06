@@ -434,7 +434,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   using ScannerId = std::pair<std::string, std::string>;
   using TokenToScannerId = std::map<std::string, std::optional<ScannerId>>;
 
-  // Called when scanners are detected by a ScannerDetector.
+  // Called when scanners are detected by a ZeroconfScannerDetector.
   void OnScannersDetected(std::vector<Scanner> scanners) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     zeroconf_scanners_ = scanners;

@@ -200,7 +200,6 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
       CreateDeviceLister(service_type);
   }
 
-  // ScannerDetector:
   void RegisterScannersDetectedCallback(
       OnScannersDetectedCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
@@ -208,7 +207,6 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
     on_scanners_detected_callback_ = std::move(callback);
   }
 
-  // ScannerDetector:
   std::vector<Scanner> GetScanners() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     return GetDedupedScanners();

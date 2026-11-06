@@ -232,7 +232,7 @@ class ZeroconfScannerDetectorTest : public testing::Test {
     generic_scanner_lister_->SetDelegate(detector_.get());
   }
 
-  // ScannerDetector callback.
+  // ZeroconfScannerDetector callback.
   void OnScannersDetected(std::vector<Scanner> scanners) {
     scanners_ = std::move(scanners);
   }
