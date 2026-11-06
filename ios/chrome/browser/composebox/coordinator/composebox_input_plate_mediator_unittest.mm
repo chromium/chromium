@@ -247,6 +247,10 @@ constexpr std::string_view kHTMLMimeType = "text/html";
 // server-side input state does not block attachments.
 constexpr int kMaxTotalInputs = 5;
 
+// How long a send waits for a lazily uploaded auto-added tab before dropping
+// it. Matches `kLazyTabUploadTimeout` in the mediator.
+constexpr base::TimeDelta kLazyTabUploadTimeout = base::Seconds(10);
+
 class TestContextualSearchSessionHandle
     : public contextual_search::MockContextualSearchSessionHandle {
  public:
@@ -256,10 +260,15 @@ class TestContextualSearchSessionHandle
 class ComposeboxInputPlateMediatorTest : public PlatformTest {
  public:
   ComposeboxInputPlateMediatorTest()
-      : scoped_variations_ids_provider_(
-            variations::VariationsIdsProvider::Mode::kUseSignedInState) {}
+      : ComposeboxInputPlateMediatorTest(
+            web::WebTaskEnvironment::TimeSource::DEFAULT) {}
 
  protected:
+  explicit ComposeboxInputPlateMediatorTest(
+      web::WebTaskEnvironment::TimeSource time_source)
+      : task_environment_(time_source),
+        scoped_variations_ids_provider_(
+            variations::VariationsIdsProvider::Mode::kUseSignedInState) {}
   void SetUp() override {
     PlatformTest::SetUp();
     omnibox::RegisterProfilePrefs(pref_service_.registry());
@@ -3294,5 +3303,156 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_EQ(consumer.items.count, 0U);
   EXPECT_TRUE(
       [mediator isWebStateIDRemoved:active_web_state->GetUniqueIdentifier()]);
+}
+
+// Fixture for tests that depend on timers, using mock time.
+class ComposeboxInputPlateMediatorMockTimeTest
+    : public ComposeboxInputPlateMediatorTest {
+ protected:
+  ComposeboxInputPlateMediatorMockTimeTest()
+      : ComposeboxInputPlateMediatorTest(
+            web::WebTaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  // Creates a Co-browse mediator using `session`, wired to
+  // `cobrowse_consumer_`, `delegate_`, and `url_loader_`, with the active tab
+  // eligible for auto-attachment. The caller is responsible for calling
+  // `-disconnect`.
+  ComposeboxInputPlateMediator* CreateCobrowseMediator(
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session) {
+    SetAIMEligible(true);
+    SetDSEGoogle(true);
+    StubPageContextExtraction();
+    PrepareForAutoAttachment(active_web_state());
+    ComposeboxInputPlateMediator* mediator = CreateMediator(std::move(session));
+    mediator.consumer = cobrowse_consumer_;
+    mediator.delegate = delegate_;
+    mediator.URLLoader = url_loader_;
+    return mediator;
+  }
+
+  web::FakeWebState* active_web_state() {
+    return static_cast<web::FakeWebState*>(
+        web_state_list_->GetActiveWebState());
+  }
+
+  // Consumer of the mediator created by `CreateCobrowseMediator()`, separate
+  // from the fixture's `consumer_` used by `mediator_`.
+  TestComposeboxInputPlateConsumer* cobrowse_consumer_ =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  TestComposeboxInputPlateMediatorDelegate* delegate_ =
+      [[TestComposeboxInputPlateMediatorDelegate alloc] init];
+  FakeComposeboxURLLoader* url_loader_ = [[FakeComposeboxURLLoader alloc] init];
+};
+
+// Tests that when the lazy upload of an auto-added tab doesn't complete within
+// the timeout, the pending follow-up drops the tab with the error snackbar,
+// deletes its upload, and is sent without it.
+TEST_F(ComposeboxInputPlateMediatorMockTimeTest,
+       SendAIMFollowupDropsAutoAddedTabWhenUploadTimesOut) {
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  base::UnguessableToken expected_server_token =
+      base::UnguessableToken::Create();
+  ON_CALL(*raw_mock_session, CreateContextToken())
+      .WillByDefault(testing::Return(expected_server_token));
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+  contextual_search::FileInfo file_info;
+  file_info.file_token = expected_server_token;
+  ON_CALL(mock_controller, GetFileInfo(expected_server_token))
+      .WillByDefault(testing::Return(&file_info));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateCobrowseMediator(std::move(mock_session));
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(
+      [](ComposeboxInputPlateMediator* mediator) { [mediator disconnect]; },
+      mediator));
+  TrackUploadedContextToken(raw_mock_session, expected_server_token);
+
+  [mediator setOmniboxFocused:YES];
+  ASSERT_EQ(cobrowse_consumer_.items.count, 1U);
+  ComposeboxInputItem* item = cobrowse_consumer_.items.firstObject;
+
+  [mediator sendAIMFollowup:@"followup query"];
+  ASSERT_TRUE(cobrowse_consumer_.sendPending);
+
+  // Extraction completes and the upload starts, but never completes.
+  auto page_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  page_context->mutable_annotated_page_content();
+  [mediator handlePageContextResponse:std::move(page_context)
+                             webState:active_web_state()
+                           identifier:item.identifier];
+  ASSERT_EQ(item.serverToken, expected_server_token);
+
+  // The follow-up keeps waiting until the timeout elapses.
+  task_environment_.FastForwardBy(kLazyTabUploadTimeout - base::Seconds(1));
+  EXPECT_EQ(cobrowse_consumer_.items.count, 1U);
+  EXPECT_FALSE(url_loader_.prepareLoadCalled);
+  EXPECT_TRUE(cobrowse_consumer_.sendPending);
+
+  EXPECT_CALL(mock_controller, DeleteFile(expected_server_token))
+      .WillOnce(testing::Return(true));
+  ExpectClientToAimRequestWithoutToken(mock_controller, expected_server_token);
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(cobrowse_consumer_.items.count, 0U);
+  EXPECT_TRUE(delegate_.showedSnackbarForItemUploadDidFail);
+  EXPECT_TRUE(url_loader_.prepareLoadCalled);
+  EXPECT_FALSE(cobrowse_consumer_.sendPending);
+}
+
+// Tests that once the lazy upload of an auto-added tab completes and the
+// follow-up is sent, the upload timeout no longer drops the tab.
+TEST_F(ComposeboxInputPlateMediatorMockTimeTest,
+       SendAIMFollowupKeepsAutoAddedTabUploadedBeforeTimeout) {
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  base::UnguessableToken expected_server_token =
+      base::UnguessableToken::Create();
+  ON_CALL(*raw_mock_session, CreateContextToken())
+      .WillByDefault(testing::Return(expected_server_token));
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateCobrowseMediator(std::move(mock_session));
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(
+      [](ComposeboxInputPlateMediator* mediator) { [mediator disconnect]; },
+      mediator));
+
+  [mediator setOmniboxFocused:YES];
+  ASSERT_EQ(cobrowse_consumer_.items.count, 1U);
+  ComposeboxInputItem* item = cobrowse_consumer_.items.firstObject;
+
+  [mediator sendAIMFollowup:@"followup query"];
+  auto page_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  page_context->mutable_annotated_page_content();
+  [mediator handlePageContextResponse:std::move(page_context)
+                             webState:active_web_state()
+                           identifier:item.identifier];
+  [mediator
+      onContextUploadStatusChanged:expected_server_token
+                          mimeType:lens::MimeType::kAnnotatedPageContent
+               contextUploadStatus:contextual_search::ContextUploadStatus::
+                                       kUploadSuccessful
+                         errorType:std::nullopt];
+  ASSERT_TRUE(url_loader_.prepareLoadCalled);
+
+  EXPECT_CALL(mock_controller, DeleteFile(testing::_)).Times(0);
+  task_environment_.FastForwardBy(kLazyTabUploadTimeout);
+
+  EXPECT_EQ(cobrowse_consumer_.items.count, 1U);
+  EXPECT_EQ(item.state, ComposeboxInputItemState::kLoaded);
+  EXPECT_FALSE(delegate_.showedSnackbarForItemUploadDidFail);
+  EXPECT_FALSE(cobrowse_consumer_.sendPending);
 }
 }  // namespace
