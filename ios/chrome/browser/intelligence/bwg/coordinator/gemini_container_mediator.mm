@@ -106,6 +106,14 @@ using ios::provider::GeminiViewState;
 
 namespace {
 
+// Returns whether a page context in computation `state` can be shared with
+// Gemini.
+bool IsPageContextComputationEligible(
+    ios::provider::GeminiPageContextComputationState state) {
+  return state == ios::provider::GeminiPageContextComputationState::kSuccess ||
+         state == ios::provider::GeminiPageContextComputationState::kPending;
+}
+
 // Internal C++ observer for `WebStateList` active `WebState` changes.
 class GeminiContainerMediatorWebStateListObserver
     : public WebStateListObserver {
@@ -209,6 +217,14 @@ class GeminiContainerMediatorTabHelperObserver
   // Lens overlay state notifier observed to dismiss the container when Lens
   // Overlay prepares.
   LensOverlayStateNotifier* _lensOverlayStateNotifier;
+  // Incremented whenever the zero-state suggestions are updated, so that
+  // results from superseded fetches are dropped.
+  // TODO(crbug.com/582737077): Remove and cancel in-flight fetch instead
+  NSUInteger _zeroStateSuggestionsRequestID;
+  // Whether the last page context propagated for the active tab can't be
+  // shared with Gemini (e.g. protected page). Updated on every page context
+  // propagation, including partial ones on navigation and tab switches.
+  BOOL _activePageContextIneligible;
 }
 
 - (instancetype)
@@ -265,6 +281,10 @@ class GeminiContainerMediatorTabHelperObserver
   GeminiPageContext* initialPageContext =
       pageContext ? pageContext : geminiTabHelper->GetPartialPageContext();
   [self applyUserPrefsToPageContext:initialPageContext];
+  // Seed the eligibility before the initial zero-state fetch, which runs before
+  // the first page context propagation.
+  _activePageContextIneligible = !IsPageContextComputationEligible(
+      initialPageContext.geminiPageContextComputationState);
 
   return [self createGeminiConfigurationWithTabHelper:geminiTabHelper
                                           pageContext:initialPageContext
@@ -296,21 +316,25 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   GeminiTabHelper* geminiTabHelper = [self activeTabHelper];
-  if (!geminiTabHelper ||
+  BOOL pageContextDetached =
+      ios::provider::GetCurrentPageContextAttachmentState() ==
+      ios::provider::GeminiPageContextAttachmentState::kDetached;
+  if (!geminiTabHelper || pageContextDetached || _activePageContextIneligible ||
+      ![self isPageContextEligibleForTabHelper:geminiTabHelper] ||
       ![self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint]) {
-    [self.zeroStateConsumer setZeroStateSuggestions:@[]];
-    [self updateZeroStateMediumDetentHeight];
+    [self setZeroStateSuggestions:@[]];
     return;
   }
 
   // Set the suggestions to nil to show empty buttons while fetching them.
-  [self.zeroStateConsumer setZeroStateSuggestions:nil];
-  [self updateZeroStateMediumDetentHeight];
+  [self setZeroStateSuggestions:nil];
 
+  NSUInteger requestID = _zeroStateSuggestionsRequestID;
   __weak __typeof(self) weakSelf = self;
   geminiTabHelper->FetchZeroStateSuggestions(
       base::BindOnce(^(NSArray<ZeroStateSuggestion*>* suggestions) {
-        [weakSelf onZeroStateSuggestionsFetched:suggestions];
+        [weakSelf onZeroStateSuggestionsFetched:suggestions
+                                      requestID:requestID];
       }));
 }
 
@@ -705,12 +729,18 @@ class GeminiContainerMediatorTabHelperObserver
     _sharedTabsManager->UpdateLocalTabAttachmentState(
         tabID, ios::provider::GeminiPageContextAttachmentState::kAttached);
   }
+  if ([self isActiveTabID:tabID]) {
+    [self fetchZeroStateSuggestions:_startupState];
+  }
 }
 
 - (void)didDetachTabWithID:(NSString*)tabID {
   if (_sharedTabsManager) {
     _sharedTabsManager->UpdateLocalTabAttachmentState(
         tabID, ios::provider::GeminiPageContextAttachmentState::kDetached);
+  }
+  if ([self isActiveTabID:tabID]) {
+    [self setZeroStateSuggestions:@[]];
   }
 }
 
@@ -936,11 +966,56 @@ class GeminiContainerMediatorTabHelperObserver
 #pragma mark - Private
 
 // Updates the zero-state consumer with fetched `suggestions` and adapts the
-// medium detent height of the assistant container.
+// medium detent height of the assistant container. Results of superseded
+// requests are dropped so they don't re-show hidden suggestions.
 - (void)onZeroStateSuggestionsFetched:
-    (NSArray<ZeroStateSuggestion*>*)suggestions {
+            (NSArray<ZeroStateSuggestion*>*)suggestions
+                            requestID:(NSUInteger)requestID {
+  if (requestID != _zeroStateSuggestionsRequestID) {
+    return;
+  }
+  [self setZeroStateSuggestions:suggestions];
+}
+
+// Forwards `suggestions` to the zero-state consumer, drops any in-flight fetch
+// result and adapts the medium detent height of the assistant container.
+- (void)setZeroStateSuggestions:(NSArray<ZeroStateSuggestion*>*)suggestions {
+  if (!self.zeroStateConsumer) {
+    return;
+  }
+  ++_zeroStateSuggestionsRequestID;
   [self.zeroStateConsumer setZeroStateSuggestions:suggestions];
-  [self updateZeroStateMediumDetentHeight];
+  if (suggestions && suggestions.count == 0) {
+    [self resetZeroStateMediumDetentHeight];
+  } else {
+    [self updateZeroStateMediumDetentHeight];
+  }
+}
+
+// Returns whether the page context of `tabHelper` can be attached: the user
+// allows sharing page content and the page is eligible for Gemini.
+- (BOOL)isPageContextEligibleForTabHelper:(GeminiTabHelper*)tabHelper {
+  return _profile->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting) &&
+         tabHelper->IsGeminiChatAvailableForWebState();
+}
+
+// Returns whether `tabID` identifies the active tab. In multi-tab mode, other
+// tabs can be attached or detached without affecting the active page context.
+- (BOOL)isActiveTabID:(NSString*)tabID {
+  GeminiTabHelper* tabHelper = [self activeTabHelper];
+  return tabHelper && [tabID isEqualToString:base::SysUTF8ToNSString(
+                                                 tabHelper->GetClientId())];
+}
+
+// Resets the medium detent height of the assistant container to its default
+// when in zero state. Used when suggestions are hidden since the remaining
+// content is too short for a content-sized detent.
+- (void)resetZeroStateMediumDetentHeight {
+  if (!_stateManager.currentUIState.zeroStateVisible ||
+      !IsIOSGeminiBottomSheetMigrationEnabled()) {
+    return;
+  }
+  [self.containerHandler setAssistantContainerMediumDetentHeight:std::nullopt];
 }
 
 // Updates the medium detent height of the assistant container to match the
@@ -1077,6 +1152,18 @@ class GeminiContainerMediatorTabHelperObserver
   ios::provider::UpdateActivePageContext(
       pageContext,
       _sharedTabsManager ? _sharedTabsManager->GetInactiveSharedTabs() : nil);
+
+  // Some pages are only known to be ineligible once their page context is
+  // computed (e.g. protected pages). Suggestions are refetched only when the
+  // page becomes eligible again, rather than on every page context update.
+  BOOL wasIneligible = _activePageContextIneligible;
+  _activePageContextIneligible = !IsPageContextComputationEligible(
+      pageContext.geminiPageContextComputationState);
+  if (_activePageContextIneligible) {
+    [self setZeroStateSuggestions:@[]];
+  } else if (wasIneligible && _stateManager.currentUIState.zeroStateVisible) {
+    [self fetchZeroStateSuggestions:_startupState];
+  }
 }
 
 - (void)updateFloatyWithPartialPageContext {
@@ -1119,6 +1206,9 @@ class GeminiContainerMediatorTabHelperObserver
       newTabHelper->AddObserver(_tabHelperObserver.get());
       [self onPageContextUpdated:newActive];
     }
+    if (_stateManager.currentUIState.zeroStateVisible) {
+      [self fetchZeroStateSuggestions:_startupState];
+    }
   }
 }
 
@@ -1157,6 +1247,9 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   [self updateFloatyWithPartialPageContext];
+  if (_stateManager.currentUIState.zeroStateVisible) {
+    [self fetchZeroStateSuggestions:_startupState];
+  }
 }
 
 - (void)onWebStateListDestroyed {

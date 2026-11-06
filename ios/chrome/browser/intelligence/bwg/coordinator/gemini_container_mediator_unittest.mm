@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/actor/core/task_source_info.h"
@@ -97,6 +98,7 @@
 - (void)setActuationActive:(BOOL)actuationActive;
 - (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
     (GeminiStartupState*)startupState;
+- (void)propagatePageContext:(GeminiPageContext*)pageContext;
 @end
 
 namespace {
@@ -142,6 +144,18 @@ NSString* const kTestConversationID = @"conversation_id";
 
 - (void)setActuationActive:(BOOL)active {
   _actuationActive = active;
+}
+@end
+
+// Fake zero-state consumer recording whether suggestions are hidden (i.e. set
+// to an empty array).
+@interface FakeGeminiZeroStateConsumer : NSObject <GeminiZeroStateConsumer>
+@property(nonatomic, assign, getter=isHidden) BOOL hidden;
+@end
+
+@implementation FakeGeminiZeroStateConsumer
+- (void)setZeroStateSuggestions:(NSArray<ZeroStateSuggestion*>*)suggestions {
+  _hidden = suggestions && suggestions.count == 0;
 }
 @end
 
@@ -1738,6 +1752,9 @@ TEST_F(GeminiContainerMediatorTest,
   web::FakeWebState* web_state = AppendActiveWebState();
   web_state->SetCurrentURL(GURL("https://example.com"));
   web_state->SetVisibleURL(GURL("https://example.com"));
+  web_state->SetContentsMimeType("text/html");
+  web_state->WasShown();
+  web_state->SetLoading(true);
 
   [mediator_ connect];
   EXPECT_EQ(std::optional<NSInteger>(kInitialHeight),
@@ -2308,6 +2325,114 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_THAT(delegate_.last_mode_changed_,
               testing::Optional(ios::provider::GeminiViewMode::kFloaty));
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+}
+
+// Fixture for zero-state suggestions visibility tests, with an eligible active
+// page and a connected mediator.
+class GeminiContainerMediatorZeroStateTest
+    : public GeminiContainerMediatorTest {
+ protected:
+  void SetUp() override {
+    GeminiContainerMediatorTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        {kAssistantContainer, kIOSGeminiBottomSheetMigration,
+         kZeroStateSuggestions, kZeroStateSuggestionsCentralization},
+        {});
+
+    zero_state_consumer_ = [[FakeGeminiZeroStateConsumer alloc] init];
+    mediator_.zeroStateConsumer = zero_state_consumer_;
+    mediator_.startupState = startup_state_;
+
+    container_handler_ = [[FakeAssistantContainerCommandsHandler alloc] init];
+    mediator_.containerHandler = container_handler_;
+    container_consumer_ = [[FakeGeminiContainerConsumer alloc] init];
+    container_consumer_.contentHeight = kContentHeight;
+    mediator_.consumer = container_consumer_;
+
+    web_state_ = AppendActiveWebState();
+    web_state_->SetCurrentURL(GURL("https://example.com"));
+    web_state_->SetVisibleURL(GURL("https://example.com"));
+    web_state_->SetContentsMimeType("text/html");
+    web_state_->WasShown();
+    web_state_->SetLoading(true);
+
+    [mediator_ connect];
+  }
+
+  // Returns the Gemini tab ID of the active tab.
+  NSString* ActiveTabID() {
+    return base::SysUTF8ToNSString(
+        GeminiTabHelper::FromWebState(web_state_)->GetClientId());
+  }
+
+  static constexpr CGFloat kContentHeight = 240.0;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  FakeGeminiZeroStateConsumer* zero_state_consumer_;
+  FakeAssistantContainerCommandsHandler* container_handler_;
+  FakeGeminiContainerConsumer* container_consumer_;
+  raw_ptr<web::FakeWebState> web_state_ = nullptr;
+};
+
+// Tests that detaching the active tab's page context hides zero-state
+// suggestions and resets the medium detent to its default, and that
+// re-attaching it fetches them again and sizes the detent to the content.
+TEST_F(GeminiContainerMediatorZeroStateTest,
+       TestSuggestionsHiddenWhenActiveTabDetachedAndRestoredOnAttach) {
+  ASSERT_FALSE(zero_state_consumer_.hidden);
+  ASSERT_EQ(std::optional<NSInteger>(kContentHeight),
+            container_handler_.mediumDetentHeight);
+
+  [mediator_ didDetachTabWithID:ActiveTabID()];
+  EXPECT_TRUE(zero_state_consumer_.hidden);
+  EXPECT_EQ(std::nullopt, container_handler_.mediumDetentHeight);
+
+  // Input plate changes while suggestions are hidden size the detent to the
+  // content again.
+  constexpr CGFloat kNanoBananaContentHeight = 300.0;
+  container_consumer_.contentHeight = kNanoBananaContentHeight;
+  [mediator_ inputPlateDidChangeNanoBananaAttachment:YES];
+  EXPECT_EQ(std::optional<NSInteger>(kNanoBananaContentHeight),
+            container_handler_.mediumDetentHeight);
+  container_consumer_.contentHeight = kContentHeight;
+
+  [mediator_ didAttachTabWithID:ActiveTabID()];
+  EXPECT_FALSE(zero_state_consumer_.hidden);
+  EXPECT_EQ(std::optional<NSInteger>(kContentHeight),
+            container_handler_.mediumDetentHeight);
+}
+
+// Tests that detaching a tab other than the active one doesn't hide zero-state
+// suggestions.
+TEST_F(GeminiContainerMediatorZeroStateTest,
+       TestSuggestionsShownWhenInactiveTabDetached) {
+  ASSERT_FALSE(zero_state_consumer_.hidden);
+
+  [mediator_ didDetachTabWithID:@"inactive_tab_id"];
+  EXPECT_FALSE(zero_state_consumer_.hidden);
+}
+
+// Tests that zero-state suggestions are hidden when the computed page context
+// turns out to be ineligible.
+TEST_F(GeminiContainerMediatorZeroStateTest,
+       TestSuggestionsHiddenWhenPageContextIneligible) {
+  ASSERT_FALSE(zero_state_consumer_.hidden);
+
+  GeminiPageContext* page_context = [[GeminiPageContext alloc] init];
+  page_context.geminiPageContextComputationState =
+      ios::provider::GeminiPageContextComputationState::kProtected;
+  [mediator_ propagatePageContext:page_context];
+  EXPECT_TRUE(zero_state_consumer_.hidden);
+}
+
+// Tests that zero-state suggestions are hidden when the user disabled page
+// content sharing.
+TEST_F(GeminiContainerMediatorZeroStateTest,
+       TestSuggestionsHiddenWhenPageContentSharingDisabled) {
+  ASSERT_FALSE(zero_state_consumer_.hidden);
+
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
+  EXPECT_TRUE(zero_state_consumer_.hidden);
 }
 
 }  // namespace

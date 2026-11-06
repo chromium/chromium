@@ -120,10 +120,6 @@ class GeminiSharedTabsManager;
 - (BOOL)shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
     (gemini::EntryPoint)entryPoint;
 
-// Handles initial setup for UI state and page context generation when the
-// container session starts.
-- (void)connect;
-
 // Currently, `GeminiBrowserAgent` does some of the state setup/cleanup on each
 // floaty invocation/dismissal, while full destruction happens on
 // `GeminiBrowserAgent` destruction.
@@ -139,7 +135,8 @@ class GeminiSharedTabsManager;
 - (void)onFloatyInvoked;
 - (void)onFloatyDismiss;
 
-// Fetches zero-state suggestions for the active web state.
+// Fetches zero-state suggestions for the active web state, or hides them when
+// its page context is detached or not eligible to be attached.
 - (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState;
 
 // Handles initial setup for UI state, page context generation, and connecting
