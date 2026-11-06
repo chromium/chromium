@@ -505,4 +505,37 @@ TEST_P(MultipartUploadDataPipeRequestTest, EquivalentToStringRequest) {
                 data_pipe_request->data_pipe_getter_for_testing()));
 }
 
+TEST_F(MultipartUploadRequestTest, FileOpenFailure) {
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  base::RunLoop run_loop;
+  bool upload_failed = false;
+  bool request_sent = false;
+  MockMultipartUploadDataPipeRequest request(
+      temp_dir_.GetPath().AppendASCII("does_not_exist.txt"),
+      base::BindLambdaForTesting(
+          [&upload_failed, &run_loop](bool success, int http_status,
+                                      const std::string& response_data) {
+            EXPECT_FALSE(success);
+            EXPECT_EQ(0, http_status);
+            EXPECT_EQ("", response_data);
+            upload_failed = true;
+            run_loop.Quit();
+          }));
+
+  // Quit on an unexpected request too, so a regression fails the expectations
+  // below instead of hanging the test.
+  EXPECT_CALL(request, CompleteSendRequest(_))
+      .WillRepeatedly([&request_sent,
+                       &run_loop](std::unique_ptr<network::ResourceRequest>) {
+        request_sent = true;
+        run_loop.Quit();
+      });
+  request.Start();
+  run_loop.Run();
+
+  EXPECT_TRUE(upload_failed);
+  EXPECT_FALSE(request_sent);
+  EXPECT_FALSE(request.data_pipe_getter_for_testing());
+}
+
 }  // namespace enterprise_connectors

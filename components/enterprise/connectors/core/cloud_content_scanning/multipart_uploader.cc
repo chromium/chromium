@@ -57,27 +57,6 @@ const char kDataContentType[] = "Content-Type: application/octet-stream";
 // Content type of a full multipart request
 const char kUploadContentType[] = "multipart/related; boundary=";
 
-std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
-    const std::string& boundary,
-    const std::string& metadata,
-    const base::FilePath& path,
-    bool is_obfuscated) {
-  // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
-  // user clicking "Open Now" without causing download errors.
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_WIN_SHARE_DELETE);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FilePath("/media/fuse/fusebox").IsParent(path)) {
-    return ConnectorDataPipeGetter::CreateFuseboxMultipartPipeGetter(
-        boundary, metadata, std::move(file), is_obfuscated);
-  }
-#endif
-
-  return ConnectorDataPipeGetter::CreateMultipartPipeGetter(
-      boundary, metadata, std::move(file), is_obfuscated);
-}
-
 }  // namespace
 
 MultipartUploadRequest::MultipartUploadRequest(
@@ -418,8 +397,8 @@ void MultipartUploadRequest::CreateDatapipe(
       std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&CreateFileDataPipeGetterBlocking, boundary_, metadata_,
-                     path_, is_obfuscated_),
+      base::BindOnce(&ConnectorDataPipeGetter::CreateMultipartPipeGetterForPath,
+                     boundary_, metadata_, path_, is_obfuscated_),
       base::BindOnce(&MultipartUploadRequest::DataPipeCreatedCallback,
                      weak_factory_.GetWeakPtr(), std::move(request)));
 }

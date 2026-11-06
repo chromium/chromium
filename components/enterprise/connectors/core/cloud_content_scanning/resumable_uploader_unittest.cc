@@ -772,6 +772,63 @@ TEST_F(ResumableUploadRequestTest, NetworkRequestStreamsEmptyDataPipe) {
   EXPECT_EQ(request->GetUploadInfo(), "Resumable - Full content scan");
 }
 
+TEST_F(ResumableUploadRequestTest, FileOpenFailure) {
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  base::RunLoop run_loop;
+  bool verdict_called = false;
+  bool content_upload_requested = false;
+
+  auto request = std::make_unique<MockResumableUploadRequest>(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      temp_dir_.GetPath().AppendASCII("does_not_exist.txt"),
+      ScanRequestUploadResult::kSuccess,
+      base::BindLambdaForTesting(
+          [&verdict_called](bool success, int http_status,
+                            const std::string& response_data) {
+            EXPECT_FALSE(success);
+            EXPECT_EQ(0, http_status);
+            EXPECT_EQ("", response_data);
+            verdict_called = true;
+          }),
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }),
+      /*force_sync_upload=*/false,
+      /*register_on_got_hash_callback=*/base::NullCallback());
+
+  test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+      [&content_upload_requested, this](const network::ResourceRequest& req) {
+        if (req.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (req.url == GURL(kUploadUrl)) {
+          // Not expected. Respond anyway so a regression fails the
+          // expectations below instead of hanging the test.
+          content_upload_requested = true;
+          auto content_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          content_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                    "final");
+          test_url_loader_factory_.AddResponse(
+              GURL(kUploadUrl), std::move(content_response_head),
+              "final_response", network::URLLoaderCompletionStatus(net::OK));
+        }
+      }));
+
+  request->Start();
+  run_loop.Run();
+
+  EXPECT_TRUE(verdict_called);
+  EXPECT_FALSE(content_upload_requested);
+  EXPECT_FALSE(request->data_pipe_getter_for_testing());
+}
+
 class ResumableUploadSendMetadataRequestTest
     : public ResumableUploadRequestTest,
       public testing::WithParamInterface<bool> {

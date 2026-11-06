@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/safe_conversions.h"
@@ -37,7 +38,18 @@ const char kDataContentType[] = "Content-Type: application/octet-stream";
 // Write the data from |file_| by chunks of 32 kbs.
 constexpr size_t kMaxSize = 32 * 1024;
 
+base::File OpenFileForUpload(const base::FilePath& path) {
+  // `FLAG_WIN_SHARE_DELETE` is necessary to allow the file to be renamed by
+  // the user clicking "Open Now" without causing download errors.
+  return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                              base::File::FLAG_WIN_SHARE_DELETE);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
+bool IsFuseboxPath(const base::FilePath& path) {
+  return base::FilePath("/media/fuse/fusebox").IsParent(path);
+}
+
 std::unique_ptr<ChunkedFileDataPipeProducer> CreateChunkedProducer(
     base::File file,
     bool is_obfuscated) {
@@ -275,6 +287,38 @@ ConnectorDataPipeGetter::CreateResumablePipeGetter(
   return std::make_unique<ConnectorDataPipeGetter>(/*boundary*/ std::string(),
                                                    /*metadata*/ std::string(),
                                                    std::move(mapping));
+}
+
+// static
+std::unique_ptr<ConnectorDataPipeGetter>
+ConnectorDataPipeGetter::CreateMultipartPipeGetterForPath(
+    const std::string& boundary,
+    const std::string& metadata,
+    const base::FilePath& path,
+    bool is_obfuscated) {
+  base::File file = OpenFileForUpload(path);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsFuseboxPath(path)) {
+    return CreateFuseboxMultipartPipeGetter(boundary, metadata, std::move(file),
+                                            is_obfuscated);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return CreateMultipartPipeGetter(boundary, metadata, std::move(file),
+                                   is_obfuscated);
+}
+
+// static
+std::unique_ptr<ConnectorDataPipeGetter>
+ConnectorDataPipeGetter::CreateResumablePipeGetterForPath(
+    const base::FilePath& path,
+    bool is_obfuscated) {
+  base::File file = OpenFileForUpload(path);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsFuseboxPath(path)) {
+    return CreateFuseboxResumablePipeGetter(std::move(file), is_obfuscated);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return CreateResumablePipeGetter(std::move(file), is_obfuscated);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

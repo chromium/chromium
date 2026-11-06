@@ -23,6 +23,10 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace enterprise_connectors {
 
 class ChunkedFileDataPipeProducer;
@@ -159,6 +163,19 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   // from it.
   static std::unique_ptr<ConnectorDataPipeGetter> CreateResumablePipeGetter(
       base::ReadOnlySharedMemoryRegion page);
+
+  // Opens the file at `path` and creates a multipart or resumable data pipe
+  // getter for it. On ChromeOS, files on the FuseBox mount are read in chunks
+  // since they can't be memory mapped. Returns `nullptr` if the file can't be
+  // opened or read. These block, so call them on a sequence that allows it.
+  static std::unique_ptr<ConnectorDataPipeGetter>
+  CreateMultipartPipeGetterForPath(const std::string& boundary,
+                                   const std::string& metadata,
+                                   const base::FilePath& path,
+                                   bool is_obfuscated);
+  static std::unique_ptr<ConnectorDataPipeGetter>
+  CreateResumablePipeGetterForPath(const base::FilePath& path,
+                                   bool is_obfuscated);
 
   // Resets `pipe_`, `watcher_`, and `write_position_` so future calls to Read
   // can work correctly.

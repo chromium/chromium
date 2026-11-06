@@ -67,24 +67,6 @@ bool IsSuccess(int net_error, int response_code) {
   return net_error == net::OK && response_code == net::HTTP_OK;
 }
 
-std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
-    const base::FilePath& path,
-    bool is_obfuscated) {
-  // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
-  // user clicking "Open Now" without causing download errors.
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_WIN_SHARE_DELETE);
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FilePath("/media/fuse/fusebox").IsParent(path)) {
-    return ConnectorDataPipeGetter::CreateFuseboxResumablePipeGetter(
-        std::move(file), is_obfuscated);
-  }
-#endif
-
-  return ConnectorDataPipeGetter::CreateResumablePipeGetter(std::move(file),
-                                                            is_obfuscated);
-}
-
 }  // namespace
 
 ResumableUploadRequest::ResumableUploadRequest(
@@ -579,8 +561,6 @@ void ResumableUploadRequest::SendContentSoon() {
   }
 }
 
-// TODO(crbug.com/328415950): Move the data pipe creation logics to
-// connector_upload_request.
 void ResumableUploadRequest::CreateDatapipe(
     std::unique_ptr<network::ResourceRequest> request,
     file_access::ScopedFileAccess file_access) {
@@ -588,7 +568,8 @@ void ResumableUploadRequest::CreateDatapipe(
       std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&CreateFileDataPipeGetterBlocking, path_, is_obfuscated_),
+      base::BindOnce(&ConnectorDataPipeGetter::CreateResumablePipeGetterForPath,
+                     path_, is_obfuscated_),
       base::BindOnce(&ResumableUploadRequest::OnDataPipeCreated,
                      weak_factory_.GetWeakPtr(), std::move(request)));
 }
