@@ -1889,6 +1889,10 @@ targets.bundle(
         # TODO(crbug.com/40287410): Remove this once the BackgroundResourceFetch
         # feature launches.
         "chromium_web_tests_brfetch_isolated_scripts",
+        "devtools_api_tests",
+        "devtools_e2e_tests",
+        "devtools_node_unit_tests",
+        "devtools_unit_tests",
         "webdriver_bidi_e2e_tests",
         "webdriver_bidi_unittests",
     ],

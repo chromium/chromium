@@ -728,6 +728,24 @@ ci.thin_tester(
             "content_browsertests": targets.mixin(
                 ci_only = True,
             ),
+            "devtools_api_tests": targets.mixin(
+                experiment_percentage = 1,
+            ),
+            "devtools_e2e_tests": targets.mixin(
+                experiment_percentage = 1,
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "devtools_node_unit_tests": targets.mixin(
+                experiment_percentage = 1,
+            ),
+            "devtools_unit_tests": targets.mixin(
+                experiment_percentage = 1,
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
             "headless_shell_wpt_tests": targets.mixin(
                 swarming = targets.swarming(
                     # Move to faster machine types to reduce capacity impact.
