@@ -6,8 +6,8 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {SearchResult, SettingsSearchDropdownElement} from 'chrome://settings/settings.js';
 import {SettingId, settingsSearchBrowserProxyFactory, SettingsSearchManagerImpl} from 'chrome://settings/settings.js';
-import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createSearchResult, TestSettingsSearchHandler} from './test_settings_search_handler.js';
 // clang-format on
@@ -18,8 +18,17 @@ suite('SettingsSearchDropdown', () => {
 
   function getRowTitles(): string[] {
     return Array.from(
-        dropdown.shadowRoot.querySelectorAll<HTMLElement>('.result'),
-        row => row.textContent.trim());
+        dropdown.$.dropdown.querySelectorAll<HTMLElement>('.result-title'),
+        el => el.textContent.trim());
+  }
+
+  function getRowBreadcrumbs(): string[] {
+    return Array.from(
+        dropdown.$.dropdown.querySelectorAll<HTMLElement>('.result'), row => {
+          const breadcrumbs =
+              row.querySelector<HTMLElement>('.result-breadcrumbs');
+          return breadcrumbs ? breadcrumbs.textContent.trim() : '';
+        });
   }
 
   async function simulateSearchQuery(query: string) {
@@ -53,22 +62,39 @@ suite('SettingsSearchDropdown', () => {
   });
 
   test('ShowsSearchResults', async () => {
+    assertFalse(isVisible(dropdown.$.dropdown));
     assertDeepEquals([], getRowTitles());
+    assertDeepEquals([], getRowBreadcrumbs());
 
     handler.setSearchResults([
-      createSearchResult({title: 'Theme'}),
-      createSearchResult({id: SettingId.kFontSize, title: 'Font size'}),
+      createSearchResult({
+        id: SettingId.kAppearance,
+        title: 'Appearance',
+        breadcrumbs: [],
+      }),
+      createSearchResult({title: 'Theme', breadcrumbs: ['Appearance']}),
+      createSearchResult({
+        id: SettingId.kFontSize,
+        title: 'Font size',
+        breadcrumbs: ['Appearance', 'Customize fonts'],
+      }),
     ]);
-    await simulateSearchQuery('theme');
-    assertDeepEquals(['Theme', 'Font size'], getRowTitles());
+    await simulateSearchQuery('appearance');
+    assertTrue(isVisible(dropdown.$.dropdown));
+    assertDeepEquals(['Appearance', 'Theme', 'Font size'], getRowTitles());
+    assertDeepEquals(
+        ['', 'Appearance', 'Appearance > Customize fonts'],
+        getRowBreadcrumbs());
   });
 
   test('ClearsResultsForShortQuery', async () => {
     handler.setSearchResults([createSearchResult({title: 'Theme'})]);
     await simulateSearchQuery('te');
+    assertTrue(isVisible(dropdown.$.dropdown));
     assertDeepEquals(['Theme'], getRowTitles());
 
     await simulateSearchQuery('t');
+    assertFalse(isVisible(dropdown.$.dropdown));
     assertDeepEquals([], getRowTitles());
   });
 

@@ -8,8 +8,17 @@ import type {SettingsSearchDropdownElement} from './settings_search_dropdown.js'
 
 export function getHtml(this: SettingsSearchDropdownElement) {
   return html`<!--_html_template_start_-->
-${this.results_.map(item => html`
-  <div class="result">${item.title}</div>
-`)}
+<div id="dropdown" ?hidden="${!this.results_.length}">
+  ${this.results_.map(item => html`
+    <div class="result">
+      <div class="result-title">${item.title}</div>
+      ${item.breadcrumbs.length ? html`
+        <div class="result-breadcrumbs cr-secondary-text">
+          ${item.breadcrumbs.join(' > ')}
+        </div>
+      ` : ''}
+    </div>
+  `)}
+</div>
 <!--_html_template_end_-->`;
 }

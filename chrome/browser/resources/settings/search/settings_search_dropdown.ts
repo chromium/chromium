@@ -13,12 +13,23 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchResult} from '../settings_search.mojom-webui.js';
 
+import {getCss} from './settings_search_dropdown.css.js';
 import {getHtml} from './settings_search_dropdown.html.js';
 import {SettingsSearchManagerImpl} from './settings_search_manager.js';
+
+export interface SettingsSearchDropdownElement {
+  $: {
+    dropdown: HTMLElement,
+  };
+}
 
 export class SettingsSearchDropdownElement extends CrLitElement {
   static get is() {
     return 'settings-search-dropdown';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {

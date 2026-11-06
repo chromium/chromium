@@ -1,0 +1,55 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+#dropdown {
+  background-color: var(--color-settings-section-background,
+      var(--cr-fallback-color-surface));
+  border-radius: 24px;
+  box-shadow: var(--cr-elevation-2);
+  overflow: hidden;
+  padding: 8px 0 16px;
+}
+
+@media (forced-colors: active) {
+  #dropdown {
+    border: var(--cr-border-hcm);
+  }
+}
+
+.result {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  padding: 16px var(--cr-section-padding);
+}
+
+.result:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.result:active {
+  background-color: var(--cr-active-background-color);
+}
+
+.result-title {
+  color: var(--cr-primary-text-color);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.result-breadcrumbs {
+  font-size: 12px;
+  line-height: 18px;
+}

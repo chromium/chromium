@@ -736,6 +736,7 @@ build_webui("build") {
     "safety_hub/safety_hub_module.css",
     "safety_hub/safety_hub_page.css",
     "safety_hub/unused_site_permissions_module.css",
+    "search/settings_search_dropdown.css",
     "search_page/extension_controlled_message.css",
     "search_page/feature_shortcuts_page.css",
     "search_page/keyboard_shortcut_page.css",

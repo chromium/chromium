@@ -55,6 +55,10 @@ cr-toolbar {
   --cr-toolbar-center-basis: var(--settings-main-basis);
 }
 
+cr-toolbar::part(search-field) {
+  anchor-name: --search-field;
+}
+
 cr-toolbar:not([narrow]) {
   --cr-toolbar-left-spacer-width: var(--settings-menu-width);
 }
@@ -63,6 +67,16 @@ cr-toolbar:not([narrow]) {
   cr-toolbar {
     --iron-icon-fill-color: white;
   }
+}
+
+settings-search-dropdown {
+  inset-inline-start: anchor(start);
+  position: fixed;
+  position-anchor: --search-field;
+  top: calc(anchor(bottom) + 4px);
+  width: anchor-size(width);
+  /* Stack above #scrollableShadow (z-index: 1 in cr_scrollable_lit.css). */
+  z-index: 2;
 }
 
 #container {
