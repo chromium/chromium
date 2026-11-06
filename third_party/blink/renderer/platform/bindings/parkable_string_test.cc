@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_conversions.h"
@@ -189,9 +188,8 @@ class ParkableStringTest
   }
 
   void TriggerCriticalMemoryPressureAndWait() {
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        base::kCriticalMemoryPressureThreshold, base::DoNothing());
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::kCriticalMemoryPressureThreshold,
         task_environment_.QuitClosure());
     task_environment_.RunUntilQuit();
   }

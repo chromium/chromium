@@ -55,6 +55,12 @@ void TestMemoryConsumerRegistry::NotifyReleaseMemory() {
   }
 }
 
+void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimitAndRelease(
+    MemoryLimit memory_limit) {
+  NotifyUpdateMemoryLimit(memory_limit);
+  NotifyReleaseMemory();
+}
+
 void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimitAsync(
     MemoryLimit memory_limit,
     OnceClosure on_notification_sent_callback) {
@@ -71,6 +77,16 @@ void TestMemoryConsumerRegistry::NotifyReleaseMemoryAsync(
       FROM_HERE,
       BindOnce(&TestMemoryConsumerRegistry::NotifyReleaseMemory,
                weak_ptr_factory_.GetWeakPtr()),
+      std::move(on_notification_sent_callback));
+}
+
+void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimitAndReleaseAsync(
+    MemoryLimit memory_limit,
+    OnceClosure on_notification_sent_callback) {
+  SingleThreadTaskRunner::GetMainThreadDefault()->PostTaskAndReply(
+      FROM_HERE,
+      BindOnce(&TestMemoryConsumerRegistry::NotifyUpdateMemoryLimitAndRelease,
+               weak_ptr_factory_.GetWeakPtr(), memory_limit),
       std::move(on_notification_sent_callback));
 }
 

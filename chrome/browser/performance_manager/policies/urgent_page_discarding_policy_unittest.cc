@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
@@ -56,10 +55,8 @@ class UrgentPageDiscardingPolicyTest
 
  protected:
   void TriggerMemoryPressure(base::MemoryLimit memory_limit) {
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        memory_limit, base::DoNothing());
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-        task_env().QuitClosure());
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        memory_limit, task_env().QuitClosure());
     task_env().RunUntilQuit();
   }
 

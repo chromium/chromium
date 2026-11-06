@@ -15,7 +15,6 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -256,10 +255,8 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
         break;
     }
     base::RunLoop run_loop;
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        memory_limit, base::DoNothing());
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-        run_loop.QuitClosure());
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        memory_limit, run_loop.QuitClosure());
     run_loop.Run();
   }
 

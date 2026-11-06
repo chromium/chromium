@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/run_loop.h"
 #include "cc/paint/paint_flags.h"
@@ -49,9 +48,8 @@ TEST_F(PlainTextPainterTest, MemoryPressure) {
   // Update limit to critical (0) and release memory.
   {
     base::RunLoop run_loop;
-    test_registry.NotifyUpdateMemoryLimitAsync(
-        base::MemoryLimit::FromPercent(0), base::DoNothing());
-    test_registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    test_registry.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::MemoryLimit::FromPercent(0), run_loop.QuitClosure());
     run_loop.Run();
   }
 

@@ -12,7 +12,6 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
@@ -111,10 +110,8 @@ class PassthroughProgramCacheTest : public GpuServiceTest,
         break;
     }
     base::RunLoop run_loop;
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        memory_limit, base::DoNothing());
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-        run_loop.QuitClosure());
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        memory_limit, run_loop.QuitClosure());
     run_loop.Run();
   }
 

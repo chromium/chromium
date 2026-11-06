@@ -274,14 +274,12 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
     base::MemoryLimit limit =
         is_critical ? base::MemoryLimit::CriticalPressureThreshold()
                     : base::MemoryLimit::ModeratePressureThreshold();
-    test_registry_.NotifyUpdateMemoryLimit(limit);
-    test_registry_.NotifyReleaseMemory();
+    test_registry_.NotifyUpdateMemoryLimitAndRelease(limit);
   }
 
   void SimulateNoMemoryPressure() {
-    test_registry_.NotifyUpdateMemoryLimit(
+    test_registry_.NotifyUpdateMemoryLimitAndRelease(
         base::MemoryLimit::NoPressureThreshold());
-    test_registry_.NotifyReleaseMemory();
   }
 
   WorkingSetTrimmerPolicyChromeOSTest()

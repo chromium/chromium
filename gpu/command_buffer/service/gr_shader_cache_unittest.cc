@@ -7,7 +7,6 @@
 #include <thread>
 
 #include "base/base64.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/run_loop.h"
@@ -262,10 +261,8 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   // Trigger critical memory pressure (0% limit).
   {
     base::RunLoop run_loop;
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        base::MemoryLimit::FromPercent(0), base::DoNothing());
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-        run_loop.QuitClosure());
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::MemoryLimit::FromPercent(0), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -284,10 +281,8 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   // Restore memory pressure to none (100% limit).
   {
     base::RunLoop run_loop;
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        base::MemoryLimit::Default(), base::DoNothing());
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-        run_loop.QuitClosure());
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::MemoryLimit::Default(), run_loop.QuitClosure());
     run_loop.Run();
   }
 

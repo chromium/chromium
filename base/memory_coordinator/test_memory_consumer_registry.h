@@ -35,12 +35,20 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   // Invokes UpdateMemoryLimit(memory_limit) on all consumers.
   void NotifyUpdateMemoryLimit(MemoryLimit memory_limit);
 
-  // Invokes DoReleaseMemory() on all consumers.
+  // Invokes ReleaseMemory() on all consumers.
   void NotifyReleaseMemory();
 
+  // Invokes UpdateMemoryLimit(memory_limit) followed by ReleaseMemory() on
+  // all consumers.
+  void NotifyUpdateMemoryLimitAndRelease(MemoryLimit memory_limit);
+
+  // Async versions of the methods above.
   void NotifyUpdateMemoryLimitAsync(MemoryLimit memory_limit,
                                     OnceClosure on_notification_sent_callback);
   void NotifyReleaseMemoryAsync(OnceClosure on_notification_sent_callback);
+  void NotifyUpdateMemoryLimitAndReleaseAsync(
+      MemoryLimit memory_limit,
+      OnceClosure on_notification_sent_callback);
 
   size_t size() const { return size_; }
 

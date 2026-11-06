@@ -800,9 +800,8 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnUpdateMemoryLimit) {
   ::testing::Mock::VerifyAndClear(loader());
 
   // Simulate memory pressure and expect the tab loader to disable loading.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::MemoryLimit::ModeratePressureThreshold());
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_env().RunUntilIdle();
 
   PageNodeImpl* page_node_impl = page_nodes[0].get();

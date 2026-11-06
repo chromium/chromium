@@ -85,12 +85,8 @@ class SSLClientSessionCacheTest : public testing::Test {
   void SimulateMemoryLimitAndRelease(
       base::test::TaskEnvironment& task_environment,
       base::MemoryLimit memory_limit) {
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
         memory_limit, task_environment.QuitClosure());
-    task_environment.RunUntilQuit();
-
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-        task_environment.QuitClosure());
     task_environment.RunUntilQuit();
   }
 

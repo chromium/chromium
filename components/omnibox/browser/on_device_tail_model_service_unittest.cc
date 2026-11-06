@@ -162,9 +162,8 @@ TEST_F(OnDeviceTailModelServiceTest, MemoryPressureLevel) {
         *results = std::move(predictions);
       },
       &results_1);
-  memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::MemoryLimit::CriticalPressureThreshold());
-  memory_consumer_registry_.NotifyReleaseMemory();
   service_->GetPredictionsForInput(input, std::move(callback_1));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(IsExecutorReady());
@@ -178,9 +177,8 @@ TEST_F(OnDeviceTailModelServiceTest, MemoryPressureLevel) {
         *results = std::move(predictions);
       },
       &results_2);
-  memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::MemoryLimit::ModeratePressureThreshold());
-  memory_consumer_registry_.NotifyReleaseMemory();
   service_->GetPredictionsForInput(input, std::move(callback_2));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(IsExecutorReady());

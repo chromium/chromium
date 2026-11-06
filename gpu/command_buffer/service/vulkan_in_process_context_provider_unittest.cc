@@ -35,11 +35,8 @@ class VulkanInProcessContextProviderTest : public testing::Test {
 
   void SendMemoryPressureSignal(base::MemoryLimit memory_limit) {
     base::RunLoop run_loop;
-    registry_.NotifyUpdateMemoryLimitAsync(
-        memory_limit,
-        base::BindOnce(
-            &base::TestMemoryConsumerRegistry::NotifyReleaseMemoryAsync,
-            base::Unretained(&registry_), run_loop.QuitClosure()));
+    registry_.NotifyUpdateMemoryLimitAndReleaseAsync(memory_limit,
+                                                     run_loop.QuitClosure());
     run_loop.Run();
   }
 

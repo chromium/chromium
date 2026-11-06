@@ -17,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_limit.h"
@@ -1780,9 +1779,8 @@ TEST_P(QuicSessionPoolTest, MemoryPressureGlobalExclusion) {
 
   // 3. Trigger memory pressure.
   base::test::TestFuture<void> memory_pressure_future;
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-      base::MemoryLimit::CriticalPressureThreshold(), base::DoNothing());
-  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+      base::MemoryLimit::CriticalPressureThreshold(),
       memory_pressure_future.GetCallback());
   ASSERT_TRUE(memory_pressure_future.Wait());
 
@@ -1797,9 +1795,8 @@ TEST_P(QuicSessionPoolTest, MemoryPressureGlobalExclusion) {
 
   // 6. Trigger memory pressure again.
   base::test::TestFuture<void> memory_pressure_future2;
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-      base::MemoryLimit::CriticalPressureThreshold(), base::DoNothing());
-  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+      base::MemoryLimit::CriticalPressureThreshold(),
       memory_pressure_future2.GetCallback());
   ASSERT_TRUE(memory_pressure_future2.Wait());
 
@@ -1861,9 +1858,8 @@ TEST_P(QuicSessionPoolTest, MemoryPressureDohExclusion) {
 
   // 3. Trigger memory pressure.
   base::test::TestFuture<void> memory_pressure_future;
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-      base::MemoryLimit::CriticalPressureThreshold(), base::DoNothing());
-  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+      base::MemoryLimit::CriticalPressureThreshold(),
       memory_pressure_future.GetCallback());
   ASSERT_TRUE(memory_pressure_future.Wait());
 
@@ -1903,9 +1899,8 @@ TEST_P(QuicSessionPoolTest, MemoryPressureWithFeatureDisabled) {
                                                                     doh_key));
 
   base::test::TestFuture<void> memory_pressure_future;
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-      base::MemoryLimit::CriticalPressureThreshold(), base::DoNothing());
-  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+      base::MemoryLimit::CriticalPressureThreshold(),
       memory_pressure_future.GetCallback());
   ASSERT_TRUE(memory_pressure_future.Wait());
 

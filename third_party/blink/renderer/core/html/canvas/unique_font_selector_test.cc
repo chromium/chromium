@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/run_loop.h"
@@ -113,9 +112,8 @@ TEST_F(UniqueFontSelectorTest, StatefulMemoryPressure_Disabled_Critical) {
   // Update limit to 0% (critical) and release memory.
   {
     base::RunLoop run_loop;
-    test_registry.NotifyUpdateMemoryLimitAsync(
-        base::MemoryLimit::FromPercent(0), base::DoNothing());
-    test_registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    test_registry.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::MemoryLimit::FromPercent(0), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -146,9 +144,8 @@ TEST_F(UniqueFontSelectorTest, StatefulMemoryPressure_Disabled_NonCritical) {
   // Update limit to 80% (non-critical) and release memory.
   {
     base::RunLoop run_loop;
-    test_registry.NotifyUpdateMemoryLimitAsync(
-        base::MemoryLimit::FromPercent(80), base::DoNothing());
-    test_registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    test_registry.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::MemoryLimit::FromPercent(80), run_loop.QuitClosure());
     run_loop.Run();
   }
 

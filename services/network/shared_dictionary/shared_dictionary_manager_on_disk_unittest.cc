@@ -2568,9 +2568,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   }
 
   // Trigger memory pressure to evict all cached storages.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::kCriticalMemoryPressureThreshold);
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_environment_.RunUntilIdle();
 
   // The storage for `isolation_key` should have been evicted.
@@ -2685,9 +2684,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   }
 
   // Trigger memory pressure to evict all cached storages.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::kCriticalMemoryPressureThreshold);
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_environment_.RunUntilIdle();
 
   // The storage for `isolation_key` should have been evicted.
@@ -2743,9 +2741,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   }
 
   // Trigger memory pressure to evict all cached storages.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::kModerateMemoryPressureThreshold);
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_environment_.RunUntilIdle();
 
   // The storage for `isolation_key` should have been evicted.
@@ -2802,9 +2799,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   }
 
   // Trigger memory pressure to evict all cached storages.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::kModerateMemoryPressureThreshold);
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_environment_.RunUntilIdle();
 
   // The storage for `isolation_key` should have been evicted.

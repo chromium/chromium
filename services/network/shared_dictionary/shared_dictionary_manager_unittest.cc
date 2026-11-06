@@ -394,11 +394,8 @@ TEST_P(SharedDictionaryManagerTest,
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
 
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
       base::kModerateMemoryPressureThreshold, task_environment_.QuitClosure());
-  task_environment_.RunUntilQuit();
-  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -429,11 +426,8 @@ TEST_P(SharedDictionaryManagerTest,
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
 
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
       base::kCriticalMemoryPressureThreshold, task_environment_.QuitClosure());
-  task_environment_.RunUntilQuit();
-  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -492,11 +486,8 @@ TEST_P(SharedDictionaryManagerTest,
   storage.reset();
   pervasive_storage.reset();
 
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
       base::kModerateMemoryPressureThreshold, task_environment_.QuitClosure());
-  task_environment_.RunUntilQuit();
-  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   // If `manager` observed moderate memory pressure, it should clear the cached
@@ -545,11 +536,8 @@ TEST_P(SharedDictionaryManagerTest,
   storage.reset();
   pervasive_storage.reset();
 
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
       base::kCriticalMemoryPressureThreshold, task_environment_.QuitClosure());
-  task_environment_.RunUntilQuit();
-  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   // If `manager` observed critical memory pressure, it should clear the cached

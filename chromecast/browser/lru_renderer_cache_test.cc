@@ -79,8 +79,9 @@ class LRURendererCacheTest : public testing::Test {
   }
 
   void SimulateMemoryLimitAndRelease(base::MemoryLimit memory_limit) {
-    SetMemoryLimit(memory_limit);
-    ReleaseMemory();
+    memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        memory_limit, task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
   }
 
   void ReleaseRendererPrelauncherAndWait(const GURL& page_url) {
@@ -370,8 +371,7 @@ TEST_F(LRURendererCacheTest, MemoryConsumer_NonStateful) {
 
   // Set memory limit to 50% (approx. MODERATE allocation). Non-stateful doesn't
   // care.
-  SetMemoryLimit(base::MemoryLimit::FromPercent(50));
-  ReleaseMemory();
+  SimulateMemoryLimitAndRelease(base::MemoryLimit::FromPercent(50));
   // Cache still has 1 renderer.
 
   // Set memory limit to 0% (approx. CRITICAL allocation).

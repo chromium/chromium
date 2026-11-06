@@ -39,12 +39,8 @@ class MemBackendImplTest : public testing::Test {
 
  protected:
   void SimulateMemoryLimitAndRelease(base::MemoryLimit memory_limit) {
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
         memory_limit, task_environment_.QuitClosure());
-    task_environment_.RunUntilQuit();
-
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-        task_environment_.QuitClosure());
     task_environment_.RunUntilQuit();
   }
 

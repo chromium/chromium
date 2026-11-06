@@ -250,9 +250,8 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnModerateMemoryPressure) {
   // Manager time must be after all segment unlock times for eviction to work.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::MemoryLimit::FromPercent(50));
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
@@ -288,9 +287,8 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
   // Manager time must be after all segment unlock times for eviction to work.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::MemoryLimit::FromPercent(0));
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
@@ -395,18 +393,16 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   EXPECT_TRUE(memory2.IsMemoryResident());
 
   // Relieving pressure should restore the limit, but not re-allocate memory.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::MemoryLimit::Default());
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
   EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
 
   // Critical pressure (0% limit) should reduce limit and release all segments.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::MemoryLimit::FromPercent(0));
-  test_memory_consumer_registry_.NotifyReleaseMemory();
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();

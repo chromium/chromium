@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/memory_coordinator/utils.h"
@@ -1285,9 +1284,8 @@ TEST_F(BlobMemoryControllerTest, StatelessMemoryPressure) {
   // Trigger moderate memory pressure (50% limit) asynchronously.
   {
     base::RunLoop run_loop;
-    registry_.NotifyUpdateMemoryLimitAsync(
-        base::MemoryLimit::ModeratePressureThreshold(), base::DoNothing());
-    registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::MemoryLimit::ModeratePressureThreshold(), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1355,9 +1353,8 @@ TEST_F(BlobMemoryControllerTest, StatefulMemoryPressureBlobDisabled) {
   // Trigger moderate memory pressure (50% limit) asynchronously.
   {
     base::RunLoop run_loop;
-    registry_.NotifyUpdateMemoryLimitAsync(
-        base::MemoryLimit::ModeratePressureThreshold(), base::DoNothing());
-    registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::MemoryLimit::ModeratePressureThreshold(), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1469,9 +1466,8 @@ TEST_F(BlobMemoryControllerTest, StatefulMemoryPressure) {
   // Set limit back to 100% (none pressure).
   {
     base::RunLoop run_loop;
-    registry_.NotifyUpdateMemoryLimitAsync(
-        base::MemoryLimit::NoPressureThreshold(), base::DoNothing());
-    registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        base::MemoryLimit::NoPressureThreshold(), run_loop.QuitClosure());
     run_loop.Run();
   }
 

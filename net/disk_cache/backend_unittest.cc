@@ -215,10 +215,8 @@ class DiskCacheBackendTest : public DiskCacheTestWithCache {
 
   void UpdateLimitAndReleaseMemory(base::MemoryLimit memory_limit) {
     base::RunLoop run_loop;
-    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        memory_limit, base::DoNothing());
-    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
-        run_loop.QuitClosure());
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndReleaseAsync(
+        memory_limit, run_loop.QuitClosure());
     run_loop.Run();
   }
 
