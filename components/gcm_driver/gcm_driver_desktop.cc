@@ -588,7 +588,15 @@ void GCMDriverDesktop::RemoveConnectionObserver(
 void GCMDriverDesktop::Stop() {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
+  // TODO(crbug.com/582637002): Call these callbacks with
+  // `GCMClient::GCM_DISABLED` once all callers are ready to handle synchronous
+  // callbacks during `Stop()`.
+  get_token_callbacks_.clear();
+  delete_token_callbacks_.clear();
+
   // No need to stop GCM service if not started yet.
+  // TODO(crbug.com/581834397): Also clean up `delayed_task_controller_` if
+  // `Stop()` is called before `GCMClientReady()` completes.
   if (!gcm_started_) {
     return;
   }
