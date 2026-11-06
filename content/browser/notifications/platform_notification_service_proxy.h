@@ -28,7 +28,6 @@ namespace content {
 
 class BrowserContext;
 struct NotificationDatabaseData;
-class PlatformNotificationService;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerRegistration;
 
@@ -81,7 +80,7 @@ class PlatformNotificationServiceProxy {
   void LogClose(const NotificationDatabaseData& data);
 
  private:
-  // Actually calls |notification_service_| to display the notification after
+  // Actually calls the notification service to display the notification after
   // verifying the |service_worker_scope|. Must be called on the UI thread.
   void DoDisplayNotification(const NotificationDatabaseData& data,
                              const GURL& service_worker_scope,
@@ -97,7 +96,6 @@ class PlatformNotificationServiceProxy {
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   raw_ptr<BrowserContext> browser_context_;
-  raw_ptr<PlatformNotificationService> notification_service_;
   base::WeakPtrFactory<PlatformNotificationServiceProxy> weak_ptr_factory_{
       this};
 };

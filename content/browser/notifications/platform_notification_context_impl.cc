@@ -19,6 +19,7 @@
 #include "content/browser/notifications/notification_database.h"
 #include "content/browser/notifications/notification_trigger_constants.h"
 #include "content/browser/notifications/platform_notification_service_proxy.h"
+#include "content/browser/notifications/platform_notification_service_routing.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -128,7 +129,7 @@ void PlatformNotificationContextImpl::Initialize() {
       service_worker_context_, browser_context_);
 
   PlatformNotificationService* service =
-      browser_context_->GetPlatformNotificationService();
+      GetPlatformNotificationServiceFor(browser_context_);
   if (!service) {
     std::set<std::string> displayed_notifications;
     DidGetNotifications(std::move(displayed_notifications),
@@ -831,7 +832,7 @@ void PlatformNotificationContextImpl::TryGetDisplayedNotifications(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   PlatformNotificationService* service =
-      browser_context_->GetPlatformNotificationService();
+      GetPlatformNotificationServiceFor(browser_context_);
 
   if (!service) {
     // Rely on the database only
