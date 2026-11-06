@@ -87,6 +87,9 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   std::optional<UIEdgeInsets> _minViewportInset;
   std::optional<UIEdgeInsets> _maxViewportInset;
   BOOL _hasPendingViewportInsets;
+  // Bounds size at the last viewport insets notification. Rotation can change
+  // the size without changing the insets (e.g. on iPad).
+  std::optional<CGSize> _lastViewportInsetsBoundsSize;
   BOOL _usesObscuredInsets;
   std::string _mimeTypeString;
   CRWViewportInsetsAnimator* _insetsAnimator;
@@ -206,12 +209,19 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 - (void)layoutSubviews {
   [super layoutSubviews];
   switch (self.webViewResizingType) {
-    case WebViewResizingType::kContentInset:
-      if (_hasPendingViewportInsets && _minViewportInset && _maxViewportInset) {
+    case WebViewResizingType::kContentInset: {
+      if (!_minViewportInset || !_maxViewportInset) {
+        break;
+      }
+      BOOL boundsSizeChanged =
+          _lastViewportInsetsBoundsSize &&
+          !CGSizeEqualToSize(*_lastViewportInsetsBoundsSize, self.bounds.size);
+      if (_hasPendingViewportInsets || boundsSizeChanged) {
         [self setMinimumViewportInset:*_minViewportInset
                  maximumViewportInset:*_maxViewportInset];
       }
       break;
+    }
     case WebViewResizingType::kFrame:
       if (!_usesObscuredInsets) {
         break;
@@ -423,16 +433,24 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
       // Only apply the viewport insets if the web view's frame is large enough
       // to accommodate them.
       if (_webView.window && isFrameLargeEnough) {
-        if (UIEdgeInsetsEqualToEdgeInsets(_webView.minimumViewportInset,
+        _hasPendingViewportInsets = NO;
+        BOOL insetsUnchanged =
+            UIEdgeInsetsEqualToEdgeInsets(_webView.minimumViewportInset,
                                           effectiveMinInset) &&
             UIEdgeInsetsEqualToEdgeInsets(_webView.maximumViewportInset,
-                                          effectiveMaxInset)) {
-          _hasPendingViewportInsets = NO;
+                                          effectiveMaxInset);
+        CGSize boundsSize = self.bounds.size;
+        BOOL boundsSizeUnchanged =
+            _lastViewportInsetsBoundsSize &&
+            CGSizeEqualToSize(*_lastViewportInsetsBoundsSize, boundsSize);
+        if (insetsUnchanged && boundsSizeUnchanged) {
           break;
         }
-        [_webView setMinimumViewportInset:effectiveMinInset
-                     maximumViewportInset:effectiveMaxInset];
-        _hasPendingViewportInsets = NO;
+        if (!insetsUnchanged) {
+          [_webView setMinimumViewportInset:effectiveMinInset
+                       maximumViewportInset:effectiveMaxInset];
+        }
+        _lastViewportInsetsBoundsSize = boundsSize;
         [self viewportInsetsDidChangeWithMinInset:effectiveMinInset
                                          maxInset:effectiveMaxInset];
         [_webView setNeedsLayout];

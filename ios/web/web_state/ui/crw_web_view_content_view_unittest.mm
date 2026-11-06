@@ -387,6 +387,66 @@ TEST_F(CRWWebViewContentViewTest, ViewportInsetsDeduplicatedWhenUnchanged) {
   EXPECT_EQ(1, insetCallCount);
 }
 
+// Tests that a bounds size change with unchanged viewport insets (e.g. iPad
+// rotation) re-notifies `viewportInsetsDidChangeWithMinInset:maxInset:` on
+// layout without re-applying the insets to the underlying web view.
+TEST_F(CRWWebViewContentViewTest,
+       ViewportInsetsDidChangeNotifiedWhenBoundsSizeChanges) {
+  const CGRect kPortraitFrame = CGRectMake(0, 0, 800, 1000);
+  const CGRect kLandscapeFrame = CGRectMake(0, 0, 1000, 800);
+  const UIEdgeInsets kMinInset = UIEdgeInsetsMake(20, 0, 0, 0);
+  const UIEdgeInsets kMaxInset = UIEdgeInsetsMake(70, 0, 50, 0);
+
+  CRWWebView* webView = [[CRWWebView alloc] initWithFrame:kPortraitFrame];
+  webView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  id mockWebView = OCMPartialMock(webView);
+
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  UIWindow* window = [[UIWindow alloc] init];
+  [window addSubview:contentView];
+  contentView.frame = kPortraitFrame;
+  [contentView layoutIfNeeded];
+
+  id mockContentView = OCMPartialMock(contentView);
+  __block int insetCallCount = 0;
+  [[[[mockWebView stub] andDo:^(NSInvocation* invocation) {
+    insetCallCount++;
+  }] andForwardToRealObject] setMinimumViewportInset:kMinInset
+                                maximumViewportInset:kMaxInset];
+  __block int notifyCallCount = 0;
+  __block CGSize notifiedBoundsSize = CGSizeZero;
+  __weak CRWWebViewContentView* weakContentView = contentView;
+  [[[mockContentView stub] andDo:^(NSInvocation* invocation) {
+    notifyCallCount++;
+    notifiedBoundsSize = weakContentView.bounds.size;
+  }] viewportInsetsDidChangeWithMinInset:kMinInset maxInset:kMaxInset];
+
+  [mockContentView setMinimumViewportInset:kMinInset
+                      maximumViewportInset:kMaxInset];
+  EXPECT_EQ(1, insetCallCount);
+  EXPECT_EQ(1, notifyCallCount);
+  EXPECT_TRUE(CGSizeEqualToSize(kPortraitFrame.size, notifiedBoundsSize));
+
+  // A layout pass without a bounds size change should not re-notify.
+  [contentView setNeedsLayout];
+  [contentView layoutIfNeeded];
+  EXPECT_EQ(1, notifyCallCount);
+
+  contentView.frame = kLandscapeFrame;
+  [contentView layoutIfNeeded];
+  EXPECT_EQ(1, insetCallCount);
+  EXPECT_EQ(2, notifyCallCount);
+  EXPECT_TRUE(CGSizeEqualToSize(kLandscapeFrame.size, notifiedBoundsSize));
+}
+
 // Tests that `safeAreaInsetsDidChange` re-applies viewport insets and scroll
 // view `contentInset` when safe area insets are propagated after initial setup.
 TEST_F(CRWWebViewContentViewTest,
