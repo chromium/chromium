@@ -975,6 +975,59 @@ uint32_t GLES2Util::GetElementSizeForUniformType(int type) {
   }
 }
 
+// static
+uint32_t GLES2Util::GetTextureTargetForSamplerType(uint32_t type) {
+  switch (type) {
+    case GL_SAMPLER_2D:
+    case GL_SAMPLER_2D_SHADOW:
+    case GL_INT_SAMPLER_2D:
+    case GL_UNSIGNED_INT_SAMPLER_2D:
+      return GL_TEXTURE_2D;
+    case GL_SAMPLER_CUBE:
+    case GL_SAMPLER_CUBE_SHADOW:
+    case GL_INT_SAMPLER_CUBE:
+    case GL_UNSIGNED_INT_SAMPLER_CUBE:
+      return GL_TEXTURE_CUBE_MAP;
+    case GL_SAMPLER_3D:
+    case GL_INT_SAMPLER_3D:
+    case GL_UNSIGNED_INT_SAMPLER_3D:
+      return GL_TEXTURE_3D;
+    case GL_SAMPLER_2D_ARRAY:
+    case GL_SAMPLER_2D_ARRAY_SHADOW:
+    case GL_INT_SAMPLER_2D_ARRAY:
+    case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
+      return GL_TEXTURE_2D_ARRAY;
+    case GL_SAMPLER_2D_MULTISAMPLE:
+    case GL_INT_SAMPLER_2D_MULTISAMPLE:
+    case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
+      return GL_TEXTURE_2D_MULTISAMPLE;
+    case GL_SAMPLER_2D_MULTISAMPLE_ARRAY:
+    case GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
+    case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
+      return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+    case GL_SAMPLER_CUBE_MAP_ARRAY:
+    case GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW:
+    case GL_INT_SAMPLER_CUBE_MAP_ARRAY:
+    case GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY:
+      return GL_TEXTURE_CUBE_MAP_ARRAY;
+    case GL_SAMPLER_BUFFER:
+    case GL_INT_SAMPLER_BUFFER:
+    case GL_UNSIGNED_INT_SAMPLER_BUFFER:
+      return GL_TEXTURE_BUFFER;
+    case GL_SAMPLER_EXTERNAL_OES:
+    case GL_SAMPLER_EXTERNAL_2D_Y2Y_EXT:
+      return GL_TEXTURE_EXTERNAL_OES;
+    // GL_SAMPLER_2D_RECT_ARB is the same value as
+    // GL_SAMPLER_2D_RECT_ANGLE;
+    // GL_TEXTURE_RECTANGLE_ARB is the same value as
+    // GL_TEXTURE_RECTANGLE_ANGLE.
+    case GL_SAMPLER_2D_RECT_ARB:
+      return GL_TEXTURE_RECTANGLE_ARB;
+    default:
+      return GL_NONE;
+  }
+}
+
 uint32_t GLES2Util::GetElementCountForUniformType(int type) {
   switch (type) {
     case GL_FLOAT:

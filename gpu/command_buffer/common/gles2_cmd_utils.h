@@ -153,6 +153,11 @@ class GLES2_UTILS_EXPORT GLES2Util {
   // For example, GL_FLOAT_MAT3 returns 9.
   static uint32_t GetElementCountForUniformType(int type);
 
+  // Returns the texture target sampled by a sampler uniform of type `type`,
+  // e.g. GL_TEXTURE_2D for GL_SAMPLER_2D, or GL_NONE if `type` isn't a
+  // sampler type.
+  static uint32_t GetTextureTargetForSamplerType(uint32_t type);
+
   static uint32_t GetGLTypeSizeForTextures(uint32_t type);
 
   static uint32_t GetGLTypeSizeForBuffers(uint32_t type);

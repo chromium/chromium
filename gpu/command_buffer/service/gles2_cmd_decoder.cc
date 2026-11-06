@@ -2133,31 +2133,16 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
                                    GLsizei drawcount);
 
   GLenum GetBindTargetForSamplerType(GLenum type) {
-    switch (type) {
-      case GL_SAMPLER_2D:
-      case GL_SAMPLER_2D_SHADOW:
-      case GL_INT_SAMPLER_2D:
-      case GL_UNSIGNED_INT_SAMPLER_2D:
-        return GL_TEXTURE_2D;
-      case GL_SAMPLER_CUBE:
-      case GL_SAMPLER_CUBE_SHADOW:
-      case GL_INT_SAMPLER_CUBE:
-      case GL_UNSIGNED_INT_SAMPLER_CUBE:
-        return GL_TEXTURE_CUBE_MAP;
-      case GL_SAMPLER_EXTERNAL_OES:
-      case GL_SAMPLER_EXTERNAL_2D_Y2Y_EXT:
-        return GL_TEXTURE_EXTERNAL_OES;
-      case GL_SAMPLER_2D_RECT_ANGLE:
-        return GL_TEXTURE_RECTANGLE_ANGLE;
-      case GL_SAMPLER_3D:
-      case GL_INT_SAMPLER_3D:
-      case GL_UNSIGNED_INT_SAMPLER_3D:
-        return GL_TEXTURE_3D;
-      case GL_SAMPLER_2D_ARRAY:
-      case GL_SAMPLER_2D_ARRAY_SHADOW:
-      case GL_INT_SAMPLER_2D_ARRAY:
-      case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
-        return GL_TEXTURE_2D_ARRAY;
+    GLenum target = GLES2Util::GetTextureTargetForSamplerType(type);
+    // The validating decoder only supports ES3.0 sampler types.
+    switch (target) {
+      case GL_TEXTURE_2D:
+      case GL_TEXTURE_CUBE_MAP:
+      case GL_TEXTURE_EXTERNAL_OES:
+      case GL_TEXTURE_RECTANGLE_ANGLE:
+      case GL_TEXTURE_3D:
+      case GL_TEXTURE_2D_ARRAY:
+        return target;
       default:
         NOTREACHED();
     }

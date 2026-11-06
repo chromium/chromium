@@ -4,12 +4,15 @@
 
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 
-#include <limits>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
 #include <GLES3/gl3.h>
+#include <GLES3/gl31.h>
+#include <GLES3/gl32.h>
 #include <stdint.h>
+
+#include <limits>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +23,58 @@ class GLES2UtilTest : public testing:: Test {
  protected:
   GLES2Util util_;
 };
+
+TEST_F(GLES2UtilTest, GetTextureTargetForSamplerType) {
+  struct {
+    GLenum sampler_type;
+    GLenum texture_target;
+  } kCases[] = {
+      {GL_SAMPLER_2D, GL_TEXTURE_2D},
+      {GL_SAMPLER_2D_SHADOW, GL_TEXTURE_2D},
+      {GL_INT_SAMPLER_2D, GL_TEXTURE_2D},
+      {GL_UNSIGNED_INT_SAMPLER_2D, GL_TEXTURE_2D},
+      {GL_SAMPLER_CUBE, GL_TEXTURE_CUBE_MAP},
+      {GL_SAMPLER_CUBE_SHADOW, GL_TEXTURE_CUBE_MAP},
+      {GL_INT_SAMPLER_CUBE, GL_TEXTURE_CUBE_MAP},
+      {GL_UNSIGNED_INT_SAMPLER_CUBE, GL_TEXTURE_CUBE_MAP},
+      {GL_SAMPLER_3D, GL_TEXTURE_3D},
+      {GL_INT_SAMPLER_3D, GL_TEXTURE_3D},
+      {GL_UNSIGNED_INT_SAMPLER_3D, GL_TEXTURE_3D},
+      {GL_SAMPLER_2D_ARRAY, GL_TEXTURE_2D_ARRAY},
+      {GL_SAMPLER_2D_ARRAY_SHADOW, GL_TEXTURE_2D_ARRAY},
+      {GL_INT_SAMPLER_2D_ARRAY, GL_TEXTURE_2D_ARRAY},
+      {GL_UNSIGNED_INT_SAMPLER_2D_ARRAY, GL_TEXTURE_2D_ARRAY},
+      {GL_SAMPLER_2D_MULTISAMPLE, GL_TEXTURE_2D_MULTISAMPLE},
+      {GL_INT_SAMPLER_2D_MULTISAMPLE, GL_TEXTURE_2D_MULTISAMPLE},
+      {GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE, GL_TEXTURE_2D_MULTISAMPLE},
+      {GL_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_2D_MULTISAMPLE_ARRAY},
+      {GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_2D_MULTISAMPLE_ARRAY},
+      {GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
+       GL_TEXTURE_2D_MULTISAMPLE_ARRAY},
+      {GL_SAMPLER_CUBE_MAP_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY},
+      {GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, GL_TEXTURE_CUBE_MAP_ARRAY},
+      {GL_INT_SAMPLER_CUBE_MAP_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY},
+      {GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY},
+      {GL_SAMPLER_BUFFER, GL_TEXTURE_BUFFER},
+      {GL_INT_SAMPLER_BUFFER, GL_TEXTURE_BUFFER},
+      {GL_UNSIGNED_INT_SAMPLER_BUFFER, GL_TEXTURE_BUFFER},
+      {GL_SAMPLER_EXTERNAL_OES, GL_TEXTURE_EXTERNAL_OES},
+      {GL_SAMPLER_EXTERNAL_2D_Y2Y_EXT, GL_TEXTURE_EXTERNAL_OES},
+      {GL_SAMPLER_2D_RECT_ARB, GL_TEXTURE_RECTANGLE_ARB},
+      // Non-sampler types.
+      {GL_FLOAT, GL_NONE},
+      {GL_INT, GL_NONE},
+      {GL_FLOAT_VEC4, GL_NONE},
+      {GL_IMAGE_2D, GL_NONE},
+      {GL_NONE, GL_NONE},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.sampler_type);
+    EXPECT_EQ(
+        test_case.texture_target,
+        GLES2Util::GetTextureTargetForSamplerType(test_case.sampler_type));
+  }
+}
 
 TEST_F(GLES2UtilTest, GLGetNumValuesReturned) {
   EXPECT_EQ(0, util_.GLGetNumValuesReturned(GL_COMPRESSED_TEXTURE_FORMATS));
