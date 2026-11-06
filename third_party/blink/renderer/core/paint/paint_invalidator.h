@@ -67,6 +67,9 @@ struct CORE_EXPORT PaintInvalidatorContext {
 
   const FragmentData* fragment_data = nullptr;
 
+  // Box-wide previous geometries must survive until the last fragment.
+  bool is_last_for_node = true;
+
   // Set when we have entered something that shouldn't track layout shift
   // inside (multicol container).
   bool inside_opaque_layout_shift_root = false;

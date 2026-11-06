@@ -441,8 +441,10 @@ void BoxPaintInvalidator::InvalidatePaint() {
   if (PaintLayerScrollableArea* area = box_.GetScrollableArea())
     area->InvalidatePaintOfScrollControlsIfNeeded(context_);
 
-  // This is for the next invalidatePaintIfNeeded so must be at the end.
-  SavePreviousBoxGeometriesIfNeeded();
+  // The saved geometries are shared by all fragments of the box.
+  if (context_.is_last_for_node) {
+    SavePreviousBoxGeometriesIfNeeded();
+  }
 }
 
 bool BoxPaintInvalidator::ShouldInvalidateGapDecorations() const {

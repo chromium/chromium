@@ -97,6 +97,48 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
 
 INSTANTIATE_PAINT_TEST_SUITE_P(BoxPaintInvalidatorTest);
 
+TEST_P(BoxPaintInvalidatorTest, SavePreviousGeometriesOnLastFragment) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="columns:2; column-gap:0; width:200px; height:100px;
+                column-fill:auto;">
+      <div id="target" style="height:150px; outline:5px solid blue;"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  auto& target = *GetElementById("target");
+  auto& box = *target.GetLayoutBox();
+  ASSERT_EQ(2u, box.PhysicalFragmentCount());
+  const PhysicalSize old_size = box.PreviousSize();
+  const PhysicalRect old_visual_overflow = box.PreviousVisualOverflowRect();
+  const auto* old_fragment = &*box.PreviousPhysicalFragments().begin();
+
+  target.setAttribute(html_names::kStyleAttr,
+                      AtomicString("height:180px; outline:10px solid blue;"));
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  ASSERT_NE(old_size, box.StitchedSize());
+  ASSERT_TRUE(box.HavePhysicalFragmentsChanged());
+
+  PaintInvalidatorContext context;
+  context.painting_layer = box.PaintingLayer();
+  context.fragment_data = &box.FirstFragment();
+  context.old_paint_offset = box.FirstFragment().PaintOffset();
+  context.is_last_for_node = false;
+  BoxPaintInvalidator(box, context).InvalidatePaint();
+  EXPECT_EQ(old_size, box.PreviousSize());
+  EXPECT_EQ(old_visual_overflow, box.PreviousVisualOverflowRect());
+  EXPECT_EQ(old_fragment, &*box.PreviousPhysicalFragments().begin());
+  EXPECT_TRUE(box.HavePhysicalFragmentsChanged());
+
+  context.is_last_for_node = true;
+  BoxPaintInvalidator(box, context).InvalidatePaint();
+  EXPECT_EQ(box.StitchedSize(), box.PreviousSize());
+  EXPECT_EQ(box.VisualOverflowRect(), box.PreviousVisualOverflowRect());
+  EXPECT_EQ(box.GetPhysicalFragment(0),
+            &*box.PreviousPhysicalFragments().begin());
+  EXPECT_FALSE(box.HavePhysicalFragmentsChanged());
+}
+
 // Paint invalidation for empty content is needed for updating composited layer
 // bounds for correct composited hit testing. It won't cause raster invalidation
 // (tested in paint_and_raster_invalidation_test.cc).

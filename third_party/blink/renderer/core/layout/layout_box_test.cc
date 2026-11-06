@@ -6,8 +6,10 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -2098,6 +2100,85 @@ TEST_F(LayoutBoxTest, StitchedBlockSizeVrl) {
   EXPECT_EQ(middle->StitchedBlockSize(), LayoutUnit(100));
   const LayoutBox* inner = GetLayoutBoxByElementId("inner");
   EXPECT_EQ(inner->StitchedBlockSize(), LayoutUnit(350));
+}
+
+TEST_F(LayoutBoxTest, StitchedSizeWithOverflow) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="columns:3; column-gap:0; column-fill:auto;
+                inline-size:300px; block-size:100px;">
+      <div id="outer" style="block-size:90px;">
+        <div id="middle" style="block-size:100px;">
+          <div id="inner" style="block-size:350px;"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  EXPECT_EQ(PhysicalSize(100, 90),
+            GetLayoutBoxByElementId("outer")->StitchedSize());
+  EXPECT_EQ(PhysicalSize(100, 100),
+            GetLayoutBoxByElementId("middle")->StitchedSize());
+  EXPECT_EQ(PhysicalSize(100, 350),
+            GetLayoutBoxByElementId("inner")->StitchedSize());
+}
+
+TEST_F(LayoutBoxTest, StitchedSizeWithOverflowVrl) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="columns:3; column-gap:0; column-fill:auto;
+                inline-size:300px; block-size:100px; writing-mode:vertical-rl;">
+      <div id="outer" style="block-size:90px;">
+        <div id="middle" style="block-size:100px;">
+          <div id="inner" style="block-size:350px;"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  EXPECT_EQ(PhysicalSize(90, 100),
+            GetLayoutBoxByElementId("outer")->StitchedSize());
+  EXPECT_EQ(PhysicalSize(100, 100),
+            GetLayoutBoxByElementId("middle")->StitchedSize());
+  EXPECT_EQ(PhysicalSize(350, 100),
+            GetLayoutBoxByElementId("inner")->StitchedSize());
+}
+
+TEST_F(LayoutBoxTest, StitchedSizeAfterRelayout) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="columns:3; column-gap:0; column-fill:auto;
+                width:300px; height:100px;">
+      <div id="target" style="height:250px;"></div>
+    </div>
+  )HTML");
+  auto* target = GetElementById("target");
+  auto* box = target->GetLayoutBox();
+  ASSERT_EQ(3u, box->PhysicalFragmentCount());
+  EXPECT_EQ(PhysicalSize(100, 250), box->StitchedSize());
+
+  target->setAttribute(html_names::kStyleAttr, AtomicString("height:50px"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, box->PhysicalFragmentCount());
+  EXPECT_EQ(PhysicalSize(100, 50), box->StitchedSize());
+
+  target->setAttribute(html_names::kStyleAttr, AtomicString("height:150px"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(2u, box->PhysicalFragmentCount());
+  EXPECT_EQ(PhysicalSize(100, 150), box->StitchedSize());
+}
+
+TEST_F(LayoutBoxTest, StitchedSizeRepeatedWhenPrinting) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @page { size:100px 100px; margin:0; }
+      body { margin:0; }
+    </style>
+    <div style="height:250px;"></div>
+    <div id="target"
+         style="position:fixed; top:0; left:0; width:20px; height:30px;"></div>
+  )HTML");
+  GetFrame().StartPrinting(WebPrintParams(gfx::SizeF(100, 100)));
+  GetDocument().View()->UpdateLifecyclePhasesForPrinting();
+  const auto* box = GetLayoutBoxByElementId("target");
+  EXPECT_EQ(3u, box->PhysicalFragmentCount());
+  EXPECT_EQ(PhysicalSize(20, 30), box->StitchedSize());
+  GetFrame().EndPrinting();
 }
 
 class ElasticOverscrollTestingPlatformSupport : public TestingPlatformSupport {

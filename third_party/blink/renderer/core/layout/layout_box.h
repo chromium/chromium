@@ -94,8 +94,8 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 //
 // LayoutBoxModelObject only introduces some abstractions for LayoutInline and
 // LayoutBox. The logic for the model is in LayoutBox, e.g. the storage for the
-// rectangle and offset forming the CSS box (frame_location_ and frame_size_)
-// and the getters for the different boxes.
+// offset forming the CSS box (frame_location_) and the getters for the
+// different boxes. The box size is derived from its physical fragments.
 //
 // LayoutBox is also the uppermost class to support scrollbars, however the
 // logic is delegated to PaintLayerScrollableArea.
@@ -1249,10 +1249,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   BackgroundPaintLocation ComputeBackgroundPaintLocation(
       bool needs_root_element_group) const;
 
-  // Compute the border-box size from physical fragments.
-  PhysicalSize ComputeSize() const;
-  void InvalidateCachedGeometry();
-
   // Clear LayoutObject fields of physical fragments.
   void DisassociatePhysicalFragments();
 
@@ -1265,11 +1261,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // offsets etc.
   PhysicalOffset frame_location_;
 
-  // TODO(crbug.com/1353190): Remove frame_size_.
-  PhysicalSize frame_size_;
-
  private:
-  // Previous value of frame_size_, updated after paint invalidation.
+  // Previous stitched border-box size, updated after paint invalidation.
   PhysicalSize previous_size_;
   LayoutResultList previous_layout_results_;
 

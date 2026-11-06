@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -152,7 +153,6 @@ static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   PhysicalOffset frame_location_;
-  PhysicalSize frame_size_;
   PhysicalSize previous_size;
   LayoutResultList previous_layout_results;
   MinMaxSizes intrinsic_logical_widths;
@@ -2570,7 +2570,7 @@ void LayoutBox::AppendLayoutResult(const LayoutResult* result) {
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
   layout_results_.push_back(std::move(result));
-  InvalidateCachedGeometry();
+  SetHavePhysicalFragmentsChanged();
   CheckDidAddFragment(*this, fragment);
 }
 
@@ -2606,7 +2606,7 @@ void LayoutBox::ReplaceLayoutResult(const LayoutResult* result,
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
   layout_results_[index] = std::move(result);
-  InvalidateCachedGeometry();
+  SetHavePhysicalFragmentsChanged();
   CheckDidAddFragment(*this, fragment, index);
 
   if (got_new_fragment && !fragment.GetBreakToken()) {
@@ -2674,7 +2674,7 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
   layout_results_.Shrink(results_to_keep);
-  InvalidateCachedGeometry();
+  SetHavePhysicalFragmentsChanged();
 }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -2685,12 +2685,6 @@ void LayoutBox::CheckMayHaveFragmentItems() const {
   }
 }
 #endif
-
-void LayoutBox::InvalidateCachedGeometry() {
-  NOT_DESTROYED();
-  SetHasValidCachedGeometry(false);
-  SetHavePhysicalFragmentsChanged();
-}
 
 // static
 void LayoutBox::InvalidateItems(const LayoutResult& result) {
@@ -3726,56 +3720,18 @@ LayoutUnit LayoutBox::StitchedBlockSize() const {
 
 PhysicalSize LayoutBox::StitchedSize() const {
   NOT_DESTROYED();
-  if (!HasValidCachedGeometry()) {
-    // const_cast in order to update the cached value.
-    const_cast<LayoutBox*>(this)->SetHasValidCachedGeometry(true);
-    const_cast<LayoutBox*>(this)->frame_size_ = ComputeSize();
-  }
-  return frame_size_;
-}
-
-PhysicalSize LayoutBox::ComputeSize() const {
-  NOT_DESTROYED();
-  const auto& results = GetLayoutResults();
-  if (results.size() == 0) {
+  if (!PhysicalFragmentCount()) {
     return PhysicalSize();
   }
-  const auto& first_fragment = results[0]->GetPhysicalFragment();
-  if (results.size() == 1u) {
+  const auto& first_fragment = *GetPhysicalFragment(0);
+  if (PhysicalFragmentCount() == 1u ||
+      (first_fragment.GetBreakToken() &&
+       first_fragment.GetBreakToken()->IsRepeated())) {
     return first_fragment.Size();
   }
   WritingModeConverter converter(first_fragment.Style().GetWritingDirection());
-  const BlockBreakToken* previous_break_token = nullptr;
-  LogicalSize size;
-  for (const auto& result : results) {
-    const auto& physical_fragment =
-        To<PhysicalBoxFragment>(result->GetPhysicalFragment());
-    LogicalSize fragment_logical_size =
-        converter.ToLogical(physical_fragment.Size());
-    if (physical_fragment.IsFirstForNode()) {
-      // Inline-size will only be set at the first fragment. Subsequent
-      // fragments may have different inline-size (either because fragmentainer
-      // inline-size is variable, or e.g. because available inline-size is
-      // affected by floats). The legacy engine doesn't handle variable
-      // inline-size (since it doesn't really understand fragmentation).  This
-      // means that things like offsetWidth won't work correctly (since that's
-      // still being handled by the legacy engine), but at least layout,
-      // painting and hit-testing will be correct.
-      size = fragment_logical_size;
-    } else {
-      DCHECK(previous_break_token);
-      size.block_size = fragment_logical_size.block_size +
-                        previous_break_token->ConsumedBlockSize();
-    }
-    previous_break_token = physical_fragment.GetBreakToken();
-    // Continue in order to update logical height, unless this fragment is
-    // past the block-end of the generating node (happens with overflow) or
-    // is a repeated one.
-    if (!previous_break_token || previous_break_token->IsRepeated() ||
-        previous_break_token->IsAtBlockEnd()) {
-      break;
-    }
-  }
+  LogicalSize size = converter.ToLogical(first_fragment.Size());
+  size.block_size = BoxTotalBlockSize(*this);
   return converter.ToPhysical(size);
 }
 

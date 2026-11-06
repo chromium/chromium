@@ -249,6 +249,8 @@ bool PaintInvalidator::InvalidatePaint(
         PaintInvalidatorContext::kSubtreeInvalidationChecking;
   }
 
+  context.is_last_for_node =
+      !pre_paint_info || pre_paint_info->is_last_for_node;
   if (pre_paint_info) {
     context.fragment_data = pre_paint_info->fragment_data;
     CHECK(context.fragment_data);

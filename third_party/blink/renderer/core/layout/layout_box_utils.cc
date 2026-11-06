@@ -327,7 +327,6 @@ LayoutUnit BoxInlineSize(const LayoutBox& box) {
 }
 
 LayoutUnit BoxTotalBlockSize(const LayoutBox& box) {
-  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   wtf_size_t num_fragments = box.PhysicalFragmentCount();
   DCHECK_GT(num_fragments, 0u);
 
