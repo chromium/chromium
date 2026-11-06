@@ -78,6 +78,15 @@ enum class ActorOneTimeTokenFillingServiceFillOtp {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceFillOtpEvent)
 
+// Outcomes of the `FillOtp()` operation, used to slice the
+// `OneTimeTokens.Actor.OneTimeTokenFillingService.FillOtp.Duration` histogram.
+// Note: This enum is only used for the patterned histogram slice and is not
+// logged directly.
+enum class ActorOtpFillOtpDurationOutcome {
+  kError,
+  kSuccess,
+};
+
 // LINT.IfChange(ActorOtpRetrieveOtpCallbackSuperseded)
 
 // Events recorded during the ActorOneTimeTokenFillingService RetrieveOtp
@@ -138,6 +147,12 @@ void RecordActorOneTimeTokenFillingServiceRetrieveOtpDuration(
 // Records events during FillOtp operation.
 void RecordActorOneTimeTokenFillingServiceFillOtp(
     ActorOneTimeTokenFillingServiceFillOtp event);
+
+// Records the time from triggering an OTP fill until `ActorFillingObserver`
+// reported its result.
+void RecordActorOneTimeTokenFillingServiceFillOtpDuration(
+    ActorOtpFillOtpDurationOutcome outcome,
+    base::TimeDelta duration);
 
 // Records events measuring superseded callbacks during RetrieveOtp operation.
 void RecordActorOtpRetrieveOtpCallbackSuperseded(

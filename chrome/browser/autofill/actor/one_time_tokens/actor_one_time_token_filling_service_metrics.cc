@@ -35,6 +35,21 @@ std::string_view GetUmaSuffix(
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/histograms.xml:AttemptOtpFillingPredictedOtpType)
 
+// LINT.IfChange(ActorOtpFillOtpDurationOutcome)
+
+// Histogram suffix for `ActorOtpFillOtpDurationOutcome`.
+std::string_view GetUmaSuffix(ActorOtpFillOtpDurationOutcome outcome) {
+  switch (outcome) {
+    case ActorOtpFillOtpDurationOutcome::kError:
+      return "Error";
+    case ActorOtpFillOtpDurationOutcome::kSuccess:
+      return "Success";
+  }
+  NOTREACHED();
+}
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/histograms.xml:ActorOtpFillOtpDurationOutcome)
+
 // LINT.IfChange(ActorOtpRetrieveOtpDurationOutcomeSuffix)
 std::string_view GetUmaSuffix(ActorOtpRetrieveOtpDurationOutcome outcome) {
   switch (outcome) {
@@ -54,7 +69,6 @@ std::string_view GetUmaSuffix(ActorOtpRetrieveOtpDurationOutcome outcome) {
   NOTREACHED();
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/histograms.xml:ActorOtpRetrieveOtpDurationOutcome)
-
 }  // namespace
 
 void RecordActorOneTimeTokenFillingServiceRetrieveOtp(
@@ -86,6 +100,15 @@ void RecordActorOneTimeTokenFillingServiceFillOtp(
     ActorOneTimeTokenFillingServiceFillOtp event) {
   base::UmaHistogramEnumeration(
       kActorOneTimeTokenFillingServiceFillOtpHistogram, event);
+}
+
+void RecordActorOneTimeTokenFillingServiceFillOtpDuration(
+    ActorOtpFillOtpDurationOutcome outcome,
+    base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      base::StrCat({kActorOneTimeTokenFillingServiceFillOtpHistogram,
+                    ".Duration.", GetUmaSuffix(outcome)}),
+      duration);
 }
 
 void RecordActorOtpRetrieveOtpCallbackSuperseded(

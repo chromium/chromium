@@ -589,6 +589,7 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   // Trigger the filling operation through the Autofill manager.
   // TODO(crbug.com/561395976): Figure out if additional authentication can be
   // required here.
+  const base::TimeTicks fill_start_time = base::TimeTicks::Now();
   autofill_manager.FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->global_id(),
       trigger_field_id, FillingProduct::kOneTimePassword, &otp_fill_data,
@@ -598,12 +599,17 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   // Activate the observer and wait for completion.
   filling_observer_->Activate(base::BindOnce(
       [](base::WeakPtr<ActorOneTimeTokenFillingServiceImpl> service,
-         const GURL& url, base::OnceCallback<void(bool)> callback,
+         const GURL& url, base::TimeTicks fill_start_time,
+         base::OnceCallback<void(bool)> callback,
          base::expected<base::flat_map<FieldGlobalId, std::string>,
                         ActorFormFillingError> result) {
         if (service) {
           using enum ActorOneTimeTokenFillingServiceFillOtp;
+          const base::TimeDelta duration =
+              base::TimeTicks::Now() - fill_start_time;
           if (result.has_value()) {
+            RecordActorOneTimeTokenFillingServiceFillOtpDuration(
+                ActorOtpFillOtpDurationOutcome::kSuccess, duration);
             RecordActorOneTimeTokenFillingServiceFillOtp(kSuccess);
             service->journal_->Log(
                 url, service->task_id_,
@@ -612,6 +618,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
                     .Add("filling_result", "Success")
                     .Build());
           } else {
+            RecordActorOneTimeTokenFillingServiceFillOtpDuration(
+                ActorOtpFillOtpDurationOutcome::kError, duration);
             RecordActorOneTimeTokenFillingServiceFillOtp(kError);
             service->journal_->Log(
                 url, service->task_id_,
@@ -634,7 +642,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
         }
         std::move(callback).Run(result.has_value());
       },
-      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), url, fill_start_time,
+      std::move(callback)));
 }
 
 FormFillingContextValidationResult

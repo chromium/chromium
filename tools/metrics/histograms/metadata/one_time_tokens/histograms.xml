@@ -8,6 +8,15 @@ found in the LICENSE file.
 
 <histograms>
 
+<!-- LINT.IfChange(ActorOtpFillOtpDurationOutcome) -->
+
+<variants name="ActorOtpFillOtpDurationOutcome">
+  <variant name="Error" summary="an error, including a fill timeout"/>
+  <variant name="Success" summary="success"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.cc:ActorOtpFillOtpDurationOutcome) -->
+
 <!-- LINT.IfChange(ActorOtpRetrieveOtpDurationOutcome) -->
 
 <variants name="ActorOtpRetrieveOtpDurationOutcome">
@@ -193,6 +202,18 @@ found in the LICENSE file.
     (e.g. the actor task ends or the browser shuts down). Recorded once per
     request.
   </summary>
+</histogram>
+
+<histogram
+    name="OneTimeTokens.Actor.OneTimeTokenFillingService.FillOtp.Duration.{Outcome}"
+    units="ms" expires_after="2027-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>salmaabdelaziz@google.com</owner>
+  <summary>
+    Time from triggering a single OTP fill until the ActorFillingObserver
+    reported {Outcome}. Recorded once per fill that reaches the observer.
+  </summary>
+  <token key="Outcome" variants="ActorOtpFillOtpDurationOutcome"/>
 </histogram>
 
 <histogram name="OneTimeTokens.Actor.OneTimeTokenFillingService.RetrieveOtp"

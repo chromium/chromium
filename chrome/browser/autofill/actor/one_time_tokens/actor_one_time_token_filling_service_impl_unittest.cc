@@ -37,6 +37,7 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/actor/actor_filling_observer.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -831,6 +832,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_Success) {
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kSuccess, 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "OneTimeTokens.Actor.OneTimeTokenFillingService.FillOtp.Duration.Success",
+      base::TimeDelta(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "OneTimeTokens.Actor.OneTimeTokenFillingService.FillOtp.Duration.Error",
+      0);
 
   // A completed fill is not reported as cancelled on destruction.
   service_.reset();
@@ -860,6 +867,32 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kError, 0);
+}
+
+// Tests that a fill that times out returns false, records a timeout error,
+// and reports the time until `ActorFillingObserver` gave up.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_Timeout) {
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  FieldGlobalId field_id = form.fields()[0].global_id();
+  // The renderer reports no filled fields, so the fill only ends on timeout.
+  EXPECT_CALL(driver(), ApplyFormAction)
+      .WillOnce(Return(base::flat_set<FieldGlobalId>()));
+
+  base::test::TestFuture<bool> future;
+  service().FillOtp(web_contents(), {field_id}, "123456",
+                    future.GetCallback());
+  task_environment()->FastForwardBy(ActorFillingObserver::GetFillingTimeout());
+
+  EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectUniqueSample(
+      kActorOneTimeTokenFillingServiceFillOtpHistogram,
+      ActorOneTimeTokenFillingServiceFillOtp::kError, 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "OneTimeTokens.Actor.OneTimeTokenFillingService.FillOtp.Duration.Error",
+      ActorFillingObserver::GetFillingTimeout(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "OneTimeTokens.Actor.OneTimeTokenFillingService.FillOtp.Duration.Success",
+      0);
 }
 
 // Tests that concurrent calls to `FillOtp` are handled gracefully and the
