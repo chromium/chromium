@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -44,12 +45,14 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/actions/actions.h"
 #endif
 #include "chrome/common/webui_url_constants.h"
@@ -746,6 +749,67 @@ void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window) {
         action_item->SetVisible(is_pinning_eligible);
       }
     }
+  }
+}
+
+int GetContextualTasksPinningStringId(int default_resource_id) {
+  const auto variant = GetContextualTasksPinningStringVariant();
+  if (variant == PinningStringVariant::kAiMode) {
+    return default_resource_id;
+  }
+
+  struct VariantIds {
+    int side_panel;
+    int in_side_panel;
+    int in_chrome;
+    int panel;
+  };
+#define CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(base_id)        \
+  {                                                              \
+    base_id, {                                                   \
+      base_id##_SIDE_PANEL, base_id##_IN_SIDE_PANEL,             \
+          base_id##_IN_CHROME, base_id##_PANEL                   \
+    }                                                            \
+  }
+  static constexpr auto kVariants =
+      base::MakeFixedFlatMap<int, VariantIds>({
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL),
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP),
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP),
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH),
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH),
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER),
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH),
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER),
+          CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS(
+              IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3),
+      });
+#undef CONTEXTUAL_TASKS_PINNING_STRING_VARIANTS
+
+  const auto it = kVariants.find(default_resource_id);
+  if (it == kVariants.end()) {
+    return default_resource_id;
+  }
+
+  switch (variant) {
+    case PinningStringVariant::kAiMode:
+      return default_resource_id;
+    case PinningStringVariant::kSidePanel:
+      return it->second.side_panel;
+    case PinningStringVariant::kInSidePanel:
+      return it->second.in_side_panel;
+    case PinningStringVariant::kInChrome:
+      return it->second.in_chrome;
+    case PinningStringVariant::kPanel:
+      return it->second.panel;
   }
 }
 #endif

@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -697,12 +698,16 @@ void ContextualTasksButton::UpdateTooltipText() {
 
   int tooltip_id = IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP;
   if (contextual_tasks::kShowEntryPoint.Get() ==
-      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded ||
+      contextual_tasks::IsContextualTasksPinningV2Enabled() ||
+      base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksPinningStringVariants)) {
     tooltip_id = is_panel_open
                      ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP
                      : IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP;
   }
-  const std::u16string button_tooltip = l10n_util::GetStringUTF16(tooltip_id);
+  const std::u16string button_tooltip = l10n_util::GetStringUTF16(
+      contextual_tasks::GetContextualTasksPinningStringId(tooltip_id));
   GetViewAccessibility().SetName(button_tooltip);
   SetTooltipText(button_tooltip);
 }

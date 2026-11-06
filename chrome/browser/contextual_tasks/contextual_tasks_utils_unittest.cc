@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -30,6 +31,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -1009,6 +1011,120 @@ TEST_F(ContextualTasksUtilsTest, ToRestoredTabInfos_FromContextualTaskContext) {
   EXPECT_EQ(restored[0].url, GURL("https://example.com/1"));
   EXPECT_EQ(restored[0].title, "Valid Tab");
   EXPECT_TRUE(restored[0].submitted);
+}
+
+TEST_F(ContextualTasksUtilsTest,
+       GetContextualTasksPinningStringId_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kContextualTasksPinningStringVariants);
+
+  EXPECT_EQ(IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL,
+            GetContextualTasksPinningStringId(
+                IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL));
+  EXPECT_EQ(IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP,
+            GetContextualTasksPinningStringId(
+                IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP));
+}
+
+TEST_F(ContextualTasksUtilsTest,
+       GetContextualTasksPinningStringId_DefaultParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kContextualTasksPinningStringVariants);
+
+  EXPECT_EQ(IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL,
+            GetContextualTasksPinningStringId(
+                IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL));
+  EXPECT_EQ(IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP,
+            GetContextualTasksPinningStringId(
+                IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP));
+}
+
+TEST_F(ContextualTasksUtilsTest, GetContextualTasksPinningStringId_Variants) {
+  struct ExpectedVariantIds {
+    int base_id;
+    int ai_mode;
+    int side_panel;
+    int in_side_panel;
+    int in_chrome;
+    int panel;
+  };
+#define CONTEXTUAL_TASKS_TEST_VARIANTS(base_id)                    \
+  {                                                                \
+    base_id, base_id, base_id##_SIDE_PANEL, base_id##_IN_SIDE_PANEL, \
+        base_id##_IN_CHROME, base_id##_PANEL                       \
+  }
+  constexpr ExpectedVariantIds kExpectedVariants[] = {
+      CONTEXTUAL_TASKS_TEST_VARIANTS(
+          IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL),
+      CONTEXTUAL_TASKS_TEST_VARIANTS(
+          IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP),
+      CONTEXTUAL_TASKS_TEST_VARIANTS(
+          IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP),
+      CONTEXTUAL_TASKS_TEST_VARIANTS(
+          IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH),
+      CONTEXTUAL_TASKS_TEST_VARIANTS(
+          IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH),
+      CONTEXTUAL_TASKS_TEST_VARIANTS(
+          IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER),
+      CONTEXTUAL_TASKS_TEST_VARIANTS(
+          IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH),
+      CONTEXTUAL_TASKS_TEST_VARIANTS(
+          IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER),
+      CONTEXTUAL_TASKS_TEST_VARIANTS(IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3),
+  };
+#undef CONTEXTUAL_TASKS_TEST_VARIANTS
+
+  for (const auto& entry : kExpectedVariants) {
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          kContextualTasksPinningStringVariants,
+          {{"ContextualTasksPinningStringVariant", "ai-mode"}});
+      EXPECT_EQ(entry.ai_mode, GetContextualTasksPinningStringId(entry.base_id));
+    }
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          kContextualTasksPinningStringVariants,
+          {{"ContextualTasksPinningStringVariant", "side-panel"}});
+      EXPECT_EQ(entry.side_panel,
+                GetContextualTasksPinningStringId(entry.base_id));
+    }
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          kContextualTasksPinningStringVariants,
+          {{"ContextualTasksPinningStringVariant", "in-side-panel"}});
+      EXPECT_EQ(entry.in_side_panel,
+                GetContextualTasksPinningStringId(entry.base_id));
+    }
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          kContextualTasksPinningStringVariants,
+          {{"ContextualTasksPinningStringVariant", "in-chrome"}});
+      EXPECT_EQ(entry.in_chrome,
+                GetContextualTasksPinningStringId(entry.base_id));
+    }
+    {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitAndEnableFeatureWithParameters(
+          kContextualTasksPinningStringVariants,
+          {{"ContextualTasksPinningStringVariant", "panel"}});
+      EXPECT_EQ(entry.panel, GetContextualTasksPinningStringId(entry.base_id));
+    }
+  }
+}
+
+TEST_F(ContextualTasksUtilsTest, GetContextualTasksPinningStringId_UnmappedId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContextualTasksPinningStringVariants,
+      {{"ContextualTasksPinningStringVariant", "side-panel"}});
+
+  constexpr int kUnmappedResourceId = -1;
+  EXPECT_EQ(kUnmappedResourceId,
+            GetContextualTasksPinningStringId(kUnmappedResourceId));
 }
 
 }  // namespace
