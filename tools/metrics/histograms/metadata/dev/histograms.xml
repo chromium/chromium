@@ -29,6 +29,33 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools action has been taken.</summary>
 </histogram>
 
+<histogram name="DevTools.AiClient.RequestResult{Surface}"
+    enum="DevToolsAiClientRequestResult" expires_after="2027-11-01">
+  <owner>jacktfranklin@google.com</owner>
+  <owner>victorporof@google.com</owner>
+  <owner>finnur@google.com</owner>
+  <owner>alinavarkki@google.com</owner>
+  <owner>yangguo@google.com</owner>
+  <owner>kprokopenko@google.com</owner>
+  <owner>kimanh@google.com</owner>
+  <component>1633102</component>
+  <summary>
+    Records the terminal outcome (success, abort, or granular transport, HTTP,
+    auth, parse, or safety/recitation error) of an AI request sent from the
+    DevTools frontend through AidaClient for {Surface}. Recorded once per
+    doConversation, completeCode, or generateCode call.
+  </summary>
+  <token key="Surface">
+    <variant name="" summary="all AI client requests"/>
+    <variant name=".AiAssistance" summary="AI Assistance (V2 agent)"/>
+    <variant name=".CodeComplete" summary="AI code completion"/>
+    <variant name=".CodeGenerate" summary="AI code generation"/>
+    <variant name=".ConsoleInsights" summary="Console Insights"/>
+    <variant name=".ConversationSummary" summary="Conversation summary"/>
+    <variant name=".PerformanceAnnotations" summary="Performance annotations"/>
+  </token>
+</histogram>
+
 <histogram name="DevTools.AidaResponseTime" units="ms"
     expires_after="2024-07-21">
   <owner>yangguo@google.com</owner>

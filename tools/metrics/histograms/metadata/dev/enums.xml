@@ -988,6 +988,26 @@ Called by update_protocol_commands_enum.py.-->
   <int value="207" label="AI Code Completion - FRE completed from Sources"/>
 </enum>
 
+<enum name="DevToolsAiClientRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Aborted"/>
+  <int value="2" label="ValidationFailed"/>
+  <int value="3" label="OAuthTokenError"/>
+  <int value="4" label="NetworkTimeout"/>
+  <int value="5" label="NetworkError"/>
+  <int value="6" label="Http400PayloadTooLarge"/>
+  <int value="7" label="Http400InvalidArgument"/>
+  <int value="8" label="Http401Unauthorized"/>
+  <int value="9" label="Http403PermissionDenied"/>
+  <int value="10" label="Http404NotFound"/>
+  <int value="11" label="Http429QuotaExceeded"/>
+  <int value="12" label="Http5xxServerError"/>
+  <int value="13" label="StreamChunkParseError"/>
+  <int value="14" label="InvalidJsonResponse"/>
+  <int value="15" label="BlockedBySafetyOrRecitation"/>
+  <int value="16" label="UnknownError"/>
+</enum>
+
 <!-- LINT.IfChange(DevToolsBlockReason) -->
 
 <enum name="DevToolsBlockReason">
