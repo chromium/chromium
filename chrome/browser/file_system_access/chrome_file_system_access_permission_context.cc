@@ -556,16 +556,14 @@ GenerateBlockPaths(bool should_normalize_file_path) {
                                 BlockType::kBlockAllChildren),
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL("_exrc"),
                                 BlockType::kBlockAllChildren),
-      // Block write access to */.git/hooks, see crbug.com/465668234 and
-      // crbug.com/553115714.
-      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/hooks"),
-                              BlockType::kBlockWrite),
-      // Block write access to the repository config and to submodule git
-      // directories, which have their own hooks and config, see
-      // crbug.com/572269631 and crbug.com/571913154.
-      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/config"),
-                              BlockType::kBlockWrite),
-      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/modules"),
+      // Block write access to */.git by default (covering .git directory and
+      // gitfile creation, config, hooks, modules, commondir, worktrees, info,
+      // and arbitrary subdirectories); `ShouldBlockAccessToGitPath()` carves
+      // out safe repository data, ref, and index paths under an existing .git
+      // directory so web-based Git clients (e.g. isomorphic-git) continue to
+      // work. See crbug.com/465668234, crbug.com/553115714,
+      // crbug.com/571913154, crbug.com/572269631, and crbug.com/577352729.
+      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git"),
                               BlockType::kBlockWrite),
       // Block write access to */.mvn, which holds Maven project and JVM
       // configuration (such as jvm.config, maven.config, and extensions.xml),
@@ -763,6 +761,109 @@ base::FilePath GetBlockedHomeDotPath(const base::FilePath& path,
   return base::FilePath();
 }
 
+// Checks if write access (`kSave` or `kProgrammaticWrite`) to `path` should be
+// blocked by a `*/.git` rule rooted at `git_dir`.
+//
+// Creating or overwriting the `.git` entry itself (directory or gitfile
+// pointer) is always blocked, as are configuration, hook, submodule, worktree,
+// `commondir`, and `objects/info` paths that control what Git executes. A
+// narrow allowlist of repository data, ref, and index paths under an existing
+// `.git` directory remains writable so web-based Git clients (e.g.
+// isomorphic-git) continue to work.
+bool ShouldBlockAccessToGitPath(const base::FilePath& git_dir,
+                                const base::FilePath& path,
+                                HandleType handle_type) {
+  base::FilePath relative_path;
+  if (!git_dir.AppendRelativePath(path, &relative_path) ||
+      relative_path.ReferencesParent()) {
+    return true;
+  }
+
+  const std::vector<base::FilePath::StringType> rel_components =
+      relative_path.GetComponents();
+  // `FilePath(".").GetComponents()` is empty when `path` is `<repo>/.git/.`.
+  if (rel_components.empty()) {
+    return true;
+  }
+
+  for (const auto& component : rel_components) {
+    if (component == base::FilePath::kCurrentDirectory ||
+        base::FilePath::CompareEqualIgnoreCase(component,
+                                               FILE_PATH_LITERAL(".git"))) {
+      return true;
+    }
+  }
+
+  // Subtrees under `.git` whose contents hold repository data, refs, or
+  // reflogs rather than executable hooks or configuration.
+  static constexpr base::FilePath::StringViewType kAllowedGitDirectories[] = {
+      FILE_PATH_LITERAL("objects"),
+      FILE_PATH_LITERAL("refs"),
+      FILE_PATH_LITERAL("reftable"),
+      FILE_PATH_LITERAL("logs"),
+  };
+  for (const auto& allowed_dir : kAllowedGitDirectories) {
+    if (base::FilePath::CompareEqualIgnoreCase(rel_components[0],
+                                               allowed_dir)) {
+      if (rel_components.size() == 1) {
+        return handle_type != HandleType::kDirectory;
+      }
+      // Block `.git/objects/info` (such as `alternates` and `http-alternates`),
+      // which can redirect object lookups outside the repository.
+      if (allowed_dir == FILE_PATH_LITERAL("objects") &&
+          base::FilePath::CompareEqualIgnoreCase(rel_components[1],
+                                                 FILE_PATH_LITERAL("info"))) {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  // Top-level files (and atomic lock/staging files) directly under `.git` that
+  // web-based Git clients (e.g. isomorphic-git) update during normal staging,
+  // commit, checkout, branch, fetch, and merge workflows. These files are safe
+  // to allow because Git parses them strictly as binary index entries, hex
+  // object IDs, `ref:` targets, or plain-text commit messages; unlike `config`,
+  // `hooks/*`, `commondir`, `gitdir`, or `objects/info/alternates`, they cannot
+  // configure external commands or redirect Git's repository/object lookup.
+  if (rel_components.size() == 1 && handle_type == HandleType::kFile) {
+    static constexpr base::FilePath::StringViewType kAllowedGitFiles[] = {
+        // Staging area updated by `add`, `checkout`, and `reset`.
+        FILE_PATH_LITERAL("index"),
+        FILE_PATH_LITERAL("index.lock"),
+        // Compacted ref table (`<oid> <refname>`) updated by `fetch` / `gc`.
+        FILE_PATH_LITERAL("packed-refs"),
+        FILE_PATH_LITERAL("packed-refs.lock"),
+        FILE_PATH_LITERAL("packed-refs.new"),
+        // Shallow-clone commit boundary OIDs updated by shallow `fetch`.
+        FILE_PATH_LITERAL("shallow"),
+        FILE_PATH_LITERAL("shallow.lock"),
+        // Current branch symref / commit OID and pseudorefs updated by
+        // `commit`, `checkout`, `fetch`, `merge`, `cherry-pick`, and `revert`.
+        FILE_PATH_LITERAL("HEAD"),
+        FILE_PATH_LITERAL("HEAD.lock"),
+        FILE_PATH_LITERAL("ORIG_HEAD"),
+        FILE_PATH_LITERAL("ORIG_HEAD.lock"),
+        FILE_PATH_LITERAL("FETCH_HEAD"),
+        FILE_PATH_LITERAL("MERGE_HEAD"),
+        FILE_PATH_LITERAL("CHERRY_PICK_HEAD"),
+        FILE_PATH_LITERAL("REVERT_HEAD"),
+        // Plain-text commit/merge message and mode state (`no-ff`).
+        FILE_PATH_LITERAL("MERGE_MSG"),
+        FILE_PATH_LITERAL("MERGE_MODE"),
+        FILE_PATH_LITERAL("COMMIT_EDITMSG"),
+    };
+    for (const auto& allowed_file : kAllowedGitFiles) {
+      if (base::FilePath::CompareEqualIgnoreCase(rel_components[0],
+                                                 allowed_file)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 // Checks if `path` should be blocked by the `rules`.
 // The BlockType of the nearest ancestor of a path to check is what
 // ultimately determines if a path is blocked or not. If a blocked path is a
@@ -806,6 +907,12 @@ bool ShouldBlockAccessToPath(
         access_trigger != AccessTrigger::kSave &&
         access_trigger != AccessTrigger::kProgrammaticWrite) {
       return false;
+    }
+
+    if (block_type == BlockType::kBlockWrite &&
+        base::FilePath::CompareEqualIgnoreCase(block_path.BaseName().value(),
+                                               FILE_PATH_LITERAL(".git"))) {
+      return ShouldBlockAccessToGitPath(block_path, path, handle_type);
     }
 
     if (path == block_path || path.IsParent(block_path)) {

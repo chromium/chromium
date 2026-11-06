@@ -419,9 +419,10 @@ IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
   ui::SelectFileDialog::SetFactory(nullptr);
 }
 
-// Verifies that every way of writing into `.git/hooks` (and case variations
-// of it) is rejected, while reads and writes elsewhere are unaffected. See
-// crbug.com/545006893.
+// Verifies that creating `.git` or writing into non-allowlisted paths under
+// `.git` (such as `hooks` and `commondir`, including case variations) is
+// rejected, while reads and writes elsewhere are unaffected. See
+// crbug.com/545006893 and crbug.com/577352729.
 //
 // This test deliberately runs against the real
 // ChromeFileSystemAccessPermissionContext installed by SetUpOnMainThread(),
@@ -445,7 +446,8 @@ IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
     ASSERT_TRUE(
         base::WriteFile(hooks.AppendASCII("pre-commit"), kHookContents));
   }
-  ASSERT_TRUE(base::CreateDirectory(test_dir.AppendASCII("src")));
+  const base::FilePath src_dir = test_dir.AppendASCII("src");
+  ASSERT_TRUE(base::CreateDirectory(src_dir));
 
   const GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -456,15 +458,78 @@ IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
 
   for (const char* git_dir : {".git", ".Git"}) {
     SCOPED_TRACE(git_dir);
-    const base::FilePath hooks =
-        test_dir.AppendASCII(git_dir).AppendASCII("hooks");
+    const base::FilePath git_path = test_dir.AppendASCII(git_dir);
+    const base::FilePath hooks = git_path.AppendASCII("hooks");
 
-    // Reading an existing hook is still allowed: `.git/hooks` is blocked for
-    // write only. This also establishes that the rejections below come from
-    // the write operation rather than from resolving the handle.
+    // Reading an existing hook is still allowed: `.git` is blocked for write
+    // only. This also establishes that the rejections below come from the
+    // write operation rather than from resolving the handle.
     EXPECT_EQ(
         RunInGitHooks(git_dir, "await hooks.getFileHandle('pre-commit');"),
         "ALLOWED");
+
+    // Calling getDirectoryHandle('.git', {create: true}) or writing entries
+    // directly under `.git` (such as `commondir`) is blocked.
+    EXPECT_EQ(content::EvalJs(GetWebContents(), content::JsReplace(
+                                                    R"((async () => {
+                        try {
+                          await self.dirHandle.getDirectoryHandle(
+                              $1, {create: true});
+                          return 'ALLOWED';
+                        } catch (e) {
+                          return 'BLOCKED: ' + e.name;
+                        }
+                      })())",
+                                                    git_dir))
+                  .ExtractString(),
+              "BLOCKED: SecurityError");
+    EXPECT_EQ(content::EvalJs(GetWebContents(), content::JsReplace(
+                                                    R"((async () => {
+                        try {
+                          const git =
+                              await self.dirHandle.getDirectoryHandle($1);
+                          await git.getFileHandle('commondir', {create: true});
+                          return 'ALLOWED';
+                        } catch (e) {
+                          return 'BLOCKED: ' + e.name;
+                        }
+                      })())",
+                                                    git_dir))
+                  .ExtractString(),
+              "BLOCKED: SecurityError");
+    EXPECT_FALSE(base::PathExists(git_path.AppendASCII("commondir")));
+
+    // Creating a new `.git` file or `.git` directory inside an unblocked
+    // directory (`src`) is also blocked.
+    EXPECT_EQ(content::EvalJs(GetWebContents(), content::JsReplace(
+                                                    R"((async () => {
+                        try {
+                          const src =
+                              await self.dirHandle.getDirectoryHandle('src');
+                          await src.getFileHandle($1, {create: true});
+                          return 'ALLOWED';
+                        } catch (e) {
+                          return 'BLOCKED: ' + e.name;
+                        }
+                      })())",
+                                                    git_dir))
+                  .ExtractString(),
+              "BLOCKED: SecurityError");
+    EXPECT_EQ(content::EvalJs(GetWebContents(), content::JsReplace(
+                                                    R"((async () => {
+                        try {
+                          const src =
+                              await self.dirHandle.getDirectoryHandle('src');
+                          await src.getDirectoryHandle($1, {create: true});
+                          return 'ALLOWED';
+                        } catch (e) {
+                          return 'BLOCKED: ' + e.name;
+                        }
+                      })())",
+                                                    git_dir))
+                  .ExtractString(),
+              "BLOCKED: SecurityError");
+    EXPECT_FALSE(base::PathExists(src_dir.AppendASCII(git_dir)));
 
     // FileSystemAccessDirectoryHandleImpl::GetFileResolved(): creating a new
     // hook file is blocked.
@@ -497,14 +562,17 @@ IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
   }
 
   // Negative control: the same operations succeed in a sibling directory that
-  // is not on the blocklist, so the rejections above are specific to
-  // `.git/hooks` rather than a blanket denial. `abort()` is used instead of
-  // `close()` to keep after-write (Safe Browsing) checks out of this test.
+  // is not on the blocklist (including dotfiles like `.gitignore`), so the
+  // rejections above are specific to `.git` rather than a blanket denial.
+  // `abort()` is used instead of `close()` to keep after-write (Safe Browsing)
+  // checks out of this test.
   EXPECT_EQ(content::EvalJs(GetWebContents(), R"((async () => {
         try {
           const src = await self.dirHandle.getDirectoryHandle('src');
           const f = await src.getFileHandle('post-commit', {create: true});
           await (await f.createWritable()).abort();
+          const ignore = await src.getFileHandle('.gitignore', {create: true});
+          await (await ignore.createWritable()).abort();
           await src.getDirectoryHandle('sub', {create: true});
           return 'ALLOWED';
         } catch (e) {
@@ -513,10 +581,139 @@ IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
       })())")
                 .ExtractString(),
             "ALLOWED");
-  EXPECT_TRUE(
-      base::PathExists(test_dir.AppendASCII("src").AppendASCII("post-commit")));
-  EXPECT_TRUE(
-      base::DirectoryExists(test_dir.AppendASCII("src").AppendASCII("sub")));
+  EXPECT_TRUE(base::PathExists(src_dir.AppendASCII("post-commit")));
+  EXPECT_TRUE(base::PathExists(src_dir.AppendASCII(".gitignore")));
+  EXPECT_TRUE(base::DirectoryExists(src_dir.AppendASCII("sub")));
+}
+
+// Verifies end-to-end that web-based Git clients holding a readwrite directory
+// grant on an existing repository can update allowlisted data, ref, and index
+// paths under `.git` (including lockfile rename to `index`), while
+// `.git/config` and `.git/objects/info` remain blocked with `SecurityError`.
+IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
+                       GitSafeDataPathsWriteAllowed) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Each case variant of `.git` lives in its own repository directory so that
+  // the variants do not alias each other on case-insensitive file systems (the
+  // default on macOS and Windows).
+  static constexpr struct {
+    const char* repo;
+    const char* git_dir;
+  } kRepos[] = {{"repo1", ".git"}, {"repo2", ".Git"}};
+
+  const base::FilePath test_dir = temp_dir().GetPath().AppendASCII("test");
+  for (const auto& [repo, git_dir] : kRepos) {
+    ASSERT_TRUE(base::CreateDirectory(
+        test_dir.AppendASCII(repo).AppendASCII(git_dir).AppendASCII(
+            "objects")));
+  }
+
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::ScopedClosureRunner reset_dialog_factory(
+      base::BindOnce([]() { ui::SelectFileDialog::SetFactory(nullptr); }));
+  ASSERT_NO_FATAL_FAILURE(PickDirectoryAsDirHandle(test_dir));
+
+  for (const auto& [repo, git_dir] : kRepos) {
+    SCOPED_TRACE(git_dir);
+    const base::FilePath git_path =
+        test_dir.AppendASCII(repo).AppendASCII(git_dir);
+
+    // Allowlisted repository data, ref, and index writes (including atomic
+    // `index.lock` -> `index` rename) succeed on an existing `.git` directory.
+    // `abort()` is used instead of `close()` to keep after-write (Safe
+    // Browsing) checks out of this test. No writable is opened on `index.lock`
+    // before it is moved: `abort()` resolves in the renderer before the browser
+    // releases the writer's lock, so the move could fail with
+    // `NoModificationAllowedError`.
+    EXPECT_EQ(content::EvalJs(GetWebContents(), content::JsReplace(
+                                                    R"((async () => {
+                        try {
+                          const repo =
+                              await self.dirHandle.getDirectoryHandle($1);
+                          const git = await repo.getDirectoryHandle($2);
+                          const head =
+                              await git.getFileHandle('HEAD', {create: true});
+                          await (await head.createWritable()).abort();
+
+                          const lock = await git.getFileHandle(
+                              'index.lock', {create: true});
+                          await lock.move('index');
+
+                          const refs = await git.getDirectoryHandle(
+                              'refs', {create: true});
+                          const heads = await refs.getDirectoryHandle(
+                              'heads', {create: true});
+                          const mainRef =
+                              await heads.getFileHandle('main', {create: true});
+                          await (await mainRef.createWritable()).abort();
+
+                          const objects =
+                              await git.getDirectoryHandle('objects');
+                          const looseDir = await objects.getDirectoryHandle(
+                              'aa', {create: true});
+                          const looseObj = await looseDir.getFileHandle(
+                              'bbccdd', {create: true});
+                          await (await looseObj.createWritable()).abort();
+                          return 'ALLOWED';
+                        } catch (e) {
+                          return 'BLOCKED: ' + e.name;
+                        }
+                      })())",
+                                                    repo, git_dir))
+                  .ExtractString(),
+              "ALLOWED");
+    EXPECT_TRUE(base::PathExists(git_path.AppendASCII("HEAD")));
+    EXPECT_TRUE(base::PathExists(git_path.AppendASCII("index")));
+    EXPECT_FALSE(base::PathExists(git_path.AppendASCII("index.lock")));
+    EXPECT_TRUE(base::PathExists(
+        git_path.AppendASCII("refs").AppendASCII("heads").AppendASCII("main")));
+    EXPECT_TRUE(base::PathExists(
+        git_path.AppendASCII("objects").AppendASCII("aa").AppendASCII(
+            "bbccdd")));
+
+    // `.git/objects/info` and `.git/config` remain blocked for write even
+    // though `.git/objects` is allowlisted.
+    EXPECT_EQ(content::EvalJs(GetWebContents(), content::JsReplace(
+                                                    R"((async () => {
+                        try {
+                          const repo =
+                              await self.dirHandle.getDirectoryHandle($1);
+                          const git = await repo.getDirectoryHandle($2);
+                          const objects =
+                              await git.getDirectoryHandle('objects');
+                          await objects.getDirectoryHandle(
+                              'info', {create: true});
+                          return 'ALLOWED';
+                        } catch (e) {
+                          return 'BLOCKED: ' + e.name;
+                        }
+                      })())",
+                                                    repo, git_dir))
+                  .ExtractString(),
+              "BLOCKED: SecurityError");
+    EXPECT_FALSE(
+        base::PathExists(git_path.AppendASCII("objects").AppendASCII("info")));
+
+    EXPECT_EQ(content::EvalJs(GetWebContents(), content::JsReplace(
+                                                    R"((async () => {
+                        try {
+                          const repo =
+                              await self.dirHandle.getDirectoryHandle($1);
+                          const git = await repo.getDirectoryHandle($2);
+                          await git.getFileHandle('config', {create: true});
+                          return 'ALLOWED';
+                        } catch (e) {
+                          return 'BLOCKED: ' + e.name;
+                        }
+                      })())",
+                                                    repo, git_dir))
+                  .ExtractString(),
+              "BLOCKED: SecurityError");
+    EXPECT_FALSE(base::PathExists(git_path.AppendASCII("config")));
+  }
 }
 
 // Verifies that moving a file into `.git/hooks` consults
