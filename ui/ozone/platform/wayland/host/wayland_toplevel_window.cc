@@ -649,8 +649,9 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
 
   // Width or height set to 0 means that we should decide on width and height by
   // ourselves, but we don't want to set them to anything else. Use restored
-  // bounds size or the current bounds iff the current state is normal (neither
-  // maximized nor fullscreen).
+  // bounds size or the current bounds when the current state is normal, or keep
+  // the size from an earlier configure in this batch (falling back to the
+  // current bounds) when maximized or fullscreen.
   //
   // Note: if the browser was started with --start-fullscreen and a user exits
   // the fullscreen mode, wayland may set the width and height to be 1. Instead,
@@ -687,6 +688,10 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   } else if (ShouldSetBounds(window_state)) {
     bounds_dip = !restored_bounds_dip().IsEmpty() ? restored_bounds_dip()
                                                   : GetBoundsInDIP();
+  } else if (bounds_dip.IsEmpty()) {
+    // 0x0 maximized/fullscreen configure with no size from an earlier
+    // configure in this batch: keep the current bounds.
+    bounds_dip = GetBoundsInDIP();
   }
 
   if (ShouldSetBounds(window_state)) {

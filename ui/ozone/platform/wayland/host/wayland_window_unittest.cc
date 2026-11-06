@@ -1641,6 +1641,8 @@ void WaylandWindowTest::DoStartWithFullscreenTest(bool async_state) {
     wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
     states.AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN);
     SendConfigureEvent(surface_id, {0, 0}, states);
+    AdvanceFrameToCurrent(window.get(), delegate);
+    EXPECT_EQ(window->GetBoundsInDIP(), gfx::Rect(100, 100));
   }
 
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
@@ -1725,6 +1727,8 @@ void WaylandWindowTest::DoStartMaximizedTest(bool async_state) {
     wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
     states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
     SendConfigureEvent(surface_id, {0, 0}, states);
+    AdvanceFrameToCurrent(window.get(), delegate);
+    EXPECT_EQ(window->GetBoundsInDIP(), gfx::Rect(100, 100));
   }
 
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
@@ -4341,6 +4345,45 @@ TEST_P(WaylandWindowTest, SizeConstraintsIgnoredWhenMaximizedOrFullscreen) {
   auto fullscreen_state = MakeStateArray(
       {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_FULLSCREEN});
   SendConfigureEvent(surface_id_, fullscreen_bounds.size(), fullscreen_state);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(window_->GetBoundsInDIP(), fullscreen_bounds);
+  VerifyAndClearExpectations();
+
+  // Regression test for crbug.com/580653140: a 0x0 configure while maximized or
+  // fullscreen (where the compositor leaves size selection to the client or
+  // updates only state flags such as activation) must retain the current bounds
+  // rather than setting empty bounds and crashing
+  // XdgSurface::SetWindowGeometry.
+  ON_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kMaximized))
+      .WillByDefault(Return(gfx::Insets(5)));
+  PostToServerAndWait([id = surface_id_, bounds = fullscreen_bounds](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
+    gfx::Rect expected_geometry(bounds.size());
+    expected_geometry.Inset(gfx::Insets(5));
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(expected_geometry));
+    EXPECT_CALL(*xdg_surface, AckConfigure(_));
+  });
+
+  SendConfigureEvent(surface_id_, {0, 0}, maximized_state);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(window_->GetBoundsInDIP(), fullscreen_bounds);
+  VerifyAndClearExpectations();
+
+  PostToServerAndWait([id = surface_id_, bounds = fullscreen_bounds](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())));
+    EXPECT_CALL(*xdg_surface, AckConfigure(_));
+  });
+
+  auto deactivated_fullscreen_state =
+      MakeStateArray({XDG_TOPLEVEL_STATE_FULLSCREEN});
+  SendConfigureEvent(surface_id_, {0, 0}, deactivated_fullscreen_state);
   AdvanceFrameToCurrent(window_.get(), delegate_);
   EXPECT_EQ(window_->GetBoundsInDIP(), fullscreen_bounds);
   VerifyAndClearExpectations();
