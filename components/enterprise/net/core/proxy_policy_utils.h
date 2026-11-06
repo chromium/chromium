@@ -17,7 +17,7 @@ class PolicyMap;
 namespace enterprise_net {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Returns true if the browser/device is managed (either via CBCM device
 // affiliation IDs or trusted OS/platform management such as EMM/MDM/AD).
 bool IsDeviceManaged(const policy::PolicyMap& policies);
@@ -36,7 +36,7 @@ bool CheckUserAffiliatedProxyPolicy(const policy::PolicyMap& policies,
                                     const std::string& policy_name,
                                     policy::PolicyErrorMap* errors);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_ANDROID)
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace enterprise_net
 

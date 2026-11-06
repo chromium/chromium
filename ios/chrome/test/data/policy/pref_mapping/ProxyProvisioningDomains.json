@@ -6,6 +6,10 @@
     "simple_policy_pref_mapping_test": {
       "pref_name": "proxy_provisioning_domains",
       "default_value": [],
+      "policy_settings": {
+        "scope": "machine",
+        "source": "cloud"
+      },
       "values_to_test": [
         [
           {
@@ -45,5 +49,42 @@
         ]
       ]
     }
+  },
+  {
+    "note": "User-scoped policy applies when EnableProxyOverrideRulesForAllUsers is enabled at machine scope.",
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EnableProxyOverrideRulesForAllUsers": 1,
+          "ProxyProvisioningDomains": [
+            {
+              "pvd_id": "https://unauthenticated.securegateway.goog"
+            }
+          ]
+        },
+        "policies_settings": {
+          "EnableProxyOverrideRulesForAllUsers": {
+            "scope": "machine",
+            "source": "cloud"
+          },
+          "ProxyProvisioningDomains": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "proxy_provisioning_domains": {
+            "value": [
+              {
+                "pvd_id": "https://unauthenticated.securegateway.goog"
+              }
+            ]
+          }
+        }
+      }
+    ]
   }
 ]

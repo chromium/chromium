@@ -49,6 +49,7 @@
 //ios/chrome/test/data/policy/pref_mapping/DownloadRestrictions.json
 //ios/chrome/test/data/policy/pref_mapping/EditBookmarksEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/EnableExperimentalPolicies.json
+//ios/chrome/test/data/policy/pref_mapping/EnableProxyOverrideRulesForAllUsers.json
 //ios/chrome/test/data/policy/pref_mapping/EnterpriseRealTimeUrlCheckMode.json
 //ios/chrome/test/data/policy/pref_mapping/FilePickerChooseFromDriveSettings.json
 //ios/chrome/test/data/policy/pref_mapping/GeminiActOnWebAllowedForURLs.json

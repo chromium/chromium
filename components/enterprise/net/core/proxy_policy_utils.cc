@@ -19,13 +19,25 @@
 namespace enterprise_net {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 bool IsDeviceManaged(const policy::PolicyMap& policies) {
   // Note: On Android, `AndroidManagementStatusProvider` caches the EMM
   // management state in `local_state` (`kEnterpriseMDMManagementAndroid`) and
   // refreshes it asynchronously via JNI on startup. On the very first cold run
   // before the cache is populated, this may return false until the next policy
   // refresh or browser restart.
+  //
+  // On iOS, `DeviceManagementStatusProvider` is uncached (`RequiresCache() ==
+  // false`) and synchronously checks `NSUserDefaults` for
+  // `kPolicyLoaderIOSConfigurationKey` ("com.apple.configuration.managed"),
+  // returning `EnterpriseManagementAuthority::CLOUD`
+  // (`ManagementAuthorityTrustworthiness::TRUSTED`) when MDM AppConfig is
+  // present—so unlike Android, there is no cold-start `local_state` cache race.
+  // MDM policies loaded via `PolicyLoaderIOS` are set at
+  // `POLICY_SCOPE_MACHINE`, so MDM-managed devices without CBCM device
+  // affiliation IDs enforce affiliation on `POLICY_SCOPE_USER` cloud policies
+  // unless `EnableProxyOverrideRulesForAllUsers` is set to `1` at
+  // `POLICY_SCOPE_MACHINE` (via MDM or CBCM).
   return !policies.GetDeviceAffiliationIds().empty() ||
          policy::PlatformManagementService::GetInstance()
                  ->GetManagementAuthorityTrustworthiness() >=
@@ -73,6 +85,6 @@ bool CheckUserAffiliatedProxyPolicy(const policy::PolicyMap& policies,
   return true;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_ANDROID)
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace enterprise_net

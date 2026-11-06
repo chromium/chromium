@@ -185,7 +185,7 @@ TEST_F(ProxyProvisioningDomainsPolicyHandlerTest, InvalidSchemaRejected) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 class ProxyProvisioningDomainsPolicyHandlerAffiliationTest
     : public testing::TestWithParam<std::tuple<bool /*affiliated*/,
                                                bool /*user_scope*/,
@@ -436,7 +436,7 @@ TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
   EXPECT_TRUE(errors.empty());
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_ANDROID)
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace enterprise_net

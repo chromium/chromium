@@ -11,6 +11,7 @@ features:
   per_profile: false
 future_on:
 - android
+- ios
 supported_on:
 - chrome.*:145-
 owners:
