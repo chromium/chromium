@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "ui/compositor/layer.h"
@@ -63,7 +62,10 @@ OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
     LocationBar* location_bar,
     OmniboxPopupPresenterDelegate& presenter_delegate,
     OmniboxController* controller)
-    : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
+    : OmniboxPopupPresenterBase(location_bar,
+                                presenter_delegate,
+                                controller,
+                                OmniboxPopupContentConfig::ForFull()) {
   // `location_bar` may be null in unit tests, which run without content.
   if (location_bar) {
     ApplyWebUIContentCreationStrategy(WebUIContentCreationStrategy::kEager);
@@ -203,7 +205,7 @@ void OmniboxPopupFullPresenter::Hide() {
     }
   }
   OmniboxPopupPresenterBase::Hide();
-  if (ShouldApplyHeightWorkarounds()) {
+  if (config().height_workarounds) {
     // Reset the cached height to force a layout update when the popup is
     // reshown. This prevents the popup from temporarily using a stale size
     // from its previous state.
@@ -312,42 +314,6 @@ std::string_view OmniboxPopupFullPresenter::GetPopupMetricPrefix() const {
   return OmniboxPopupPresenterBase::kFullWebUIPopupMetricPrefix;
 }
 
-std::optional<base::TimeDelta>
-OmniboxPopupFullPresenter::ShouldDeferUntilVisualStateReady() const {
-  if (!base::FeatureList::IsEnabled(
-          omnibox::kOmniboxFullWebUIDeferShowUntilVisualStateReady)) {
-    return std::nullopt;
-  }
-  return base::Milliseconds(
-      omnibox::kOmniboxFullWebUIDeferShowUntilVisualStateReadyTimeoutMs.Get());
-}
-
-bool OmniboxPopupFullPresenter::ShouldDebounceResize() const {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxFullWebUIDebounceResize);
-}
-
-bool OmniboxPopupFullPresenter::ShouldApplyHeightWorkarounds() const {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxFullWebUIHeightWorkarounds);
-}
-
-bool OmniboxPopupFullPresenter::ShouldDetachWebContentsOnHide() const {
-  return base::FeatureList::IsEnabled(
-      omnibox::kOmniboxFullWebUIDetachWebContentsOnHide);
-}
-
-bool OmniboxPopupFullPresenter::ShouldEvictOnHide() const {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxFullWebUIEvictOnHide);
-}
-
-bool OmniboxPopupFullPresenter::ShouldSizeWebViewToPreferredHeight() const {
-  return base::FeatureList::IsEnabled(
-      omnibox::kOmniboxFullWebUISizeWebViewToPreferredHeight);
-}
-
-bool OmniboxPopupFullPresenter::ShouldDrawShadowInWebUI() const {
-  return omnibox::ShouldDrawFullPopupShadowInWebUI();
-}
-
 std::unique_ptr<RoundedOmniboxResultsFrame>
 OmniboxPopupFullPresenter::CreateResultsFrame(
     std::unique_ptr<views::View> contents,
@@ -415,7 +381,7 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   CHECK(results_frame);
   const gfx::Insets shadow_margin = GetShadowMargin();
   results_frame->SetShadowMargin(shadow_margin);
-  const bool shadow_in_webui = ShouldDrawShadowInWebUI();
+  const bool shadow_in_webui = config().draw_shadow_in_webui;
   if (!shadow_in_webui) {
     const bool has_results = content_height_ > default_height;
     results_frame->SetElevation(

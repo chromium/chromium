@@ -39,22 +39,36 @@ BASE_FEATURE(kTestDeferWebUIContentCreation, base::FEATURE_DISABLED_BY_DEFAULT);
                                            TestTimeouts::action_timeout());
 }
 
+// The content config the test presenters use unless a test needs otherwise.
+OmniboxPopupContentConfig TestConfig() {
+  return {
+      .detach_on_hide = true,
+      .debounce_resize = true,
+      .height_workarounds = true,
+      .size_webview_to_preferred_height = true,
+  };
+}
+
+// `TestConfig()`, with the popup painting its own drop shadow in the page.
+OmniboxPopupContentConfig TestShadowConfig() {
+  OmniboxPopupContentConfig config = TestConfig();
+  config.draw_shadow_in_webui = true;
+  return config;
+}
+
 }  // namespace
 
 class TestOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
  public:
-  using OmniboxPopupPresenterBase::OmniboxPopupPresenterBase;
+  TestOmniboxPopupPresenter(LocationBar* location_bar,
+                            OmniboxPopupPresenterDelegate& presenter_delegate,
+                            OmniboxController* controller,
+                            OmniboxPopupContentConfig config)
+      : OmniboxPopupPresenterBase(location_bar,
+                                  presenter_delegate,
+                                  controller,
+                                  config) {}
   using OmniboxPopupPresenterBase::OnPromptRemoved;
-
-  std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
-      const override {
-    return std::nullopt;
-  }
-  bool ShouldDebounceResize() const override { return true; }
-  bool ShouldApplyHeightWorkarounds() const override { return true; }
-  bool ShouldDetachWebContentsOnHide() const override { return true; }
-  bool ShouldEvictOnHide() const override { return false; }
-  bool ShouldSizeWebViewToPreferredHeight() const override { return true; }
 
   std::string_view GetPopupMetricPrefix() const override {
     return "TestPrefix";
@@ -65,9 +79,14 @@ class TestOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
 // layer reserves the shadow margin around the content.
 class TestShadowOmniboxPopupPresenter : public TestOmniboxPopupPresenter {
  public:
-  using TestOmniboxPopupPresenter::TestOmniboxPopupPresenter;
-
-  bool ShouldDrawShadowInWebUI() const override { return true; }
+  TestShadowOmniboxPopupPresenter(
+      LocationBar* location_bar,
+      OmniboxPopupPresenterDelegate& presenter_delegate,
+      OmniboxController* controller)
+      : TestOmniboxPopupPresenter(location_bar,
+                                  presenter_delegate,
+                                  controller,
+                                  TestShadowConfig()) {}
 };
 
 // Presenter that defers its content and never creates it, so that each
@@ -106,17 +125,19 @@ class TestCreateOnFocusPresenter : public TestCountingDeferredPresenter {
 
 class TestDeferredOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
  public:
-  using OmniboxPopupPresenterBase::OmniboxPopupPresenterBase;
-
-  std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
-      const override {
-    return base::Milliseconds(100);
-  }
-  bool ShouldDebounceResize() const override { return true; }
-  bool ShouldApplyHeightWorkarounds() const override { return true; }
-  bool ShouldDetachWebContentsOnHide() const override { return true; }
-  bool ShouldEvictOnHide() const override { return false; }
-  bool ShouldSizeWebViewToPreferredHeight() const override { return true; }
+  TestDeferredOmniboxPopupPresenter(
+      LocationBar* location_bar,
+      OmniboxPopupPresenterDelegate& presenter_delegate,
+      OmniboxController* controller)
+      : OmniboxPopupPresenterBase(
+            location_bar,
+            presenter_delegate,
+            controller,
+            {.detach_on_hide = true,
+             .debounce_resize = true,
+             .height_workarounds = true,
+             .size_webview_to_preferred_height = true,
+             .defer_until_visual_state = base::Milliseconds(100)}) {}
 
   std::string_view GetPopupMetricPrefix() const override {
     return "TestPrefix";
@@ -155,7 +176,7 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
     controller_ = std::make_unique<OmniboxController>(std::move(client));
 
     presenter_ = std::make_unique<TestOmniboxPopupPresenter>(
-        nullptr, dummy_delegate_, controller_.get());
+        nullptr, dummy_delegate_, controller_.get(), TestConfig());
 
     views::Widget::InitParams params(
         views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -234,7 +255,7 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
   CreatePresenterAfterWindowPresentation(
       OmniboxPopupPresenterDelegate& delegate) {
     auto presenter = std::make_unique<TestCountingDeferredPresenter>(
-        nullptr, delegate, controller_.get());
+        nullptr, delegate, controller_.get(), TestConfig());
     presenter->ApplyWebUIContentCreationStrategy(
         Strategy::kAfterWindowPresentation);
     return presenter;
@@ -489,7 +510,7 @@ TEST_F(OmniboxPopupPresenterBaseTest, ContentHeightExcludesShadowMargin) {
 
 TEST_F(OmniboxPopupPresenterBaseTest, ContentHeightUnchangedWithoutShadow) {
   auto presenter = std::make_unique<TestOmniboxPopupPresenter>(
-      nullptr, dummy_delegate_, controller_.get());
+      nullptr, dummy_delegate_, controller_.get(), TestConfig());
 
   presenter->OnContentHeightChanged(400);
 
@@ -555,7 +576,7 @@ TEST_F(OmniboxPopupPresenterBaseTest, RedundantHideDoesNotDiscardWidget) {
 // only that one task, and none of them creates the content inline.
 TEST_F(OmniboxPopupPresenterBaseTest, BrowserWindowPresentationPostsOneTask) {
   auto presenter = std::make_unique<TestCountingDeferredPresenter>(
-      nullptr, dummy_delegate_, controller_.get());
+      nullptr, dummy_delegate_, controller_.get(), TestConfig());
 
   presenter->OnBrowserWindowPresented();
   presenter->OnBrowserWindowPresented();
@@ -595,7 +616,7 @@ TEST_F(OmniboxPopupPresenterBaseTest,
 TEST_F(OmniboxPopupPresenterBaseTest,
        OnOmniboxFocusCreatesContentWhenFocusedAfterPresentation) {
   auto presenter = std::make_unique<TestCountingDeferredPresenter>(
-      nullptr, dummy_delegate_, controller_.get());
+      nullptr, dummy_delegate_, controller_.get(), TestConfig());
   presenter->ApplyWebUIContentCreationStrategy(Strategy::kOnOmniboxFocus);
 
   presenter->OnBrowserWindowPresented();
@@ -612,7 +633,7 @@ TEST_F(OmniboxPopupPresenterBaseTest,
 TEST_F(OmniboxPopupPresenterBaseTest,
        OnOmniboxFocusDefersEarlyFocusUntilPresentation) {
   auto presenter = std::make_unique<TestCountingDeferredPresenter>(
-      nullptr, dummy_delegate_, controller_.get());
+      nullptr, dummy_delegate_, controller_.get(), TestConfig());
   presenter->ApplyWebUIContentCreationStrategy(Strategy::kOnOmniboxFocus);
 
   presenter->OnOmniboxFocused();
@@ -630,7 +651,7 @@ TEST_F(OmniboxPopupPresenterBaseTest,
 TEST_F(OmniboxPopupPresenterBaseTest, AppliesDeferredStrategyOverride) {
   base::test::ScopedFeatureList features(kTestDeferWebUIContentCreation);
   auto presenter = std::make_unique<TestCreateOnFocusPresenter>(
-      nullptr, dummy_delegate_, controller_.get());
+      nullptr, dummy_delegate_, controller_.get(), TestConfig());
   presenter->ApplyWebUIContentCreationStrategy(kTestDeferWebUIContentCreation);
 
   presenter->OnBrowserWindowPresented();

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 
 #include <memory>
-#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -28,7 +27,10 @@ OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
     LocationBar* location_bar,
     OmniboxController* controller,
     OmniboxPopupPresenterDelegate& presenter_delegate)
-    : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
+    : OmniboxPopupPresenterBase(location_bar,
+                                presenter_delegate,
+                                controller,
+                                OmniboxPopupContentConfig::ForAim()) {
   // If the content is not created here, it is created on demand by `Show()`
   // or by the classic popup's context menu, which needs the AIM WebContents.
   ApplyWebUIContentCreationStrategy(omnibox::kOmniboxAimPopupDeferCreation);
@@ -88,45 +90,10 @@ void OmniboxPopupAimPresenter::LogResultToContentReadyMetric(
   // telemetry.
 }
 
-std::optional<base::TimeDelta>
-OmniboxPopupAimPresenter::ShouldDeferUntilVisualStateReady() const {
-  if (!omnibox::ShouldDeferAimShowUntilVisualStateReady()) {
-    return std::nullopt;
-  }
-  return base::Milliseconds(
-      omnibox::kOmniboxAimDeferShowUntilVisualStateReadyTimeoutMs.Get());
-}
-
-bool OmniboxPopupAimPresenter::ShouldDebounceResize() const {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxAimDebounceResize);
-}
-
-bool OmniboxPopupAimPresenter::ShouldApplyHeightWorkarounds() const {
-  return omnibox::ShouldApplyAimHeightWorkarounds();
-}
-
-bool OmniboxPopupAimPresenter::ShouldDetachWebContentsOnHide() const {
-  return base::FeatureList::IsEnabled(
-      omnibox::kOmniboxAimDetachWebContentsOnHide);
-}
-
-bool OmniboxPopupAimPresenter::ShouldEvictOnHide() const {
-  return omnibox::ShouldAimEvictOnHide();
-}
-
 bool OmniboxPopupAimPresenter::ShouldDestroyWidgetOnHide() const {
   return base::FeatureList::IsEnabled(
              omnibox::kOmniboxAimDestroyWidgetOnHide) ||
          OmniboxPopupPresenterBase::ShouldDestroyWidgetOnHide();
-}
-
-bool OmniboxPopupAimPresenter::ShouldSizeWebViewToPreferredHeight() const {
-  return base::FeatureList::IsEnabled(
-      omnibox::kOmniboxAimSizeWebViewToPreferredHeight);
-}
-
-bool OmniboxPopupAimPresenter::ShouldDrawShadowInWebUI() const {
-  return omnibox::ShouldDrawAimShadowInWebUI();
 }
 
 void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,

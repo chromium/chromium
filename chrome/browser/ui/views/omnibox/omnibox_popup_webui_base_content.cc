@@ -229,7 +229,7 @@ void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
 
   if (popup_presenter_) {
     width = std::max(width, popup_presenter_->get_minimum_size().width());
-    if (popup_presenter_->ShouldDrawShadowInWebUI()) {
+    if (popup_presenter_->config().draw_shadow_in_webui) {
       // The WebView spans the whole widget, shadow margin included, and the
       // page reserves that margin in its own layout. The renderer viewport
       // must match the WebView or the content would be laid out narrower than
@@ -385,12 +385,12 @@ void OmniboxPopupWebUIBaseContent::ResizeDueToAutoResize(
   const bool is_resizing = is_window_resizing_;
   is_window_resizing_ = false;
 
-  if (popup_presenter_->ShouldDeferUntilVisualStateReady().has_value() ||
-      is_resizing || !popup_presenter_->ShouldDebounceResize()) {
+  if (popup_presenter_->config().defer_until_visual_state.has_value() ||
+      is_resizing || !popup_presenter_->config().debounce_resize) {
     debounce_resize_timer_.Stop();
     popup_presenter_->OnContentHeightChanged(new_size.height());
   } else {
-        // Debounce the resize event by 2 frame's time (assuming 60 Hz) to avoid
+    // Debounce the resize event by 2 frame's time (assuming 60 Hz) to avoid
     // flickering issues when the renderer sends a transient initial size.
     // The issue is manifested as the popup being clipped at the top.
     // This happens when:
@@ -551,7 +551,7 @@ void OmniboxPopupWebUIBaseContent::AdoptContents() {
 void OmniboxPopupWebUIBaseContent::BindContentsToWindow() {
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
-  if (popup_presenter_->ShouldEvictOnHide()) {
+  if (popup_presenter_->config().evict_on_hide) {
     if (auto* rwhv =
             contents_wrapper_->web_contents()->GetRenderWidgetHostView()) {
       rwhv->SetEvictOnHide(true);
@@ -625,7 +625,7 @@ void OmniboxPopupWebUIBaseContent::Detach() {
       }
     }
   }
-  if (!popup_presenter_->ShouldDetachWebContentsOnHide()) {
+  if (!popup_presenter_->config().detach_on_hide) {
     return;
   }
   if (popup_presenter_->IsShown()) {
@@ -767,16 +767,16 @@ void OmniboxPopupWebUIBaseContent::OnFileChooserClosed() {
 }
 
 bool OmniboxPopupWebUIBaseContent::ShouldApplyHeightWorkarounds() const {
-  return !popup_presenter_ || popup_presenter_->ShouldApplyHeightWorkarounds();
+  return !popup_presenter_ || popup_presenter_->config().height_workarounds;
 }
 
 bool OmniboxPopupWebUIBaseContent::ShouldSizeWebViewToPreferredHeight() const {
   return popup_presenter_ &&
-         popup_presenter_->ShouldSizeWebViewToPreferredHeight();
+         popup_presenter_->config().size_webview_to_preferred_height;
 }
 
 bool OmniboxPopupWebUIBaseContent::ShouldDrawShadowInWebUI() const {
-  return popup_presenter_ && popup_presenter_->ShouldDrawShadowInWebUI();
+  return popup_presenter_ && popup_presenter_->config().draw_shadow_in_webui;
 }
 
 bool OmniboxPopupWebUIBaseContent::is_full_webui_omnibox() const {

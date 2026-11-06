@@ -372,7 +372,7 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   // overrides any OS-default focus selection (such as macOS Select-All).
   if (target_popup_state == OmniboxPopupState::kFull) {
     if (presenter()) {
-      if (presenter()->ShouldApplyHeightWorkarounds()) {
+      if (presenter()->config().height_workarounds) {
         // Reset cached height to 1 on tab switch. This forces
         // `OmniboxPopupFullPresenter::SynchronizePopupBounds` to fall back to
         // `default_height` (the single location bar height) and drop

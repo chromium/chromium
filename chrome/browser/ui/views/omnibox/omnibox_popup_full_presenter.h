@@ -62,15 +62,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void RequestFocus() override;
   std::string_view GetPopupMetricPrefix() const override;
 
-  std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
-      const override;
-  bool ShouldDebounceResize() const override;
-  bool ShouldApplyHeightWorkarounds() const override;
-  bool ShouldDetachWebContentsOnHide() const override;
-  bool ShouldEvictOnHide() const override;
-  bool ShouldSizeWebViewToPreferredHeight() const override;
-  bool ShouldDrawShadowInWebUI() const override;
-
   bool ShouldReceiveFocus() const override;
 
  protected:

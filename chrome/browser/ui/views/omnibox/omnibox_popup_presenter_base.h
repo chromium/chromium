@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_content_config.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -100,7 +101,8 @@ class OmniboxPopupPresenterBase
   explicit OmniboxPopupPresenterBase(
       LocationBar* location_bar,
       OmniboxPopupPresenterDelegate& presenter_delegate,
-      OmniboxController* controller);
+      OmniboxController* controller,
+      OmniboxPopupContentConfig config);
   OmniboxPopupPresenterBase(const OmniboxPopupPresenterBase&) = delete;
   OmniboxPopupPresenterBase& operator=(const OmniboxPopupPresenterBase&) =
       delete;
@@ -188,31 +190,8 @@ class OmniboxPopupPresenterBase
   // the page loads while the user types without delaying window presentation.
   virtual void OnOmniboxFocused();
 
-  // Returns the timeout if showing should be deferred until the WebUI has
-  // painted a new frame, or std::nullopt if it should not be deferred.
-  virtual std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
-      const = 0;
-
-  // Returns whether resize events should be debounced.
-  virtual bool ShouldDebounceResize() const = 0;
-
-  // Returns whether height workarounds should be applied.
-  virtual bool ShouldApplyHeightWorkarounds() const = 0;
-  // Returns if the WebContents should be detached when the popup is hidden.
-  virtual bool ShouldDetachWebContentsOnHide() const = 0;
-
-  // Returns whether the popup should evict its saved compositor frame when
-  // hidden.
-  virtual bool ShouldEvictOnHide() const = 0;
-
-  // Returns if the child WebView bounds should be sized to its preferred
-  // height in RoundedOmniboxResultsFrame.
-  virtual bool ShouldSizeWebViewToPreferredHeight() const = 0;
-
-  // Returns whether the popup's drop shadow is painted by the page rather than
-  // by the results frame. When true the frame paints nothing and the WebView
-  // is expanded to cover the shadow margin.
-  virtual bool ShouldDrawShadowInWebUI() const;
+  // Returns the per-popup content behavior this presenter was created with.
+  const OmniboxPopupContentConfig& config() const { return config_; }
 
   // Returns whether the popup's page has completed its first visually
   // non-empty paint. `LocationBarView` drops its native focus ring under the
@@ -505,6 +484,7 @@ class OmniboxPopupPresenterBase
   std::vector<std::unique_ptr<views::Widget>> widgets_pending_deletion_;
 
   const raw_ptr<OmniboxController> controller_;
+  const OmniboxPopupContentConfig config_;
 
   // True if `ShowWidget()` execution is currently being deferred until the
   // WebUI has produced a new frame.

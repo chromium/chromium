@@ -415,8 +415,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
 
   // When the page paints the shadow, the height it reports always includes its
   // full vertical shadow padding.
-  const int reported_shadow_height =
-      presenter->ShouldDrawShadowInWebUI() ? full_shadow_insets.height() : 0;
+  const int reported_shadow_height = presenter->config().draw_shadow_in_webui
+                                         ? full_shadow_insets.height()
+                                         : 0;
 
   // Collapsed state: widget bounds exclude the bottom shadow margin.
   presenter->OnContentHeightChanged(collapsed_content_height +

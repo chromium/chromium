@@ -7,7 +7,6 @@
 
 #include <cstddef>
 #include <memory>
-#include <optional>
 #include <string_view>
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -39,14 +38,7 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   void WidgetDestroyed() override;
   bool ShouldShowLocationBarCutout() const override;
   bool ShouldHideForInitialLayout() const override;
-  std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
-      const override;
-  bool ShouldDebounceResize() const override;
-  bool ShouldApplyHeightWorkarounds() const override;
-  bool ShouldDetachWebContentsOnHide() const override;
-  bool ShouldEvictOnHide() const override;
   bool ShouldDestroyWidgetOnHide() const override;
-  bool ShouldSizeWebViewToPreferredHeight() const override;
   std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
       std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
   WebUIContentCreationStrategy GetDeferredWebUIContentCreationStrategy()

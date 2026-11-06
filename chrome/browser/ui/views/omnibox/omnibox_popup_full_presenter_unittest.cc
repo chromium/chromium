@@ -80,6 +80,11 @@ class OmniboxPopupFullPresenterTest : public views::ViewsTestBase {
     auto client = std::make_unique<TestOmniboxClient>();
     controller_ = std::make_unique<OmniboxController>(std::move(client));
 
+    ResetPresenter();
+  }
+
+  void ResetPresenter() {
+    widget_ptr_ = nullptr;
     presenter_ = std::make_unique<TestOmniboxPopupFullPresenter>(
         dummy_delegate_, controller_.get());
 
@@ -109,6 +114,7 @@ class OmniboxPopupFullPresenterTest : public views::ViewsTestBase {
 TEST_F(OmniboxPopupFullPresenterTest, ResetsContentHeightOnHideWhenEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kOmniboxFullWebUIHeightWorkarounds);
+  ResetPresenter();
 
   presenter_->set_content_height(400);
   EXPECT_EQ(presenter_->content_height(), 400);
@@ -122,6 +128,7 @@ TEST_F(OmniboxPopupFullPresenterTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       omnibox::kOmniboxFullWebUIHeightWorkarounds);
+  ResetPresenter();
 
   presenter_->set_content_height(400);
   EXPECT_EQ(presenter_->content_height(), 400);
@@ -137,6 +144,7 @@ TEST_F(OmniboxPopupFullPresenterTest,
       /*enabled_features=*/{omnibox::
                                 kOmniboxFullWebUISizeWebViewToPreferredHeight},
       /*disabled_features=*/{omnibox::kOmniboxFullWebUIHeightWorkarounds});
+  ResetPresenter();
 
   presenter_->set_content_height(400);
   EXPECT_EQ(presenter_->content_height(), 400);
@@ -151,6 +159,7 @@ TEST_F(OmniboxPopupFullPresenterTest, ShadowMarginDropsBottomWhenCollapsed) {
       /*enabled_features=*/{omnibox::internal::kWebUIOmniboxFullPopup,
                             omnibox::kOmniboxFullWebUIShadow},
       /*disabled_features=*/{});
+  ResetPresenter();
 
   const gfx::Insets full_insets = RoundedOmniboxResultsFrame::GetShadowInsets();
   gfx::Insets collapsed_insets = full_insets;
