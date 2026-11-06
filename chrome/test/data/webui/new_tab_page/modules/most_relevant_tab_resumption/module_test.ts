@@ -10,7 +10,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -74,7 +73,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
                               0) as MostRelevantTabResumptionModuleElement;
     document.body.append(moduleElement);
 
-    await waitAfterNextRender(document.body);
+    await microtasksFinished();
     return moduleElement;
   }
 

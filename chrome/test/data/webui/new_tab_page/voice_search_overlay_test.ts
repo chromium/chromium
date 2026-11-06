@@ -10,7 +10,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -91,7 +90,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     voiceSearchOverlay = document.createElement('ntp-voice-search-overlay');
     document.body.appendChild(voiceSearchOverlay);
-    await flushTasks();
+    await microtasksFinished();
   });
 
   test('creating overlay opens native dialog', () => {
@@ -508,7 +507,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     document.body.removeChild(voiceSearchOverlay);
     voiceSearchOverlay = document.createElement('ntp-voice-search-overlay');
     document.body.appendChild(voiceSearchOverlay);
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify fallback error when speech recognition ends unexpectedly without
     // final results (maps to AUDIO_CAPTURE / bucket 1).

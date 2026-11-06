@@ -642,14 +642,11 @@ webui_ts_library("build_ts") {
     "trusted_html.ts",
   ]
 
-  if (!is_android || enable_webui_ntp) {
-    in_files += [ "polymer_test_util.ts" ]
-  }
-
   if (!is_android) {
     in_files += [
       "fake_settings_private.ts",
       "mocked_metrics_reporter.ts",
+      "polymer_test_util.ts",
       "test_api.ts",
       "test_store.ts",
     ]
@@ -671,7 +668,7 @@ webui_ts_library("build_ts") {
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
-  if (!is_android || enable_webui_ntp) {
+  if (!is_android) {
     deps += [ "//third_party/polymer/v3_0:library" ]
   }
 
