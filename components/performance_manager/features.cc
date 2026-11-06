@@ -276,6 +276,11 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kDisablePeriodicUnfreezeOnCriticalMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(int,
+                   kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent,
+                   &kDisablePeriodicUnfreezeOnCriticalMemoryPressure,
+                   5);
+
 BASE_FEATURE(kDiscardOnCommitLimit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,

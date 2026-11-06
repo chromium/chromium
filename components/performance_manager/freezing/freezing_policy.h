@@ -72,12 +72,6 @@ class FreezingPolicy : public PageNodeObserver,
   using FreezingTypeSet = base::
       EnumSet<FreezingType, FreezingType::kVoting, FreezingType::kInfiniteTabs>;
 
-  enum class InfiniteTabFreezingStatus {
-    kInactive,
-    kActiveWithPeriodicUnfreezing,
-    kActiveWithoutPeriodicUnfreezing,
-  };
-
   explicit FreezingPolicy(
       std::unique_ptr<freezing::Discarder> discarder,
       std::unique_ptr<freezing::OptOutChecker> opt_out_checker = nullptr);
@@ -93,8 +87,12 @@ class FreezingPolicy : public PageNodeObserver,
   bool IsPeriodicUnfreezeTimerRunningForTesting(
       const PageNode* page_node) const;
 
-  // Updates the infinite-tab freezing status for testing.
-  void SetInfiniteTabFreezingStatusForTesting(InfiniteTabFreezingStatus status);
+  // Updates infinite-tab freezing state from a sampled available physical
+  // memory percentage (`[0, 100]`).
+  void UpdateStateFromAvailableMemoryPercentForTesting(
+      int available_memory_percent);
+
+  void StopMemoryCheckTimerForTesting() { memory_check_timer_.Stop(); }
 
   // Invoked freezing on battery saver is enabled or disabled.
   void ToggleFreezingOnBatterySaverMode(bool is_enabled);
@@ -118,6 +116,12 @@ class FreezingPolicy : public PageNodeObserver,
  private:
   FRIEND_TEST_ALL_PREFIXES(FreezingPolicyBatterySaverTest,
                            RecordFreezingEligibilityUKMForPageStatic);
+
+  enum class InfiniteTabFreezingStatus {
+    kInactive,
+    kActiveWithPeriodicUnfreezing,
+    kActiveWithoutPeriodicUnfreezing,
+  };
 
   class CanFreezePerTypeTracker;
 
@@ -308,9 +312,13 @@ class FreezingPolicy : public PageNodeObserver,
   // eliminate randomness.
   virtual base::LiveTicks GenerateRandomPeriodicUnfreezePhase() const;
 
-  // Called when the memory pressure state of the system is updated. Triggers a
-  // policy-wide re-evaluation of page freezing.
-  void CheckMemoryPressureForFreezing();
+  // Periodically invoked by `memory_check_timer_` to sample available physical
+  // memory and update infinite-tab freezing state.
+  void CheckAvailableMemory();
+
+  // Computes the new `InfiniteTabFreezingStatus` from
+  // `available_memory_percent` (`[0, 100]`) and updates policy state.
+  void UpdateStateFromAvailableMemoryPercent(int available_memory_percent);
 
   // Updates the cached infinite-tab freezing status and reconciles policy
   // state.

@@ -38,10 +38,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "components/memory_pressure/threshold_memory_pressure_evaluator.h"
-#endif
-
 namespace performance_manager {
 
 namespace {
@@ -275,7 +271,7 @@ FreezingPolicy::FreezingPolicy(
     memory_check_timer_.Start(
         FROM_HERE,
         features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get(), this,
-        &FreezingPolicy::CheckMemoryPressureForFreezing);
+        &FreezingPolicy::CheckAvailableMemory);
   }
 #endif
 }
@@ -287,12 +283,9 @@ bool FreezingPolicy::IsPeriodicUnfreezeTimerRunningForTesting(
   return GetFreezingState(page_node).periodic_unfreeze_timer.IsRunning();
 }
 
-void FreezingPolicy::SetInfiniteTabFreezingStatusForTesting(
-    InfiniteTabFreezingStatus status) {
-#if BUILDFLAG(IS_WIN)
-  memory_check_timer_.Stop();
-#endif
-  SetInfiniteTabFreezingStatus(status);
+void FreezingPolicy::UpdateStateFromAvailableMemoryPercentForTesting(
+    int available_memory_percent) {
+  UpdateStateFromAvailableMemoryPercent(available_memory_percent);
 }
 
 void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
@@ -1467,20 +1460,13 @@ base::LiveTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
                     .InMilliseconds()));
 }
 
-void FreezingPolicy::CheckMemoryPressureForFreezing() {
+void FreezingPolicy::CheckAvailableMemory() {
 #if BUILDFLAG(IS_WIN)
   base::SystemMemoryInfo info;
   if (!base::GetSystemMemoryInfo(&info)) {
     // Cannot get system memory info, do nothing.
     return;
   }
-
-  // The moderate pressure threshold value is lifted from the default logic in
-  // SystemMemoryPressureEvaluator. It was determined experimentally to ensure
-  // sufficient responsiveness of the memory pressure subsystem with minimal
-  // overhead.
-  const int kPressureThresholdPercent =
-      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
 
   base::ByteSize total = info.total;
   base::ByteSize avail = info.avail_phys;
@@ -1491,23 +1477,33 @@ void FreezingPolicy::CheckMemoryPressureForFreezing() {
         static_cast<int>(avail.InBytesF() / total.InBytesF() * 100.0);
   }
 
+  UpdateStateFromAvailableMemoryPercent(available_percent);
+
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+void FreezingPolicy::UpdateStateFromAvailableMemoryPercent(
+    int available_memory_percent) {
+  // The moderate pressure threshold value is lifted from the default logic in
+  // SystemMemoryPressureEvaluator. It was determined experimentally to ensure
+  // sufficient responsiveness of the memory pressure subsystem with minimal
+  // overhead.
+  const int freeze_threshold_percent =
+      features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
+  const int critical_threshold_percent =
+      features::kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent.Get();
+
   const bool is_active =
       base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing) ||
       (base::FeatureList::IsEnabled(
            features::kInfiniteTabsFreezingOnMemoryPressure) &&
-       (available_percent < kPressureThresholdPercent ||
-        avail <= memory_pressure::ThresholdMemoryPressureEvaluator::
-                     kDefaultWinCriticalThreshold));
+       available_memory_percent < freeze_threshold_percent);
 
   InfiniteTabFreezingStatus new_status = InfiniteTabFreezingStatus::kInactive;
   if (is_active) {
-    // TODO(b/466015017): Standardize memory pressure handling and remove this
-    // direct dependency on //components/memory_pressure once the experiment
-    // concludes.
     if (base::FeatureList::IsEnabled(
             features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure) &&
-        avail <= memory_pressure::ThresholdMemoryPressureEvaluator::
-                     kDefaultWinCriticalThreshold) {
+        available_memory_percent < critical_threshold_percent) {
       new_status = InfiniteTabFreezingStatus::kActiveWithoutPeriodicUnfreezing;
     } else {
       new_status = InfiniteTabFreezingStatus::kActiveWithPeriodicUnfreezing;
@@ -1515,8 +1511,6 @@ void FreezingPolicy::CheckMemoryPressureForFreezing() {
   }
 
   SetInfiniteTabFreezingStatus(new_status);
-
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 void FreezingPolicy::SetInfiniteTabFreezingStatus(

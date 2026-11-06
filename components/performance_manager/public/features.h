@@ -236,6 +236,12 @@ BASE_DECLARE_FEATURE_PARAM(int, kInfiniteTabsFreezingOnMemoryPressurePercent);
 // critical memory pressure.
 BASE_DECLARE_FEATURE(kDisablePeriodicUnfreezeOnCriticalMemoryPressure);
 
+// The available physical memory percentage below which periodic unfreezing is
+// disabled when `kDisablePeriodicUnfreezeOnCriticalMemoryPressure` is enabled.
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kDisablePeriodicUnfreezeOnCriticalMemoryPressurePercent);
+
 // If enabled, tabs may be discarded on Windows when the system approaches the
 // commit limit.
 BASE_DECLARE_FEATURE(kDiscardOnCommitLimit);
