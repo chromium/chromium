@@ -140,7 +140,6 @@ class ConditionalFocusInteractiveUiTest : public WebRtcTestBase {
                FocusEnumValue focus_enum_value,
                bool on_correct_microtask = true,
                const std::string& expected_result = "capture-success") {
-    std::string script_result;
     EXPECT_EQ(content::EvalJs(
                   capturing_tab_->GetPrimaryMainFrame(),
                   base::StringPrintf("captureOtherTab(%d, '%s', %s);",

@@ -121,8 +121,6 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnWeb
 // with the expected page classification.
 IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
                        StartPrefetch) {
-  const std::string srp_url = "https://www.google.com/search?q=hello+world";
-  const std::string web_url = "https://www.example.com";
   auto input_is_correct = [](const AutocompleteInput& input) {
     return input.current_page_classification() ==
                metrics::OmniboxEventProto::NTP_ZPS_PREFETCH &&
@@ -174,7 +172,6 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
 IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
                        StartPrefetch) {
   const std::string srp_url = "https://www.google.com/search?q=hello+world";
-  const std::string web_url = "https://www.example.com";
   auto input_is_correct = [](const AutocompleteInput& input) {
     return input.current_page_classification() ==
                metrics::OmniboxEventProto::SRP_ZPS_PREFETCH &&
@@ -237,7 +234,6 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
 // prefetch request with the expected page classification.
 IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
                        StartPrefetch) {
-  const std::string srp_url = "https://www.google.com/search?q=hello+world";
   const std::string web_url = "https://www.example.com";
   auto input_is_correct = [](const AutocompleteInput& input) {
     return input.current_page_classification() ==

@@ -1856,7 +1856,6 @@ class NetworkContextConfigurationDataPacBrowserTest
   ~NetworkContextConfigurationDataPacBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::string contents;
     // Read in kPACScript contents.
     command_line->AppendSwitchASCII(switches::kProxyPacUrl,
                                     "data:," + GetPacScript());

@@ -247,7 +247,6 @@ TEST_F(ClientCertificateFetcherTest, ReturnsFirstCertIfMatching) {
                &FetchCertificateCallbackWrapper::OnFetchCertificateFinished,
                base::Unretained(&wrapper)));
 
-  net::ClientCertIdentityList certs;
   cert_store_ptr->SimulateCallback(GetDefaultClientCertList());
 
   EXPECT_EQ(1, wrapper.callbacks_called_);
@@ -282,7 +281,6 @@ TEST_F(ClientCertificateFetcherTest, ReturnsSecondCertIfMatching) {
                &FetchCertificateCallbackWrapper::OnFetchCertificateFinished,
                base::Unretained(&wrapper)));
 
-  net::ClientCertIdentityList certs;
   cert_store_ptr->SimulateCallback(GetDefaultClientCertList());
 
   EXPECT_EQ(1, wrapper.callbacks_called_);
@@ -316,7 +314,6 @@ TEST_F(ClientCertificateFetcherTest, ReturnsNoCertIfNoFiltersMatch) {
                &FetchCertificateCallbackWrapper::OnFetchCertificateFinished,
                base::Unretained(&wrapper)));
 
-  net::ClientCertIdentityList certs;
   cert_store_ptr->SimulateCallback(GetDefaultClientCertList());
 
   EXPECT_EQ(1, wrapper.callbacks_called_);
@@ -343,7 +340,6 @@ TEST_F(ClientCertificateFetcherTest, ReturnsNoCertIfNoFilters) {
                &FetchCertificateCallbackWrapper::OnFetchCertificateFinished,
                base::Unretained(&wrapper)));
 
-  net::ClientCertIdentityList certs;
   cert_store_ptr->SimulateCallback(GetDefaultClientCertList());
 
   EXPECT_EQ(1, wrapper.callbacks_called_);

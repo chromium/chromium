@@ -252,7 +252,6 @@ bool DialServiceImpl::DialSocket::CheckResult(const char* operation,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result < net::OK && result != net::ERR_IO_PENDING) {
     Close();
-    std::string error_str(net::ErrorToString(result));
     dial_service_->NotifyOnError();
     return false;
   }

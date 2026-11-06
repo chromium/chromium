@@ -429,7 +429,6 @@ class InteractiveGlicTestMixin : public T {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
-    const std::string kConversationId = "conversation_id_default";
     auto steps =
         Api::Steps(Api::Log("Opening glic window"), CheckGlicIsClosed(),
                    // Technically, this toggles the window, but we've

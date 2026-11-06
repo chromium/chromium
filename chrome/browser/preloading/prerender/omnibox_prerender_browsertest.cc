@@ -420,7 +420,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   InitializePrerenderManager();
 
-  std::string search_query = "prerender2";
   PrerenderQueryAndWaitForExpiring("prerender222");
 
   histogram_tester.ExpectUniqueSample(

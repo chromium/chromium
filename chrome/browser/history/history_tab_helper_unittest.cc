@@ -158,7 +158,6 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   history::MostVisitedURLList QueryMostVisitedURLs() {
     history::MostVisitedURLList result;
-    std::string title;
     base::RunLoop loop;
     history_service_->QueryMostVisitedURLs(
         /*result_count=*/10,

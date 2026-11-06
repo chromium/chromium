@@ -1142,9 +1142,6 @@ TEST_F(PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
       message_center::RichNotificationData(), /*delegate=*/nullptr);
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
 
-  std::string bucket_label =
-      permissions::NotificationsEngagementService::GetBucketLabel(
-          base::Time::Now());
   service()->HandleOnDeviceModelResponseThenMaybeDisplay(
       notification, std::move(metadata), /*should_show_warning=*/false,
       /* serialized_content_detection_metadata*/ std::nullopt);

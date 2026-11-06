@@ -224,7 +224,6 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
 
   content::EvalJsResult RequestAndRespondToPermission(
       permissions::PermissionRequestManager::AutoResponseType bubble_response) {
-    std::string result;
     content::WebContents* web_contents = GetActiveWebContents(browser());
     permissions::PermissionRequestManager::FromWebContents(web_contents)
         ->set_auto_response_for_test(bubble_response);

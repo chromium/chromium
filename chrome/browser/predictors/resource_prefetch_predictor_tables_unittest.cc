@@ -141,8 +141,6 @@ void ResourcePrefetchPredictorTablesTest::TestGetAllData() {
 }
 
 void ResourcePrefetchPredictorTablesTest::TestDeleteData() {
-  std::vector<std::string> urls_to_delete = {"http://fb.com/google",
-                                             "http://google.com"};
   std::vector<std::string> hosts_to_delete = {"microsoft.com"};
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
       &KeyValueTable<RedirectData>::DeleteData,

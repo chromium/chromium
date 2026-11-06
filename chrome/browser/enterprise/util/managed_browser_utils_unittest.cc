@@ -145,7 +145,6 @@ TEST_F(ManagedBrowserUtilsTest, WorkProfileDefaultLabel) {
 }
 
 TEST_F(ManagedBrowserUtilsTest, DefaultLabelDisabledbyPolicy) {
-  std::u16string work_label = u"Work";
   profile()->GetPrefs()->SetInteger(
       prefs::kEnterpriseProfileBadgeToolbarSettings, 1);
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);

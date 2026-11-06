@@ -313,8 +313,6 @@ DnsProbeStatus DnsProbeBrowserTest::WaitForSentStatus() {
 // Check title by roundtripping to renderer, to make sure any probe results
 // sent before this have been applied.
 std::string DnsProbeBrowserTest::Title() {
-  std::string title;
-
   WebContents* contents =
       active_browser_->tab_strip_model()->GetActiveWebContents();
 

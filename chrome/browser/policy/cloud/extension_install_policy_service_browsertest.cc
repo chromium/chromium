@@ -261,7 +261,6 @@ class ExtensionInstallPolicyServiceTest : public PolicyTest {
                            bool expected_result) {
     ExtensionInstallPolicyServiceImpl service(GetProfile());
     base::test::TestFuture<extensions::ManagementPolicy::Decision> future;
-    std::u16string error;
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder("Test Extension")
             .SetID(extension_id)

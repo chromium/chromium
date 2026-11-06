@@ -239,7 +239,6 @@ TEST_F(FromGWSNavigationAndKeepAliveRequestObserverTest,
 // The navigation URL does not have a desired category ID.
 TEST_F(FromGWSNavigationAndKeepAliveRequestObserverTest,
        DidStartNavigationWithoutCategoryId) {
-  std::string category = "invalid-prefix10";
   // Navigates to a SRP;
   auto page_url = GURL(kTestGoogleSearchUrl);
   NavigateAndCommit(page_url);

@@ -890,7 +890,6 @@ void CastActivityManager::HandleLaunchSessionResponse(
 
   mojom::RoutePresentationConnectionPtr presentation_connection;
   const std::string& client_id = cast_source.client_id();
-  std::string app_id = ChooseAppId(cast_source, params.sink);
   const auto channel_id = sink.cast_data().cast_channel_id;
   const auto destination_id = session->destination_id();
   auto media_source = MediaSource(cast_source.source_id());

@@ -3927,7 +3927,6 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
   std::string search_terms = "terms of service";
-  std::string user_input = "terms";
 
   AutocompleteMatch autocomplete_match =
       CreateSearchSuggestionMatch(search_terms, search_terms, false);
@@ -4010,7 +4009,6 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
   std::string search_terms = "terms of service";
-  std::string user_input = "terms";
 
   AutocompleteMatch autocomplete_match =
       CreateSearchSuggestionMatch(search_terms, search_terms, false);
@@ -4094,7 +4092,6 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
   std::string search_terms = "terms of service";
-  std::string user_input = "terms";
 
   AutocompleteMatch autocomplete_match =
       CreateSearchSuggestionMatch(search_terms, search_terms, false);
@@ -4414,7 +4411,6 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchHoldbackBrowserTest,
           "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
       true);
   std::string search_terms = "terms of service";
-  std::string user_input = "terms";
 
   AutocompleteMatch autocomplete_match =
       CreateSearchSuggestionMatch(search_terms, search_terms, false);
@@ -4592,7 +4588,6 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchIncognitoBrowserTest,
       SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_NE(search_prefetch_service, nullptr);
   std::string search_terms = "terms of service";
-  std::string user_input = "terms";
 
   AutocompleteMatch autocomplete_match =
       CreateSearchSuggestionMatch(search_terms, search_terms, false);

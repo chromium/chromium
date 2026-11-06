@@ -661,8 +661,6 @@ ExtensionInstallPolicyServiceImpl::GetExtensions() {
     return {};
   }
   std::set<ExtensionIdAndVersion> extensions;
-  std::string webstore_update_url =
-      extension_urls::GetWebstoreUpdateUrl().spec();
   // Include all installed extensions, even if they're already disabled.
   extensions::ExtensionSet installed_extensions =
       extension_registry->GenerateInstalledExtensionsSet();

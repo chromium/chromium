@@ -532,8 +532,6 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_GoBack2Forward2) {
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
   // The first navigation should fail, and the second one should be the error
   // page.
-  std::string url =
-      embedded_test_server()->GetURL("mock.http", "/title2.html").spec();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 
@@ -570,8 +568,6 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
 // traces indicate this may actually happen.  This test may hang on regression.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
                        DNSError_DoReloadAfterSameDocumentNavigation) {
-  std::string url =
-      embedded_test_server()->GetURL("mock.http", "/title2.html").spec();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 

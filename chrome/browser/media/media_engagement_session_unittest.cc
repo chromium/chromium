@@ -171,7 +171,6 @@ TEST_F(MediaEngagementSessionTest, IsSameOrigin) {
 // Checks that RecordShortPlaybackIgnored() records the right UKM.
 TEST_F(MediaEngagementSessionTest, RecordShortPlaybackIgnored) {
   using Entry = ukm::builders::Media_Engagement_ShortPlaybackIgnored;
-  const std::string url_string = origin().GetURL().spec();
 
   scoped_refptr<MediaEngagementSession> session = new MediaEngagementSession(
       service(), origin(), MediaEngagementSession::RestoreType::kNotRestored,
@@ -619,7 +618,6 @@ TEST_F(MediaEngagementSessionTest, CommitPendingData_UpdatePlayersWhenNeeded) {
 // SmokeTest that RecordUkmMetrics actually record UKM. The method has little to
 // no logic.
 TEST_F(MediaEngagementSessionTest, RecordUkmMetrics) {
-  const std::string url_string = origin().GetURL().spec();
   using Entry = ukm::builders::Media_Engagement_SessionFinished;
 
   scoped_refptr<MediaEngagementSession> session = new MediaEngagementSession(

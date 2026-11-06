@@ -744,7 +744,6 @@ void ProfileNetworkContextService::UpdateCTPolicy() {
   // TODO(crbug.com/41392053): CT policy needs to be sent to both network
   // service and cert verifier service. Finish refactoring so that it is only
   // sent to cert verifier service.
-  std::vector<network::mojom::NetworkContext*> contexts;
   profile_->ForEachLoadedStoragePartition(
       [&](content::StoragePartition* storage_partition) {
         storage_partition->GetNetworkContext()->SetCTPolicy(GetCTPolicy());

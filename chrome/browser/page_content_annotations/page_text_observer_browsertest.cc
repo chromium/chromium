@@ -140,8 +140,6 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
       const net::test_server::HttpRequest& request) {
-    std::string path_value;
-
     // This script is render blocking in the HTML, but is intentionally slow.
     // This provides important time between commit and first layout for any text
     // dump requests to make it to the renderer, reducing flakes.

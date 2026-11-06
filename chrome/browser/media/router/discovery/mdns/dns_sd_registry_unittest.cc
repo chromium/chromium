@@ -169,8 +169,6 @@ TEST_F(DnsSdRegistryTest, AddServiceWithInvalidIPAddress) {
   DnsSdService service;
   service.service_name = "_myDevice." + service_type;
 
-  DnsSdRegistry::DnsSdServiceList service_list;
-
   EXPECT_CALL(observer_, OnDnsSdEvent(_, _)).Times(1);
   registry_->RegisterDnsSdListener(service_type);
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer_));

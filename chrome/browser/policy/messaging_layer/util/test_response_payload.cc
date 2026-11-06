@@ -135,7 +135,6 @@ StatusOr<base::DictValue> ResponseBuilder::Build() const {
     base::DictValue lock;
     lock.Set(json_keys::kConfigurationFileDestination, "LOCK_UNLOCK_EVENTS");
     event_configs.Append(std::move(lock));
-    std::string encoded = base::Base64Encode("Fake signature");
     configuration_file.Set(json_keys::kConfigurationFileSignature,
                            base::Base64Encode("Fake signature"));
     configuration_file.Set(json_keys::kBlockedEventConfigs,

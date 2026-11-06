@@ -1003,7 +1003,6 @@ TEST_F(DisplayMediaAccessHandlerTest,
 
 TEST_F(DisplayMediaAccessHandlerTest,
        ChangeSourceWithAudioRequestPermissionGiven) {
-  blink::MediaStreamDevices devices;
   ChangeSourceRequestTest(
       /*with_audio=*/true,
       /*expected_result=*/blink::mojom::MediaStreamRequestResult::OK,

@@ -50,8 +50,6 @@ class ManagedProfileRequiredPageTest : public testing::Test {
 
 TEST_F(ManagedProfileRequiredPageTest, ShownAndMetricsRecorded) {
   base::HistogramTester histograms;
-  auto unsafe_resources =
-      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList();
 
   histograms.ExpectTotalCount(kBlockDecisionHistogram, 0);
 

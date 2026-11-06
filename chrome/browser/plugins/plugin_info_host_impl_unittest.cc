@@ -179,8 +179,6 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     chrome::mojom::PluginStatus status;
     content::WebPluginInfo plugin;
     std::string actual_mime_type;
-    std::string identifier;
-    std::u16string plugin_name;
     EXPECT_FALSE(context()->FindEnabledPlugin(
         GURL(), "foo/bar", &status, &plugin, &actual_mime_type, nullptr));
     EXPECT_EQ(chrome::mojom::PluginStatus::kDisabled, status);

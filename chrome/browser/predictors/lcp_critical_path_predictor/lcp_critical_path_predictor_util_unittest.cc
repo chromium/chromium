@@ -54,7 +54,6 @@ bool IsCanonicalizedFrequencyData(
     const LcppStringFrequencyStatData& frequency_stat,
     const google::protobuf::Map<std::string, T>& map) {
   const auto& frequency_main_buckets = frequency_stat.main_buckets();
-  std::vector<std::string> remove_from_map;
   for (const auto& it : map) {
     if (auto pos = frequency_main_buckets.find(it.first);
         pos == frequency_main_buckets.end()) {
