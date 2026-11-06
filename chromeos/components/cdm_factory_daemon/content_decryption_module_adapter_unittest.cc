@@ -6,7 +6,8 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -45,7 +46,7 @@ const std::vector<uint8_t>& GetFakeEncryptedData() {
 
 template <size_t size>
 std::vector<uint8_t> ToVector(const char (&array)[size]) {
-  return std::vector<uint8_t>(array, UNSAFE_TODO(array + size - 1));
+  return base::ToVector(base::as_byte_span(array).template first<size - 1>());
 }
 
 MATCHER_P(MatchesDecoderBuffer, buffer, "") {
