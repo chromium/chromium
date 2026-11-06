@@ -44,7 +44,6 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -317,7 +316,7 @@ IN_PROC_BROWSER_TEST_P(SearchOverriddenParamsProvidersBrowserTest,
   ASSERT_TRUE(params);
   if (IsExplicitChoiceDialog()) {
     ASSERT_TRUE(params->content.previous_setting);
-    EXPECT_EQ(u"testfoo", params->content.previous_setting->text);
+    EXPECT_EQ(u"testname", params->content.previous_setting->text);
   } else {
     EXPECT_EQ("Did you mean to change your search provider?",
               base::UTF16ToUTF8(params->content.dialog_title));
@@ -965,7 +964,7 @@ class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
-    PrimarySearchIsExtensionWithoutPrepopulateID) {
+    PrimarySearchIsExtensionNotInPrepopulatedList) {
   base::HistogramTester histogram_tester;
   const extensions::Extension* extension = AddExtensionControllingSearch();
   ASSERT_TRUE(extension);
@@ -994,7 +993,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
-    PrimarySearchIsExtensionWithPrepopulateID) {
+    PrimarySearchIsExtensionInPrepopulatedList) {
   const TemplateURL* extension_turl = FindPrepopulatedTemplateURL();
   const GURL expected_favicon_url = extension_turl->favicon_url();
   EXPECT_FALSE(expected_favicon_url.is_empty());
@@ -1009,7 +1008,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const extensions::Extension* extension = InstallCustomSearchExtension(
       kManifestName, base::UTF16ToUTF8(extension_turl->keyword()),
-      extension_turl->url(), extension_turl->prepopulate_id(),
+      extension_turl->url(), /*prepopulated_id=*/std::nullopt,
       manifest_favicon_url);
   ASSERT_TRUE(extension);
 
@@ -1073,24 +1072,35 @@ IN_PROC_BROWSER_TEST_F(
 
   auto previous_setting = params->content.previous_setting;
   ASSERT_TRUE(previous_setting.has_value());
-  // For a non-prepopulated search engine, the vector icon should be used,
-  // and the text should be the formatted URL rather than the short name.
+  // For a non-extension custom search engine, the user's configured short name
+  // and favicon URL should be preserved.
   EXPECT_TRUE(previous_setting.value().image.IsVectorIcon());
-  EXPECT_EQ(u"customsearch.com", previous_setting.value().text);
-  EXPECT_TRUE(previous_setting.value().favicon_url.is_empty());
+  EXPECT_EQ(custom_turl->short_name(), previous_setting.value().text);
+  EXPECT_EQ(custom_turl->favicon_url(), previous_setting.value().favicon_url);
   EXPECT_EQ(u"Your previous choice", previous_setting.value().description);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
-    SecondarySearchIsExtensionWithPrepopulateID) {
+    SecondarySearchIsExtensionInPrepopulatedList) {
   const TemplateURL* extension_turl = FindPrepopulatedTemplateURL();
+  const GURL expected_favicon_url = extension_turl->favicon_url();
+  EXPECT_FALSE(expected_favicon_url.is_empty());
 
-  // Install the first extension overriding search with prepopulated_id.
+  // Use a name and favicon URL in the extension manifest that differ from the
+  // prepopulated engine's values to verify that the dialog uses the
+  // authoritative prepopulated values rather than those from the manifest.
+  constexpr char kManifestName[] = "FirstPrepopulatedExtension";
+  const GURL manifest_favicon_url("https://example.com/manifest_favicon.ico");
+  ASSERT_NE(kManifestName, base::UTF16ToUTF8(extension_turl->short_name()));
+  ASSERT_NE(manifest_favicon_url, expected_favicon_url);
+
+  // Install the first extension overriding search with a prepopulated search
+  // URL.
   const extensions::Extension* first_extension = InstallCustomSearchExtension(
-      "FirstPrepopulatedExtension",
-      base::UTF16ToUTF8(extension_turl->keyword()), extension_turl->url(),
-      extension_turl->prepopulate_id(), extension_turl->favicon_url());
+      kManifestName, base::UTF16ToUTF8(extension_turl->keyword()),
+      extension_turl->url(), /*prepopulated_id=*/std::nullopt,
+      manifest_favicon_url);
   ASSERT_TRUE(first_extension);
 
   // Install a second extension, which becomes the primary controlling
@@ -1105,22 +1115,15 @@ IN_PROC_BROWSER_TEST_F(
 
   auto previous_setting = params->content.previous_setting;
   ASSERT_TRUE(previous_setting.has_value());
-  // TODO(crbug.com/562972276): GetSecondarySearchInfo() currently reconstructs
-  // `secondary_extension_search` without matching prepopulated engines, so
-  // `IsPrepopulated()` returns false and falls back to the formatted URL and
-  // vector icon. Update these expectations when the secondary-search fix lands.
-  EXPECT_EQ(
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          GURL(extension_turl->url())),
-      previous_setting.value().text);
-  EXPECT_TRUE(previous_setting.value().favicon_url.is_empty());
+  EXPECT_EQ(extension_turl->short_name(), previous_setting.value().text);
+  EXPECT_EQ(expected_favicon_url, previous_setting.value().favicon_url);
   EXPECT_TRUE(previous_setting.value().image.IsVectorIcon());
   EXPECT_EQ(u"Your previous choice", previous_setting.value().description);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
-    SecondarySearchIsExtensionWithoutPrepopulateID) {
+    SecondarySearchIsExtensionNotInPrepopulatedList) {
   // Install the first extension with a non-prepopulated search URL.
   const extensions::Extension* first_extension = InstallCustomSearchExtension(
       "FirstNonPrepopulatedExtension", "first_keyword",

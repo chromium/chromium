@@ -92,58 +92,19 @@ bool GoogleIsDefaultSearchProvider(Profile* profile) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// Helper to determine if a search provider is known (prepopulated).
-bool IsPrepopulated(const TemplateURL* template_url,
-                    TemplateURLService* template_url_service) {
-  auto is_prepopulated = [](const TemplateURL* turl) {
-    return turl->prepopulate_id() > 0;
-  };
-
-  if (is_prepopulated(template_url)) {
-    return true;
-  }
-
-  // Extensions may override prepopulated engines, but their prepopulate_id
-  // might be zeroed out. If the extension provided a search engine that
-  // matches a prepopulated one, treat it as prepopulated.
-  if (template_url->type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION) {
-    const auto& all_urls = template_url_service->GetTemplateURLs();
-    return std::any_of(all_urls.begin(), all_urls.end(), [&](const auto& turl) {
-      return turl.get() != template_url &&
-             turl->keyword() == template_url->keyword() &&
-             turl->url() == template_url->url() && is_prepopulated(turl.get());
-    });
-  }
-
-  return false;
-}
-
 // Formats a search URL for display in the explicit choice dialog.
 std::u16string FormatSearchUrl(const GURL& search_url) {
   return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
       search_url);
 }
 
-// Returns the display name for a search engine based on whether it is
-// prepopulated. This is used when the kSearchEngineExplicitChoiceDialog
-// feature is enabled.
-std::u16string GetDialogDisplayName(const TemplateURL* search_engine,
-                                    bool is_prepopulated,
-                                    const GURL& search_url) {
-  if (is_prepopulated ||
-      !base::FeatureList::IsEnabled(
-          extensions_features::kSearchEngineExplicitChoiceDialog)) {
-    return search_engine->short_name();
-  }
-
-  return FormatSearchUrl(search_url);
-}
-
 // Helper to find the matching built-in prepopulated engine for a search URL,
 // if any, by matching the URL's domain against known prepopulated engines.
 const TemplateURLPrepopulateData::PrepopulatedEngine*
 GetPrepopulatedEngineForSearchUrl(const GURL& search_url) {
-  CHECK(search_url.is_valid());
+  if (!search_url.is_valid()) {
+    return nullptr;
+  }
 
   // First, look up the search engine type by matching the URL's domain against
   // known prepopulated engines (including alternate URLs and migrated engines).
@@ -200,9 +161,6 @@ struct SecondarySearchInfo {
 
   // The favicon URL, if available.
   GURL favicon_url;
-
-  // True if the search engine is prepopulated or from the starter pack.
-  bool is_prepopulated = false;
 };
 
 // Returns details about the search that would take over, if the currently-
@@ -262,17 +220,30 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
 
   const GURL search_url = secondary_search->GenerateSearchURL(
       template_url_service->search_terms_data());
-  const GURL origin = search_url.DeprecatedGetOriginAsURL();
   SecondarySearchInfo search_info;
-  search_info.origin = origin;
-  search_info.is_prepopulated =
-      IsPrepopulated(secondary_search, template_url_service);
-  search_info.name = GetDialogDisplayName(
-      secondary_search, search_info.is_prepopulated, search_url);
+  search_info.origin = search_url.DeprecatedGetOriginAsURL();
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog)) {
-    search_info.favicon_url = secondary_search->favicon_url();
+    if (secondary_extension_search) {
+      // Display the known name and favicon for the secondary extension's
+      // search, if it is known by the browser. Otherwise, show the formatted
+      // search URL and supply no favicon (downstream code can use a fallback
+      // icon).
+      if (const auto* prepopulated_engine =
+              GetPrepopulatedEngineForSearchUrl(search_url)) {
+        search_info.name = std::u16string(prepopulated_engine->name);
+        search_info.favicon_url = GURL(prepopulated_engine->favicon_url);
+      } else {
+        search_info.name = FormatSearchUrl(search_url);
+        search_info.favicon_url = GURL();
+      }
+    } else {
+      search_info.name = secondary_search->short_name();
+      search_info.favicon_url = secondary_search->favicon_url();
+    }
+  } else {
+    search_info.name = secondary_search->short_name();
   }
   if (google_util::IsGoogleSearchUrl(search_url)) {
     search_info.type = SecondarySearchInfo::Type::kGoogle;
@@ -705,7 +676,7 @@ GetSearchOverriddenParams(Profile* profile) {
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_PREVIOUS_CHOICE);
     previous_setting.image =
         CreateFallbackSearchIcon(/*extension_name=*/std::string());
-    if (secondary_search.is_prepopulated) {
+    if (secondary_search.favicon_url.is_valid()) {
       previous_setting.favicon_url = secondary_search.favicon_url;
     }
 
