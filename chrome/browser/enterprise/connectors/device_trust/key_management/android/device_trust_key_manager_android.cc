@@ -4,13 +4,18 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/android/device_trust_key_manager_android.h"
 
+#include <cstdint>
+#include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/android/android_attestation_token_client.h"
@@ -21,6 +26,35 @@
 #include "crypto/hash.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+constexpr char kSuccessLatencyHistogram[] =
+    "Enterprise.DeviceTrust.AttestationToken.Latency.Success";
+constexpr char kFailureLatencyHistogram[] =
+    "Enterprise.DeviceTrust.AttestationToken.Latency.Failure";
+constexpr char kTokenSizeHistogram[] =
+    "Enterprise.DeviceTrust.AttestationToken.Size";
+
+// Records token metrics, then forwards `token` to `callback`.
+void OnTokenGenerated(
+    base::TimeTicks start_time,
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    std::optional<std::vector<uint8_t>> token) {
+  // Medium times: generation can exceed the 10 s `UmaHistogramTimes()` cap.
+  base::UmaHistogramMediumTimes(
+      token ? kSuccessLatencyHistogram : kFailureLatencyHistogram,
+      base::TimeTicks::Now() - start_time);
+
+  if (token) {
+    base::UmaHistogramCounts100000(kTokenSizeHistogram,
+                                   base::saturated_cast<int>(token->size()));
+  }
+
+  std::move(callback).Run(std::move(token));
+}
+
+}  // namespace
 
 DeviceTrustKeyManagerAndroid::DeviceTrustKeyManagerAndroid(
     std::unique_ptr<AndroidAttestationTokenClient> client,
@@ -89,8 +123,11 @@ void DeviceTrustKeyManagerAndroid::SignStringAsync(
 
   // Bind the attestation token to the content of the serialized challenge
   // response.
-  // TODO(crbug.com/463390232): Add latency logging for this operation.
-  client_->GenerateToken(crypto::hash::Sha256(str), std::move(callback));
+  client_->GenerateToken(
+      crypto::hash::Sha256(str),
+      // Not bound to `this`: `callback` must run even if `this` is destroyed.
+      base::BindOnce(&OnTokenGenerated, base::TimeTicks::Now(),
+                     std::move(callback)));
 }
 
 std::optional<DeviceTrustKeyManager::KeyMetadata>

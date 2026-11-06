@@ -2097,6 +2097,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.AttestationToken.Latency.{Outcome}"
+    units="ms" expires_after="2027-10-01">
+  <owner>mwalachowski@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Time to generate the attestation token that signs a Device Trust connector
+    challenge response. Recorded once per token request that {Outcome},
+    including results that arrive after the handshake timed out. Android only.
+  </summary>
+  <token key="Outcome">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.AttestationToken.Size" units="bytes"
+    expires_after="2027-10-01">
+  <owner>mwalachowski@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Size of each successfully generated attestation token. It is base64-encoded
+    into the challenge response header, taking about 4/3 of this size there.
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.EnrollmentStatus"
     enum="DTEnrollmentStatus" expires_after="2027-01-02">
   <owner>lmasopust@google.com</owner>
