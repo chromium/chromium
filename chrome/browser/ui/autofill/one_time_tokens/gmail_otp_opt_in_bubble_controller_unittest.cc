@@ -172,6 +172,12 @@ class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
 
     controller_ =
         std::make_unique<GmailOtpOptInBubbleController>(tab_interface_.get());
+    ON_CALL(mock_bubble_, Hide)
+        .WillByDefault([weak_controller = controller_->GetWeakPtr()]() {
+          if (weak_controller) {
+            weak_controller->OnBubbleClosed(GmailOtpOptInResult::kUnknown);
+          }
+        });
     controller_->SetBubbleViewFactoryForTesting(base::BindRepeating(
         [](AutofillBubbleBase* bubble,
            raw_ptr<content::WebContents>* last_shown_web_contents,
@@ -347,14 +353,12 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
   controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
   ASSERT_TRUE(controller()->IsShowingBubble());
 
-  // Deactivating the tab re-queues the bubble in BubbleManager and hides it.
+  // Deactivating the tab re-queues the bubble in BubbleManager and hides it
+  // (which synchronously invokes OnBubbleClosed). Because the bubble is queued,
+  // OnBubbleClosed should not run the callback yet.
   EXPECT_CALL(mock_bubble_, Hide());
   tab_interface()->Deactivate();
   ASSERT_FALSE(controller()->IsShowingBubble());
-
-  // When the widget finishes closing asynchronously, OnBubbleClosed should not
-  // run the callback while the bubble is queued.
-  controller()->OnBubbleClosed(GmailOtpOptInResult::kUnknown);
   EXPECT_FALSE(future.IsReady());
   histogram_tester.ExpectTotalCount("OneTimeTokens.Gmail.OptIn.BubbleResult",
                                     0);

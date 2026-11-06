@@ -140,6 +140,7 @@ GmailOtpOptInBubbleView::~GmailOtpOptInBubbleView() = default;
 
 void GmailOtpOptInBubbleView::Hide() {
   CloseBubble();
+  WindowClosing();
 }
 
 void GmailOtpOptInBubbleView::OnWidgetInitialized() {

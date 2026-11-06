@@ -74,7 +74,6 @@ class GmailOtpOptInBubbleController : public AutofillBubbleControllerBase {
   base::WeakPtr<GmailOtpOptInBubbleController> GetWeakPtr();
 
   // AutofillBubbleControllerBase:
-  void HideBubble(bool initiated_by_bubble_manager) override;
   void OnBubbleDiscarded() override;
   BubbleType GetBubbleType() const override;
   bool ShouldReshowOnTabVisible() const override;

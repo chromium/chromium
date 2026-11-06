@@ -75,11 +75,11 @@ GmailOtpOptInBubbleController::GmailOtpOptInBubbleController(
           base::BindRepeating(&CreateGmailOtpOptInBubbleView)) {}
 
 GmailOtpOptInBubbleController::~GmailOtpOptInBubbleController() {
+  FinishWithResult(std::move(callback_), GmailOtpOptInResult::kDiscarded);
   if (IsShowingBubble()) {
     DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
     HideBubble(/*initiated_by_bubble_manager=*/false);
   }
-  FinishWithResult(std::move(callback_), GmailOtpOptInResult::kDiscarded);
 }
 
 // static
@@ -131,12 +131,6 @@ void GmailOtpOptInBubbleController::SetAccountEmailForTesting(
 base::WeakPtr<GmailOtpOptInBubbleController>
 GmailOtpOptInBubbleController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-void GmailOtpOptInBubbleController::HideBubble(
-    bool initiated_by_bubble_manager) {
-  AutofillBubbleControllerBase::HideBubble(initiated_by_bubble_manager);
-  UpdatePageActionIcon();
 }
 
 void GmailOtpOptInBubbleController::OnBubbleDiscarded() {
