@@ -289,26 +289,26 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
     constexpr uint8_t kUnconstrainedAnchorCaId[] = {0x09, 0x01, 0x03, 0x04};
     auto unconstrained_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
         kUnconstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
-        x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+        x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
         std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kConstrainedAnchorCaId[] = {0x08, 0x04, 0x05, 0x06};
     auto constrained_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
         kConstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
-        x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+        x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
         std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kUntrustedConstrainedAnchorCaId[] = {0x06, 0x04, 0x05,
                                                            0x06};
     auto untrusted_constrained_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
         kUntrustedConstrainedAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
-        x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+        x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
         std::vector<bssl::LogTrustedSubtrees>());
 
     constexpr uint8_t kUnknownAnchorCaId[] = {0x07, 0x07, 0x07, 0x07};
     auto unknown_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
         kUnknownAnchorCaId, bssl::SignatureAlgorithm::kMldsa44,
-        x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+        x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
         std::vector<bssl::LogTrustedSubtrees>());
 
     chrome_root_store::SignerSet signer_set;
@@ -701,7 +701,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
 
       mtc_anchor_with_id_11 = bssl::MTCAnchor::CreatePlants07(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
-          x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+          x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
           std::vector<bssl::LogTrustedSubtrees>());
     }
 
@@ -712,7 +712,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
 
       mtc_anchor_with_no_id = bssl::MTCAnchor::CreatePlants07(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
-          x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+          x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
           std::vector<bssl::LogTrustedSubtrees>());
     }
 
@@ -724,7 +724,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
 
       untrusted_mtc_anchor_with_id = bssl::MTCAnchor::CreatePlants07(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
-          x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+          x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
           std::vector<bssl::LogTrustedSubtrees>());
     }
 
@@ -733,7 +733,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
       constexpr uint8_t kCaId[] = {0x01, 0x08};
       unknown_mtc_anchor = bssl::MTCAnchor::CreatePlants07(
           kCaId, bssl::SignatureAlgorithm::kMldsa44,
-          x509_util::CreateCryptoBuffer(std::string_view("fake key")),
+          x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
           std::vector<bssl::LogTrustedSubtrees>());
     }
 
@@ -1004,10 +1004,10 @@ class TrustStoreChromeMtcTest : public testing::TestWithParam<bool> {
     std::shared_ptr<const bssl::ParsedCertificate> mtc_leaf =
         ToParsedCertificate(std::move(leaf_buffer));
 
-    return {CreateMTCAnchor(
-                mtc_log_builder.ca_id(), bssl::SignatureAlgorithm::kMldsa44,
-                x509_util::CreateCryptoBuffer(std::string_view("fake key")),
-                mtc_log_builder.GetPerLogLandmarkSubtreeHashes()),
+    return {CreateMTCAnchor(mtc_log_builder.ca_id(),
+                            bssl::SignatureAlgorithm::kMldsa44,
+                            x509_util::CreateCryptoBuffer(MakeTestMtcCaKey()),
+                            mtc_log_builder.GetPerLogLandmarkSubtreeHashes()),
             std::move(mtc_leaf)};
   }
 

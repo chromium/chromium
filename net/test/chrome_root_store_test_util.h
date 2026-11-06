@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 
@@ -36,6 +37,11 @@ chrome_root_store::Signer* AddSignerSetIssuer(
     base::span<const uint8_t> log_id,
     std::string_view operator_name,
     std::optional<int32_t> crs_root_id);
+
+// Returns the DER-encoded SubjectPublicKeyInfo of a newly generated ML-DSA-44
+// key, for tests that need a well-formed MTC CA key but do not verify
+// signatures with it.
+std::vector<uint8_t> MakeTestMtcCaKey();
 
 }  // namespace net
 

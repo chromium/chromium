@@ -4,6 +4,8 @@
 
 #include "net/test/chrome_root_store_test_util.h"
 
+#include "base/strings/string_view_util.h"
+#include "crypto/keypair.h"
 #include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "net/cert/x509_util.h"
 
@@ -17,11 +19,11 @@ chrome_root_store::Signer* FillSignerSetSigner(
     std::string_view operator_name) {
   signer->set_friendly_name(x509_util::RelativeOidToString(log_id));
   signer->set_base_id(x509_util::RelativeOidToString(log_id));
-  // Signer will be returned with a fake key, which is good enough for most
-  // tests since the key isn't parsed until doing a signature verification.
-  // Tests that actually need to test signature verification can set the key
-  // field on the returned object to their chosen key.
-  signer->set_key("fakekey");
+  // Signer will be returned with a well-formed key that tests do not have the
+  // private key for, which is good enough for most tests. Tests that actually
+  // need to test signature verification can set the key field on the returned
+  // object to their chosen key.
+  signer->set_key(base::as_string_view(MakeTestMtcCaKey()));
   signer->set_realm(chrome_root_store::REALM_PUBLICLY_TRUSTED);
   signer->set_signature_algorithm(
       chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA44);
@@ -63,6 +65,11 @@ chrome_root_store::Signer* AddSignerSetMirror(
       FillSignerSetSigner(signer_set.add_mirrors(), log_id, operator_name);
   mirror->set_type(chrome_root_store::SIGNER_TYPE_MIRROR);
   return mirror;
+}
+
+std::vector<uint8_t> MakeTestMtcCaKey() {
+  return crypto::keypair::PrivateKey::GenerateMldsa44()
+      .ToSubjectPublicKeyInfo();
 }
 
 }  // namespace net

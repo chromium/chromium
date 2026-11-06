@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
@@ -1298,11 +1299,12 @@ Signer Signer::CreateForTesting(chrome_root_store::SignerType type,
   signer.operator_history.emplace_back(
       x509_util::RelativeOidToString(base_id),
       base::Time::FromSecondsSinceUnixEpoch(1));
-  // Signer will be returned with a fake key, which is good enough for most
-  // tests since the key isn't parsed until doing a signature verification.
-  // Tests that actually need to test signature verification can set the key
-  // field on the returned object to their chosen key.
-  signer.key = x509_util::CreateCryptoBuffer(std::string_view("fake key"));
+  // Signer will be returned with a well-formed key that tests do not have the
+  // private key for, which is good enough for most tests. Tests that actually
+  // need to test signature verification can set the key field on the returned
+  // object to their chosen key.
+  signer.key = x509_util::CreateCryptoBuffer(
+      crypto::keypair::PrivateKey::GenerateMldsa44().ToSubjectPublicKeyInfo());
   signer.type = type;
   signer.realm = chrome_root_store::REALM_PUBLICLY_TRUSTED;
   signer.signature_algorithm = bssl::SignatureAlgorithm::kMldsa44;
