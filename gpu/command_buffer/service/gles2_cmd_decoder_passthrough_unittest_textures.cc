@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -1194,6 +1195,64 @@ TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EndAccess(kSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       AttachSharedImageOnlyToColorAttachments) {
+  GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
+  DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
+  CreateSharedImageTexture(kSecondSharedImageClientId);
+
+  std::vector<GLenum> attachments = {GL_DEPTH_ATTACHMENT,
+                                     GL_STENCIL_ATTACHMENT};
+  if (IsES3()) {
+    attachments.push_back(GL_DEPTH_STENCIL_ATTACHMENT);
+  }
+  for (GLenum attachment : attachments) {
+    SCOPED_TRACE(attachment);
+    // Attaching a shared image to a depth or stencil attachment is rejected,
+    // for each import of the shared image.
+    for (GLuint client_id :
+         {kSharedImageClientId, kSecondSharedImageClientId}) {
+      cmds::FramebufferTexture2D cmd;
+      cmd.Init(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, client_id, 0);
+      EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+      EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+    }
+
+    // Regular textures can still be attached there, and detaching is always
+    // allowed.
+    DoFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D,
+                           kClientTextureId, 0);
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+    DoFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, 0, 0);
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  // Shared images can be attached to any color attachment.
+  DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         kSharedImageClientId, 0);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  if (IsES3()) {
+    DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D,
+                           kSecondSharedImageClientId, 0);
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+  DoDeleteTexture(kSecondSharedImageClientId);
+}
+
+TEST_P(GLES2DecoderPassthroughSharedImageReadAccessTest,
+       AttachSharedImageKillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kRestrictSharedImageAttachmentsToColorAttachments);
+
+  GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
+  DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
+  DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                         kSharedImageClientId, 0);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
 }  // namespace gles2

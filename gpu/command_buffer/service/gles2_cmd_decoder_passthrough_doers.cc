@@ -1281,6 +1281,10 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2D(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
+  if (!CheckSharedImageAttachment(attachment, texture,
+                                  "glFramebufferTexture2D")) {
+    return error::kNoError;
+  }
   api()->glFramebufferTexture2DEXTFn(
       target, attachment, textarget,
       GetTextureServiceID(api(), texture, resources_), level);
@@ -1296,6 +1300,10 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTextureLayer(
   if (IsEmulatedFramebufferBound(target)) {
     InsertError(GL_INVALID_OPERATION,
                 "Cannot change the attachments of the default framebuffer.");
+    return error::kNoError;
+  }
+  if (!CheckSharedImageAttachment(attachment, texture,
+                                  "glFramebufferTextureLayer")) {
     return error::kNoError;
   }
   api()->glFramebufferTextureLayerFn(
@@ -1314,6 +1322,10 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTextureMultiviewOVR(
   if (IsEmulatedFramebufferBound(target)) {
     InsertError(GL_INVALID_OPERATION,
                 "Cannot change the attachments of the default framebuffer.");
+    return error::kNoError;
+  }
+  if (!CheckSharedImageAttachment(attachment, texture,
+                                  "glFramebufferTextureMultiviewOVR")) {
     return error::kNoError;
   }
   api()->glFramebufferTextureMultiviewOVRFn(
@@ -3646,6 +3658,10 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2DMultisampleEXT(
   if (IsEmulatedFramebufferBound(target)) {
     InsertError(GL_INVALID_OPERATION,
                 "Cannot change the attachments of the default framebuffer.");
+    return error::kNoError;
+  }
+  if (!CheckSharedImageAttachment(attachment, texture,
+                                  "glFramebufferTexture2DMultisampleEXT")) {
     return error::kNoError;
   }
   api()->glFramebufferTexture2DMultisampleEXTFn(

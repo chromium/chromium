@@ -60,6 +60,8 @@ namespace gles2 {
 
 BASE_FEATURE(kEnforceSharedImageAccessForGLReads,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRestrictSharedImageAttachmentsToColorAttachments,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -3181,6 +3183,31 @@ bool GLES2DecoderPassthroughImpl::CheckReadFramebufferSharedImageAccess(
                 base::StrCat({function_name,
                               ": read framebuffer attachment is a shared "
                               "image without an active access"}));
+    return false;
+  }
+  return true;
+}
+
+bool GLES2DecoderPassthroughImpl::CheckSharedImageAttachment(
+    GLenum attachment,
+    GLuint texture_client_id,
+    const char* function_name) {
+  // Invalid attachment points are left for GL to reject.
+  const bool is_depth_or_stencil = attachment == GL_DEPTH_ATTACHMENT ||
+                                   attachment == GL_STENCIL_ATTACHMENT ||
+                                   attachment == GL_DEPTH_STENCIL_ATTACHMENT;
+  if (!is_depth_or_stencil || texture_client_id == 0 ||
+      !base::FeatureList::IsEnabled(
+          kRestrictSharedImageAttachmentsToColorAttachments)) {
+    return true;
+  }
+  // Every import of a shared image has its own entry, so checking the client
+  // id also covers aliased imports.
+  if (resources_->texture_shared_image_map.contains(texture_client_id)) {
+    InsertError(GL_INVALID_OPERATION,
+                base::StrCat({function_name,
+                              ": shared image textures can only be attached to "
+                              "color attachments"}));
     return false;
   }
   return true;

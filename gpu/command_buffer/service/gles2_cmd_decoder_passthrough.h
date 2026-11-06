@@ -56,6 +56,12 @@ namespace gles2 {
 // TODO(crbug.com/577345414): Remove after a safe rollout.
 GPU_GLES2_EXPORT BASE_DECLARE_FEATURE(kEnforceSharedImageAccessForGLReads);
 
+// Kill switch for only allowing shared image textures to be attached to color
+// attachments of framebuffers, i.e. not to depth or stencil attachments.
+// TODO(crbug.com/582302547): Remove after a safe rollout.
+GPU_GLES2_EXPORT BASE_DECLARE_FEATURE(
+    kRestrictSharedImageAttachmentsToColorAttachments);
+
 class ContextGroup;
 class GPUTracer;
 class MultiDrawManager;
@@ -536,6 +542,16 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   // GL_STENCIL_BUFFER_BIT) is a shared image without an active access.
   bool CheckReadFramebufferSharedImageAccess(GLbitfield mask,
                                              const char* function_name);
+
+  // Shared image textures may only be attached to color attachments of
+  // framebuffers. Generates GL_INVALID_OPERATION and returns false if the
+  // texture with client id `texture_client_id` is a shared image and
+  // `attachment` is GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT or
+  // GL_DEPTH_STENCIL_ATTACHMENT. Disabled if
+  // kRestrictSharedImageAttachmentsToColorAttachments is disabled.
+  bool CheckSharedImageAttachment(GLenum attachment,
+                                  GLuint texture_client_id,
+                                  const char* function_name);
 
   PassthroughProgramCache* get_passthrough_program_cache() const;
 
