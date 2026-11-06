@@ -69,6 +69,7 @@ class GlicSidePanelCoordinator {
   // Show the Glic side panel.
   struct ShowOptions {
     bool suppress_animations = false;
+    bool show_native_fre = false;
     enum class InitialState { kExpanded, kPeeked };
     InitialState initial_state = InitialState::kExpanded;
     SidePanelOpenTrigger open_trigger = SidePanelOpenTrigger::kGlicOpened;

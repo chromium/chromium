@@ -52,6 +52,8 @@ class GlicUiEmbedder {
     virtual void Attach(tabs::TabHandle tab) = 0;
     // Called after the value of GetPanelState() changes.
     virtual void UpdatePanelState() = 0;
+    // Called when the user accepts the native FRE.
+    virtual void AcceptNativeFre() = 0;
   };
 
   virtual ~GlicUiEmbedder() = default;

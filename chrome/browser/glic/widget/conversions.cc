@@ -19,6 +19,8 @@ GlicSidePanelCoordinator::ShowOptions ConvertToCoordinatorShowOptions(
     target_options.initial_state =
         GlicSidePanelCoordinator::ShowOptions::InitialState::kPeeked;
   }
+  target_options.show_native_fre =
+      options.fre_override == mojom::FreOverride::kNativeFre;
   target_options.open_trigger = side_panel_options.open_trigger;
 
   return target_options;

@@ -315,6 +315,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Opens the floating UI for this instance
   void Detach(tabs::TabInterface& tab) override;
   void Attach(tabs::TabHandle tab) override;
+  void AcceptNativeFre() override;
 
   // GlicInstance:
   ObservableValueView<mojom::PanelState>& GetPanelState() const override;

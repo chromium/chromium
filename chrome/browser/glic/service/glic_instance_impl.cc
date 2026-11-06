@@ -44,6 +44,7 @@
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
@@ -601,6 +602,10 @@ void GlicInstanceImpl::Attach(tabs::TabHandle tab) {
   auto show_options = ShowOptions::ForSidePanel(*tab_to_attach_to);
   show_options.invocation_source = mojom::InvocationSource::kDetachAttachButton;
   Show(show_options);
+}
+
+void GlicInstanceImpl::AcceptNativeFre() {
+  service_->provider_spec().GetFreStore().CompleteOnboarding(profile_);
 }
 
 void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {

@@ -88,6 +88,7 @@ class FakeGlicUiEmbedderDelegate : public GlicUiEmbedder::Delegate {
   void Detach(tabs::TabInterface& tab) override {}
   void Attach(tabs::TabHandle tab) override {}
   void UpdatePanelState() override {}
+  void AcceptNativeFre() override {}
 
   const std::vector<bool>& activation_changes() const {
     return activation_changes_;
