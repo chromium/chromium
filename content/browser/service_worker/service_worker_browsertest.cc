@@ -14,6 +14,7 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -1547,12 +1548,27 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   EXPECT_TRUE(pdf_frame->GetSiteInstance()->GetSiteInfo().is_pdf());
   EXPECT_TRUE(pdf_frame->GetProcess()->IsPdf());
   EXPECT_FALSE(pdf_frame->GetLastCommittedServiceWorkerClient());
-  EXPECT_EQ(true,
-            EvalJs(pdf_frame, "navigator.serviceWorker.controller === null"));
-  EXPECT_EQ("InvalidStateError", EvalJs(pdf_frame, R"(
-    navigator.serviceWorker.register('fetch_event_pass_through.js')
-        .then(() => 'resolved', e => e.name)
-  )"));
+  if (base::FeatureList::IsEnabled(features::kPdfOpaqueOrigin)) {
+    // With `features::kPdfOpaqueOrigin`, the PDF document has an opaque origin,
+    // so it can't access `navigator.serviceWorker` at all.
+    EXPECT_EQ("SecurityError", EvalJs(pdf_frame, R"(
+      (() => {
+        try {
+          navigator.serviceWorker;
+          return 'no error';
+        } catch (e) {
+          return e.name;
+        }
+      })()
+    )"));
+  } else {
+    EXPECT_EQ(true,
+              EvalJs(pdf_frame, "navigator.serviceWorker.controller === null"));
+    EXPECT_EQ("InvalidStateError", EvalJs(pdf_frame, R"(
+      navigator.serviceWorker.register('fetch_event_pass_through.js')
+          .then(() => 'resolved', e => e.name)
+    )"));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, SubresourceTimingAllowPassed) {
