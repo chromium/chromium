@@ -577,21 +577,6 @@
             ]
         }
     ],
-    "AndroidDesktopGlicContextMenu": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled_50_20260915",
-                    "disable_features": [
-                        "ClankGlicContextMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDesktopUAPlatform": [
         {
             "platforms": [
@@ -4706,6 +4691,28 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FeedSyntheticCapabilities"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ClankGlicContextMenu": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "LinkAndSelection_20261027",
+                    "params": {
+                        "show_gemini_on_tab_strip": "true",
+                        "show_on_image_mobile": "false",
+                        "show_on_link": "true",
+                        "show_on_page": "false",
+                        "show_on_selection": "true"
+                    },
+                    "enable_features": [
+                        "ClankGlicContextMenu"
                     ]
                 }
             ]
