@@ -1376,31 +1376,7 @@ void URLRequest::RecordReferrerGranularityMetrics(
 
 IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
     const NetworkAnonymizationKey& network_anonymization_key) {
-  if (network_anonymization_key.IsEmpty()) {
-    return IsolationInfo();
-  }
-
-  url::Origin top_frame_origin =
-      network_anonymization_key.GetTopFrameSite()->site_as_origin_;
-
-  std::optional<url::Origin> frame_origin;
-  if (network_anonymization_key.IsCrossSite()) {
-    // If we know that the origin is cross site to the top level site, create an
-    // empty origin to use as the frame origin for the isolation info. This
-    // should be cross site with the top level origin.
-    frame_origin = url::Origin();
-  } else {
-    // If we don't know that it's cross site to the top level site, use the top
-    // frame site to set the frame origin.
-    frame_origin = top_frame_origin;
-  }
-
-  auto isolation_info = IsolationInfo::Create(
-      IsolationInfo::RequestType::kOther, top_frame_origin,
-      frame_origin.value(), SiteForCookies(),
-      network_anonymization_key.GetNonce());
-  // TODO(crbug.com/40852603): DCHECK isolation info is fully populated.
-  return isolation_info;
+  return IsolationInfo::DoNotUseCreatePartialFromNak(network_anonymization_key);
 }
 
 ConnectionAttempts URLRequest::GetConnectionAttempts() const {

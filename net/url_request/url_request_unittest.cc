@@ -12889,6 +12889,38 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNak) {
   d.RunUntilComplete();
 }
 
+TEST_F(URLRequestTest,
+       SetIsolationInfoFromNakPreservesNetworkIsolationPartition) {
+  TestDelegate d;
+  SchemefulSite site_a(GURL("https://a.test/"));
+  base::UnguessableToken nak_nonce = base::UnguessableToken::Create();
+  NetworkAnonymizationKey partitioned_nak =
+      NetworkAnonymizationKey::CreateFromParts(
+          site_a, /*is_cross_site=*/false, nak_nonce,
+          NetworkIsolationPartition::kDnsOverHttps);
+  NetworkAnonymizationKey empty_partitioned_nak =
+      NetworkAnonymizationKey::CreateEmptyWithPartition(
+          NetworkIsolationPartition::kDnsOverHttps);
+
+  std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+      GURL("http://localhost"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
+  r->SetLoadFlags(LOAD_DISABLE_CACHE);
+  r->set_disallow_credentials();
+
+  r->set_isolation_info_from_network_anonymization_key(partitioned_nak);
+  EXPECT_EQ(r->isolation_info().network_anonymization_key(), partitioned_nak);
+  EXPECT_EQ(r->isolation_info().GetNetworkIsolationPartition(),
+            NetworkIsolationPartition::kDnsOverHttps);
+
+  r->set_isolation_info_from_network_anonymization_key(empty_partitioned_nak);
+  EXPECT_EQ(r->isolation_info().network_anonymization_key(),
+            empty_partitioned_nak);
+  EXPECT_TRUE(r->isolation_info().IsEmpty());
+  EXPECT_EQ(r->isolation_info().GetNetworkIsolationPartition(),
+            NetworkIsolationPartition::kDnsOverHttps);
+}
+
 TEST_F(URLRequestTest, CookiePartitionKey) {
   const url::Origin kOrigin = url::Origin::Create(GURL("http://foo.test/"));
   const url::Origin kCrossSiteOrigin =
