@@ -8477,26 +8477,6 @@
             ]
         }
     ],
-    "GaiaAccountIdEnforcement": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260414",
-                    "enable_features": [
-                        "GaiaAccountIdEnforcement"
-                    ]
-                }
-            ]
-        }
-    ],
     "GateMemoryMetricsOnVisibility": [
         {
             "platforms": [
