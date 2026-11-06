@@ -1,5 +1,5 @@
 diff --git a/src/google/protobuf/generated_message_util.cc b/src/google/protobuf/generated_message_util.cc
-index 4edc317..35b1c92 100644
+index 1440cbf68d6cc..f1c22a9fd44a8 100644
 --- a/src/google/protobuf/generated_message_util.cc
 +++ b/src/google/protobuf/generated_message_util.cc
 @@ -111,6 +111,11 @@ void InitProtobufDefaultsSlow() {
@@ -15,7 +15,7 @@ index 4edc317..35b1c92 100644
  const T& Get(const void* ptr) {
    return *static_cast<const T*>(ptr);
 diff --git a/src/google/protobuf/generated_message_util.h b/src/google/protobuf/generated_message_util.h
-index 9340f24..6b64840 100644
+index dc9a2325a7198..1f94a0a42e50a 100644
 --- a/src/google/protobuf/generated_message_util.h
 +++ b/src/google/protobuf/generated_message_util.h
 @@ -82,10 +82,7 @@ PROTOBUF_EXPORT inline void InitProtobufDefaults() {

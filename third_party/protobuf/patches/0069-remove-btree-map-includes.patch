@@ -1,4 +1,5 @@
 diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extension_set.cc
+index 04aefe1f01fe9..74ac441834190 100644
 --- a/src/google/protobuf/extension_set.cc
 +++ b/src/google/protobuf/extension_set.cc
 @@ -25,7 +25,9 @@
@@ -36,7 +37,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
  namespace {
  
  inline WireFormatLite::FieldType real_type(FieldType type) {
-@@ -190,7 +210,7 @@
+@@ -190,7 +210,7 @@ ExtensionSet::~ExtensionSet() {
  
    ForEach([](int /* number */, Extension& ext) { ext.Free(); }, PrefetchNta{});
    if (ABSL_PREDICT_FALSE(is_large())) {
@@ -45,7 +46,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
    } else {
      DeleteFlatMap(map_.flat, flat_capacity_);
    }
-@@ -228,8 +248,16 @@
+@@ -228,8 +248,16 @@ void ExtensionSet::DeleteFlatMap(const ExtensionSet::KeyValue* flat,
  
  bool ExtensionSet::IsEmpty() const {
    if (IsCompletelyEmpty()) return true;
@@ -64,7 +65,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
  }
  
  bool ExtensionSet::Has(int number) const {
-@@ -861,8 +889,8 @@
+@@ -861,8 +889,8 @@ void ExtensionSet::InternalMergeFromSlow(Arena* arena,
                                        other.flat_begin(), other.flat_end()));
      } else {
        GrowCapacity(arena, SizeOfUnion(flat_begin(), flat_end(),
@@ -75,7 +76,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
      }
    }
    other.ForEach(
-@@ -1112,7 +1140,7 @@
+@@ -1112,7 +1140,7 @@ bool ExtensionSet::IsInitialized(Arena* arena,
    // Extensions are never required.  However, we need to check that all
    // embedded messages are initialized.
    if (ABSL_PREDICT_FALSE(is_large())) {
@@ -84,7 +85,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
        if (!kv.second.IsInitialized(this, extendee, kv.first, arena)) {
          return false;
        }
-@@ -1191,8 +1219,8 @@
+@@ -1191,8 +1219,8 @@ uint8_t* ExtensionSet::_InternalSerializeImplLarge(
      const MessageLite* extendee, int start_field_number, int end_field_number,
      uint8_t* target, io::EpsCopyOutputStream* stream) const {
    assert(is_large());
@@ -95,7 +96,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
         it != end && it->first < end_field_number; ++it) {
      target = it->second.InternalSerializeFieldWithCachedSizesToArray(
          extendee, this, it->first, target, stream);
-@@ -1543,8 +1571,8 @@
+@@ -1543,8 +1571,8 @@ const ExtensionSet::Extension* ExtensionSet::FindOrNull(int key) const {
  const ExtensionSet::Extension* ExtensionSet::FindOrNullInLargeMap(
      int key) const {
    assert(is_large());
@@ -106,7 +107,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
      return &it->second;
    }
    return nullptr;
-@@ -1564,9 +1592,33 @@
+@@ -1564,9 +1592,33 @@ ExtensionSet::Extension* ExtensionSet::FindOrNullInLargeMap(int key) {
  ABSL_ATTRIBUTE_NOINLINE
  std::pair<ExtensionSet::Extension*, bool>
  ExtensionSet::InternalInsertIntoLargeMap(int key) {
@@ -143,7 +144,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
  }
  
  std::pair<ExtensionSet::Extension*, bool> ExtensionSet::Insert(Arena* arena,
-@@ -1619,11 +1671,13 @@
+@@ -1619,11 +1671,13 @@ void ExtensionSet::GrowCapacity(Arena* arena, size_t minimum_new_capacity) {
    KeyValue* end = flat_end();
    AllocatedData new_map;
    if (new_flat_capacity > kMaximumFlatCapacity) {
@@ -160,7 +161,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
      flat_size_ = static_cast<uint16_t>(-1);
      ABSL_DCHECK(is_large());
    } else {
-@@ -1654,7 +1708,7 @@
+@@ -1654,7 +1708,7 @@ void ExtensionSet::InternalReserveSmallCapacityFromEmpty(
  
  void ExtensionSet::Erase(int key) {
    if (ABSL_PREDICT_FALSE(is_large())) {
@@ -170,6 +171,7 @@ diff --git a/src/google/protobuf/extension_set.cc b/src/google/protobuf/extensio
    }
    KeyValue* end = flat_end();
 diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension_set.h
+index f9b67c3127085..64da3365b3d51 100644
 --- a/src/google/protobuf/extension_set.h
 +++ b/src/google/protobuf/extension_set.h
 @@ -33,7 +33,7 @@
@@ -181,7 +183,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
  #include "absl/log/absl_check.h"
  #include "absl/strings/string_view.h"
  #include "google/protobuf/generated_enum_util.h"
-@@ -880,7 +880,11 @@
+@@ -880,7 +880,11 @@ class PROTOBUF_EXPORT ExtensionSet {
      Extension second;
    };
  
@@ -194,7 +196,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
  
    // Wrapper API that switches between flat-map and LargeMap.
  
-@@ -899,6 +903,15 @@
+@@ -899,6 +903,15 @@ class PROTOBUF_EXPORT ExtensionSet {
    // Same as insert for the large map.
    std::pair<Extension*, bool> InternalInsertIntoLargeMap(int key);
  
@@ -210,7 +212,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
    // Grows the flat_capacity_.
    // If flat_capacity_ > kMaximumFlatCapacity, converts to LargeMap.
    void GrowCapacity(Arena* arena, size_t minimum_new_capacity);
-@@ -919,7 +932,7 @@
+@@ -919,7 +932,7 @@ class PROTOBUF_EXPORT ExtensionSet {
    // Returns the number of elements in the ExtensionSet, including cleared
    // extensions.
    size_t Size() const {
@@ -219,7 +221,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
    }
  
    // For use as `PrefetchFunctor`s in `ForEach`.
-@@ -963,8 +976,7 @@
+@@ -963,8 +976,7 @@ class PROTOBUF_EXPORT ExtensionSet {
    template <typename KeyValueFunctor, typename PrefetchFunctor>
    void ForEach(KeyValueFunctor func, PrefetchFunctor prefetch_func) {
      if (ABSL_PREDICT_FALSE(is_large())) {
@@ -229,7 +231,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
        return;
      }
      ForEachPrefetchImpl(flat_begin(), flat_end(), std::move(func),
-@@ -974,8 +986,7 @@
+@@ -974,8 +986,7 @@ class PROTOBUF_EXPORT ExtensionSet {
    template <typename KeyValueFunctor, typename PrefetchFunctor>
    void ForEach(KeyValueFunctor func, PrefetchFunctor prefetch_func) const {
      if (ABSL_PREDICT_FALSE(is_large())) {
@@ -239,7 +241,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
        return;
      }
      ForEachPrefetchImpl(flat_begin(), flat_end(), std::move(func),
-@@ -990,25 +1001,11 @@
+@@ -990,25 +1001,11 @@ class PROTOBUF_EXPORT ExtensionSet {
      for (Iterator it = begin; it != end; ++it) func(it->first, it->second);
    }
  
@@ -266,7 +268,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
        return;
      }
      ForEachNoPrefetch(flat_begin(), flat_end(), std::move(func));
-@@ -1018,25 +1015,12 @@
+@@ -1018,25 +1015,12 @@ class PROTOBUF_EXPORT ExtensionSet {
    template <typename KeyValueFunctor>
    void ForEachNoPrefetch(KeyValueFunctor func) const {
      if (ABSL_PREDICT_FALSE(is_large())) {
@@ -293,7 +295,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
    // Returns true if nothing is allocated in the ExtensionSet.
    bool IsCompletelyEmpty() const {
      return flat_size_ == 0 && flat_capacity_ == 0;
-@@ -1223,6 +1207,9 @@
+@@ -1223,6 +1207,9 @@ class PROTOBUF_EXPORT ExtensionSet {
      assert(!is_large());
      return map_.flat + flat_size_;
    }
@@ -303,7 +305,7 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
  
    static KeyValue* AllocateFlatMap(Arena* arena,
                                     uint16_t powerof2_flat_capacity);
-@@ -1238,7 +1225,7 @@
+@@ -1238,7 +1225,7 @@ class PROTOBUF_EXPORT ExtensionSet {
  
      // If flat_capacity_ > kMaximumFlatCapacity, switch to LargeMap,
      // which guarantees O(n lg n) CPU but larger constant factors.
@@ -313,9 +315,10 @@ diff --git a/src/google/protobuf/extension_set.h b/src/google/protobuf/extension
  };
  
 diff --git a/src/google/protobuf/extension_set_heavy.cc b/src/google/protobuf/extension_set_heavy.cc
+index b4936cdcd378b..527e39ab798ad 100644
 --- a/src/google/protobuf/extension_set_heavy.cc
 +++ b/src/google/protobuf/extension_set_heavy.cc
-@@ -369,8 +369,9 @@
+@@ -369,8 +369,9 @@ int ExtensionSet::SpaceUsedExcludingSelf() const {
  }
  
  size_t ExtensionSet::SpaceUsedExcludingSelfLong() const {
@@ -328,6 +331,7 @@ diff --git a/src/google/protobuf/extension_set_heavy.cc b/src/google/protobuf/ex
        [&total_size](int /* number */, const Extension& ext) {
          total_size += ext.SpaceUsedExcludingSelfLong();
 diff --git a/src/google/protobuf/map.h b/src/google/protobuf/map.h
+index d99acb105ac19..9757efef06cc8 100644
 --- a/src/google/protobuf/map.h
 +++ b/src/google/protobuf/map.h
 @@ -31,7 +31,6 @@

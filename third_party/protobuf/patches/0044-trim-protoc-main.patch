@@ -1,5 +1,5 @@
 diff --git a/src/google/protobuf/compiler/main.cc b/src/google/protobuf/compiler/main.cc
-index dbf8d89..bee5b10 100644
+index dbf8d8975f770..bee5b1015c176 100644
 --- a/src/google/protobuf/compiler/main.cc
 +++ b/src/google/protobuf/compiler/main.cc
 @@ -8,16 +8,9 @@

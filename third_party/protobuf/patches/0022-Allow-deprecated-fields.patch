@@ -1,7 +1,8 @@
 diff --git a/src/google/protobuf/compiler/cpp/enum.cc b/src/google/protobuf/compiler/cpp/enum.cc
+index 4caecc98749b6..39ea5cf797a5e 100644
 --- a/src/google/protobuf/compiler/cpp/enum.cc
 +++ b/src/google/protobuf/compiler/cpp/enum.cc
-@@ -147,7 +147,7 @@
+@@ -147,7 +147,7 @@ void EnumGenerator::GenerateDefinition(io::Printer* p) {
                             .AnnotatedAs(value),
                         {"kNumber", Int32ToString(value->number())},
                         {"DEPRECATED",
@@ -10,7 +11,7 @@ diff --git a/src/google/protobuf/compiler/cpp/enum.cc b/src/google/protobuf/comp
                     },
                     R"cc(
                       $Msg_Enum_VALUE$$ DEPRECATED$ = $kNumber$,
-@@ -323,7 +323,7 @@
+@@ -323,7 +323,7 @@ void EnumGenerator::GenerateSymbolImports(io::Printer* p) const {
      p->Emit(
          {
              Sub("VALUE", EnumValueName(enum_->value(j))).AnnotatedAs(value),
@@ -20,9 +21,10 @@ diff --git a/src/google/protobuf/compiler/cpp/enum.cc b/src/google/protobuf/comp
              // wrap it to avoid triggering -Wdeprecated-declarations in code the
              // user does not control. See protocolbuffers/protobuf#18205.
 diff --git a/src/google/protobuf/compiler/cpp/helpers.h b/src/google/protobuf/compiler/cpp/helpers.h
+index 42e145f8ac355..d6c03f2e215b0 100644
 --- a/src/google/protobuf/compiler/cpp/helpers.h
 +++ b/src/google/protobuf/compiler/cpp/helpers.h
-@@ -63,12 +63,12 @@
+@@ -63,12 +63,12 @@ inline FieldDescriptor::CppRepeatedType CalculateFieldDescriptorRepeatedType(
  
  inline std::string DeprecatedAttribute(const Options&,
                                         const FieldDescriptor* d) {

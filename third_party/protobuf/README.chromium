@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD-3-Clause
 License File: LICENSE
-Version: 36.0
-CPEPrefix: cpe:/a:google:protobuf:36.0
-Revision: 3f17acbf7ffbda81db8be17505554c726e558bb2
+Version: 36.2
+CPEPrefix: cpe:/a:google:protobuf:36.2
+Revision: 2c74169b34066ceb8ddb6b882fcb3fb32d737a55
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
@@ -174,8 +174,12 @@ Notes (hints) for the next roll(er):
   you don't nuke those changes).
 * Any argument changes to `protoc_wrapper` in `third_party/protobuf/BUILD.gn`
   may require updating `build/config/siso/protoc_wrapper.star` as well.
-* The protobuf wheel for vpython3 needs to stay in sync with this protobuf, at
-  least if there are breaking changes in protobuf's python bindings. See
+* The `'protobuf==7.XX.Y'` wheel in `//vpython.toml` (and companion
+  `//vpython.toml.uv.lock`, regenerated via `vpython3 -vpython-tool upgrade`)
+  must be updated on every version bump (including patch releases), because
+  `ValidateProtobufRuntimeVersion` in generated `*_pb2.py` files (such as
+  `traffic_annotation_pb2.py` in `check_network_annotations`) rejects any
+  runtime older than the gencode version. See
   https://chromium.googlesource.com/infra/infra/+/refs/heads/main/infra/tools/dockerbuild/README.wheels.md
 
 When a patch conflicts:
@@ -266,10 +270,12 @@ hand (in sorted order of `GITDIR/protobuf-roll/chain/`):
 
 Note about vpython:
 
-Some Python scripts end up mixing protoc output from this copy of protobuf with
-the google.protobuf module from vpython's protobuf. If Python scripts break due
-to the vpython copy of protobuf, you may need to update the version in
-//vpython.toml. See https://crbug.com/1320047.
+Some Python scripts (such as `check_network_annotations`) mix `protoc` output
+from this copy of protobuf with the `google.protobuf` module from `vpython3`'s
+`//vpython.toml` wheel. Because `ValidateProtobufRuntimeVersion` in generated
+`*_pb2.py` files rejects any runtime older than the gencode version (even across
+patch releases), `//vpython.toml` and `//vpython.toml.uv.lock` must be updated
+on every version roll. See https://crbug.com/1320047.
 
 Description of the patches:
 

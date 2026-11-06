@@ -1,4 +1,5 @@
 diff --git a/src/google/protobuf/message.h b/src/google/protobuf/message.h
+index e0dc16e425fdb..f77bebf2908e2 100644
 --- a/src/google/protobuf/message.h
 +++ b/src/google/protobuf/message.h
 @@ -633,9 +633,7 @@ class PROTOBUF_EXPORT Reflection final {

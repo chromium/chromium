@@ -1,5 +1,5 @@
 diff --git a/src/google/protobuf/text_format.h b/src/google/protobuf/text_format.h
-index fb847c9..3e85ba0 100644
+index b940b247ab2a7..a505d992be0b5 100644
 --- a/src/google/protobuf/text_format.h
 +++ b/src/google/protobuf/text_format.h
 @@ -53,7 +53,7 @@ PROTOBUF_EXPORT int64_t GetRedactedFieldCount();

@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/any.h b/src/google/protobuf/any.h
-index a31f7c8..dd6be3f 100644
+index 0abe70fcb2e41..e579f82da28b2 100644
 --- a/src/google/protobuf/any.h
 +++ b/src/google/protobuf/any.h
-@@ -130,8 +130,8 @@ PROTOBUF_FUTURE_ADD_EARLY_NODISCARD bool InternalIs(
+@@ -133,8 +133,8 @@ PROTOBUF_FUTURE_ADD_EARLY_NODISCARD bool InternalIs(
  // NOTE: this function is available publicly as a static method on the
  // generated message type: google::protobuf::Any::ParseAnyTypeUrl()
  PROTOBUF_FUTURE_ADD_EARLY_NODISCARD
@@ -13,7 +13,7 @@ index a31f7c8..dd6be3f 100644
  
  // Get the proto type name and prefix from Any::type_url value. For example,
  // passing "type.googleapis.com/rpc.QueryOrigin" will return
-@@ -139,18 +139,17 @@ bool ParseAnyTypeUrl(absl::string_view type_url,
+@@ -142,18 +142,17 @@ bool ParseAnyTypeUrl(absl::string_view type_url,
  // *full_type_name. Returns false if the type_url does not have a "/" in the
  // type url separating the full type name.
  PROTOBUF_FUTURE_ADD_EARLY_NODISCARD

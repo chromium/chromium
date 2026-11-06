@@ -1,5 +1,5 @@
 diff --git a/src/google/protobuf/io/gzip_stream.h b/src/google/protobuf/io/gzip_stream.h
-index 3b5952e..32f4dfa 100644
+index b8a4c776ed04c..4e478a388674c 100644
 --- a/src/google/protobuf/io/gzip_stream.h
 +++ b/src/google/protobuf/io/gzip_stream.h
 @@ -26,6 +26,9 @@

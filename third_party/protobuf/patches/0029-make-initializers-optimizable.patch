@@ -1,5 +1,5 @@
 diff --git a/src/google/protobuf/generated_message_util.cc b/src/google/protobuf/generated_message_util.cc
-index 35b1c92..9e21635 100644
+index f1c22a9fd44a8..1ebce8b6a9bb9 100644
 --- a/src/google/protobuf/generated_message_util.cc
 +++ b/src/google/protobuf/generated_message_util.cc
 @@ -89,27 +89,17 @@ static void InitWeakDefaults() {
@@ -36,7 +36,7 @@ index 35b1c92..9e21635 100644
  const std::string& GetEmptyString() {
    InitProtobufDefaults();
 diff --git a/src/google/protobuf/generated_message_util.h b/src/google/protobuf/generated_message_util.h
-index 6b64840..771b45d 100644
+index 1f94a0a42e50a..df6af06573a75 100644
 --- a/src/google/protobuf/generated_message_util.h
 +++ b/src/google/protobuf/generated_message_util.h
 @@ -71,11 +71,14 @@ class ExtensionSet;
@@ -58,10 +58,10 @@ index 6b64840..771b45d 100644
    }
  }
 diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
-index 1cd73d2..3c7c91f 100644
+index f1432d5f37fa1..6452caa22dd73 100644
 --- a/src/google/protobuf/port_def.inc
 +++ b/src/google/protobuf/port_def.inc
-@@ -555,15 +555,7 @@
+@@ -571,15 +571,7 @@
  #define PROTOBUF_FINAL final
  #endif
  

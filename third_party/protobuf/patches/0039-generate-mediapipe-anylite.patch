@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/compiler/cpp/helpers.cc b/src/google/protobuf/compiler/cpp/helpers.cc
-index 98fae20..f61b3fa 100644
+index 095d1cede6e56..9b2489cbdde67 100644
 --- a/src/google/protobuf/compiler/cpp/helpers.cc
 +++ b/src/google/protobuf/compiler/cpp/helpers.cc
-@@ -120,6 +120,14 @@ MessageKnownNonNullaryMethodsSnakeCase() {
+@@ -123,6 +123,14 @@ MessageKnownNonNullaryMethodsSnakeCase() {
    return *methods;
  }
  
@@ -17,7 +17,7 @@ index 98fae20..f61b3fa 100644
  static const char* const kKeywordList[] = {
      // clang-format off
      "NULL",
-@@ -1373,11 +1381,13 @@ bool IsRepeatedPtrField(const FieldDescriptor* field) {
+@@ -1403,11 +1411,13 @@ bool IsRepeatedPtrField(const FieldDescriptor* field) {
  }
  
  bool IsAnyMessage(const FileDescriptor* descriptor) {
@@ -34,10 +34,10 @@ index 98fae20..f61b3fa 100644
  }
  
 diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
-index f060e32..f9a26a9 100644
+index 6149be7182870..03628a8f6ec22 100644
 --- a/src/google/protobuf/compiler/cpp/message.cc
 +++ b/src/google/protobuf/compiler/cpp/message.cc
-@@ -2391,30 +2391,34 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
+@@ -2368,30 +2368,34 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
      return;
    }
    if (IsAnyMessage(descriptor_)) {

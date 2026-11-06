@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
-index 9e093c9..9c936d9 100644
+index b6e391ea94031..8d3eae28a7d74 100644
 --- a/src/google/protobuf/descriptor.cc
 +++ b/src/google/protobuf/descriptor.cc
-@@ -347,22 +347,16 @@ class FlatAllocation {
+@@ -355,22 +355,16 @@ class FlatAllocation {
      return ends_.template Get<U>();
    }
  
@@ -30,10 +30,10 @@ index 9e093c9..9c936d9 100644
  
    template <typename U>
 diff --git a/src/google/protobuf/map.h b/src/google/protobuf/map.h
-index d384d2a..659f2c8 100644
+index e08d297f91d53..d99acb105ac19 100644
 --- a/src/google/protobuf/map.h
 +++ b/src/google/protobuf/map.h
-@@ -321,6 +321,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
+@@ -319,6 +319,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
    UntypedMapBase& operator=(const UntypedMapBase&) = delete;
  
    template <typename T>
@@ -41,7 +41,7 @@ index d384d2a..659f2c8 100644
    T* GetKey(NodeBase* node) const {
      // Debug check that `T` matches what we expect from the type info.
      ABSL_DCHECK_EQ(static_cast<int>(StaticTypeKind<T>()),
-@@ -333,6 +334,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
+@@ -331,6 +332,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
    }
  
    template <typename T>
@@ -50,10 +50,10 @@ index d384d2a..659f2c8 100644
      // Debug check that `T` matches what we expect from the type info.
      ABSL_DCHECK_EQ(static_cast<int>(StaticTypeKind<T>()),
 diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
-index 3c7c91f..4334a6e 100644
+index 6452caa22dd73..f5c801d9430e3 100644
 --- a/src/google/protobuf/port_def.inc
 +++ b/src/google/protobuf/port_def.inc
-@@ -572,6 +572,16 @@
+@@ -588,6 +588,16 @@
  #define PROTOBUF_PREFETCH_WITH_OFFSET(base, offset)
  #endif
  

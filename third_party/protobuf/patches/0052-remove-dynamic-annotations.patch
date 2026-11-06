@@ -1,4 +1,5 @@
 diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
+index 8d3eae28a7d74..80a21ca118468 100644
 --- a/src/google/protobuf/descriptor.cc
 +++ b/src/google/protobuf/descriptor.cc
 @@ -38,7 +38,6 @@
@@ -10,6 +11,7 @@ diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.
  #include "absl/base/thread_annotations.h"
  #include "absl/cleanup/cleanup.h"
 diff --git a/src/google/protobuf/repeated_field.h b/src/google/protobuf/repeated_field.h
+index 263f79c371aa8..fa17691383fe1 100644
 --- a/src/google/protobuf/repeated_field.h
 +++ b/src/google/protobuf/repeated_field.h
 @@ -34,7 +34,6 @@
@@ -20,7 +22,7 @@ diff --git a/src/google/protobuf/repeated_field.h b/src/google/protobuf/repeated
  #include "absl/base/macros.h"
  #include "absl/base/no_destructor.h"
  #include "absl/base/optimization.h"
-@@ -679,8 +678,8 @@
+@@ -679,8 +678,8 @@ class ABSL_ATTRIBUTE_WARN_UNUSED PROTOBUF_DECLSPEC_EMPTY_BASES
      if (old_size != new_size) {
        [[maybe_unused]] const bool is_soo = this->is_soo();
        [[maybe_unused]] const Element* elem = soo_rep_.elements<Element>(is_soo);

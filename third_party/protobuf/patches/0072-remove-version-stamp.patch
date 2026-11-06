@@ -1,8 +1,11 @@
 diff --git a/src/google/protobuf/port.cc b/src/google/protobuf/port.cc
-index 455e34743..6cf237db1 100644
+index 7f5abb8b33673..82536dd22c381 100644
 --- a/src/google/protobuf/port.cc
 +++ b/src/google/protobuf/port.cc
-@@ -33,10 +33,0 @@
+@@ -30,16 +30,6 @@
+ // Must be included last
+ #include "google/protobuf/port_def.inc"
+ 
 -#if !defined(PROTO2_OPENSOURCE)
 -#if defined(PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT)
 -extern "C" {
@@ -13,4 +16,6 @@ index 455e34743..6cf237db1 100644
 -}
 -#endif  // defined(PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT)
 -#endif  // !defined(PROTO2_OPENSOURCE)
-
+ 
+ namespace google {
+ namespace protobuf {

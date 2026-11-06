@@ -1,5 +1,5 @@
 diff --git a/src/google/protobuf/inlined_string_field.cc b/src/google/protobuf/inlined_string_field.cc
-index 3a7015e..c1e298f 100644
+index 3a7015e4ed68d..c1e298fac9962 100644
 --- a/src/google/protobuf/inlined_string_field.cc
 +++ b/src/google/protobuf/inlined_string_field.cc
 @@ -15,7 +15,6 @@
@@ -11,7 +11,7 @@ index 3a7015e..c1e298f 100644
  #include "google/protobuf/arena.h"
  #include "google/protobuf/arena_align.h"
 diff --git a/src/google/protobuf/io/coded_stream.cc b/src/google/protobuf/io/coded_stream.cc
-index f10df0b..5ca8868 100644
+index a4abfc210024e..e8732af7a57ae 100644
 --- a/src/google/protobuf/io/coded_stream.cc
 +++ b/src/google/protobuf/io/coded_stream.cc
 @@ -33,7 +33,6 @@
@@ -32,7 +32,7 @@ index f10df0b..5ca8868 100644
      if (z.second) {
        // Oddly enough, memcpy() requires its first two args to be non-NULL even
 diff --git a/src/google/protobuf/io/zero_copy_stream_impl_lite.cc b/src/google/protobuf/io/zero_copy_stream_impl_lite.cc
-index 12a967d..effac7f 100644
+index 12a967dc882f6..effac7f6b63dd 100644
 --- a/src/google/protobuf/io/zero_copy_stream_impl_lite.cc
 +++ b/src/google/protobuf/io/zero_copy_stream_impl_lite.cc
 @@ -24,7 +24,6 @@
@@ -54,10 +54,10 @@ index 12a967d..effac7f 100644
                 kMinimumSize + 0));  // "+ 0" works around GCC4 weirdness.
  
 diff --git a/src/google/protobuf/message_lite.cc b/src/google/protobuf/message_lite.cc
-index 1d7da03..5405769 100644
+index 5ef066ee0188b..0bacfdf1356b9 100644
 --- a/src/google/protobuf/message_lite.cc
 +++ b/src/google/protobuf/message_lite.cc
-@@ -26,7 +26,6 @@
+@@ -27,7 +27,6 @@
  #include "absl/log/absl_log.h"
  #include "absl/strings/cord.h"
  #include "absl/strings/cord_buffer.h"
@@ -65,7 +65,7 @@ index 1d7da03..5405769 100644
  #include "absl/strings/str_cat.h"
  #include "absl/strings/string_view.h"
  #include "absl/types/span.h"
-@@ -596,8 +595,7 @@ bool MessageLite::AppendPartialToString(std::string* output) const {
+@@ -608,8 +607,7 @@ bool MessageLite::AppendPartialToString(std::string* output) const {
      return false;
    }
  
@@ -76,7 +76,7 @@ index 1d7da03..5405769 100644
        reinterpret_cast<uint8_t*>(io::mutable_string_data(output) + old_size);
    SerializeToArrayImpl(*this, start, byte_size);
 diff --git a/src/google/protobuf/parse_context.h b/src/google/protobuf/parse_context.h
-index 30cc5f2..2e1a4fe 100644
+index b8e3d4a7a283e..34933c3904dc5 100644
 --- a/src/google/protobuf/parse_context.h
 +++ b/src/google/protobuf/parse_context.h
 @@ -24,7 +24,6 @@
@@ -87,7 +87,7 @@ index 30cc5f2..2e1a4fe 100644
  #include "absl/strings/string_view.h"
  #include "absl/types/span.h"
  #include "google/protobuf/arena.h"
-@@ -203,7 +202,7 @@ class PROTOBUF_EXPORT EpsCopyInputStream {
+@@ -212,7 +211,7 @@ class PROTOBUF_EXPORT EpsCopyInputStream {
        // However micro-benchmarks regress on string reading cases. So we copy
        // the same logic from the old CodedInputStream ReadString. Note: as of
        // Apr 2021, this is still a significant win over `assign()`.
@@ -97,7 +97,7 @@ index 30cc5f2..2e1a4fe 100644
        memcpy(z, ptr, size);
        return ptr + size;
 diff --git a/src/google/protobuf/unknown_field_set.cc b/src/google/protobuf/unknown_field_set.cc
-index 9da9b0c..3d6e940 100644
+index 01697a7fac70d..050313bcc7d37 100644
 --- a/src/google/protobuf/unknown_field_set.cc
 +++ b/src/google/protobuf/unknown_field_set.cc
 @@ -18,7 +18,6 @@
@@ -108,7 +108,7 @@ index 9da9b0c..3d6e940 100644
  #include "absl/strings/string_view.h"
  #include "google/protobuf/extension_set.h"
  #include "google/protobuf/generated_message_tctable_impl.h"
-@@ -223,7 +222,7 @@ bool UnknownFieldSet::ParseFromArray(const void* data, int size) {
+@@ -188,7 +187,7 @@ bool UnknownFieldSet::ParseFromString(const absl::string_view data) {
  bool UnknownFieldSet::SerializeToString(std::string* output) const {
    const size_t size =
        google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(*this);
