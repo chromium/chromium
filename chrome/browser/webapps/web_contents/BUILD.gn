@@ -22,6 +22,6 @@ source_set("browser_tests") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/test:test_support_ui" ]
+    deps += [ "//chrome/test/base:platform_browser_test" ]
   }
 }

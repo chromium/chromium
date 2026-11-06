@@ -22,7 +22,6 @@ source_set("browser_tests") {
     sources += [ "media_gallery_util_browsertest.cc" ]
 
     deps += [
-      "//chrome/test:test_support_ui",
       "//components/media_gallery_util/public/mojom",
       "//third_party/libyuv",
     ]

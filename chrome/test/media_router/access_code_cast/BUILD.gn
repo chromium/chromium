@@ -32,7 +32,6 @@ static_library("access_code_cast_integration_base") {
     "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
     "//chrome/common",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chrome/test/media_router:test_support",
     "//components/keyed_service/content",
     "//components/media_router/browser",

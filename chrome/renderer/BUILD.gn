@@ -472,21 +472,32 @@ if (!is_android) {
     deps = [
       ":renderer",
       "//base/test:test_support",
-      "//chrome/test:test_support_ui",
+      "//chrome/common",
+      "//chrome/common:non_code_constants",
+      "//chrome/common/read_anything:mojo_bindings",
       "//chrome/test/base:chrome_render_view_test",
       "//components/autofill/content/renderer",
       "//components/autofill/content/renderer:test_support",
+      "//components/autofill/core/common:test_support",
       "//components/commerce/content/renderer",
       "//components/commerce/core:commerce_constants",
       "//components/no_state_prefetch/renderer",
       "//components/optimization_guide/content/renderer",
+      "//components/resources:components_resources",
       "//components/safe_browsing/core/common/phishing_classifier",
       "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//components/translate/content/common",
       "//components/translate/content/renderer",
+      "//components/translate/core/common",
+      "//components/variations",
       "//content/test:test_support",
       "//gin",
       "//services/strings",
       "//testing/gtest",
+
+      # tflite_config provides third_party/tflite/src/ include path, needed
+      # because :renderer headers transitively include tflite internal headers.
+      "//third_party/tflite",
     ]
 
     if (safe_browsing_mode == 1) {
@@ -495,6 +506,7 @@ if (!is_android) {
       deps += [
         "//components/safe_browsing/content/common:interfaces",
         "//components/safe_browsing/content/renderer",
+        "//components/safe_browsing/core/common:features",
       ]
 
       if (!is_mac) {
@@ -509,6 +521,7 @@ if (!is_android) {
           "//chrome/test/base:chrome_unit_test_suite",
           "//components/safe_browsing/content/renderer/phishing_classifier",
           "//components/safe_browsing/core/common/fbs:client_model",
+          "//net:test_support",
         ]
       }
     }

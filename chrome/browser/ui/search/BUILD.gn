@@ -213,7 +213,9 @@ if (enable_webui_ntp) {
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/tab_contents",
         "//chrome/browser/ui/tabs:tab_strip",
-        "//chrome/test:test_support_ui",
+        "//chrome/test/base:browser_test_waiters",
+        "//chrome/test/base:in_process_browser_test",
+        "//chrome/test/base:ui_test_utils",
       ]
     }
   }
