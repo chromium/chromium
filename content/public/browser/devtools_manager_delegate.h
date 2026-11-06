@@ -10,9 +10,12 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "url/gurl.h"
 
@@ -23,6 +26,7 @@ class DictValue;
 namespace content {
 
 class DevToolsAgentHostClientChannel;
+class MediaStreamUI;
 class RenderFrameHost;
 class WebContents;
 
@@ -177,6 +181,41 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   // the Lab testing). If you want to return true here, please get security
   // clearance from the devtools owners.
   virtual bool IsBrowserTargetDiscoverable();
+
+  // Describes the video capture device that Page.startScreenRecording uses
+  // when the client sets `captureArea` to `browserWindow`.
+  struct CONTENT_EXPORT BrowserWindowCaptureDevice {
+    // Out of line, because `MediaStreamUI` is only forward-declared here.
+    BrowserWindowCaptureDevice();
+    BrowserWindowCaptureDevice(BrowserWindowCaptureDevice&& other);
+    BrowserWindowCaptureDevice& operator=(BrowserWindowCaptureDevice&& other);
+    ~BrowserWindowCaptureDevice();
+
+    // The surface to capture, as in a getDisplayMedia() response. Content
+    // launches the capture device for it like for getDisplayMedia().
+    DesktopMediaID media_id;
+    // Shows that the window is captured (for example a screen sharing
+    // notification with a Stop button). It is null if the embedder shows no
+    // UI.
+    std::unique_ptr<MediaStreamUI> ui;
+  };
+  using BrowserWindowCaptureDeviceCallback = base::OnceCallback<void(
+      base::expected<BrowserWindowCaptureDevice, std::string>)>;
+
+  // The error message for a target whose browser window cannot be recorded.
+  static constexpr char kBrowserWindowRecordingNotSupportedError[] =
+      "Recording the browser window is not supported for this target.";
+
+  // Gets the video capture device for the browser window that shows
+  // `web_contents`, for example the window of a docked DevTools window with
+  // the inspected page. Runs `callback` with an error message if the
+  // embedder does not support it. The default implementation always fails.
+  // The device records the window and not `web_contents`: if `web_contents`
+  // is in a background tab, or if the user selects another tab during the
+  // recording, the recording shows the tab that the window shows.
+  virtual void GetBrowserWindowCaptureDevice(
+      WebContents* web_contents,
+      BrowserWindowCaptureDeviceCallback callback);
 
   using AcceptCallback =
       base::OnceCallback<void(DevToolsManagerDelegate::AcceptConnectionResult)>;

@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
@@ -25,6 +26,7 @@
 #include "content/browser/devtools/protocol/page.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_widget_host.h"
@@ -228,6 +230,28 @@ class PageHandler : public DevToolsDomainHandler,
   Response AssureTopLevelActiveFrame();
 
  private:
+  // Asks the embedder for the capture device of the browser window that shows
+  // the target, and starts `media_recorder_` with it.
+  void StartBrowserWindowRecording(
+      bool audio,
+      int max_width,
+      int max_height,
+      int frame_rate,
+      std::unique_ptr<StartScreenRecordingCallback> callback);
+  void OnBrowserWindowCaptureDevice(
+      base::WeakPtr<MediaRecorder> recorder,
+      bool audio,
+      int max_width,
+      int max_height,
+      int frame_rate,
+      std::unique_ptr<StartScreenRecordingCallback> callback,
+      base::expected<DevToolsManagerDelegate::BrowserWindowCaptureDevice,
+                     std::string> device);
+  void OnBrowserWindowRecordingStarted(
+      base::WeakPtr<MediaRecorder> recorder,
+      std::unique_ptr<StartScreenRecordingCallback> callback,
+      Response response);
+
   struct PendingScreenshotRequest;
 
   using BitmapEncoder =
