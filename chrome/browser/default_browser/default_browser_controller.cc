@@ -54,6 +54,8 @@ std::string SetterTypeToString(DefaultBrowserSetterType setter_type) {
       return "ShellIntegration";
     case DefaultBrowserSetterType::kVisualGuide:
       return "VisualGuide";
+    case DefaultBrowserSetterType::kAnnotatedShellIntegration:
+      return "AnnotatedShellIntegration";
   }
   NOTREACHED();
 }

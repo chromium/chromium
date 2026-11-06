@@ -507,13 +507,18 @@ const FeatureEntry::FeatureParam
         {"setter_option", "shell_integration"}};
 const FeatureEntry::FeatureParam kDefaultBrowserSetterSelection_VisualGuide[] =
     {{"setter_option", "visual_guide"}};
+const FeatureEntry::FeatureParam
+    kDefaultBrowserSetterSelection_AnnotatedShellIntegration[] = {
+        {"setter_option", "annotated_shell_integration"}};
 
 const FeatureEntry::FeatureVariation
     kDefaultBrowserSetterSelectionVariations[] = {
         {"with Shell Integration",
          kDefaultBrowserSetterSelection_ShellIntegration, nullptr},
         {"with Visual Guide", kDefaultBrowserSetterSelection_VisualGuide,
-         nullptr}};
+         nullptr},
+        {"with Annotated Shell Integration (Windows 11)",
+         kDefaultBrowserSetterSelection_AnnotatedShellIntegration, nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 const FeatureEntry::FeatureParam kLocalNetworkAccessChecksBlock[] = {

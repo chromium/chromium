@@ -119,6 +119,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(DefaultBrowserSetterType) -->
 
 <variants name="DefaultBrowserSetterType">
+  <variant name="AnnotatedShellIntegration"
+      summary="the annotated shell integration setter"/>
   <variant name="ShellIntegration" summary="the shell integration setter"/>
   <variant name="VisualGuide" summary="the visual guide setter"/>
 </variants>

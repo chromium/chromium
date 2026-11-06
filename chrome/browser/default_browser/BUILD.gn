@@ -60,9 +60,14 @@ source_set("default_browser") {
   ]
 
   if (is_win) {
-    sources += [ "default_browser_monitor_win.cc" ]
+    sources += [
+      "default_browser_monitor_win.cc",
+      "setters/default_browser_annotated_shell_integration_setter.cc",
+      "setters/default_browser_annotated_shell_integration_setter.h",
+    ]
 
     deps += [
+      "//chrome/browser/ui/views/default_browser",
       "//chrome/browser/win",
       "//chrome/browser/win:registry_watcher",
       "//chrome/install_static:install_static_util",
@@ -115,6 +120,7 @@ source_set("unit_tests") {
     sources += [
       "default_browser_notification_observer_unittest.cc",
       "default_browser_startup_metrics_unittest.cc",
+      "setters/default_browser_annotated_shell_integration_setter_unittest.cc",
     ]
   }
 
@@ -134,6 +140,7 @@ source_set("unit_tests") {
   if (is_win) {
     deps += [
       ":startup_metrics",
+      "//chrome/browser/ui/views/default_browser",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
       "//chrome/installer/util:with_no_strings",

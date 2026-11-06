@@ -142,7 +142,13 @@ DefaultBrowserSetterType GetDefaultBrowserSetterType() {
     return DefaultBrowserSetterType::kShellIntegration;
   }
 
-  return kDefaultBrowserSetterParam.Get();
+  const DefaultBrowserSetterType setter_type = kDefaultBrowserSetterParam.Get();
+  // Windows 11 only; elsewhere, fall back to the flow it annotates.
+  if (setter_type == DefaultBrowserSetterType::kAnnotatedShellIntegration &&
+      !IsWin11OrGreater()) {
+    return DefaultBrowserSetterType::kShellIntegration;
+  }
+  return setter_type;
 }
 
 GURL GetDefaultBrowserVisualGuideURL() {
@@ -197,7 +203,9 @@ BASE_FEATURE(kVisualGuidedSetterDocking, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr inline auto kDefaultBrowserSetterSelectionOption =
     std::to_array<base::FeatureParam<DefaultBrowserSetterType>::Option>(
         {{DefaultBrowserSetterType::kShellIntegration, "shell_integration"},
-         {DefaultBrowserSetterType::kVisualGuide, "visual_guide"}});
+         {DefaultBrowserSetterType::kVisualGuide, "visual_guide"},
+         {DefaultBrowserSetterType::kAnnotatedShellIntegration,
+          "annotated_shell_integration"}});
 
 BASE_FEATURE_ENUM_PARAM(DefaultBrowserSetterType,
                         kDefaultBrowserSetterParam,

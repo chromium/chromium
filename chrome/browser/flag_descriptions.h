@@ -591,7 +591,8 @@ inline constexpr char kDefaultBrowserPromptSurfacesName[] =
 
 inline constexpr char kDefaultBrowserSetterSelectionDescription[] =
     "Enables selecting a default browser setter (e.g. shell integration, "
-    "visual guide).";
+    "visual guide, or on Windows 11 shell integration annotated with a bubble "
+    "pointing at the Settings \"Set default\" button).";
 inline constexpr char kDefaultBrowserSetterSelectionName[] =
     "Default Browser Setter Selection";
 

@@ -31,6 +31,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
+#include "chrome/browser/default_browser/setters/default_browser_annotated_shell_integration_setter.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace default_browser {
@@ -202,6 +203,12 @@ DefaultBrowserManager::CreateControllerFor(
       setter = std::make_unique<DefaultBrowserVisualGuidedSetter>(
           DefaultBrowserManager::From(g_browser_process)->GetProfile());
       break;
+#if BUILDFLAG(IS_WIN)
+    case DefaultBrowserSetterType::kAnnotatedShellIntegration:
+      setter =
+          std::make_unique<DefaultBrowserAnnotatedShellIntegrationSetter>();
+      break;
+#endif  // BUILDFLAG(IS_WIN)
     default:
       NOTREACHED();
   }

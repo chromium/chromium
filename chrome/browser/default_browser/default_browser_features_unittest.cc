@@ -56,6 +56,31 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
 #endif
 }
 
+TEST(DefaultBrowserFeaturesTest,
+     AnnotatedShellIntegrationSetterIsWindows11Only) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kDefaultBrowserSetterSelection,
+      {{"setter_option", "annotated_shell_integration"}});
+#if BUILDFLAG(IS_WIN)
+  {
+    base::test::ScopedOSInfoOverride win11_os(
+        base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+    EXPECT_EQ(GetDefaultBrowserSetterType(),
+              DefaultBrowserSetterType::kAnnotatedShellIntegration);
+  }
+  {
+    base::test::ScopedOSInfoOverride win10_os(
+        base::test::ScopedOSInfoOverride::Type::kWin10Pro);
+    EXPECT_EQ(GetDefaultBrowserSetterType(),
+              DefaultBrowserSetterType::kShellIntegration);
+  }
+#else
+  EXPECT_EQ(GetDefaultBrowserSetterType(),
+            DefaultBrowserSetterType::kShellIntegration);
+#endif
+}
+
 TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserModalSticky) {
   {
     base::test::ScopedFeatureList feature_list;
