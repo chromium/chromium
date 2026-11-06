@@ -334,7 +334,18 @@ TEST_F(DOMFeaturePolicyTest, UseCountersSkipExcludedFeatures) {
   const Document& document = page_holder_->GetDocument();
 
   // Queries for excluded features are not counted.
-  for (const char* feature : {"browsing-topics", "interest-cohort"}) {
+  for (const char* feature : {
+           "attribution-reporting",
+           "browsing-topics",
+           "fenced-unpartitioned-storage-read",
+           "interest-cohort",
+           "join-ad-interest-group",
+           "private-aggregation",
+           "record-ad-auction-events",
+           "run-ad-auction",
+           "shared-storage",
+           "shared-storage-select-url",
+       }) {
     GetPolicy()->allowsFeature(script_state, feature);
     GetPolicy()->allowsFeature(script_state, feature, kOriginA);
     GetPolicy()->getAllowlistForFeature(script_state, feature);
@@ -370,7 +381,18 @@ TEST_F(IFramePolicyTest, UseCountersSkipExcludedFeatures) {
   const Document& document = page_holder_->GetDocument();
 
   // Queries for excluded features are not counted.
-  for (const char* feature : {"browsing-topics", "interest-cohort"}) {
+  for (const char* feature : {
+           "attribution-reporting",
+           "browsing-topics",
+           "fenced-unpartitioned-storage-read",
+           "interest-cohort",
+           "join-ad-interest-group",
+           "private-aggregation",
+           "record-ad-auction-events",
+           "run-ad-auction",
+           "shared-storage",
+           "shared-storage-select-url",
+       }) {
     GetPolicy()->allowsFeature(script_state, feature);
     GetPolicy()->allowsFeature(script_state, feature, kOriginA);
     GetPolicy()->getAllowlistForFeature(script_state, feature);

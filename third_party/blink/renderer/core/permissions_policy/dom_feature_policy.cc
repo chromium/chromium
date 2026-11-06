@@ -30,8 +30,18 @@ namespace {
 void MaybeCountFeaturePolicyJSAPIUse(ExecutionContext* execution_context,
                                      const String& feature,
                                      WebFeature specific_feature) {
-  static constexpr const char* kExcludedFeatures[] = {"browsing-topics",
-                                                      "interest-cohort"};
+  static constexpr const char* kExcludedFeatures[] = {
+      "attribution-reporting",
+      "browsing-topics",
+      "fenced-unpartitioned-storage-read",
+      "interest-cohort",
+      "join-ad-interest-group",
+      "private-aggregation",
+      "record-ad-auction-events",
+      "run-ad-auction",
+      "shared-storage",
+      "shared-storage-select-url",
+  };
   if (std::ranges::contains(kExcludedFeatures, feature)) {
     return;
   }
