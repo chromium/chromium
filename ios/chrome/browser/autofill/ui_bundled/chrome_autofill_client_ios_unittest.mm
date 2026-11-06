@@ -44,7 +44,6 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
-#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
 #import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -152,8 +151,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
 
     mock_snackbar_handler_ = OCMStrictProtocolMock(@protocol(SnackbarCommands));
     autofill_agent_delegate_ = [[AutofillAgentDelegate alloc]
-        initWithSnackbarHandler:mock_snackbar_handler_
-                atMemoryHandler:nil];
+        initWithSnackbarHandler:mock_snackbar_handler_];
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_snackbar_handler_
@@ -624,33 +622,6 @@ TEST_F(ChromeAutofillClientIOSTest, GetPersonalContextEntityMetadataManager) {
       client().GetPersonalContextEntityMetadataManager();
   ASSERT_NE(manager, nullptr);
   EXPECT_NE(manager->GetSyncControllerDelegate(), nullptr);
-}
-
-// Test that `HideSuggestions` dismisses AtMemory when product is `kAtMemory`,
-// but not when product is `std::nullopt` or other products.
-TEST_F(ChromeAutofillClientIOSTest, HideSuggestionsDismissesAtMemory) {
-  id mock_at_memory_handler =
-      OCMStrictProtocolMock(@protocol(AtMemoryCommands));
-  client().set_at_memory_handler(mock_at_memory_handler);
-
-  // When product is kAtMemory, dismissAtMemory should be called.
-  OCMExpect([mock_at_memory_handler dismissAtMemory]);
-  client().HideSuggestions(SuggestionHidingReason::kUserAborted,
-                           FillingProduct::kAtMemory);
-  EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
-
-  // When product is nullopt, dismissAtMemory should not be called.
-  [[mock_at_memory_handler reject] dismissAtMemory];
-  client().HideSuggestions(SuggestionHidingReason::kTabGone, std::nullopt);
-  EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
-
-  // When product is a different product, dismissAtMemory should not be called.
-  [[mock_at_memory_handler reject] dismissAtMemory];
-  client().HideSuggestions(SuggestionHidingReason::kUserAborted,
-                           FillingProduct::kAddress);
-  EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
-
-  client().set_at_memory_handler(nil);
 }
 
 // Test that suggestion updates are attributed to the form and field the popup

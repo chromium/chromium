@@ -7,8 +7,6 @@
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
-#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
-#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
@@ -201,12 +199,8 @@
     id<AutofillCommands> autofillHandler =
         HandlerForProtocol(_commandDispatcher, AutofillCommands);
     autofillTabHelper->SetAutofillHandler(autofillHandler);
-    id<AtMemoryCommands> atMemoryHandler =
-        autofill::IsAutofillAtMemoryEnabled()
-            ? HandlerForProtocol(_commandDispatcher, AtMemoryCommands)
-            : nil;
-    autofillTabHelper->SetCommandHandlers(
-        static_cast<id<SnackbarCommands>>(_commandDispatcher), atMemoryHandler);
+    autofillTabHelper->SetSnackbarHandler(
+        static_cast<id<SnackbarCommands>>(_commandDispatcher));
     id<FormInputAccessoryCommands> formInputAccessoryHandler =
         HandlerForProtocol(_commandDispatcher, FormInputAccessoryCommands);
     autofillTabHelper->SetFormInputAccessoryHandler(formInputAccessoryHandler);
@@ -380,7 +374,7 @@
   if (autofillTabHelper) {
     autofillTabHelper->SetBaseViewController(nil);
     autofillTabHelper->SetAutofillHandler(nil);
-    autofillTabHelper->SetCommandHandlers(nil, nil);
+    autofillTabHelper->SetSnackbarHandler(nil);
     autofillTabHelper->SetFormInputAccessoryHandler(nil);
   }
 

@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -32,12 +31,9 @@ void AutofillTabHelper::SetAutofillHandler(
   autofill_client_->set_commands_handler(autofill_handler);
 }
 
-void AutofillTabHelper::SetCommandHandlers(
-    id<SnackbarCommands> snackbar_handler,
-    id<AtMemoryCommands> at_memory_handler) {
+void AutofillTabHelper::SetSnackbarHandler(
+    id<SnackbarCommands> snackbar_handler) {
   snackbar_handler_ = snackbar_handler;
-  at_memory_handler_ = at_memory_handler;
-  autofill_client_->set_at_memory_handler(at_memory_handler);
   UpdateAutofillAgentDelegate();
 }
 
@@ -50,8 +46,7 @@ void AutofillTabHelper::SetFormInputAccessoryHandler(
 void AutofillTabHelper::UpdateAutofillAgentDelegate() {
   if (snackbar_handler_) {
     autofill_agent_delegate_ = [[AutofillAgentDelegate alloc]
-        initWithSnackbarHandler:snackbar_handler_
-                atMemoryHandler:at_memory_handler_];
+        initWithSnackbarHandler:snackbar_handler_];
     autofill_agent_.delegate = autofill_agent_delegate_;
   } else {
     autofill_agent_delegate_ = nil;

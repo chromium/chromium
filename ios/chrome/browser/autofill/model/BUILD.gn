@@ -77,7 +77,6 @@ source_set("model") {
     "//components/wallet/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/account_settings/model",
-    "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/resources",
     "//ios/chrome/browser/history/model",
@@ -146,7 +145,6 @@ source_set("autofill_agent_delegate") {
   deps = [
     "//base",
     "//components/autofill/ios/browser",
-    "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/shared/public/commands",
   ]
 }

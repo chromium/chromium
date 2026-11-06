@@ -39,9 +39,6 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_coordinator.h"
-#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
-#import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_source_item.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_view_controller.h"
@@ -105,8 +102,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-using autofill::FieldGlobalId;
-
 namespace {
 // Delay between the time the view is shown, and the time the suggestion label
 // is highlighted.
@@ -119,10 +114,6 @@ constexpr base::TimeDelta kAutofillSuggestionTipDelay = base::Seconds(0.5);
 // Additional vertical offset for the IPH, so that it doesn't appear below the
 // Autofill strip at the top of the keyboard.
 const CGFloat kIPHVerticalOffset = -5;
-
-// The histogram recording why the AtMemory UI failed to open on button tap.
-constexpr std::string_view kAtMemoryFailedToOpenReasonHistogram =
-    "Autofill.AtMemory.IOS.FailedToOpenReason";
 
 // Return the feature corresponding to the `feature_for_iph` enum.
 const base::Feature* FetchIPHFeatureFromEnum(
@@ -191,7 +182,6 @@ void UndoInSessionSuppressedEntity(
 
 @interface FormInputAccessoryCoordinator () <
     AddressCoordinatorDelegate,
-    AtMemoryCommands,
     AutofillAiSourcesViewControllerDelegate,
     AutofillSuggestionContextMenuHandler,
     CardCoordinatorDelegate,
@@ -240,9 +230,6 @@ void UndoInSessionSuppressedEntity(
   // Modal alert.
   AlertCoordinator* _alertCoordinator;
 
-  // The coordinator for the AtMemory Autofill feature.
-  AtMemoryCoordinator* _atMemoryCoordinator;
-
   // The navigation controller presenting the Autofill AI sources bottom sheet.
   UINavigationController* _sourcesNavigationController;
 }
@@ -254,8 +241,6 @@ void UndoInSessionSuppressedEntity(
     CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:self
                              forProtocol:@protocol(SecurityAlertCommands)];
-    [dispatcher startDispatchingToTarget:self
-                             forProtocol:@protocol(AtMemoryCommands)];
     [dispatcher startDispatchingToTarget:self
                              forProtocol:@protocol(FormInputAccessoryCommands)];
 
@@ -377,30 +362,15 @@ void UndoInSessionSuppressedEntity(
   [self stopManualFillAllPasswordCoordinator];
 
   [self dismissAlertCoordinator];
-  [self stopAtMemoryCoordinator];
   [self dismissSourcesSheetAnimated:NO];
 }
 
 - (void)stopChildren {
-  [self stopAtMemoryCoordinator];
   _formInputAccessoryMediator.formInputInteractionDelegate = nil;
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];
   }
   [self.childCoordinators removeAllObjects];
-}
-
-// Returns the reason why the AtMemory UI can't be opened for `fieldId`, or
-// `AtMemoryFailedToOpenReason::kNone` if it can be opened.
-- (AtMemoryFailedToOpenReason)atMemoryFailedToOpenReasonForField:
-    (FieldGlobalId)fieldId {
-  if (!fieldId.renderer_id) {
-    return AtMemoryFailedToOpenReason::kNoFocusedField;
-  }
-  if (_atMemoryCoordinator) {
-    return AtMemoryFailedToOpenReason::kAlreadyOpen;
-  }
-  return GetAtMemoryFailedToOpenReason(self.browser);
 }
 
 // Starts the expanded manual fill coordinator and displays its view controller.
@@ -927,43 +897,6 @@ void UndoInSessionSuppressedEntity(
     return;
   }
   [self reset];
-}
-
-#pragma mark - AtMemoryCommands
-
-- (void)showAtMemoryForField:(FieldGlobalId)fieldId {
-  AtMemoryFailedToOpenReason reason =
-      [self atMemoryFailedToOpenReasonForField:fieldId];
-  base::UmaHistogramEnumeration(kAtMemoryFailedToOpenReasonHistogram, reason);
-  if (reason != AtMemoryFailedToOpenReason::kNone) {
-    return;
-  }
-  _atMemoryCoordinator = [[AtMemoryCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                         fieldId:fieldId];
-
-  [self.childCoordinators addObject:_atMemoryCoordinator];
-
-  [_atMemoryCoordinator start];
-}
-
-- (void)dismissAtMemory {
-  if (_atMemoryCoordinator.settingsPresented) {
-    return;
-  }
-  [self stopAtMemoryCoordinator];
-}
-
-// Stops and removes `_atMemoryCoordinator`.
-- (void)stopAtMemoryCoordinator {
-  if (!_atMemoryCoordinator) {
-    return;
-  }
-  AtMemoryCoordinator* coordinator = _atMemoryCoordinator;
-  _atMemoryCoordinator = nil;
-  [coordinator stop];
-  [self.childCoordinators removeObject:coordinator];
 }
 
 #pragma mark - SecurityAlertCommands

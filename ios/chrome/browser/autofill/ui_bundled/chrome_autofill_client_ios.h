@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-@protocol AtMemoryCommands;
 @protocol AutofillCommands;
 @protocol FormInputAccessoryCommands;
 @class UIViewController;
@@ -107,11 +106,6 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
     commands_handler_ = commands_handler;
   }
   id<AutofillCommands> commands_handler() const { return commands_handler_; }
-
-  void set_at_memory_handler(id<AtMemoryCommands> at_memory_handler) {
-    at_memory_handler_ = at_memory_handler;
-  }
-  id<AtMemoryCommands> at_memory_handler() const { return at_memory_handler_; }
 
   void set_form_input_accessory_commands_handler(
       id<FormInputAccessoryCommands> form_input_accessory_commands_handler) {
@@ -314,8 +308,6 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   __weak UIViewController* base_view_controller_;
 
   __weak id<AutofillCommands> commands_handler_;
-
-  __weak id<AtMemoryCommands> at_memory_handler_;
 
   __weak id<FormInputAccessoryCommands> form_input_accessory_commands_handler_;
 
