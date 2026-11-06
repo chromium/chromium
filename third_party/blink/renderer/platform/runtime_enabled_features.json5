@@ -7857,7 +7857,7 @@
     },
     {
       name: "WebTransportDatagramsReadableType",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebTransportDatagramsWritable",
