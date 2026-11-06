@@ -416,7 +416,6 @@ class TabInterface;
 //
 // Do not add more public accessors. Instead use the UnownedUserData design
 // pattern, see ui/base/unowned_user_data/README.md.
-// TODO(crbug.com/481268779): Remove existing public accessors.
 class TabFeatures {
  public:
   TabFeatures();
