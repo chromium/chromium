@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -449,6 +450,7 @@ BookmarkRemoteUpdatesHandler::ReorderValidUpdates(
   // |roots| contains only root of all trees in the forest all of which are
   // ready to be processed because none has a pending update.
   std::vector<const syncer::UpdateResponseData*> ordered_updates;
+  ordered_updates.reserve(updates->size());
   for (const base::Uuid& root : roots) {
     TraverseAndAppendChildren(root, uuid_to_updates, parent_to_children,
                               &ordered_updates);

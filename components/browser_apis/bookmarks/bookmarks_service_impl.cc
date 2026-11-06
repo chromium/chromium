@@ -5,7 +5,9 @@
 #include "components/browser_apis/bookmarks/bookmarks_service_impl.h"
 
 #include <memory>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -281,6 +283,7 @@ BookmarksServiceImpl::MoveBookmarkNode(const base::Uuid& id,
 mojom::BookmarksService::DeleteBookmarkNodesResult
 BookmarksServiceImpl::DeleteBookmarkNodes(const std::vector<base::Uuid>& ids) {
   std::vector<const bookmarks::BookmarkNode*> nodes_to_remove;
+  nodes_to_remove.reserve(ids.size());
   for (const auto& id : ids) {
     ASSIGN_OR_RETURN(const bookmarks::BookmarkNode* node,
                      view_->FindNodeByUuid(id), &MakeError,
@@ -315,11 +318,8 @@ void BookmarksServiceImpl::OnBookmarksViewBeingDeleted(BookmarksView* view) {
 void BookmarksServiceImpl::BroadcastEvents(
     const std::vector<mojom::BookmarksEventPtr>& events) {
   for (auto& observer : observers_) {
-    std::vector<mojom::BookmarksEventPtr> copy;
-    for (const auto& event : events) {
-      copy.push_back(event.Clone());
-    }
-    observer->OnBookmarksEvents(std::move(copy));
+    observer->OnBookmarksEvents(
+        base::ToVector(events, &mojom::BookmarksEventPtr::Clone));
   }
 }
 
