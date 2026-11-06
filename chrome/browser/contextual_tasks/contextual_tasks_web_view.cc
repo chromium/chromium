@@ -459,10 +459,8 @@ void ContextualTasksWebView::DidFinishNavigation(
     if (was_on_srp && ui_service->IsAiUrl(navigation_handle->GetURL())) {
       if (auto* tab = browser_window_->GetActiveTabInterface()) {
         if (auto* controller = LensSearchController::From(tab)) {
-          // TODO(crbug.com/566315172): Update to a dedicated dismissal source
-          // for SRP to AIM transitions.
-          controller->CloseLensAsync(
-              lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
+          controller->CloseLensAsync(lens::LensOverlayDismissalSource::
+                                         kContextualTasksSrpToAimTransition);
         }
       }
     }

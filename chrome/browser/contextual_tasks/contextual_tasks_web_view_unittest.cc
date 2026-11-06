@@ -490,7 +490,7 @@ TEST_F(ContextualTasksWebViewTest, TransitionFromSrpToAiPageClosesLens) {
   EXPECT_CALL(
       mock_lens_controller,
       CloseLensAsync(
-          lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted))
+          lens::LensOverlayDismissalSource::kContextualTasksSrpToAimTransition))
       .Times(1);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents.get(), GURL("https://ai.google.com/search?q=test"));
@@ -516,7 +516,7 @@ TEST_F(ContextualTasksWebViewTest,
   EXPECT_CALL(
       mock_lens_controller,
       CloseLensAsync(
-          lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted))
+          lens::LensOverlayDismissalSource::kContextualTasksSrpToAimTransition))
       .Times(1);
   auto sim = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://www.google.com/search?q=test&udm=50"),

@@ -156,7 +156,11 @@ enum class LensOverlayDismissalSource {
   // used on Desktop.
   kContextualTasksLensChipRemoved = 39,
 
-  kMaxValue = kContextualTasksLensChipRemoved,
+  // The Contextual Tasks side panel transitioned from a Search Results Page
+  // (SRP) to an AI Mode (AIM) page. Only used on Desktop.
+  kContextualTasksSrpToAimTransition = 40,
+
+  kMaxValue = kContextualTasksSrpToAimTransition,
 
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
