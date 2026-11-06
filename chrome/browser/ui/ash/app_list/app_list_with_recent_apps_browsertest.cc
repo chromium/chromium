@@ -35,9 +35,6 @@ class AppListWithRecentAppBrowserTest
     ASSERT_TRUE(client);
     client->UpdateProfile();
 
-    // Ensure async callbacks are run.
-    base::RunLoop().RunUntilIdle();
-
     // Install enough apps to show the recent apps view.
     auto* app1 = LoadExtension(test_data_dir_.AppendASCII("app1"));
     allowlist_1_ = std::make_unique<
