@@ -6112,7 +6112,7 @@ crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.ht
 crbug.com/1376845 external/wpt/mediacapture-insertable-streams/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 
 # Investigate the flake.
-crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.tentative.window.html [ Failure Pass ]
+crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/same-origin-bfcache.window.html [ Failure Pass ]
 
 # Test is flaky because of test_driver.bless, see crbug.com/1066891
 crbug.com/1382865 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure Timeout ]
@@ -6437,9 +6437,9 @@ crbug.com/1488391 external/wpt/mst-content-hint/RTCRtpSendParameters-degradation
 crbug.com/1479983 [ Mac ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Pass Timeout ]
 
 # NotRestoredReasons flaky
-crbug.com/1485427 [ Linux ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-fetch.tentative.window.html [ Failure Pass ]
-crbug.com/1485427 [ Mac ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-fetch.tentative.window.html [ Failure Pass ]
-crbug.com/1485427 [ Win ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-fetch.tentative.window.html [ Failure Pass ]
+crbug.com/1485427 [ Linux ] external/wpt/performance-timeline/not-restored-reasons/fetch.window.html [ Failure Pass ]
+crbug.com/1485427 [ Mac ] external/wpt/performance-timeline/not-restored-reasons/fetch.window.html [ Failure Pass ]
+crbug.com/1485427 [ Win ] external/wpt/performance-timeline/not-restored-reasons/fetch.window.html [ Failure Pass ]
 
 # Gardener 2023-09-21
 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/initial-empty-document/window-open-204-fragment.html [ Failure ]
