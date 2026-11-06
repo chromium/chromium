@@ -113,6 +113,12 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
         .join(' ');
   }
 
+  protected getGroupAriaLabel_(group: MenuGroup<unknown>): string {
+    return group.header.shortcut ?
+        `${group.header.title} (${group.header.shortcut})` :
+        group.header.title;
+  }
+
   protected getItemRole_(item: MenuStateItem<unknown>): string {
     return item.itemType === SettingsItemType.ACTION ? 'menuitem' :
                                                        'menuitemradio';

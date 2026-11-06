@@ -16,7 +16,7 @@ export function getHtml(this: GroupedActionMenuElement) {
           tabindex="-1">
         ${this.menuGroups.map((group, groupIndex) => html`
           <span class="menu-group" role="group"
-              aria-label="${group.header.title}"
+              aria-label="${this.getGroupAriaLabel_(group)}"
               aria-owns="${this.getAriaOwns_(groupIndex, group.items.length)}">
           </span>
           <hr class="sp-hr has-separator-${group.header.separator}">

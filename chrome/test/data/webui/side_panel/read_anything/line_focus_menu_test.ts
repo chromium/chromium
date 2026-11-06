@@ -26,10 +26,21 @@ suite('LineFocusMenuElement', () => {
     document.body.appendChild(lineFocusMenu);
   });
 
-  test('has header shortcut', () => {
+  test('has header shortcut and exposes it in group aria-label', async () => {
+    await microtasksFinished();
+    const expectedLabel = loadTimeData.getString('lineFocusLabel');
+    const expectedShortcut = loadTimeData.getString('lineFocusShortcutLabel');
+
+    assertEquals(expectedLabel, lineFocusMenu.$.menu.label);
     assertEquals(
-        loadTimeData.getString('lineFocusShortcutLabel'),
-        lineFocusMenu.$.menu.menuGroups[0]!.header.shortcut);
+        expectedShortcut, lineFocusMenu.$.menu.menuGroups[0]!.header.shortcut);
+
+    const group = lineFocusMenu.$.menu.$.lazyMenu.get()
+                      .querySelector<HTMLElement>('.menu-group');
+    assertTrue(!!group);
+    assertEquals(
+        `${expectedLabel} (${expectedShortcut})`,
+        group.getAttribute('aria-label'));
   });
 
   test('notifies of feature use if enabled on close', async () => {
@@ -136,6 +147,18 @@ suite('LineFocusMenuElement', () => {
       lineFocusMenu = document.createElement('line-focus-menu');
       document.body.appendChild(lineFocusMenu);
       await microtasksFinished();
+    });
+
+    test('uses toolsLabel for menu label and keeps shortcut in group', () => {
+      assertEquals(
+          loadTimeData.getString('toolsLabel'), lineFocusMenu.$.menu.label);
+      const group = lineFocusMenu.$.menu.$.lazyMenu.get()
+                        .querySelector<HTMLElement>('.menu-group');
+      assertTrue(!!group);
+      assertEquals(
+          `${loadTimeData.getString('lineFocusLabel')} (${
+              loadTimeData.getString('lineFocusShortcutLabel')})`,
+          group.getAttribute('aria-label'));
     });
 
     test(

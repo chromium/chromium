@@ -164,6 +164,13 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     this.groups_ = groups;
   }
 
+  protected getMenuLabel_(): string {
+    return loadTimeData.getString(
+        this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled() ?
+            'toolsLabel' :
+            'lineFocusLabel');
+  }
+
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
     this.$.menu.open(anchor, showAtConfig);
   }

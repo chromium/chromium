@@ -140,6 +140,33 @@ suite('GroupedActionMenuElement', () => {
         menu.$.lazyMenu.get().querySelector<HTMLElement>('.header-style');
     assertTrue(!!header);
     assertEquals('Header 1', header.textContent.trim());
+
+    const group =
+        menu.$.lazyMenu.get().querySelector<HTMLElement>('.menu-group');
+    assertTrue(!!group);
+    assertEquals('Header 1', group.getAttribute('aria-label'));
+  });
+
+  test('group accessible name includes header shortcut when set', async () => {
+    menu.menuGroups = [
+      {
+        header: {title: 'Line focus', shortcut: 'Alt+L', separator: false},
+        items: [{title: 'Off', data: false}],
+        eventName: ToolbarEvent.LINE_FOCUS_TOGGLE,
+      },
+      {
+        header: {title: 'Style', separator: true},
+        items: [{title: 'Underline', data: 1}],
+        eventName: ToolbarEvent.LINE_FOCUS_STYLE,
+      },
+    ];
+    await microtasksFinished();
+
+    const groups =
+        menu.$.lazyMenu.get().querySelectorAll<HTMLElement>('.menu-group');
+    assertEquals(2, groups.length);
+    assertEquals('Line focus (Alt+L)', groups[0]!.getAttribute('aria-label'));
+    assertEquals('Style', groups[1]!.getAttribute('aria-label'));
   });
 
   test('button accessible name and title fall back to item title', async () => {

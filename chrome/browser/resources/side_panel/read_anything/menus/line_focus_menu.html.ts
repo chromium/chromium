@@ -8,7 +8,7 @@ import type {LineFocusMenuElement} from './line_focus_menu.js';
 
 export function getHtml(this: LineFocusMenuElement) {
   return html`<!--_html_template_start_-->
-<grouped-action-menu id="menu" label="$i18n{lineFocusLabel}"
+<grouped-action-menu id="menu" label="${this.getMenuLabel_()}"
     .menuGroups="${this.groups_}" .nonModal="${this.nonModal}"
     .closeOnClick="${false}">
 </grouped-action-menu>
