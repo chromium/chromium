@@ -18,6 +18,8 @@
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#else
+#include "ui/compositor/layer.h"
 #endif  // USE_AURA
 
 namespace {
@@ -181,6 +183,17 @@ TEST_F(FullWebUIOmniboxFrameTest, ViewTargeterHitTesting) {
   frame->SetElevation(0);
   widget_->LayoutRootViewIfNecessary();
   EXPECT_NE(frame->GetEventHandlerForPoint(gfx::Point(50, 500 - 2)), frame);
+
+  // When the widget layer is clipped (e.g. by the Organizer Tray or expanded
+  // vertical tab strip covering the left 200px), points in the clipped region
+  // target the frame so they are forwarded to the browser window beneath, while
+  // points in the unclipped interior still target the child contents.
+  widget_->GetLayer()->SetClipRect(gfx::Rect(200, 0, 300, 500));
+  EXPECT_EQ(frame->GetEventHandlerForPoint(gfx::Point(100, 250)), frame);
+  EXPECT_NE(frame->GetEventHandlerForPoint(gfx::Point(250, 250)), frame);
+
+  widget_->GetLayer()->SetClipRect(gfx::Rect());
+  EXPECT_NE(frame->GetEventHandlerForPoint(gfx::Point(100, 250)), frame);
 }
 
 TEST_F(FullWebUIOmniboxFrameTest, OnMouseEventMarksHandled) {

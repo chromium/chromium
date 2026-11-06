@@ -23,8 +23,10 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #else
+#include "ui/compositor/layer.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
+#include "ui/views/widget/widget.h"
 #endif  // USE_AURA
 
 namespace {
@@ -43,14 +45,23 @@ class ResultsViewTargeterDelegate : public views::ViewTargeterDelegate {
   views::View* TargetForRect(views::View* root,
                              const gfx::Rect& rect) override {
     // On macOS (non-Aura), there is no `WindowTargeter` to exclude the shadow
-    // margin at the window level. Because the widget bounds include the shadow
-    // margin, and in WebUI shadow mode the WebView spans the entire widget,
-    // clicks in the transparent shadow margin would be swallowed by the
-    // WebView. Redirect rects falling entirely in that margin to `root` (this
-    // frame), which forwards them to the browser window beneath so underlying
-    // controls (e.g. bookmarks bar or web content) receive the events.
+    // margin or the layer's clip rect at the window level. Because the widget
+    // bounds include the shadow margin, and in WebUI shadow mode the WebView
+    // spans the entire widget, clicks in the transparent shadow margin or the
+    // region clipped for an occluding view (e.g. `OrganizerTrayView` or the
+    // expanded vertical tab strip) would be swallowed by the WebView. Redirect
+    // rects falling outside the unclipped interior to `root` (this frame),
+    // which forwards them to the browser window beneath so underlying controls
+    // (e.g. Organizer Tray, vertical tab strip, bookmarks bar, or web content)
+    // receive the events.
     gfx::Rect interior = root->GetLocalBounds();
     interior.Inset(frame_->shadow_margin());
+    if (const views::Widget* widget = root->GetWidget()) {
+      if (const ui::Layer* layer = widget->GetLayer();
+          layer && !layer->clip_rect().IsEmpty()) {
+        interior.Intersect(layer->clip_rect());
+      }
+    }
     if (!interior.Intersects(rect)) {
       return root;
     }
