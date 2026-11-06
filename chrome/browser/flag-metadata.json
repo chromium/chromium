@@ -5989,6 +5989,14 @@
     "expiry_milestone": 162
   },
   {
+    "name": "glic-force-fcm-experimental-trigger-failure",
+    "owners": [
+      "meiliang@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "glic-guest-url-presets",
     "owners": [
       "cuianthony@google.com",

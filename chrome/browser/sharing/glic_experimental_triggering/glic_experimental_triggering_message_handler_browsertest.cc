@@ -1661,6 +1661,49 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   EXPECT_TRUE(cancel_future.Wait());
   EXPECT_EQ(cancel_future.Take(), "pending-context-id");
 }
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       ForceFcmTriggerFailureDropsTriggerWithoutReply) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kGlicBackgroundTriggering,
+       features::kGlicForceFcmExperimentalTriggerFailure},
+      {});
+  base::HistogramTester histogram_tester;
+
+  OptIn();
+
+  auto message = CreateTriggeringMessage(101);
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  triggering->set_context_id("test-context-id");
+  triggering->mutable_request()->mutable_trigger_actuation_request();
+
+  // No message should be sent back to the server.
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .Times(0);
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+  // The drop is synchronous: OnMessage returns without posting any task.
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+
+  // The done callback never runs, so SharingFCMHandler sends no ack.
+  EXPECT_FALSE(done_future.IsReady());
+
+  // No pending task is added, so the foreground service is not kept alive.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  EXPECT_FALSE(actor_service->HasPendingTask("test-context-id"));
+  EXPECT_EQ(actor_service->GetPendingTasksCount(), 0u);
+  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  // The message is dropped before any metric is recorded.
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage", 0);
+}
 #endif
 
 }  // namespace glic

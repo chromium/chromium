@@ -386,4 +386,7 @@ BASE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings,
              FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
 
 BASE_FEATURE(kGlicWhatsNewLuminous, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicForceFcmExperimentalTriggerFailure,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

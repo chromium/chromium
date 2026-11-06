@@ -9475,6 +9475,8 @@ from previous Chrome versions.
   <int value="-1651341724"
       label="PrivateNetworkAccessPermissionPrompt:disabled"/>
   <int value="-1650769314" label="enable-webgl2-compute-context"/>
+  <int value="-1650145373"
+      label="GlicForceFcmExperimentalTriggerFailure:disabled"/>
   <int value="-1650033715"
       label="kGlicDefaultToLastActiveConversation:disabled"/>
   <int value="-1649778035" label="disable-clear-browsing-data-counters"/>
@@ -17005,6 +17007,8 @@ from previous Chrome versions.
   <int value="601875786" label="PageVisibilityPageContentAnnotations:enabled"/>
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
   <int value="602452004" label="WebBluetoothBondOnDemand:disabled"/>
+  <int value="602842232"
+      label="GlicForceFcmExperimentalTriggerFailure:enabled"/>
   <int value="603256057" label="NotebookLmAppShelfPin:disabled"/>
   <int value="603275624" label="AndroidHubSearch:enabled"/>
   <int value="603326800" label="UsePasswordSeparatedSigninFlow:enabled"/>

@@ -289,6 +289,11 @@ BASE_DECLARE_FEATURE(kGlicActivityHub);
 BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings);
 
 BASE_DECLARE_FEATURE(kGlicWhatsNewLuminous);
+
+// Test only. When enabled, Android drops incoming Glic experimental triggering
+// TriggerActuationRequest messages without replying or acking, as if the FCM
+// message never arrived.
+BASE_DECLARE_FEATURE(kGlicForceFcmExperimentalTriggerFailure);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

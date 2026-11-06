@@ -1856,6 +1856,12 @@ inline constexpr char kGlicBackgroundTriggeringName[] =
     "Glic background triggering";
 inline constexpr char kGlicBackgroundTriggeringDescription[] =
     "Enables background triggering for Glic.";
+inline constexpr char kGlicForceFcmExperimentalTriggerFailureName[] =
+    "Glic force FCM experimental trigger failure";
+inline constexpr char kGlicForceFcmExperimentalTriggerFailureDescription[] =
+    "Test only. Drops incoming Glic experimental triggering task requests "
+    "without a reply, as if the FCM message never arrived. Use it to test the "
+    "'Preparing to start your task' timeout.";
 inline constexpr char kGlicOptInDialogA11yFixName[] =
     "Glic Opt-in dialog accessibility fix";
 inline constexpr char kGlicOptInDialogA11yFixDescription[] =

@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_converters.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -226,6 +227,23 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
     SharingMessageHandler::DoneCallback done_callback) {
   CheckFeatureFlags();
   CHECK(message.has_glic_experimental_triggering());
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kGlicForceFcmExperimentalTriggerFailure) &&
+      message.glic_experimental_triggering().has_request() &&
+      message.glic_experimental_triggering()
+          .request()
+          .has_trigger_actuation_request()) {
+    // Test only: act as if the FCM message never arrived. Do not reply, do not
+    // run `done_callback` (so no ack is sent) and do not record metrics.
+    LOG(WARNING) << "GlicTrigger: Dropping TriggerActuationRequest for "
+                 << message.glic_experimental_triggering().context_id()
+                 << " because kGlicForceFcmExperimentalTriggerFailure is "
+                    "enabled.";
+    return;
+  }
+#endif
 
   glic::ScopedIncomingMessageResultLogger result_logger(
       glic::GlicMetricReporter(profile_),
