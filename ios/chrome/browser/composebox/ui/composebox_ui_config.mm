@@ -92,8 +92,7 @@
     case ComposeboxMode::kCanvas:
       return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_SUBITITLE_CANVAS);
     case ComposeboxMode::kPTM:
-      return l10n_util::GetNSString(
-          IDS_IOS_COMPOSEBOX_MENU_SUBTITLE_AGENT_TASK);
+      return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_SUBTITLE_PTM);
     default:
       return nil;
   }
