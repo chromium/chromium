@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -86,6 +87,37 @@ TEST(ExecutionContextTokenTest, MojomTraits) {
   ExpectSerializationWorks<blink::ExecutionContextToken,
                            blink::mojom::ExecutionContextToken,
                            blink::PaintWorkletToken>();
+}
+
+TEST(ContinuationTokenTest, MojomTraits) {
+  blink::ContinuationToken token(base::Uuid::GenerateRandomV4());
+  EXPECT_TRUE(blink::IsValidContinuationToken(token));
+  EXPECT_FALSE(blink::IsValidContinuationToken(blink::ContinuationToken()));
+
+  blink::ContinuationToken deserialized;
+  EXPECT_TRUE(
+      ::mojo::test::SerializeAndDeserialize<blink::mojom::ContinuationToken>(
+          token, deserialized));
+  EXPECT_EQ(token, deserialized);
+}
+
+TEST(ContinuationTokenTest, MojomTraitsRejectNonV4Uuids) {
+  // Valid UUIDs that are not RFC 4122 version 4: the first has version 1, and
+  // the second has version 4 but the wrong variant.
+  for (const char* uuid : {"01234567-89ab-1def-8123-456789abcdef",
+                           "01234567-89ab-4def-c123-456789abcdef"}) {
+    SCOPED_TRACE(uuid);
+    base::Uuid parsed = base::Uuid::ParseLowercase(uuid);
+    ASSERT_TRUE(parsed.is_valid());
+    EXPECT_FALSE(
+        blink::IsValidContinuationToken(blink::ContinuationToken(parsed)));
+
+    auto input = blink::mojom::ContinuationToken::New(parsed);
+    blink::ContinuationToken deserialized;
+    EXPECT_FALSE(
+        ::mojo::test::SerializeAndDeserialize<blink::mojom::ContinuationToken>(
+            input, deserialized));
+  }
 }
 
 }  // namespace mojo

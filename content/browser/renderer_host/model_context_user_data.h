@@ -6,13 +6,21 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MODEL_CONTEXT_USER_DATA_H_
 
 #include <map>
+#include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -24,6 +32,150 @@
 namespace content {
 
 class RenderFrameHost;
+
+// Tracks a WebMCP tool execution across a single continuation token handoff.
+// `tool_invocation_id_`, `token_`, and `step_invocation_id_` are immutable and
+// fixed at construction time.
+class CONTENT_EXPORT ContinuedToolExecution {
+ public:
+  enum class State {
+    // Minted by RequestContinuationToken(); waiting for Redeem().
+    kRequested,
+    // Redeem() has completed; ResumeScriptTool() is currently executing in
+    // `redeeming_document_`.
+    kExecuting,
+  };
+
+  using CompletionCallback =
+      base::OnceCallback<void(base::expected<std::string, std::string> result)>;
+
+  ContinuedToolExecution(blink::ToolInvocationToken tool_invocation_id,
+                         blink::ContinuationToken token,
+                         url::Origin origin,
+                         std::string tool_name,
+                         std::string input_arguments,
+                         base::TimeDelta timeout,
+                         base::OnceClosure on_expired);
+  ContinuedToolExecution(const ContinuedToolExecution&) = delete;
+  ContinuedToolExecution& operator=(const ContinuedToolExecution&) = delete;
+  ~ContinuedToolExecution();
+
+  const blink::ToolInvocationToken& tool_invocation_id() const {
+    return tool_invocation_id_;
+  }
+  const blink::ContinuationToken& token() const { return token_; }
+  const blink::ToolInvocationToken& step_invocation_id() const {
+    return step_invocation_id_;
+  }
+  const url::Origin& origin() const { return origin_; }
+  const std::string& tool_name() const { return tool_name_; }
+  const std::string& input_arguments() const { return input_arguments_; }
+  State state() const { return state_; }
+  // Set by `Redeem()`.
+  const std::optional<blink::DocumentToken>& redeeming_document_token() const {
+    return redeeming_document_token_;
+  }
+  WeakDocumentPtr redeeming_document() const { return redeeming_document_; }
+
+  // Claims the token for `redeeming_document` if `state_` is `kRequested`.
+  // Stops the expiration timer and returns true on success.
+  bool Redeem(WeakDocumentPtr redeeming_document,
+              blink::DocumentToken redeeming_document_token);
+
+  // Transitions from `kRequested` to `kExecuting` when `ResumeScriptTool()` is
+  // dispatched to `redeeming_document_`.
+  void MarkExecuting();
+
+  void SetCompletionCallback(CompletionCallback callback);
+  bool HasCompletionCallback() const { return !completion_callback_.is_null(); }
+  void CancelCompletionCallback();
+  void Complete(base::expected<std::string, std::string> result);
+
+ private:
+  const blink::ToolInvocationToken tool_invocation_id_;
+  const blink::ContinuationToken token_;
+  // Identifies the resumed execution step in `redeeming_document_`, for
+  // `ResumeScriptTool()` and `CancelScriptTool()`. Distinct from
+  // `tool_invocation_id_`, which identifies the original tool execution.
+  const blink::ToolInvocationToken step_invocation_id_;
+  const url::Origin origin_;
+  const std::string tool_name_;
+  const std::string input_arguments_;
+  WeakDocumentPtr redeeming_document_;
+  std::optional<blink::DocumentToken> redeeming_document_token_;
+  State state_ = State::kRequested;
+  base::OneShotTimer expiration_timer_;
+  CompletionCallback completion_callback_;
+};
+
+// Manages active `ContinuedToolExecution` instances across a `WebContents`, so
+// that a continuation token outlives the document that minted it. The token can
+// be redeemed by a same-origin document in the primary page, for example after
+// the tool's frame navigates, or in another frame. The tool execution's caller
+// must outlive the continuation to receive its result.
+class CONTENT_EXPORT ModelContextContinuationManager
+    : public WebContentsUserData<ModelContextContinuationManager> {
+ public:
+  static ModelContextContinuationManager* GetForRenderFrameHost(
+      RenderFrameHost& rfh);
+  static ModelContextContinuationManager* GetOrCreateForRenderFrameHost(
+      RenderFrameHost& rfh);
+
+  ~ModelContextContinuationManager() override;
+
+  std::optional<blink::ContinuationToken> RequestContinuationToken(
+      RenderFrameHost& rfh,
+      const blink::ToolInvocationToken& invocation_id);
+
+  // Redeems `token` for `rfh` and replies to the renderer via `reply`. On
+  // acceptance, `reply` runs *before* `ResumeScriptTool()` is sent, so that the
+  // renderer resolves the `resumeTool()` Promise (and drains its microtasks)
+  // before the resumed callback is invoked. Both interfaces share one ordered
+  // channel.
+  void RedeemContinuationToken(
+      RenderFrameHost& rfh,
+      const blink::ContinuationToken& token,
+      blink::mojom::ModelContextHost::RedeemContinuationTokenCallback reply);
+
+  std::optional<blink::ContinuationToken> GetContinuationToken(
+      const blink::ToolInvocationToken& tool_invocation_id) const;
+
+  void WaitForContinuation(const blink::ContinuationToken& token,
+                           ContinuedToolExecution::CompletionCallback callback);
+
+  void CancelContinuation(const blink::ContinuationToken& token);
+
+  void OnDocumentDestroyed(
+      const blink::DocumentToken& destroyed_document_token);
+
+  base::WeakPtr<ModelContextContinuationManager> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  friend class WebContentsUserData<ModelContextContinuationManager>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  explicit ModelContextContinuationManager(WebContents* web_contents);
+
+  ContinuedToolExecution* FindByToken(const blink::ContinuationToken& token);
+
+  void StartResumedExecution(
+      const blink::ToolInvocationToken& tool_invocation_id);
+  void OnResumedToolCompleted(
+      const blink::ToolInvocationToken& tool_invocation_id,
+      const std::optional<std::string>& result,
+      std::optional<blink::mojom::ScriptToolErrorCode> error_code);
+  void OnTokenExpired(const blink::ToolInvocationToken& tool_invocation_id);
+  void FailAndRemove(const blink::ToolInvocationToken& tool_invocation_id,
+                     const std::string& error_message);
+
+  // Keyed by `tool_invocation_id`.
+  std::map<blink::ToolInvocationToken, std::unique_ptr<ContinuedToolExecution>>
+      continuations_;
+
+  base::WeakPtrFactory<ModelContextContinuationManager> weak_factory_{this};
+};
 
 // Associated with the Page, managing pending tool executions within a given
 // frame tree. This must be `Page`-scoped instead of document-scoped, and
@@ -51,7 +203,15 @@ class CONTENT_EXPORT ModelContextPageUserData
     blink::DocumentToken target_token;
     WeakDocumentPtr target_document;
     std::string tool_name;
+    std::string input_arguments;
     blink::mojom::ModelContextHost::ExecuteRemoteScriptToolCallback callback;
+    // Set to true as soon as the initial target document mints a continuation
+    // token via `RequestContinuationToken()`. While true, `callback` is held
+    // open waiting for the continuation chain to finish in subsequent
+    // document(s), and unloading the initial `target_document` or settling its
+    // initial `ExecuteScriptTool()` IPC does not complete or cancel the pending
+    // execution.
+    bool awaiting_continuation = false;
   };
 
   explicit ModelContextPageUserData(Page& page);
@@ -64,6 +224,15 @@ class CONTENT_EXPORT ModelContextPageUserData
   void AddPendingScriptToolExecution(
       const blink::ToolInvocationToken& invocation_id,
       PendingScriptToolExecution execution);
+  const PendingScriptToolExecution* FindPendingScriptToolExecution(
+      const blink::ToolInvocationToken& invocation_id) const;
+  // Called by `continuation_manager` when the target of the pending execution
+  // for `invocation_id` mints `token`. Marks the execution as awaiting the
+  // continuation, and waits for the continuation's result.
+  void OnContinuationTokenCreated(
+      ModelContextContinuationManager& continuation_manager,
+      const blink::ToolInvocationToken& invocation_id,
+      const blink::ContinuationToken& token);
   // When the browser process calls the `ExecuteScriptTool()` IPC on
   // `blink.mojom.ModelContext` (i.e., `blink::ModelContext`), the callback
   // signifying tool completion in the renderer calls this method. This method
@@ -145,6 +314,12 @@ class CONTENT_EXPORT ModelContextUserData
   void CancelRemoteScriptTool(
       const blink::ToolInvocationToken& invocation_id) override;
   void SetScriptToolsReady(bool ready) override;
+  void RequestContinuationToken(
+      const blink::ToolInvocationToken& invocation_id,
+      RequestContinuationTokenCallback callback) override;
+  void RedeemContinuationToken(
+      const blink::ContinuationToken& token,
+      RedeemContinuationTokenCallback callback) override;
 
   std::vector<blink::mojom::ScriptToolPtr>& script_tools() {
     return script_tools_;
@@ -155,6 +330,7 @@ class CONTENT_EXPORT ModelContextUserData
  private:
   friend class DocumentUserData<ModelContextUserData>;
   friend class ModelContextPageUserData;
+  friend class ModelContextContinuationManager;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 

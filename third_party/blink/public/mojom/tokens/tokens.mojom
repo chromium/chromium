@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 
 // Various token types. These are used as cross-layer and cross-process
 // identifiers for objects that exist in blink, but which have representations
@@ -106,6 +107,10 @@ struct ShadowRealmToken {
 // If you have multiple tokens that make a thematic group, please lift them to
 // their own section, in alphabetical order. If adding a new token here, please
 // keep the following list in alphabetic order.
+
+struct ContinuationToken {
+  mojo_base.mojom.Uuid value;
+};
 
 union ExecutionContextToken {
   LocalFrameToken local_frame_token;

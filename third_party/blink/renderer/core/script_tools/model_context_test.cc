@@ -140,6 +140,16 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
   }
   void CancelRemoteScriptTool(
       const ToolInvocationToken& invocation_id) override {}
+  void RequestContinuationToken(
+      const ToolInvocationToken& invocation_id,
+      RequestContinuationTokenCallback callback) override {
+    std::move(callback).Run(ContinuationToken(base::Uuid::GenerateRandomV4()));
+  }
+  void RedeemContinuationToken(
+      const ContinuationToken& token,
+      RedeemContinuationTokenCallback callback) override {
+    std::move(callback).Run(false);
+  }
 
   void SetScriptToolsReady(bool ready) override {
     script_tools_ready_updates_.push_back(ready);

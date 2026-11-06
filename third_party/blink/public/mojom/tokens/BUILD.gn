@@ -92,6 +92,10 @@ mojom_component("tokens") {
         # them to their own section, in alphabetical order. If adding a new
         # token here, please keep the following list in alphabetic order.
         {
+          mojom = "blink.mojom.ContinuationToken"
+          cpp = "::blink::ContinuationToken"
+        },
+        {
           mojom = "blink.mojom.ExecutionContextToken"
           cpp = "::blink::ExecutionContextToken"
         },

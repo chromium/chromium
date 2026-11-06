@@ -156,6 +156,23 @@ interface ModelContextHost {
   // Notifies whether the script tools associated with this Document are ready,
   // i.e. not being updated by the page.
   SetScriptToolsReady(bool ready);
+
+  // Requests a single-use continuation token for the tool execution
+  // `invocation_id`, which must be running in the calling document. Returns
+  // null if the calling document is inactive or not in the primary page, or if
+  // there is no pending tool execution for `invocation_id`.
+  RequestContinuationToken(blink.mojom.ToolInvocationToken invocation_id)
+      => (blink.mojom.ContinuationToken? token);
+
+  // Redeems a continuation token in the calling document. Returns
+  // `accepted = true` if the token exists and has not yet been redeemed, and the
+  // calling document is same-origin with the document that minted it and is in
+  // the primary page of the same tab. On acceptance, the
+  // browser sends this reply and *then* invokes `ResumeScriptTool()` on this
+  // document's `ModelContext`. Because `ModelContext` is associated with this
+  // interface, the renderer always receives the reply first.
+  RedeemContinuationToken(blink.mojom.ContinuationToken token)
+      => (bool accepted);
 };
 
 // Interface implemented by `blink::ModelContext` for the browser to notify the
@@ -174,6 +191,21 @@ interface ModelContext {
   // and a non-null error_code.
   ExecuteScriptTool(blink.mojom.ToolInvocationToken invocation_id,
                     blink.mojom.ScriptToolToken tool_id, string input_arguments)
+      => (string? result, ScriptToolErrorCode? error_code);
+
+  // Invokes the callback registered via `modelContext.resumeTool(token, cb)`
+  // after `token` has been redeemed. Always sent after the
+  // `RedeemContinuationToken(token)` reply. `invocation_id` identifies this
+  // resumed execution step for cancellation and `options.invocation`.
+  //
+  // Resolution of the JavaScript Promise results in the callback being called
+  // with the result and a null error_code, while failure passes a null result
+  // and a non-null error_code.
+  ResumeScriptTool(
+      blink.mojom.ToolInvocationToken invocation_id,
+      blink.mojom.ContinuationToken token,
+      string tool_name,
+      string input_arguments)
       => (string? result, ScriptToolErrorCode? error_code);
 
   // Cancels a pending execution of a script tool in this Document.

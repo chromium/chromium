@@ -597,6 +597,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="409" label="RFH_CREATE_NEW_WINDOW_INVALID_REFERRER"/>
   <int value="410" label="RFH_DEVICE_BOUND_SESSION_JS_API_NOT_AVAILABLE"/>
   <int value="411" label="RFHI_BEGIN_NAVIGATION_DISALLOWED_QUALIFIER"/>
+  <int value="412" label="RFHI_WEBMCP_INVALID_TOOL_CONTINUATION"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

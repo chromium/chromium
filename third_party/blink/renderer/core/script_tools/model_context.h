@@ -238,6 +238,11 @@ class CORE_EXPORT ModelContext : public EventTarget,
                          const ScriptToolToken& tool_id,
                          const String& input_arguments,
                          ExecuteScriptToolCallback callback) override;
+  void ResumeScriptTool(const ToolInvocationToken& invocation_id,
+                        const ContinuationToken& token,
+                        const String& tool_name,
+                        const String& input_arguments,
+                        ResumeScriptToolCallback callback) override;
   void CancelScriptTool(const ToolInvocationToken& invocation_id) override;
 
   void DidFinishParsing();
@@ -284,10 +289,11 @@ class CORE_EXPORT ModelContext : public EventTarget,
                               ScriptToolExecutedCallback tool_executed_cb);
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                      ToolInvocationToken invocation_id,
-                     const ScriptToolToken& tool_id,
+                     std::optional<ScriptToolToken> tool_id,
                      const String& name,
                      const String& input_arguments,
                      AbortController* abort_controller,
+                     bool is_resumed,
                      ScriptToolExecutedCallback tool_executed_cb);
 
   void OnToolFailed(ScriptToolExecutedCallback callback,
@@ -298,6 +304,20 @@ class CORE_EXPORT ModelContext : public EventTarget,
       const ToolInvocationToken& invocation_id,
       base::expected<String, std::pair<ScriptValue, ScriptState*>> result);
 
+  void OnRequestContinuationTokenCompleted(
+      ScriptPromiseResolver<IDLString>* resolver,
+      const ToolInvocationToken& invocation_id,
+      const std::optional<ContinuationToken>& token);
+
+  void OnRedeemContinuationTokenCompleted(const ContinuationToken& token,
+                                          bool accepted);
+  void RunResumedScriptTool(V8ToolExecuteCallback* v8_tool_function,
+                            const ToolInvocationToken& invocation_id,
+                            const ContinuationToken& token,
+                            const String& tool_name,
+                            const String& input_arguments,
+                            ResumeScriptToolCallback callback);
+
   void MaybeRecordToolCount();
 
   // Called when a promise passed to `waitForToolsUntil()` settles.
@@ -306,25 +326,46 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   HeapHashMap<ScriptToolToken, Member<ToolData>> tool_map_;
 
+  struct PendingResumption final : public GarbageCollected<PendingResumption> {
+    PendingResumption(V8ToolExecuteCallback* execute_callback,
+                      ScriptPromiseResolver<IDLUndefined>* resolver)
+        : execute_callback(execute_callback), resolver(resolver) {}
+
+    void Trace(Visitor* visitor) const;
+
+    Member<V8ToolExecuteCallback> execute_callback;
+    // Cleared once `OnRedeemContinuationTokenCompleted()` resolves the
+    // `resumeTool()` Promise. The browser always sends that reply before
+    // `ResumeScriptTool()`, which removes this entry.
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver;
+  };
+  // Keyed by the token's canonical lowercase string; see
+  // `ContinuationTokenKey()`.
+  HeapHashMap<String, Member<PendingResumption>> pending_resumptions_;
+
   struct PendingExecution final : public GarbageCollected<PendingExecution> {
     PendingExecution(String tool_name,
-                     const ScriptToolToken& tool_id,
+                     std::optional<ScriptToolToken> tool_id,
                      ScriptToolExecutedCallback callback,
-                     AbortController* abort_controller)
+                     AbortController* abort_controller,
+                     bool is_resumed = false)
         : tool_name(std::move(tool_name)),
           tool_id(tool_id),
           callback(std::move(callback)),
-          abort_controller(abort_controller) {}
+          abort_controller(abort_controller),
+          is_resumed(is_resumed) {}
 
     void Trace(Visitor* visitor) const;
     String tool_name;
     // The tool being executed. Used to look the tool back up in `tool_map_`,
     // which `tool_name` cannot safely do, since the name may since have been
-    // taken by a different tool.
-    ScriptToolToken tool_id;
+    // taken by a different tool. Null for resumed continuation steps, which are
+    // not associated with a registered tool.
+    std::optional<ScriptToolToken> tool_id;
     ScriptToolExecutedCallback callback;
     // Created for every tool execution; never null.
     Member<AbortController> abort_controller;
+    bool is_resumed = false;
   };
   HeapHashMap<ToolInvocationToken, Member<PendingExecution>>
       pending_executions_;

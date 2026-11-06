@@ -5,7 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_TOKENS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_TOKENS_H_
 
+#include <string>
+
+#include "base/types/strong_alias.h"
 #include "base/types/token_type.h"
+#include "base/uuid.h"
 #include "third_party/blink/public/common/tokens/multi_token.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 
@@ -120,6 +124,22 @@ using ShadowRealmToken = base::TokenType<class ShadowRealmTokenTypeMarker>;
 
 // Identifies a unique clipboard state.
 using ClipboardSequenceNumberToken = ui::ClipboardSequenceNumberToken;
+
+// Identifies a continuation token for a WebMCP script tool execution.
+using ContinuationToken =
+    base::StrongAlias<class ContinuationTokenTag, base::Uuid>;
+
+// Returns true if `token` holds a valid continuation token.
+//
+// Continuation tokens are valid RFC 4122 v4 UUIDs, of the form
+// `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`, where `y` is one of `8`, `9`, `a`, or
+// `b`.
+inline bool IsValidContinuationToken(const ContinuationToken& token) {
+  const std::string& lowercase = token.value().AsLowercaseString();
+  return token.value().is_valid() && lowercase[14] == '4' &&
+         (lowercase[19] == '8' || lowercase[19] == '9' ||
+          lowercase[19] == 'a' || lowercase[19] == 'b');
+}
 
 // Identifies an arbitrary ExecutionContext. Each concrete implementation of an
 // ExecutionContext has a distinct token type that can be represented here.
