@@ -4,11 +4,16 @@
 
 #include "extensions/browser/updater/extension_downloader.h"
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -20,7 +25,9 @@
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/extensions_client.h"
 #include "extensions/common/verifier_formats.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
@@ -773,6 +780,63 @@ TEST_F(ExtensionDownloaderTest, TestExtensionURLMerged) {
   EXPECT_EQ(number_of_fetches, 1);
 }
 
+// Tests that merged extension fetches require publisher proof if any of the
+// merged tasks uses the Web Store update URL.
+TEST_F(ExtensionDownloaderTest, TestExtensionURLMergedWithWebstoreTask) {
+  ExtensionDownloaderTestHelper helper;
+
+  ExtensionDownloaderTask task1 = CreateDownloaderTask(
+      kTestExtensionId, GURL("https://example.com/update1"));
+  task1.request_id = 1;
+  ExtensionDownloaderTask task2 = CreateDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
+  task2.request_id = 2;
+
+  int number_of_fetches = 0;
+  helper.test_url_loader_factory().SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url.spec() == "https://example.com/extension1.crx") {
+          number_of_fetches++;
+          // Don't reply on this request immediately, make sure that manifest
+          // fetches will happen first.
+          return;
+        }
+        helper.test_url_loader_factory().AddResponse(
+            request.url.spec(),
+            CreateUpdateManifest(
+                {std::make_tuple(kTestExtensionId, "1.0",
+                                 "https://example.com/extension1.crx")}),
+            net::HTTP_OK);
+      }));
+
+  MockExtensionDownloaderDelegate& delegate = helper.delegate();
+  EXPECT_CALL(delegate, IsExtensionPending(kTestExtensionId))
+      .WillRepeatedly(Return(true));
+  std::optional<crx_file::VerifierFormat> observed_format;
+  EXPECT_CALL(delegate, OnExtensionDownloadFinished_(_, _, _, _, _, _))
+      .WillOnce([&](const CRXFileInfo& file, bool file_ownership_passed,
+                    const GURL& download_url,
+                    const ExtensionDownloaderDelegate::PingResult& ping_result,
+                    const std::set<int>& request_ids,
+                    ExtensionDownloaderDelegate::InstallCallback& callback) {
+        observed_format = file.required_format;
+        EXPECT_EQ(request_ids, std::set<int>({1, 2}));
+      });
+
+  helper.downloader().AddPendingExtension(std::move(task1));
+  helper.downloader().AddPendingExtension(std::move(task2));
+  helper.downloader().StartAllPending(nullptr);
+
+  content::RunAllTasksUntilIdle();
+  helper.test_url_loader_factory().AddResponse(
+      "https://example.com/extension1.crx", "", net::HTTP_OK);
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(number_of_fetches, 1);
+  EXPECT_EQ(observed_format,
+            crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF);
+}
+
 // Tests how the downloader uses the cache when there is no network.
 TEST_F(ExtensionDownloaderTest, TestMultipleCacheAccess) {
   ExtensionDownloaderTestHelper helper;
@@ -810,6 +874,194 @@ TEST_F(ExtensionDownloaderTest, TestMultipleCacheAccess) {
   content::RunAllTasksUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(&mock_cache);
+}
+
+// Regression test verifying that downloads initiated with the Web Store update
+// URL require publisher proof regardless of the CRX download (`codebase`) URL,
+// while non-Web Store update URLs use the downloader's configured format.
+TEST_F(ExtensionDownloaderTest, WebstoreUpdateUrlRequiresPublisherProof) {
+  auto fetch_and_get_format = [&](const GURL& update_url,
+                                  const std::string& crx_url) {
+    ExtensionDownloaderTestHelper helper;
+    ExtensionDownloaderTask task =
+        CreateDownloaderTask(kTestExtensionId, update_url);
+
+    helper.test_url_loader_factory().SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          if (request.url.spec() == crx_url) {
+            helper.test_url_loader_factory().AddResponse(request.url.spec(),
+                                                         "crx", net::HTTP_OK);
+            return;
+          }
+          helper.test_url_loader_factory().AddResponse(
+              request.url.spec(),
+              CreateUpdateManifest(
+                  {std::make_tuple(kTestExtensionId, "1.0", crx_url)}),
+              net::HTTP_OK);
+        }));
+
+    MockExtensionDownloaderDelegate& delegate = helper.delegate();
+    EXPECT_CALL(delegate, IsExtensionPending(kTestExtensionId))
+        .WillOnce(Return(true));
+    std::optional<crx_file::VerifierFormat> observed_format;
+    EXPECT_CALL(delegate, OnExtensionDownloadFinished_(_, _, _, _, _, _))
+        .WillOnce(
+            [&](const CRXFileInfo& file, bool file_ownership_passed,
+                const GURL& download_url,
+                const ExtensionDownloaderDelegate::PingResult& ping_result,
+                const std::set<int>& request_ids,
+                ExtensionDownloaderDelegate::InstallCallback& callback) {
+              observed_format = file.required_format;
+            });
+
+    helper.downloader().AddPendingExtension(std::move(task));
+    helper.downloader().StartAllPending(nullptr);
+    content::RunAllTasksUntilIdle();
+
+    return observed_format;
+  };
+
+  // Explicit Web Store update URL with a CDN or third-party codebase URL must
+  // require production publisher proof.
+  EXPECT_EQ(
+      fetch_and_get_format(extension_urls::GetDefaultWebstoreUpdateUrl(),
+                           "https://clients2.googleusercontent.com/ext.crx"),
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF);
+  EXPECT_EQ(fetch_and_get_format(extension_urls::GetDefaultWebstoreUpdateUrl(),
+                                 "https://example.com/ext.crx"),
+            crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF);
+
+  // Empty update URL defaults to the Web Store update URL and must also require
+  // production publisher proof.
+  EXPECT_EQ(fetch_and_get_format(GURL(), "https://example.com/ext.crx"),
+            crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF);
+
+  // Non-Web Store update URL uses the downloader's fallback format.
+  EXPECT_EQ(fetch_and_get_format(GURL("https://example.com/updates.xml"),
+                                 "https://example.com/ext.crx"),
+            GetTestVerifierFormat());
+
+  // The same applies even if the codebase URL is the Web Store update URL,
+  // since the update manifest controls it.
+  EXPECT_EQ(fetch_and_get_format(GURL("https://example.com/updates.xml"),
+                                 extension_urls::GetWebstoreUpdateUrl().spec()),
+            GetTestVerifierFormat());
+
+  // When the Web Store update URL is overridden (e.g. via
+  // --apps-gallery-update-url), test publisher proof is accepted too.
+  {
+    const GURL previous_gallery_url = extension_urls::GetWebstoreUpdateUrl();
+    const GURL custom_gallery_url("https://staging.example.com/update2/crx");
+    base::CommandLine override_cmd(base::CommandLine::NO_PROGRAM);
+    override_cmd.AppendSwitchASCII("apps-gallery-update-url",
+                                   custom_gallery_url.spec());
+    ExtensionsClient::Get()->InitializeWebStoreUrls(&override_cmd);
+    base::ScopedClosureRunner restore_urls(
+        base::BindLambdaForTesting([&previous_gallery_url]() {
+          base::CommandLine restore_cmd(base::CommandLine::NO_PROGRAM);
+          restore_cmd.AppendSwitchASCII("apps-gallery-update-url",
+                                        previous_gallery_url.spec());
+          ExtensionsClient::Get()->InitializeWebStoreUrls(&restore_cmd);
+        }));
+
+    EXPECT_EQ(
+        fetch_and_get_format(custom_gallery_url, "https://example.com/ext.crx"),
+        crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF);
+  }
+
+  // The kill switch restores the previous behavior, which keyed the requirement
+  // on the codebase URL.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        extensions_features::kExtensionDownloaderPublisherProofByUpdateUrl);
+    EXPECT_EQ(
+        fetch_and_get_format(extension_urls::GetDefaultWebstoreUpdateUrl(),
+                             "https://example.com/ext.crx"),
+        GetTestVerifierFormat());
+    EXPECT_EQ(
+        fetch_and_get_format(GURL("https://example.com/updates.xml"),
+                             extension_urls::GetWebstoreUpdateUrl().spec()),
+        crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF);
+  }
+}
+
+// Tests that cached CRXs for Web Store update URL tasks also require publisher
+// proof, both on a cache hit after a manifest fetch and on the cache fallback
+// after a failed manifest fetch.
+TEST_F(ExtensionDownloaderTest, WebstoreCachedCrxRequiresPublisherProof) {
+  auto install_from_cache_and_get_format = [&](const GURL& update_url,
+                                               bool manifest_fetch_fails) {
+    ExtensionCacheFake cache;
+    cache.AllowCaching(kTestExtensionId);
+    cache.PutExtension(kTestExtensionId, /*expected_hash=*/"",
+                       base::FilePath(FILE_PATH_LITERAL("ext.crx")), "1.0",
+                       base::DoNothing());
+
+    ExtensionDownloaderTestHelper helper;
+    ExtensionDownloaderTask task =
+        CreateDownloaderTask(kTestExtensionId, update_url);
+    // The cache fallback after a failed manifest fetch only applies to
+    // force-installed extensions.
+    task.install_location = mojom::ManifestLocation::kExternalPolicyDownload;
+
+    helper.test_url_loader_factory().SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          if (manifest_fetch_fails) {
+            helper.test_url_loader_factory().AddResponse(
+                request.url, network::CreateURLResponseHead(net::HTTP_OK),
+                /*content=*/"",
+                network::URLLoaderCompletionStatus(
+                    net::ERR_INTERNET_DISCONNECTED));
+            return;
+          }
+          helper.test_url_loader_factory().AddResponse(
+              request.url.spec(),
+              CreateUpdateManifest({std::make_tuple(
+                  kTestExtensionId, "1.0", "https://example.com/ext.crx")}),
+              net::HTTP_OK);
+        }));
+
+    MockExtensionDownloaderDelegate& delegate = helper.delegate();
+    EXPECT_CALL(delegate, IsExtensionPending(kTestExtensionId))
+        .WillRepeatedly(Return(true));
+    std::optional<crx_file::VerifierFormat> observed_format;
+    EXPECT_CALL(delegate, OnExtensionDownloadFinished_(_, _, _, _, _, _))
+        .WillOnce(
+            [&](const CRXFileInfo& file, bool file_ownership_passed,
+                const GURL& download_url,
+                const ExtensionDownloaderDelegate::PingResult& ping_result,
+                const std::set<int>& request_ids,
+                ExtensionDownloaderDelegate::InstallCallback& callback) {
+              // Only installs from the cache get a callback.
+              EXPECT_FALSE(callback.is_null());
+              observed_format = file.required_format;
+            });
+
+    helper.downloader().AddPendingExtension(std::move(task));
+    helper.downloader().StartAllPending(&cache);
+    content::RunAllTasksUntilIdle();
+
+    return observed_format;
+  };
+
+  // Cache hit after a successful manifest fetch.
+  EXPECT_EQ(
+      install_from_cache_and_get_format(extension_urls::GetWebstoreUpdateUrl(),
+                                        /*manifest_fetch_fails=*/false),
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF);
+
+  // Cache fallback after a failed manifest fetch.
+  EXPECT_EQ(
+      install_from_cache_and_get_format(extension_urls::GetWebstoreUpdateUrl(),
+                                        /*manifest_fetch_fails=*/true),
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF);
+
+  // Non-Web Store update URL uses the downloader's fallback format.
+  EXPECT_EQ(
+      install_from_cache_and_get_format(GURL("https://example.com/updates.xml"),
+                                        /*manifest_fetch_fails=*/false),
+      GetTestVerifierFormat());
 }
 
 class ExtensionDownloaderRedirectTest : public ExtensionsTest {

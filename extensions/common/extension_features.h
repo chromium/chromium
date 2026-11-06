@@ -153,6 +153,13 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMaxScriptSizeForBackgroundCompilation);
 // If enabled, disables unpacked extensions if developer mode is off.
 BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
 
+// If enabled (the default), ExtensionDownloader decides whether to require Web
+// Store publisher proof based on the update URLs of the tasks requesting a
+// download. If disabled (kill switch), it reverts to checking the CRX download
+// URL from the update manifest. Note that disabling this feature has security
+// implications.
+BASE_DECLARE_FEATURE(kExtensionDownloaderPublisherProofByUpdateUrl);
+
 // Allow e.g. .css files to use default_locale messages in WAR files via GUID.
 // TODO(crbug.com/435609878): Remove after m142. It's for safe m141 back merge.
 BASE_DECLARE_FEATURE(kExtensionLocalizationGuid);
