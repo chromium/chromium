@@ -1116,9 +1116,18 @@ TEST_F(WebUIPageActionControlTest,
   EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
             states[2]->page_action_id);
 
+  const page_actions::SuggestionChipConfig chip_config{
+      .priority = page_actions::PageActionPriorityCategory::
+          kSecurityTrustAndPermissions,
+  };
+  const page_actions::AnchoredMessageConfig anchored_message_config{
+      .priority = page_actions::PageActionPriorityCategory::
+          kSecurityTrustAndPermissions,
+  };
+
   // Promote kActionShowTranslate to a suggestion chip. Chips precede regular
   // icons.
-  controller->ShowSuggestionChip(kActionShowTranslate);
+  controller->ShowSuggestionChip(kActionShowTranslate, chip_config);
   states = control_->GetPageActionStates();
   ASSERT_EQ(3u, states.size());
   EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
@@ -1134,9 +1143,8 @@ TEST_F(WebUIPageActionControlTest,
 
   // Show an anchored message on kActionSidePanelShowLensOverlayResults.
   // Page actions with anchored messages are placed before chips and icons.
-  page_actions::AnchoredMessageConfig config{};
   controller->ShowAnchoredMessage(kActionSidePanelShowLensOverlayResults,
-                                  config);
+                                  anchored_message_config);
   states = control_->GetPageActionStates();
   ASSERT_EQ(3u, states.size());
   EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
@@ -1152,7 +1160,7 @@ TEST_F(WebUIPageActionControlTest,
   // Promote kActionAiMode to a chip as well. The anchored message remains
   // first, followed by chips in their initial order (AiMode before
   // ShowTranslate).
-  controller->ShowSuggestionChip(kActionAiMode);
+  controller->ShowSuggestionChip(kActionAiMode, chip_config);
   states = control_->GetPageActionStates();
   ASSERT_EQ(3u, states.size());
   EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::
@@ -1183,7 +1191,8 @@ TEST_F(WebUIPageActionControlTest,
 
   // Show an anchored message on a chip action (kActionShowTranslate). It should
   // now be placed first, ahead of the other chip (kActionAiMode).
-  controller->ShowAnchoredMessage(kActionShowTranslate, config);
+  controller->ShowAnchoredMessage(kActionShowTranslate,
+                                  anchored_message_config);
   states = control_->GetPageActionStates();
   ASSERT_EQ(3u, states.size());
   EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
@@ -1215,7 +1224,7 @@ TEST_F(WebUIPageActionControlTest,
   EXPECT_FALSE(states[2]->should_show_chip);
 
   // Re-promoting kActionShowTranslate to a chip brings both chips to the front.
-  controller->ShowSuggestionChip(kActionShowTranslate);
+  controller->ShowSuggestionChip(kActionShowTranslate, chip_config);
   states = control_->GetPageActionStates();
   ASSERT_EQ(3u, states.size());
   EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,

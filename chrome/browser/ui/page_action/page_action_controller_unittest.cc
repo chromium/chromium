@@ -656,6 +656,11 @@ TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {
   controller().ShowSuggestionChip(kFirstActionItemId);
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, false))
+      .Times(1);
+  controller().HideSuggestionChip(kFirstActionItemId);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
               SetShouldShowSuggestionChip(_, true))
       .Times(1);
   EXPECT_CALL(models().Get(kFirstActionItemId),
@@ -1108,18 +1113,23 @@ TEST_F(PageActionControllerMockModelTest,
 
 TEST_F(PageActionControllerMockModelTest,
        QueuedAnchoredMessagesDowngradedWhenNewBubbleShown) {
-  EXPECT_CALL(models().Get(kFirstActionItemId),
-              SetShouldShowAnchoredMessage(_, true))
-      .Times(1);
-  controller().ShowAnchoredMessage(
-      kFirstActionItemId,
-      {.priority = PageActionPriorityCategory::kUserInteraction});
-  EXPECT_EQ(controller().GetActiveAnchoredMessage(), kFirstActionItemId);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kPageActionAnchoredMessageActiveTabOnly,
+       features::kPageActionsPrioritySelector,
+       features::kPageActionsPrioritySelectorProductMessagingController},
+      {});
+  RecreateController();
+  tab_interface().Activate();
 
-  // Queue a second anchored message behind the active UserInteraction message.
+  // Queue an anchored message in ProductMessagingController.
+  EXPECT_CALL(models().Get(kSecondActionItemId),
+              SetShouldShowAnchoredMessage(_, _))
+      .Times(0);
   controller().ShowAnchoredMessage(
       kSecondActionItemId,
       {.priority = PageActionPriorityCategory::kProactiveSuggestion});
+  EXPECT_EQ(controller().GetActiveAnchoredMessage(), std::nullopt);
 
   EXPECT_CALL(models().Get(kFirstActionItemId), SetActionActive(_, true))
       .Times(1);
@@ -1129,15 +1139,11 @@ TEST_F(PageActionControllerMockModelTest,
   EXPECT_CALL(models().Get(kSecondActionItemId),
               SetShouldShowSuggestionChip(_, true))
       .Times(1);
-  // The active UserInteraction message should remain showing.
-  EXPECT_CALL(models().Get(kFirstActionItemId),
-              SetShouldShowAnchoredMessage(_, false))
-      .Times(0);
 
   ScopedPageActionActivity activity =
       controller().AddActivity(kFirstActionItemId);
 
-  EXPECT_EQ(controller().GetActiveAnchoredMessage(), kFirstActionItemId);
+  EXPECT_EQ(controller().GetActiveAnchoredMessage(), std::nullopt);
 }
 
 }  // namespace
