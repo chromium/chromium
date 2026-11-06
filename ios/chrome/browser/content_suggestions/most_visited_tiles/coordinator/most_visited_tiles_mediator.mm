@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 
 #import <algorithm>
+#import <optional>
 
 #import "base/apple/foundation_util.h"
 #import "base/callback_list.h"
@@ -130,7 +131,9 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   FaviconAttributesProvider* _mostVisitedAttributesProvider;
   std::map<GURL, FaviconCompletionHandler> _mostVisitedFetchFaviconCallbacks;
   NSMutableArray<MostVisitedItem*>* _freshMostVisitedItems;
-  // Most visited items from the MostVisitedSites service currently displayed.
+  // Last set of tiles received from `MostVisitedSites`.
+  std::optional<ntp_tiles::NTPTilesVector> _lastMostVisitedTiles;
+  // Most visited items from the `MostVisitedSites` service currently displayed.
   MostVisitedTilesConfig* _mostVisitedConfig;
   // Whether incognito mode is available.
   BOOL _incognitoAvailable;
@@ -143,7 +146,6 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   raw_ptr<feature_engagement::Tracker> _engagementTracker;
   raw_ptr<AIModeButtonServiceIOS> _aiModeButtonService;
   base::CallbackListSubscription _aiModeButtonStateSubscription;
-  BOOL _isAIMAllowed;
   LayoutGuideCenter* _layoutGuideCenter;
   // The last snackbar message displayed that is related to the most visited
   // tiles.
@@ -226,6 +228,7 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   }
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
+  _lastMostVisitedTiles.reset();
   _mostVisitedAttributesProvider = nil;
   _historyService = nullptr;
   _engagementTracker = nullptr;
@@ -266,64 +269,8 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
       tiles, _mostVisitedAttributesProvider,
       app_group::ShortcutsWidgetFaviconsFolder(), _accountManagerService);
-
-  int indexToShowAIMTile = [self indexToShowAIMTile:tiles];
-  BOOL showAimTile = indexToShowAIMTile >= 0;
-
-  _freshMostVisitedItems = [NSMutableArray array];
-  NSUInteger pinnedCount = 0;
-  for (const ntp_tiles::NTPTile& tile : tiles) {
-    if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
-      // If the virtual AIM tile is visible, suppress naturally-occurring
-      // zero-state AIM URLs in Top Sites.
-      if (showAimTile && tile.source != TileSource::CUSTOM_LINKS &&
-          IsAimZeroStateURL(tile.url)) {
-        continue;
-      }
-    }
-
-    MostVisitedItem* item = [self convertNTPTile:tile];
-    item.commandHandler = self;
-    item.incognitoAvailable = _incognitoAvailable;
-    item.actionsProvider = self;
-    if (tile.source == TileSource::CUSTOM_LINKS) {
-      pinnedCount++;
-    }
-    [_freshMostVisitedItems addObject:item];
-  }
-
-  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
-    if (showAimTile) {
-      MostVisitedItem* aimItem = [self createAIMItem];
-
-      // Insert AIM tile among the pinned tiles, clamped to [0, pinnedCount].
-      NSUInteger targetIndex =
-          std::min(static_cast<NSUInteger>(std::max(0, indexToShowAIMTile)),
-                   pinnedCount);
-      if (targetIndex <= _freshMostVisitedItems.count) {
-        [_freshMostVisitedItems insertObject:aimItem atIndex:targetIndex];
-      } else {
-        [_freshMostVisitedItems addObject:aimItem];
-      }
-    }
-
-    NSUInteger maxTiles =
-        static_cast<NSUInteger>(kContentSuggestionsMostVisitedTilesMax);
-
-    if (showAimTile) {
-      maxTiles += 1;
-    }
-
-    while (_freshMostVisitedItems.count > maxTiles) {
-      [_freshMostVisitedItems removeLastObject];
-    }
-  }
-
-  for (NSUInteger i = 0; i < _freshMostVisitedItems.count; i++) {
-    _freshMostVisitedItems[i].index = static_cast<int>(i);
-  }
-
-  [self useFreshMostVisited];
+  _lastMostVisitedTiles = tiles;
+  BOOL showAimTile = [self buildMostVisitedItemsFromTiles:tiles];
 
   if (tiles.size() && !_recordedPageImpression) {
     _recordedPageImpression = YES;
@@ -603,19 +550,9 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
       int oldAiIndex =
           _prefService->GetInteger(prefs::kIosMostVisitedAiModeTileIndex);
       _prefService->SetInteger(prefs::kIosMostVisitedAiModeTileIndex, -1);
-      NSUInteger itemIndex = [_freshMostVisitedItems
-          indexOfObjectPassingTest:^BOOL(MostVisitedItem* obj, NSUInteger idx,
-                                         BOOL* stop) {
-            return obj.source == TileSource::AI_MODE;
-          }];
-      if (itemIndex != NSNotFound) {
-        [_freshMostVisitedItems removeObjectAtIndex:itemIndex];
+      if (_lastMostVisitedTiles.has_value()) {
+        [self buildMostVisitedItemsFromTiles:_lastMostVisitedTiles.value()];
       }
-      for (NSUInteger i = 0; i < _freshMostVisitedItems.count; i++) {
-        _freshMostVisitedItems[i].index = static_cast<int>(i);
-      }
-      [self useFreshMostVisited];
-      _mostVisitedSites->RefreshTiles();
       RecordAimTileUnpinnedUserAction();
 
       __weak MostVisitedTilesMediator* weakSelf = self;
@@ -636,11 +573,7 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
     BOOL itemWasBeforeAim = NO;
     int oldAimIndex = -1;
     if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
-      NSUInteger aimIndex = [_freshMostVisitedItems
-          indexOfObjectPassingTest:^BOOL(MostVisitedItem* obj, NSUInteger idx,
-                                         BOOL* stop) {
-            return obj.source == TileSource::AI_MODE;
-          }];
+      NSUInteger aimIndex = [self indexOfAIMItem];
       itemWasBeforeAim =
           (aimIndex != NSNotFound && item.index < static_cast<int>(aimIndex));
       oldAimIndex =
@@ -1003,7 +936,9 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   }
   _prefService->SetInteger(prefs::kIosMostVisitedAiModeTileIndex,
                            std::max(0, oldIndex));
-  _mostVisitedSites->RefreshTiles();
+  if (_lastMostVisitedTiles.has_value()) {
+    [self buildMostVisitedItemsFromTiles:_lastMostVisitedTiles.value()];
+  }
   RecordAimTileUndoUnpinUserAction();
 }
 
@@ -1022,47 +957,116 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   RecordSnackbarUndoUserAction(/*undo_pin=*/NO);
 }
 
+// Builds `_freshMostVisitedItems` from `tiles`, inserting the virtual AI Mode
+// tile if applicable, updates the consumer, and returns whether the virtual AI
+// Mode tile was shown.
+- (BOOL)buildMostVisitedItemsFromTiles:(const ntp_tiles::NTPTilesVector&)tiles {
+  return [self buildMostVisitedItemsFromTiles:tiles
+                           indexToShowAIMTile:[self indexToShowAIMTile:tiles]];
+}
+
+// Builds `_freshMostVisitedItems` from `tiles`, inserting the virtual AI Mode
+// tile at `indexToShowAIMTile` if non-negative, updates the consumer, and
+// returns whether the virtual AI Mode tile was shown.
+- (BOOL)buildMostVisitedItemsFromTiles:(const ntp_tiles::NTPTilesVector&)tiles
+                    indexToShowAIMTile:(int)indexToShowAIMTile {
+  BOOL showAimTile = indexToShowAIMTile >= 0;
+
+  _freshMostVisitedItems = [NSMutableArray array];
+  NSUInteger pinnedCount = 0;
+  for (const ntp_tiles::NTPTile& tile : tiles) {
+    // If the virtual AIM tile is visible, suppress naturally-occurring
+    // zero-state AIM URLs in Top Sites.
+    if (showAimTile && tile.source != TileSource::CUSTOM_LINKS &&
+        IsAimZeroStateURL(tile.url)) {
+      continue;
+    }
+
+    MostVisitedItem* item = [self convertNTPTile:tile];
+    item.commandHandler = self;
+    item.incognitoAvailable = _incognitoAvailable;
+    item.actionsProvider = self;
+    if (tile.source == TileSource::CUSTOM_LINKS) {
+      pinnedCount++;
+    }
+    [_freshMostVisitedItems addObject:item];
+  }
+
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
+    if (showAimTile) {
+      MostVisitedItem* aimItem = [self createAIMItem];
+
+      // Insert AIM tile among the pinned tiles, clamped to [0, `pinnedCount`].
+      NSUInteger targetIndex =
+          std::min(static_cast<NSUInteger>(indexToShowAIMTile), pinnedCount);
+      if (targetIndex <= _freshMostVisitedItems.count) {
+        [_freshMostVisitedItems insertObject:aimItem atIndex:targetIndex];
+      } else {
+        [_freshMostVisitedItems addObject:aimItem];
+      }
+    }
+
+    NSUInteger maxTiles =
+        static_cast<NSUInteger>(kContentSuggestionsMostVisitedTilesMax);
+
+    if (showAimTile) {
+      maxTiles += 1;
+    }
+
+    while (_freshMostVisitedItems.count > maxTiles) {
+      [_freshMostVisitedItems removeLastObject];
+    }
+  }
+
+  for (NSUInteger i = 0; i < _freshMostVisitedItems.count; i++) {
+    _freshMostVisitedItems[i].index = static_cast<int>(i);
+  }
+
+  [self useFreshMostVisited];
+  return showAimTile;
+}
+
 // Updates AI Mode availability.
 - (void)updateAIMAvailability {
   CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsMvt);
-  BOOL aimAllowed =
-      _aiModeButtonService && _aiModeButtonService->IsButtonAvailable();
-  if (aimAllowed == _isAIMAllowed) {
-    if (aimAllowed && _freshMostVisitedItems) {
-      NSUInteger itemIndex = [_freshMostVisitedItems
-          indexOfObjectPassingTest:^BOOL(MostVisitedItem* obj, NSUInteger idx,
-                                         BOOL* stop) {
-            return obj.source == TileSource::AI_MODE;
-          }];
-      if (itemIndex != NSNotFound) {
-        MostVisitedItem* aimItem = [self createAIMItem];
-        aimItem.index = static_cast<int>(itemIndex);
-        _freshMostVisitedItems[itemIndex] = aimItem;
-        [self useFreshMostVisited];
-      }
-    }
+  if (!_lastMostVisitedTiles.has_value()) {
     return;
   }
-  _isAIMAllowed = aimAllowed;
 
-  if (!aimAllowed && _freshMostVisitedItems) {
-    NSUInteger itemIndex = [_freshMostVisitedItems
-        indexOfObjectPassingTest:^BOOL(MostVisitedItem* obj, NSUInteger idx,
-                                       BOOL* stop) {
-          return obj.source == TileSource::AI_MODE;
-        }];
-    if (itemIndex != NSNotFound) {
-      [_freshMostVisitedItems removeObjectAtIndex:itemIndex];
-      for (NSUInteger i = 0; i < _freshMostVisitedItems.count; i++) {
-        _freshMostVisitedItems[i].index = static_cast<int>(i);
-      }
-      [self useFreshMostVisited];
+  NSUInteger currentAimIndex = [self indexOfAIMItem];
+  BOOL wasShowingAimTile = currentAimIndex != NSNotFound;
+  int indexToShowAIMTile =
+      [self indexToShowAIMTile:_lastMostVisitedTiles.value()];
+  BOOL showAimTile = indexToShowAIMTile >= 0;
+
+  if (showAimTile != wasShowingAimTile) {
+    [self buildMostVisitedItemsFromTiles:_lastMostVisitedTiles.value()
+                      indexToShowAIMTile:indexToShowAIMTile];
+    // If the initial tile impression already occurred before AI Mode
+    // availability resolved or changed, record the updated entrypoint
+    // visibility.
+    if (_recordedPageImpression && _aiModeButtonService) {
+      _aiModeButtonService->RecordEntrypointShown(showAimTile);
     }
+  } else if (showAimTile) {
+    MostVisitedItem* aimItem = [self createAIMItem];
+    aimItem.index = static_cast<int>(currentAimIndex);
+    _freshMostVisitedItems[currentAimIndex] = aimItem;
+    [self useFreshMostVisited];
   }
+}
 
-  if (_mostVisitedSites) {
-    _mostVisitedSites->RefreshTiles();
+// Returns the index of the virtual AI Mode tile in `_freshMostVisitedItems`,
+// or `NSNotFound` if it is not present.
+- (NSUInteger)indexOfAIMItem {
+  if (!_freshMostVisitedItems) {
+    return NSNotFound;
   }
+  return [_freshMostVisitedItems
+      indexOfObjectPassingTest:^BOOL(MostVisitedItem* obj, NSUInteger idx,
+                                     BOOL* stop) {
+        return obj.source == TileSource::AI_MODE;
+      }];
 }
 
 // Returns the saved index to surface the AIM tile in the Most Visited
@@ -1072,7 +1076,7 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
     return -1;
   }
 
-  if (!_isAIMAllowed) {
+  if (!_aiModeButtonService || !_aiModeButtonService->IsButtonAvailable()) {
     return -1;
   }
 
