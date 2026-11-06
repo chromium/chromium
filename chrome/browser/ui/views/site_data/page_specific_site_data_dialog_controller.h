@@ -34,7 +34,7 @@ class PageSpecificSiteDataDialogController
   ~PageSpecificSiteDataDialogController() override;
   static void CreateAndShowForWebContents(content::WebContents* web_contents);
 
-  // Triggers the migrated Collected Cookies InfoBar.
+  // Shows the Collected Cookies reload InfoBar for `web_contents`.
   static void ShowCollectedCookiesInfoBar(content::WebContents* web_contents);
 
  private:

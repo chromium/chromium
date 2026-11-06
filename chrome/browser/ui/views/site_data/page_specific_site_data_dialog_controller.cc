@@ -95,13 +95,25 @@ views::View* PageSpecificSiteDataDialogController::GetDialogView() {
 // static
 void PageSpecificSiteDataDialogController::ShowCollectedCookiesInfoBar(
     content::WebContents* web_contents) {
-  auto* browser_infobar_manager =
-      infobars::BrowserInfoBarManager::From(g_browser_process);
-  CHECK(browser_infobar_manager);
-  auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (tab) {
-    browser_infobar_manager->Show(
-        tab, infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE);
+  if (!web_contents) {
+    return;
+  }
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)) {
+    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+      auto* browser_infobar_manager =
+          infobars::BrowserInfoBarManager::From(g_browser_process);
+      CHECK(browser_infobar_manager);
+      browser_infobar_manager->Show(
+          tab, infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE);
+      return;
+    }
+    // TODO(crbug.com/582324173): Support non-tab WebContents in
+    // BrowserInfoBarManager.
+  }
+  if (auto* infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(web_contents)) {
+    CollectedCookiesInfoBarDelegate::Create(infobar_manager);
   }
 }
 

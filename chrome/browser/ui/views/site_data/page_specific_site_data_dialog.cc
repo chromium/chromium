@@ -17,10 +17,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
@@ -42,7 +40,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -171,15 +168,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
 
     if (status_changed_) {
-      if (infobars::IsInfoBarMigrated(
-              infobars::InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)) {
-        PageSpecificSiteDataDialogController::ShowCollectedCookiesInfoBar(
-            web_contents_.get());
-      } else if (auto* infobar_manager =
-                     infobars::ContentInfoBarManager::FromWebContents(
-                         web_contents_.get())) {
-        CollectedCookiesInfoBarDelegate::Create(infobar_manager);
-      }
+      PageSpecificSiteDataDialogController::ShowCollectedCookiesInfoBar(
+          web_contents_.get());
     }
 
     // Reset the dialog reference in the user data. If the dialog is opened

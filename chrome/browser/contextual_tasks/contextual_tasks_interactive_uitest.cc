@@ -68,12 +68,15 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
+#include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -84,6 +87,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/browsing_data/content/browsing_data_model.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
@@ -121,6 +126,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/aim_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
@@ -5801,6 +5807,120 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
                        panel_contents) == nullptr;
           },
           "On-device site data dialog closed cleanly."));
+}
+
+// This tests the following CUJ:
+//  (1) User opens the Contextual Tasks side panel on an AI Mode page that has
+//      stored first-party site data.
+//  (2) User opens the Page Info bubble from the Super G toolbar button and
+//      clicks "Cookies and site data" -> "Manage on-device site data".
+//  (3) User deletes the site data row in the dialog (which also clears web
+//      sign-in cookies) and clicks "Done".
+//  (4) The side panel does not auto-refresh to zero state; instead, it displays
+//      the native Reload infobar banner and reloads when the user clicks
+//      "Reload".
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
+    SuperGLogoButtonDeletingSiteDataShowsReloadBannerWithoutAutoRefresh) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
+
+  const DeepQuery kSuperGButton = {
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      ".top-toolbar-logo-button",
+  };
+  const GURL kAimUrl("https://www.google.com/search?q=hello+world&udm=50");
+  GURL committed_url;
+
+  RunTestSequence(
+      SubmitContextualSearchboxQueryToOpenSidePanel(kOverlayId, "hello world",
+                                                    kAimUrl),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelContentWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelContentWebContentsId),
+      Do([this, &committed_url]() {
+        content::WebContents* panel_contents =
+            ContextualTasksPanelController::From(browser())
+                ->GetActiveWebContents();
+        ASSERT_TRUE(panel_contents);
+        committed_url = panel_contents->GetLastCommittedURL();
+        content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
+            panel_contents->GetPrimaryMainFrame(),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(committed_url)),
+            BrowsingDataModel::StorageType::kLocalStorage,
+            /*blocked=*/false);
+      }),
+      InstrumentSidePanelToolbar(kSidePanelToolbarWebContentsId),
+      InAnyContext(WaitForShow(kContextualTasksSuperGButtonElementId)),
+      WaitForElementVisible(kSidePanelToolbarWebContentsId, kSuperGButton),
+      ClickElement(kSidePanelToolbarWebContentsId, kSuperGButton),
+      WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier),
+      WaitForShow(PageInfoMainView::kCookieButtonElementId),
+      PressButton(PageInfoMainView::kCookieButtonElementId),
+      WaitForShow(PageInfoCookiesContentView::kCookieDialogButton),
+      PressButton(PageInfoCookiesContentView::kCookieDialogButton),
+      InAnyContext(WaitForShow(kPageSpecificSiteDataDialogRow)),
+      InAnyContext(WithElement(
+          kPageSpecificSiteDataDialogRow,
+          [this](ui::TrackedElement* el) {
+            views::test::InteractionTestUtilSimulatorViews::PressButton(
+                AsView<SiteDataRowView>(el)->delete_button_for_testing());
+          })),
+      InAnyContext(WaitForHide(kPageSpecificSiteDataDialogRow)), Do([this]() {
+        if (GetParam() == UserVariation::kSignedIn) {
+          auto* coordinator = static_cast<ContextualTasksSidePanelCoordinator*>(
+              ContextualTasksPanelController::From(browser()));
+          coordinator->OnAccountsInCookieUpdated(
+              signin::AccountsInCookieJarInfo(/*accounts_are_fresh=*/true, {}),
+              GoogleServiceAuthError::AuthErrorNone());
+        }
+      }),
+      Check(
+          [this, &committed_url]() {
+            content::WebContents* panel_contents =
+                ContextualTasksPanelController::From(browser())
+                    ->GetActiveWebContents();
+            return panel_contents &&
+                   panel_contents->GetLastCommittedURL() == committed_url;
+          },
+          "Deleting cookies in the dialog does not auto-refresh the panel."),
+      InAnyContext(WithElement(
+          kPageSpecificSiteDataDialogFirstPartySection,
+          [this](ui::TrackedElement* el) {
+            views::test::InteractionTestUtilSimulatorViews::PressButton(
+                AsView<views::View>(el)
+                    ->GetWidget()
+                    ->widget_delegate()
+                    ->AsDialogDelegate()
+                    ->GetOkButton());
+          })),
+      InAnyContext(WaitForHide(kPageSpecificSiteDataDialogFirstPartySection)),
+      WaitForShow(ConfirmInfoBar::kOkButtonElementId),
+      CheckView(kContextualTasksSidePanelWebViewElementId,
+                [](ContextualTasksWebView* web_view) {
+                  return web_view->infobar_container() &&
+                         web_view->infobar_container()->GetVisible();
+                }),
+      Check(
+          [this, &committed_url]() {
+            content::WebContents* panel_contents =
+                ContextualTasksPanelController::From(browser())
+                    ->GetActiveWebContents();
+            return panel_contents &&
+                   panel_contents->GetLastCommittedURL() == committed_url;
+          },
+          "Side panel remains on the thread URL while reload banner is shown."),
+      PressButton(ConfirmInfoBar::kOkButtonElementId),
+      WaitForWebContentsNavigation(kSidePanelContentWebContentsId),
+      WaitForHide(ConfirmInfoBar::kOkButtonElementId));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/infobars/core/infobar_container.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -33,6 +34,7 @@ struct OpenURLParams;
 }  // namespace content
 
 class BrowserWindowInterface;
+class InfoBarContainerView;
 class Profile;
 
 namespace views {
@@ -50,6 +52,7 @@ class ContextualTasksUIBase;
 
 class ContextualTasksWebView
     : public views::View,
+      public infobars::InfoBarContainer::Delegate,
       public web_modal::WebContentsModalDialogManagerDelegate,
       public views::WebContentsDelegateViews<ContextualTasksWebView>,
       public content::WebContentsObserver {
@@ -127,9 +130,15 @@ class ContextualTasksWebView
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
       content::WebContents* web_contents) override;
 
+  // infobars::InfoBarContainer::Delegate:
+  void InfoBarContainerStateChanged(bool is_animating) override;
+
   // Returns the toolbar WebView, which is used for the header UI in the
   // rearchitected side panel.
   views::WebView* toolbar_web_view() { return toolbar_web_view_; }
+
+  // Returns the infobar container view hosted below the toolbar.
+  InfoBarContainerView* infobar_container() { return infobar_container_; }
 
   // Returns the main content WebView.
   views::WebView* content_web_view() { return content_web_view_; }
@@ -174,6 +183,10 @@ class ContextualTasksWebView
   // The WebView used for the toolbar/header (only active when the
   // rearchitecture feature is enabled).
   raw_ptr<views::WebView> toolbar_web_view_ = nullptr;
+
+  // Container view for displaying infobars (such as the reload prompt after
+  // modifying site data or permissions) below the toolbar.
+  raw_ptr<InfoBarContainerView> infobar_container_ = nullptr;
 
   // Container view hosting `content_web_view_` and `scrim_view_` under
   // the side panel rearchitecture.

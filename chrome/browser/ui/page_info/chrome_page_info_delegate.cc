@@ -291,17 +291,18 @@ void ChromePageInfoDelegate::RegisterPageInfoInfoBar(
 bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
   if (infobars::IsInfoBarMigrated(
           infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
-    auto* browser_infobar_manager =
-        infobars::BrowserInfoBarManager::From(g_browser_process);
-    if (browser_infobar_manager) {
-      auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents_);
-      if (tab) {
+    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents_)) {
+      auto* browser_infobar_manager =
+          infobars::BrowserInfoBarManager::From(g_browser_process);
+      if (browser_infobar_manager) {
         browser_infobar_manager->Show(
             tab, infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
         return true;
       }
+      return false;
     }
-    return false;
+    // TODO(crbug.com/582324173): Support non-tab WebContents in
+    // BrowserInfoBarManager.
   }
 
   infobars::ContentInfoBarManager* infobar_manager =
