@@ -19,7 +19,6 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_prefs.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
@@ -78,12 +77,7 @@ class SingleClientExtensionsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientExtensionsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientExtensionsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientExtensionsSyncTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -91,8 +85,6 @@ class SingleClientExtensionsSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // TODO(https://crbug.com/40804030): Remove when these tests use only MV3
   // extensions.
   extensions::ScopedTestMV2Enabler mv2_enabler_;
@@ -190,15 +182,8 @@ class SingleClientExtensionsMigrateSyncingUserToSignedInSyncTest
  public:
   SingleClientExtensionsMigrateSyncingUserToSignedInSyncTest()
       : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kReplaceSyncPromosWithSignInPromos};
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (content::IsPreTest()) {
-      disabled_features.push_back(switches::kMigrateSyncingUserToSignedIn);
-    } else {
-      enabled_features.push_back(switches::kMigrateSyncingUserToSignedIn);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureState(
+        switches::kMigrateSyncingUserToSignedIn, !content::IsPreTest());
   }
 
   // The value doesn't matter, since the tests use SetupSyncWithMode(..) to

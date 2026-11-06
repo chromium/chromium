@@ -43,7 +43,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
@@ -189,10 +188,8 @@ class SingleClientParameterizedBookmarksSyncTestBase
  public:
   SingleClientParameterizedBookmarksSyncTestBase() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      feature_overrides_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kSyncEnableBookmarksInTransportMode},
-          {});
+      feature_overrides_.InitAndEnableFeature(
+          switches::kSyncEnableBookmarksInTransportMode);
     } else {
       // Skip sync-to-signin migration for sync-the-feature tests. This is to
       // avoid the sync state changing between the PRE_ tests.
@@ -2945,9 +2942,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(SetupSync());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3017,9 +3011,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(SetupSync());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3103,9 +3094,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(SetupSync());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3172,9 +3160,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(SetupSync());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3230,9 +3215,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(SetupSync());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3289,9 +3271,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(SetupSync());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3377,9 +3356,6 @@ IN_PROC_BROWSER_TEST_F(
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
   ASSERT_TRUE(SetupSync());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3479,9 +3455,6 @@ IN_PROC_BROWSER_TEST_F(
   // Sign in again, but don't actually enable Sync-the-feature (so that Sync
   // will start in transport mode).
   ASSERT_TRUE(SignIn());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3537,8 +3510,7 @@ class SingleClientBookmarksSyncTestWithEnabledMigrateSyncingUserToSignedIn
           switches::kMigrateSyncingUserToSignedIn);
     } else {
       features_override_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                                switches::kMigrateSyncingUserToSignedIn,
+          /*enabled_features=*/{switches::kMigrateSyncingUserToSignedIn,
                                 switches::kSyncEnableBookmarksInTransportMode},
           /*disabled_features=*/{});
     }
