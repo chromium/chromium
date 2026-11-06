@@ -31,8 +31,9 @@ template <typename T>
 SkImageInfo GetSkImageInfo(T* provider) {
   return SkImageInfo::Make(
       provider->Size().width(), provider->Size().height(),
-      viz::ToClosestSkColorType(provider->GetSharedImageFormat()),
-      provider->GetAlphaType(), provider->GetColorSpace().ToSkColorSpace());
+      viz::ToClosestSkColorType(provider->GetSharedImageFormatForTesting()),
+      provider->GetAlphaTypeForTesting(),
+      provider->GetColorSpaceForTesting().ToSkColorSpace());
 }
 
 constexpr int kMaxTextureSize = 1024;
@@ -154,7 +155,7 @@ TEST_F(CanvasNon2DResourceProviderTest, AcceleratedOverlay) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_FALSE(provider->IsSoftware());
-  EXPECT_TRUE(provider->GetSharedImageUsageFlags().Has(
+  EXPECT_TRUE(provider->GetSharedImageUsageFlagsForTesting().Has(
       gpu::SHARED_IMAGE_USAGE_SCANOUT));
   // As it is an accelerated canvas, it will internally force it to BGRA8 on
   // MacOS when scanout is used, or RGBA8 otherwise.
@@ -180,7 +181,7 @@ TEST_F(CanvasNon2DResourceProviderTest, Texture) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_FALSE(provider->IsSoftware());
-  EXPECT_FALSE(provider->GetSharedImageUsageFlags().Has(
+  EXPECT_FALSE(provider->GetSharedImageUsageFlagsForTesting().Has(
       gpu::SHARED_IMAGE_USAGE_SCANOUT));
   // As it is an accelerated canvas, it will internally force it to kRGBA8
   EXPECT_EQ(GetSkImageInfo(provider.get()),

@@ -323,8 +323,8 @@ bool CanvasNon2DResourceProvider::IsValid() const {
   return !IsGpuContextLost();
 }
 
-gpu::SharedImageUsageSet CanvasNon2DResourceProvider::GetSharedImageUsageFlags()
-    const {
+gpu::SharedImageUsageSet
+CanvasNon2DResourceProvider::GetSharedImageUsageFlagsForTesting() const {
   return image_pool_->GetImageInfo().usage;
 }
 
@@ -646,7 +646,7 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
         // Create an ImageDecodeCache for half float images only if the canvas
         // is using half float back storage.
         cc::ImageDecodeCache* cache_f16 = nullptr;
-        if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+        if (format_ == viz::SinglePlaneFormat::kRGBA_F16) {
           cache_f16 =
               context_provider_wrapper_->ContextProvider().ImageDecodeCache(
                   kRGBA_F16_SkColorType);
@@ -657,7 +657,7 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
                 kN32_SkColorType);
 
         canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-            cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+            cache_rgba8, cache_f16, color_space_, format_,
             cc::PlaybackImageProvider::RasterMode::kGpu,
             context_provider_wrapper_);
       }
@@ -665,7 +665,7 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
       // Create an ImageDecodeCache for half float images only if the canvas
       // is using half float back storage.
       cc::ImageDecodeCache* cache_f16 = nullptr;
-      if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+      if (format_ == viz::SinglePlaneFormat::kRGBA_F16) {
         cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
       }
 
@@ -673,7 +673,7 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
           &Image::SharedCCDecodeCache(kN32_SkColorType);
 
       canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-          cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+          cache_rgba8, cache_f16, color_space_, format_,
           cc::PlaybackImageProvider::RasterMode::kSoftware,
           context_provider_wrapper_);
     }
@@ -780,7 +780,7 @@ SkSurface* CanvasNon2DResourceProvider::GetSkSurface() const {
 
 
 SkSurfaceProps CanvasNon2DResourceProvider::GetSkSurfaceProps() const {
-  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
+  const bool can_use_lcd_text = alpha_type_ == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 

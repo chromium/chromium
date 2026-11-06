@@ -86,15 +86,18 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   ~CanvasNon2DResourceProvider() override;
 
-  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
-
   bool IsSoftware() const { return is_software_; }
 
   gfx::Size Size() const { return size_; }
-  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
-  const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
-  const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
-  SkAlphaType GetAlphaType() const { return alpha_type_; }
+
+  gpu::SharedImageUsageSet GetSharedImageUsageFlagsForTesting() const;
+  viz::SharedImageFormat GetSharedImageFormatForTesting() const {
+    return format_;
+  }
+  const gfx::ColorSpace& GetColorSpaceForTesting() const {
+    return color_space_;
+  }
+  SkAlphaType GetAlphaTypeForTesting() const { return alpha_type_; }
 
   base::ByteSize EstimatedSizeInBytes() const;
 
@@ -123,8 +126,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // via raster or the compositor) waits on this token.
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
-  gpu::raster::RasterInterface* RasterInterface() const;
-
  private:
   CanvasNon2DResourceProvider(
       gfx::Size,
@@ -143,6 +144,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
                               WebGraphicsSharedImageInterfaceProvider*,
                               base::OnceClosure context_lost_callback = {});
 
+  gpu::raster::RasterInterface* RasterInterface() const;
   CanvasImageProvider* GetOrCreateImageProvider();
   void ClearUnusedResources();
   bool IsGpuContextLost() const;
