@@ -31,7 +31,6 @@ class ProxyOverrideRulesTransformer : public PrefTransformerInterface {
   std::optional<base::Value> BrowserToExtensionPref(
       const base::Value& browser_pref,
       bool is_incognito_profile) override;
-  bool IsExtensionModifiable(content::BrowserContext* context) const override;
 };
 
 }  // namespace extensions

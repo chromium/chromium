@@ -78,37 +78,6 @@ constexpr char kManifestTemplate[] = R"(
       "background": { "service_worker": "background.js" }
     })";
 
-constexpr char kVerifyControllableAndSetRuleJs[] = R"(
-    chrome.test.runTests([
-      function canSetAndControl() {
-        chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
-          chrome.test.assertNoLastError();
-          chrome.test.assertEq(0, details.value.length);
-          chrome.test.assertEq("controllable_by_this_extension",
-                               details.levelOfControl);
-
-          const rule = {
-            DestinationMatchers: ["google.com"],
-            ProxyList: ["https://proxy.example.com"]
-          };
-
-          chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
-            chrome.test.assertNoLastError();
-            chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
-              chrome.test.assertNoLastError();
-              chrome.test.assertEq(1, details.value.length);
-              chrome.test.assertEq("google.com",
-                                   details.value[0].DestinationMatchers[0]);
-              chrome.test.assertEq("controlled_by_this_extension",
-                                   details.levelOfControl);
-              chrome.test.succeed();
-            });
-          });
-        });
-      }
-    ]);
-  )";
-
 }  // namespace
 
 class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
@@ -160,44 +129,6 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return profile()->GetPrefs()->GetList(
                  proxy_config::prefs::kProxyOverrideRules) == rules;
-    }));
-  }
-
-  void SetPolicyState(bool affiliated,
-                      std::optional<int> enable_for_all_users = std::nullopt) {
-    policy::PolicyMap policies;
-    policies.SetDeviceAffiliationIds({kAffiliationId});
-    if (affiliated) {
-      policies.SetUserAffiliationIds({kAffiliationId});
-    } else {
-      policies.SetUserAffiliationIds({"unaffiliated-id"});
-    }
-#if !BUILDFLAG(IS_CHROMEOS)
-    if (enable_for_all_users.has_value()) {
-      policies.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
-                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                   policy::POLICY_SOURCE_CLOUD,
-                   base::Value(*enable_for_all_users), nullptr);
-    }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-    provider_.UpdateChromePolicy(policies);
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      const policy::PolicyMap& active_policies =
-          profile_policy_connector()->policy_service()->GetPolicies(
-              policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
-                                      std::string()));
-      if (active_policies.GetDeviceAffiliationIds().empty() ||
-          active_policies.IsUserAffiliated() != affiliated) {
-        return false;
-      }
-#if !BUILDFLAG(IS_CHROMEOS)
-      if (profile()->GetPrefs()->GetInteger(
-              proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers) !=
-          enable_for_all_users.value_or(0)) {
-        return false;
-      }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-      return true;
     }));
   }
 
@@ -526,68 +457,5 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
   )";
   RunTest(kTest);
 }
-
-IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
-                       ProxyOverrideRules_Unaffiliated) {
-  SetPolicyState(/*affiliated=*/false);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, extensions can always set and control ProxyOverrideRules
-  // regardless of user affiliation.
-  RunTest(kVerifyControllableAndSetRuleJs);
-  EXPECT_EQ(profile()
-                ->GetPrefs()
-                ->GetList(proxy_config::prefs::kProxyOverrideRules)
-                .size(),
-            1u);
-#else
-  constexpr char kTest[] = R"(
-    chrome.test.runTests([
-      function unaffiliatedCannotSetOrControl() {
-        chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
-          chrome.test.assertNoLastError();
-          chrome.test.assertEq(0, details.value.length);
-          chrome.test.assertEq("not_controllable", details.levelOfControl);
-
-          const rule = {
-            DestinationMatchers: ["google.com"],
-            ProxyList: ["https://proxy.example.com"]
-          };
-
-          chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
-            chrome.test.assertLastError(
-                "Cannot set the 'proxyOverrideRulesPrivate' preference " +
-                "because it is not controllable by extensions.");
-            chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
-              chrome.test.assertNoLastError();
-              chrome.test.assertEq(0, details.value.length);
-              chrome.test.assertEq("not_controllable", details.levelOfControl);
-              chrome.test.succeed();
-            });
-          });
-        });
-      }
-    ]);
-  )";
-  RunTest(kTest);
-  EXPECT_TRUE(profile()
-                  ->GetPrefs()
-                  ->GetList(proxy_config::prefs::kProxyOverrideRules)
-                  .empty());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
-                       ProxyOverrideRules_UnaffiliatedEnabledForAllUsers) {
-  SetPolicyState(/*affiliated=*/false, /*enable_for_all_users=*/1);
-  RunTest(kVerifyControllableAndSetRuleJs);
-  EXPECT_EQ(profile()
-                ->GetPrefs()
-                ->GetList(proxy_config::prefs::kProxyOverrideRules)
-                .size(),
-            1u);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
