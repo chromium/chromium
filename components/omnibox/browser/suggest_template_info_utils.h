@@ -17,8 +17,8 @@ namespace suggest_template_info {
 
 namespace internal {
 
-// Returns the color token for text with the classification `style`. If both
-// URL and DIM are set, URL wins. Other styles get COLOR_SUGGEST_QUERY_TEXT.
+// Returns the color token for text with the classification `style`.
+// If both URL and DIM are set, URL wins. Other styles get COLOR_SUGGEST_QUERY_TEXT.
 omnibox::FormattedString::ColorType ACMatchClassificationToColorType(int style);
 
 // Converts `text` and its `classifications` to a FormattedString protobuf. Each
