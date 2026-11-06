@@ -412,6 +412,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private void reset() {
         dropFocus();
         mSelectionMenuCachedResult = null;
+        resetMagnifierAnimator();
         mContext = null;
         mWindowAndroid = null;
     }
@@ -437,7 +438,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         if (containerView != null) containerView.setClickable(true);
         mView = containerView;
-        mMagnifierAnimator = null;
+        resetMagnifierAnimator();
     }
 
     private void ensureView() {
@@ -989,7 +990,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         mWindowAndroid = newWindowAndroid;
         mContext = mWebContents.getContext();
-        mMagnifierAnimator = null;
+        resetMagnifierAnimator();
         destroySelectActionMode();
     }
 
@@ -1997,6 +1998,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return mMagnifierAnimator;
     }
 
+    private void resetMagnifierAnimator() {
+        if (mMagnifierAnimator != null) {
+            mMagnifierAnimator.handleDragStopped();
+            mMagnifierAnimator = null;
+        }
+    }
+
     @CalledByNative
     private void onSelectAroundCaretSuccess(
             int extendedStartAdjust,
@@ -2240,6 +2248,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         assert oldValue != null;
         assert oldValue.get() == this;
         mNativeSelectionPopupController = 0;
+        resetMagnifierAnimator();
         mHasSelection = false;
         mClassificationResult = null;
     }

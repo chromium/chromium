@@ -14,6 +14,7 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/linear_gradient.h"
@@ -33,7 +34,8 @@ constexpr uint8_t kDarkestAlpha = 64;
 constexpr uint8_t kLightestAlpha = 0;
 }  // namespace
 
-static int64_t JNI_MagnifierSurfaceControl_Create(
+static jni_zero::JniUniquePtr<MagnifierSurfaceControl>
+JNI_MagnifierSurfaceControl_Create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
     const base::android::JavaRef<jobject>& j_surface_control,
@@ -48,16 +50,10 @@ static int64_t JNI_MagnifierSurfaceControl_Create(
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(j_web_contents));
 
-  return reinterpret_cast<int64_t>(new MagnifierSurfaceControl(
+  return jni_zero::MakeUnique<MagnifierSurfaceControl>(
       web_contents, j_surface_control, device_scale, width, height,
       corner_radius, zoom, top_shadow_height, bottom_shadow_height,
-      bottom_shadow_width_reduction));
-}
-
-static void JNI_MagnifierSurfaceControl_Destroy(
-    JNIEnv* env,
-    int64_t magnifier_surface_control) {
-  delete reinterpret_cast<MagnifierSurfaceControl*>(magnifier_surface_control);
+      bottom_shadow_width_reduction);
 }
 
 MagnifierSurfaceControl::MagnifierSurfaceControl(

@@ -16,6 +16,10 @@ import android.widget.Magnifier;
 import androidx.annotation.RequiresApi;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -23,14 +27,16 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 
 /**
- * Magnifier implementation using GPU/viz compositor and surface control.
- * This has the benefit that surface control does not need to be turned off, though
- * there are some small visual differences.
+ * Magnifier implementation using GPU/viz compositor and surface control. This has the benefit that
+ * surface control does not need to be turned off, though there are some small visual differences.
  */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @JNINamespace("content")
 @NullMarked
 public class MagnifierSurfaceControl implements MagnifierWrapper {
+    @JniType("::content::MagnifierSurfaceControl")
+    interface NativeMagnifierSurfaceControl extends JniTypeToken {}
+
     // Shadows are implemented as linear gradients with the same rounded corner as the main
     // content. Values are in device independent pixels, and converted to pixels at run time.
     // Shadow height is amount that shadow extends above and below the magnifier; they increase
@@ -40,7 +46,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
     // The bottom shadow is shrunk horizontally by this amount each side.
     private static final int BOTTOM_SHADOW_WIDTH_REDUCTION_DP = 3;
 
-    private long mNativeMagnifierSurfaceControl;
+    private @Nullable JniUniquePtr<NativeMagnifierSurfaceControl> mNativeMagnifierSurfaceControl;
 
     private final WebContentsImpl mWebContents;
     private final SelectionPopupControllerImpl.ReadbackViewCallback mViewCallback;
@@ -70,6 +76,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
         createNativeIfNeeded();
         if (mSurfaceControl != null) {
             assumeNonNull(mTransaction);
+            assumeNonNull(mNativeMagnifierSurfaceControl);
             x = x - mWidthPx / 2f;
             y = y - mHeightPx / 2f;
             float readbackY = y;
@@ -107,12 +114,12 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
 
     @Override
     public void childLocalSurfaceIdChanged() {
-        if (mNativeMagnifierSurfaceControl == 0) return;
+        if (mNativeMagnifierSurfaceControl == null) return;
         MagnifierSurfaceControlJni.get().childLocalSurfaceIdChanged(mNativeMagnifierSurfaceControl);
     }
 
     private void createNativeIfNeeded() {
-        if (mNativeMagnifierSurfaceControl != 0) return;
+        if (mNativeMagnifierSurfaceControl != null) return;
         View view = getView();
         if (view == null) return;
         AttachedSurfaceControl attachedSurfaceControl = view.getRootSurfaceControl();
@@ -159,10 +166,10 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
     }
 
     private void destroyNativeIfNeeded() {
-        if (mNativeMagnifierSurfaceControl != 0) {
-            MagnifierSurfaceControlJni.get().destroy(mNativeMagnifierSurfaceControl);
+        if (mNativeMagnifierSurfaceControl != null) {
+            mNativeMagnifierSurfaceControl.destroy();
+            mNativeMagnifierSurfaceControl = null;
         }
-        mNativeMagnifierSurfaceControl = 0;
         if (mSurfaceControl != null) {
             assumeNonNull(mTransaction);
             mTransaction.reparent(mSurfaceControl, null);
@@ -187,7 +194,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
 
     @NativeMethods
     interface Natives {
-        long create(
+        JniUniquePtr<NativeMagnifierSurfaceControl> create(
                 WebContentsImpl webContents,
                 SurfaceControl surfaceControl,
                 float deviceScale,
@@ -199,10 +206,8 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
                 int bottomShadowHeight,
                 int bottomShadowWidthReduction);
 
-        void destroy(long magnifierSurfaceControl);
+        void setReadbackOrigin(JniPtr<NativeMagnifierSurfaceControl> self, float x, float y);
 
-        void setReadbackOrigin(long nativeMagnifierSurfaceControl, float x, float y);
-
-        void childLocalSurfaceIdChanged(long nativeMagnifierSurfaceControl);
+        void childLocalSurfaceIdChanged(JniPtr<NativeMagnifierSurfaceControl> self);
     }
 }
