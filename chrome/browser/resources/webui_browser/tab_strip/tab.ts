@@ -54,6 +54,7 @@ export class TabElement extends CrLitElement {
     isActive: false,
     isBlocked: false,
     isSelected: false,
+    lastActive: {internalValue: 0n},
     networkState: TabNetworkState.kNone,
     title: '',
     url: '',

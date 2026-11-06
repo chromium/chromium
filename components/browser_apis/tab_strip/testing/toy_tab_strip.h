@@ -6,7 +6,9 @@
 #define COMPONENTS_BROWSER_APIS_TAB_STRIP_TESTING_TOY_TAB_STRIP_H_
 
 #include <set>
+#include <string>
 
+#include "base/time/time.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
@@ -21,6 +23,8 @@ struct ToyTab {
   bool active = false;
   bool selected = false;
   std::optional<tab_groups::TabGroupId> group_id;
+  std::u16string title;
+  base::TimeTicks last_active;
 };
 
 struct ToyTabCollection {

@@ -508,21 +508,17 @@ void TabSearchPageHandler::WalkContainer(
     std::set<DedupKey>& tab_dedup_keys,
     std::set<tab_groups::TabGroupId>& tab_group_ids) {
   if (container->data->is_tab()) {
-    const std::optional<tabs::TabHandle> handle =
-        container->data->get_tab()->id.ToTabHandle();
-    if (handle) {
-      tabs::TabInterface* const tab_interface = handle->Get();
-      // A Tab can potentially be in a state where it has no committed
-      // entries during loading and thus has no title/URL. Skip any such
-      // pending tabs. These tabs will be added to the list later on once
-      // loading has finished.
-      if (tab_interface && tab_interface->GetContents()
-                               ->GetController()
-                               .GetLastCommittedEntry()) {
-        tab_search::mojom::TabPtr tab = GetTab(tab_interface);
-        tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
-        window->tabs.push_back(std::move(tab));
-      }
+    tabs::TabInterface* const tab_interface =
+        container->data->get_tab().ToTabHandle().Get();
+    // A Tab can potentially be in a state where it has no committed
+    // entries during loading and thus has no title/URL. Skip any such
+    // pending tabs. These tabs will be added to the list later on once
+    // loading has finished.
+    if (tab_interface &&
+        tab_interface->GetContents()->GetController().GetLastCommittedEntry()) {
+      tab_search::mojom::TabPtr tab = GetTab(tab_interface);
+      tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
+      window->tabs.push_back(std::move(tab));
     }
   } else if (container->data->is_tab_group()) {
     const auto& group_data = container->data->get_tab_group();
@@ -972,13 +968,11 @@ void TabSearchPageHandler::OnTabDataChanged(
     const tabs_api::mojom::TabChange& event) {
   // Ignore if the UI is hidden or the event doesn't contain
   // relevant tab data changes.
-  const std::optional<tabs::TabHandle> handle = event.data->id.ToTabHandle();
-  if (!IsWebContentsVisible() || !HasTabSiteDataChanged(event.mask) ||
-      !handle) {
+  if (!IsWebContentsVisible() || !HasTabSiteDataChanged(event.mask)) {
     return;
   }
 
-  tabs::TabInterface* const tab = handle->Get();
+  tabs::TabInterface* const tab = event.data.ToTabHandle().Get();
   if (!tab) {
     return;
   }

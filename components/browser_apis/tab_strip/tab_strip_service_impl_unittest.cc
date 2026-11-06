@@ -55,8 +55,8 @@ TEST_F(TabStripServiceImplTest, CreateNewTab) {
   // One tab should have been created. Now we assert its shape.
   ASSERT_EQ(1ul, tab_strip_->GetTabs().size());
   auto created = tab_strip_->GetTabs().at(0);
-  ASSERT_EQ(base::NumberToString(created.raw_value()), result.value()->id.Id());
-  ASSERT_EQ(NodeId::Type::kContent, result.value()->id.Type());
+  ASSERT_EQ(base::NumberToString(created.raw_value()), result.value().id.Id());
+  ASSERT_EQ(NodeId::Type::kContent, result.value().id.Type());
 }
 
 TEST_F(TabStripServiceImplTest, GetTabs) {
@@ -71,9 +71,9 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
   ASSERT_TRUE(tab_strip->data->is_tab_strip());
   ASSERT_EQ(1u, tab_strip->children.size());
   ASSERT_TRUE(tab_strip->children[0]->data->is_tab());
-  ASSERT_EQ("888", tab_strip->children[0]->data->get_tab()->id.Id());
+  ASSERT_EQ("888", tab_strip->children[0]->data->get_tab().id.Id());
   ASSERT_EQ(NodeId::Type::kContent,
-            tab_strip->children[0]->data->get_tab()->id.Type());
+            tab_strip->children[0]->data->get_tab().id.Type());
 }
 
 TEST_F(TabStripServiceImplTest, GetTab) {
@@ -83,8 +83,8 @@ TEST_F(TabStripServiceImplTest, GetTab) {
   auto result = service_->GetTab(tab_id);
 
   ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(result.value()->id.Id(), "666");
-  ASSERT_EQ(result.value()->id.Type(), NodeId::Type::kContent);
+  ASSERT_EQ(result.value().id.Id(), "666");
+  ASSERT_EQ(result.value().id.Type(), NodeId::Type::kContent);
 }
 
 TEST_F(TabStripServiceImplTest, GetTab_NotFound) {
@@ -352,8 +352,8 @@ TEST_F(TabStripServiceImplTest, UpdateTabGroup) {
 
 TEST_F(TabStripServiceImplTest, Update_Unimplemented) {
   tabs_api::NodeId tab_id(NodeId::Type::kContent, "123");
-  mojom::TabPtr tab_mojom = mojom::Tab::New();
-  tab_mojom->id = tab_id;
+  Tab tab_mojom;
+  tab_mojom.id = tab_id;
 
   auto data = mojom::Data::NewTab(std::move(tab_mojom));
   auto result = service_->Update(std::move(data), std::nullopt);

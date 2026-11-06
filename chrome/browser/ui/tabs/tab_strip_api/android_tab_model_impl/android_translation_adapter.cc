@@ -23,7 +23,7 @@ AndroidTranslationAdapter::AndroidTranslationAdapter(
 
 AndroidTranslationAdapter::~AndroidTranslationAdapter() = default;
 
-base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr>
+base::expected<Tab, mojo_base::mojom::ErrorPtr>
 AndroidTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
   auto* tab = handle.Get();
   CHECK(tab) << "invalid handle passed in for conversion";
@@ -31,18 +31,18 @@ AndroidTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
 
   // TODO(crbug.com/445765534): Most of these are copied from the tsm converter
   // pkg. Maybe we should consolidate the two.
-  auto result = tabs_api::mojom::Tab::New();
+  Tab result;
   auto* contents = tab->GetContents();
   // TODO(crbug.com/498763314): This is not strictly guaranteed in android,
   // because web contents is lazily loaded.
   CHECK(contents);
 
-  result->id = tabs_api::NodeId::FromTabHandle(handle);
-  result->title = base::UTF16ToUTF8(contents->GetTitle());
+  result.id = tabs_api::NodeId::FromTabHandle(handle);
+  result.title = contents->GetTitle();
 
   auto image_model = ui::ImageModel::FromImage(
       favicon::GetTabFaviconMaybeDesaturatedOnError(contents));
-  result->favicon = image_model.Rasterize(&color_provider);
+  result.favicon = image_model.Rasterize(&color_provider);
 
   // TODO(crbug.com/445765534): favicon...
   content::NavigationEntry* entry =
@@ -52,13 +52,15 @@ AndroidTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
   // NavigationEntry. In that case, show about:blank to match the omnibox.
   auto url = missing_navigation_entry ? GURL(url::kAboutBlankURL)
                                       : contents->GetVisibleURL();
-  result->url = url;
-  result->network_state = tabs::TabNetworkStateForWebContents(contents);
+  result.url = url;
+  result.network_state = tabs::TabNetworkStateForWebContents(contents);
 
   auto states = adapter_->GetTabStates(handle);
-  result->is_active = states.is_active;
-  result->is_selected = states.is_selected;
-  result->is_blocked = tab->IsBlocked();
+  result.is_active = states.is_active;
+  result.is_selected = states.is_selected;
+  result.is_blocked = tab->IsBlocked();
+  result.last_active = std::max(contents->GetLastActiveTimeTicks(),
+                                contents->GetLastInteractionTimeTicks());
 
   return result;
 }

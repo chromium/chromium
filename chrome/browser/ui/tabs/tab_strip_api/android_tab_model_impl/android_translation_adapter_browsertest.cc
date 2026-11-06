@@ -58,14 +58,14 @@ IN_PROC_BROWSER_TEST_F(AndroidTranslationAdapterBrowserTest, TranslateTab) {
   ASSERT_TRUE(result.has_value());
 
   auto mojo = std::move(result.value());
-  ASSERT_EQ(url, mojo->url);
-  ASSERT_EQ(tabs_api::NodeId::FromTabHandle(tab->GetHandle()), mojo->id);
-  ASSERT_EQ(base::UTF16ToUTF8(tab->GetContents()->GetTitle()), mojo->title);
-  ASSERT_FALSE(mojo->favicon.isNull());
-  ASSERT_EQ(tabs::TabNetworkState::kError, mojo->network_state);
-  ASSERT_TRUE(mojo->is_active);
-  ASSERT_TRUE(mojo->is_selected);
-  ASSERT_FALSE(mojo->is_blocked);
+  ASSERT_EQ(url, mojo.url);
+  ASSERT_EQ(tabs_api::NodeId::FromTabHandle(tab->GetHandle()), mojo.id);
+  ASSERT_EQ(tab->GetContents()->GetTitle(), mojo.title);
+  ASSERT_FALSE(mojo.favicon.isNull());
+  ASSERT_EQ(tabs::TabNetworkState::kError, mojo.network_state);
+  ASSERT_TRUE(mojo.is_active);
+  ASSERT_TRUE(mojo.is_selected);
+  ASSERT_FALSE(mojo.is_blocked);
 }
 
 // TODO(crbug.com/445765534): Add more tests.

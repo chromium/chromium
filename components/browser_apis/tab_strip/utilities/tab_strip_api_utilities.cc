@@ -24,9 +24,38 @@ const tabs_api::NodeId& GetNodeId(const mojom::Data& data) {
     case mojom::Data::Tag::kTabGroup:
       return data.get_tab_group()->id;
     case mojom::Data::Tag::kTab:
-      return data.get_tab()->id;
+      return data.get_tab().id;
     case mojom::Data::Tag::kWindow:
       return data.get_window()->id;
+  }
+}
+
+const Tab* FindActiveTab(const mojom::Container& container) {
+  if (container.data && container.data->is_tab()) {
+    const Tab& tab = container.data->get_tab();
+    if (tab.is_active) {
+      return &tab;
+    }
+  }
+  for (const auto& child : container.children) {
+    if (child) {
+      if (const Tab* found = FindActiveTab(*child)) {
+        return found;
+      }
+    }
+  }
+  return nullptr;
+}
+
+void FlattenTabs(const mojom::Container& container,
+                 std::vector<const Tab*>& out) {
+  if (container.data && container.data->is_tab()) {
+    out.push_back(&container.data->get_tab());
+  }
+  for (const auto& child : container.children) {
+    if (child) {
+      FlattenTabs(*child, out);
+    }
   }
 }
 

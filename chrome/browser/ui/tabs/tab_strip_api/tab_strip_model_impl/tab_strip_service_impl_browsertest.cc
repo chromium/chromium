@@ -61,8 +61,8 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
   void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr event) {
     for (auto& tab_created_container : event->tabs) {
       auto& tab = tab_created_container->tab;
-      auto tab_id = tab->id;
-      tabs.emplace(std::string(tab_id.Id()), std::move(tab));
+      auto tab_id = tab.id;
+      tabs.emplace(std::string(tab_id.Id()), tab);
     }
     tab_created_events.push_back(event.Clone());
   }
@@ -85,9 +85,9 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     switch (event->which()) {
       case tabs_api::mojom::OnDataChangedEvent::Tag::kTab: {
         const auto& tab = event->get_tab()->data;
-        std::string id_str = std::string(tab->id.Id());
+        std::string id_str = std::string(tab.id.Id());
         if (tabs.contains(id_str)) {
-          tabs.at(id_str) = tab.Clone();
+          tabs.at(id_str) = tab;
         }
         const auto& mask = event->get_tab()->mask;
         if (mask && mask->favicon) {
@@ -134,7 +134,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
   std::vector<tabs_api::mojom::OnTabsCreatedEventPtr> tab_created_events;
   std::vector<tabs_api::mojom::OnNodesClosedEventPtr> node_closed_events;
 
-  std::map<std::string, tabs_api::mojom::TabPtr> tabs;
+  std::map<std::string, tabs_api::Tab> tabs;
 
   // Number of data changed events received where the favicon field was marked
   // as changed.
@@ -207,7 +207,7 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     if (data->which() == target_tag) {
       switch (data->which()) {
         case tabs_api::mojom::Data::Tag::kTab:
-          return data->get_tab()->id;
+          return data->get_tab().id;
         case tabs_api::mojom::Data::Tag::kTabStrip:
           return data->get_tab_strip()->id;
         case tabs_api::mojom::Data::Tag::kPinnedTabs:
@@ -237,7 +237,7 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     const auto& data = container.data;
     switch (data->which()) {
       case tabs_api::mojom::Data::Tag::kTab:
-        return data->get_tab()->id;
+        return data->get_tab().id;
       case tabs_api::mojom::Data::Tag::kTabStrip:
         return data->get_tab_strip()->id;
       case tabs_api::mojom::Data::Tag::kPinnedTabs:
@@ -273,7 +273,7 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     return std::nullopt;
   }
 
-  tabs_api::mojom::TabPtr CreateTabAt(
+  std::optional<tabs_api::Tab> CreateTabAt(
       mojo::Remote<TabStripService>& remote,
       std::optional<tabs_api::Position> position = std::nullopt,
       std::optional<GURL> url = std::nullopt) {
@@ -287,7 +287,8 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
         }));
     run_loop.Run();
     EXPECT_TRUE(result.has_value());
-    return result.has_value() ? std::move(result.value()) : nullptr;
+    return result.has_value() ? std::make_optional(std::move(result.value()))
+                              : std::nullopt;
   }
 
   void CreateTabs(mojo::Remote<TabStripService>& remote,
@@ -478,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com/")));
   receiver.FlushForTesting();
   ASSERT_EQ("https://www.google.com/",
-            client.tabs.find(std::string(created_tab->id.Id()))->second->url);
+            client.tabs.find(std::string(created_tab->id.Id()))->second.url);
 
   TabStripService::CloseNodesResult close_result;
   base::RunLoop close_tab_loop;
@@ -652,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SetSelectedTabs) {
     ASSERT_EQ(should_be_selected, tab->IsSelected());
 
     auto& observation_tab = observation->client.tabs.at(tab_id);
-    ASSERT_EQ(should_be_active, observation_tab->is_active)
+    ASSERT_EQ(should_be_active, observation_tab.is_active)
         << "bad id was: " << tab_id;
     // There is a race that is preventing this from reliably completing. Fix
     // then retest.

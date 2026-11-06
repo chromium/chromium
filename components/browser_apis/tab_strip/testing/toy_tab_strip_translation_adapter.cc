@@ -15,7 +15,7 @@ ToyTabStripTranslationAdapter::ToyTabStripTranslationAdapter(
 
 ToyTabStripTranslationAdapter::~ToyTabStripTranslationAdapter() = default;
 
-base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr>
+base::expected<Tab, mojo_base::mojom::ErrorPtr>
 ToyTabStripTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
   auto maybe_tab = tab_strip_->GetToyTabFor(handle);
   if (!maybe_tab.has_value()) {
@@ -24,9 +24,14 @@ ToyTabStripTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
     return base::unexpected(std::move(err));
   }
 
-  auto mojo_tab = mojom::Tab::New();
-  mojo_tab->id = NodeId::FromTabHandle(handle);
-  return mojo_tab;
+  Tab tab;
+  tab.id = NodeId::FromTabHandle(handle);
+  tab.title = maybe_tab->title;
+  tab.url = maybe_tab->gurl;
+  tab.is_active = maybe_tab->active;
+  tab.is_selected = maybe_tab->selected;
+  tab.last_active = maybe_tab->last_active;
+  return tab;
 }
 
 base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr>

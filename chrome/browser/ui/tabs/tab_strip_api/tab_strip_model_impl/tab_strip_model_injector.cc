@@ -15,14 +15,13 @@ namespace tabs_api::tab_strip_model {
 Translator::Translator(TabStripModelAdapterImpl& tab_strip_model_adapter)
     : tab_strip_model_adapter_(tab_strip_model_adapter) {}
 
-base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr> Translator::ToMojoTab(
+base::expected<Tab, mojo_base::mojom::ErrorPtr> Translator::ToMojoTab(
     tabs::TabHandle tab_handle) {
   const ui::ColorProvider& color_provider =
       tab_strip_model_adapter_->GetColorProvider();
-  auto mojo_tab = tabs_api::converters::BuildMojoTab(
+  return tabs_api::converters::BuildMojoTab(
       tab_handle.Get(), color_provider,
       tab_strip_model_adapter_->GetTabStates(tab_handle));
-  return std::move(mojo_tab);
 }
 
 base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr>

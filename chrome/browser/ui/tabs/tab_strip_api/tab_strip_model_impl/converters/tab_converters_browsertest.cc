@@ -55,18 +55,18 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceConvertersBrowserTest, ConvertTab) {
                                .is_selected = true,
                            });
 
-  ASSERT_EQ(base::NumberToString(tab->GetHandle().raw_value()), mojo->id.Id());
-  ASSERT_EQ(NodeId::Type::kContent, mojo->id.Type());
-  ASSERT_EQ(tab_ui_helper->GetVisibleURL(), mojo->url);
-  ASSERT_EQ(base::UTF16ToUTF8(tab_ui_helper->GetTitle()), mojo->title);
-  ASSERT_TRUE(mojo->is_active);
-  ASSERT_TRUE(mojo->is_selected);
+  ASSERT_EQ(base::NumberToString(tab->GetHandle().raw_value()), mojo.id.Id());
+  ASSERT_EQ(NodeId::Type::kContent, mojo.id.Type());
+  ASSERT_EQ(tab_ui_helper->GetVisibleURL(), mojo.url);
+  ASSERT_EQ(tab_ui_helper->GetTitle(), mojo.title);
+  ASSERT_TRUE(mojo.is_active);
+  ASSERT_TRUE(mojo.is_selected);
   ASSERT_EQ(tabs::TabNetworkStateForWebContents(tab->GetContents()),
-            mojo->network_state);
+            mojo.network_state);
 
   ASSERT_EQ(tabs::TabAlertController::From(tab)->GetAllActiveAlerts(),
-            mojo->alert_states);
-  ASSERT_EQ(tab->IsBlocked(), mojo->is_blocked);
+            mojo.alert_states);
+  ASSERT_EQ(tab->IsBlocked(), mojo.is_blocked);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceConvertersBrowserTest,

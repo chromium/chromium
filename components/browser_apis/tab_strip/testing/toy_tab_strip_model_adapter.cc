@@ -84,9 +84,16 @@ mojom::ContainerPtr ToyTabStripModelAdapter::GetTabStripTopology(
 
   std::vector<tabs::TabHandle> tabs = tab_strip_->GetTabs();
   for (auto& handle : tabs) {
-    auto tab = tabs_api::mojom::Tab::New();
-    tab->id = tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
-                               base::NumberToString(handle.raw_value()));
+    tabs_api::Tab tab;
+    tab.id = tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
+                              base::NumberToString(handle.raw_value()));
+    if (auto maybe_toy_tab = tab_strip_->GetToyTabFor(handle)) {
+      tab.title = maybe_toy_tab->title;
+      tab.url = maybe_toy_tab->gurl;
+      tab.is_active = maybe_toy_tab->active;
+      tab.is_selected = maybe_toy_tab->selected;
+      tab.last_active = maybe_toy_tab->last_active;
+    }
     auto child_container = tabs_api::mojom::Container::New();
     child_container->data = tabs_api::mojom::Data::NewTab(std::move(tab));
     tab_strip_container->children.push_back(std::move(child_container));

@@ -105,7 +105,7 @@ void AndroidTabModelEventBridge::HandleSelectionAndActivationChange() {
       CHECK(tab_or_error.has_value()) << tab_or_error.error()->message;
 
       auto change_event = mojom::TabChange::New();
-      change_event->data = tab_or_error.value().Clone();
+      change_event->data = std::move(tab_or_error.value());
       change_event->mask = mojom::TabFieldMask::New();
       // Technically this might not have changed. The selected state might not
       // have been changed even if the activation state changed. But the general
@@ -130,7 +130,7 @@ void AndroidTabModelEventBridge::DidAddTab(TabAndroid* tab,
 
   auto event = mojom::OnTabsCreatedEvent::New();
   auto created_container = mojom::TabCreatedContainer::New();
-  created_container->tab = tab_or_error.value().Clone();
+  created_container->tab = std::move(tab_or_error.value());
   int index = model_->GetIndexOfTab(tab->GetHandle());
   created_container->position = adapter_->GetPositionForAbsoluteIndex(index);
   event->tabs.push_back(std::move(created_container));

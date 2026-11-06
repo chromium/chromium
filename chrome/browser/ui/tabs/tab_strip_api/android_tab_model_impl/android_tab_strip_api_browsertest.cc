@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Get) {
     ASSERT_EQ(1u, tab_strip_container->children.size());
     ASSERT_EQ(base::NumberToString(
                   model_->GetAllTabs().at(0)->GetHandle().raw_value()),
-              tab_strip_container->children.at(0)->data->get_tab()->id.Id());
+              tab_strip_container->children.at(0)->data->get_tab().id.Id());
   }
 
   // Now create a new tab and check that it is indeed reflected.
@@ -138,9 +138,9 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Get) {
     // Ordering is actually material, we need to ensure that the tab
     // order returned by the API matches the underlying model.
     ASSERT_EQ(base::NumberToString(model_->GetTab(0)->GetHandle().raw_value()),
-              tab_strip_container->children.at(0)->data->get_tab()->id.Id());
+              tab_strip_container->children.at(0)->data->get_tab().id.Id());
     ASSERT_EQ(base::NumberToString(model_->GetTab(1)->GetHandle().raw_value()),
-              tab_strip_container->children.at(1)->data->get_tab()->id.Id());
+              tab_strip_container->children.at(1)->data->get_tab().id.Id());
   }
 }
 

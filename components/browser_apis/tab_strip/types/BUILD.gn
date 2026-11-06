@@ -10,6 +10,8 @@ source_set("types") {
     "path.h",
     "position.cc",
     "position.h",
+    "tab.cc",
+    "tab.h",
     "tab_states.h",
   ]
 
@@ -18,6 +20,8 @@ source_set("types") {
     "//components/split_tabs",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//ui/gfx",
+    "//url",
   ]
 }
 

@@ -215,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiEventsBrowserTest,
   EXPECT_THAT(
       client.received,
       ::testing::Contains(TabChanged([&](const mojom::TabChangePtr& change) {
-        return change->data->id == NodeId::FromTabHandle(handle0) &&
-               change->data->is_active;
+        return change->data.id == NodeId::FromTabHandle(handle0) &&
+               change->data.is_active;
       })));
 }
 
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiEventsBrowserTest, EndToEndEvents) {
   auto result = service_->CreateTabAt(std::nullopt, std::nullopt);
   ASSERT_TRUE(result.has_value());
   auto tab1 = std::move(result.value());
-  auto id1 = tab1->id;
+  auto id1 = tab1.id;
 
   // We expect 3 events: tab created, deselect handle0, select tab1.
   // On Android, the JNI notification split between selection and activation
@@ -252,20 +252,20 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiEventsBrowserTest, EndToEndEvents) {
               ::testing::Contains(
                   TabsCreated([&](const mojom::OnTabsCreatedEventPtr& event) {
                     return event->tabs.size() == 1u &&
-                           event->tabs[0]->tab->id == id1 &&
+                           event->tabs[0]->tab.id == id1 &&
                            event->tabs[0]->position.index() == 1u;
                   })));
   EXPECT_THAT(
       client.received,
       ::testing::Contains(TabChanged([&](const mojom::TabChangePtr& change) {
-        return change->data->id == id0 && !change->data->is_active &&
-               !change->data->is_selected;
+        return change->data.id == id0 && !change->data.is_active &&
+               !change->data.is_selected;
       })));
   EXPECT_THAT(
       client.received,
       ::testing::Contains(TabChanged([&](const mojom::TabChangePtr& change) {
-        return change->data->id == id1 && change->data->is_active &&
-               change->data->is_selected;
+        return change->data.id == id1 && change->data.is_active &&
+               change->data.is_selected;
       })));
 
   client.received.clear();
@@ -286,14 +286,14 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiEventsBrowserTest, EndToEndEvents) {
   EXPECT_THAT(
       client.received,
       ::testing::Contains(TabChanged([&](const mojom::TabChangePtr& change) {
-        return change->data->id == id0 && change->data->is_active &&
-               change->data->is_selected;
+        return change->data.id == id0 && change->data.is_active &&
+               change->data.is_selected;
       })));
   EXPECT_THAT(
       client.received,
       ::testing::Contains(TabChanged([&](const mojom::TabChangePtr& change) {
-        return change->data->id == id1 && !change->data->is_active &&
-               !change->data->is_selected;
+        return change->data.id == id1 && !change->data.is_active &&
+               !change->data.is_selected;
       })));
 
   client.received.clear();

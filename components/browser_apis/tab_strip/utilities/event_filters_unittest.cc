@@ -36,8 +36,7 @@ TEST(EventFiltersTest, FilterEvents) {
       std::move(tab_moved_event)));
 
   auto tab_change = tabs_api::mojom::TabChange::New();
-  tab_change->data = tabs_api::mojom::Tab::New();
-  tab_change->data->id =
+  tab_change->data.id =
       tabs_api::NodeId(tabs_api::NodeId::Type::kContent, "333");
   tab_change->mask = tabs_api::mojom::TabFieldMask::New();
   events.push_back(tabs_api::mojom::TabsEvent::NewDataChangedEvent(
@@ -74,7 +73,7 @@ TEST(EventFiltersTest, FilterEvents) {
   EXPECT_NE(created_groups[0], nullptr);
 
   ASSERT_TRUE(data_changed_events[0]->is_tab());
-  EXPECT_EQ(data_changed_events[0]->get_tab()->data->id.Id(), "333");
+  EXPECT_EQ(data_changed_events[0]->get_tab()->data.id.Id(), "333");
 
   ASSERT_TRUE(data_changed_events[1]->is_tab_group());
   EXPECT_EQ(data_changed_events[1]->get_tab_group()->data->id.Id(), "444");

@@ -100,30 +100,33 @@ tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMaskForSelection(bool active,
   return mask;
 }
 
-tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabInterface* tab,
-                                     const ui::ColorProvider& color_provider,
-                                     const types::TabStates& states) {
-  auto result = tabs_api::mojom::Tab::New();
+tabs_api::Tab BuildMojoTab(tabs::TabInterface* tab,
+                           const ui::ColorProvider& color_provider,
+                           const types::TabStates& states) {
+  tabs_api::Tab result;
   TabUIHelper* tab_ui_helper = TabUIHelper::From(tab);
   CHECK(tab_ui_helper);
 
-  result->id =
+  result.id =
       tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
                        base::NumberToString(tab->GetHandle().raw_value()));
-  result->title = base::UTF16ToUTF8(tab_ui_helper->GetTitle());
-  result->favicon =
+  result.title = tab_ui_helper->GetTitle();
+  result.favicon =
       RasterizeThemedFavicon(tab, tab_ui_helper, color_provider, states);
-  result->url = tab_ui_helper->GetVisibleURL();
-  result->network_state = tab_ui_helper->GetTabNetworkState();
+  result.url = tab_ui_helper->GetVisibleURL();
+  result.network_state = tab_ui_helper->GetTabNetworkState();
   if (tab->GetHandle().Get() != nullptr) {
-    result->alert_states =
-        tabs::TabAlertController::From(tab->GetHandle().Get())
-            ->GetAllActiveAlerts();
+    result.alert_states = tabs::TabAlertController::From(tab->GetHandle().Get())
+                              ->GetAllActiveAlerts();
   }
 
-  result->is_active = states.is_active;
-  result->is_selected = states.is_selected;
-  result->is_blocked = tab->IsBlocked();
+  result.is_active = states.is_active;
+  result.is_selected = states.is_selected;
+  result.is_blocked = tab->IsBlocked();
+  if (content::WebContents* contents = tab->GetContents()) {
+    result.last_active = std::max(contents->GetLastActiveTimeTicks(),
+                                  contents->GetLastInteractionTimeTicks());
+  }
   return result;
 }
 

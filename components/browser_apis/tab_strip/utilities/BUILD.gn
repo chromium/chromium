@@ -12,12 +12,14 @@ source_set("utilities") {
     "tab_strip_api_utilities.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//components/browser_apis/tab_strip:mojom",
-    "//components/browser_apis/tab_strip/adapters",
+    "//components/browser_apis/tab_strip/types",
+    "//components/tab_groups",
     "//mojo/public/mojom/base",
   ]
+  deps = [ "//components/browser_apis/tab_strip/adapters" ]
 }
 
 source_set("unit_tests") {

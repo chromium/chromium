@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
+#include "components/browser_apis/tab_strip/types/tab.h"
 #include "components/browser_apis/tab_strip/types/tab_states.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_collection.h"
@@ -16,9 +17,9 @@
 
 namespace tabs_api::converters {
 
-tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabInterface* tab,
-                                     const ui::ColorProvider& color_provider,
-                                     const types::TabStates& states);
+tabs_api::Tab BuildMojoTab(tabs::TabInterface* tab,
+                           const ui::ColorProvider& color_provider,
+                           const types::TabStates& states);
 
 // Builds a mojom::DataPtr based off a TabCollection.
 // Note: Handle must be valid and point to a live TabCollection. There is a

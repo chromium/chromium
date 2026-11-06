@@ -216,8 +216,8 @@ mojom::ContainerPtr AndroidTabStripModelAdapter::GetTabStripTopology(
 
   for (auto* tab_interface : model_->GetAllTabs()) {
     auto tab = tabs_api::mojom::Container::New();
-    auto tab_data = mojom::Tab::New();
-    tab_data->id = tabs_api::NodeId::FromTabHandle(tab_interface->GetHandle());
+    Tab tab_data;
+    tab_data.id = tabs_api::NodeId::FromTabHandle(tab_interface->GetHandle());
     tab->data = mojom::Data::NewTab(std::move(tab_data));
     tab_strip->children.emplace_back(std::move(tab));
   }

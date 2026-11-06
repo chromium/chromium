@@ -24,10 +24,10 @@ tabs_api::NodeId CreateTestNodeId(enum tabs_api::NodeId::Type type) {
 }
 
 TEST(TabStripApiUtilsTest, GetNodeIdFromTab) {
-  auto tab = mojom::Tab::New();
-  tab->id = CreateTestNodeId(tabs_api::NodeId::Type::kContent);
-  auto data = mojom::Data::NewTab(tab.Clone());
-  EXPECT_EQ(GetNodeId(*data), tab->id);
+  Tab tab;
+  tab.id = CreateTestNodeId(tabs_api::NodeId::Type::kContent);
+  auto data = mojom::Data::NewTab(tab);
+  EXPECT_EQ(GetNodeId(*data), tab.id);
 }
 
 TEST(TabStripApiUtilsTest, GetNodeIdFromTabGroup) {
@@ -147,6 +147,49 @@ TEST(TabStripApiUtilsTest, MergeTabGroupVisualData_InvalidField) {
       current, incoming, std::vector<std::string>({"invalid_field"}));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
+}
+
+TEST(TabStripApiUtilsTest, FindActiveTabAndFlattenTabs) {
+  auto root = mojom::Container::New();
+  auto root_strip = mojom::TabStrip::New();
+  root_strip->id = CreateTestNodeId(tabs_api::NodeId::Type::kCollection);
+  root->data = mojom::Data::NewTabStrip(std::move(root_strip));
+
+  auto unpinned = mojom::Container::New();
+  auto unpinned_data = mojom::UnpinnedTabs::New();
+  unpinned_data->id = CreateTestNodeId(tabs_api::NodeId::Type::kCollection);
+  unpinned->data = mojom::Data::NewUnpinnedTabs(std::move(unpinned_data));
+
+  auto tab1_node = mojom::Container::New();
+  Tab tab1;
+  tab1.id = CreateTestNodeId(tabs_api::NodeId::Type::kContent);
+  tab1.title = u"First";
+  tab1.is_active = false;
+  NodeId tab1_id = tab1.id;
+  tab1_node->data = mojom::Data::NewTab(std::move(tab1));
+  unpinned->children.push_back(std::move(tab1_node));
+
+  auto tab2_node = mojom::Container::New();
+  Tab tab2;
+  tab2.id = CreateTestNodeId(tabs_api::NodeId::Type::kContent);
+  tab2.title = u"Second";
+  tab2.is_active = true;
+  NodeId tab2_id = tab2.id;
+  tab2_node->data = mojom::Data::NewTab(std::move(tab2));
+  unpinned->children.push_back(std::move(tab2_node));
+
+  root->children.push_back(std::move(unpinned));
+
+  const Tab* active = FindActiveTab(*root);
+  ASSERT_NE(active, nullptr);
+  EXPECT_EQ(active->id, tab2_id);
+  EXPECT_EQ(active->title, u"Second");
+
+  std::vector<const Tab*> flat;
+  FlattenTabs(*root, flat);
+  ASSERT_EQ(flat.size(), 2u);
+  EXPECT_EQ(flat[0]->id, tab1_id);
+  EXPECT_EQ(flat[1]->id, tab2_id);
 }
 
 }  // namespace

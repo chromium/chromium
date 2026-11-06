@@ -11,8 +11,10 @@
 #include <vector>
 
 #include "base/types/expected.h"
+#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_types.mojom.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
+#include "components/browser_apis/tab_strip/types/tab.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "mojo/public/mojom/base/error.mojom.h"
@@ -33,6 +35,15 @@ namespace tabs_api::utils {
 
 // Returns the NodeId from any variant of the mojom::Data union.
 const tabs_api::NodeId& GetNodeId(const mojom::Data& data);
+
+// Returns a pointer to the active tab in `container` (searching recursively
+// through child collections), or nullptr if none is active.
+const Tab* FindActiveTab(const mojom::Container& container);
+
+// Appends pointers to all tabs in `container` (in pre-order traversal order)
+// into `out`.
+void FlattenTabs(const mojom::Container& container,
+                 std::vector<const Tab*>& out);
 
 // Returns the tab group id for a given node id.
 base::expected<tab_groups::TabGroupId, mojo_base::mojom::ErrorPtr>
