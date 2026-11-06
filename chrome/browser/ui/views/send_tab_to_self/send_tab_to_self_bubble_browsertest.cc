@@ -66,11 +66,11 @@ class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
   void SetEntryPointDisplayReason(
       std::optional<send_tab_to_self::EntryPointDisplayReason> reason) {
     reason_ = reason;
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
     if (reason_ ==
         send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice) {
-      signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(Profile::FromBrowserContext(
-              GetWebContents().GetBrowserContext()));
       if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         AccountInfo account_info = signin::MakePrimaryAccountAvailable(
             identity_manager, "user@host.com", signin::ConsentLevel::kSignin);
@@ -79,6 +79,13 @@ class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
             "https://avatar.com/avatar.png",
             gfx::Image(gfx::test::CreateImageSkia(96, 96)));
       }
+    } else if (reason_ ==
+               send_tab_to_self::EntryPointDisplayReason::kOfferReauth) {
+      if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+        signin::MakePrimaryAccountAvailable(identity_manager, "user@host.com",
+                                            signin::ConsentLevel::kSignin);
+      }
+      signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
     }
   }
 

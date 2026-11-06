@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_PROMO_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_PROMO_BUBBLE_VIEW_H_
 
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_dialog_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
@@ -14,30 +14,20 @@ class WebContents;
 
 namespace send_tab_to_self {
 
-// Shown when the user is signed out, offering a promotional sign-in flow.
-class SendTabToSelfSignInPromoBubbleView
-    : public LocationBarBubbleDelegateView {
+// Shown when the user is signed out or in a sign-in pending state, offering a
+// promotional sign-in or reauth flow.
+class SendTabToSelfSignInPromoBubbleView : public BubbleSignInPromoDialogView {
   METADATA_HEADER(SendTabToSelfSignInPromoBubbleView,
-                  LocationBarBubbleDelegateView)
+                  BubbleSignInPromoDialogView)
 
  public:
-  enum class PromoMode {
-    kSignIn,
-    kReauth,
-  };
-
   SendTabToSelfSignInPromoBubbleView(views::BubbleAnchor anchor,
-                                     content::WebContents* web_contents,
-                                     PromoMode promo_mode);
+                                     content::WebContents* web_contents);
   SendTabToSelfSignInPromoBubbleView(
       const SendTabToSelfSignInPromoBubbleView&) = delete;
   SendTabToSelfSignInPromoBubbleView& operator=(
       const SendTabToSelfSignInPromoBubbleView&) = delete;
   ~SendTabToSelfSignInPromoBubbleView() override;
-
-  // views::View:
-  // Sets up the header illustration.
-  void AddedToWidget() override;
 };
 
 }  // namespace send_tab_to_self

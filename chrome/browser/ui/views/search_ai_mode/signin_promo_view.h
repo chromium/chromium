@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_SEARCH_AI_MODE_SIGNIN_PROMO_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_dialog_view.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -18,17 +19,20 @@ class BubbleSignInPromoDelegate;
 class SearchAIModeSignInPromoController;
 class ComposeboxDriveSignInPromoController;
 
-// Base view for the location bar sign-in promo bubble.
-class AIModeSignInPromoViewBase : public LocationBarBubbleDelegateView {
-  METADATA_HEADER(AIModeSignInPromoViewBase, LocationBarBubbleDelegateView)
+// Base view for the AI Mode and Composebox Drive location bar sign-in promo
+// bubbles.
+class AIModeSignInPromoViewBase : public BubbleSignInPromoDialogView {
+  METADATA_HEADER(AIModeSignInPromoViewBase, BubbleSignInPromoDialogView)
  public:
-  // `delegate` handles the sign-in button and must not be null.
   AIModeSignInPromoViewBase(
       views::BubbleAnchor anchor,
       content::WebContents* web_contents,
       base::WeakPtr<AIModeSignInPromoControllerBase> controller,
       signin_metrics::AccessPoint access_point,
-      std::unique_ptr<BubbleSignInPromoDelegate> delegate);
+      std::unique_ptr<BubbleSignInPromoDelegate> delegate,
+      int signin_title_resource_id,
+      std::optional<int> verify_title_resource_id,
+      int lottie_resource_id);
   AIModeSignInPromoViewBase(const AIModeSignInPromoViewBase&) = delete;
   AIModeSignInPromoViewBase& operator=(const AIModeSignInPromoViewBase&) =
       delete;
@@ -62,7 +66,7 @@ class SearchAIModeSignInPromoView : public AIModeSignInPromoViewBase {
   bool IsTimerRunningForTesting() const;
 
  protected:
-  // LocationBarBubbleDelegateView:
+  // views::View:
   void AddedToWidget() override;
 
  private:
@@ -83,7 +87,7 @@ class ComposeboxDriveSignInPromoView : public AIModeSignInPromoViewBase {
   ~ComposeboxDriveSignInPromoView() override;
 
  protected:
-  // LocationBarBubbleDelegateView:
+  // views::View:
   void AddedToWidget() override;
 };
 

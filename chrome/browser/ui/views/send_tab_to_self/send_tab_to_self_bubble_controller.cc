@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,13 +24,13 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_no_target_device_bubble_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_list_waiter.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -40,6 +41,10 @@
 #include "ui/events/event.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
@@ -164,12 +169,14 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn:
     case send_tab_to_self::EntryPointDisplayReason::kOfferReauth:
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       bubble_view = std::make_unique<SendTabToSelfSignInPromoBubbleView>(
-          std::move(anchor.value()), &GetWebContents(),
-          reason == send_tab_to_self::EntryPointDisplayReason::kOfferReauth
-              ? SendTabToSelfSignInPromoBubbleView::PromoMode::kReauth
-              : SendTabToSelfSignInPromoBubbleView::PromoMode::kSignIn);
+          std::move(anchor.value()), &GetWebContents());
       break;
+#else
+      NOTREACHED()
+          << "The promo bubble shouldn't show if dice-support is disabled";
+#endif
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
       bubble_view = std::make_unique<SendTabToSelfNoTargetDeviceBubbleView>(
           std::move(anchor.value()), &GetWebContents());

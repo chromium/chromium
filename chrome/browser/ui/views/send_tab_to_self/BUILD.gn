@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("send_tab_to_self") {
@@ -10,7 +12,6 @@ source_set("send_tab_to_self") {
     "send_tab_to_self_bubble_device_button.h",
     "send_tab_to_self_device_picker_bubble_view.h",
     "send_tab_to_self_no_target_device_bubble_view.h",
-    "send_tab_to_self_promo_bubble_view.h",
   ]
   sources = [
     "send_tab_to_self_bubble.cc",
@@ -18,7 +19,6 @@ source_set("send_tab_to_self") {
     "send_tab_to_self_bubble_device_button.cc",
     "send_tab_to_self_device_picker_bubble_view.cc",
     "send_tab_to_self_no_target_device_bubble_view.cc",
-    "send_tab_to_self_promo_bubble_view.cc",
   ]
 
   public_deps = [
@@ -45,11 +45,11 @@ source_set("send_tab_to_self") {
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/send_tab_to_self",
-    "//chrome/browser/ui/signin",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/toolbar",
     "//components/signin/public/base",
+    "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/url_formatter",
@@ -59,6 +59,12 @@ source_set("send_tab_to_self") {
     "//ui/strings:ui_strings",
     "//ui/strings:ui_strings_grit",
   ]
+
+  if (enable_dice_support) {
+    public += [ "send_tab_to_self_promo_bubble_view.h" ]
+    sources += [ "send_tab_to_self_promo_bubble_view.cc" ]
+    public_deps += [ "//chrome/browser/ui/signin" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -144,8 +150,10 @@ source_set("unit_tests") {
   sources = [
     "send_tab_to_self_device_picker_bubble_view_unittest.cc",
     "send_tab_to_self_no_target_device_bubble_view_unittest.cc",
-    "send_tab_to_self_promo_bubble_view_unittest.cc",
   ]
+  if (enable_dice_support) {
+    sources += [ "send_tab_to_self_promo_bubble_view_unittest.cc" ]
+  }
   deps = [
     ":send_tab_to_self",
     "//base",
@@ -154,10 +162,8 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/signin:test_support",
-    "//chrome/browser/ui/signin",
     "//chrome/test:test_support",
     "//components/send_tab_to_self",
-    "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings",
@@ -173,4 +179,7 @@ source_set("unit_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+  if (enable_dice_support) {
+    deps += [ "//chrome/browser/ui/signin" ]
+  }
 }

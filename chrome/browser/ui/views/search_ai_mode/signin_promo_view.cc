@@ -10,12 +10,8 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
-#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 #include "chrome/common/url_constants.h"
@@ -29,25 +25,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 
 constexpr base::TimeDelta kPromoSelfDismissalTimeout = base::Seconds(15);
-
-std::unique_ptr<views::ImageView> CreateHeaderImageView(int lottie_res_id) {
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image_view = std::make_unique<views::ImageView>(
-      bundle.GetThemedLottieImageNamed(lottie_res_id));
-  image_view->GetViewAccessibility().SetIsInvisible(true);
-  return image_view;
-}
 
 void RedirectSignInTabToNewTabPage(
     base::WeakPtr<content::WebContents> sign_in_tab) {
@@ -112,26 +95,18 @@ AIModeSignInPromoViewBase::AIModeSignInPromoViewBase(
     content::WebContents* web_contents,
     base::WeakPtr<AIModeSignInPromoControllerBase> controller,
     signin_metrics::AccessPoint access_point,
-    std::unique_ptr<BubbleSignInPromoDelegate> delegate)
-    : LocationBarBubbleDelegateView(anchor, web_contents),
-      controller_(std::move(controller)) {
-  CHECK(web_contents);
-
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  SetShowCloseButton(true);
-
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  set_margins(BubbleSignInPromoView::GetBubbleSigninPromoMargins());
-
-  auto* sign_in_promo = AddChildView(std::make_unique<BubbleSignInPromoView>(
-      web_contents, access_point, std::move(delegate)));
-  SetInitiallyFocusedView(sign_in_promo->GetSignInButton());
-}
+    std::unique_ptr<BubbleSignInPromoDelegate> delegate,
+    int signin_title_resource_id,
+    std::optional<int> verify_title_resource_id,
+    int lottie_resource_id)
+    : BubbleSignInPromoDialogView(anchor,
+                                  web_contents,
+                                  access_point,
+                                  std::move(delegate),
+                                  signin_title_resource_id,
+                                  verify_title_resource_id,
+                                  lottie_resource_id),
+      controller_(std::move(controller)) {}
 
 AIModeSignInPromoViewBase::~AIModeSignInPromoViewBase() {
   if (controller_) {
@@ -170,10 +145,12 @@ SearchAIModeSignInPromoView::SearchAIModeSignInPromoView(
           signin_metrics::AccessPoint::kSearchAIModeBubble,
           std::make_unique<DefaultBubbleSignInPromoDelegate>(
               *web_contents,
-              signin_metrics::AccessPoint::kSearchAIModeBubble)) {
+              signin_metrics::AccessPoint::kSearchAIModeBubble),
+          IDS_AI_SIGNIN_PROMO_TITLE,
+          /*verify_title_resource_id=*/std::nullopt,
+          IDR_SEARCH_AI_MODE_SIGNIN_PROMO_LOTTIE) {
   CHECK(base::FeatureList::IsEnabled(switches::kEnableSearchAIModeSigninPromo));
   SetProperty(views::kElementIdentifierKey, kSearchAIModeSignInPromoViewId);
-  SetTitle(IDS_AI_SIGNIN_PROMO_TITLE);
 }
 
 SearchAIModeSignInPromoView::~SearchAIModeSignInPromoView() = default;
@@ -189,10 +166,9 @@ bool SearchAIModeSignInPromoView::IsTimerRunningForTesting() const {
 }
 
 void SearchAIModeSignInPromoView::AddedToWidget() {
+  AIModeSignInPromoViewBase::AddedToWidget();
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kSearchAIModeSignInPromoFrameViewId);
-  GetBubbleFrameView()->SetHeaderView(
-      CreateHeaderImageView(IDR_SEARCH_AI_MODE_SIGNIN_PROMO_LOTTIE));
 
   if (base::FeatureList::IsEnabled(
           switches::kSearchAIModeSignInPromoSelfDismissal)) {
@@ -222,31 +198,21 @@ ComposeboxDriveSignInPromoView::ComposeboxDriveSignInPromoView(
           web_contents,
           std::move(controller),
           signin_metrics::AccessPoint::kComposeboxDriveContextMenuOptionBubble,
-          std::make_unique<ComposeboxDriveSignInPromoDelegate>(*web_contents)) {
+          std::make_unique<ComposeboxDriveSignInPromoDelegate>(*web_contents),
+          IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_TITLE,
+          IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_VERIFY_PROMO_TITLE,
+          IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_LOTTIE) {
   CHECK(base::FeatureList::IsEnabled(
       omnibox::kComposeboxDriveContextMenuOptionSigninPromo));
   SetProperty(views::kElementIdentifierKey, kComposeboxDriveSignInPromoViewId);
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          ->GetOriginalProfile();
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  signin_util::SignedInState signed_in_state =
-      signin_util::GetSignedInState(identity_manager);
-
-  SetTitle(signed_in_state == signin_util::SignedInState::kSignInPending
-               ? IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_VERIFY_PROMO_TITLE
-               : IDS_COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_SIGNIN_PROMO_TITLE);
 }
 
 ComposeboxDriveSignInPromoView::~ComposeboxDriveSignInPromoView() = default;
 
 void ComposeboxDriveSignInPromoView::AddedToWidget() {
+  AIModeSignInPromoViewBase::AddedToWidget();
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kComposeboxDriveSignInPromoFrameViewId);
-  GetBubbleFrameView()->SetHeaderView(
-      CreateHeaderImageView(IDR_COMPOSEBOX_DRIVE_SIGNIN_PROMO_LOTTIE));
 }
 
 BEGIN_METADATA(ComposeboxDriveSignInPromoView)

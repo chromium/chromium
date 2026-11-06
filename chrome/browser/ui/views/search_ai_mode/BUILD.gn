@@ -14,6 +14,7 @@ source_set("search_ai_mode") {
   public_deps = [
     "//base",
     "//chrome/browser/contextual_tasks:ui",
+    "//chrome/browser/ui/signin",
     "//chrome/browser/ui/views/location_bar",
     "//components/signin/public/base",
     "//content/public/browser",
