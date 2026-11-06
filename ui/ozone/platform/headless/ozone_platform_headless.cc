@@ -14,6 +14,9 @@
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/input_method_minimal.h"
 #include "ui/display/types/native_display_delegate.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/device_hotplug_event_observer.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -133,6 +136,12 @@ class OzonePlatformHeadlessImpl : public OzonePlatformHeadless {
     input_controller_ = std::make_unique<StubInputController>();
     cursor_factory_ = std::make_unique<BitmapCursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
+
+    DeviceDataManager::CreateInstance();
+    DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
+    observer->OnMouseDevicesUpdated({InputDevice(
+        1, InputDeviceType::INPUT_DEVICE_INTERNAL, "Headless Mouse")});
+    observer->OnDeviceListsComplete();
 
     return true;
   }

@@ -1,0 +1,10 @@
+Tests interaction media features.
+(pointer: none): false
+(pointer: coarse): false
+(pointer: fine): true
+(any-pointer: none): false
+(any-pointer: fine): true
+(hover: none): false
+(hover: hover): true
+(any-hover: none): false
+(any-hover: hover): true

@@ -407,6 +407,7 @@ source_set("headless_browser") {
     "//ui/display",
     "//ui/display/util",
     "//ui/events/devices",
+    "//ui/events/platform",
     "//ui/gfx",
     "//url",
   ]
