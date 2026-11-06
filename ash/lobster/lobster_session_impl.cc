@@ -24,7 +24,6 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -32,9 +31,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "build/branding_buildflags.h"
+#include "components/account_id/account_id.h"
 #include "components/feedback/feedback_constants.h"
-#include "components/session_manager/core/session.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -105,18 +103,6 @@ std::string BuildFeedbackDescription(std::string_view query,
       model_version, user_description);
 }
 
-// TODO(crbug.com/563546692): Take the account id from the caller.
-// LobsterSessionImpl holds a LobsterClient, which knows the account its
-// profile was built for, so the notification can carry it down here.
-void OpenDownloadsFolder() {
-  // The session runs for whoever is using Lobster, and the notification this
-  // hangs off is only ever shown inside their session.
-  const session_manager::Session& session =
-      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
-  ash::NewWindowDelegate::GetInstance()->OpenDownloadsFolder(
-      session.account_id());
-}
-
 message_center::RichNotificationData CreateRichNotificationData(
     const base::FilePath& image_path,
     const std::string& image_bytes) {
@@ -131,9 +117,12 @@ message_center::RichNotificationData CreateRichNotificationData(
   return rich_notification_data;
 }
 
+// `account_id` owns the download, and is the user whose Downloads folder the
+// "Show in folder" button opens.
 void DisplaySuccessfulImageDownloadNotification(
     const base::FilePath& image_path,
-    const std::string& image_bytes) {
+    const std::string& image_bytes,
+    const AccountId& account_id) {
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotificationPtr(
           /*type=*/message_center::NOTIFICATION_TYPE_IMAGE,
@@ -149,6 +138,7 @@ void DisplaySuccessfulImageDownloadNotification(
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(
                   [](const std::string& image_bytes,
+                     const AccountId& account_id,
                      std::optional<int> button_index) {
                     if (!button_index.has_value()) {
                       return;
@@ -156,12 +146,13 @@ void DisplaySuccessfulImageDownloadNotification(
                     CHECK(*button_index == 0 || button_index == 1);
 
                     if (button_index == 0) {
-                      OpenDownloadsFolder();
+                      ash::NewWindowDelegate::GetInstance()
+                          ->OpenDownloadsFolder(account_id);
                     } else if (button_index == 1) {
                       CopyToClipboard(image_bytes);
                     }
                   },
-                  image_bytes)),
+                  image_bytes, account_id)),
           /*small_image=*/
           ::features::IsRoundedIconsEnabled()
               ? vector_icons::kDownload2FilledIcon
@@ -278,12 +269,14 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                 base::BindOnce(
                     [](StatusCallback status_callback,
                        const std::string& image_bytes,
+                       const AccountId& account_id,
                        const LobsterImageDownloadResponse& download_response) {
                       std::move(status_callback).Run(download_response.success);
 
                       if (download_response.success) {
                         DisplaySuccessfulImageDownloadNotification(
-                            download_response.download_path, image_bytes);
+                            download_response.download_path, image_bytes,
+                            account_id);
                         RecordLobsterState(
                             LobsterMetricState::kCandidateDownloadSuccess);
                         return;
@@ -294,7 +287,8 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                       RecordLobsterState(
                           LobsterMetricState::kCandidateDownloadError);
                     },
-                    std::move(status_callback), image_candidate.image_bytes));
+                    std::move(status_callback), image_candidate.image_bytes,
+                    lobster_client->GetAccountId()));
           },
           client_.get(), &download_actuator_, download_dir,
           // Always use the original user query for the filename
@@ -406,7 +400,8 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
 
                       if (download_response.success) {
                         DisplaySuccessfulImageDownloadNotification(
-                            download_response.download_path, image_bytes);
+                            download_response.download_path, image_bytes,
+                            lobster_client->GetAccountId());
                         RecordLobsterState(
                             LobsterMetricState::kCommitAsDownloadSuccess);
                         return;

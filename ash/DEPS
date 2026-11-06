@@ -197,10 +197,6 @@ specific_include_rules = {
     "+components/session_manager/core/session.h",
     "+components/session_manager/core/session_manager.h",
   ],
-  "lobster_session_impl\\.cc": [
-    "+components/session_manager/core/session.h",
-    "+components/session_manager/core/session_manager.h",
-  ],
   "nearby_share_detailed_view_impl(_unittest)?\\.cc": [
     "+components/session_manager/core/session.h",
     "+components/session_manager/core/session_manager.h",
