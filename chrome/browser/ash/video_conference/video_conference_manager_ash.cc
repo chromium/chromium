@@ -18,10 +18,13 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 
@@ -92,8 +95,14 @@ void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
 }
 
 void VideoConferenceManagerAsh::CreateBackgroundImage() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  CHECK(profile, base::NotFatalUntil::M161);
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id()));
+  CHECK(profile);
   SystemAppLaunchParams params;
   params.launch_source = apps::LaunchSource::kFromShelf;
   LaunchSystemWebAppAsync(profile, SystemWebAppType::VC_BACKGROUND, params);

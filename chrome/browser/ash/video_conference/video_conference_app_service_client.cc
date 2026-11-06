@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/ash/video_conference/video_conference_ukm_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -204,6 +203,8 @@ void VideoConferenceAppServiceClient::OnInstanceRegistryWillBeDestroyed(
 
 void VideoConferenceAppServiceClient::OnSessionStateChanged(
     session_manager::SessionState state) {
+  // TODO(crbug.com/582209855): Also rebind on OnActiveUserSessionChanged() so
+  // a multi-user switch updates the observed registries.
   if (state != session_manager::SessionState::ACTIVE) {
     return;
   }
@@ -224,6 +225,7 @@ void VideoConferenceAppServiceClient::OnSessionStateChanged(
     return;
   }
 
+  account_id_ = active_session->account_id();
   auto* ash_proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   instance_registry_ = &ash_proxy->InstanceRegistry();
   app_registry_ = &ash_proxy->AppRegistryCache();
@@ -233,7 +235,7 @@ void VideoConferenceAppServiceClient::OnSessionStateChanged(
 
   capability_cache_ =
       apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
-          active_session->account_id());
+          account_id_);
   app_capability_observation_.Reset();
   app_capability_observation_.Observe(capability_cache_);
 }
@@ -302,7 +304,10 @@ VideoConferenceAppServiceClient::GetOrAddAppState(const std::string& app_id) {
     } else {
       // In real environment, using real UkmRecorder and real SourceID.
       const auto source_id = apps::AppPlatformMetrics::GetSourceId(
-          ProfileManager::GetActiveUserProfile(), app_id);
+          Profile::FromBrowserContext(
+              BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                  account_id_)),
+          app_id);
       if (source_id != ukm::kInvalidSourceId) {
         id_to_ukm_hepler_[app_id] = std::make_unique<VideoConferenceUkmHelper>(
             ukm::UkmRecorder::Get(), source_id);
