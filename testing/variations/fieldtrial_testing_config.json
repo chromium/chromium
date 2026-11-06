@@ -10588,6 +10588,23 @@
             ]
         }
     ],
+    "IOSGeminiBottomSheetMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AssistantContainer",
+                        "IOSGeminiBottomSheetMigration",
+                        "ZeroStateSuggestionsCentralization"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSGeminiContextualSuggestionsCues": [
         {
             "platforms": [
