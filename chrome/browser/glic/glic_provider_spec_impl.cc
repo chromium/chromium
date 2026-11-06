@@ -54,6 +54,21 @@ GlicIndigoFeatureParams& GlicIndigoFeatureParams::operator=(
     GlicIndigoFeatureParams&&) = default;
 GlicIndigoFeatureParams::~GlicIndigoFeatureParams() = default;
 
+GlicMarketingAutoOpenFeatureParams::GlicMarketingAutoOpenFeatureParams() =
+    default;
+GlicMarketingAutoOpenFeatureParams::GlicMarketingAutoOpenFeatureParams(
+    const GlicMarketingAutoOpenFeatureParams&) = default;
+GlicMarketingAutoOpenFeatureParams&
+GlicMarketingAutoOpenFeatureParams::operator=(
+    const GlicMarketingAutoOpenFeatureParams&) = default;
+GlicMarketingAutoOpenFeatureParams::GlicMarketingAutoOpenFeatureParams(
+    GlicMarketingAutoOpenFeatureParams&&) = default;
+GlicMarketingAutoOpenFeatureParams&
+GlicMarketingAutoOpenFeatureParams::operator=(
+    GlicMarketingAutoOpenFeatureParams&&) = default;
+GlicMarketingAutoOpenFeatureParams::~GlicMarketingAutoOpenFeatureParams() =
+    default;
+
 namespace {
 
 // Appended by `GetLocalizedGuestURL()` from Chrome's UI locale.
@@ -194,12 +209,18 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
 #else
         return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      // The contextual cueing helpers apply the flags.
+      // Callers apply the flags: the contextual cueing helpers, glicPrivate
+      // (per-source `extensions_features` flags) and the web continuity
+      // navigation throttle.
       case GlicFeature::kContextualCueing:
       case GlicFeature::kZeroStateSuggestions:
+      case GlicFeature::kGooglePageInvocation:
+      case GlicFeature::kWebContinuity:
         return true;
       case GlicFeature::kSkills:
         return base::FeatureList::IsEnabled(::features::kSkillsEnabled);
+      case GlicFeature::kMarketingAutoOpen:
+        return base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen);
       case GlicFeature::kIndigoOpenGlic:
         return base::FeatureList::IsEnabled(features::kIndigoOpenGlic);
     }
@@ -224,6 +245,11 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   }
   GlicIndigoFeatureParams GetIndigoFeatureParams() const override {
     return features::PopulateIndigoFeatureParams(features::kIndigoOpenGlic);
+  }
+  GlicMarketingAutoOpenFeatureParams GetMarketingAutoOpenFeatureParams()
+      const override {
+    return features::PopulateMarketingAutoOpenFeatureParams(
+        features::kGlicMarketingAutoOpen);
   }
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGlicSsr);
@@ -294,6 +320,9 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kContextualCueing:
       case GlicFeature::kZeroStateSuggestions:
       case GlicFeature::kSkills:
+      case GlicFeature::kGooglePageInvocation:
+      case GlicFeature::kMarketingAutoOpen:
+      case GlicFeature::kWebContinuity:
       case GlicFeature::kIndigoOpenGlic:
         return false;
     }
@@ -310,6 +339,10 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     return {};
   }
   GlicIndigoFeatureParams GetIndigoFeatureParams() const override { return {}; }
+  GlicMarketingAutoOpenFeatureParams GetMarketingAutoOpenFeatureParams()
+      const override {
+    return {};
+  }
   // TODO(b/576365433): Enable `kGeicSsr` once the webapp supports it.
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGeicSsr);

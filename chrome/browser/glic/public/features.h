@@ -204,10 +204,6 @@ BASE_DECLARE_FEATURE(kGeicSsr);
 // `kGeic`.
 BASE_DECLARE_FEATURE(kGeicProviderChangePrompt);
 
-BASE_DECLARE_FEATURE(kGlicMarketingAutoOpen);
-extern const base::FeatureParam<std::string> kGlicMarketingUrlAllowlist;
-extern const base::FeatureParam<int> kGlicMarketingAutoOpenMaxCount;
-
 BASE_DECLARE_FEATURE(kGlicHotkeyLocalScope);
 
 BASE_DECLARE_FEATURE(kGlicPasteEligibilityCheck);

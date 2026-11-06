@@ -1192,10 +1192,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           tab.GetContents());
 #endif
 
-  if (base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen)) {
-    glic_marketing_page_tab_helper_ =
-        std::make_unique<glic::GlicMarketingPageTabHelper>(tab.GetContents());
-  }
+  glic_marketing_page_tab_helper_ =
+      glic::GlicMarketingPageTabHelper::MaybeCreate(tab.GetContents());
 
   tab_context_decryption_token_tab_helper_ =
       TabContextDecryptionTokenTabHelper::MaybeCreate(tab.GetContents());
@@ -1880,7 +1878,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   if (glic_marketing_page_tab_helper_) {
     glic_marketing_page_tab_helper_ =
-        std::make_unique<glic::GlicMarketingPageTabHelper>(new_contents);
+        glic::GlicMarketingPageTabHelper::MaybeCreate(new_contents);
   }
 
   tab_context_decryption_token_tab_helper_ =

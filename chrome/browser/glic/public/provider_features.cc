@@ -76,6 +76,26 @@ BASE_FEATURE(kFirstRunFeatureShowcaseGeminiStep,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+BASE_FEATURE(kGlicMarketingAutoOpen, base::FEATURE_ENABLED_BY_DEFAULT);
+glic::GlicMarketingAutoOpenFeatureParams PopulateMarketingAutoOpenFeatureParams(
+    const base::Feature& feature) {
+  static constexpr char kDefaultAllowlistedUrls[] =
+#if BUILDFLAG(IS_ANDROID)
+      "https://www.google.com/chrome/ai-innovations/gemini-in-chrome/,"
+      "https://www.google.com/chrome/campaigns/gic-on-android/";
+#else
+      "";
+#endif
+  glic::GlicMarketingAutoOpenFeatureParams params;
+  params.allowlisted_urls = base::GetFieldTrialParamByFeatureAsString(
+      feature, kGlicMarketingAutoOpenAllowlistedUrlsParam,
+      kDefaultAllowlistedUrls);
+  params.max_impressions = base::GetFieldTrialParamByFeatureAsInt(
+      feature, kGlicMarketingAutoOpenMaxImpressionsParam,
+      params.max_impressions);
+  return params;
+}
+
 BASE_FEATURE(kIndigoOpenGlic, base::FEATURE_DISABLED_BY_DEFAULT);
 glic::GlicIndigoFeatureParams PopulateIndigoFeatureParams(
     const base::Feature& feature) {

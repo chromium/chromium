@@ -15,6 +15,7 @@
 
 namespace glic {
 struct GlicIndigoFeatureParams;
+struct GlicMarketingAutoOpenFeatureParams;
 struct GlicPdfAutoOpenFeatureParams;
 struct GlicPdfSummarizeFeatureParams;
 struct GlicSelectionInlineCueFeatureParams;
@@ -66,6 +67,16 @@ BASE_DECLARE_FEATURE(kGlicCaptureRegion);
 // --force-fre-feature-showcase-steps (which should be used only for testing).
 BASE_DECLARE_FEATURE(kFirstRunFeatureShowcaseGeminiStep);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// Auto-opening Glic on allowlisted marketing pages. See
+// GlicFeature::kMarketingAutoOpen.
+BASE_DECLARE_FEATURE(kGlicMarketingAutoOpen);
+inline constexpr char kGlicMarketingAutoOpenAllowlistedUrlsParam[] =
+    "allowlisted_urls";
+inline constexpr char kGlicMarketingAutoOpenMaxImpressionsParam[] =
+    "max_impressions";
+glic::GlicMarketingAutoOpenFeatureParams PopulateMarketingAutoOpenFeatureParams(
+    const base::Feature& feature);
 
 // Opening Glic from the Indigo page action. See GlicFeature::kIndigoOpenGlic.
 BASE_DECLARE_FEATURE(kIndigoOpenGlic);

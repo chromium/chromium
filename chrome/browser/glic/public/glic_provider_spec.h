@@ -82,6 +82,23 @@ struct GlicIndigoFeatureParams {
   base::TimeDelta trigger_delay = base::Milliseconds(300);
 };
 
+struct GlicMarketingAutoOpenFeatureParams {
+  GlicMarketingAutoOpenFeatureParams();
+  GlicMarketingAutoOpenFeatureParams(const GlicMarketingAutoOpenFeatureParams&);
+  GlicMarketingAutoOpenFeatureParams& operator=(
+      const GlicMarketingAutoOpenFeatureParams&);
+  GlicMarketingAutoOpenFeatureParams(GlicMarketingAutoOpenFeatureParams&&);
+  GlicMarketingAutoOpenFeatureParams& operator=(
+      GlicMarketingAutoOpenFeatureParams&&);
+  ~GlicMarketingAutoOpenFeatureParams();
+
+  // Comma-separated URLs that auto-open Glic. Query and fragment are ignored
+  // when matching.
+  std::string allowlisted_urls;
+  // Maximum number of auto-opens per profile.
+  int max_impressions = 1;
+};
+
 class GlicFreStore;
 // Provider-specific data for a profile's Glic surface. Feature code reads
 // values from here instead of checking which provider the profile uses.
@@ -175,6 +192,8 @@ class GlicProviderSpec {
   virtual GlicSelectionInlineCueFeatureParams
   GetSelectionInlineCueFeatureParams() const = 0;
   virtual GlicIndigoFeatureParams GetIndigoFeatureParams() const = 0;
+  virtual GlicMarketingAutoOpenFeatureParams GetMarketingAutoOpenFeatureParams()
+      const = 0;
   // Whether this provider's guest supports server-side rendering.
   virtual bool SupportsSsr() const = 0;
   // Whether daisy-chained tabs (e.g. tabs opened via CreateTab or link clicks)

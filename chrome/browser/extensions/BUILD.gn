@@ -2143,6 +2143,7 @@ source_set("unit_tests") {
       "api/experimental_ai_data/experimental_ai_data_api_unittest.cc",
       "api/experimental_ai_data/experimental_ai_data_policy_unittest.cc",
       "api/file_system/file_system_api_unittest.cc",
+      "api/glic_private/glic_private_api_unittest.cc",
       "api/identity/gaia_remote_consent_flow_unittest.cc",
       "api/identity/web_auth_flow_info_bar_delegate_unittest.cc",
       "api/language_settings_private/language_settings_private_api_unittest.cc",
@@ -2177,6 +2178,8 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/affiliations",
       "//chrome/browser/custom_handlers",
+      "//chrome/browser/extensions/api/glic_private",
+      "//chrome/browser/glic/test_support",
       "//chrome/browser/password_manager",
       "//chrome/browser/password_manager:test_support",
       "//chrome/browser/spellchecker",

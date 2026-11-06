@@ -21,8 +21,10 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -216,26 +218,29 @@ api::glic_private::ProfileState CreateProfileState(
   state.user_enable_actuation_on_web =
       glic_service && glic_service->enabling().GetUserEnabledActuationOnWeb();
 
-  bool invocation_source_enabled = false;
+  if (!glic::GetGlicProviderSpec(profile).SupportsFeature(
+          glic::GlicFeature::kGooglePageInvocation)) {
+    return state;
+  }
+
   switch (invocation_source) {
     case api::glic_private::InvocationSource::kUniversalCart:
-      invocation_source_enabled = base::FeatureList::IsEnabled(
+      state.invocation_source_enabled = base::FeatureList::IsEnabled(
           extensions_features::kApiGlicAccessFromGoogleWebpage);
       break;
     case api::glic_private::InvocationSource::kPromotionPage:
-      invocation_source_enabled = base::FeatureList::IsEnabled(
+      state.invocation_source_enabled = base::FeatureList::IsEnabled(
           extensions_features::kApiGlicAccessFromPromotionPage);
       break;
     case api::glic_private::InvocationSource::kWebContinuity:
-      invocation_source_enabled = base::FeatureList::IsEnabled(
+      state.invocation_source_enabled = base::FeatureList::IsEnabled(
           extensions_features::kApiGlicAccessFromWebContinuity);
       break;
     case api::glic_private::InvocationSource::kUnknown:
     case api::glic_private::InvocationSource::kNone:
-      invocation_source_enabled = false;
+      state.invocation_source_enabled = false;
       break;
   }
-  state.invocation_source_enabled = invocation_source_enabled;
 
   return state;
 }

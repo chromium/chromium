@@ -436,10 +436,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   contextual_cueing_helper_ = glic::ContextualCueingHelper::MaybeCreate(tab);
 
-  if (base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen)) {
-    glic_marketing_page_tab_helper_ =
-        std::make_unique<glic::GlicMarketingPageTabHelper>(web_contents);
-  }
+  glic_marketing_page_tab_helper_ =
+      glic::GlicMarketingPageTabHelper::MaybeCreate(web_contents);
   if (glic::GlicEnabling::IsProfileEligible(profile) &&
       base::FeatureList::IsEnabled(features::kGlicWarmOnGeminiWeb)) {
     glic_gemini_web_warming_observer_ =

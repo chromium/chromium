@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_MARKETING_PAGE_TAB_HELPER_H_
 #define CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_MARKETING_PAGE_TAB_HELPER_H_
 
+#include <memory>
+#include <vector>
+
 #include "content/public/browser/web_contents_observer.h"
+#include "url/gurl.h"
 
 namespace glic {
 
@@ -14,7 +18,12 @@ namespace glic {
 //
 class GlicMarketingPageTabHelper : public content::WebContentsObserver {
  public:
-  explicit GlicMarketingPageTabHelper(content::WebContents* web_contents);
+  // Returns a helper for `web_contents`, or nullptr if the profile's Glic
+  // provider doesn't support `GlicFeature::kMarketingAutoOpen` or no marketing
+  // URLs are allowlisted.
+  static std::unique_ptr<GlicMarketingPageTabHelper> MaybeCreate(
+      content::WebContents* web_contents);
+
   GlicMarketingPageTabHelper(const GlicMarketingPageTabHelper&) = delete;
   GlicMarketingPageTabHelper& operator=(const GlicMarketingPageTabHelper&) =
       delete;
@@ -23,6 +32,14 @@ class GlicMarketingPageTabHelper : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+ private:
+  GlicMarketingPageTabHelper(content::WebContents* web_contents,
+                             std::vector<GURL> allowed_urls,
+                             int max_impressions);
+
+  const std::vector<GURL> allowed_urls_;
+  const int max_impressions_;
 };
 
 }  // namespace glic

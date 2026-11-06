@@ -5,16 +5,18 @@
 #include "chrome/browser/glic/navigation_capture/glic_marketing_page_tab_helper.h"
 
 #include <algorithm>
+#include <string_view>
+#include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/no_destructor.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -25,8 +27,7 @@
 namespace glic {
 namespace {
 
-std::vector<GURL> ParseAllowedMarketingUrls() {
-  std::string allowlist_str = features::kGlicMarketingUrlAllowlist.Get();
+std::vector<GURL> ParseAllowedMarketingUrls(std::string_view allowlist_str) {
   std::vector<GURL> urls;
   for (std::string_view piece :
        base::SplitStringPiece(allowlist_str, ",", base::TRIM_WHITESPACE,
@@ -39,12 +40,6 @@ std::vector<GURL> ParseAllowedMarketingUrls() {
   return urls;
 }
 
-const std::vector<GURL>& GetAllowedMarketingUrls() {
-  static const base::NoDestructor<std::vector<GURL>> cached_urls(
-      ParseAllowedMarketingUrls());
-  return *cached_urls;
-}
-
 void RecordMarketingAutoOpen(Profile* profile) {
   if (profile) {
     PrefService* prefs = profile->GetPrefs();
@@ -55,19 +50,39 @@ void RecordMarketingAutoOpen(Profile* profile) {
 
 }  // namespace
 
+// static
+std::unique_ptr<GlicMarketingPageTabHelper>
+GlicMarketingPageTabHelper::MaybeCreate(content::WebContents* web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  const GlicProviderSpec& spec = GetGlicProviderSpec(profile);
+  if (!spec.SupportsFeature(GlicFeature::kMarketingAutoOpen)) {
+    return nullptr;
+  }
+  const GlicMarketingAutoOpenFeatureParams params =
+      spec.GetMarketingAutoOpenFeatureParams();
+  std::vector<GURL> allowed_urls =
+      ParseAllowedMarketingUrls(params.allowlisted_urls);
+  if (allowed_urls.empty()) {
+    return nullptr;
+  }
+  return base::WrapUnique(new GlicMarketingPageTabHelper(
+      web_contents, std::move(allowed_urls), params.max_impressions));
+}
+
 GlicMarketingPageTabHelper::GlicMarketingPageTabHelper(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    content::WebContents* web_contents,
+    std::vector<GURL> allowed_urls,
+    int max_impressions)
+    : content::WebContentsObserver(web_contents),
+      allowed_urls_(std::move(allowed_urls)),
+      max_impressions_(max_impressions) {}
 
 GlicMarketingPageTabHelper::~GlicMarketingPageTabHelper() = default;
 
 void GlicMarketingPageTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-
-  if (!base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen)) {
-    return;
-  }
 
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||
@@ -82,11 +97,6 @@ void GlicMarketingPageTabHelper::DidFinishNavigation(
     return;
   }
 
-  const std::vector<GURL>& allowed_urls = GetAllowedMarketingUrls();
-  if (allowed_urls.empty()) {
-    return;
-  }
-
   GURL::Replacements replacements;
   replacements.ClearQuery();
   replacements.ClearRef();
@@ -94,7 +104,7 @@ void GlicMarketingPageTabHelper::DidFinishNavigation(
   const GURL current_url_match =
       navigation_handle->GetURL().ReplaceComponents(replacements);
 
-  if (!std::ranges::contains(allowed_urls, current_url_match)) {
+  if (!std::ranges::contains(allowed_urls_, current_url_match)) {
     return;
   }
 
@@ -102,9 +112,7 @@ void GlicMarketingPageTabHelper::DidFinishNavigation(
 
   int current_count =
       pref_service->GetInteger(prefs::kGlicMarketingAutoOpenCount);
-  int max_count = features::kGlicMarketingAutoOpenMaxCount.Get();
-
-  if (current_count >= max_count) {
+  if (current_count >= max_impressions_) {
     return;
   }
 

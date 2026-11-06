@@ -39,6 +39,13 @@ enum class GlicFeature {
   kZeroStateSuggestions,
   // Chrome Skills (chrome://skills and skill invocation from Glic).
   kSkills,
+  // Google pages (Universal Cart, promotion page, web continuity) invoking Glic
+  // via the glicPrivate component extension.
+  kGooglePageInvocation,
+  // Auto-opening Glic on allowlisted marketing pages.
+  kMarketingAutoOpen,
+  // Opening Glic for web continuity navigations.
+  kWebContinuity,
   // Opening Glic from the Indigo page action (chrome/browser/indigo).
   kIndigoOpenGlic,
 

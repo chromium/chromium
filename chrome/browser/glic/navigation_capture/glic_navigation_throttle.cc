@@ -16,7 +16,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -186,7 +188,11 @@ GlicNavigationThrottle::WillStartRequest() {
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  bool is_glic_enabled = GlicEnabling::IsEnabledForProfile(profile);
+  // Web continuity only opens Glic for providers that support it. Others still
+  // get the redirect to the target URL below, and are logged as disabled.
+  bool is_glic_enabled =
+      GlicEnabling::IsEnabledForProfile(profile) &&
+      GetGlicProviderSpec(profile).SupportsFeature(GlicFeature::kWebContinuity);
 
   size_t max_cid_length = features::kGlicWebContinuityMaxCIDLength.Get();
   size_t max_target_url_length =

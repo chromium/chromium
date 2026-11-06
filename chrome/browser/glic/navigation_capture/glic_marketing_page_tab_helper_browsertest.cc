@@ -7,10 +7,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -29,7 +31,7 @@ class GlicMarketingPageTabHelperBrowserTest : public GlicBrowserTest {
     ASSERT_TRUE(marketing_server_.InitializeAndListen());
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicMarketingAutoOpen,
-        {{"allowlisted_urls",
+        {{features::kGlicMarketingAutoOpenAllowlistedUrlsParam,
           marketing_server_.GetURL("/title1.html").spec()}});
     GlicBrowserTest::SetUp();
   }
@@ -106,6 +108,26 @@ IN_PROC_BROWSER_TEST_F(GlicMarketingPageTabHelperBrowserTest,
 
   // The helper should not invoke the client a second time.
   EXPECT_EQ(instance, GetInstanceImpl());
+}
+
+class GlicMarketingPageTabHelperGeminiEnterpriseBrowserTest
+    : public GlicMarketingPageTabHelperBrowserTest {
+ private:
+  ScopedGlicProviderOverride provider_override_{
+      GlicProvider::kGeminiEnterprise};
+};
+
+// Gemini Enterprise doesn't support auto-opening Glic on marketing pages, even
+// when `kGlicMarketingAutoOpen` is enabled and the URL is allowlisted.
+IN_PROC_BROWSER_TEST_F(GlicMarketingPageTabHelperGeminiEnterpriseBrowserTest,
+                       DoesNotHandleNavigation) {
+  GURL allowed_url = marketing_server_.GetURL("/title1.html?utm_source=test");
+  PrefService* prefs = GetProfile()->GetPrefs();
+
+  EXPECT_TRUE(CreateAndActivateTab(allowed_url));
+
+  EXPECT_FALSE(GetInstanceImpl());
+  EXPECT_EQ(0, prefs->GetInteger(prefs::kGlicMarketingAutoOpenCount));
 }
 
 }  // namespace glic

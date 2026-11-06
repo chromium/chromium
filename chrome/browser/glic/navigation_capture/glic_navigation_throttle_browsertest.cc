@@ -12,12 +12,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -642,6 +645,39 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
+}
+
+class GlicNavigationThrottleGeminiEnterpriseBrowserTest
+    : public GlicNavigationThrottleBrowserTest {
+ private:
+  ScopedGlicProviderOverride provider_override_{
+      GlicProvider::kGeminiEnterprise};
+};
+
+// Gemini Enterprise doesn't support web continuity: the throttle still
+// redirects to the target URL, but doesn't open Glic.
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleGeminiEnterpriseBrowserTest,
+                       RedirectsToTargetUrlWithoutOpeningGlic) {
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(browser()->GetProfile()));
+  base::HistogramTester histogram_tester;
+  MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile(),
+                                                   /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, Invoke(_)).Times(0);
+  EXPECT_CALL(*mock_service, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  GURL target_url("https://www.google.com/");
+  NavigateToURL(browser(), BuildContinueUrl(target_url, "123", "turnA"));
+
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            target_url);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureDisabled",
+      GeminiNavigationCaptureResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureEnabled", 0);
 }
 
 }  // namespace glic
