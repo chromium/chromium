@@ -36,7 +36,6 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 export {CustomizeButtonsElement} from '/shared/customize_buttons/customize_buttons.js';
 export type {ComposeboxFile, ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_components/composebox/common.js';
 export {SubmitButtonIconType, VoiceSearchAction} from 'chrome://resources/cr_components/composebox/common.js';
-export {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 export {AimButtonMode} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 export {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 export {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
