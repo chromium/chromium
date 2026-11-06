@@ -41,10 +41,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for edge to edge using public transit. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION)
 @EnableFeatures({"DrawCutoutEdgeToEdge"})
 @Batch(Batch.PER_CLASS)
 // Bots <= VERSION_CODES.S use 3-bottom nav bar. See crbug.com/352402600

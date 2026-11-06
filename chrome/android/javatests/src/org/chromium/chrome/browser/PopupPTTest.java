@@ -21,11 +21,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -38,7 +36,6 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 
 /** Tests whether popup windows appear or get blocked as expected. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PopupPTTest {

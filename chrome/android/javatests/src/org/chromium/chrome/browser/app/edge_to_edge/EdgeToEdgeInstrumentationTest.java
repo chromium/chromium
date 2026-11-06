@@ -42,7 +42,6 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
@@ -67,9 +66,6 @@ import java.io.IOException;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Testing startup behavior")
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-})
 @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @MinAndroidSdkLevel(Build.VERSION_CODES.R)
 @EnableFeatures(ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE)
