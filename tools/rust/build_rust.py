@@ -1072,10 +1072,10 @@ def main():
         # Create git-commit-info in the source directory so that builds from
         # tarballs (which lack `.git`) can set rustc's version info.  `tz=None`
         # matches rustc's bootstrap. We use `checkout_revision` rather than
-        # `HEAD`, because the cherry-picks below (if any) commit with a dummy
-        # date (see `GIT_METADATA_OVERRIDES`). The date ends up in `rustc
-        # --version`, where `#[rustversion::since(...)]` in Crubit reads it, so
-        # tarball and git builds have to agree.
+        # `HEAD`, because `HEAD` may be one of the local cherry-picks below.
+        # The date ends up in `rustc --version`, where
+        # `#[rustversion::since(...)]` in Crubit reads it, so tarball and git
+        # builds have to agree (see also `GetGitMetadataEnv`).
         WriteGitCommitInfo(RUST_SRC_DIR, checkout_revision, tz=None)
 
         # This happens after initializing submodules, so that we can include

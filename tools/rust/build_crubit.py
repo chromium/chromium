@@ -17,7 +17,7 @@ of that script in the compilation of Crubit. In particular it uses:
 
 This script:
 - Clones the Crubit repository, checks out a defined revision.
-- Builds external C++ dependencies (Abseil, Protobuf) using CMake.
+- Builds the external C++ dependency (Abseil) using CMake.
 - Builds Crubit's `cc_bindings_from_rs` and `rs_bindings_from_cc` using Cargo.
 - Copies the built tools into `RUST_TOOLCHAIN_OUT_DIR`, along with Crubit's
   support library.
@@ -74,11 +74,6 @@ ABSEIL_GIT = (
     'https://chromium.googlesource.com/external/github.com/abseil/abseil-cpp'
 )
 
-PROTOBUF_GIT = (
-    'https://chromium.googlesource.com/external/'
-    'github.com/protocolbuffers/protobuf'
-)
-
 # Directory for sources that are checked out or downloaded by this script (and
 # by `build_rust.py`) but are not part of the Chromium checkout.
 RUST_TOOLCHAIN_INTERMEDIATE_DIR = os.path.join(
@@ -89,12 +84,9 @@ CRUBIT_SRC_DIR = os.path.join(RUST_TOOLCHAIN_INTERMEDIATE_DIR, 'crubit')
 ABSEIL_SRC_DIR = os.path.join(
     RUST_TOOLCHAIN_INTERMEDIATE_DIR, 'crubit-abseil-src'
 )
-PROTOBUF_SRC_DIR = os.path.join(
-    RUST_TOOLCHAIN_INTERMEDIATE_DIR, 'crubit-protobuf-src'
-)
 
-# Set to `False` to skip `rs_bindings_from_cc` and its C++ dependencies
-# (Abseil, Protobuf) if they break the toolchain build.  Nothing in Chromium
+# Set to `False` to skip `rs_bindings_from_cc` and its C++ dependency
+# (Abseil) if they break the toolchain build.  Nothing in Chromium
 # uses `rs_bindings_from_cc` yet.  `cc_bindings_from_rs` is always built,
 # because Chromium builds need it.
 ENABLE_BUILDING_RS_BINDINGS_FROM_CC = True
@@ -112,12 +104,11 @@ SMOKE_TEST_ARGS = {
     'rs_bindings_from_cc': '--version',
 }
 
-# Abseil and Protobuf versions must be kept in sync with the versions that
-# Crubit pins via `bazel_dep(...)` in its `MODULE.bazel`:
+# The Abseil version must be kept in sync with the version that Crubit pins via
+# `bazel_dep(...)` in its `MODULE.bazel`:
 # https://github.com/google/crubit/blob/main/MODULE.bazel
 # `CheckDependencyVersion` below enforces this at build time.
 ABSEIL_VERSION = '20260526.0'
-PROTOBUF_VERSION = '36.1'
 
 # Name of the stamp file in each CMake install dir (see `BuildCMakeProject`).
 CMAKE_STAMP_FILENAME = 'build_crubit_stamp'
@@ -156,8 +147,8 @@ def CheckDependencyVersion(module_name, pinned_version):
 
     Bazel Central Registry version strings live in BCR's own namespace: a BCR
     re-release of the same upstream version adds a `.bcr.<N>` suffix (for
-    example protobuf's `36.1.bcr.1` for upstream `36.1`).  That suffix is
-    stripped before comparing; everything else must match exactly.
+    example `36.1.bcr.1` for upstream `36.1`).  That suffix is stripped before
+    comparing; everything else must match exactly.
 
     Matching version doesn't necessarily indicate identical content (because BCR
     can carry additional patches), but in practice the only differences are some
@@ -223,21 +214,17 @@ def BuildCMakeProject(
     build_dir,
     install_dir,
     extra_args,
-    extra_stamp_lines=(),
 ):
     """Checks out, builds, and installs a CMake project, unless up to date.
 
     The sources are checked out from `git_url` at `git_tag` into `src_dir` only
     when the project has to be (re)built.
 
-    `install_dir` holds a stamp file with `name` (which includes the version),
-    `extra_stamp_lines`, and all the CMake arguments.  If the stamp is
-    different, then the project is rebuilt from scratch.  So a version bump or
-    a flag change takes effect even when `--out-dir` is reused.  The old
-    `install_dir` is removed, because Crubit's cargo build links all the
-    Abseil libraries that it finds there.
-
-    Returns the stamp, so that dependent projects can add it to their stamp.
+    `install_dir` holds a stamp file with `name` (which includes the version)
+    and all the CMake arguments.  If the stamp is different, then the project
+    is rebuilt from scratch.  So a version bump or a flag change takes effect
+    even when `--out-dir` is reused.  The old `install_dir` is removed, because
+    Crubit's cargo build links all the Abseil libraries that it finds there.
     """
     cc_bin, cxx_bin, _ = GetHostCcTools()
     cmake_args = GetThirdPartyCMakeArgs(
@@ -251,8 +238,8 @@ def BuildCMakeProject(
         '-DCMAKE_CXX_STANDARD_REQUIRED=ON',
         '-DBUILD_SHARED_LIBS=OFF',
     ]
-    # Link `protoc` with `lld` rather than with the host's linker (this mimics
-    # what `build.py` does).
+    # Link executables (e.g. CMake's `try_compile` checks) with `lld` rather
+    # than with the host's linker (this mimics what `build.py` does).
     #
     # TODO(https://crbug.com/562142145): Using `CMAKE_LINKER_TYPE` may be
     # cleaner, but requires CMake 3.29.
@@ -268,11 +255,11 @@ def BuildCMakeProject(
         cmake_args.append('-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags))
     cmake_args += extra_args
 
-    stamp = '\n'.join([name, *extra_stamp_lines, *cmake_args])
+    stamp = '\n'.join([name, *cmake_args])
     stamp_file = os.path.join(install_dir, CMAKE_STAMP_FILENAME)
     if ReadStampFile(stamp_file) == stamp:
         print(f'{name} is up to date, skipping.')
-        return stamp
+        return
 
     for d in [build_dir, install_dir]:
         if os.path.exists(d):
@@ -305,20 +292,19 @@ def BuildCMakeProject(
 
     WriteStampFile(stamp, stamp_file)
     print(f'Building {name} ... done.')
-    return stamp
 
 
 ########################################################################
-# Abseil and Protobuf.
+# Abseil.
 
 
 def BuildAbseil(build_dir, install_dir):
-    """Returns the stamp of the Abseil build (see `BuildCMakeProject`)."""
+    """Builds and installs Abseil (see `BuildCMakeProject`)."""
     # Abseil overwrites `CMAKE_MSVC_RUNTIME_LIBRARY` (from
     # `GetThirdPartyCMakeArgs`), so without this it selects the DLL CRT on
     # Windows.
     extra_args = ['-DABSL_MSVC_STATIC_RUNTIME=ON'] if IS_WIN else []
-    return BuildCMakeProject(
+    BuildCMakeProject(
         f'Abseil {ABSEIL_VERSION}',
         ABSEIL_GIT,
         f'refs/tags/{ABSEIL_VERSION}',
@@ -326,40 +312,6 @@ def BuildAbseil(build_dir, install_dir):
         build_dir,
         install_dir,
         extra_args,
-    )
-
-
-def BuildProtobuf(abseil_install_dir, abseil_stamp, build_dir, install_dir):
-    """Builds Protobuf against the Abseil in `abseil_install_dir`."""
-    # Point Protobuf directly at our Abseil package.  CMake ignores an
-    # `absl_DIR` without `abslConfig.cmake` and searches the system instead,
-    # so check that the file is there.
-    absl_dir = os.path.join(abseil_install_dir, 'lib', 'cmake', 'absl')
-    if not os.path.exists(os.path.join(absl_dir, 'abslConfig.cmake')):
-        raise RuntimeError(f'abslConfig.cmake not found in {absl_dir}')
-
-    extra_args = [
-        # This is the default, but older Protobuf releases defaulted to ON,
-        # and the tests need GoogleTest, which this build doesn't provide.
-        '-Dprotobuf_BUILD_TESTS=OFF',
-        '-Dprotobuf_LOCAL_DEPENDENCIES_ONLY=ON',
-        # Without this, CMake picks up the host's zlib (if any) for Protobuf's
-        # gzip streams, which Crubit doesn't use.  This keeps the build
-        # hermetic.
-        '-Dprotobuf_WITH_ZLIB=OFF',
-        CreateCMakePathFlag('absl_DIR', absl_dir),
-    ]
-    # `abseil_stamp` makes sure that Protobuf is rebuilt when the version or
-    # the flags of Abseil change.
-    BuildCMakeProject(
-        f'Protobuf {PROTOBUF_VERSION}',
-        PROTOBUF_GIT,
-        f'refs/tags/v{PROTOBUF_VERSION}',
-        PROTOBUF_SRC_DIR,
-        build_dir,
-        install_dir,
-        extra_args,
-        extra_stamp_lines=[abseil_stamp],
     )
 
 
@@ -552,32 +504,21 @@ def SetUpBuildTools():
 
 
 def BuildCppDependencies(out_dir):
-    """Builds Abseil and Protobuf with CMake.
+    """Builds Abseil with CMake.
 
-    Returns their install directories as an (abseil, protobuf) pair.
+    Returns its install directory.
     """
     CheckDependencyVersion('abseil-cpp', ABSEIL_VERSION)
-    CheckDependencyVersion('protobuf', PROTOBUF_VERSION)
 
     abseil_install_dir = os.path.join(out_dir, 'abseil-install')
-    abseil_stamp = BuildAbseil(
+    BuildAbseil(
         os.path.join(out_dir, 'abseil-build'),
         abseil_install_dir,
     )
-
-    # Protobuf depends on Abseil, so it has to be built second.
-    protobuf_install_dir = os.path.join(out_dir, 'protobuf-install')
-    BuildProtobuf(
-        abseil_install_dir,
-        abseil_stamp,
-        os.path.join(out_dir, 'protobuf-build'),
-        protobuf_install_dir,
-    )
-
-    return abseil_install_dir, protobuf_install_dir
+    return abseil_install_dir
 
 
-def SetUpCargoEnv(env, abseil_install_dir, protobuf_install_dir, out_dir):
+def SetUpCargoEnv(env, abseil_install_dir):
     """Adds to `env` the settings that Crubit's cargo build scripts read.
 
     `env` comes from `GetHostCargoEnv`, which already makes the `cc` crate
@@ -587,8 +528,6 @@ def SetUpCargoEnv(env, abseil_install_dir, protobuf_install_dir, out_dir):
     The variable names below are Crubit's contract, not ours: they are read by
     `cargo/build/*.rs` in the Crubit checkout, and documented at
     https://crubit.rs/overview/cargo_build.html#rs_bindings_from_cc
-
-    Returns the (protoc path, pre-generated proto header dir) pair.
     """
     # Where to find the Clang libraries that `rs_bindings_from_cc` links.
     env['CLANG_INCLUDE_PATH'] = os.path.join(
@@ -600,18 +539,6 @@ def SetUpCargoEnv(env, abseil_install_dir, protobuf_install_dir, out_dir):
 
     env['ABSL_INCLUDE_PATH'] = os.path.join(abseil_install_dir, 'include')
     env['ABSL_LIB_STATIC_PATH'] = os.path.join(abseil_install_dir, 'lib')
-
-    # Protobuf C++ headers are pre-generated into `proto_gen_dir` rather than
-    # by a build script, so they are just another include dir.
-    proto_gen_dir = os.path.join(out_dir, 'crubit-proto-headers')
-    os.makedirs(proto_gen_dir, exist_ok=True)
-    env['PROTOBUF_INCLUDE_PATH'] = os.pathsep.join(
-        [os.path.join(protobuf_install_dir, 'include'), proto_gen_dir]
-    )
-    env['PROTOBUF_LIB_STATIC_PATH'] = os.path.join(protobuf_install_dir, 'lib')
-
-    protoc_path = os.path.join(protobuf_install_dir, 'bin', 'protoc' + EXE)
-    env['PROTOC'] = protoc_path
 
     if IS_LINUX:
         # Without this, the `cc` crate links the shared libstdc++.
@@ -631,37 +558,6 @@ def SetUpCargoEnv(env, abseil_install_dir, protobuf_install_dir, out_dir):
         # today) and `LLVM_BUILD_STATIC` is not defined.
         cxxflags += ['-DCLANG_BUILD_STATIC', '-DLLVM_BUILD_STATIC']
     env['CXXFLAGS'] += ' ' + ' '.join(cxxflags)
-
-    return protoc_path, proto_gen_dir
-
-
-def GenerateProtoHeaders(protoc_path, proto_gen_dir):
-    """Pre-generates the Protobuf C++ headers that Crubit needs.
-
-    This is a correctness fix, not an optimization: many of Crubit's C++
-    support crates include `rs_bindings_from_cc/ir.pb.h`, and if their cargo
-    build scripts generated it into a shared directory, the parallel `protoc`
-    runs would race and the build would fail intermittently.  Generating the
-    headers once, up front, removes the race.  Crubit documents the split in
-    `docs/overview/cargo_build_protobuf.md`.
-    """
-    print('Generating Protobuf C++ headers for Crubit ...')
-    generate_proto_script = os.path.join(
-        CRUBIT_SRC_DIR, 'cargo', 'build', 'generate_proto_headers.py'
-    )
-    # `--protoc` and `--repo_root` have defaults (`$PROTOC` and the script's
-    # own repo root) that happen to match what we want, but pass them anyway
-    # so that this script does not depend on Crubit's choice of defaults.
-    RunCommand(
-        [
-            sys.executable,
-            generate_proto_script,
-            f'--protoc={protoc_path}',
-            f'--out_dir={proto_gen_dir}',
-            f'--repo_root={CRUBIT_SRC_DIR}',
-        ],
-        setenv=True,
-    )
 
 
 def BuildCrubitBinaries(env, target_dir):
@@ -736,15 +632,12 @@ def BuildCrubit(out_dir):
 
     if ENABLE_BUILDING_RS_BINDINGS_FROM_CC:
         SetUpBuildTools()
-        abseil_install_dir, protobuf_install_dir = BuildCppDependencies(out_dir)
+        abseil_install_dir = BuildCppDependencies(out_dir)
 
     # `GetHostCargoEnv` copies `os.environ`, so call it after `SetUpBuildTools`.
     env = GetHostCargoEnv(cargo_home=home_dir)
     if ENABLE_BUILDING_RS_BINDINGS_FROM_CC:
-        protoc_path, proto_gen_dir = SetUpCargoEnv(
-            env, abseil_install_dir, protobuf_install_dir, out_dir
-        )
-        GenerateProtoHeaders(protoc_path, proto_gen_dir)
+        SetUpCargoEnv(env, abseil_install_dir)
 
     BuildCrubitBinaries(env, target_dir)
     InstallCrubit(release_dir)
