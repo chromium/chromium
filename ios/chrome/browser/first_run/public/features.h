@@ -86,10 +86,6 @@ BASE_DECLARE_FEATURE(kPostFREIphInProfileAgent);
 // Feature flag to enable the Android Switcher Default Browser Promo in the FRE.
 BASE_DECLARE_FEATURE(kAndroidSwitcherDefaultBrowserPromoInFRE);
 
-// Feature flag (killswitch) to record `.SwitcherInfo.*` Default Browser
-// metrics.
-BASE_DECLARE_FEATURE(kRecordSwitcherInfoDefaultBrowserMetrics);
-
 // Name of the parameter that controls the experiment type for the Animated
 // Default Browser Promo in the FRE experiment, which determines the layout of
 // the promo.
