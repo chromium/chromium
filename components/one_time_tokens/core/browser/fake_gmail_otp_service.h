@@ -56,6 +56,10 @@ class FakeGmailOtpService : public GmailOtpService {
   void ClearCache();
 
   size_t num_callbacks() const;
+  size_t num_get_freshest_cached_otp_calls() const {
+    return num_get_freshest_cached_otp_calls_;
+  }
+  size_t num_subscribe_calls() const { return num_subscribe_calls_; }
 
  private:
   void NotifySubscriber(
@@ -75,6 +79,8 @@ class FakeGmailOtpService : public GmailOtpService {
   FakeGmailOtpBackend backend_;
   std::vector<OneTimeToken> cached_tokens_;
   bool has_pending_requests_ = false;
+  size_t num_get_freshest_cached_otp_calls_ = 0;
+  size_t num_subscribe_calls_ = 0;
   ExpiringSubscriptionManager<void(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>)>
       subscription_manager_;

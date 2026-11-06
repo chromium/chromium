@@ -29,6 +29,7 @@ void FakeGmailOtpService::GetFreshestCachedOtp(
     const url::Origin& origin,
     bool allow_psl_matching,
     GetFreshestCachedOtpCallback callback) {
+  ++num_get_freshest_cached_otp_calls_;
   if (origin.opaque()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
@@ -59,6 +60,7 @@ ExpiringSubscription FakeGmailOtpService::Subscribe(
     base::Time expiration,
     IncomingTokenCallback callback,
     base::OnceClosure expiration_callback) {
+  ++num_subscribe_calls_;
   if (origin.opaque()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

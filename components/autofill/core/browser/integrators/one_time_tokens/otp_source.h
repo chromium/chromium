@@ -50,6 +50,11 @@ class OtpSource {
   // unless explicitly cleared.
   virtual void Stop() = 0;
 
+  // Stops active subscriptions and clears cached unconsumed OTPs scoped to
+  // `origin` when all OTP fields for that origin disappear, while leaving
+  // subscriptions and caches for other origins active.
+  virtual void StopListeningForOrigin(const url::Origin& origin) {}
+
   // Returns any currently available, unconsumed OTP candidates for `target`.
   virtual std::vector<OtpCandidate> GetAvailable(
       const OtpTarget& target) const = 0;
