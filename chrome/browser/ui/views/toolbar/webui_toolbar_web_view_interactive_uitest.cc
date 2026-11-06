@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
+#include <memory>
+
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -50,12 +54,20 @@
 #include "extensions/test/test_extension_dir.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/bubble/bubble_anchor.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -65,6 +77,54 @@
 
 namespace {
 
+// Owns a client-owned test bubble dialog and its widget so the widget is
+// destroyed before the delegate.
+struct TestAnchoredBubble {
+  explicit TestAnchoredBubble(views::BubbleAnchor anchor)
+      : host(std::make_unique<views::BubbleDialogModelHost>(
+            ui::DialogModel::Builder()
+                .DisableCloseOnDeactivate()
+                .AddOkButton(base::DoNothing())
+                .Build(),
+            anchor,
+            views::BubbleBorder::Arrow::TOP_RIGHT,
+            /*autosize=*/true,
+            /*owned_by_widget=*/false)),
+        widget(views::BubbleDialogDelegate::CreateBubble(host.get())) {
+    views::test::WidgetVisibleWaiter waiter(widget.get());
+    widget->Show();
+    waiter.Wait();
+  }
+
+  std::unique_ptr<views::BubbleDialogModelHost> host;
+  std::unique_ptr<views::Widget> widget;
+};
+
+void VerifyFocusDialogHotkeyFocusesBubble(BrowserWindowInterface* browser,
+                                          BrowserView* browser_view,
+                                          AppMenuControl* app_menu_control,
+                                          TestAnchoredBubble& bubble) {
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(browser_view);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+               kToolbarAppMenuButtonElementId, context) != nullptr;
+  }));
+
+  EXPECT_EQ(app_menu_control->GetDialogDelegate(), bubble.host.get());
+
+  views::FocusManager* const focus_manager = bubble.widget->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+  views::View* const initially_focused_view =
+      bubble.host->GetInitiallyFocusedView();
+  ASSERT_TRUE(initially_focused_view);
+
+  focus_manager->ClearFocus();
+  EXPECT_FALSE(initially_focused_view->HasFocus());
+
+  BrowserFocusController::From(browser)->FocusInactivePopupForAccessibility();
+  EXPECT_TRUE(initially_focused_view->HasFocus());
+}
 
 std::string GetPinnedButtonJS(
     toolbar_ui_api::mojom::PinnedToolbarAction action) {
@@ -588,6 +648,53 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
   ASSERT_TRUE(contents_view);
   contents_view->RequestFocus();
   EXPECT_FALSE(toolbar_view->GetAppMenuFocused());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       FocusDialogHotkeyFocusesAppMenuAnchoredBubble) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  AppMenuControl* const app_menu_control =
+      browser_view->toolbar_button_provider()->GetAppMenuControl();
+  ASSERT_TRUE(app_menu_control);
+
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(browser_view);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+               kToolbarAppMenuButtonElementId, context) != nullptr;
+  }));
+
+  TestAnchoredBubble bubble(app_menu_control->GetAnchor());
+  EXPECT_NE(bubble.host->GetAnchor().GetIfElement(), nullptr);
+  VerifyFocusDialogHotkeyFocusesBubble(browser(), browser_view,
+                                       app_menu_control, bubble);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       GetDialogDelegateFallsBackToToolbarViewAnchor) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  ToolbarView* const toolbar_view = browser_view->toolbar();
+  ASSERT_TRUE(toolbar_view);
+  AppMenuControl* const app_menu_control =
+      browser_view->toolbar_button_provider()->GetAppMenuControl();
+  ASSERT_TRUE(app_menu_control);
+
+  // Anchor to the parent toolbar view to cover bubbles created before the WebUI
+  // app menu element registers.
+  TestAnchoredBubble bubble(
+      views::BubbleAnchor(toolbar_view->GetWebUIToolbarViewForTesting()));
+  VerifyFocusDialogHotkeyFocusesBubble(browser(), browser_view,
+                                       app_menu_control, bubble);
 }
 
 class WebUIPinnedToolbarActionsInteractiveTest : public InteractiveBrowserTest {

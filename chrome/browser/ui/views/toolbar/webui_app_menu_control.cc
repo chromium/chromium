@@ -17,8 +17,11 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/bubble/bubble_anchor.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
@@ -107,8 +110,24 @@ bool WebUIAppMenuControl::IsMenuShowing() const {
 }
 
 views::DialogDelegate* WebUIAppMenuControl::GetDialogDelegate() {
-  // TODO(crbug.com/510825650): Implement dialog delegate from WebUI if needed.
-  return nullptr;
+  views::View* const view = delegate_->GetView();
+  if (!view) {
+    return nullptr;
+  }
+  if (ui::TrackedElement* const element =
+          ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+              kToolbarAppMenuButtonElementId,
+              views::ElementTrackerViews::GetContextForView(view))) {
+    if (views::DialogDelegate* const dialog =
+            views::BubbleDialogDelegate::GetAnchoredDialog(
+                views::BubbleAnchor(element))) {
+      return dialog;
+    }
+  }
+  // Fall back to the toolbar view for bubbles anchored before the WebUI app
+  // menu element registered.
+  return views::BubbleDialogDelegate::GetAnchoredDialog(
+      views::BubbleAnchor(view));
 }
 
 void WebUIAppMenuControl::CloseMenu() {
