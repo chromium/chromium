@@ -679,6 +679,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   }
   _fullscreenBrowserAgentObserverBridge.reset();
   _fullscreenBrowserAgent = nullptr;
+  [_bottomOmniboxEnabled stop];
+  _bottomOmniboxEnabled.observer = nil;
+  _bottomOmniboxEnabled = nil;
   base::UmaHistogramBoolean("IOS.NTP.LandscapeMode", _wasNTPInLandscape);
 }
 
