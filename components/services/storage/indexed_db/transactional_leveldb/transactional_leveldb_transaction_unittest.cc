@@ -698,7 +698,6 @@ TEST_F(TransactionalLevelDBTransactionTest, IteratorPutInvalidation) {
   const std::string key3("b-key3");
   const std::string value1("value1");
   const std::string value2("value2");
-  const std::string value3("value3");
 
   Put(key1, value1);
   Put(key2, value1);

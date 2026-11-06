@@ -393,7 +393,6 @@ void DomStorageDatabaseLevelDBTest::TestInvalidVersion(
   ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
 
   // Write the invalid version in the database.
-  DomStorageDatabase::Value version_string_bytes;
   DbStatus status = db->Put(kTestVersionKey, invalid_version);
   EXPECT_TRUE(status.ok()) << status.ToString();
 

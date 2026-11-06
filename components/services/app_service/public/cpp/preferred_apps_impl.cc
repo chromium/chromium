@@ -207,7 +207,6 @@ void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
   if (preferred_apps_string.empty()) {
     preferred_apps_list_.Init();
   } else {
-    std::string json_string;
     JSONStringValueDeserializer deserializer(preferred_apps_string);
     int error_code;
     std::string error_message;

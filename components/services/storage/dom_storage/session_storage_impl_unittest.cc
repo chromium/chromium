@@ -696,7 +696,6 @@ TEST_P(SessionStorageImplTest, Cloning) {
 TEST_P(SessionStorageImplTest, ImmediateCloning) {
   std::string namespace_id1 = blink::AllocateSessionStorageNamespaceId();
   std::string namespace_id2 = blink::AllocateSessionStorageNamespaceId();
-  std::string namespace_id3 = blink::AllocateSessionStorageNamespaceId();
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
@@ -1017,7 +1016,6 @@ TEST_P(SessionStorageImplTest, RecreateOnCommitFailure) {
   for (int i = 0; i <= kCommitErrorThreshold; ++i) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
-    std::vector<uint8_t> old_value = value;
     value[0]++;
     area_o1->Put(StringViewToUint8Vector("key"), value, std::nullopt,
                  test::MakeStorageAreaSource(),
@@ -2724,7 +2722,6 @@ TEST_P(SessionStorageImplTest, ClearDiskStateOnOpenWithEmptyPathUsesInMemory) {
 TEST_P(SessionStorageImplTest, InterruptedCloneWithDelete) {
   std::string namespace_id1 = blink::AllocateSessionStorageNamespaceId();
   std::string namespace_id2 = blink::AllocateSessionStorageNamespaceId();
-  std::string namespace_id3 = blink::AllocateSessionStorageNamespaceId();
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);

@@ -768,8 +768,6 @@ TEST_F(AsyncDomStorageDatabaseMigrationTest, MigrationFails) {
 TEST_F(AsyncDomStorageDatabaseMigrationTest,
        QueuesOperationsDuringFailedMigration) {
   // Create test data for a write operation that occurs during migration.
-  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
-      kEmptyEntries;
   const blink::StorageKey kOtherStorageKey =
       blink::StorageKey::CreateFromStringForTesting(kSecondFakeUrlString);
   const DomStorageDatabase::MapMetadata kWriteMapMetadata{

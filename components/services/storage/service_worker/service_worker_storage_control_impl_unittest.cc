@@ -1223,7 +1223,6 @@ TEST_F(ServiceWorkerStorageControlImplTest, GetRegistrationsForStorageKey) {
   // Get registrations for the origin.
   {
     const url::Origin origin = url::Origin::Create(kScope1);
-    std::vector<mojom::ServiceWorkerFindRegistrationResultPtr> registrations;
 
     GetRegistrationsForOriginResult result =
         GetRegistrationsForStorageKey(kKey1);
@@ -1243,7 +1242,6 @@ TEST_F(ServiceWorkerStorageControlImplTest, GetRegistrationsForStorageKey) {
   {
     const url::Origin origin =
         url::Origin::Create(GURL("https://www.example.test/"));
-    std::vector<mojom::ServiceWorkerFindRegistrationResultPtr> registrations;
 
     GetRegistrationsForOriginResult result = GetRegistrationsForStorageKey(
         blink::StorageKey::CreateFirstParty(origin));
