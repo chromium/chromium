@@ -4,11 +4,7 @@
 
 #include "base/memory/memory_pressure_listener_registry.h"
 
-#include <string_view>
-
-#include "base/feature_list.h"
 #include "base/memory/memory_pressure_level.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -18,62 +14,10 @@
 
 namespace base {
 
-BASE_FEATURE(kSuppressMemoryListeners,
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_ANDROID)
-             FEATURE_ENABLED_BY_DEFAULT
-#else
-             FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 namespace {
 
 MemoryPressureListenerRegistry* g_memory_pressure_listener_registry = nullptr;
 
-BASE_FEATURE_PARAM(std::string,
-                   kSuppressMemoryListenersMask,
-                   &kSuppressMemoryListeners,
-                   "suppress_memory_listeners_mask",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-                   "0200200202220200020020020002020020000002000000020"
-#elif BUILDFLAG(IS_CHROMEOS)
-                   "0000000200000200000000000000000000000000000000000"
-#elif BUILDFLAG(IS_ANDROID)
-                   // Only disable PrerenderHostRegistry.
-                   "0000000000000000000000000000000000000000200000000"
-#else
-                   ""
-#endif
-);
-
-bool IsListenerSuppressed(MemoryPressureListenerTag tag,
-                          MemoryPressureLevel memory_pressure_level,
-                          std::string_view mask) {
-  const size_t tag_index = static_cast<size_t>(tag);
-  if (tag_index >= mask.size()) {
-    return false;
-  }
-
-  const char mask_char = mask[tag_index];
-  switch (mask_char) {
-    case '0':
-      // '0' means do NOT suppress any notifications (always notify).
-      return false;
-
-    case '1':
-      // '1' means suppress only MODERATE notifications.
-      return memory_pressure_level == MEMORY_PRESSURE_LEVEL_MODERATE;
-
-    case '2':
-      // '2' means suppress all notifications.
-      return true;
-
-    default:
-      // Suppress all on unknown mask characters.
-      return true;
-  }
-}
 }  // namespace
 
 // static
@@ -151,12 +95,8 @@ void MemoryPressureListenerRegistry::AddObserver(
     return;
   }
 
-  if (!FeatureList::IsEnabled(kSuppressMemoryListeners) ||
-      !IsListenerSuppressed(listener->tag(), last_memory_pressure_level_,
-                            kSuppressMemoryListenersMask.Get())) {
-    listener->SetInitialMemoryPressureLevel(
-        PassKey<MemoryPressureListenerRegistry>(), last_memory_pressure_level_);
-  }
+  listener->SetInitialMemoryPressureLevel(
+      PassKey<MemoryPressureListenerRegistry>(), last_memory_pressure_level_);
 }
 
 void MemoryPressureListenerRegistry::RemoveObserver(
@@ -268,19 +208,9 @@ void MemoryPressureListenerRegistry::SendMemoryPressureNotification(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
 
-  if (FeatureList::IsEnabled(kSuppressMemoryListeners)) {
-    std::string mask = kSuppressMemoryListenersMask.Get();
-    for (auto& listener : listeners_) {
-      if (!IsListenerSuppressed(listener.tag(), memory_pressure_level, mask)) {
-        listener.UpdateMemoryPressureLevel(
-            PassKey<MemoryPressureListenerRegistry>(), memory_pressure_level);
-      }
-    }
-  } else {
-    listeners_.Notify(
-        &MemoryPressureListenerRegistration::UpdateMemoryPressureLevel,
-        PassKey<MemoryPressureListenerRegistry>(), memory_pressure_level);
-  }
+  listeners_.Notify(
+      &MemoryPressureListenerRegistration::UpdateMemoryPressureLevel,
+      PassKey<MemoryPressureListenerRegistry>(), memory_pressure_level);
 }
 
 bool MemoryPressureListenerRegistry::AreNotificationsSuppressedImpl() {

@@ -13,7 +13,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_bound.h"
@@ -169,59 +168,6 @@ TEST(MemoryPressureListenerTest, IgnoreRepeatedNotifications) {
       MEMORY_PRESSURE_LEVEL_CRITICAL);
   MemoryPressureListenerRegistry::NotifyMemoryPressure(
       MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
-}
-
-TEST(MemoryPressureListenerTest, SuppressMemoryListenersSyncInitial) {
-  test::ScopedFeatureList feature_list;
-  // Use InitAndEnableFeatureWithParameters instead of InitWithCommandLine
-  // because the former will disable param caching for the feature. Param
-  // caching is global state that can cause test failures when tests running in
-  // the same process use different param values.
-  // Suppress kTest (tag 0) for MODERATE.
-  // Mask '1' suppresses non-critical (MODERATE).
-  feature_list.InitAndEnableFeatureWithParameters(
-      kSuppressMemoryListeners, {{"suppress_memory_listeners_mask", "1"}});
-
-  MemoryPressureListenerRegistry registry;
-  MockMemoryPressureListener listener;
-
-  // Simulate before registration.
-  MemoryPressureListenerRegistry::SimulatePressureNotification(
-      MEMORY_PRESSURE_LEVEL_MODERATE);
-
-  EXPECT_CALL(listener, OnMemoryPressure(_)).Times(0);
-
-  MemoryPressureListenerRegistration registration(
-      MemoryPressureListenerTag::kTest, &listener);
-
-  // Since it is suppressed, it should be initialized to NONE.
-  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_NONE);
-}
-
-TEST(MemoryPressureListenerTest,
-     SuppressMemoryListenersSyncInitialCriticalNotSuppressed) {
-  test::ScopedFeatureList feature_list;
-  // Use InitAndEnableFeatureWithParameters instead of InitWithCommandLine -see
-  // SuppressMemoryListenersSyncInitial for why.
-  // Suppress kTest (tag 0) for MODERATE only (mask '1').
-  feature_list.InitAndEnableFeatureWithParameters(
-      kSuppressMemoryListeners, {{"suppress_memory_listeners_mask", "1"}});
-
-  MemoryPressureListenerRegistry registry;
-  MockMemoryPressureListener listener;
-
-  // Simulate CRITICAL before registration.
-  MemoryPressureListenerRegistry::SimulatePressureNotification(
-      MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  EXPECT_CALL(listener, OnMemoryPressure(_)).Times(0);
-
-  MemoryPressureListenerRegistration registration(
-      MemoryPressureListenerTag::kTest, &listener);
-
-  // Since it is NOT suppressed for CRITICAL, it should be initialized to
-  // CRITICAL.
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
