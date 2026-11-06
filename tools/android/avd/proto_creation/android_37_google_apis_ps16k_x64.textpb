@@ -6,7 +6,7 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator/linux-amd64"
-  version: "BGpcZ4Xj5C1PIkDS9kWuvS6SbENdA_AiGIbIQRIs2U4C"  # 37.2.13 (Stable)
+  version: "iC68PzTvR0H3ep-hBsHaSK6w5Fh8EDpjDneGgAVDc9IC"  # 37.1.11 (Stable)
 }
 
 system_image_package {
