@@ -62,10 +62,22 @@ class HrTimeProcessor extends AudioWorkletProcessor {
           } :
                                      null;
 
-          globalThis.performance = 'replaced';
-          const afterValue = globalThis.performance;
-          const replacedDesc =
-              Object.getOwnPropertyDescriptor(globalThis, 'performance');
+          let afterValue;
+          let replacedDesc;
+          try {
+            globalThis.performance = 'replaced';
+            afterValue = globalThis.performance;
+            replacedDesc =
+                Object.getOwnPropertyDescriptor(globalThis, 'performance');
+          } finally {
+            if (desc) {
+              if (desc.configurable) {
+                Object.defineProperty(globalThis, 'performance', desc);
+              }
+            } else {
+              delete globalThis.performance;
+            }
+          }
           this.port.postMessage({
             id,
             initialDesc,

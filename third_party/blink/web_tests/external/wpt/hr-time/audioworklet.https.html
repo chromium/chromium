@@ -10,12 +10,8 @@
 
 const MODULE_PATH = 'resources/audioworklet-processor.js';
 let nextRequestId = 1;
-
-function createAudioContext(t) {
-  const context = new AudioContext();
-  t.add_cleanup(() => context.close());
-  return context;
-}
+let sharedAudioContext = null;
+let sharedAudioWorkletPromise = null;
 
 async function createProcessorNode(context, options) {
   await context.audioWorklet.addModule(MODULE_PATH);
@@ -23,6 +19,32 @@ async function createProcessorNode(context, options) {
   node.port.start();
   return node;
 }
+
+function getSharedAudioWorklet() {
+  if (!sharedAudioWorkletPromise) {
+    sharedAudioContext = new AudioContext();
+    sharedAudioWorkletPromise =
+        createProcessorNode(sharedAudioContext).then((node) => ({
+          node,
+          createdAt: performance.now(),
+        }));
+  }
+  return sharedAudioWorkletPromise;
+}
+
+function closeSharedAudioContext() {
+  if (!sharedAudioContext) {
+    return Promise.resolve();
+  }
+  const context = sharedAudioContext;
+  sharedAudioContext = null;
+  sharedAudioWorkletPromise = null;
+  return context.close();
+}
+
+add_completion_callback(() => {
+  closeSharedAudioContext();
+});
 
 function sendCommand(node, command) {
   const id = nextRequestId++;
@@ -62,9 +84,8 @@ test(() => {
       'WorkletPerformance must not be exposed on Window');
 }, 'WorkletPerformance is not exposed on Window');
 
-promise_test(async (t) => {
-  const context = createAudioContext(t);
-  const node = await createProcessorNode(context);
+promise_test(async () => {
+  const {node} = await getSharedAudioWorklet();
   const info = await sendCommand(node, 'interface');
 
   assert_equals(
@@ -108,9 +129,8 @@ promise_test(async (t) => {
       'performance.now() returns a number');
 }, 'AudioWorkletGlobalScope exposes WorkletPerformance on performance');
 
-promise_test(async (t) => {
-  const context = createAudioContext(t);
-  const node = await createProcessorNode(context);
+promise_test(async () => {
+  const {node} = await getSharedAudioWorklet();
   const info = await sendCommand(node, 'replaceable');
 
   assert_not_equals(
@@ -177,15 +197,14 @@ promise_test(async () => {
 }, 'performance.now() returns positive, monotonically non-decreasing values in AudioWorkletGlobalScope');
 
 promise_test(async (t) => {
-  const context = createAudioContext(t);
-  const node = await createProcessorNode(context);
+  const {node} = await getSharedAudioWorklet();
 
   const initial = await sendCommand(node, 'now-and-date');
   assert_equals(
       typeof initial.hrt, 'number',
       'performance.now() returns a number');
 
-  await new Promise((resolve) => t.step_timeout(resolve, 500));
+  await new Promise((resolve) => t.step_timeout(resolve, 200));
 
   const final = await sendCommand(node, 'now-and-date');
   assert_greater_than(
@@ -197,19 +216,30 @@ promise_test(async (t) => {
 }, 'High resolution time in AudioWorkletGlobalScope has approximately the right relative magnitude');
 
 promise_test(async (t) => {
-  const context1 = createAudioContext(t);
-  const node1 = await createProcessorNode(context1);
+  let context2;
+  t.add_cleanup(() => Promise.all([
+    closeSharedAudioContext(),
+    context2 ? context2.close() : Promise.resolve(),
+  ]));
 
-  // Delay creating additional contexts so their creation times are measurably
-  // later than both the Window time origin and context1.
-  await new Promise((resolve) => t.step_timeout(resolve, 100));
+  const {node: node1, createdAt: context1CreatedAt} =
+      await getSharedAudioWorklet();
 
-  const context2 = createAudioContext(t);
-  const node2 = await createProcessorNode(context2);
+  // Delay creating additional contexts if needed so their creation times are
+  // measurably later than both the Window time origin and the first
+  // AudioContext.
+  const elapsed = performance.now() - context1CreatedAt;
+  if (elapsed < 50) {
+    await new Promise((resolve) => t.step_timeout(resolve, 50 - elapsed));
+  }
 
+  context2 = new AudioContext();
   const offlineContext = new OfflineAudioContext(1, 256, 48000);
-  const offlineNode = await createProcessorNode(
-      offlineContext, {processorOptions: {reportProcess: true}});
+  const [node2, offlineNode] = await Promise.all([
+    createProcessorNode(context2),
+    createProcessorNode(
+        offlineContext, {processorOptions: {reportProcess: true}}),
+  ]);
   offlineNode.connect(offlineContext.destination);
 
   const t0 = performance.now();
