@@ -10464,6 +10464,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="ContextualTasks.PermanentToolbarButton.UserAction.RemoveByContextMenu">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user removes the current task via the
+    &quot;Close/Remove&quot; item in the permanently pinned contextual tasks
+    toolbar button's context menu.
+  </description>
+</action>
+
 <action name="ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick">
   <owner>nguyenbryan@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

@@ -3622,13 +3622,22 @@ IN_PROC_BROWSER_TEST_F(
       WaitForHide(kPinnedActionToolbarUnpinElementId),
       Check([&]() { return !IsActiveIndicatorVisible(); }),
       Do([&]() {
+        // The removal came from the permanently pinned button, so it must be
+        // attributed to it rather than to the ephemeral button.
         EXPECT_EQ(1, user_action_tester.GetActionCount(
-                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
                          "RemoveByContextMenu"));
         histogram_tester.ExpectUniqueSample(
-            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "ContextualTasks.PermanentToolbarButton.UserAction."
             "RemoveByContextMenu",
             true, 1);
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "RemoveByContextMenu"));
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "RemoveByContextMenu",
+            0);
       }),
       // The option should be gone again now that the task was dismissed.
       ShowToolbarButtonContextMenu(
@@ -4437,4 +4446,85 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralPinButtonRefactorInteractiveTest,
       SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId));
+}
+
+// Under the ephemeral pin button refactor, "Close/Remove" from the permanently
+// pinned button's context menu must be attributed to the permanent button, and
+// "Close/Remove" from the unpinned button's context menu to the ephemeral one.
+class ContextualTasksEphemeralPinButtonRefactorPinnedCloseInteractiveTest
+    : public ContextualTasksEphemeralPinButtonRefactorInteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralButtonPinningV2InteractiveTest::
+            GetEnabledFeatures();
+    enabled_features.push_back(
+        {contextual_tasks::kContextualTasksEphemeralPinButtonRefactor, {}});
+    enabled_features.push_back(
+        {contextual_tasks::kContextualTasksPinnedButtonActiveIndicator,
+         {{"ContextualTasksPinnedButtonContextMenuCloseSidePanel", "true"}}});
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralPinButtonRefactorPinnedCloseInteractiveTest,
+    RemoveByContextMenuIsAttributedToPinnedOrUnpinnedButton) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      // Unpinned: remove the task from the ephemeral button's context menu.
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      ShowToolbarButtonContextMenu(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForShow(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      SelectMenuItem(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      WaitForHide(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "RemoveByContextMenu"));
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "RemoveByContextMenu"));
+      }),
+      // Pinned: remove the task from the permanent button's context menu.
+      Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      ShowToolbarButtonContextMenu(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForShow(kPinnedActionToolbarUnpinElementId),
+      WaitForShow(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      SelectMenuItem(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      WaitForHide(kPinnedActionToolbarUnpinElementId), Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "RemoveByContextMenu"));
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "RemoveByContextMenu"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.PermanentToolbarButton.UserAction."
+            "RemoveByContextMenu",
+            true, 1);
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "RemoveByContextMenu",
+            true, 1);
+      }));
 }

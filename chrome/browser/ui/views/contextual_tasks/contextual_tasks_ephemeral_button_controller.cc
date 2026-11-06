@@ -514,13 +514,28 @@ void ContextualTasksEphemeralButtonController::
     return;
   }
 
-  base::RecordAction(base::UserMetricsAction(
-      "ContextualTasks.EphemeralToolbarButton.UserAction."
-      "RemoveByContextMenu"));
-  base::UmaHistogramBoolean(
-      "ContextualTasks.EphemeralToolbarButton.UserAction."
-      "RemoveByContextMenu",
-      true);
+  // The "Close/Remove" item is shown in the ephemeral (unpinned) button's
+  // context menu, and in the permanently pinned button's context menu when
+  // `ShouldShowCloseSidePanelInPinnedButtonContextMenu()` is on. Attribute the
+  // removal to the button the user actually interacted with.
+  if (contextual_tasks::GetEffectivePinState(
+          browser_window_interface_->GetProfile())) {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.PermanentToolbarButton.UserAction."
+        "RemoveByContextMenu"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.PermanentToolbarButton.UserAction."
+        "RemoveByContextMenu",
+        true);
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "RemoveByContextMenu"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "RemoveByContextMenu",
+        true);
+  }
 
   base::AutoReset<std::optional<RemovalReason>> reset_reason(
       &removal_reason_, RemovalReason::kContextMenu);

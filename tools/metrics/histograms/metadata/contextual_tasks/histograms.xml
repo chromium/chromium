@@ -821,6 +821,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContextualTasks.PermanentToolbarButton.UserAction.RemoveByContextMenu"
+    enum="Boolean" expires_after="2027-04-15">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user selects the &quot;Close/Remove&quot; item in the
+    permanently pinned contextual tasks toolbar button's context menu to remove
+    the current task. Only shown when the
+    ContextualTasksPinnedButtonContextMenuCloseSidePanel param is enabled.
+    Always recorded as true. See
+    ContextualTasks.EphemeralToolbarButton.UserAction.RemoveByContextMenu for
+    the unpinned button.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.PermissionChip.Click"
     enum="ContextualTasksPermissionChipType" expires_after="2027-04-15">
   <owner>hujasonx@google.com</owner>
