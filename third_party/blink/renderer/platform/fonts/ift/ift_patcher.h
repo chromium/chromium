@@ -5,10 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_IFT_IFT_PATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_IFT_IFT_PATCHER_H_
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/types/expected.h"
 #include "third_party/blink/renderer/platform/fonts/ift_patcher_rs.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -80,6 +83,15 @@ class PLATFORM_EXPORT IftPatcher {
     kPatchGroupError,
     kPatchError,
     kMissingPatches,
+    // More invalidating patches were needed than the IFT spec allows in a
+    // single extension.
+    kPatchLimitExceeded,
+  };
+
+  // Errors returned by `IftPatcher::RequestPatches()`.
+  enum class RequestError {
+    // More patches were needed than the IFT spec allows in a single extension.
+    kPatchLimitExceeded,
   };
 
   // Creates an `IftPatcher` instance initialized with `font_data`.
@@ -123,12 +135,23 @@ class PLATFORM_EXPORT IftPatcher {
   // the font data being rendered.
   void MarkFontDataRendered();
 
+  // Starts a new execution of the IFT extension algorithm
+  // (https://www.w3.org/TR/IFT/#extend-font-subset). This resets the counts
+  // limited by the spec: at most 100 invalidating patches applied and at most
+  // 2000 patches loaded per extension.
+  void BeginExtension();
+
   // Evaluates `subset` against the current font state and returns a vector of
   // patch URLs required to fulfill the subset request.
   //
   // Patch URLs that have already been requested or whose patch data was
   // supplied are omitted from the returned list.
-  Vector<String> RequestPatches(const IftSubsetDefinition& subset);
+  //
+  // Returns `RequestError::kPatchLimitExceeded`, without recording any URLs, if
+  // requesting the patches would exceed the patch limit of the current
+  // extension.
+  base::expected<Vector<String>, RequestError> RequestPatches(
+      const IftSubsetDefinition& subset);
 
   // Supplies binary patch `data` downloaded for the given `url`.
   void AddPatchData(const String& url, base::span<const uint8_t> data);
@@ -143,6 +166,10 @@ class PLATFORM_EXPORT IftPatcher {
   // have not yet had their corresponding patch data supplied via
   // `AddPatchData()`.
   bool HasPendingPatchRequests() const;
+
+  // Overrides the IFT spec patch limits enforced per extension.
+  void SetPatchLimitsForTesting(uint32_t max_invalidating_patches,
+                                uint32_t max_total_patches);
 
  private:
   explicit IftPatcher(ift_patcher_rs::IftPatcher patcher);

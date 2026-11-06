@@ -495,6 +495,129 @@ TEST_F(IftCustomFontDataTest, SecondPatchRoundIsRendered) {
   EXPECT_NE(font_data_bc, font_data_b.Get());
 }
 
+TEST_F(IftCustomFontDataTest, ExceedingTotalPatchLimitFails) {
+  const IftFont* ift_font = LoadIftFont("b");
+  ASSERT_NE(ift_font, nullptr);
+  // 'b' requires two patches.
+  ift_font->SetPatchLimitsForTesting(/*max_invalidating_patches=*/100,
+                                     /*max_total_patches=*/1);
+
+  // The font fails before fetching any patch and is never used.
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(ift_font->GetStateForTesting(), IftFont::State::kFailed);
+  EXPECT_FALSE(Compositor().NeedsBeginFrame());
+  EXPECT_FALSE(IsShapedWith(ift_font));
+}
+
+TEST_F(IftCustomFontDataTest, ExceedingInvalidatingPatchLimitFails) {
+  SimSubresourceRequest patch_b_table(kPatchBTableUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_b_glyph(kPatchBGlyphUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_c_glyph(kPatchCGlyphUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_c_table(kPatchCAfterBTableUrl,
+                                      "application/octet-stream");
+  const IftFont* ift_font = LoadIftFont("bc");
+  ASSERT_NE(ift_font, nullptr);
+  // "bc" requires two invalidating patches.
+  ift_font->SetPatchLimitsForTesting(/*max_invalidating_patches=*/1,
+                                     /*max_total_patches=*/2000);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  patch_b_table.Complete(PatchPayload(kPatchBTableUrl));
+  patch_b_glyph.Complete(PatchPayload(kPatchBGlyphUrl));
+  patch_c_glyph.Complete(PatchPayload(kPatchCGlyphUrl));
+  test::RunPendingTasks();
+  EXPECT_EQ(ift_font->GetStateForTesting(), IftFont::State::kFetching);
+
+  // Applying the second invalidating patch exceeds the limit.
+  patch_c_table.Complete(PatchPayload(kPatchCAfterBTableUrl));
+  test::RunPendingTasks();
+  EXPECT_EQ(ift_font->GetStateForTesting(), IftFont::State::kFailed);
+  EXPECT_FALSE(Compositor().NeedsBeginFrame());
+  EXPECT_FALSE(IsShapedWith(ift_font));
+}
+
+TEST_F(IftCustomFontDataTest, PatchLimitsResetForEachExtension) {
+  SimSubresourceRequest patch_b_table(kPatchBTableUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_b_glyph(kPatchBGlyphUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_c_table(kPatchCAfterBTableUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_c_glyph(kPatchCGlyphUrl,
+                                      "application/octet-stream");
+  const IftFont* ift_font = LoadIftFont("b");
+  ASSERT_NE(ift_font, nullptr);
+  // "b" and "c" each require one invalidating patch.
+  ift_font->SetPatchLimitsForTesting(/*max_invalidating_patches=*/1,
+                                     /*max_total_patches=*/2000);
+
+  // First extension: "b".
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  patch_b_table.Complete(PatchPayload(kPatchBTableUrl));
+  patch_b_glyph.Complete(PatchPayload(kPatchBGlyphUrl));
+  test::RunPendingTasks();
+  ASSERT_EQ(ift_font->GetStateForTesting(), IftFont::State::kIdle);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(IsShapedWithUpdated(ift_font));
+
+  // Second extension: "c" gets its own patch limits.
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setTextContent(String("bc"));
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  patch_c_table.Complete(PatchPayload(kPatchCAfterBTableUrl));
+  patch_c_glyph.Complete(PatchPayload(kPatchCGlyphUrl));
+  test::RunPendingTasks();
+  EXPECT_EQ(ift_font->GetStateForTesting(), IftFont::State::kIdle);
+  Compositor().BeginFrame();
+  EXPECT_TRUE(IsShapedWithUpdated(ift_font));
+  EXPECT_TRUE(ift_font->RequireSubset("bc"));
+}
+
+TEST_F(IftCustomFontDataTest, TextAddedWhileFetchingSharesPatchLimits) {
+  SimSubresourceRequest patch_b_table(kPatchBTableUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_b_glyph(kPatchBGlyphUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_c_table(kPatchCAfterBTableUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_c_glyph(kPatchCGlyphUrl,
+                                      "application/octet-stream");
+  const IftFont* ift_font = LoadIftFont("b");
+  ASSERT_NE(ift_font, nullptr);
+  // "b" and "c" each require one invalidating patch.
+  ift_font->SetPatchLimitsForTesting(/*max_invalidating_patches=*/1,
+                                     /*max_total_patches=*/2000);
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_EQ(ift_font->GetStateForTesting(), IftFont::State::kFetching);
+
+  // "c" is requested while "b" is fetching, so it joins the same extension.
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setTextContent(String("bc"));
+  Compositor().BeginFrame();
+  patch_b_table.Complete(PatchPayload(kPatchBTableUrl));
+  patch_b_glyph.Complete(PatchPayload(kPatchBGlyphUrl));
+  test::RunPendingTasks();
+  EXPECT_EQ(ift_font->GetStateForTesting(), IftFont::State::kFetching);
+
+  // Applying the second invalidating patch exceeds the limit.
+  patch_c_table.Complete(PatchPayload(kPatchCAfterBTableUrl));
+  patch_c_glyph.Complete(PatchPayload(kPatchCGlyphUrl));
+  test::RunPendingTasks();
+  EXPECT_EQ(ift_font->GetStateForTesting(), IftFont::State::kFailed);
+  EXPECT_FALSE(Compositor().NeedsBeginFrame());
+  EXPECT_FALSE(IsShapedWithUpdated(ift_font));
+}
+
 TEST_F(IftCustomFontDataTest, DocumentDetachedBeforeCollectingFails) {
   const IftFont* ift_font = LoadIftFont();
   ASSERT_NE(ift_font, nullptr);

@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/location.h"
+#include "base/types/expected.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -138,6 +139,12 @@ base::span<const uint8_t> IftFont::GetFontDataForTesting() const {
   return patcher_->GetFontData();
 }
 
+void IftFont::SetPatchLimitsForTesting(uint32_t max_invalidating_patches,
+                                       uint32_t max_total_patches) const {
+  patcher_->SetPatchLimitsForTesting(max_invalidating_patches,
+                                     max_total_patches);
+}
+
 void IftFont::BeginIdle() const {
   if (state_ == State::kFailed) {
     return;
@@ -166,6 +173,9 @@ void IftFont::BeginCollecting() const {
     return;
   }
   state_ = State::kCollecting;
+  // Leaving `kIdle` starts a new execution of the extension algorithm. Subsets
+  // requested before returning to `kIdle` share its patch limits.
+  patcher_->BeginExtension();
   ExecutionContext* execution_context =
       font_face_source_->GetExecutionContext();
   if (!execution_context) {
@@ -192,15 +202,20 @@ void IftFont::BeginFetching() const {
 
   state_ = State::kFetching;
   fetched_subset_->Union(*requested_subset_);
-  Vector<String> patch_urls = patcher_->RequestPatches(*fetched_subset_);
-  if (patch_urls.empty()) {
+  base::expected<Vector<String>, IftPatcher::RequestError> patch_urls =
+      patcher_->RequestPatches(*fetched_subset_);
+  if (!patch_urls.has_value()) {
+    BeginFailed();
+    return;
+  }
+  if (patch_urls->empty()) {
     BeginIdle();
     return;
   }
 
   // Register every loader before starting any fetch so that a fetch finishing
   // synchronously does not observe an incomplete `patch_loaders_`.
-  for (const String& patch_url : patch_urls) {
+  for (const String& patch_url : *patch_urls) {
     PatchLoader* loader = MakeGarbageCollected<PatchLoader>(this, patch_url);
     patch_loaders_.insert(loader);
     // https://www.w3.org/TR/IFT/#abstract-opdef-load-patch-file
@@ -222,8 +237,6 @@ void IftFont::ApplyPatches() const {
   if (state_ != State::kFetching) {
     return;
   }
-  // TODO(wmedrano): Consider limiting the max number of patch applications. At
-  // some point, we may want to just request the entire subset.
   switch (patcher_->ApplyPatches(*fetched_subset_)) {
     case IftPatcher::ApplyStatus::kSuccess:
     case IftPatcher::ApplyStatus::kMissingPatches:
@@ -236,6 +249,7 @@ void IftFont::ApplyPatches() const {
     case IftPatcher::ApplyStatus::kInvalidFont:
     case IftPatcher::ApplyStatus::kPatchGroupError:
     case IftPatcher::ApplyStatus::kPatchError:
+    case IftPatcher::ApplyStatus::kPatchLimitExceeded:
       BeginFailed();
       return;
   }

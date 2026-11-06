@@ -62,7 +62,8 @@ class CORE_EXPORT IftFont final : public GarbageCollected<IftFont> {
     // The font is ready to use.
     kIdle,
     // The font is collecting subsets which will later be batched into a fetch
-    // request.
+    // request. Entering this state from `kIdle` starts a new extension, which
+    // lasts until the font returns to `kIdle`.
     kCollecting,
     // The font is fetching the patches required for `fetched_subset_`.
     kFetching,
@@ -71,6 +72,9 @@ class CORE_EXPORT IftFont final : public GarbageCollected<IftFont> {
   };
 
   State GetStateForTesting() const { return state_; }
+  // Overrides the IFT spec patch limits enforced per extension.
+  void SetPatchLimitsForTesting(uint32_t max_invalidating_patches,
+                                uint32_t max_total_patches) const;
   // Returns the font data with all patches applied so far. The returned span is
   // invalidated when more patches are applied.
   base::span<const uint8_t> GetFontDataForTesting() const LIFETIME_BOUND;
