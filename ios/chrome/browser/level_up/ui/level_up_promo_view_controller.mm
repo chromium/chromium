@@ -130,12 +130,14 @@ constexpr CGFloat kChecklistHorizontalMargin = 34;
   // Green palette.
   ConfigureAnimationSemanticColor(_animationViewWrapper, @"kGreen100Color",
                                   kGreen100Color);
-  ConfigureAnimationCustomColor(_animationViewWrapper, @"A8DAB5",
-                                gfx::kGoogleGreen200, gfx::kGoogleGreen400);
-  ConfigureAnimationSemanticColor(_animationViewWrapper, @"kGreen400Color",
-                                  kGreen400Color);
   ConfigureAnimationSemanticColor(_animationViewWrapper, @"kGreen800Color",
                                   kGreen800Color);
+  ConfigureAnimationCustomColor(_animationViewWrapper, @"7DBF90",
+                                SkColorSetRGB(0x7D, 0xBF, 0x90),
+                                gfx::kGoogleGreen400);
+  ConfigureAnimationCustomColor(_animationViewWrapper, @"B0D3BA",
+                                SkColorSetRGB(0xB0, 0xD3, 0xBA),
+                                gfx::kGoogleGreen600);
 
   // Yellow / Orange palette.
   ConfigureAnimationCustomColor(_animationViewWrapper, @"EA8600",
@@ -148,17 +150,17 @@ constexpr CGFloat kChecklistHorizontalMargin = 34;
                                 gfx::kGoogleYellow500, gfx::kGoogleYellow400);
 
   // Purple palette.
-  ConfigureAnimationCustomColor(_animationViewWrapper, @"7627BB",
-                                gfx::kGooglePurple800, gfx::kGooglePurple050);
+  ConfigureAnimationCustomColor(_animationViewWrapper, @"9334E6",
+                                gfx::kGooglePurple600, gfx::kGooglePurple050);
   ConfigureAnimationCustomColor(_animationViewWrapper, @"F0DDF0",
                                 SkColorSetRGB(0xF0, 0xDD, 0xF0),
                                 gfx::kGooglePurple700);
-  // TODO(crbug.com/568788012): Update the Lottie JSON and color mappings once
-  // the missing `D7AEFB` keypath and `A142F4` mock alignment are resolved.
-  ConfigureAnimationCustomColor(_animationViewWrapper, @"A142F4",
-                                gfx::kGooglePurple500, gfx::kGooglePurple300);
-  ConfigureAnimationCustomColor(_animationViewWrapper, @"D7AEFB",
-                                gfx::kGooglePurple500, gfx::kGooglePurple200);
+  ConfigureAnimationCustomColor(_animationViewWrapper, @"F7B0F7",
+                                SkColorSetRGB(0xF7, 0xB0, 0xF7),
+                                gfx::kGooglePurple300);
+  ConfigureAnimationCustomColor(_animationViewWrapper, @"F6D0F6",
+                                SkColorSetRGB(0xF6, 0xD0, 0xF6),
+                                gfx::kGooglePurple500);
 }
 
 // Creates a checklist view with blue checkmarks, promo content, and a bottom
