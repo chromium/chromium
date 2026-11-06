@@ -271,8 +271,6 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
 
   test_api(GetIbanSaveManager())
       .OnUserDidDecideOnLocalSave(iban, SaveIbanOfferUserDecision::kDeclined);
-  const std::vector<const Iban*> ibans =
-      personal_data().payments_data_manager().GetLocalIbans();
 
   EXPECT_TRUE(personal_data().payments_data_manager().GetLocalIbans().empty());
 }
@@ -285,8 +283,6 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored) {
 
   test_api(GetIbanSaveManager())
       .OnUserDidDecideOnLocalSave(iban, SaveIbanOfferUserDecision::kIgnored);
-  const std::vector<const Iban*> ibans =
-      personal_data().payments_data_manager().GetLocalIbans();
 
   EXPECT_TRUE(personal_data().payments_data_manager().GetLocalIbans().empty());
 }

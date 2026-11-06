@@ -2794,8 +2794,6 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
   form_suggestion->add_field_suggestions()->add_predictions()->set_type(
       UNKNOWN_TYPE);
 
-  std::string response_string = SerializeAndEncode(response);
-
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
                                  test::GetEncodedSignatures({form}),

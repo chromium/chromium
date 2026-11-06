@@ -578,7 +578,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 
   base::HistogramTester histogram_tester;
-  std::string test_number = "4444333322221111";
   const CreditCard* enrolled_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId, /*cvc=*/u"",
                        CreditCard::RecordType::kMaskedServerCard,

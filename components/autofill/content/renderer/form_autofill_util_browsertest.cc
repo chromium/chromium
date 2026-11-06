@@ -2766,7 +2766,6 @@ TEST_F(FormAutofillUtilsTest, GetOwnedFormControlsRequiresConnectedness) {
 // final-checkout-amount if the label node is in the subtree that is only one
 // ancestor up.
 TEST_F(FormAutofillUtilsTest, ExtractFinalCheckoutAmountFromDom_OneAncestorUp) {
-  std::vector<std::string> matches;
   LoadHTML(R"(
     <body>
       <div>

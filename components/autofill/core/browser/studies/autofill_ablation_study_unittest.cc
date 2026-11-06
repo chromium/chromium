@@ -382,7 +382,6 @@ TEST_F(AutofillAblationStudyTestInUTC, IntegrationTestForOptimizationGuide) {
   AutofillOptimizationGuideDecider autofill_optimization_guide(&guide);
   std::array<int, 5> times_in_ablation_group{0};
   std::array<int, 5> times_in_control{0};
-  std::map<AblationGroup, int> result;
   for (size_t iteration = 0; iteration < 1000; ++iteration) {
     AutofillAblationStudy study(base::NumberToString(iteration));
     for (size_t url_idx = 0; url_idx < urls.size(); ++url_idx) {

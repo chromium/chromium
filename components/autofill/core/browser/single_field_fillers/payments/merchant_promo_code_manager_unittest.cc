@@ -209,8 +209,7 @@ TEST_F(MerchantPromoCodeManagerTest,
 
 TEST_F(MerchantPromoCodeManagerTest,
        DoesNotShowPromoCodeOffersForOffTheRecord) {
-  std::string promo_code = SetUpPromoCodeOffer(
-      kTestOriginUrl, GURL("https://offer-details-url.com/"));
+  SetUpPromoCodeOffer(kTestOriginUrl, GURL("https://offer-details-url.com/"));
   client().set_is_off_the_record(true);
 
   // Setting up mock to verify that suggestions returning is not triggered if

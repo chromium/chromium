@@ -803,7 +803,6 @@ void FormStructureRationalizer::RationalizeDateFormatStrings(
         continue;
     }
 
-    std::u16string format;
     if (data_util::IsValidDateFormat(field.placeholder())) {
       set_format(field, field.placeholder());
       continue;

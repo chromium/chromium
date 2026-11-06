@@ -2184,10 +2184,6 @@ TEST_F(
        features::kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting},
       /*disabled_features=*/{});
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kCreditCardEntry),
-      Suggestion(SuggestionType::kBnplEntry)};
-
   ASSERT_FALSE(autofill_client()
                    .GetPersonalDataManager()
                    .payments_data_manager()

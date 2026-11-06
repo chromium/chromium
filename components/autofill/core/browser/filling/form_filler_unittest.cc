@@ -2187,7 +2187,6 @@ TEST_F(FormFillerTest, Refill_UsesBlockedFields) {
   // TODO(crbug.com/489280538): Currently the refill will always fill the new
   // field, even if it "shouldn't" (i.e., if the caller that originally set the
   // blocked fields list would also have blocked the new field).
-  std::vector<FormFieldData> refilled_fields;
   EXPECT_CALL(
       autofill_driver(),
       ApplyFormAction(_, _,

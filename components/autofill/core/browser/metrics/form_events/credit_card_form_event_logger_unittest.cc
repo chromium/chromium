@@ -533,10 +533,6 @@ TEST_F(CreditCardFormEventLoggerTest, CreditCardParsedFormEvents) {
                   CreateTestFormField("Verification", "verification", "",
                                       FormControlType::kInputText)});
 
-  const std::vector<FieldType> field_types = {CREDIT_CARD_NAME_FULL,
-                                              CREDIT_CARD_EXP_MONTH,
-                                              CREDIT_CARD_VERIFICATION_CODE};
-
   base::HistogramTester histogram_tester;
   SeeForm(form);
   histogram_tester.ExpectUniqueSample(
@@ -1962,11 +1958,6 @@ TEST_F(CreditCardFormEventLoggerTest, MixedParsedFormEvents) {
                            FormControlType::kInputText),
        CreateTestFormField("Verification", "verification", "",
                            FormControlType::kInputText)});
-
-  const std::vector<FieldType> field_types = {
-      ADDRESS_HOME_STATE,          ADDRESS_HOME_CITY,
-      ADDRESS_HOME_STREET_ADDRESS, CREDIT_CARD_NAME_FULL,
-      CREDIT_CARD_EXP_MONTH,       CREDIT_CARD_VERIFICATION_CODE};
 
   base::HistogramTester histogram_tester;
   SeeForm(form);

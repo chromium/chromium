@@ -37,7 +37,6 @@ std::string GetAutofillFilledTypesMetadata(
 
   base::DictValue metadata_dict;
   metadata_dict.Set("filled_types", std::move(filled_types_list));
-  std::string metadata_json;
   return base::WriteJson(metadata_dict).value_or("");
 }
 

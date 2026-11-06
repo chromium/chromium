@@ -1254,9 +1254,6 @@ TEST_F(AutofillMetricsTest, AddressParsedFormEvents) {
        CreateTestFormField("Street", "street", "",
                            FormControlType::kInputText)});
 
-  const std::vector<FieldType> field_types = {
-      ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
-
   base::HistogramTester histogram_tester;
   SeeForm(form);
   histogram_tester.ExpectUniqueSample("Autofill.FormEvents.Address",

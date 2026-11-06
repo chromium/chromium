@@ -1264,8 +1264,6 @@ AutofillProfile AutofillProfile::ConvertToLocalOrSyncableProfile() const {
 
 FieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
   FieldTypeSet inaccessible_fields;
-  const std::string stored_country =
-      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
   // Consider only AddressFields which are invisible in the settings for some
   // countries.
   for (const AddressField& adress_field :

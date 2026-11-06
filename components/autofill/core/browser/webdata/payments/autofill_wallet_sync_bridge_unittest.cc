@@ -1529,9 +1529,6 @@ TEST_F(AutofillWalletSyncBridgeTest, SetWalletCards_LogVirtualMetadataSynced) {
   card3_specifics.mutable_masked_card()->set_billing_address_id(std::string());
   card4_specifics.mutable_masked_card()->set_billing_address_id(std::string());
 
-  std::vector<std::string> server_ids = {"card2_server_id", "card3_server_id",
-                                         "card4_server_id"};
-
   // Trigger sync.
   base::HistogramTester histogram_tester;
   StartSyncing(
