@@ -60,6 +60,8 @@ fn default_category_for_marker(info: DataMarkerInfo) -> Icu4cFilterCategory {
         Icu4cFilterCategory::CollTree
     } else if id.starts_with("transliterator/") {
         Icu4cFilterCategory::Translit
+    } else if id.starts_with("plurals/ranges/") {
+        Icu4cFilterCategory::PluralRanges
     } else if id.starts_with("plurals/") {
         Icu4cFilterCategory::Plurals
     } else {
