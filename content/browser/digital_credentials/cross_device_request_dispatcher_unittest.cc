@@ -207,6 +207,42 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, HandshakeError) {
             RequestDispatcher::Error(ProtocolError::kTransportError));
 }
 
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, WalletDataIsString) {
+  base::expected<Response, RequestDispatcher::Error> result =
+      Transact(device::cablev2::PayloadType::kJSON,
+               R"({
+           "response": {
+             "digital": {
+               "data": {
+                 "data": "not_an_object",
+                 "protocol": "ProtocolInResponse"
+               }
+             }
+           }
+         })");
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            RequestDispatcher::Error(ProtocolError::kInvalidResponse));
+}
+
+TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, WalletDataIsList) {
+  base::expected<Response, RequestDispatcher::Error> result =
+      Transact(device::cablev2::PayloadType::kJSON,
+               R"({
+           "response": {
+             "digital": {
+               "data": {
+                 "data": [],
+                 "protocol": "ProtocolInResponse"
+               }
+             }
+           }
+         })");
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            RequestDispatcher::Error(ProtocolError::kInvalidResponse));
+}
+
 TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, ValidResponse) {
   base::expected<Response, RequestDispatcher::Error> result =
       Transact(device::cablev2::PayloadType::kJSON,

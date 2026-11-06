@@ -183,13 +183,13 @@ void RequestDispatcher::OnComplete(
   // response contains a JSON object that has both a protocol and data.
   if (data->is_dict()) {
     const base::DictValue& data_dict = data->GetDict();
-    const base::Value* wallet_data = data_dict.Find("data");
+    const base::DictValue* wallet_data = data_dict.FindDict("data");
     const std::string* protocol = data_dict.FindString("protocol");
     if (wallet_data && protocol) {
       FIDO_LOG(EVENT) << "Standard format is received from the mobile device.";
       std::move(callback_).Run(
           Response(DigitalIdentityProvider::DigitalCredential(
-              *protocol, wallet_data->Clone())));
+              *protocol, base::Value(wallet_data->Clone()))));
       return;
     }
   }
