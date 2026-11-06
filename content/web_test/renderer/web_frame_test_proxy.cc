@@ -284,14 +284,18 @@ void WebFrameTestProxy::ResetRendererAfterWebTest() {
   // So the steps in this method need to be audited piecemeal for redundancy.
   CHECK(IsMainFrame());
 
+  accessibility_controller_.Reset();
+  spell_check_->Reset();
+  test_runner_->Reset();
+
   if (IsMainFrame()) {
     GetWebFrame()->ClearActiveFindMatchForTesting();
     GetWebFrame()->SetName(blink::WebString());
     GetWebFrame()->ClearOpener();
 
     blink::WebTestingSupport::ResetMainFrame(GetWebFrame());
-    // Resetting the internals object also overrides the WebPreferences, so we
-    // have to sync them to WebKit again.
+    // Resetting the internals object and runtime features also overrides the
+    // WebPreferences, so we have to sync them to WebKit again.
     blink::WebView* web_view = GetWebFrame()->View();
     web_view->SetWebPreferences(web_view->GetWebPreferences());
 
@@ -302,10 +306,6 @@ void WebFrameTestProxy::ResetRendererAfterWebTest() {
     test_runner()->ResetWebFrameWidget(GetLocalRootWebFrameWidget());
     GetLocalRootFrameWidgetTestHelper()->Reset();
   }
-
-  accessibility_controller_.Reset();
-  spell_check_->Reset();
-  test_runner_->Reset();
 }
 
 void WebFrameTestProxy::ResetTestRunnerForNewWebTest() {
@@ -317,6 +317,12 @@ void WebFrameTestProxy::ResetTestRunnerForNewWebTest() {
   // stale. Resetting it again in a process that did receive
   // ResetRendererAfterWebTest() is harmless.
   test_runner_->Reset();
+  // Resetting runtime features in TestRunner::Reset() also overrides
+  // RuntimeEnabledFeatures controlled by WebPreferences (such as
+  // Accelerated2dCanvas), so sync WebPreferences to the WebView again.
+  if (blink::WebView* web_view = GetWebFrame()->View()) {
+    web_view->SetWebPreferences(web_view->GetWebPreferences());
+  }
 }
 
 std::string WebFrameTestProxy::GetFrameNameForWebTests() {
