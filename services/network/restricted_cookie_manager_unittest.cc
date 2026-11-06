@@ -1363,6 +1363,26 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWithMismatchingDomain) {
   ASSERT_FALSE(received_bad_message());
 }
 
+TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWithPublicSuffixDomain) {
+  for (const std::string& domain : {"com", ".com"}) {
+    backend()->SetCookieFromString(
+        kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+        net::StorageAccessApiStatus::kNone,
+        /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+        "new-name=new-value;path=/;domain=" + domain);
+    service_remote_.FlushForTesting();
+    ASSERT_FALSE(received_bad_message());
+
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "new-name";
+    options->match_type = mojom::CookieMatchType::EQUALS;
+    EXPECT_THAT(sync_service_->GetAllForUrl(
+                    kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                    net::StorageAccessApiStatus::kNone, std::move(options)),
+                IsEmpty());
+  }
+}
+
 TEST_P(RestrictedCookieManagerTest,
        SetCookieFromStringWithNonStandardSchemeUppercaseHost) {
   url::ScopedSchemeRegistryForTests scoped_registry;
@@ -1471,6 +1491,206 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithMismatchingDomain) {
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone));
   ASSERT_TRUE(received_bad_message());
+}
+
+// Regression test for https://crbug.com/40051990: ensure a compromised renderer
+// cannot set domain cookies on public suffixes / TLDs (including multi-label
+// suffixes and private registries) even though they suffix-match the origin's
+// host.
+TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithPublicSuffixDomain) {
+  struct TestCase {
+    const char* url;
+    const char* domain;
+  };
+  constexpr TestCase kTestCases[] = {
+      {"https://example.com/test/", "com"},
+      {"https://example.com/test/", ".com"},
+      {"https://sub.example.co.uk/test/", "co.uk"},
+      {"https://sub.example.co.uk/test/", ".co.uk"},
+      {"https://sub.example.co.uk/test/", "uk"},
+      {"https://sub.appspot.com/test/", "appspot.com"},
+      {"https://sub.appspot.com/test/", ".appspot.com"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "url=" << test_case.url << " domain=" << test_case.domain);
+    const GURL url(test_case.url);
+    const url::Origin origin = url::Origin::Create(url);
+    const net::SiteForCookies site_for_cookies =
+        net::SiteForCookies::FromUrl(url);
+
+    service_->OverrideIsolationInfoForTesting(
+        net::IsolationInfo::CreateForInternalRequest(origin));
+    service_->OverrideOriginForTesting(origin);
+
+    received_bad_message_ = false;
+    ExpectBadMessage("Setting cookies on other domains is disallowed.");
+    EXPECT_FALSE(sync_service_->SetCanonicalCookie(
+        mojom::RestrictedCanonicalCookieParams::New(
+            "new-name", "new-value", test_case.domain, "/", base::Time(),
+            base::Time(), base::Time(), /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT,
+            mojom::RestrictedCookiePartition::UNPARTITIONED),
+        url, site_for_cookies, origin, net::StorageAccessApiStatus::kNone));
+    EXPECT_TRUE(received_bad_message());
+
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "new-name";
+    options->match_type = mojom::CookieMatchType::EQUALS;
+    EXPECT_THAT(sync_service_->GetAllForUrl(url, site_for_cookies, origin,
+                                            net::StorageAccessApiStatus::kNone,
+                                            std::move(options)),
+                IsEmpty());
+  }
+}
+
+TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromPublicSuffixOrigin) {
+  const GURL suffix_url("https://co.uk/test/");
+  const url::Origin suffix_origin = url::Origin::Create(suffix_url);
+  const net::SiteForCookies suffix_site_for_cookies =
+      net::SiteForCookies::FromUrl(suffix_url);
+
+  service_->OverrideIsolationInfoForTesting(
+      net::IsolationInfo::CreateForInternalRequest(suffix_origin));
+  service_->OverrideOriginForTesting(suffix_origin);
+
+  // Attempting to set a cookie on a parent TLD must fail.
+  for (const char* domain : {"uk", ".uk"}) {
+    EXPECT_FALSE(sync_service_->SetCanonicalCookie(
+        mojom::RestrictedCanonicalCookieParams::New(
+            "new-name", "new-value", domain, "/", base::Time(), base::Time(),
+            base::Time(), /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT,
+            mojom::RestrictedCookiePartition::UNPARTITIONED),
+        suffix_url, suffix_site_for_cookies, suffix_origin,
+        net::StorageAccessApiStatus::kNone));
+  }
+
+  auto empty_options = mojom::CookieManagerGetOptions::New();
+  empty_options->name = "new-name";
+  empty_options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  suffix_url, suffix_site_for_cookies, suffix_origin,
+                  net::StorageAccessApiStatus::kNone, std::move(empty_options)),
+              IsEmpty());
+
+  // Passing a domain attribute that matches the public suffix host itself is
+  // coerced into a host-only cookie, never a domain cookie.
+  for (const char* domain : {"co.uk", ".co.uk"}) {
+    EXPECT_TRUE(sync_service_->SetCanonicalCookie(
+        mojom::RestrictedCanonicalCookieParams::New(
+            "host-only", "value", domain, "/", base::Time(), base::Time(),
+            base::Time(), /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT,
+            mojom::RestrictedCookiePartition::UNPARTITIONED),
+        suffix_url, suffix_site_for_cookies, suffix_origin,
+        net::StorageAccessApiStatus::kNone));
+
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "host-only";
+    options->match_type = mojom::CookieMatchType::EQUALS;
+    std::vector<net::CanonicalCookie> cookies = sync_service_->GetAllForUrl(
+        suffix_url, suffix_site_for_cookies, suffix_origin,
+        net::StorageAccessApiStatus::kNone, std::move(options));
+    ASSERT_THAT(cookies, testing::SizeIs(1));
+    EXPECT_TRUE(cookies[0].IsHostCookie());
+    EXPECT_EQ("co.uk", cookies[0].Domain());
+  }
+}
+
+TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithInvalidDomain) {
+  // Domains that fail validation without triggering EXCLUDE_DOMAIN_MISMATCH
+  // (e.g., subdomains of the request host or syntactically invalid domains).
+  constexpr const char* kInvalidDomains[] = {
+      "sub.example.com", ".sub.example.com",      "..example.com",
+      "%2eexample.com",  "example.com; httponly", " example.com",
+      "example.com\n",
+  };
+
+  for (const char* domain : kInvalidDomains) {
+    SCOPED_TRACE(domain);
+    EXPECT_FALSE(sync_service_->SetCanonicalCookie(
+        mojom::RestrictedCanonicalCookieParams::New(
+            "new-name", "new-value", domain, "/", base::Time(), base::Time(),
+            base::Time(), /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT,
+            mojom::RestrictedCookiePartition::UNPARTITIONED),
+        kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+        net::StorageAccessApiStatus::kNone));
+    EXPECT_FALSE(received_bad_message());
+  }
+
+  auto options = mojom::CookieManagerGetOptions::New();
+  options->name = "new-name";
+  options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                  net::StorageAccessApiStatus::kNone, std::move(options)),
+              IsEmpty());
+}
+
+TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromIpAddressOrigin) {
+  const GURL ip_url("https://127.0.0.1/test/");
+  const url::Origin ip_origin = url::Origin::Create(ip_url);
+  const net::SiteForCookies ip_site_for_cookies =
+      net::SiteForCookies::FromUrl(ip_url);
+  service_->OverrideIsolationInfoForTesting(
+      net::IsolationInfo::CreateForInternalRequest(ip_origin));
+  service_->OverrideOriginForTesting(ip_origin);
+
+  // IP address origins cannot set cookies on partial IP suffixes or other
+  // hosts.
+  for (const char* domain : {"0.0.1", ".0.0.1", "1", "192.168.0.1"}) {
+    SCOPED_TRACE(domain);
+    EXPECT_FALSE(sync_service_->SetCanonicalCookie(
+        mojom::RestrictedCanonicalCookieParams::New(
+            "new-name", "new-value", domain, "/", base::Time(), base::Time(),
+            base::Time(), /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT,
+            mojom::RestrictedCookiePartition::UNPARTITIONED),
+        ip_url, ip_site_for_cookies, ip_origin,
+        net::StorageAccessApiStatus::kNone));
+    EXPECT_FALSE(received_bad_message());
+  }
+
+  auto empty_options = mojom::CookieManagerGetOptions::New();
+  empty_options->name = "new-name";
+  empty_options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  ip_url, ip_site_for_cookies, ip_origin,
+                  net::StorageAccessApiStatus::kNone, std::move(empty_options)),
+              IsEmpty());
+
+  // Passing a matching IP domain attribute (even with a leading dot) is coerced
+  // into a host-only cookie.
+  for (const char* domain : {"127.0.0.1", ".127.0.0.1"}) {
+    SCOPED_TRACE(domain);
+    EXPECT_TRUE(sync_service_->SetCanonicalCookie(
+        mojom::RestrictedCanonicalCookieParams::New(
+            "host-only", "value", domain, "/", base::Time(), base::Time(),
+            base::Time(), /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_DEFAULT,
+            mojom::RestrictedCookiePartition::UNPARTITIONED),
+        ip_url, ip_site_for_cookies, ip_origin,
+        net::StorageAccessApiStatus::kNone));
+
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "host-only";
+    options->match_type = mojom::CookieMatchType::EQUALS;
+    std::vector<net::CanonicalCookie> cookies = sync_service_->GetAllForUrl(
+        ip_url, ip_site_for_cookies, ip_origin,
+        net::StorageAccessApiStatus::kNone, std::move(options));
+    ASSERT_THAT(cookies, testing::SizeIs(1));
+    EXPECT_TRUE(cookies[0].IsHostCookie());
+    EXPECT_EQ("127.0.0.1", cookies[0].Domain());
+  }
 }
 
 TEST_P(RestrictedCookieManagerTest,
