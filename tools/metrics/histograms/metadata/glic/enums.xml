@@ -215,7 +215,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown Cancel"/>
   <int value="2" label="Abandoned (User closed UI before load)"/>
   <int value="3" label="Failed"/>
-  <int value="4" label="Failed Latency"/>
+  <int value="4"
+      label="(Obsolete) Failed Latency. Removed in 2026/11 (M159): a slow
+             success is Success, a timeout is Failed."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_cui_tracker.h:GlicCuiOutcome) -->

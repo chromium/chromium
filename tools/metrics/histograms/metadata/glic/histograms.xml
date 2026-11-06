@@ -661,9 +661,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
         summary="when the interaction was abandoned by the user closing or
                  hiding the UI before the FRE impression was shown"/>
     <variant name=".Failed" summary="when the interaction failed"/>
-    <variant name=".FailedLatency"
-        summary="when the FRE impression was shown but exceeded the latency
-                 threshold"/>
     <variant name=".Success" summary="when the FRE impression was shown"/>
   </token>
 </histogram>
@@ -682,7 +679,9 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     location-mismatch, or ineligible-account state before the impression is
     shown; UnknownCancel when a deferred FRE flow focuses or submits the prompt
     input before showing the opt-in impression; and Superseded if a new open
-    starts while a previous tracker is still active.
+    starts while a previous tracker is still active. Before M159, a success that
+    took longer than 60 s was recorded as Failed Latency; from M159 a slow
+    success is Success (its duration is in the Latency histograms).
   </summary>
 </histogram>
 
@@ -700,9 +699,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
         summary="when the response was abandoned by the user stopping the
                  response or closing/hiding the UI"/>
     <variant name=".Failed" summary="when the response failed"/>
-    <variant name=".FailedLatency"
-        summary="when the response completed but exceeded the latency
-                 threshold"/>
     <variant name=".Success" summary="when the response completed"/>
   </token>
 </histogram>
@@ -712,7 +708,9 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <owner>dewittj@chromium.org</owner>
   <owner>glic@google.com</owner>
   <summary>
-    Records the outcome of full turn response completion in Glic.
+    Records the outcome of full turn response completion in Glic. Before M159, a
+    success that took longer than 60 s was recorded as Failed Latency; from M159
+    a slow success is Success (its duration is in the Latency histograms).
   </summary>
 </histogram>
 
@@ -729,9 +727,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
         summary="when the interaction was abandoned by the user closing or
                  hiding the UI before the response started"/>
     <variant name=".Failed" summary="when the interaction failed"/>
-    <variant name=".FailedLatency"
-        summary="when the interaction succeeded but exceeded the latency
-                 threshold"/>
     <variant name=".Success" summary="when the interaction succeeded"/>
   </token>
 </histogram>
@@ -740,7 +735,11 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     expires_after="2027-06-15">
   <owner>dewittj@chromium.org</owner>
   <owner>glic@google.com</owner>
-  <summary>Records the outcome of submitting a query in Glic.</summary>
+  <summary>
+    Records the outcome of submitting a query in Glic. Before M159, a success
+    that took longer than 60 s was recorded as Failed Latency; from M159 a slow
+    success is Success (its duration is in the Latency histograms).
+  </summary>
 </histogram>
 
 <histogram name="Glic.CUI.WindowEntryPointInvocation.Latency{Outcome}"
@@ -756,9 +755,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
         summary="when the invocation was abandoned by the user explicitly
                  closing the UI before it loaded"/>
     <variant name=".Failed" summary="when the invocation failed"/>
-    <variant name=".FailedLatency"
-        summary="when the invocation succeeded but exceeded the latency
-                 threshold"/>
     <variant name=".Success" summary="when the invocation succeeded"/>
   </token>
 </histogram>
@@ -768,7 +764,10 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <owner>dewittj@chromium.org</owner>
   <owner>glic@google.com</owner>
   <summary>
-    Records the outcome of invoking the Glic window entry point.
+    Records the outcome of invoking the Glic window entry point. Before M159, a
+    success that took longer than 60 s was recorded as Failed Latency; from M159
+    a slow success is Success (its duration is in the Latency histograms) and an
+    invocation that timed out is Failed.
   </summary>
 </histogram>
 

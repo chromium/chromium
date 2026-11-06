@@ -26,12 +26,6 @@ void GlicCuiTracker::Resolve(GlicCuiOutcome reason) {
   is_resolved_ = true;
   base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
 
-  if (reason == GlicCuiOutcome::kSuccess) {
-    if (duration > GetMaxLatency()) {
-      reason = GlicCuiOutcome::kFailedLatency;
-    }
-  }
-
   const char* metric_prefix = GetMetricName();
 
   base::UmaHistogramEnumeration(base::StrCat({metric_prefix, ".Outcome"}),
@@ -48,9 +42,6 @@ void GlicCuiTracker::Resolve(GlicCuiOutcome reason) {
         break;
       case GlicCuiOutcome::kFailed:
         reason_suffix = ".Failed";
-        break;
-      case GlicCuiOutcome::kFailedLatency:
-        reason_suffix = ".FailedLatency";
         break;
       default:
         break;
@@ -85,10 +76,6 @@ std::optional<GlicCuiOutcome> GlicCuiTracker::GetEventOutcome(
 base::TimeDelta GlicCuiTracker::GetHistogramMax() const {
   // TODO(crbug.com/524764084): Re-evaluate this default value based on metrics.
   return base::Minutes(3);
-}
-
-base::TimeDelta GlicCuiTracker::GetMaxLatency() const {
-  return base::Seconds(60);
 }
 
 }  // namespace glic

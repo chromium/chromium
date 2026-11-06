@@ -80,12 +80,11 @@ class GlicInvokeMetrics {
   }
 
   // A CUI tracker to resolve with the invocation's outcome: kSuccess on
-  // RecordSuccess() (the tracker itself turns that into kFailedLatency when
-  // it took too long) and MapInvokeErrorToCuiOutcome() of the error on
-  // RecordError(). This makes the CUI histogram and the InvokeTerminated
-  // Outcome agree by construction. An unresolved tracker records
-  // kUnknownCancel when `this` is destroyed, which cannot happen for an
-  // invocation that terminated.
+  // RecordSuccess() (however long it took; latency is recorded separately)
+  // and MapInvokeErrorToCuiOutcome() of the error on RecordError(). This
+  // makes the CUI histogram and the InvokeTerminated Outcome agree by
+  // construction. An unresolved tracker records kUnknownCancel when `this` is
+  // destroyed, which cannot happen for an invocation that terminated.
   void SetCuiTracker(std::unique_ptr<GlicCuiTracker> cui_tracker);
 
   // Called when the invocation orchestrator starts execution.

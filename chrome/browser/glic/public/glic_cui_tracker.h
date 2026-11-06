@@ -17,6 +17,11 @@ namespace glic {
 // Interaction (CUI) interactions. CUI represents the critical user interactions
 // for Glic. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
+//
+// The outcome says whether the interaction completed; how long it took is
+// recorded separately in the `.Latency{Outcome}` histograms. A slow success is
+// still a success, and an interaction that gave up waiting (timed out) is
+// kFailed.
 // LINT.IfChange(GlicCuiOutcome)
 enum class GlicCuiOutcome {
   kSuccess = 0,
@@ -25,8 +30,10 @@ enum class GlicCuiOutcome {
   // not include tab switches or other implicit backgrounding events.
   kAbandoned = 2,
   kFailed = 3,
-  kFailedLatency = 4,
-  kMaxValue = kFailedLatency,
+  // kFailedLatency = 4: obsolete (M159). A success that took longer than a
+  // threshold used to be recorded as this instead of kSuccess, and a timed
+  // out invocation as this instead of kFailed. Do not reuse the value.
+  kMaxValue = kFailed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicCuiOutcome)
 
@@ -61,7 +68,6 @@ class GlicCuiTracker {
 
   const char* GetMetricName() const { return metric_prefix_; }
   virtual base::TimeDelta GetHistogramMax() const;
-  virtual base::TimeDelta GetMaxLatency() const;
 
  private:
   const char* metric_prefix_;

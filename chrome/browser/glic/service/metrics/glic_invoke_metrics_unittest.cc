@@ -425,7 +425,7 @@ TEST_F(GlicInvokeMetricsCuiTrackerTest, ErrorsResolveTheMappedOutcome) {
     GlicInvokeError error;
     GlicCuiOutcome outcome;
   } kCases[] = {
-      {GlicInvokeError::kTimeout, GlicCuiOutcome::kFailedLatency},
+      {GlicInvokeError::kTimeout, GlicCuiOutcome::kFailed},
       {GlicInvokeError::kCancelled, GlicCuiOutcome::kUnknownCancel},
       {GlicInvokeError::kPanelClosed, GlicCuiOutcome::kAbandoned},
       {GlicInvokeError::kTabClosed, GlicCuiOutcome::kAbandoned},

@@ -3806,7 +3806,9 @@
     <metric name="Outcome" type="GlicCuiOutcome">
       <summary>
         The high level outcome of the invocation natively mapped from
-        GlicCuiOutcome.
+        GlicCuiOutcome. FAILED_LATENCY is not recorded from M159: a slow
+        success is SUCCESS and a timeout is FAILED, with the duration in
+        TimeSinceStart.
       </summary>
     </metric>
     <metric name="InvokeError" type="int">

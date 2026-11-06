@@ -84,8 +84,6 @@ ToStructuredEntryPath(GlicInvokeEntryPath entry_path) {
 
 glic::GlicCuiOutcome MapInvokeErrorToCuiOutcome(GlicInvokeError error) {
   switch (error) {
-    case GlicInvokeError::kTimeout:
-      return glic::GlicCuiOutcome::kFailedLatency;
     case GlicInvokeError::kCancelled:
       return glic::GlicCuiOutcome::kUnknownCancel;
     case GlicInvokeError::kTabClosed:
@@ -98,6 +96,9 @@ glic::GlicCuiOutcome MapInvokeErrorToCuiOutcome(GlicInvokeError error) {
     case GlicInvokeError::kSignInRequired:
       return glic::GlicCuiOutcome::kAbandoned;
     default:
+      // Including kTimeout: an invocation that gave up waiting failed. How
+      // long invocations take is tracked by the latency histograms, not by
+      // the outcome.
       return glic::GlicCuiOutcome::kFailed;
   }
 }

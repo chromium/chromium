@@ -5,6 +5,8 @@
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_fre_impression_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_response_completion_cui_tracker.h"
@@ -26,6 +28,8 @@ class TestGlicCuiTracker : public GlicCuiTracker {
 
 class GlicCuiTrackerTest : public testing::Test {
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
 };
 
@@ -39,6 +43,21 @@ TEST_F(GlicCuiTrackerTest, SuccessRecordsOutcomeAndLatency) {
                                        GlicCuiOutcome::kSuccess, 1);
   histogram_tester_.ExpectTotalCount("Glic.TestCui.Latency", 1);
   histogram_tester_.ExpectTotalCount("Glic.TestCui.Latency.Success", 1);
+}
+
+// The outcome says whether the interaction completed, not how fast: a slow
+// success is a success, with its duration in the latency histograms.
+TEST_F(GlicCuiTrackerTest, SlowSuccessIsStillSuccess) {
+  {
+    TestGlicCuiTracker tracker;
+    task_environment_.FastForwardBy(base::Minutes(2));
+    tracker.Resolve(GlicCuiOutcome::kSuccess);
+  }
+
+  histogram_tester_.ExpectUniqueSample("Glic.TestCui.Outcome",
+                                       GlicCuiOutcome::kSuccess, 1);
+  histogram_tester_.ExpectUniqueTimeSample("Glic.TestCui.Latency.Success",
+                                           base::Minutes(2), 1);
 }
 
 TEST_F(GlicCuiTrackerTest, DestroyBeforeReadyRecordsUnknownCancel) {
