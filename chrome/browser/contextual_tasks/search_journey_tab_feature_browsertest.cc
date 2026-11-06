@@ -52,7 +52,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -131,20 +130,25 @@ class SearchJourneyTabFeatureBrowserTest : public InProcessBrowserTest {
                            std::string_view copied_text) {
     ClipboardObserverWaiter waiter(web_contents);
     content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
-    frame->GetView()->Focus();
     ASSERT_TRUE(content::ExecJs(frame, content::JsReplace(
                                            R"(
       (function() {
         const textarea = document.createElement("textarea");
+        textarea.id = "copy-target";
         textarea.value = $1;
         document.body.append(textarea);
         textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
       })();
     )",
                                            copied_text)));
+    // Use WebContents::Copy() (EditorCommandSource::kMenuOrKeyBinding) rather
+    // than document.execCommand("copy"), which silently no-ops in parallel
+    // browser_tests when another browser window steals OS focus and
+    // Document::hasFocus() becomes false.
+    web_contents->Copy();
     waiter.Wait();
+    ASSERT_TRUE(content::ExecJs(
+        frame, "document.getElementById('copy-target')?.remove();"));
   }
 
   TemplateURLService* template_url_service() {
