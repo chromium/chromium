@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/JavascriptInjectorImpl_jni.h"
@@ -94,7 +95,7 @@ WebContentsImpl& JavascriptInjector::GetWebContentsImpl() {
   return static_cast<WebContentsImpl&>(GetWebContents());
 }
 
-static int64_t JNI_JavascriptInjectorImpl_Init(
+static void JNI_JavascriptInjectorImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents,
@@ -105,9 +106,47 @@ static int64_t JNI_JavascriptInjectorImpl_Init(
         base::NotFatalUntil::M159);
 
   // Owned by |web_contents|.
-  auto* injector =
-      new JavascriptInjector(env, obj, retained_objects, web_contents);
-  return reinterpret_cast<intptr_t>(injector);
+  new JavascriptInjector(env, obj, retained_objects, web_contents);
+}
+
+static void JNI_JavascriptInjectorImpl_SetAllowInspection(
+    JNIEnv* env,
+    WebContents* web_contents,
+    bool allow) {
+  if (!web_contents) {
+    return;
+  }
+  if (auto* injector = JavascriptInjector::FromWebContents(web_contents)) {
+    injector->SetAllowInspection(env, allow);
+  }
+}
+
+static void JNI_JavascriptInjectorImpl_AddInterface(
+    JNIEnv* env,
+    WebContents* web_contents,
+    const JavaRef<jobject>& object,
+    const JavaRef<jstring>& name,
+    const JavaRef<jclass>& safe_annotation_clazz,
+    origin_matcher::OriginMatcher matcher) {
+  if (!web_contents) {
+    return;
+  }
+  if (auto* injector = JavascriptInjector::FromWebContents(web_contents)) {
+    injector->AddInterface(env, object, name, safe_annotation_clazz,
+                           std::move(matcher));
+  }
+}
+
+static void JNI_JavascriptInjectorImpl_RemoveInterface(
+    JNIEnv* env,
+    WebContents* web_contents,
+    const JavaRef<jstring>& name) {
+  if (!web_contents) {
+    return;
+  }
+  if (auto* injector = JavascriptInjector::FromWebContents(web_contents)) {
+    injector->RemoveInterface(env, name);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(JavascriptInjector);

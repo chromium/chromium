@@ -38,7 +38,8 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     // strong reference is not optimized away by R8.
     @DoNotInline private final Set<Object> mRetainedObjects = new HashSet<>();
     private final Map<String, InjectedInterface> mInjectedObjects = new HashMap<>();
-    private long mNativePtr;
+    private final WebContents mWebContents;
+    private boolean mNativeDestroyed;
 
     /**
      * @param webContents {@link WebContents} object.
@@ -53,12 +54,13 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     }
 
     public JavascriptInjectorImpl(WebContents webContents) {
-        mNativePtr = JavascriptInjectorImplJni.get().init(this, webContents, mRetainedObjects);
+        mWebContents = webContents;
+        JavascriptInjectorImplJni.get().init(this, webContents, mRetainedObjects);
     }
 
     @CalledByNative
     private void onDestroy() {
-        mNativePtr = 0;
+        mNativeDestroyed = true;
     }
 
     @Override
@@ -68,8 +70,8 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     @Override
     public void setAllowInspection(boolean allow) {
-        if (mNativePtr != 0) {
-            JavascriptInjectorImplJni.get().setAllowInspection(mNativePtr, allow);
+        if (!mNativeDestroyed && !mWebContents.isDestroyed()) {
+            JavascriptInjectorImplJni.get().setAllowInspection(mWebContents, allow);
         }
     }
 
@@ -79,14 +81,14 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
             String name,
             @Nullable Class<? extends Annotation> requiredAnnotation,
             OriginMatcher matcher) {
-        if (object == null || mNativePtr == 0) {
+        if (object == null || mNativeDestroyed || mWebContents.isDestroyed()) {
             return;
         }
 
         mInjectedObjects.put(
                 name, new InjectedInterface(object, requiredAnnotation, matcher.serialize()));
         JavascriptInjectorImplJni.get()
-                .addInterface(mNativePtr, object, name, requiredAnnotation, matcher);
+                .addInterface(mWebContents, object, name, requiredAnnotation, matcher);
     }
 
     @Override
@@ -108,24 +110,26 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     @Override
     public void removeInterface(String name) {
         mInjectedObjects.remove(name);
-        if (mNativePtr != 0) {
-            JavascriptInjectorImplJni.get().removeInterface(mNativePtr, name);
+        if (!mNativeDestroyed && !mWebContents.isDestroyed()) {
+            JavascriptInjectorImplJni.get().removeInterface(mWebContents, name);
         }
     }
 
     @NativeMethods
     interface Natives {
-        long init(JavascriptInjectorImpl self, WebContents webContents, Object retainedObjects);
+        void init(JavascriptInjectorImpl self, WebContents webContents, Object retainedObjects);
 
-        void setAllowInspection(long nativeJavascriptInjector, boolean allow);
+        void setAllowInspection(
+                @JniType("content::WebContents*") WebContents webContents, boolean allow);
 
         void addInterface(
-                long nativeJavascriptInjector,
+                @JniType("content::WebContents*") WebContents webContents,
                 Object object,
                 String name,
                 @Nullable Class requiredAnnotation,
                 @JniType("origin_matcher::OriginMatcher") OriginMatcher matcher);
 
-        void removeInterface(long nativeJavascriptInjector, String name);
+        void removeInterface(
+                @JniType("content::WebContents*") WebContents webContents, String name);
     }
 }
