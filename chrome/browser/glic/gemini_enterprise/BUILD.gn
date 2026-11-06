@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
+
 # GEiC Finch and command-line configuration helpers.
 #
 # This is a GLiC-internal helper, not a general purpose enablement check; see
@@ -185,4 +187,22 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (enterprise_data_controls && !is_android) {
+    sources += [ "geic_paste_policy_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/test:test_support",
+      "//chrome/browser/enterprise/data_controls:test_support",
+      "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/public:provider",
+      "//chrome/browser/policy:test_support",
+      "//components/enterprise/common/proto:dlp_policy_event_proto",
+      "//components/enterprise/data_controls/content/browser",
+      "//components/enterprise/data_controls/core/browser:test_support",
+      "//components/policy/core/common:test_support",
+      "//net:test_support",
+      "//ui/base/clipboard",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
+  }
 }
