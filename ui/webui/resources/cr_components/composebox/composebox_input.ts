@@ -292,6 +292,9 @@ export class ComposeboxInputElement extends I18nMixinLit
       if (caret) {
         caret.classList.add('caret-visible');
         this.updateCaret_();
+        requestAnimationFrame(() => {
+          this.updateCaret_();
+        });
       }
     }
   }

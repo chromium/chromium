@@ -869,6 +869,31 @@ suite('ComposeboxCaretGeometry', () => {
     assertTrue(Math.abs(caretRect.left - spanRect.left) < 2);
   });
 
+  test('CaretFollowsSelectionPlacedAfterFocus', async () => {
+    const input =
+        inputElement.shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+    const mirror =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!caret);
+    assertTrue(!!mirror);
+
+    input.value = 'test';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    input.focus();
+    input.setSelectionRange(0, 0);
+    input.dispatchEvent(new FocusEvent('focus'));
+    input.setSelectionRange(2, 2);
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    const secondSpan = mirror.childNodes[1] as HTMLElement;
+    assertTrue(!!secondSpan);
+    assertEquals('--cursor-char', secondSpan.style.anchorName);
+    assertFalse(caret.classList.contains('at-start'));
+  });
+
   test('ResetCaretAnchorsToFirstSpan', async () => {
     const input =
         inputElement.shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
