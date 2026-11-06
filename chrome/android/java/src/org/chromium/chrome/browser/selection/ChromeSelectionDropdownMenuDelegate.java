@@ -44,24 +44,21 @@ import java.util.List;
 @NullMarked
 public class ChromeSelectionDropdownMenuDelegate
         implements SelectionDropdownMenuDelegate, FlyoutHandler<AnchoredPopupWindow> {
-    private final Context mContext;
     private final @Nullable GlicSelectionMenuTracker mGlicSelectionMenuTracker;
     private @Nullable ItemClickListener mClickListener;
     private @Nullable View mRootView;
     private @Nullable HierarchicalMenuController<AnchoredPopupWindow> mHierarchicalMenuController;
 
-    public ChromeSelectionDropdownMenuDelegate(Context context) {
-        this(context, null);
+    public ChromeSelectionDropdownMenuDelegate() {
+        this(null);
     }
 
     /**
-     * @param context The {@link Context} of the window displaying the menu.
      * @param glicSelectionMenuTracker Told when the menu is shown or dismissed and when an item is
      *     clicked, or null if the menu can't show Ask Gemini.
      */
     public ChromeSelectionDropdownMenuDelegate(
-            Context context, @Nullable GlicSelectionMenuTracker glicSelectionMenuTracker) {
-        mContext = context;
+            @Nullable GlicSelectionMenuTracker glicSelectionMenuTracker) {
         mGlicSelectionMenuTracker = glicSelectionMenuTracker;
     }
 
@@ -258,7 +255,7 @@ public class ChromeSelectionDropdownMenuDelegate
                         .with(ListMenuItemProperties.MENU_ITEM_ID, id)
                         .with(
                                 ListMenuItemProperties.SHORTCUT_TEXT,
-                                KeyboardShortcuts.getShortcutText(mContext, id))
+                                KeyboardShortcuts.getShortcutText(id))
                         .with(ListMenuItemProperties.START_ICON_DRAWABLE, null)
                         .with(ListMenuItemProperties.ENABLED, enabled)
                         .with(ListMenuItemProperties.INTENT, intent)

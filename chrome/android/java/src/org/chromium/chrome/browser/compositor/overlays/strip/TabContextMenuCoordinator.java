@@ -799,13 +799,13 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         return MultiWindowUtils.isMultiInstanceApi31Enabled() && mMultiInstanceManager != null;
     }
 
-    private ListItem buildListItem(
+    private static ListItem buildListItem(
             @StringRes int titleRes, @IdRes int menuId, boolean isIncognito) {
         return new ListItemBuilder()
                 .withTitleRes(titleRes)
                 .withMenuId(menuId)
                 .withIsIncognito(isIncognito)
-                .withShortcutText(KeyboardShortcuts.getShortcutText(mActivity, menuId))
+                .withShortcutText(KeyboardShortcuts.getShortcutText(menuId))
                 .build();
     }
 

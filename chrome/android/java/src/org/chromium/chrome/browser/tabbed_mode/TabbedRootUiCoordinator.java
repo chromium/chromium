@@ -2278,7 +2278,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivityLifecycleDispatcher,
                             mSnackbarManagerSupplier.asNonNull().get(),
                             contextMenuPopulatorFactory,
-                            new ChromeSelectionDropdownMenuDelegate(mActivity),
+                            new ChromeSelectionDropdownMenuDelegate(),
                             mActivityTabProvider.asObservable(),
                             mTabModelSelectorSupplier,
                             PriceDropNotificationManagerFactory.create(

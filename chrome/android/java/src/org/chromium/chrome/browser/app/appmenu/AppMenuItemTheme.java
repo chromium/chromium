@@ -15,7 +15,6 @@ import androidx.annotation.IdRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
@@ -31,11 +30,6 @@ public class AppMenuItemTheme {
     public AppMenuItemTheme(Context context, TabModelSelector tabModelSelector) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
-    }
-
-    /** Returns the keyboard shortcut text for the menu item, or null if none should be shown. */
-    public @Nullable String getShortcutText(@IdRes int itemId) {
-        return KeyboardShortcuts.getShortcutText(mContext, itemId);
     }
 
     /** Return whether the given {@link MenuItem} is managed by policy. */

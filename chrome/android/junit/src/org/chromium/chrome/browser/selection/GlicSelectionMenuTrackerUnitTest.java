@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -37,7 +36,7 @@ public class GlicSelectionMenuTrackerUnitTest {
     private static final int EXECUTED = 1;
 
     private final ChromeSelectionDropdownMenuDelegate mDropdownDelegate =
-            new ChromeSelectionDropdownMenuDelegate(ContextUtils.getApplicationContext());
+            new ChromeSelectionDropdownMenuDelegate();
 
     private GlicSelectionMenuTracker mTracker;
 

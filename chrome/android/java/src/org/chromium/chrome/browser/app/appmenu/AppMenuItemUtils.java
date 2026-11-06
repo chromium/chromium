@@ -20,6 +20,7 @@ import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -92,7 +93,7 @@ public class AppMenuItemUtils {
                 .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart)
                 .with(AppMenuItemProperties.TITLE_CONDENSED, theme.getContentDescription(id))
                 .with(AppMenuItemProperties.MANAGED, theme.isMenuItemManaged(id))
-                .with(AppMenuItemProperties.SHORTCUT_TEXT, theme.getShortcutText(id));
+                .with(AppMenuItemProperties.SHORTCUT_TEXT, KeyboardShortcuts.getShortcutText(id));
     }
 
     /**

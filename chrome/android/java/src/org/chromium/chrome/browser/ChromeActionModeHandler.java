@@ -99,7 +99,6 @@ public class ChromeActionModeHandler {
                                     new GlicSelectionMenuTracker(profileSupplier)));
                     spc.setDropdownMenuDelegate(
                             new ChromeSelectionDropdownMenuDelegate(
-                                    tab.getContext(),
                                     new GlicSelectionMenuTracker(profileSupplier)));
                 };
 

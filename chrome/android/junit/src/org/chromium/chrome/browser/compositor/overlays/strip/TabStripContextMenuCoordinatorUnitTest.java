@@ -702,7 +702,6 @@ public class TabStripContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw600dp")
     @EnableFeatures({
         ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS,
         ChromeFeatureList.TASK_MANAGER_CLANK

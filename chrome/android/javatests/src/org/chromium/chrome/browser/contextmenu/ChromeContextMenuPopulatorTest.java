@@ -4676,7 +4676,6 @@ public class ChromeContextMenuPopulatorTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
     public void testPage_ShortcutTextPopulatedWhenEnabled() {
@@ -4710,7 +4709,6 @@ public class ChromeContextMenuPopulatorTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
     public void testSelectionDropdown_ShortcutTextPopulatedWhenEnabled() {
@@ -4720,8 +4718,7 @@ public class ChromeContextMenuPopulatorTest {
         when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(
                         ChromeCommandIds.CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE))
                 .thenReturn("Ctrl+Shift+V");
-        ChromeSelectionDropdownMenuDelegate delegate =
-                new ChromeSelectionDropdownMenuDelegate(ContextUtils.getApplicationContext());
+        ChromeSelectionDropdownMenuDelegate delegate = new ChromeSelectionDropdownMenuDelegate();
 
         assertEquals(
                 "Ctrl+C", getSelectionItemShortcutText(delegate, R.id.select_action_menu_copy));
