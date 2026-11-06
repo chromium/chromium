@@ -104,6 +104,13 @@
                 "arguments": [
                     "--extra-browser-args=--enable-features=OnDeviceModelForceCpuBackend"
                 ]
+            },
+            "blink-ai-v4.crossbench": {
+                "crossbench_name": "blink-ai",
+                "arguments": [
+                    "--extra-browser-args=--enable-features=OnDeviceModelForceCpuBackend",
+                    "--model=v4"
+                ]
             }
         },
         "benchmarks": {

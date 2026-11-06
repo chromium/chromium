@@ -66,6 +66,12 @@
                 "arguments": [
                     "--enable-field-trials=benchmarking"
                 ]
+            },
+            "blink-ai-v4.crossbench": {
+                "crossbench_name": "blink-ai",
+                "arguments": [
+                    "--model=v4"
+                ]
             }
         }
     },

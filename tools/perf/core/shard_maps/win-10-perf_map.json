@@ -60,6 +60,12 @@
             "blink-ai.crossbench": {
                 "crossbench_name": "blink-ai",
                 "arguments": []
+            },
+            "blink-ai-v4.crossbench": {
+                "crossbench_name": "blink-ai",
+                "arguments": [
+                    "--model=v4"
+                ]
             }
         }
     },

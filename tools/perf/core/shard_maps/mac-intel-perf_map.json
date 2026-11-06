@@ -76,6 +76,13 @@
                 "arguments": [
                     "--timeout-unit=2s"
                 ]
+            },
+            "blink-ai-v4.crossbench": {
+                "crossbench_name": "blink-ai",
+                "arguments": [
+                    "--timeout-unit=2s",
+                    "--model=v4"
+                ]
             }
         },
         "benchmarks": {
