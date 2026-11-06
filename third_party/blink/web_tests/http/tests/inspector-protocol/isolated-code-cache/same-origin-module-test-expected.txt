@@ -85,8 +85,12 @@ v8.compileModule Properties:
 v8.compileModule Properties:
 {
     data : {
+        cacheKind : normal
+        cacheRejected : false
         columnNumber : 1
+        consumedCacheSize : <number>
         lineNumber : 1
+        notStreamedReason : script has code-cache available (background)
         streamed : <boolean>
         url : http://127.0.0.1:8000/devtools/resources/v8-cache-script.cgi
     }

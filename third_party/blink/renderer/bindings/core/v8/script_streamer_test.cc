@@ -70,6 +70,8 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "v8/include/v8.h"
 
@@ -1283,7 +1285,9 @@ class BackgroundResourceScriptStreamerTestBase : public testing::Test {
         MakeGarbageCollected<TestResourceClient>(run_loop_.QuitClosure());
     FetchParameters params = FetchParameters::CreateForTest(std::move(request));
     if (is_module_script) {
+      // As ModuleScriptLoader does: module scripts are always UTF-8.
       params.SetModuleScript();
+      params.SetDecoderOptions(TextResourceDecoderOptions::CreateUTF8Decode());
     }
     if (charset) {
       params.SetCharset(*charset);
@@ -1474,6 +1478,35 @@ TEST_P(BackgroundResourceScriptStreamerTest, HasCodeCache) {
   ExpectCodeCacheHandledOnMainThread();
 }
 
+// Same as above, for a module script.
+TEST_P(BackgroundResourceScriptStreamerTest, HasCodeCacheModuleScript) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    head->charset = "utf-8";
+    std::optional<mojo_base::BigBuffer> cached_metadata =
+        std::move(code_cache_data);
+    EXPECT_FALSE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_TRUE(head);
+    EXPECT_TRUE(consumer_handle_);
+    ASSERT_TRUE(cached_metadata);
+    EXPECT_THAT(*cached_metadata,
+                testing::ElementsAreArray(code_cache_data_copy));
+  }));
+  Finish();
+  RunUntilResourceLoaded();
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground,
+      mojom::blink::ScriptType::kModule);
+}
+
 class BackgroundResourceScriptStreamerCodeCacheDecodeStartTest
     : public BackgroundResourceScriptStreamerTest {
  public:
@@ -1529,6 +1562,146 @@ TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest, HasCodeCache) {
   // When there is a code cache, we should not stream the script.
   CheckNotStreamingReason(
       ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground);
+}
+
+// Same as above, for a module script: the code cache is consumed off-thread
+// and the decoded source handed to the main thread, instead of streaming.
+TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
+       HasCodeCacheModuleScript) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    head->charset = "utf-8";
+    std::optional<mojo_base::BigBuffer> cached_metadata =
+        std::move(code_cache_data);
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    ASSERT_TRUE(cached_metadata);
+    EXPECT_EQ(cached_metadata->size(), 0u);
+  }));
+  AppendData(kLargeEnoughScript);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
+      /*expected_cached_metadata=*/code_cache_data_copy);
+  Finish();
+  RunUntilResourceLoaded();
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground,
+      mojom::blink::ScriptType::kModule);
+}
+
+// Module scripts are always decoded as UTF-8 and their code cache is tagged
+// with UTF-8 (see TextResourceDecoder::SetEncoding()), so a charset parameter
+// on the response must not affect the code cache check or the decoding on the
+// background thread.
+TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
+       HasCodeCacheModuleScriptWithNonUTF8Charset) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  EXPECT_TRUE(resource_->EncodingIsAlwaysUTF8());
+  mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("text/javascript; charset=windows-1252");
+    head->charset = "windows-1252";
+    std::optional<mojo_base::BigBuffer> cached_metadata =
+        std::move(code_cache_data);
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    ASSERT_TRUE(cached_metadata);
+    EXPECT_EQ(cached_metadata->size(), 0u);
+  }));
+  AppendData(kLargeEnoughScript);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
+      /*expected_cached_metadata=*/code_cache_data_copy);
+  Finish();
+  RunUntilResourceLoaded();
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground,
+      mojom::blink::ScriptType::kModule);
+}
+
+// The classic-script counterpart: the resource starts out as UTF-8 (matching
+// the code cache's tag) and the charset parameter switches it, so the code
+// cache is not used and the script streams.
+TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
+       CodeCacheEncodingMismatchClassicScript) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/false, Utf8Encoding());
+  EXPECT_FALSE(resource_->EncodingIsAlwaysUTF8());
+  EXPECT_EQ(resource_->Encoding(), Utf8Encoding());
+  mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head =
+        CreateURLResponseHead("text/javascript; charset=windows-1252");
+    head->charset = "windows-1252";
+    std::optional<mojo_base::BigBuffer> cached_metadata =
+        std::move(code_cache_data);
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+  }));
+  AppendData(kLargeEnoughScript);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  Finish();
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(TakeScriptStreamer());
+}
+
+// A UTF-16 BOM does not change the encoding of an always-UTF-8 (module)
+// resource on the main thread, so it must not on the background thread
+// either: the body decoded there (and used as the source text) is UTF-8.
+TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
+       ModuleScriptIgnoresUTF16BOM) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate(), /*is_module_script=*/true);
+  EXPECT_TRUE(resource_->EncodingIsAlwaysUTF8());
+  mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    std::optional<mojo_base::BigBuffer> cached_metadata =
+        std::move(code_cache_data);
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+  }));
+  // "\xFF\xFE" is a UTF-16LE BOM; decoded as UTF-8 it is two U+FFFD.
+  std::string body = std::string("\xFF\xFE") + kLargeEnoughScript;
+  AppendData(body);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  Finish();
+  RunUntilResourceLoaded();
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground,
+      mojom::blink::ScriptType::kModule);
+  StringBuilder expected;
+  expected.Append(uchar::kReplacementCharacter);
+  expected.Append(uchar::kReplacementCharacter);
+  expected.Append(kLargeEnoughScript);
+  EXPECT_EQ(resource_->GetSourceText().ToString(), expected.ToString());
 }
 
 TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,

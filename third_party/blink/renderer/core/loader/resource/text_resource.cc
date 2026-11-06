@@ -20,6 +20,10 @@ TextResource::TextResource(const ResourceRequest& resource_request,
 
 TextResource::~TextResource() = default;
 
+bool TextResource::EncodingIsAlwaysUTF8() const {
+  return decoder_->AlwaysUseUTF8();
+}
+
 void TextResource::SetEncoding(const String& chs) {
   decoder_->SetEncoding(TextEncoding(chs),
                         TextResourceDecoder::kEncodingFromHTTPHeader);

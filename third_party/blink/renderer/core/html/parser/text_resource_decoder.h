@@ -68,6 +68,12 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
 
   void SetEncoding(const TextEncoding&, EncodingSource);
   const TextEncoding& Encoding() const { return encoding_; }
+  // True if the encoding is fixed to UTF-8 and SetEncoding() (e.g. from a
+  // charset parameter) and content sniffing are ignored.
+  bool AlwaysUseUTF8() const {
+    return options_.GetEncodingDetectionOption() ==
+           TextResourceDecoderOptions::kAlwaysUseUTF8ForText;
+  }
   bool EncodingWasDetectedHeuristically() const {
     return source_ == kAutoDetectedEncoding ||
            source_ == kEncodingFromContentSniffing;

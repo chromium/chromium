@@ -829,6 +829,26 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
       embedded_test_server()->GetURL("c.com", "/"),
       blink::kCodeCacheTimestampCachedMetaSize + 1);
   code_cache_size_checker2.Wait();
+
+  // Clear Blink side cache.
+  PurgeResourceCacheFromTheMainFrame();
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  // Navigate to the same page a third time. The module script must now be
+  // compiled with the code cache rather than streamed and compiled from
+  // source.
+  {
+    base::HistogramTester histogram_tester;
+    TitleWatcher watcher(shell()->web_contents(), expected_title);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    EXPECT_EQ(expected_title, watcher.WaitAndGetTitle());
+    FetchHistogramsFromChildProcesses();
+    histogram_tester.ExpectBucketCount(
+        blink::v8_compile_hints::kStatusHistogram,
+        blink::v8_compile_hints::Status::kConsumeCodeCacheModuleNonStreaming,
+        1);
+  }
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA) || !defined(__OPTIMIZE_SIZE__)
 

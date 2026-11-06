@@ -27,6 +27,9 @@ class CORE_EXPORT TextResource : public Resource {
   String DecodedText() const;
 
   TextEncoding Encoding() const override;
+  // True if Encoding() is fixed to UTF-8 regardless of the response's charset
+  // (e.g. module scripts).
+  bool EncodingIsAlwaysUTF8() const;
 
   void SetEncodingForTest(const String& encoding) { SetEncoding(encoding); }
 

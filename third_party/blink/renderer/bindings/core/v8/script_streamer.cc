@@ -110,9 +110,24 @@ struct StreamingDetails {
   const uint64_t script_resource_identifier;
   v8::Isolate* isolate;
   TextEncoding encoding;
+  // The resource decodes as UTF-8 regardless of the response's charset
+  // parameter or a UTF-16 BOM (TextResourceDecoderOptions::
+  // kAlwaysUseUTF8ForText, used for module scripts), so the background
+  // processor must too.
+  const bool encoding_is_always_utf8;
   std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
       compile_hints_builder;
   const bool should_use_code_cache_with_hashing;
+
+  // The options for decoding the body the way the resource's own decoder
+  // would.
+  TextResourceDecoderOptions DecoderOptions() const {
+    if (encoding_is_always_utf8) {
+      return TextResourceDecoderOptions::CreateUTF8Decode();
+    }
+    return TextResourceDecoderOptions(
+        TextResourceDecoderOptions::kPlainTextContent, encoding);
+  }
 };
 
 }  // namespace
@@ -1575,6 +1590,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
       uint64_t script_resource_identifier,
       v8::Isolate* isolate,
       TextEncoding encoding,
+      bool encoding_is_always_utf8,
       std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
           compile_hints_builder,
       bool should_use_code_cache_with_hashing,
@@ -1641,6 +1657,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessorFactory final
         script_resource_identifier_(script_resource->InspectorId()),
         isolate_(script_resource->GetIsolateOrNull()),
         encoding_(script_resource->Encoding()),
+        encoding_is_always_utf8_(script_resource->EncodingIsAlwaysUTF8()),
         compile_hints_builder_(
             std::make_unique<
                 v8_compile_hints::CompileHintsForStreaming::Builder>(
@@ -1664,6 +1681,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessorFactory final
   const uint64_t script_resource_identifier_;
   v8::Isolate* isolate_;
   const TextEncoding encoding_;
+  const bool encoding_is_always_utf8_;
   std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
       compile_hints_builder_;
   const bool should_use_code_cache_with_hashing_;
@@ -1872,6 +1890,7 @@ BackgroundResourceScriptStreamer::BackgroundProcessor::BackgroundProcessor(
     uint64_t script_resource_identifier,
     v8::Isolate* isolate,
     TextEncoding encoding,
+    bool encoding_is_always_utf8,
     std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
         compile_hints_builder,
     bool should_use_code_cache_with_hashing,
@@ -1882,6 +1901,7 @@ BackgroundResourceScriptStreamer::BackgroundProcessor::BackgroundProcessor(
           script_resource_identifier,
           isolate,
           std::move(encoding),
+          encoding_is_always_utf8,
           std::move(compile_hints_builder),
           should_use_code_cache_with_hashing)),
       streamer_handle_(std::move(streamer_handle)) {}
@@ -1966,7 +1986,7 @@ std::unique_ptr<BackgroundResponseProcessor>
 BackgroundResourceScriptStreamer::BackgroundProcessorFactory::Create() && {
   return std::make_unique<BackgroundProcessor>(
       script_type_, script_url_string_, script_resource_identifier_, isolate_,
-      encoding_, std::move(compile_hints_builder_),
+      encoding_, encoding_is_always_utf8_, std::move(compile_hints_builder_),
       should_use_code_cache_with_hashing_, std::move(streamer_handle_));
 }
 
@@ -2025,7 +2045,9 @@ void BackgroundJSStreamManager::SetState(BackgroundStreamingState state) {
 bool BackgroundJSStreamManager::TryStartStreaming() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!head_->charset.empty()) {
+  // As TextResourceDecoder::SetEncoding() does, ignore the charset parameter
+  // for resources that are always decoded as UTF-8.
+  if (!head_->charset.empty() && !details_->encoding_is_always_utf8) {
     TextEncoding new_encoding = TextEncoding(String(head_->charset));
     if (new_encoding.IsValid()) {
       details_->encoding = new_encoding;
@@ -2051,8 +2073,7 @@ bool BackgroundJSStreamManager::TryStartStreaming() {
     SetState(BackgroundStreamingState::
                  kWaitingForConsumeCodeCacheResultAndDecodedScript);
     data_pipe_script_decoder_ = DataPipeScriptDecoder::Create(
-        std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-            TextResourceDecoderOptions::kPlainTextContent, details_->encoding)),
+        std::make_unique<TextResourceDecoder>(details_->DecoderOptions()),
         background_task_runner_,
         CrossThreadBindOnce(&BackgroundJSStreamManager::OnFinishScriptDecode,
                             weak_factory_.GetWeakPtr()));
@@ -2200,8 +2221,7 @@ bool BackgroundJSStreamManager::TryStartStreamingTask(
   watcher_.reset();
 
   std::unique_ptr<TextResourceDecoder> decoder(
-      std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-          TextResourceDecoderOptions::kPlainTextContent, details_->encoding)));
+      std::make_unique<TextResourceDecoder>(details_->DecoderOptions()));
   decoder->CheckForBOM(base::as_chars(data.first(kMaximumLengthOfBOM)));
   MojoResult end_read_result = body_->EndReadData(0);
   CHECK_EQ(end_read_result, MOJO_RESULT_OK);
@@ -2217,13 +2237,14 @@ bool BackgroundJSStreamManager::TryStartStreamingTask(
   std::unique_ptr<TextResourceDecoder> stream_decoder;
   if (base::FeatureList::IsEnabled(features::kDecodeScriptsInBlink)) {
     stream_decoder =
-        std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-            TextResourceDecoderOptions::kPlainTextContent,
-            decoder->Encoding()));
+        details_->encoding_is_always_utf8
+            ? std::make_unique<TextResourceDecoder>(details_->DecoderOptions())
+            : std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+                  TextResourceDecoderOptions::kPlainTextContent,
+                  decoder->Encoding()));
   } else {
     script_decoder = ScriptDecoder::Create(
-        std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-            TextResourceDecoderOptions::kPlainTextContent, details_->encoding)),
+        std::make_unique<TextResourceDecoder>(details_->DecoderOptions()),
         background_task_runner_);
   }
   auto source_stream = std::make_unique<SourceStream>();
@@ -2375,10 +2396,6 @@ std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
 BackgroundJSStreamManager::MaybeCreateConsumeCodeCacheTask(
     bool& has_code_cache) {
   CHECK(!has_code_cache);
-  if (details_->script_type == v8::ScriptType::kModule) {
-    // Currently ModuleScript doesn't support off-thread cache consumption.
-    return nullptr;
-  }
   const bool requires_hash =
       head_->should_use_source_hash_for_js_code_cache ||
       (head_->was_fetched_via_service_worker &&
