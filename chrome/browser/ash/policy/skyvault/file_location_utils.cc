@@ -11,10 +11,7 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "components/session_manager/core/session.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 
 namespace policy::local_user_files {
 
@@ -33,22 +30,6 @@ base::FilePath GetDriveFsMountPointPath() {
     return base::FilePath();
   }
   return integration_service->GetMountPointPath();
-}
-
-// TODO(crbug.com/579585875): Take the User from ResolvePath()'s callers
-// instead of assuming the primary one.
-base::FilePath GetUserDefaultDownloadsFolder() {
-  const session_manager::Session* const session =
-      session_manager::SessionManager::Get()->GetPrimarySession();
-  const user_manager::User* const user =
-      session
-          ? user_manager::UserManager::Get()->FindUser(session->account_id())
-          : nullptr;
-  // The home directory is not mounted until the user signs in.
-  if (!user || user->username_hash().empty()) {
-    return base::FilePath();
-  }
-  return file_manager::util::GetDownloadsFolder(*user);
 }
 
 }  // namespace
@@ -81,14 +62,15 @@ base::FilePath GetGoogleDriveRoot() {
   return drive_path.Append("root");
 }
 
-base::FilePath ResolvePath(const std::string& path_str) {
+base::FilePath ResolvePath(const user_manager::User& user,
+                           const std::string& path_str) {
   if (!IsValidLocationString(path_str)) {
     return base::FilePath();
   }
 
   // Empty path in the policy means default downloads directory.
   if (path_str.empty()) {
-    return GetUserDefaultDownloadsFolder();
+    return file_manager::util::GetDownloadsFolder(user);
   }
 
   const size_t google_drive_position =

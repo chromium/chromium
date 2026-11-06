@@ -603,12 +603,21 @@ base::FilePath ChromeCaptureModeDelegate::GetOneDriveVirtualPath() const {
 
 ChromeCaptureModeDelegate::PolicyCapturePath
 ChromeCaptureModeDelegate::GetPolicyCapturePath() const {
-  if (auto* profile = ProfileManager::GetActiveUserProfile()) {
-    auto* pref = profile->GetPrefs()->FindPreference(
-        ash::prefs::kCaptureModePolicySavePath);
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* const session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  const user_manager::User* const user =
+      session
+          ? user_manager::UserManager::Get()->FindUser(session->account_id())
+          : nullptr;
+  if (const PrefService* const prefs =
+          user ? user->GetProfilePrefs() : nullptr) {
+    const PrefService::Preference* pref =
+        prefs->FindPreference(ash::prefs::kCaptureModePolicySavePath);
     if (pref->IsManaged()) {
       const base::FilePath resolved_path =
-          policy::local_user_files::ResolvePath(pref->GetValue()->GetString());
+          policy::local_user_files::ResolvePath(*user,
+                                                pref->GetValue()->GetString());
       if (!resolved_path.empty()) {
         return {resolved_path, CapturePathEnforcement::kManaged};
       }
@@ -616,7 +625,7 @@ ChromeCaptureModeDelegate::GetPolicyCapturePath() const {
     if (pref->IsRecommended()) {
       const base::FilePath resolved_path =
           policy::local_user_files::ResolvePath(
-              pref->GetRecommendedValue()->GetString());
+              *user, pref->GetRecommendedValue()->GetString());
       if (!resolved_path.empty()) {
         return {resolved_path, CapturePathEnforcement::kRecommended};
       }

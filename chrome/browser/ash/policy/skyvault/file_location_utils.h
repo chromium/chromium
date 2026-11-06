@@ -9,6 +9,10 @@
 
 #include "base/files/file_path.h"
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace policy::local_user_files {
 
 // Returns a virtual path for files that should be uploaded to OneDrive, like
@@ -22,8 +26,9 @@ bool IsValidLocationString(const std::string& str);
 base::FilePath GetGoogleDriveRoot();
 
 // Resolves possible path placeholders for external storages in `path_str` that
-// can be set by policies. Returns empty path if can't resolve.
-base::FilePath ResolvePath(const std::string& path_str);
+// can be set by policies, for `user`. Returns empty path if can't resolve.
+base::FilePath ResolvePath(const user_manager::User& user,
+                           const std::string& path_str);
 
 }  // namespace policy::local_user_files
 
