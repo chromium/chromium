@@ -20,7 +20,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -38,7 +37,6 @@ import java.util.concurrent.TimeoutException;
 
 /** A payment integration test for the correct log of the CanMakePayment metrics. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestCanMakePaymentMetricsTest {
     public final FreshCtaTransitTestRule mCtaTestRule =

@@ -21,12 +21,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -70,7 +68,6 @@ import java.util.Set;
 
 /** An integration test for the Android payment app finder. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344662668): Failing when batched, batch this again.
 @MediumTest
 @EnableFeatures(PaymentFeatureList.PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE)

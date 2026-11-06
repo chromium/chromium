@@ -23,7 +23,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -39,7 +38,6 @@ import java.util.concurrent.TimeoutException;
 
 /** A payment integration test to validate the logging of Payment Request metrics. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestMetricsTest {
     public final FreshCtaTransitTestRule mCtaTestRule =

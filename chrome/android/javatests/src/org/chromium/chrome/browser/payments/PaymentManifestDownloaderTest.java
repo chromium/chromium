@@ -19,12 +19,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -38,7 +36,6 @@ import org.chromium.url.Origin;
 
 /** An integration test for the payment manifest downloader. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MediumTest
 @EnableFeatures(PaymentFeatureList.PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE)
 public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {

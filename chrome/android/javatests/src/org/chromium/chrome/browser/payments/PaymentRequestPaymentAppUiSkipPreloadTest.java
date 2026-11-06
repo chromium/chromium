@@ -18,7 +18,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
@@ -38,7 +37,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     // Speed up the test by not looking up actual apps installed on the device.
     "disable-features=" + PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS,
 })
