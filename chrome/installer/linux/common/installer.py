@@ -596,6 +596,13 @@ class InstallerConfig:
                 is_optional=True,
             ),
             Artifact(
+                "libLiteRtWebGpuAccelerator.so.stripped",
+                "libLiteRtWebGpuAccelerator.so",
+                ArtifactType.BINARY,
+                self.shlib_perms,
+                is_optional=True,
+            ),
+            Artifact(
                 "liboptimization_guide_internal.so.stripped",
                 "liboptimization_guide_internal.so",
                 ArtifactType.BINARY,

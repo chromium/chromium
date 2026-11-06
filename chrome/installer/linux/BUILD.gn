@@ -13,6 +13,7 @@ import("//build/util/process_version.gni")
 import("//chrome/installer/installers.gni")
 import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//ui/gl/features.gni")
@@ -102,6 +103,9 @@ if (enable_swiftshader) {
 if (build_with_internal_optimization_guide) {
   packaging_files_shlibs +=
       [ "$root_out_dir/liboptimization_guide_internal.so" ]
+  if (enable_ml_internal) {
+    packaging_files_shlibs += [ "$root_out_dir/libLiteRtWebGpuAccelerator.so" ]
+  }
 }
 
 packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
@@ -265,6 +269,12 @@ if (build_with_internal_optimization_guide) {
     deps = [
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
+  }
+  if (enable_ml_internal) {
+    strip_binary("strip_ml_drift_webgpu_accelerator") {
+      binary_input = "$root_out_dir/libLiteRtWebGpuAccelerator.so"
+      deps = [ "//components/optimization_guide/internal/third_party/odml:ml_drift_webgpu_accelerator_so" ]
+    }
   }
 }
 
@@ -526,6 +536,12 @@ group("installer_deps") {
       ":strip_optimization_guide",
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
+    if (enable_ml_internal) {
+      public_deps += [
+        ":strip_ml_drift_webgpu_accelerator",
+        "//components/optimization_guide/internal/third_party/odml:ml_drift_webgpu_accelerator_so",
+      ]
+    }
   }
   if (use_qt5) {
     public_deps += [

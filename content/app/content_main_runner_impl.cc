@@ -123,6 +123,7 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "services/webnn/public/cpp/webnn_sandbox_init.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -441,6 +442,7 @@ void PreSandboxInit() {
   PreloadLibraryCdms();
 #endif
   InitializeWebRtcModuleBeforeSandbox();
+  webnn::PreSandboxWebNNInitialization(/*is_gpu_process=*/false);
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // cpuinfo needs to parse /proc/cpuinfo, or its equivalent.
