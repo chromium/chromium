@@ -17,8 +17,6 @@
 #include "chrome/browser/ash/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/ash/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/ash/video_conference/video_conference_web_app.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
