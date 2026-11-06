@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 
-import type {OmniboxFullAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import type {OmniboxFullAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 

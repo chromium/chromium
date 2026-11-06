@@ -21,11 +21,21 @@ build_webui_tests("build") {
     "textfield_model_test.ts",
   ]
 
-  # Tests should only import from the URL below, so they behave the same whether
-  # `optimize_webui` is `true` or `false`.
+  # Tests should only import from the URLs below, so they behave the same
+  # whether `optimize_webui` is `true` or `false`.
   ts_path_mappings = [
     "chrome://omnibox-popup.top-chrome/omnibox_popup.js|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/omnibox_popup/tsc/omnibox_popup.d.ts",
+            target_gen_dir),
+    "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/omnibox_popup/aim/tsc/omnibox_popup_aim.d.ts",
+            target_gen_dir),
+    "chrome://omnibox-popup.top-chrome/omnibox_popup_full.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/omnibox_popup/full/tsc/omnibox_popup_full.d.ts",
+            target_gen_dir),
+    "chrome://omnibox-popup.top-chrome/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/omnibox_popup/shared/tsc/*",
             target_gen_dir),
     "chrome://webui-test/cr_components/searchbox/*|" + rebase_path(
             "$root_gen_dir/chrome/test/data/webui/cr_components/searchbox/tsc/*",
@@ -33,6 +43,9 @@ build_webui_tests("build") {
   ]
   ts_deps = [
     "//chrome/browser/resources/omnibox_popup:build_ts",
+    "//chrome/browser/resources/omnibox_popup/aim:build_ts",
+    "//chrome/browser/resources/omnibox_popup/full:build_ts",
+    "//chrome/browser/resources/omnibox_popup/shared:build_ts",
     "//chrome/test/data/webui/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_components/search:build_ts",

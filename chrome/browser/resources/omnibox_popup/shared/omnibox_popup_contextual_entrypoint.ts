@@ -262,8 +262,8 @@ export class OmniboxPopupContextualEntrypointElement extends
     return null;
   }
 
-  getContextualChipElement():
-      (CurrentTabChipElement|ComposeboxLensSearchElement)|null {
+  getContextualChipElement(): (CurrentTabChipElement|
+                               ComposeboxLensSearchElement)|null {
     if (this.showContextualChip) {
       // Search for class instead of ID since the contextual chip is either a
       // CurrentTabChipElement or ComposeboxLensSearchElement.

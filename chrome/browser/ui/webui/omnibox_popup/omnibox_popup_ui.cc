@@ -295,7 +295,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 
   int default_resource = IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML;
   if (omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
-    default_resource = IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_FULL_HTML;
+    default_resource = IDR_OMNIBOX_POPUP_FULL_OMNIBOX_POPUP_FULL_HTML;
     // Serves layout_constants_v<N>.css, which the full popup links from its
     // <head>.
     WebUIToolbarLayoutCssHelper::SetAsRequestFilter(source);

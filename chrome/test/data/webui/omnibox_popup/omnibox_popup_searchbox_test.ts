@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {isMac} from '//resources/js/platform.js';
-import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
+import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

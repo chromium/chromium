@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TextfieldModel} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {TextfieldModel} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('TextfieldModelTest', function() {

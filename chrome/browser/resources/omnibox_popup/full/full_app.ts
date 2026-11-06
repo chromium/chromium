@@ -96,9 +96,9 @@ export class OmniboxFullAppElement extends CrLitElement {
         }
       }
     } else if (searchbox) {
-        searchbox.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
-        searchbox.style.removeProperty('--cr_composebox_minimum_height');
-        searchbox.style.removeProperty('--cr_composebox_minimum_width');
+      searchbox.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
+      searchbox.style.removeProperty('--cr_composebox_minimum_height');
+      searchbox.style.removeProperty('--cr_composebox_minimum_width');
     }
   }
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {aimBrowserProxyFactory, ComposeboxProxyImpl, OmniboxPopupAimPageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import type {OmniboxAimAppElement, OmniboxPopupAimPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {aimBrowserProxyFactory, ComposeboxProxyImpl, OmniboxPopupAimPageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_aim.js';
+import type {OmniboxAimAppElement, OmniboxPopupAimPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_aim.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';

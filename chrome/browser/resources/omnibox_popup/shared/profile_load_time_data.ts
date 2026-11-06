@@ -6,9 +6,8 @@
 // shows the popup. In TopChromeWebUIProfile, the WebUIDataSource of the popup
 // is shared by the windows of all profiles, so OmniboxPopupUI passes these
 // values to each frame instead. In other profiles, nothing is passed. Entry
-// points must import this before the elements that read the values.
-import '/strings.m.js';
-
+// points must import '/strings.m.js' and then this module before the elements
+// that read the values.
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 const profileLoadTimeData = chrome.getVariableValue('profileLoadTimeData');

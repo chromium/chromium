@@ -5,7 +5,7 @@
 import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 import '//resources/cr_components/searchbox/searchbox_compose_button.js';
-import './omnibox_popup_contextual_entrypoint.js';
+import 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint.js';
 
 import type {ComposeboxLensSearchElement} from '//resources/cr_components/composebox/composebox_lens_search.js';
 import type {CurrentTabChipElement} from '//resources/cr_components/composebox/current_tab_chip.js';
@@ -29,11 +29,11 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface, SelectionDirection, SelectionStep, UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import {browserProxyFactory, MatchesUpdate, OmniboxEscapeAction} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup.mojom-webui.js';
+import type {OmniboxInputState, PageCallbackRouter as PopupPageCallbackRouter, PageHandlerInterface as PopupPageHandlerInterface} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup.mojom-webui.js';
+import type {OmniboxPopupContextualEntrypointElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint.js';
+import type {OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint_button.js';
 
-import {browserProxyFactory, MatchesUpdate, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
-import type {OmniboxInputState, PageCallbackRouter as PopupPageCallbackRouter, PageHandlerInterface as PopupPageHandlerInterface} from './omnibox_popup.mojom-webui.js';
-import type {OmniboxPopupContextualEntrypointElement} from './omnibox_popup_contextual_entrypoint.js';
-import type {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
 import {getCss} from './omnibox_popup_searchbox.css.js';
 import {getHtml} from './omnibox_popup_searchbox.html.js';
 import {TextfieldModel} from './textfield_model.js';
@@ -279,11 +279,11 @@ export class OmniboxPopupSearchboxElement extends
     icon: '',
   };
 
-  private getContextualEntrypoint_():
-      OmniboxPopupContextualEntrypointElement|null {
-    return this.shadowRoot.querySelector<
-        OmniboxPopupContextualEntrypointElement>(
-        'omnibox-popup-contextual-entrypoint');
+  private getContextualEntrypoint_(): OmniboxPopupContextualEntrypointElement
+      |null {
+    return this.shadowRoot
+        .querySelector<OmniboxPopupContextualEntrypointElement>(
+            'omnibox-popup-contextual-entrypoint');
   }
 
   override get showContextEntrypoint(): boolean {
@@ -540,14 +540,14 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
-  getContextualEntrypointButton():
-      OmniboxPopupContextualEntrypointButtonElement|null {
+  getContextualEntrypointButton(): OmniboxPopupContextualEntrypointButtonElement
+      |null {
     const entrypoint = this.getContextualEntrypoint_();
     return entrypoint ? entrypoint.getContextEntrypointElement() : null;
   }
 
-  getContextualChipElement():
-      (CurrentTabChipElement|ComposeboxLensSearchElement)|null {
+  getContextualChipElement(): (CurrentTabChipElement|
+                               ComposeboxLensSearchElement)|null {
     const entrypoint = this.getContextualEntrypoint_();
     return entrypoint ? entrypoint.getContextualChipElement() : null;
   }
@@ -555,7 +555,7 @@ export class OmniboxPopupSearchboxElement extends
   isContextualChipVirtualFocused(): boolean {
     return this.showContextualChip &&
         this.selection.state ===
-            SelectionLineState.kFocusedButtonContextualChip;
+        SelectionLineState.kFocusedButtonContextualChip;
   }
 
   getLensSearchIconElement(): ComposeboxLensSearchElement|null {
