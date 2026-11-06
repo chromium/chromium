@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SkillsGeicBrowserTest, SkillsPageShowsUnsupportedError) {
                             std::string(kErrorPageJs) +
                                 ".shadowRoot.querySelector('.body-text a')"
                                 ".href"));
-  EXPECT_EQ("Gemini Enterprise web app",
+  EXPECT_EQ("Gemini Enterprise app",
             content::EvalJs(web_contents(),
                             std::string(kErrorPageJs) +
                                 ".shadowRoot.querySelector('.body-text a')"

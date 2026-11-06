@@ -61,10 +61,10 @@
     The Skills feature is currently disabled. Update your Chrome Settings to get started.
   </message>
   <message name="IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is not supported for the current profile (e.g. Gemini Enterprise)">
-    The Chrome skills gallery isn't currently supported for Gemini Enterprise. You can still create skills and explore those managed by your organization in the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Gemini Enterprise web app<ph name="END_LINK">&lt;/a&gt;</ph>.
+    The Chrome skills gallery isn't currently supported for Gemini Enterprise. You can still create skills and explore those managed by your organization in the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Gemini Enterprise app<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SKILLS_UNSUPPORTED_ERROR_PAGE_DESCRIPTION_NO_LINK" desc="Description of the error page that occurs when chrome://skills is not supported for the current profile and no external Skills URL is available">
-    The Chrome skills gallery isn't currently supported for Gemini Enterprise. You can still create skills and explore those managed by your organization in the Gemini Enterprise web app.
+    The Chrome skills gallery isn't currently supported for Gemini Enterprise. You can still create skills and explore those managed by your organization in the Gemini Enterprise app.
   </message>
   <message name="IDS_SKILLS_REMOTE_AUTHORITY_UNREACHABLE_DESCRIPTION" desc="Description of the error page that occurs when the remote guest skills webview cannot load or be reached.">
     We're having trouble connecting to the server. Please try again later.
