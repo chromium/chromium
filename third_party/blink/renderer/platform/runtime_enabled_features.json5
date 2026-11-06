@@ -1891,11 +1891,6 @@
       status: "stable",
     },
     {
-      // https://chromestatus.com/feature/6289894144212992
-      name: "CSSKeyframesRuleLength",
-      status: "stable",
-    },
-    {
       // Support for extended language ranges in :lang()
       // https://chromestatus.com/feature/5071058079055872
       name: "CSSLangExtendedRanges",
