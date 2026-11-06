@@ -23,6 +23,10 @@
 // Computes the height of a row at the given index.
 - (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index;
 
+// Whether the bottom sheet always uses the large detent instead of fitting its
+// content. Default implementation returns NO.
+- (BOOL)shouldAlwaysUseLargeDetent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_BOTTOM_SHEET_TABLE_VIEW_BOTTOM_SHEET_VIEW_CONTROLLER_SUBCLASSING_H_
