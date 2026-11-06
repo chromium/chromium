@@ -4510,28 +4510,33 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForWebContentsReady(kTab1), ClickWebPageBody(kTab1),
       WaitForPopupDismissed(), WaitForPopupTransitionLockout(),
       WaitForPopupHandlerReady(), WriteClipboardText(u"pasted text"),
-      MoveMouseTo(kOmniboxElementId), ClickMouse(ui_controls::RIGHT),
+      MoveMouseTo(kOmniboxElementId),
 #if BUILDFLAG(IS_MAC)
       // The native context menu runs a nested run loop, and since it is shown
       // from a task no application tasks run until it closes, including this
       // test's steps and its IPCs to the WebUI. So select Paste on the same
       // call stack as the menu being shown, wait for the menu to close, and
       // only then verify the WebUI omnibox.
-      InAnyContext(WithoutDelay(
-          WaitForShow(OmniboxContextMenuMixinBase::kPasteMenuItem),
-          // The suggestions dropdown is closed (checked in C++, since the
-          // WebUI can't be queried while the menu is open).
-          CheckResult(
-              [this]() {
-                return GetOmniboxControllerForTest()
-                    ->autocomplete_controller()
-                    ->result()
-                    .empty();
-              },
-              true, "NoSuggestionsWhileContextMenuIsShown"),
-          SelectMenuItem(OmniboxContextMenuMixinBase::kPasteMenuItem))),
-      InAnyContext(WaitForHide(OmniboxContextMenuMixinBase::kPasteMenuItem)),
+      InParallel(
+          RunSubsequence(ClickMouse(ui_controls::RIGHT)),
+          RunSubsequence(
+              InAnyContext(WithoutDelay(
+                  WaitForShow(OmniboxContextMenuMixinBase::kPasteMenuItem),
+                  // The suggestions dropdown is closed (checked in C++, since
+                  // the WebUI can't be queried while the menu is open).
+                  CheckResult(
+                      [this]() {
+                        return GetOmniboxControllerForTest()
+                            ->autocomplete_controller()
+                            ->result()
+                            .empty();
+                      },
+                      true, "NoSuggestionsWhileContextMenuIsShown"),
+                  SelectMenuItem(OmniboxContextMenuMixinBase::kPasteMenuItem))),
+              InAnyContext(
+                  WaitForHide(OmniboxContextMenuMixinBase::kPasteMenuItem)))),
 #else
+      ClickMouse(ui_controls::RIGHT),
       // The WebUI searchbox context menu is shown.
       InAnyContext(WaitForShow(OmniboxContextMenuMixinBase::kPasteMenuItem)),
 #endif
