@@ -1117,6 +1117,7 @@ ci.thin_tester(
             "updater_gtests_win",
         ],
         mixins = [
+            "no_ssd",
             "win10",
             "x86-64",
         ],
