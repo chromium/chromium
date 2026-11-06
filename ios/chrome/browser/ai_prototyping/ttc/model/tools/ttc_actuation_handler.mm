@@ -516,12 +516,13 @@ void TtcActuationHandler::OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
     return;
   }
 
-  web::BrowserState* browser_state =
-      target_web_state ? target_web_state->GetBrowserState() : nullptr;
-  if (!browser_state || browser_state->IsOffTheRecord()) {
-    FailWithError(std::move(callback),
-                  actor::mojom::ActionResultCode::kTabWentAway);
-    return;
+  if (target_web_state) {
+    web::BrowserState* browser_state = target_web_state->GetBrowserState();
+    if (!browser_state || browser_state->IsOffTheRecord()) {
+      FailWithError(std::move(callback),
+                    actor::mojom::ActionResultCode::kTabWentAway);
+      return;
+    }
   }
 
   if (active_callback_) {
@@ -531,7 +532,7 @@ void TtcActuationHandler::OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
     return;
   }
 
-  Browser* resolved_browser = GetBrowserForWebState(target_web_state);
+  Browser* resolved_browser = ResolveRegularBrowser(browser, target_web_state);
   TabInsertionBrowserAgent* insertion_agent =
       resolved_browser ? TabInsertionBrowserAgent::FromBrowser(resolved_browser)
                        : nullptr;

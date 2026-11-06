@@ -101,8 +101,8 @@ class TtcActuationHandler {
 
   // Validates and executes an `open_url` tool call with `new_tab == true` by
   // inserting and activating a new foreground `WebState` in the regular
-  // `Browser` owning `target_web_state`, registering it as controlled in
-  // `actor_service_`, and invoking `callback`.
+  // `Browser` resolved from `browser` or `target_web_state`, registering it as
+  // controlled in `actor_service_`, and invoking `callback`.
   void OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
                        web::WebState* target_web_state,
                        Browser* browser,

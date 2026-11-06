@@ -625,9 +625,10 @@ TEST_F(TtcActuationHandlerTest,
 }
 
 // Tests that `ProcessToolCall` for `open_url` with `new_tab: true` fails with
-// `kTabWentAway` when `active_web_state` is null.
-TEST_F(TtcActuationHandlerTest,
-       ProcessToolCallOpenUrlInNewTabWithNullWebStateFailsWithTabWentAway) {
+// `kWindowWentAway` when both `target_web_state` and `browser` are null.
+TEST_F(
+    TtcActuationHandlerTest,
+    ProcessToolCallOpenUrlInNewTabWithoutRegularBrowserFailsWithWindowWentAway) {
   std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
   base::DictValue args = CreateUrlArgs("https://example.com/new");
   args.Set("new_tab", true);
@@ -640,7 +641,7 @@ TEST_F(TtcActuationHandlerTest,
   const ttc::ToolResponse& response = future.Get();
   ASSERT_FALSE(response.Ok());
   EXPECT_EQ(response.error().code,
-            actor::mojom::ActionResultCode::kTabWentAway);
+            actor::mojom::ActionResultCode::kWindowWentAway);
   handler->Disconnect();
 }
 
