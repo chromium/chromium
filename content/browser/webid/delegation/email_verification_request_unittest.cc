@@ -530,12 +530,9 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
-  const std::string kIssuer = "issuer.example.com";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
   const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
   const GURL kJwksUri = GURL("https://issuer.example.com/jwks");
-
-  const std::string kToken = "test_token";
 
   // Generate issuer key pair for signing and verification.
   auto issuer_key = crypto::keypair::PrivateKey::GenerateEd25519();
@@ -767,7 +764,6 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
   const std::string kEmail = "test@issuer.example.com";
   const std::string kEmailUpper = "TEST@ISSUER.EXAMPLE.COM";
   const std::string kNonce = "test_nonce";
-  const std::string kIssuer = "issuer.example.com";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
   const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
   // Generate issuer key pair for signing and verification.
@@ -925,7 +921,6 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
   const GURL kCrossOriginIssuanceEndpoint = GURL("https://attacker.com/token");
 
@@ -1013,7 +1008,6 @@ TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
   const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
   const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
@@ -1278,7 +1272,6 @@ TEST_F(EmailVerificationRequestTest, WebIdentityWellKnownHttpNotFound) {
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
   const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
 
@@ -1347,7 +1340,6 @@ TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
 
   EXPECT_CALL(*mock_dns_request, SendRequest).Times(0);
   EXPECT_CALL(*mock_network_manager, FetchWellKnown).Times(0);
@@ -1384,7 +1376,6 @@ TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
 
   EXPECT_CALL(*mock_dns_request,
               SendRequest("_email-verification.example.com", _))
@@ -1539,7 +1530,6 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
       static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
 
   EXPECT_CALL(*mock_dns_request,
@@ -1835,7 +1825,6 @@ TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
       static_cast<RenderFrameHostImpl&>(*fenced_frame));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>,
                          blink::mojom::EmailVerificationRequestResult,
@@ -1869,7 +1858,6 @@ TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
       static_cast<RenderFrameHostImpl&>(*cross_origin_iframe));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>,
                          blink::mojom::EmailVerificationRequestResult,
@@ -1918,7 +1906,6 @@ TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
       static_cast<RenderFrameHostImpl&>(*same_origin_iframe));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
   const GURL kIssuerUrl = GURL("https://issuer.example.com");
 
   EXPECT_CALL(*mock_dns_request_,
@@ -1996,7 +1983,6 @@ TEST_F(EmailVerificationRequestTest,
       static_cast<RenderFrameHostImpl&>(*iframe_a));
 
   const std::string kEmail = "test@example.com";
-  const std::string kNonce = "test_nonce";
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>,
                          blink::mojom::EmailVerificationRequestResult,

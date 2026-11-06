@@ -368,8 +368,6 @@ TEST_P(ServiceWorkerUpdatedScriptLoaderTest, CompleteFailed) {
       "HTTP/1.0 200 OK\0Content-Type: text/javascript\0Content-Length: 34\0\0";
   const std::string kSameBlock = "old-block";
   const std::string kDiffBlock = "|diff-block|";
-  const std::string kNetworkBlock = "network-block";
-  const std::string kNewData = kSameBlock + kDiffBlock + kNetworkBlock;
 
   SetUpComparedScriptInfo(
       base::ByteSize(kSameBlock.length()), kNewHeaders, kDiffBlock,

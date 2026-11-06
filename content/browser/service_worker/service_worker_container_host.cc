@@ -431,7 +431,6 @@ void ServiceWorkerContainerHostForServiceWorker::GetRegistrations(
 
 void ServiceWorkerContainerHostForServiceWorker::GetRegistrationForReady(
     GetRegistrationForReadyCallback callback) {
-  std::string error_message;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromUnsupportedClient);
   // ReportBadMessage() will kill the renderer process, but Mojo complains if

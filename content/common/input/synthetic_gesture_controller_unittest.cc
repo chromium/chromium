@@ -2097,7 +2097,6 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
   CreateControllerAndTarget<MockSyntheticPointerMouseActionTarget>();
 
   // First, send a mouse move.
-  SyntheticPointerActionListParams::ParamList param_list;
   SyntheticPointerActionParams param = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::MOVE);
 
@@ -2171,7 +2170,6 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   CreateControllerAndTarget<MockSyntheticPointerMouseActionTarget>();
 
   // First, send a pen move.
-  SyntheticPointerActionListParams::ParamList param_list;
   SyntheticPointerActionParams param = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::MOVE);
 

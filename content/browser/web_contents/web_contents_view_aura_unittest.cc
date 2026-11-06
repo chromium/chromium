@@ -1407,8 +1407,6 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
 TEST_F(WebContentsViewAuraTest, RejectDragFromHiddenWebContents) {
   const char kGoogleUrl[] = "https://google.com/";
 
-  std::u16string url_string = u"https://google.com/";
-
   NavigateAndCommit(GURL(kGoogleUrl));
 
   TestDragDropClient drag_drop_client;
@@ -1437,8 +1435,6 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromHiddenWebContents) {
 // browser-observed last mouse location (aura::Env) must be used.
 TEST_F(WebContentsViewAuraTest, ClampMouseLocationToBrowserObservedPoint) {
   const char kGoogleUrl[] = "https://google.com/";
-
-  std::u16string url_string = u"https://google.com/";
 
   NavigateAndCommit(GURL(kGoogleUrl));
 

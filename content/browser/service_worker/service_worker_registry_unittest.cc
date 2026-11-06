@@ -2922,12 +2922,10 @@ TEST_F(ServiceWorkerRegistryOriginTrialsTest, FromMainScript) {
   // SSL3 TLS_DHE_RSA_WITH_AES_256_CBC_SHA
   response_head.ssl_info->connection_status = 0x300039;
 
-  const std::string kHTTPHeaderLine("HTTP/1.1 200 OK\n\n");
   const std::string kOriginTrial("Origin-Trial");
   // Test features declared in runtime_enabled_features.json5
   const std::string kFeature1Name("Frobulate");
   const std::string kFeature2Name("FrobulateDeprecation");
-  const std::string kFeature3Name("FrobulateThirdParty");
   // Token for Feature1 which expires 2033-05-18.
   // generate_token.py valid.example.com Frobulate --expire-timestamp=2000000000
   // TODO(horo): Generate this sample token during the build.

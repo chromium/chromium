@@ -203,7 +203,6 @@ void StartURLLoader(
       range_or_error.has_value() ? std::make_optional(range_or_error.value())
                                  : std::nullopt;
 
-  std::string path = URLDataSource::URLToRequestPath(request.url);
   std::string origin_header =
       request.headers.GetHeader(net::HttpRequestHeaders::kOrigin)
           .value_or(std::string());

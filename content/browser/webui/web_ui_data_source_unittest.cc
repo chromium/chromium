@@ -233,7 +233,6 @@ TEST_F(WebUIDataSourceTest, NamedResourceWithUrlFragment) {
 
 void WebUIDataSourceTest::RequestFilterQueryStringCallback(
     scoped_refptr<base::RefCountedMemory> data) {
-  std::string result(base::as_string_view(*data));
   // Check that the query string is passed to the request filter (and not
   // trimmed).
   EXPECT_EQ("foobar?query?string", request_path_);

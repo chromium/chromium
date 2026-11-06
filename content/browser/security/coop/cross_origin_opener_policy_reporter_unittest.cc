@@ -105,7 +105,6 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, Basic) {
   auto reporter = GetReporter();
   std::string url1 = "https://www1.example.com/y?bar=baz#foo";
   std::string url1_report = "https://www1.example.com/y?bar=baz";
-  std::string url2 = "https://www1.example.com/";
   std::string url3 = "http://www2.example.com:41/z";
 
   reporter->QueueNavigationToCOOPReport(GURL(url1), true, false);

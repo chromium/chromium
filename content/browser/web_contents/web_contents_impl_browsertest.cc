@@ -3905,7 +3905,6 @@ class LoadStateWaiter : public WebContentsDelegate {
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DISABLED_UpdateLoadState) {
   std::u16string a_host = url_formatter::IDNToUnicode("a.com");
   std::u16string b_host = url_formatter::IDNToUnicode("b.com");
-  std::u16string paused_host = url_formatter::IDNToUnicode("paused.com");
 
   // Controlled responses for image requests made in the test. They will
   // alternate being the "most interesting" for the purposes of notifying the

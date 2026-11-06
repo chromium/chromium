@@ -290,7 +290,6 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
 
     string log_id = pc.getLogIdString();
     VerifyElementWithId(log_id);
-    string result;
     for (size_t i = 0; i < pc.events_.size(); ++i) {
       std::stringstream ss;
       ss << "var row = document.getElementById('" << log_id << "').rows["

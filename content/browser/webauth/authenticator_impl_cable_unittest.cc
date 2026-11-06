@@ -569,7 +569,6 @@ TEST_F(AuthenticatorCableV2Test, LateLinking) {
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
   MaybeExpectDiscoveryWithScanCallback();
 
-  const std::vector<uint8_t> contact_id(/*count=*/200, /*value=*/1);
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::NewLateLinkingDevice(
           device::CtapDeviceResponseCode::kCtap2ErrOperationDenied,

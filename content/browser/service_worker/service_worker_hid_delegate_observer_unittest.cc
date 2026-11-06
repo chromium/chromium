@@ -1002,13 +1002,10 @@ TEST_F(ServiceWorkerHidDelegateObserverTest,
   auto device1 = CreateDeviceWithOneReport("device1-guid");
   auto device2 = CreateDeviceWithOneReport("device2-guid");
   std::vector<mojo::Remote<blink::mojom::HidService>> hid_services(num_workers);
-  std::vector<MockHidManagerClient> hid_manager_clients(num_workers);
   // DeviceAdded event when the service worker is not running.
   {
     std::vector<std::unique_ptr<TestServiceWorkerObserver>>
         service_worker_observers;
-    std::vector<TestFuture<device::mojom::HidDeviceInfoPtr>>
-        device_added_futures(num_workers);
     for (size_t idx = 0; idx < num_workers; ++idx) {
       service_worker_observers.push_back(
           std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),

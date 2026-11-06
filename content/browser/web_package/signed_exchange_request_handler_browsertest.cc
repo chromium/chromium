@@ -1416,9 +1416,6 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeAcceptHeaderBrowserTest, ServiceWorker) {
   NavigateAndWaitForTitle(https_server_.GetURL("/sxg/service-worker.html"),
                           "Done");
 
-  const std::string frame_accept = FrameAcceptHeaderValue(
-      /*allow_sxg_responses=*/false,
-      shell()->web_contents()->GetBrowserContext());
   const std::string frame_accept_with_sxg = FrameAcceptHeaderValue(
       /*allow_sxg_responses=*/true,
       shell()->web_contents()->GetBrowserContext());

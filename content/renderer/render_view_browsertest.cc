@@ -3221,7 +3221,6 @@ TEST_F(RenderViewImplScaleFactorTest,
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
 
   auto* widget_input_handler = GetWidgetInputHandler();
-  const std::u16string empty_string;
   const std::vector<ui::ImeTextSpan> empty_ime_text_span;
   std::vector<gfx::Rect> bounds_at_1x;
   widget_input_handler->SetFocus(blink::mojom::FocusState::kFocused);

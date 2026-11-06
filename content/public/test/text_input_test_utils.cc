@@ -336,7 +336,6 @@ bool DestroyRenderWidgetHost(int32_t process_id,
 }
 
 size_t GetRegisteredViewsCountFromTextInputManager(WebContents* web_contents) {
-  std::unordered_set<RenderWidgetHostView*> views;
   TextInputManager* manager =
       static_cast<WebContentsImpl*>(web_contents)->GetTextInputManager();
   return !!manager ? manager->GetRegisteredViewsCountForTesting() : 0;

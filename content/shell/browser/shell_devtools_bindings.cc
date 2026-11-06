@@ -405,8 +405,6 @@ void ShellDevToolsBindings::CallClientFunction(
     base::Value arg2,
     base::Value arg3,
     base::OnceCallback<void(base::Value)> cb) {
-  std::string javascript;
-
   web_contents()->GetPrimaryMainFrame()->AllowInjectingJavaScript();
 
   base::ListValue arguments;

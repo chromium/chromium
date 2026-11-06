@@ -94,8 +94,6 @@ CrossOriginIsolatedCrossOriginRedirectHandler(
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
   std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
-  net::test_server::RequestQuery query =
-      net::test_server::ParseQuery(request_url);
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
@@ -109,8 +107,6 @@ CrossOriginIsolatedCrossOriginRedirectHandler(
 std::unique_ptr<net::test_server::HttpResponse>
 CoopAndCspSandboxRedirectHandler(const net::test_server::HttpRequest& request) {
   std::string dest = base::UnescapeBinaryURLComponent(request.GetURL().query());
-  net::test_server::RequestQuery query =
-      net::test_server::ParseQuery(request.GetURL());
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HttpStatusCode::HTTP_FOUND);

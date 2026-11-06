@@ -870,7 +870,6 @@ void ExpectPendingInterfaceReceiversFromSources(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     std::vector<SourceAnnotation> expected_sources) {
-  std::vector<SourceAnnotation> sources;
   ASSERT_TRUE(browser_interface_broker_receiver.is_valid());
 
   std::vector<SourceAnnotation> browser_interface_broker_sources;

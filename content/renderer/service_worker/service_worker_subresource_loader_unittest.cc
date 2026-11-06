@@ -363,7 +363,6 @@ class FakeControllerServiceWorker
 
       case ResponseMode::kBlobRange: {
         // Parse the Range header.
-        std::string range_header;
         std::vector<net::HttpByteRange> ranges;
         ASSERT_TRUE(fetch_event_request_->headers.contains(
             std::string(net::HttpRequestHeaders::kRange)));

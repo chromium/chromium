@@ -767,7 +767,6 @@ void NetworkSpeechRecognitionEngineImplTest::ExpectFramedChunk(
 }
 
 std::string NetworkSpeechRecognitionEngineImplTest::ConsumeChunkedUploadData() {
-  std::string result;
   base::RunLoop().RunUntilIdle();
 
   if (!upstream_data_pipe_.get()) {
