@@ -239,7 +239,6 @@ crbug.com/567546565 [ Device ] WindowOpenByDOMTestCase/testLinkWithBlankTargetMu
 # Gardening suppression 2026-10-01
 crbug.com/538053103 SendTabToSelfCoordinatorAutoOpenTestCase/testTabCardLabelPersistsAcrossRelaunch [ Pass Failure ]
 crbug.com/557196796 [ Simulator ] FileUploadPanelTestCase/testDriveFilePickerFromContextMenu [ Pass Failure ]
-crbug.com/556653764 [ Simulator ] HistoryUITestCase/testContextMenuRepeatedShare [ Pass Failure ]
 crbug.com/568359962 [ iPhone Simulator ] AdaptiveToolbarBottomOmniboxTestCase/testTapLocationBarAboveTheKeyboardForVoiceOver [ Pass Failure ]
 crbug.com/568360510 [ iPad Simulator ] ContentSuggestionsTestCase/testMagicStackCompactedSetUpListCompleteAllItems [ Pass Failure ]
 crbug.com/568360452 [ iPad Simulator ] PasswordManagerDetailsTestCase/testShowHidePassword [ Pass Failure ]
