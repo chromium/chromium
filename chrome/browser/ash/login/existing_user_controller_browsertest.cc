@@ -201,6 +201,7 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
 
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
     mock_signin_ui_ = std::make_unique<MockSigninUI>();
+    dummy_wizard_context_ = std::make_unique<WizardContext>();
     SetUpLoginDisplay();
   }
 
@@ -209,7 +210,7 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
         .WillByDefault(Return(mock_signin_ui_.get()));
 
     ON_CALL(*mock_login_display_host_, GetWizardContext())
-        .WillByDefault(Return(&dummy_wizard_context_));
+        .WillByDefault(Return(dummy_wizard_context_.get()));
   }
 
   void SetUpOnMainThread() override {
@@ -243,6 +244,7 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     Mock::VerifyAndClear(mock_login_display_host_.get());
     existing_user_controller_.reset();
     mock_login_display_host_.reset();
+    dummy_wizard_context_.reset();
 
     // Test case may be configured with the real user manager but empty user
     // list initially. So network OOBE screen is initialized.
@@ -303,7 +305,7 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
                                    nullptr,
                                    &cryptohome_mixin_};
 
-  WizardContext dummy_wizard_context_;
+  std::unique_ptr<WizardContext> dummy_wizard_context_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerTest, ExistingUserLogin) {

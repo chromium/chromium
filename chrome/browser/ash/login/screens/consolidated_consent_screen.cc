@@ -53,6 +53,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "crypto/obsolete/sha1.h"
 
@@ -205,9 +206,9 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext& context) {
   // Do not skip the screen, if the system location toggle can be configured by
   // the user being onboarded. Returns false when the Privacy Hub Location is
   // disabled.
-  CHECK(context.onboarding_account_id.has_value());
+  CHECK(context.onboarding_user);
   if (ash::privacy_hub_util::IsCrosLocationOobeNegotiationNeeded(
-          *context.onboarding_account_id)) {
+          context.onboarding_user->GetAccountId())) {
     return false;
   }
 

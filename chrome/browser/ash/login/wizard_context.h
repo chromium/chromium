@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -17,6 +18,10 @@
 #include "components/account_id/account_id.h"
 
 class PrefService;
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -307,8 +312,11 @@ class WizardContext {
   // already shown, a call to reload GAIA webview may be necessary.
   GaiaConfig gaia_config;
 
-  // Account ID of the user going through onboarding or post-login OOBE screens.
-  std::optional<AccountId> onboarding_account_id;
+  // User going through onboarding or post-login OOBE screens. Set by
+  // UserSessionManager when the user session is initialized. `user_context`
+  // can't be used here: it is only set for pre-login recovery and password
+  // change flows, and is cleared before login completes.
+  raw_ptr<user_manager::User> onboarding_user = nullptr;
 };
 
 // Returns |true| if this is an OOBE flow after enterprise enrollment.
