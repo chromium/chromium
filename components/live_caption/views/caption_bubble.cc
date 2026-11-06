@@ -1708,8 +1708,7 @@ void CaptionBubble::SetTextColor() {
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           base::BindRepeating(&CaptionBubble::OnContentSettingsLinkClicked,
                               base::Unretained(this)));
-  link_style.override_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleLink);
+  link_style.override_color = ui::kColorLiveCaptionBubbleLink;
   media_foundation_renderer_error_text_->AddStyleRange(
       gfx::Range(offset, offset + link.length()), link_style);
 
