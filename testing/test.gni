@@ -875,6 +875,9 @@ template("test") {
       }
 
       subpackages = _subpackages
+      if (defined(invoker.subpackages)) {
+        subpackages += invoker.subpackages
+      }
     }
 
     # |target_name| refers to the package-runner rule, so that building

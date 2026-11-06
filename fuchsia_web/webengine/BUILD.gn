@@ -728,9 +728,11 @@ test("web_engine_integration_tests") {
     "//fuchsia_web/common/test/test_realm_root.shard.test-cml",
     "//fuchsia_web/webengine/web_engine_integration_tests.shard.test-cml",
     "//fuchsia_web/webinstance_host/web_instance_host_with_svc_directory.shard.cml",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_subpackage.shard.cml",
     "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
   ]
+  subpackages =
+      [ "//third_party/fuchsia-sdk/sdk/packages/realm_builder_server" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

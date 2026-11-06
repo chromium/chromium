@@ -78,6 +78,8 @@ fuchsia_package("web_engine_shell_pkg") {
     ":web_engine_shell_component",
     ":web_engine_shell_for_web_instance_host_component",
   ]
+  subpackages =
+      [ "//third_party/fuchsia-sdk/sdk/packages/realm_builder_server" ]
   excluded_files = _web_shell_excluded_files
 }
 
@@ -158,6 +160,8 @@ if (enable_cast_receiver) {
       ":cast_streaming_shell_component",
       ":cast_streaming_shell_for_web_instance_host_component",
     ]
+    subpackages =
+        [ "//third_party/fuchsia-sdk/sdk/packages/realm_builder_server" ]
     excluded_files = _web_shell_excluded_files
   }
 
