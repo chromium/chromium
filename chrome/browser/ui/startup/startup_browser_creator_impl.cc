@@ -135,9 +135,22 @@ void PrependTabs(const StartupTabs& from, StartupTabs* to) {
 BrowserWindowInterface* GetExistingBrowserForOpenBehavior(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup) {
-  BrowserWindowInterface* current_browser =
-      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
-  BrowserWindowInterface* workspace_browser = current_browser;
+  // Only a tabbed browser can take the tabs: for any other type (e.g. an app
+  // window), OpenTabsInBrowser() creates a new window. So fall back to the most
+  // recently active tabbed browser, on any workspace, rather than to the most
+  // recently active browser of any type. This also covers platforms where the
+  // current workspace is unknown, such as Linux on Wayland.
+  BrowserWindowInterface* workspace_browser = nullptr;
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&](BrowserWindowInterface* window) {
+        if (window->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL ||
+            window->IsDeleteScheduled()) {
+          return true;
+        }
+        workspace_browser = window;
+        return false;
+      },
+      BrowserCollection::Order::kActivation);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // On Windows and ChromeOS we specifically want to select the last active

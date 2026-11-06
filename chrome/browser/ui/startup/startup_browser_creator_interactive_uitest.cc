@@ -21,6 +21,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
@@ -188,6 +189,33 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorActivationTest,
   EXPECT_FALSE(browser()->GetWindow()->IsActive());
   EXPECT_TRUE(other_profile_browser->GetWindow()->IsActive());
   EXPECT_TRUE(browser()->GetWindow()->IsVisible());
+}
+
+// URLs handed to a running browser open as tabs in the existing tabbed window
+// even when an app window of the same profile was activated after it, rather
+// than in a new window (https://crbug.com/581932209).
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorActivationTest,
+                       OpensTabInTabbedWindowWhenAppWindowWasLastActive) {
+  Profile* const profile = browser()->GetProfile();
+  BrowserWindowInterface* const app_browser =
+      CreateBrowserForApp("test_app", profile);
+  ASSERT_EQ(BrowserWindowInterface::Type::TYPE_APP, app_browser->GetType());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(app_browser));
+  ASSERT_EQ(
+      app_browser,
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser());
+
+  TabStripModel* const tab_strip = browser()->GetTabStripModel();
+  const int initial_count = tab_strip->count();
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendArg(StartupTestUrl().spec());
+  ASSERT_TRUE(ProcessCommandLineForRunningBrowser(command_line));
+
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_EQ(initial_count + 1, tab_strip->count());
+  EXPECT_EQ(StartupTestUrl(),
+            tab_strip->GetWebContentsAt(initial_count)->GetVisibleURL());
 }
 
 #if defined(USE_AURA)
