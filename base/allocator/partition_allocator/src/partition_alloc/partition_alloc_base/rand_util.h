@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace partition_alloc {
@@ -69,8 +70,29 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) InsecureRandomGenerator {
   // Never use outside testing, not enough entropy.
   void ReseedForTesting(uint64_t seed);
 
-  uint32_t RandUint32();
-  uint64_t RandUint64();
+  PA_ALWAYS_INLINE uint32_t RandUint32() {
+    // The generator usually returns an uint64_t, truncate it.
+    //
+    // It is noted in this paper (https://arxiv.org/abs/1810.05313) that the
+    // lowest 32 bits fail some statistical tests from the Big Crush
+    // suite. Use the higher ones instead.
+    return this->RandUint64() >> 32;
+  }
+
+  PA_ALWAYS_INLINE uint64_t RandUint64() {
+    // Using XorShift128+, which is simple and widely used. See
+    // https://en.wikipedia.org/wiki/Xorshift#xorshift+ for details.
+    uint64_t t = a_;
+    const uint64_t s = b_;
+
+    a_ = s;
+    t ^= t << 23;
+    t ^= t >> 17;
+    t ^= s ^ (s >> 26);
+    b_ = t;
+
+    return t + s;
+  }
 
   static InsecureRandomGenerator ConstructForTesting() {
     return InsecureRandomGenerator();
