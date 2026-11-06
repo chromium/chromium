@@ -210,8 +210,7 @@ export class OmniboxEverywhereAppElement extends
     this.eventTracker_.add(window, 'blur', this.onWindowBlur_.bind(this));
     this.eventTracker_.add(window, 'click', this.onAppClick_.bind(this));
     this.eventTracker_.add(
-        document.documentElement, 'visibilitychange',
-        this.onVisibilitychange_.bind(this));
+        document, 'visibilitychange', this.onVisibilitychange_.bind(this));
     this.eventTracker_.add(
         window, 'keydown', (e: KeyboardEvent) => this.onKeyDown_(e));
     this.setupListeners_();

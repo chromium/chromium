@@ -3347,6 +3347,35 @@ suite('OmniboxEverywhereAppTest', () => {
       });
 
   test(
+      'visibilitychange on document focuses active input when visible',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        let focusCount = 0;
+        searchbox.focusInput = () => {
+          ++focusCount;
+        };
+
+        Object.defineProperty(
+            document, 'visibilityState', {value: 'hidden', configurable: true});
+        try {
+          document.dispatchEvent(new Event('visibilitychange'));
+          await microtasksFinished();
+          assertEquals(0, focusCount);
+
+          Object.defineProperty(document, 'visibilityState', {
+            value: 'visible',
+            configurable: true,
+          });
+          document.dispatchEvent(new Event('visibilitychange'));
+          await microtasksFinished();
+          assertEquals(1, focusCount);
+        } finally {
+          delete (document as {visibilityState?: string}).visibilityState;
+        }
+      });
+
+  test(
       'escape key with text in composebox clears text and stays in composebox',
       async () => {
         const searchbox =
