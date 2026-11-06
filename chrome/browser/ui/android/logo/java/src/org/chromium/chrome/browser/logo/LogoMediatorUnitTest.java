@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.logo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -20,6 +21,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -674,5 +676,41 @@ public class LogoMediatorUnitTest {
         when(mTemplateUrl.getKeyword()).thenReturn("bing.com");
         mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
         assertEquals(bingLogo, mLogoModel.get(LogoProperties.LOGO));
+    }
+
+    @Test
+    public void testLogoBridgeLifecycle() {
+        JniUniquePtr<LogoBridge.NativeLogoBridge> nativePtr = JniUniquePtr.createForTesting(1L);
+        when(mLogoBridgeJniMock.init(mProfile)).thenReturn(nativePtr);
+
+        LogoBridge logoBridge = new LogoBridge(mProfile);
+        logoBridge.recordImpression(null);
+        verify(mLogoBridgeJniMock, never()).recordImpression(any(), any());
+
+        LogoMediator logoMediator = createMediatorWithoutNative();
+        logoMediator.setLogoBridgeForTesting(logoBridge);
+        logoMediator.initWithNative(mProfile);
+        logoMediator.updateVisibility(/* animationEnabled= */ false);
+
+        verify(mLogoBridgeJniMock).init(mProfile);
+        verify(mLogoBridgeJniMock)
+                .getCurrentLogo(eq(nativePtr), mLogoObserverArgumentCaptor.capture());
+
+        Logo logo =
+                new Logo(
+                        /* image= */ null,
+                        /* darkImage= */ null,
+                        /* onClickUrl= */ null,
+                        /* altText= */ null,
+                        /* animatedLogoUrl= */ null,
+                        /* darkAnimatedLogoUrl= */ null,
+                        TEST_LOG_URL,
+                        /* darkLogUrl= */ null,
+                        /* ctaLogUrl= */ null,
+                        /* darkCtaLogUrl= */ null);
+        mLogoObserverArgumentCaptor.getValue().onLogoAvailable(logo, /* fromCache= */ true);
+        verify(mLogoBridgeJniMock).recordImpression(nativePtr, TEST_LOG_URL);
+
+        logoMediator.destroy();
     }
 }

@@ -31,7 +31,7 @@ class LogoBridge {
   LogoBridge(const LogoBridge&) = delete;
   LogoBridge& operator=(const LogoBridge&) = delete;
 
-  void Destroy();
+  ~LogoBridge();
 
   // Gets the current non-animated logo (downloading it if necessary) and passes
   // it to the observer.
@@ -47,8 +47,6 @@ class LogoBridge {
   void RecordImpression(std::string_view log_url);
 
  private:
-  virtual ~LogoBridge();
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<search_provider_logos::LogoService> logo_service_;
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/android/logo/logo_bridge.h"
 
 #include <jni.h>
-#include <stdint.h>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -21,6 +20,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
@@ -99,9 +99,9 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
 
 }  // namespace
 
-static int64_t JNI_LogoBridge_Init(Profile* profile) {
-  LogoBridge* logo_bridge = new LogoBridge(profile);
-  return reinterpret_cast<intptr_t>(logo_bridge);
+static jni_zero::JniUniquePtr<LogoBridge> JNI_LogoBridge_Init(
+    Profile* profile) {
+  return jni_zero::MakeUnique<LogoBridge>(profile);
 }
 
 LogoBridge::LogoBridge(Profile* profile)
@@ -113,10 +113,6 @@ LogoBridge::LogoBridge(Profile* profile)
 }
 
 LogoBridge::~LogoBridge() = default;
-
-void LogoBridge::Destroy() {
-  delete this;
-}
 
 void LogoBridge::GetCurrentLogo(JNIEnv* env,
                                 const JavaRef<jobject>& j_logo_observer) {

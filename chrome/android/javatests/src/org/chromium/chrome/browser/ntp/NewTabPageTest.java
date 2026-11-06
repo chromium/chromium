@@ -69,8 +69,6 @@ import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.logo.LogoBridge;
-import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -167,8 +165,6 @@ public class NewTabPageTest {
     @Mock VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock FeedReliabilityLogger mFeedReliabilityLogger;
     @Mock FeedActionDelegate.PageLoadObserver mPageLoadObserver;
-    @Mock LogoBridge.Natives mLogoBridgeJniMock;
-    @Mock private LogoBridge mLogoBridge;
     @Mock ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
@@ -834,15 +830,16 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage"})
     public void testRecordHistogramLogoClick_Ntp() {
-        LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
         NewTabPageCoordinator ntpCoordinator = mNtp.getNewTabPageCoordinator();
         LogoCoordinator logoCoordinator = ntpCoordinator.getLogoCoordinatorForTesting();
-        logoCoordinator.setLogoBridgeForTesting(mLogoBridge);
-        logoCoordinator.setOnLogoClickUrlForTesting(TEST_URL);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.DOODLE);
-        ThreadUtils.runOnUiThreadBlocking(() -> logoCoordinator.onLogoClickedForTesting(true));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    logoCoordinator.setOnLogoClickUrlForTesting(TEST_URL);
+                    logoCoordinator.onLogoClickedForTesting(true);
+                });
         histogramWatcher.assertExpected(
                 HISTOGRAM_NTP_MODULE_CLICK
                         + " is not recorded correctly when click on Logo with doodle enabled.");
