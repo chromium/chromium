@@ -29,7 +29,7 @@ BASE_FEATURE(kUniversalOptOutExtensionSilent,
 BASE_FEATURE(kUniversalOptOutSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUniversalOptOutUpdateOnGeoLocationChanged,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kUniversalOptOutExtensionSilentControllerOnly{
     &kUniversalOptOutExtensionSilent, "controller-only", false};
