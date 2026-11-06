@@ -5,16 +5,23 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_BUTTON_OPTIONS_MENU_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_BUTTON_OPTIONS_MENU_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace ash {
 class IconButton;
 }  // namespace ash
+
+namespace gfx {
+class Canvas;
+class Size;
+}  // namespace gfx
 
 namespace views {
 class Label;
@@ -47,14 +54,22 @@ class DisplayOverlayController;
 // -----------------------------------|
 // ||           Done button          ||
 // +----------------------------------+
-class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
-  METADATA_HEADER(ButtonOptionsMenu, ArrowContainer)
+class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
+  METADATA_HEADER(ButtonOptionsMenu, views::View)
 
  public:
   ButtonOptionsMenu(DisplayOverlayController* controller, Action* action);
   ButtonOptionsMenu(const ButtonOptionsMenu&) = delete;
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;
   ~ButtonOptionsMenu() override;
+
+  // Set triangle wedge offset from center of the container on the height.
+  //   - `offset` < 0, the triangle wedge is above the center.
+  //   - `offset` > 0, the triangle wedge is below the center.
+  //   - `offset` = 0, the triangle wedge is right on the center.
+  void SetArrowVerticalOffset(int offset);
+  // Set the triangle wedge on left or right side.
+  void SetArrowOnLeft(bool arrow_on_left);
 
   void UpdateWidget();
 
@@ -65,7 +80,10 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   friend class EditLabelTest;
   friend class OverlayViewTestBase;
 
+  class ShadowLayer;
+
   void Init();
+  void UpdateBorder();
 
   // Add UI components.
   void AddHeader();
@@ -79,11 +97,21 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   void OnDoneButtonPressed();
   void OnButtonLabelAssignmentPressed();
 
+  // views::View:
+  void OnPaintBackground(gfx::Canvas* canvas) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
   // TouchInjectorObserver:
   void OnActionRemoved(const Action& action) override;
   void OnActionTypeChanged(Action* action, Action* new_action) override;
   void OnActionInputBindingUpdated(const Action& action) override;
   void OnActionNewStateRemoved(const Action& action) override;
+
+  std::unique_ptr<ShadowLayer> shadow_layer_;
+
+  int arrow_vertical_offset_ = 0;
+  bool arrow_on_left_ = false;
 
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> controller_ = nullptr;

@@ -21,7 +21,7 @@ namespace arc::input_overlay {
 
 class Action;
 class ActionLabel;
-class ArrowContainer;
+class ButtonOptionsMenu;
 class DisplayOverlayController;
 class InputElement;
 class RepositionController;
@@ -97,7 +97,7 @@ class ActionView : public views::View {
   gfx::Point CalculateAttachViewPositionInRootWindow(
       const gfx::Rect& available_bounds,
       const gfx::Point& window_content_origin,
-      ArrowContainer* attached_view) const;
+      ButtonOptionsMenu* attached_view) const;
 
   // views::View:
   void AddedToWidget() override;

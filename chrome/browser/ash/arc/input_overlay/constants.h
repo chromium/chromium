@@ -59,8 +59,8 @@ inline constexpr int kEditingListWidth = 296;
 // Width of `ButtonOptionsMenu` minus the triangle height.
 inline constexpr int kButtonOptionsMenuWidth = 296;
 
-// Horizontal order inset for `ArrowContainer` and its children.
-inline constexpr int kArrowContainerHorizontalBorderInset = 16;
+// Horizontal border inset for `ButtonOptionsMenu` and its children.
+inline constexpr int kButtonOptionsMenuHorizontalBorderInset = 16;
 
 // Arrow key move distance per key press event.
 inline constexpr int kArrowKeyMoveDistance = 2;

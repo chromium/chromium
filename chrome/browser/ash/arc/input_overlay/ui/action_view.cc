@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -215,7 +215,7 @@ gfx::Point ActionView::GetTouchCenterInWindow() const {
 gfx::Point ActionView::CalculateAttachViewPositionInRootWindow(
     const gfx::Rect& available_bounds,
     const gfx::Point& window_content_origin,
-    ArrowContainer* attached_view) const {
+    ButtonOptionsMenu* attached_view) const {
   auto origin_in_window = origin();
   origin_in_window.Offset(window_content_origin.x(), window_content_origin.y());
 
