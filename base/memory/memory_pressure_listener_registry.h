@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/feature.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/observer_list.h"
@@ -46,13 +45,6 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   static void DecreaseNotificationSuppressionCount();
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
-  // Posts a task to the main thread that invokes
-  // `SimulatePressureNotification`, then runs `on_notification_sent_callback`
-  // on the main thread once the notification has been sent. Must be called on
-  // the main thread.
-  static void SimulatePressureNotificationAsync(
-      MemoryPressureLevel memory_pressure_level,
-      OnceClosure on_notification_sent_callback);
 
  private:
   // Sets the current memory pressure level, and then notifies listeners, if

@@ -10,7 +10,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,12 +105,10 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, SkipInProductHelpUserActions) {
 TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
   ASSERT_TRUE(OnlyStartupEventLogged());
 
-  base::RunLoop run_loop;
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE, base::DoNothing());
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
-  run_loop.Run();
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   EXPECT_FALSE(OnlyStartupEventLogged());
   auto events = GetEvents();

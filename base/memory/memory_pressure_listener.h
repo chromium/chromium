@@ -11,7 +11,6 @@
 #define BASE_MEMORY_MEMORY_PRESSURE_LISTENER_H_
 
 #include "base/base_export.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/raw_ptr.h"
@@ -148,13 +147,6 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
   static bool AreNotificationsSuppressed();
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
-  // Posts a task to the main thread that invokes
-  // `SimulatePressureNotification`, then runs `on_notification_sent_callback`
-  // on the main thread once the notification has been sent. Must be called on
-  // the main thread.
-  static void SimulatePressureNotificationAsync(
-      MemoryPressureLevel memory_pressure_level,
-      OnceClosure on_notification_sent_callback);
 
   MemoryPressureLevel memory_pressure_level() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

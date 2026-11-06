@@ -4,10 +4,7 @@
 
 #include "base/memory/memory_pressure_listener.h"
 
-#include <utility>
-
 #include "base/check_op.h"
-#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory_coordinator/utils.h"
@@ -55,14 +52,6 @@ void MemoryPressureListener::SimulatePressureNotification(
     MemoryPressureLevel memory_pressure_level) {
   MemoryPressureListenerRegistry::SimulatePressureNotification(
       memory_pressure_level);
-}
-
-// static
-void MemoryPressureListener::SimulatePressureNotificationAsync(
-    MemoryPressureLevel memory_pressure_level,
-    OnceClosure on_notification_sent_callback) {
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      memory_pressure_level, std::move(on_notification_sent_callback));
 }
 
 MemoryLimit MemoryPressureListener::GetMemoryLimit() const {

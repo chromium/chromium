@@ -224,17 +224,6 @@ void MemoryPressureListenerRegistry::SimulatePressureNotification(
   Get().SimulatePressureNotificationImpl(memory_pressure_level);
 }
 
-// static
-void MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-    MemoryPressureLevel memory_pressure_level,
-    OnceClosure on_notification_sent_callback) {
-  CHECK(
-      SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
-  SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
-      FROM_HERE, BindOnce(&SimulatePressureNotification, memory_pressure_level),
-      std::move(on_notification_sent_callback));
-}
-
 void MemoryPressureListenerRegistry::SetMemoryPressureLevel(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
