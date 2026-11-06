@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -19,6 +20,7 @@
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
 
+class BrowserAnimationController;
 class TabCollectionNode;
 class TabGroupView;
 
@@ -44,6 +46,14 @@ class UnpinnedTabContainerView
    protected:
     // views::LayoutManagerBase:
     void OnInstalled(views::View* host) override;
+    views::ProposedLayout CalculateProposedLayout(
+        const views::SizeBounds& size_bounds) const final;
+
+    // Lays out the children as if `focused_group_id` were the focused group
+    // (nullopt for no focus mode).
+    virtual views::ProposedLayout CalculateProposedLayout(
+        const views::SizeBounds& size_bounds,
+        std::optional<tab_groups::TabGroupId> focused_group_id) const = 0;
 
     // Casts host_view() to an UnpinnedTabContainerView const ref, using
     // static_cast. Avoids views::AsViewClass as it incurs overhead when
@@ -101,6 +111,8 @@ class UnpinnedTabContainerView
 
   void ResetCollectionNode();
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
+  void OnFocusAnimationUpdated(const BrowserAnimationController* controller,
+                               BrowserAnimationUpdate status);
 
   const TabStripOrientation orientation_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
@@ -109,6 +121,7 @@ class UnpinnedTabContainerView
 
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
+  base::CallbackListSubscription focus_animation_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_UNPINNED_TAB_CONTAINER_VIEW_H_

@@ -26,9 +26,11 @@ class UnpinnedTabContainerViewVerticalLayout
   gfx::Size GetMinimumSize(const views::View* host) const override;
 
  protected:
-  // views::LayoutManagerBase:
+  // UnpinnedTabContainerView::LayoutManager:
+  using UnpinnedTabContainerView::LayoutManager::CalculateProposedLayout;
   views::ProposedLayout CalculateProposedLayout(
-      const views::SizeBounds& size_bounds) const override;
+      const views::SizeBounds& size_bounds,
+      std::optional<tab_groups::TabGroupId> focused_group_id) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_UNPINNED_TAB_CONTAINER_VIEW_VERTICAL_LAYOUT_H_

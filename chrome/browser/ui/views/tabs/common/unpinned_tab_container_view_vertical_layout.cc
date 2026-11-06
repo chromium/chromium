@@ -63,13 +63,12 @@ gfx::Size UnpinnedTabContainerViewVerticalLayout::GetMinimumSize(
 
 views::ProposedLayout
 UnpinnedTabContainerViewVerticalLayout::CalculateProposedLayout(
-    const views::SizeBounds& size_bounds) const {
+    const views::SizeBounds& size_bounds,
+    std::optional<tab_groups::TabGroupId> focused_group_id) const {
   views::ProposedLayout layouts;
   if (!UnpinnedTabContainerView().collection_node_) {
     return layouts;
   }
-
-  std::optional<tab_groups::TabGroupId> focused_group_id = GetFocusedGroupId();
 
   const auto children =
       UnpinnedTabContainerView().collection_node_->GetDirectChildren();
@@ -105,6 +104,12 @@ UnpinnedTabContainerViewVerticalLayout::CalculateProposedLayout(
                           child_height_bound);
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_size_bounds));
     bounds.set_x(x);
+    // Hidden children keep the full width too, so a focus transition only
+    // tweens their height when blending the focused and unfocused layouts.
+    if (size_bounds.width().is_bounded()) {
+      bounds.set_width(size_bounds.width().value() - bounds.x() -
+                       horizontal_padding);
+    }
 
     auto drag_data =
         UnpinnedTabContainerView().GetVisualDataForDraggedView(*child);
@@ -119,11 +124,6 @@ UnpinnedTabContainerViewVerticalLayout::CalculateProposedLayout(
     }
 
     bounds.set_y(drag_data ? drag_data->offset.y() : height);
-
-    if (size_bounds.width().is_bounded()) {
-      bounds.set_width(size_bounds.width().value() - bounds.x() -
-                       horizontal_padding);
-    }
     layouts.child_layouts.emplace_back(child, true, bounds);
     height += bounds.height() + kTabVerticalPadding;
     width = std::max(width, bounds.width() + bounds.x());

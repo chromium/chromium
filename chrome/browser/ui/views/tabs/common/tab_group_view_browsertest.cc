@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 
+#include <algorithm>
+
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -16,10 +19,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
@@ -47,6 +52,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
@@ -71,6 +77,7 @@ class TabGroupViewTestBase
         InProcessBrowserTest>::GetEnabledFeatures();
     enabled.push_back({data_sharing::features::kDataSharingFeature, {}});
     enabled.push_back({features::kTabGroupsFocusing, {}});
+    enabled.push_back({features::kNonGroupFocus, {}});
     enabled.push_back({tabs::kTabStripUnification, {}});
     return enabled;
   }
@@ -171,6 +178,91 @@ class TabGroupViewTestBase
     return std::get<tabs::ConstDanglingUntriagedTabInterface>(
         node->GetNodeData());
   }
+
+  TabGroupView* GetTabGroupView(tab_groups::TabGroupId group_id) {
+    TabCollectionNode* group_node =
+        root_node()->GetNodeForHandle(browser()
+                                          ->GetTabStripModel()
+                                          ->group_model()
+                                          ->GetTabGroup(group_id)
+                                          ->GetCollectionHandle());
+    return group_node ? views::AsViewClass<TabGroupView>(group_node->view())
+                      : nullptr;
+  }
+
+  // Enables rich animations and drives `kFocusMode` from a container whose
+  // clock only advances through `AdvanceFocusMotion()`.
+  void EnableFocusAnimations() {
+    disable_rich_animations_.reset();
+    enable_rich_animations_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+    normal_duration_mode_ =
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+    animation_container_ = base::MakeRefCounted<gfx::AnimationContainer>();
+    BrowserAnimationController::From(browser())
+        ->SetAnimationContainerForTesting(FocusModeAnimations::kFocusMode,
+                                          animation_container_.get());
+    animation_container_test_api_ =
+        std::make_unique<gfx::AnimationContainerTestApi>(
+            animation_container_.get());
+  }
+
+  // Disables rich animations so that setup happens synchronously.
+  void DisableFocusAnimations() {
+    disable_rich_animations_ =
+        gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  }
+
+  bool IsAnyTabLayoutAnimating() {
+    views::View* const unpinned_view = unpinned_collection_node()->view();
+    if (static_cast<TabCollectionAnimatingLayoutManager*>(
+            unpinned_view->GetLayoutManager())
+            ->is_animating()) {
+      return true;
+    }
+    for (views::View* child : unpinned_view->children()) {
+      if (auto* group_view = views::AsViewClass<TabGroupView>(child);
+          group_view && static_cast<TabCollectionAnimatingLayoutManager*>(
+                            group_view->GetLayoutManager())
+                            ->is_animating()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void AdvanceFocusMotion(base::TimeDelta delta) {
+    animation_container_test_api_->IncrementTime(delta);
+    RunScheduledLayouts();
+  }
+
+  // Runs the focus motion to its end, then drains any tab layout animation
+  // that is still in flight.
+  void FinishFocusMotion() {
+    const BrowserAnimationController* const controller =
+        BrowserAnimationController::From(browser());
+    if (controller->IsAnimating(FocusModeAnimations::kFocusMode)) {
+      AdvanceFocusMotion(
+          controller->GetMotionDuration(FocusModeAnimations::kFocusMode));
+    }
+    EXPECT_FALSE(controller->IsAnimating(FocusModeAnimations::kFocusMode));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      RunScheduledLayouts();
+      return !IsAnyTabLayoutAnimating();
+    }));
+    RunScheduledLayouts();
+  }
+
+ private:
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      disable_rich_animations_;
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      enable_rich_animations_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> normal_duration_mode_;
+  scoped_refptr<gfx::AnimationContainer> animation_container_;
+  std::unique_ptr<gfx::AnimationContainerTestApi> animation_container_test_api_;
 };
 
 class TabGroupViewTest
@@ -518,6 +610,7 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, FocusTraversalBetweenHeaderAndTabs) {
 }
 
 IN_PROC_BROWSER_TEST_P(TabGroupViewTest, FocusTraversalInFocusMode) {
+  DisableFocusAnimations();
   TabStripModel* model = browser()->GetTabStripModel();
   AppendTab();
   AppendTab();
@@ -807,6 +900,222 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   group_header->OnMouseEntered(mouse_enter_event);
 
   EXPECT_FALSE(group_header->editor_bubble_button()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
+                       FocusModeEnterAndExitAnimation) {
+  DisableFocusAnimations();
+  tab_groups::TabGroupId group_id = CreateInactiveTabGroup();
+  TabGroupView* const group_view = GetTabGroupView(group_id);
+  ASSERT_NE(group_view, nullptr);
+  const TabGroupUnfocusButton* const unfocus_button =
+      group_view->unfocus_header();
+  TabGroupLineView* const group_line = group_view->group_line();
+  views::View* const grouped_tab_view =
+      group_view->collection_node()->children()[0]->view();
+  views::View* const unrelated_tab_view =
+      unpinned_collection_node()->children()[0]->view();
+  const int unrelated_tab_height = unrelated_tab_view->height();
+  ASSERT_GT(unrelated_tab_height, 0);
+
+  EXPECT_FALSE(unfocus_button->GetVisible());
+  EXPECT_TRUE(group_line->GetVisible());
+  EXPECT_EQ(grouped_tab_view->x(), TabGroupView::kTabLeadingPadding);
+  EXPECT_LE(group_line->bounds().right(), grouped_tab_view->x());
+
+  EnableFocusAnimations();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const BrowserAnimationController* const anim_controller =
+      BrowserAnimationController::From(browser());
+
+  // Enter: the focus motion drives the layouts directly, so no tab layout
+  // animation runs alongside it. The Unfocus button grows in from zero height
+  // while the group line stays to the left of the grouped tabs as it fades out,
+  // and the unrelated tab shrinks away rather than disappearing at once.
+  model->EnterFocusMode(group_id);
+  RunScheduledLayouts();
+  EXPECT_TRUE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+  EXPECT_TRUE(group_line->GetVisible());
+  EXPECT_LE(group_line->bounds().right(), grouped_tab_view->x());
+  EXPECT_TRUE(unrelated_tab_view->GetVisible());
+
+  AdvanceFocusMotion(base::Milliseconds(150));
+  EXPECT_TRUE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_TRUE(unfocus_button->GetVisible());
+  EXPECT_GT(unfocus_button->height(), 0);
+  EXPECT_LT(group_line->opacity(), 1.0f);
+  EXPECT_TRUE(group_line->GetVisible());
+  EXPECT_LE(group_line->bounds().right(), grouped_tab_view->x());
+  EXPECT_LT(unrelated_tab_view->height(), unrelated_tab_height);
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+
+  FinishFocusMotion();
+  EXPECT_TRUE(unfocus_button->GetVisible());
+  EXPECT_FALSE(group_line->GetVisible());
+  EXPECT_EQ(grouped_tab_view->x(), 0);
+  EXPECT_FALSE(unrelated_tab_view->GetVisible());
+
+  // Exit: the Unfocus button stays visible while it shrinks out and the
+  // unrelated tab grows back in.
+  model->ExitFocusMode();
+  RunScheduledLayouts();
+  EXPECT_TRUE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+  EXPECT_TRUE(unfocus_button->GetVisible());
+  EXPECT_LE(group_line->bounds().right(), grouped_tab_view->x());
+
+  AdvanceFocusMotion(base::Milliseconds(125));
+  EXPECT_TRUE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_TRUE(unrelated_tab_view->GetVisible());
+  EXPECT_GT(unrelated_tab_view->height(), 0);
+  EXPECT_LT(unrelated_tab_view->height(), unrelated_tab_height);
+  EXPECT_LE(group_line->bounds().right(), grouped_tab_view->x());
+
+  FinishFocusMotion();
+  EXPECT_FALSE(unfocus_button->GetVisible());
+  EXPECT_TRUE(group_line->GetVisible());
+  EXPECT_EQ(grouped_tab_view->x(), TabGroupView::kTabLeadingPadding);
+  EXPECT_LE(group_line->bounds().right(), grouped_tab_view->x());
+  EXPECT_TRUE(unrelated_tab_view->GetVisible());
+  EXPECT_EQ(unrelated_tab_view->height(), unrelated_tab_height);
+}
+
+// Exiting focus on an ephemeral (non-group focus) group defers dissolving the
+// group in the model until the exit motion finishes, so the group view stays
+// alive and shrinks both its unfocus button and header away while the
+// unrelated tabs grow back.
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
+                       FocusModeExitOfEphemeralGroup) {
+  DisableFocusAnimations();
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  views::View* const unpinned_view = unpinned_collection_node()->view();
+  views::View* const unrelated_tab_view =
+      unpinned_collection_node()->children()[0]->view();
+  const int unrelated_tab_height = unrelated_tab_view->height();
+  ASSERT_GT(unrelated_tab_height, 0);
+  const auto find_group_view = [&]() -> TabGroupView* {
+    const auto it = std::ranges::find_if(
+        unpinned_view->children(),
+        [](views::View* v) { return views::IsViewClass<TabGroupView>(v); });
+    return it == unpinned_view->children().end()
+               ? nullptr
+               : views::AsViewClass<TabGroupView>(*it);
+  };
+
+  EnableFocusAnimations();
+  const BrowserAnimationController* const anim_controller =
+      BrowserAnimationController::From(browser());
+  const tab_groups::TabGroupId group_id = model->EnterFocusMode({1, 2});
+  RunScheduledLayouts();
+  EXPECT_TRUE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  TabGroupView* const group_view = find_group_view();
+  ASSERT_NE(group_view, nullptr);
+  EXPECT_EQ(SkColorGetA(group_view->group_header()
+                            ->title_label_for_testing()
+                            ->GetEnabledColor()),
+            0u);
+
+  FinishFocusMotion();
+  const int group_view_height = group_view->height();
+  EXPECT_FALSE(unrelated_tab_view->GetVisible());
+  EXPECT_EQ(SkColorGetA(group_view->group_header()
+                            ->title_label_for_testing()
+                            ->GetEnabledColor()),
+            SK_AlphaOPAQUE);
+
+  model->ExitFocusMode();
+  RunScheduledLayouts();
+  // The controller holds the group's removal lock while the exit animation
+  // runs, so the group stays in the model, unfocused.
+  EXPECT_TRUE(model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(model->GetFocusedGroup(), std::nullopt);
+  EXPECT_TRUE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+  EXPECT_EQ(find_group_view(), group_view);
+
+  AdvanceFocusMotion(base::Milliseconds(125));
+  EXPECT_TRUE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  ASSERT_EQ(find_group_view(), group_view);
+  EXPECT_TRUE(group_view->GetVisible());
+  EXPECT_GT(group_view->height(), 0);
+  EXPECT_LT(group_view->height(), group_view_height);
+  EXPECT_EQ(SkColorGetA(group_view->group_header()
+                            ->title_label_for_testing()
+                            ->GetEnabledColor()),
+            0u);
+  EXPECT_TRUE(unrelated_tab_view->GetVisible());
+
+  FinishFocusMotion();
+  // Dissolving the ephemeral group at the end of kExit must not kick off a
+  // secondary layout animation.
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+  EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(find_group_view(), nullptr);
+  EXPECT_EQ(unrelated_tab_view->height(), unrelated_tab_height);
+}
+
+// With rich animations disabled (e.g. reduced motion), entering and exiting
+// focus mode snap straight to their resting states without layering children.
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
+                       FocusModeWithoutRichAnimations) {
+  DisableFocusAnimations();
+  tab_groups::TabGroupId group_id = CreateInactiveTabGroup();
+  TabGroupView* const group_view = GetTabGroupView(group_id);
+  ASSERT_NE(group_view, nullptr);
+  views::View* const unpinned_view = unpinned_collection_node()->view();
+  TabStripModel* const model = browser()->GetTabStripModel();
+
+  model->EnterFocusMode(group_id);
+  RunScheduledLayouts();
+  FinishFocusMotion();
+
+  EXPECT_TRUE(group_view->unfocus_header()->GetVisible());
+  EXPECT_FALSE(group_view->group_line()->GetVisible());
+  for (views::View* child : unpinned_view->children()) {
+    EXPECT_EQ(child->GetVisible(), child == group_view);
+  }
+
+  model->ExitFocusMode();
+  RunScheduledLayouts();
+  FinishFocusMotion();
+
+  EXPECT_FALSE(group_view->unfocus_header()->GetVisible());
+  EXPECT_TRUE(group_view->group_line()->GetVisible());
+  for (views::View* child : unpinned_view->children()) {
+    EXPECT_TRUE(child->GetVisible());
+  }
+}
+
+// Closing the focused group while its enter transition is still running tears
+// the group view down cleanly and leaves no focus motion behind.
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
+                       FocusModeGroupClosedMidEnterAnimation) {
+  DisableFocusAnimations();
+  tab_groups::TabGroupId group_id = CreateInactiveTabGroup();
+  ASSERT_NE(GetTabGroupView(group_id), nullptr);
+  EnableFocusAnimations();
+
+  TabStripModel* const model = browser()->GetTabStripModel();
+  model->EnterFocusMode(group_id);
+  AdvanceFocusMotion(base::Milliseconds(150));
+  ASSERT_TRUE(BrowserAnimationController::From(browser())->IsAnimating(
+      FocusModeAnimations::kFocusMode));
+
+  model->CloseAllTabsInGroup(group_id);
+  RunScheduledLayouts();
+  FinishFocusMotion();
+
+  EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_FALSE(model->GetFocusedGroup().has_value());
+  EXPECT_EQ(unpinned_collection_node()->GetChildNodeOfType(
+                TabCollectionNode::Type::GROUP),
+            nullptr);
+  for (views::View* child : unpinned_collection_node()->view()->children()) {
+    EXPECT_TRUE(child->GetVisible());
+  }
 }
 
 class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {

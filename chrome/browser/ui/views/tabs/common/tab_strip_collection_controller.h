@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -212,6 +213,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
 
   std::optional<FocusTransition> focus_transition_;
   base::CallbackListSubscription focus_animation_subscription_;
+  base::ScopedClosureRunner ephemeral_group_removal_lock_;
 
   bool is_animating_layout_change_ = false;
 

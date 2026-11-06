@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
@@ -898,6 +899,24 @@ class TabStripControllerFocusTransitionBrowserTest
         FocusModeAnimations::kFocusMode, FocusModeAnimations::kProgress);
   }
 
+  bool IsAnyTabLayoutAnimating() {
+    views::View* const unpinned_view = unpinned_collection_node()->view();
+    if (static_cast<TabCollectionAnimatingLayoutManager*>(
+            unpinned_view->GetLayoutManager())
+            ->is_animating()) {
+      return true;
+    }
+    for (views::View* child : unpinned_view->children()) {
+      if (auto* group_view = views::AsViewClass<TabGroupView>(child);
+          group_view && static_cast<TabCollectionAnimatingLayoutManager*>(
+                            group_view->GetLayoutManager())
+                            ->is_animating()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void AdvanceFocusMotion(base::TimeDelta delta) {
     animation_container_test_api_->IncrementTime(delta);
     RunScheduledLayouts();
@@ -921,8 +940,9 @@ class TabStripControllerFocusTransitionBrowserTest
   std::unique_ptr<gfx::AnimationContainerTestApi> animation_container_test_api_;
 };
 
-// Entering and exiting focus mode starts the enter/exit motion and exposes the
-// transitioning group while it runs.
+// Entering and exiting focus mode starts the enter/exit motion, exposes the
+// transitioning group while it runs, and suppresses layout animations so the
+// motion is the only thing driving the strip.
 IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
                        FocusChangeDrivesFocusMotion) {
   AppendTab();
@@ -941,6 +961,8 @@ IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
   ASSERT_TRUE(controller->GetFocusTransition().has_value());
   EXPECT_EQ(controller->GetFocusTransition()->target_group, group_id);
   EXPECT_FALSE(controller->GetFocusTransition()->previous_group.has_value());
+  EXPECT_FALSE(controller->ShouldAnimateLayout());
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
 
   AdvanceFocusMotion(base::Milliseconds(150));
   EXPECT_TRUE(IsFocusMotionAnimating());
@@ -963,6 +985,8 @@ IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
   EXPECT_FALSE(model->GetFocusedGroup().has_value());
   ASSERT_TRUE(controller->GetFocusTransition().has_value());
   EXPECT_EQ(controller->GetFocusTransition()->target_group, group_id);
+  EXPECT_FALSE(controller->ShouldAnimateLayout());
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
 
   AdvanceFocusMotion(base::Milliseconds(125));
   EXPECT_TRUE(IsFocusMotionAnimating());
@@ -1057,10 +1081,70 @@ IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
   EXPECT_FALSE(controller->GetFocusTransition().has_value());
 }
 
-// Without rich animations the controller snaps the motion to its resting
-// state and never reports a transition.
+// Non-group focus creates its ephemeral group in the same turn as the focus
+// change and reports that group as the transition's target.
 IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
-                       ReducedMotionSnapsWithoutTransition) {
+                       EnteringNonGroupFocusReportsEphemeralGroup) {
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  model->ActivateTabAt(0);
+  RunScheduledLayouts();
+
+  EnableRichAnimations();
+  const tab_groups::TabGroupId group_id = model->EnterFocusMode({1, 2});
+  RunScheduledLayouts();
+  EXPECT_TRUE(IsFocusMotionAnimating());
+  ASSERT_TRUE(
+      vertical_tab_strip_controller()->GetFocusTransition().has_value());
+  EXPECT_EQ(vertical_tab_strip_controller()->GetFocusTransition()->target_group,
+            group_id);
+
+  FinishFocusMotion();
+  EXPECT_FALSE(
+      vertical_tab_strip_controller()->GetFocusTransition().has_value());
+  EXPECT_EQ(model->GetFocusedGroup(), group_id);
+}
+
+// Exiting an ephemeral group holds the model's removal lock while the exit
+// motion runs, so the group stays in the model (unfocused) until the motion
+// ends, and its dissolution does not start a layout animation of its own.
+IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
+                       EphemeralGroupStaysInModelWhileExitAnimates) {
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_id = model->EnterFocusMode({1, 2});
+  RunScheduledLayouts();
+  ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_id));
+
+  EnableRichAnimations();
+  model->ExitFocusMode();
+  RunScheduledLayouts();
+  EXPECT_TRUE(IsFocusMotionAnimating());
+  EXPECT_TRUE(model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_FALSE(model->GetFocusedGroup().has_value());
+  ASSERT_TRUE(
+      vertical_tab_strip_controller()->GetFocusTransition().has_value());
+  EXPECT_EQ(vertical_tab_strip_controller()->GetFocusTransition()->target_group,
+            group_id);
+
+  AdvanceFocusMotion(base::Milliseconds(125));
+  EXPECT_TRUE(IsFocusMotionAnimating());
+  EXPECT_TRUE(model->group_model()->ContainsTabGroup(group_id));
+
+  FinishFocusMotion();
+  EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+  EXPECT_FALSE(
+      vertical_tab_strip_controller()->GetFocusTransition().has_value());
+}
+
+// Without rich animations the controller snaps the motion to its resting
+// state: no transition is reported and an ephemeral group is dissolved
+// synchronously on exit.
+IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
+                       ReducedMotionSnapsWithoutHoldingEphemeralGroup) {
   AppendTab();
   AppendTab();
   TabStripModel* const model = browser()->GetTabStripModel();

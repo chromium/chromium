@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
@@ -13,8 +14,27 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+
+views::ChildLayout BlendChildLayout(float progress,
+                                    views::View* child,
+                                    const gfx::Rect& from_bounds,
+                                    bool from_visible,
+                                    const gfx::Rect& to_bounds,
+                                    bool to_visible) {
+  const gfx::Rect bounds =
+      gfx::Tween::RectValueBetween(progress, from_bounds, to_bounds);
+  return {.child_view = child,
+          .visible = (from_visible || to_visible) && !bounds.IsEmpty(),
+          .bounds = bounds};
+}
+
+}  // namespace
 
 std::vector<int> CalculateProportionalChildWidths(
     int available_width,
@@ -234,4 +254,20 @@ TabStripCollectionLayoutInfo CollectVisibleChildLayoutInfo(
         GetTrailingChildPadding(collection.visible_children.back().view);
   }
   return collection;
+}
+
+views::ProposedLayout BlendProposedLayouts(float progress,
+                                           const views::ProposedLayout& from,
+                                           const views::ProposedLayout& to) {
+  views::ProposedLayout layout;
+  layout.host_size =
+      gfx::Tween::SizeValueBetween(progress, from.host_size, to.host_size);
+  for (const views::ChildLayout& from_child : from.child_layouts) {
+    const views::ChildLayout& to_child =
+        CHECK_DEREF(to.GetLayoutFor(from_child.child_view));
+    layout.child_layouts.push_back(BlendChildLayout(
+        progress, from_child.child_view, from_child.bounds, from_child.visible,
+        to_child.bounds, to_child.visible));
+  }
+  return layout;
 }

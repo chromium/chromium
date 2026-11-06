@@ -31,6 +31,7 @@ class TabGroupLineView : public views::View {
   // Sets the opacity applied to the line color when painting. Used to fade the
   // line in as part of the focus mode exit animation.
   void SetOpacity(float opacity);
+  float opacity() const { return opacity_; }
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;

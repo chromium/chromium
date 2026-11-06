@@ -105,15 +105,15 @@ views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   const int container_height = TabStyle::Get()->GetStandardHeight();
 
-  // Place the Unfocus button and the group header. A child with zero width is
-  // laid out hidden so it neither paints nor takes events.
+  // Place the Unfocus button and the group header. A header with zero width
+  // is laid out hidden so it neither paints nor takes events.
   const HeaderLayoutInfo header = ComputeHeaderInfo();
   const int header_width = header.total_width();
   if (TabGroupView().group_header_) {
     const int header_y =
         TabGroupStyle::GetTitleChipOffset(header.header_height).y();
     if (TabGroupView().unfocus_header_) {
-      const bool unfocus_visible = header.unfocus_width > 0;
+      const bool unfocus_visible = TabGroupView().ShouldShowUnfocusButton();
       layouts.child_layouts.emplace_back(
           TabGroupView().unfocus_header_.get(), unfocus_visible,
           unfocus_visible ? gfx::Rect(0, header_y, header.unfocus_width,
@@ -196,9 +196,7 @@ views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(
       (num_children > 0 && !is_collapsed) ? (x + tab_overlap) : header_width;
 
   if (TabGroupView().group_line_) {
-    const bool show_group_line =
-        !TabGroupView().ShouldUseFocusedHeaderStyle() &&
-        !TabGroupView().is_collapsed();
+    const bool show_group_line = TabGroupView().ShouldShowGroupLine();
     gfx::Rect group_line_bounds(0, 0, total_group_width, container_height);
     layouts.child_layouts.emplace_back(TabGroupView().group_line_.get(),
                                        show_group_line, group_line_bounds);

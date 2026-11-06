@@ -27,6 +27,7 @@ source_set("common") {
   deps = [
     "//base",
     "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/animation",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/tabs:tab_strip",

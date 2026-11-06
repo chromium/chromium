@@ -105,13 +105,12 @@ gfx::Size UnpinnedTabContainerViewHorizontalLayout::GetMinimumSize(
 
 views::ProposedLayout
 UnpinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
-    const views::SizeBounds& size_bounds) const {
+    const views::SizeBounds& size_bounds,
+    std::optional<tab_groups::TabGroupId> focused_group_id) const {
   views::ProposedLayout layouts;
   if (!UnpinnedTabContainerView().collection_node_) {
     return layouts;
   }
-
-  std::optional<tab_groups::TabGroupId> focused_group_id = GetFocusedGroupId();
 
   const auto children =
       UnpinnedTabContainerView().collection_node_->GetDirectChildren();

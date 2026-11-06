@@ -99,13 +99,15 @@ TabStripCollectionController::TabStripCollectionController(
         service->IsBrowserWindowEligible(browser_view_->browser()));
   }
 
-  if (auto* const anim_controller = GetBrowserAnimationController()) {
-    focus_animation_subscription_ = anim_controller->Subscribe(
-        FocusModeAnimations::kFocusMode,
-        base::BindRepeating(
-            &TabStripCollectionController::OnFocusAnimationUpdated,
-            base::Unretained(this)));
-  }
+  // Subscribers are notified in subscription order. This must run before any
+  // tab group or container view subscribes, since those views read
+  // `GetFocusTransition()` from their own callbacks and rely on it already
+  // being cleared when the motion ends.
+  focus_animation_subscription_ = GetBrowserAnimationController()->Subscribe(
+      FocusModeAnimations::kFocusMode,
+      base::BindRepeating(
+          &TabStripCollectionController::OnFocusAnimationUpdated,
+          base::Unretained(this)));
 }
 
 TabStripCollectionController::~TabStripCollectionController() {
@@ -604,36 +606,37 @@ void TabStripCollectionController::TabGroupFocusChanged(
   CHECK(browser_view_);
   CHECK(new_focused_group_id.has_value() || old_focused_group_id.has_value());
 
-  auto* const anim_controller = GetBrowserAnimationController();
+  BrowserAnimationController* const anim_controller =
+      GetBrowserAnimationController();
+  focus_transition_.reset();
+  const bool should_animate = ShouldAnimateLayout();
   const bool is_entering = new_focused_group_id.has_value();
 
-  if (anim_controller) {
-    // Each sequence of `kEnter` starts from its persisted value. After a direct
-    // switch between groups that value is the focused resting state, so
-    // `kProgress` would sit at 1.0 for the whole motion and nothing would move
-    // (and the unrelated tabs' opacity would start from 0). Reset to the
-    // unfocused resting values first. This emits kEnded, which clears
-    // `focus_transition_`, so it must happen before the new transition is
-    // recorded.
-    if (is_entering && old_focused_group_id.has_value()) {
-      anim_controller->Reset(FocusModeAnimations::kFocusMode,
-                             FocusModeAnimations::kExit);
-    }
+  // Each sequence of `kEnter` starts from its persisted value. After a direct
+  // switch between groups that value is the focused resting state, so reset
+  // to the unfocused resting values first.
+  if (is_entering && old_focused_group_id.has_value()) {
+    anim_controller->Reset(FocusModeAnimations::kFocusMode,
+                           FocusModeAnimations::kExit);
+  }
 
-    focus_transition_ = FocusTransition{
-        .target_group =
-            is_entering ? *new_focused_group_id : *old_focused_group_id,
-        .previous_group = is_entering ? old_focused_group_id : std::nullopt};
+  focus_transition_ = FocusTransition{
+      .target_group =
+          is_entering ? *new_focused_group_id : *old_focused_group_id,
+      .previous_group = is_entering ? old_focused_group_id : std::nullopt};
 
-    const auto motion =
-        is_entering ? FocusModeAnimations::kEnter : FocusModeAnimations::kExit;
-    if (ShouldAnimateLayout()) {
-      base::AutoReset<bool> starting(
-          &focus_transition_->is_starting_focus_motion, true);
-      anim_controller->Start(FocusModeAnimations::kFocusMode, motion);
-    } else {
-      anim_controller->Reset(FocusModeAnimations::kFocusMode, motion);
+  const auto motion =
+      is_entering ? FocusModeAnimations::kEnter : FocusModeAnimations::kExit;
+  if (should_animate) {
+    if (!is_entering && !ephemeral_group_removal_lock_) {
+      ephemeral_group_removal_lock_ =
+          model_->TakeEphemeralGroupRemovalLock(*old_focused_group_id);
     }
+    base::AutoReset<bool> starting(&focus_transition_->is_starting_focus_motion,
+                                   true);
+    anim_controller->Start(FocusModeAnimations::kFocusMode, motion);
+  } else {
+    anim_controller->Reset(FocusModeAnimations::kFocusMode, motion);
   }
 
   if (auto* tab_strip_view = browser_view_->tab_strip_view()) {
@@ -1016,6 +1019,10 @@ void TabStripCollectionController::OnFocusAnimationUpdated(
 }
 
 void TabStripCollectionController::EndFocusTransition() {
+  // Release the lock while `ShouldAnimateLayout()` is still false, so the
+  // layout change caused by the group's dissolution snaps rather than
+  // animating a second time.
+  ephemeral_group_removal_lock_.RunAndReset();
   focus_transition_.reset();
 }
 
@@ -1048,6 +1055,9 @@ bool TabStripCollectionController::ShouldAnimateLayout() const {
     return false;
   }
   if (!drag_handler_->detached_drag_range().is_empty()) {
+    return false;
+  }
+  if (focus_transition_.has_value()) {
     return false;
   }
   return is_animating_layout_change_ || drag_handler_->IsDragging();

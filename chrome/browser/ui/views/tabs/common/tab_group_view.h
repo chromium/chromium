@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -19,6 +20,7 @@
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
 
+class BrowserAnimationController;
 class TabCollectionNode;
 class TabGroupHeaderView;
 class TabGroupLineView;
@@ -99,11 +101,11 @@ class TabGroupView : public TabCollectionZOrderManager,
 
   bool IsCollapsed() const;
 
-  // Progress of this group's focus mode layout, from 0.0 (unfocused layout) to
-  // 1.0 (focused layout). The group layouts size the Unfocus button, its gap,
-  // and (horizontally) the header chip height from this so that intermediate
-  // values produce intermediate layouts.
+  // Progress of this group's focus mode layout, from 0.0 (unfocused) to 1.0
+  // (focused).
   float GetFocusProgress() const;
+  bool ShouldShowGroupLine() const;
+  bool ShouldShowUnfocusButton() const;
 
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
       const gfx::Point& point_in_local_coords);
@@ -155,11 +157,20 @@ class TabGroupView : public TabCollectionZOrderManager,
 
   void ResetCollectionNode();
   void OnDataChanged();
+
+  enum class FocusTransitionRole {
+    kNone,
+    kDirectFocus,
+    kSwitchingFocus,
+  };
+  FocusTransitionRole GetFocusTransitionRole() const;
+
+  void OnFocusAnimationUpdated(const BrowserAnimationController* controller,
+                               BrowserAnimationUpdate status);
+  void FinishFocusAnimation();
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
   void UpdateChildVisibilityForCollapseState(bool collapsed);
   void ExitFocusMode() override;
-
-  // Refreshes tab-count-dependent views of an ephemeral group.
   void OnTabCountChanged();
 
   const TabStripOrientation orientation_;
@@ -170,6 +181,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   // updates occur only when collapse/expand animations complete, rather than
   // reacting immediately to visual data updates during animation.
   bool is_collapsed_ = false;
+  bool is_focus_animating_ = false;
 
   const raw_ptr<TabGroupUnfocusButton> unfocus_header_ = nullptr;
   const raw_ptr<TabGroupHeaderView> group_header_ = nullptr;
@@ -181,6 +193,7 @@ class TabGroupView : public TabCollectionZOrderManager,
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
+  base::CallbackListSubscription focus_animation_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_VIEW_H_

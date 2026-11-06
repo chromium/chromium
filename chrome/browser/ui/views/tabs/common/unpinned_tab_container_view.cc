@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 
+#include <optional>
+#include <vector>
+
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -14,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_layout_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view_horizontal_layout.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view_vertical_layout.h"
@@ -142,6 +149,14 @@ UnpinnedTabContainerView::UnpinnedTabContainerView(
             &UnpinnedTabContainerView::OnCollapseStateChanged,
             base::Unretained(this)));
   }
+
+  focus_animation_subscription_ =
+      collection_node_->GetController()
+          ->GetBrowserAnimationController()
+          ->Subscribe(FocusModeAnimations::kFocusMode,
+                      base::BindRepeating(
+                          &UnpinnedTabContainerView::OnFocusAnimationUpdated,
+                          base::Unretained(this)));
 }
 
 UnpinnedTabContainerView::~UnpinnedTabContainerView() = default;
@@ -153,6 +168,35 @@ int UnpinnedTabContainerView::LayoutManager::GetUnconstrainedPreferredWidth()
 
 void UnpinnedTabContainerView::LayoutManager::OnInstalled(views::View* host) {
   CHECK(IsViewClass<class UnpinnedTabContainerView>(host));
+}
+
+views::ProposedLayout
+UnpinnedTabContainerView::LayoutManager::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  if (!UnpinnedTabContainerView().collection_node_) {
+    return CalculateProposedLayout(size_bounds, std::nullopt);
+  }
+  const TabStripCollectionController* const controller =
+      UnpinnedTabContainerView().collection_node_->GetController();
+  const auto transition = controller->GetFocusTransition();
+  if (!transition.has_value()) {
+    return CalculateProposedLayout(size_bounds, controller->GetFocusedGroup());
+  }
+  const float progress =
+      static_cast<float>(controller->GetBrowserAnimationController()
+                             ->GetCurrentValue(FocusModeAnimations::kFocusMode,
+                                               FocusModeAnimations::kProgress)
+                             .value());
+  if (progress <= 0.0f) {
+    return CalculateProposedLayout(size_bounds, transition->previous_group);
+  }
+  if (progress >= 1.0f) {
+    return CalculateProposedLayout(size_bounds, transition->target_group);
+  }
+  return BlendProposedLayouts(
+      progress,
+      CalculateProposedLayout(size_bounds, transition->previous_group),
+      CalculateProposedLayout(size_bounds, transition->target_group));
 }
 
 const UnpinnedTabContainerView&
@@ -317,12 +361,26 @@ int UnpinnedTabContainerView::GetUnconstrainedPreferredWidth() const {
 }
 
 void UnpinnedTabContainerView::ResetCollectionNode() {
+  focus_animation_subscription_ = {};
   collapsed_state_changed_subscription_ = {};
   collection_node_ = nullptr;
 }
 
 void UnpinnedTabContainerView::OnCollapseStateChanged(
     tabs::VerticalTabStripCollapseState state) {
+  InvalidateLayout();
+}
+
+void UnpinnedTabContainerView::OnFocusAnimationUpdated(
+    const BrowserAnimationController* controller,
+    BrowserAnimationUpdate status) {
+  if (!collection_node_) {
+    return;
+  }
+  // Re-lay out from the transition's current progress (see
+  // `LayoutManager::CalculateProposedLayout()`). The transitioning group's view
+  // invalidates too, but this keeps the container following the motion if that
+  // view goes away mid-transition and settles it when the motion ends.
   InvalidateLayout();
 }
 

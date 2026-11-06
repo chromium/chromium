@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 
+#include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/common/child_view_targeter_delegate.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
@@ -129,6 +132,14 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
         state_controller->RegisterOnCollapseChanged(base::BindRepeating(
             &TabGroupView::OnCollapseStateChanged, base::Unretained(this)));
   }
+
+  focus_animation_subscription_ =
+      collection_node_->GetController()
+          ->GetBrowserAnimationController()
+          ->Subscribe(
+              FocusModeAnimations::kFocusMode,
+              base::BindRepeating(&TabGroupView::OnFocusAnimationUpdated,
+                                  base::Unretained(this)));
 
   TabGroup* const tab_group =
       const_cast<TabGroup*>(GetTabGroupFromNode(collection_node_));
@@ -342,6 +353,7 @@ void TabGroupView::OnTabCountChanged() {
 
 void TabGroupView::ResetCollectionNode() {
   HideHoverCard(TabSlotController::HoverCardUpdateType::kTabRemoved);
+  focus_animation_subscription_ = {};
   node_destroyed_subscription_ = {};
   collapsed_state_changed_subscription_ = {};
   tab_group_data_changed_subscription_ = {};
@@ -363,7 +375,7 @@ void TabGroupView::OnDataChanged() {
       tab_group_data.visual_data.is_collapsed();
   tab_group_visual_data_ = tab_group_data.visual_data;
   if (unfocus_header_) {
-    unfocus_header_->SetVisible(IsGroupFocused());
+    unfocus_header_->SetVisible(ShouldShowUnfocusButton());
     unfocus_header_->SetGroupColorData(tab_group_visual_data_.color(),
                                        is_ephemeral_);
     unfocus_header_->UpdateAccessibleName();
@@ -386,6 +398,68 @@ void TabGroupView::OnDataChanged() {
   group_line_->SchedulePaint();
 
   InvalidateLayout();
+}
+
+void TabGroupView::OnFocusAnimationUpdated(
+    const BrowserAnimationController* controller,
+    BrowserAnimationUpdate status) {
+  const FocusTransitionRole role = GetFocusTransitionRole();
+  if (role == FocusTransitionRole::kNone) {
+    if (is_focus_animating_) {
+      FinishFocusAnimation();
+    }
+    return;
+  }
+
+  is_focus_animating_ = true;
+
+  if (role == FocusTransitionRole::kSwitchingFocus) {
+    group_header_->SetFocusAnimationProgress(1.0f);
+    unfocus_header_->SetFocusAnimationState(1.0f, 1.0f);
+  } else {
+    const auto value = [&](BrowserAnimationSequence sequence) {
+      return static_cast<float>(
+          controller->GetCurrentValue(FocusModeAnimations::kFocusMode, sequence)
+              .value());
+    };
+    const float progress = value(FocusModeAnimations::kProgress);
+    const float label_opacity =
+        value(FocusModeAnimations::kUnfocusLabelOpacity);
+    group_header_->SetFocusAnimationProgress(progress, label_opacity);
+    unfocus_header_->SetFocusAnimationState(progress, label_opacity);
+    group_line_->SetOpacity(value(FocusModeAnimations::kUnrelatedTabsOpacity));
+  }
+
+  InvalidateLayout();
+}
+
+TabGroupView::FocusTransitionRole TabGroupView::GetFocusTransitionRole() const {
+  if (!IsValid()) {
+    return FocusTransitionRole::kNone;
+  }
+  const auto transition =
+      collection_node_->GetController()->GetFocusTransition();
+  if (!transition.has_value()) {
+    return FocusTransitionRole::kNone;
+  }
+  const tab_groups::TabGroupId group_id = GetTabGroup().id();
+  if (transition->previous_group.has_value()) {
+    return (transition->target_group == group_id ||
+            transition->previous_group == group_id)
+               ? FocusTransitionRole::kSwitchingFocus
+               : FocusTransitionRole::kNone;
+  }
+  return transition->target_group == group_id
+             ? FocusTransitionRole::kDirectFocus
+             : FocusTransitionRole::kNone;
+}
+
+void TabGroupView::FinishFocusAnimation() {
+  is_focus_animating_ = false;
+  group_header_->SetFocusAnimationProgress(std::nullopt);
+  unfocus_header_->SetFocusAnimationState(std::nullopt, 1.0f);
+  group_line_->SetOpacity(1.0f);
+  OnDataChanged();
 }
 
 void TabGroupView::OnCollapseStateChanged(
@@ -618,11 +692,35 @@ bool TabGroupView::IsGroupFocused() const {
 bool TabGroupView::ShouldUseFocusedHeaderStyle() const {
   // Ephemeral groups only exist focused, or briefly while animating out of
   // focus, so their headers keep the focused style for their whole lifetime.
-  return is_ephemeral_ || IsGroupFocused();
+  // During a direct switch between groups, the outgoing group also keeps its
+  // focused header style while the container shrinks it away.
+  return is_ephemeral_ || IsGroupFocused() ||
+         (is_focus_animating_ &&
+          GetFocusTransitionRole() == FocusTransitionRole::kSwitchingFocus);
 }
 
 float TabGroupView::GetFocusProgress() const {
-  return IsGroupFocused() ? 1.0f : 0.0f;
+  switch (GetFocusTransitionRole()) {
+    case FocusTransitionRole::kSwitchingFocus:
+      return 1.0f;
+    case FocusTransitionRole::kDirectFocus:
+      return static_cast<float>(
+          collection_node_->GetController()
+              ->GetBrowserAnimationController()
+              ->GetCurrentValue(FocusModeAnimations::kFocusMode,
+                                FocusModeAnimations::kProgress)
+              .value());
+    case FocusTransitionRole::kNone:
+      return IsGroupFocused() ? 1.0f : 0.0f;
+  }
+}
+
+bool TabGroupView::ShouldShowGroupLine() const {
+  return !is_ephemeral_ && !is_collapsed_ && GetFocusProgress() < 1.0f;
+}
+
+bool TabGroupView::ShouldShowUnfocusButton() const {
+  return IsGroupFocused() || is_focus_animating_;
 }
 
 bool TabGroupView::IsUnfocusButtonFocused() const {
