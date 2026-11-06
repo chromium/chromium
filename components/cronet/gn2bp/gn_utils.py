@@ -218,12 +218,16 @@ def _determine_target_type(target_name, desc):
     if script in (
         "//build/util/generate_wrapper.py",
         "//build/android/gyp/generate_android_wrapper.py",
+        "//build/android/gyp/prepare_resources.py",
         "//build/android/gyp/rename_java_classes.py",
         "//build/android/gyp/zip.py",
+        "//components/cronet/tools/check_combined_proguard_file.py",
+        "//components/cronet/tools/generate_proguard_file.py",
     ):
         # High-level GN test/packaging wrapper actions (`test`/`cronet_test`,
-        # `cronet_instrumentation_test_apk`, `repackage_jars`, `dist_jar`) are
-        # unwrapped as groups into their underlying C++ and Java targets.
+        # `cronet_instrumentation_test_apk`, `prepare_resources`, `repackage_jars`,
+        # `dist_jar`, `collect_proguard_configs`) are unwrapped as groups into
+        # their underlying C++, Java, and resource targets.
         return 'group'
 
     if type_ == "executable" and desc.get("crate_root", None):
@@ -789,10 +793,24 @@ class GnParser:
             # wrappers) are bubbled upward without creating an equivalent Soong
             # module.
             script = desc.get("script", "")
-            if script == "//build/util/generate_wrapper.py":
+            if script in (
+                "//build/android/gyp/prepare_resources.py",
+                "//components/cronet/tools/check_combined_proguard_file.py",
+            ):
+                target.arch[arch].sources.update(
+                    source
+                    for source in desc.get('sources', [])
+                    if not source.startswith("//out")
+                )
+                deps = []
+            elif (
+                script == "//components/cronet/tools/generate_proguard_file.py"
+            ):
+                deps = []
+            elif script == "//build/util/generate_wrapper.py":
                 # GTest wrapper (`test` / `cronet_test`): unwrap `<target>__apk`
                 # into its C++ test shared_library (`<target>__library`) and the
-                # Java libraries attached to `<target>__apk__java`.
+                # Java libraries / resource groups attached to `<target>__apk__java`.
                 unwrapped_deps = []
                 for d in deps:
                     if gn2bp_common.label_without_toolchain(d).endswith(
@@ -809,21 +827,31 @@ class GnParser:
                                     jd_no_tc = (
                                         gn2bp_common.label_without_toolchain(jd)
                                     )
-                                    if (
-                                        jd in gn_desc
-                                        and _determine_target_type(
-                                            jd_no_tc, gn_desc[jd]
-                                        )
-                                        == "java_library"
-                                        and not jd_no_tc.endswith(
-                                            "_single_jar_java"
+                                    jd_desc = gn_desc.get(jd, {})
+                                    is_res_group = any(
+                                        gn2bp_common.label_without_toolchain(
+                                            dep
+                                        ).endswith("__prepare")
+                                        for dep in jd_desc.get("deps", [])
+                                    )
+                                    if jd in gn_desc and (
+                                        is_res_group
+                                        or (
+                                            _determine_target_type(
+                                                jd_no_tc, jd_desc
+                                            )
+                                            == "java_library"
+                                            and not jd_no_tc.endswith(
+                                                "_single_jar_java"
+                                            )
                                         )
                                     ):
                                         unwrapped_deps.append(jd)
                 deps = unwrapped_deps
             elif script == "//build/android/gyp/generate_android_wrapper.py":
                 # Instrumentation APK wrapper (`cronet_instrumentation_test_apk`):
-                # unwrap into the native test shared libraries it packages.
+                # unwrap into the native test shared libraries, manifest, and
+                # resource groups it packages.
                 unwrapped_deps = []
                 candidate_deps = list(deps)
                 for d in deps:
@@ -841,11 +869,29 @@ class GnParser:
                         "__test_apk"
                     ):
                         for td in d_desc.get("deps", []):
-                            if (
-                                gn_desc.get(td, {}).get("type")
-                                == "shared_library"
-                            ):
+                            td_desc = gn_desc.get(td, {})
+                            td_no_tc = gn2bp_common.label_without_toolchain(td)
+                            if td_desc.get("type") == "shared_library":
                                 unwrapped_deps.append(td)
+                            elif td_no_tc.endswith(
+                                "__build_config_crbug_908819"
+                            ):
+                                target.arch[arch].sources.update(
+                                    inp
+                                    for inp in td_desc.get("inputs", [])
+                                    if inp.endswith("AndroidManifest.xml")
+                                    and not inp.startswith("//out")
+                                )
+                            elif td_no_tc.endswith("__test_apk__java"):
+                                for jd in td_desc.get("deps", []):
+                                    jd_desc = gn_desc.get(jd, {})
+                                    if any(
+                                        gn2bp_common.label_without_toolchain(
+                                            dep
+                                        ).endswith("__prepare")
+                                        for dep in jd_desc.get("deps", [])
+                                    ):
+                                        unwrapped_deps.append(jd)
                 deps = unwrapped_deps
             elif script == "//build/android/gyp/zip.py":
                 deps = [
@@ -853,6 +899,17 @@ class GnParser:
                     for d in deps
                     if not gn2bp_common.label_without_toolchain(d).endswith(
                         "__build_config_crbug_908819"
+                    )
+                ]
+            elif any(
+                gn2bp_common.label_without_toolchain(d).endswith("__prepare")
+                for d in deps
+            ):
+                deps = [
+                    d
+                    for d in deps
+                    if gn2bp_common.label_without_toolchain(d).endswith(
+                        "__prepare"
                     )
                 ]
             elif any(
@@ -873,8 +930,12 @@ class GnParser:
         elif target.type == 'copy':
             # Copy targets, except for a few exception (see handling of action
             # targets above), are bubbled upward without creating an equivalent
-            # GN target.
-            pass
+            # GN target. Record their source files so Copybara imports them.
+            target.arch[arch].sources.update(
+                source
+                for source in desc.get('sources', [])
+                if not source.startswith("//out")
+            )
         elif target.type == 'crubit_cpp_from_rust':
             crate_header_rel_path = metadata["crate_header"][0]
             target.source_subdir = (

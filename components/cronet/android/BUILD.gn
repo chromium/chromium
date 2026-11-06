@@ -2429,6 +2429,7 @@ group("cronet_gn2bp_production_targets") {
     ":cronet_build_config_java",
     ":cronet_final_jni_java",
     ":cronet_impl_native_java",
+    ":httpengine_combine_proguard_flags",
   ]
 }
 

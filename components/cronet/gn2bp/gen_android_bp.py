@@ -832,25 +832,6 @@ def _get_rust_crate_root_directory_from_crate_root(crate_root: str) -> str:
     return None
 
 
-# Files and globs required by templates (boringssl_Android.bp.template),
-# external/cronet/Android.bp, driver scripts (run_gn2bp.py), or header-only
-# includes without a corresponding GN target.
-COPYBARA_ADDITIONAL_PATHS = {
-    # Used by run_gn2bp.py to determine the Chromium version.
-    "chrome/VERSION",
-    "components/cronet/android/httpengine_combined_proguard_golden.cfg",
-    "components/cronet/android/test/javatests/AndroidManifest.xml",
-    "components/cronet/android/test/res/**",
-    "net/android/unittest_support/res/**",
-    "third_party/icu/android/**",
-    # Referenced by boringssl_Android.bp.template and _gen_boringssl in run_gn2bp.py.
-    "third_party/boringssl/**",
-    # Included by base/rand_util_posix.cc and base/process/process_util_unittest.cc
-    # when building for Linux host without a corresponding GN target.
-    "third_party/lss/linux_syscall_support.h",
-}
-
-
 _CPP_SOURCE_EXTENSIONS = (
     ".c",
     ".cc",
@@ -881,7 +862,11 @@ def extract_copybara_paths(
     context: Union[translation_context.TranslationContext, None] = None,
 ) -> List[str]:
     """Extracts exact file paths and required globs for Copybara from the GN graph and blueprints."""
-    paths = set(COPYBARA_ADDITIONAL_PATHS)
+    paths = {
+        f"{src_dir}/**"
+        for src_dir, dst_dir in translation_config.BLUEPRINTS_MAPPING.items()
+        if not dst_dir
+    }
     excluded_prefixes = (
         tuple(
             d.removeprefix(f"{context.tree_path}/")
