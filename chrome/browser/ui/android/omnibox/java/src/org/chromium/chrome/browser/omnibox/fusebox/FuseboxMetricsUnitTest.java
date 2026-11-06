@@ -20,6 +20,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentSizeLimitCheck;
@@ -37,7 +38,9 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxMetricsUnitTest {
@@ -371,6 +374,8 @@ public class FuseboxMetricsUnitTest {
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation.Other",
                                 AutocompleteRequestType.SEARCH)
+                        .expectNoRecords(
+                                FuseboxMetrics.TAB_ATTACHMENT_COUNT_AT_SUBMISSION_HISTOGRAM)
                         // No attachment button usage/shown metrics should be recorded.
                         .build();
 
@@ -772,6 +777,66 @@ public class FuseboxMetricsUnitTest {
                 ModelMode.MODEL_MODE_GEMINI_REGULAR,
                 mModelList);
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testNotifyOmniboxSessionEnded_Navigated_RecordsTabAttachmentCount() {
+        mMetrics.notifyOmniboxSessionStarted();
+        doReturn(Set.of(1, 2)).when(mModelList).getAttachedTabIds();
+        doReturn(Collections.emptyIterator()).when(mModelList).iterator();
+        var watcher = createTabAttachmentCountWatcher(2);
+
+        mMetrics.notifyOmniboxSessionEnded(
+                /* userDidNavigate= */ true,
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                AutocompleteRequestType.AI_MODE,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                mModelList);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testNotifyOmniboxSessionEnded_Navigated_RecordsZeroTabAttachmentCount() {
+        mMetrics.notifyOmniboxSessionStarted();
+        doReturn(Set.of()).when(mModelList).getAttachedTabIds();
+        doReturn(Collections.emptyIterator()).when(mModelList).iterator();
+        var watcher = createTabAttachmentCountWatcher(0);
+
+        mMetrics.notifyOmniboxSessionEnded(
+                /* userDidNavigate= */ true,
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                AutocompleteRequestType.AI_MODE,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                mModelList);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testNotifyOmniboxSessionEnded_Abandoned_DoesNotRecordTabAttachmentCount() {
+        mMetrics.notifyOmniboxSessionStarted();
+        var watcher = createTabAttachmentCountWatcher(null);
+
+        mMetrics.notifyOmniboxSessionEnded(
+                /* userDidNavigate= */ false,
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                AutocompleteRequestType.AI_MODE,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                mModelList);
+
+        watcher.assertExpected();
+    }
+
+    private static HistogramWatcher createTabAttachmentCountWatcher(
+            @Nullable Integer expectedCount) {
+        if (expectedCount == null) {
+            return HistogramWatcher.newBuilder()
+                    .expectNoRecords(FuseboxMetrics.TAB_ATTACHMENT_COUNT_AT_SUBMISSION_HISTOGRAM)
+                    .build();
+        }
+        return HistogramWatcher.newSingleRecordWatcher(
+                FuseboxMetrics.TAB_ATTACHMENT_COUNT_AT_SUBMISSION_HISTOGRAM, expectedCount);
     }
 
     private static FuseboxAttachment createAttachment(@FuseboxAttachmentButtonType int buttonType) {

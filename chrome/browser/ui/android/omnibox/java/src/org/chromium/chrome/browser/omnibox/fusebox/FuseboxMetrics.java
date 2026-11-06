@@ -98,6 +98,10 @@ public class FuseboxMetrics {
             "Omnibox.MobileFusebox.AttachmentTypeAtSubmission";
 
     @VisibleForTesting
+    static final String TAB_ATTACHMENT_COUNT_AT_SUBMISSION_HISTOGRAM =
+            "Omnibox.MobileFusebox.AttachmentCountAtSubmission.Tab";
+
+    @VisibleForTesting
     static final String ATTACHMENT_ICON_FALLBACK_HISTOGRAM =
             "Omnibox.MobileFusebox.AttachmentIconFallback";
 
@@ -468,6 +472,9 @@ public class FuseboxMetrics {
             @Nullable FuseboxAttachmentModelList modelList) {
         if (!mSessionStarted) return;
         if (userDidNavigate && modelList != null) {
+            RecordHistogram.recordCount100Histogram(
+                    TAB_ATTACHMENT_COUNT_AT_SUBMISSION_HISTOGRAM,
+                    modelList.getAttachedTabIds().size());
             for (FuseboxAttachment attachment : modelList) {
                 recordAttachmentTypeAtSubmission(attachment.buttonType, pageClassification);
             }
