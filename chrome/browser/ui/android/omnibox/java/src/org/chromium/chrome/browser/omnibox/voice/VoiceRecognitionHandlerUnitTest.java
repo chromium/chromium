@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.V
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -142,7 +141,6 @@ public class VoiceRecognitionHandlerUnitTest {
         lenient().doReturn(mProfile).when(mProfile).getOriginalProfile();
         lenient().doReturn(mProfile2).when(mProfile2).getOriginalProfile();
         lenient().doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         lenient()
                 .doReturn(DEFAULT_SEARCH_URL)
@@ -155,7 +153,7 @@ public class VoiceRecognitionHandlerUnitTest {
         var activity = Robolectric.buildActivity(Activity.class).setup().get();
 
         mWindowAndroid = spy(new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true));
-        mIntentHandler = spy(new VoiceRecognitionIntentHandler(mWindowAndroid));
+        mIntentHandler = spy(new VoiceRecognitionIntentHandler(mWindowAndroid, mProfileSupplier));
         mHandler =
                 new VoiceRecognitionHandler(
                         mOmniboxStub,
@@ -164,6 +162,7 @@ public class VoiceRecognitionHandlerUnitTest {
                         mWindowAndroid,
                         mProfileSupplier,
                         mIntentHandler);
+        mProfileSupplier.set(mProfile);
         mHandler.addObserver(mObserver);
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
@@ -270,22 +269,34 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testIsVoiceSearchEnabled_UpdateAfterProfileSet() {
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        verify(mObserver, never()).onVoiceAvailabilityImpacted();
-        assertTrue(mHandler.isVoiceSearchEnabled());
+        clearInvocations(mPrefChangeRegistrarJni, mObserver);
+        SettableMonotonicObservableSupplier<Profile> profileSupplier =
+                ObservableSuppliers.createMonotonic();
+        var intentHandler = new VoiceRecognitionIntentHandler(mWindowAndroid, profileSupplier);
+        var handler =
+                new VoiceRecognitionHandler(
+                        mOmniboxStub,
+                        mDataProvider,
+                        mAutocompleteCoordinator,
+                        mWindowAndroid,
+                        profileSupplier,
+                        intentHandler);
+        handler.addObserver(mObserver);
 
-        mProfileSupplier.set(mProfile);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        assertFalse(mHandler.isVoiceSearchEnabled());
+        verify(mObserver, never()).onVoiceAvailabilityImpacted();
+        assertTrue(handler.isVoiceSearchEnabled());
+
+        profileSupplier.set(mProfile);
+        assertFalse(handler.isVoiceSearchEnabled());
         verify(mPrefChangeRegistrarJni).add(FAKE_PREF_REGISTRAR, Pref.AUDIO_CAPTURE_ALLOWED);
         verify(mObserver).onVoiceAvailabilityImpacted();
+        handler.destroy();
     }
 
     @Test
     public void testOnProfileUpdated_recreatesPrefChangeRegistrarAndCleansUpOnDestroy() {
-        mProfileSupplier.set(mProfile);
         verify(mPrefChangeRegistrarJni).add(FAKE_PREF_REGISTRAR, Pref.AUDIO_CAPTURE_ALLOWED);
-        verify(mObserver).onVoiceAvailabilityImpacted();
         clearInvocations(mPrefChangeRegistrarJni, mObserver);
 
         mProfileSupplier.set(mProfile2);
@@ -357,10 +368,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testIgnoreProfileAfterDestroy() {
-        mProfileSupplier.set(mProfile);
-        verify(mObserver).onVoiceAvailabilityImpacted();
-        clearInvocations(mObserver);
-
         mHandler.destroy();
         mProfileSupplier.set(mProfile2);
         // Stop propagating changes after destroy.
@@ -416,7 +423,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testVoicePlate_passesProfileToIntegration() {
-        mProfileSupplier.set(mProfile);
         enableVoicePlate();
         setVoiceResult(
                 /* resultCode= */ Activity.RESULT_CANCELED,
@@ -469,7 +475,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testVoicePlate_stoppedWithPartialTranscript_populatesFocusedOmnibox() {
-        mProfileSupplier.set(mProfile);
         enableVoicePlate();
         setVoiceResult(
                 /* resultCode= */ Activity.RESULT_OK,
@@ -487,7 +492,6 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testVoicePlate_stoppedWithEmptyTranscript_treatsAsCanceled() {
-        mProfileSupplier.set(mProfile);
         enableVoicePlate();
         setVoiceResult(
                 /* resultCode= */ Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.0f);
@@ -765,9 +769,6 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     public void testParseResults_VoiceResponseURLConversion() {
         doReturn(false).when(mMatch).isSearchSuggestion();
-        // Needed to interact with classifier, which requires a valid profile.
-        mProfileSupplier.set(mProfile);
-
         doReturn(mMatch).when(mAutocompleteController).classify(any());
 
         String[] texts = new String[] {"a", "www. b .co .uk", "engadget .com", "www.google.com"};

@@ -14,7 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -43,10 +43,11 @@ public class VoiceRecognitionUtil {
      * <p>Note: this check does not perform strict policy checking.
      *
      * @param androidPermissionDelegate Delegate used to query runtime permissions.
+     * @param profile The active {@link Profile}, or null if no profile has been loaded yet.
      * @return true if all the conditions permit execution of a voice search.
      */
     public static boolean isVoiceSearchEnabled(
-            AndroidPermissionDelegate androidPermissionDelegate) {
+            AndroidPermissionDelegate androidPermissionDelegate, @Nullable Profile profile) {
         if (sIsVoiceSearchEnabledForTesting != null) {
             return sIsVoiceSearchEnabledForTesting.booleanValue();
         }
@@ -58,7 +59,7 @@ public class VoiceRecognitionUtil {
             return false;
         }
 
-        if (!isVoiceSearchPermittedByPolicy(/* strictPolicyCheck= */ false)) return false;
+        if (!isVoiceSearchPermittedByPolicy(profile, /* strictPolicyCheck= */ false)) return false;
 
         return isRecognitionIntentPresent(/* useCachedValue= */ true);
     }
@@ -70,17 +71,19 @@ public class VoiceRecognitionUtil {
      * called prematurely, certain signals may be unavailable, making the system fall back to
      * best-effort defaults.
      *
+     * @param profile The active {@link Profile}, or null if no profile has been loaded yet.
      * @param strictPolicyCheck Whether to fail if the policy verification cannot be performed at
      *     this time. May be set to false by the UI code if there is a possibility that the call is
      *     made early (eg. before native libraries are initialized). Must be set to true ahead of
      *     actual check.
      * @return true if the Enterprise policies permit execution of a voice search.
      */
-    public static boolean isVoiceSearchPermittedByPolicy(boolean strictPolicyCheck) {
+    public static boolean isVoiceSearchPermittedByPolicy(
+            @Nullable Profile profile, boolean strictPolicyCheck) {
         // If the PrefService isn't initialized yet we won't know here whether or not voice
         // search is allowed by policy. In that case, treat voice search as enabled but check
         // again when a Profile is set and PrefService becomes available.
-        PrefService prefService = getPrefService();
+        PrefService prefService = getPrefService(profile);
 
         // Fail if strict policy checking is requested but we do not have the way to verify.
         if (strictPolicyCheck && prefService == null) return false;
@@ -88,10 +91,10 @@ public class VoiceRecognitionUtil {
         return prefService == null || prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
     }
 
-    /** Returns the PrefService for the active Profile, or null if no profile has been loaded. */
-    private static @Nullable PrefService getPrefService() {
-        if (!ProfileManager.isInitialized()) return null;
-        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+    /** Returns the PrefService for the given Profile, or null if no active profile is provided. */
+    private static @Nullable PrefService getPrefService(@Nullable Profile profile) {
+        if (profile == null || profile.shutdownStarted()) return null;
+        return UserPrefs.get(profile.getOriginalProfile());
     }
 
     /**

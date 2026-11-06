@@ -131,7 +131,8 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     void startVoiceRecognition() {
         if (mWindowAndroid == null) return;
 
-        VoiceRecognitionIntentHandler handler = new VoiceRecognitionIntentHandler(mWindowAndroid);
+        VoiceRecognitionIntentHandler handler =
+                new VoiceRecognitionIntentHandler(mWindowAndroid, () -> mProfile);
         handler.startVoiceRecognition(
                 VoiceInteractionSource.COMPOSEBOX,
                 new VoiceRecognitionIntentHandler.RecognitionCallback() {

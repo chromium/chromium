@@ -151,7 +151,7 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
         if (activity == null) return false;
         AndroidPermissionDelegate permissionDelegate =
                 new ActivityAndroidPermissionDelegate(new WeakReference<>(activity));
-        return VoiceRecognitionUtil.isVoiceSearchEnabled(permissionDelegate);
+        return VoiceRecognitionUtil.isVoiceSearchEnabled(permissionDelegate, getProfile());
     }
 
     /*package*/ void setCanUseVoiceSearchForTesting(boolean canUseVoiceSearch) {

@@ -256,7 +256,8 @@ public class AdaptiveToolbarStatePredictor {
                 return !isBottomBarEnabled();
             case AdaptiveToolbarButtonVariant.VOICE:
                 if (mAndroidPermissionDelegate == null) return true;
-                return VoiceRecognitionUtil.isVoiceSearchEnabled(mAndroidPermissionDelegate);
+                return VoiceRecognitionUtil.isVoiceSearchEnabled(
+                        mAndroidPermissionDelegate, mProfile);
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.TRANSLATE:

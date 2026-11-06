@@ -107,7 +107,7 @@ public class VoiceRecognitionHandler {
                 autocompleteCoordinator,
                 windowAndroid,
                 profileSupplier,
-                new VoiceRecognitionIntentHandler(windowAndroid));
+                new VoiceRecognitionIntentHandler(windowAndroid, profileSupplier));
     }
 
     VoiceRecognitionHandler(
