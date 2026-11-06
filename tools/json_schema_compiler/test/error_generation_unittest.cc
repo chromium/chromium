@@ -127,7 +127,6 @@ TEST(JsonSchemaCompilerErrorTest, WrongPropertyValueType) {
 
 TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   {
-    std::u16string error;
     base::ListValue params_value;
     params_value.Append("Yeah!");
     EXPECT_TRUE(errors::TestString::Params::Create(params_value).has_value());
@@ -135,7 +134,6 @@ TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   {
     base::ListValue params_value;
     params_value.Append(5);
-    std::u16string error;
     EXPECT_TRUE(
         EqualsUtf16("'paramObject': expected dictionary, got integer",
                     errors::TestTypeInObject::Params::Create(params_value)
