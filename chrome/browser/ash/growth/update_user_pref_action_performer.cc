@@ -7,13 +7,17 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace {
 
@@ -29,27 +33,17 @@ enum class UpdateType {
   kMaxUpdateType = kRemove,
 };
 
-// Return nullptr if the pref service is not available or the pref is invalid or
-// the pref type is invalid.
+// Returns false if the pref is invalid or the pref type is invalid.
 // Use type NONE as target type to skip type checking.
-PrefService* GetPrefServiceAndCheckUserPrefType(
-    const std::string& pref_name,
-    const base::Value::Type& target_type) {
-  PrefService* pref_service =
-      ProfileManager::GetActiveUserProfile()->GetPrefs();
-  if (!pref_service) {
-    growth::RecordCampaignsManagerError(
-        growth::CampaignsManagerError::kUserPrefServiceNotAvailable);
-    CAMPAIGNS_LOG(ERROR) << "User pref service not available.";
-    return nullptr;
-  }
-
-  const PrefService::Preference* pref = pref_service->FindPreference(pref_name);
+bool CheckUserPrefType(const PrefService& pref_service,
+                       const std::string& pref_name,
+                       const base::Value::Type& target_type) {
+  const PrefService::Preference* pref = pref_service.FindPreference(pref_name);
   if (!pref) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kUserPrefNotFound);
     CAMPAIGNS_LOG(ERROR) << "User pref action: " << pref_name << " not found";
-    return nullptr;
+    return false;
   }
 
   // Skip type checking if the target_type is type::NONE.
@@ -59,85 +53,83 @@ PrefService* GetPrefServiceAndCheckUserPrefType(
         growth::CampaignsManagerError::kUserPrefValueTypeMismatch);
     CAMPAIGNS_LOG(ERROR) << "User pref action: " << pref_name
                          << " type mismatched";
-    return nullptr;
-  }
-  return pref_service;
-}
-
-bool SetUserPrefValue(const std::string& pref_name, const base::Value* value) {
-  PrefService* pref_service =
-      GetPrefServiceAndCheckUserPrefType(pref_name, value->type());
-  if (!pref_service) {
     return false;
   }
-
-  pref_service->Set(pref_name, *value);
   return true;
 }
 
-bool ClearUserPrefValue(const std::string& pref_name) {
-  PrefService* pref_service =
-      GetPrefServiceAndCheckUserPrefType(pref_name, base::Value::Type::NONE);
-  if (!pref_service) {
+bool SetUserPrefValue(PrefService& pref_service,
+                      const std::string& pref_name,
+                      const base::Value* value) {
+  if (!CheckUserPrefType(pref_service, pref_name, value->type())) {
     return false;
   }
-  pref_service->ClearPref(pref_name);
+
+  pref_service.Set(pref_name, *value);
   return true;
 }
 
-bool AppendValueToUserPref(const std::string& pref_name,
+bool ClearUserPrefValue(PrefService& pref_service,
+                        const std::string& pref_name) {
+  if (!CheckUserPrefType(pref_service, pref_name, base::Value::Type::NONE)) {
+    return false;
+  }
+  pref_service.ClearPref(pref_name);
+  return true;
+}
+
+bool AppendValueToUserPref(PrefService& pref_service,
+                           const std::string& pref_name,
                            const base::Value* value) {
-  PrefService* pref_service =
-      GetPrefServiceAndCheckUserPrefType(pref_name, base::Value::Type::LIST);
-  if (!pref_service) {
+  if (!CheckUserPrefType(pref_service, pref_name, base::Value::Type::LIST)) {
     return false;
   }
 
-  if (std::ranges::contains(pref_service->GetList(pref_name), *value)) {
+  if (std::ranges::contains(pref_service.GetList(pref_name), *value)) {
     CAMPAIGNS_LOG(ERROR) << "Pref value is already in the list.";
     return false;
   }
 
-  auto& values = pref_service->GetList(pref_name);
+  auto& values = pref_service.GetList(pref_name);
   auto cached_values = values.Clone();
   cached_values.Append(value->Clone());
-  pref_service->SetList(pref_name, std::move(cached_values));
+  pref_service.SetList(pref_name, std::move(cached_values));
   return true;
 }
 
-bool RemoveValueFromUserPref(const std::string& pref_name,
+bool RemoveValueFromUserPref(PrefService& pref_service,
+                             const std::string& pref_name,
                              const base::Value* value) {
-  PrefService* pref_service =
-      GetPrefServiceAndCheckUserPrefType(pref_name, base::Value::Type::LIST);
-  if (!pref_service) {
+  if (!CheckUserPrefType(pref_service, pref_name, base::Value::Type::LIST)) {
     return false;
   }
 
-  if (!std::ranges::contains(pref_service->GetList(pref_name), *value)) {
+  if (!std::ranges::contains(pref_service.GetList(pref_name), *value)) {
     CAMPAIGNS_LOG(ERROR)
         << "Unable to remove: Pref value not in user preference.";
     return false;
   }
 
-  auto& values = pref_service->GetList(pref_name);
+  auto& values = pref_service.GetList(pref_name);
   auto cached_values = values.Clone();
   cached_values.EraseValue(*value);
-  pref_service->SetList(pref_name, std::move(cached_values));
+  pref_service.SetList(pref_name, std::move(cached_values));
   return true;
 }
 
-bool UpdateUserPrefValue(const std::string& pref_name,
+bool UpdateUserPrefValue(PrefService& pref_service,
+                         const std::string& pref_name,
                          UpdateType type,
                          const base::Value* value) {
   switch (type) {
     case UpdateType::kSet:
-      return SetUserPrefValue(pref_name, value);
+      return SetUserPrefValue(pref_service, pref_name, value);
     case UpdateType::kClear:
-      return ClearUserPrefValue(pref_name);
+      return ClearUserPrefValue(pref_service, pref_name);
     case UpdateType::kAppend:
-      return AppendValueToUserPref(pref_name, value);
+      return AppendValueToUserPref(pref_service, pref_name, value);
     case UpdateType::kRemove:
-      return RemoveValueFromUserPref(pref_name, value);
+      return RemoveValueFromUserPref(pref_service, pref_name, value);
   }
 }
 
@@ -193,7 +185,25 @@ void UpdateUserPrefActionPerformer::Run(
     return;
   }
 
-  if (!UpdateUserPrefValue(*pref_name, update_type, value)) {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  // Null before the user's Profile is created and after it is destroyed.
+  PrefService* pref_service =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUserAndModify(
+                      active_session->account_id()))
+          .GetProfilePrefs();
+  if (!pref_service) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kUserPrefServiceNotAvailable);
+    CAMPAIGNS_LOG(ERROR) << "User pref service not available.";
+    std::move(callback).Run(growth::ActionResult::kFailure,
+                            growth::ActionResultReason::kUpdateUserPrefFailed);
+    return;
+  }
+
+  if (!UpdateUserPrefValue(*pref_service, *pref_name, update_type, value)) {
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kUpdateUserPrefFailed);
     return;

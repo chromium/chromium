@@ -4,18 +4,22 @@
 
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -103,17 +107,11 @@ void InstallWebAppImpl(web_app::WebAppProvider& provider,
       web_app::WebAppInstallParams());
 }
 
-web_app::WebAppProvider* GetWebAppProvider() {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  return web_app::WebAppProvider::GetForWebApps(profile);
-}
-
-void TriggerWebAppInstall(std::unique_ptr<web_app::WebAppInstallInfo> info,
+void TriggerWebAppInstall(web_app::WebAppProvider& provider,
+                          std::unique_ptr<web_app::WebAppInstallInfo> info,
                           growth::ActionPerformer::Callback callback) {
-  auto* provider = GetWebAppProvider();
-  CHECK(provider);
-  provider->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(InstallWebAppImpl, std::ref(*provider),
+  provider.on_registry_ready().Post(
+      FROM_HERE, base::BindOnce(InstallWebAppImpl, std::ref(provider),
                                 std::move(info), std::move(callback)));
 }
 
@@ -127,7 +125,17 @@ void InstallWebAppActionPerformer::Run(
     std::optional<int> group_id,
     const base::DictValue* params,
     growth::ActionPerformer::Callback callback) {
-  if (!GetWebAppProvider()) {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
+  CHECK(profile);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
     std::move(callback).Run(
         growth::ActionResult::kFailure,
         growth::ActionResultReason::kWebAppProviderNotAvailable);
@@ -141,7 +149,7 @@ void InstallWebAppActionPerformer::Run(
     return;
   }
 
-  TriggerWebAppInstall(std::move(info), std::move(callback));
+  TriggerWebAppInstall(*provider, std::move(info), std::move(callback));
 }
 
 growth::ActionType InstallWebAppActionPerformer::ActionType() const {

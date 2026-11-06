@@ -8,22 +8,27 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-inline constexpr char kTestProfileName[] = "profile@test.com";
+constexpr auto kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("profile@test.com",
+                                            GaiaId::Literal("1234567890"));
 
 inline constexpr char kStringPref[] = "string_pref";
 inline constexpr char kListPref[] = "list_pref";
@@ -59,32 +64,35 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
   ~UpdateUserPrefActionPerformerTest() override = default;
 
   void SetUp() override {
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kAccountId)));
+    ASSERT_TRUE(profile_);
 
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-
-    const user_manager::User* user =
-        user_manager_->AddUser(AccountId::FromUserEmail(kTestProfileName));
-    user_manager_->LoginUser(user->GetAccountId());
-    user_manager_->SwitchActiveUser(user->GetAccountId());
-
-    // Note that user profiles are created after user login in reality.
-    // profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
-    auto prefs = GetDefaultPrefs();
-    profile_manager_->CreateTestingProfile(kTestProfileName, std::move(prefs),
-                                           u"User Name", /*avatar_id=*/0,
-                                           TestingProfile::TestingFactories());
+    sync_preferences::TestingPrefServiceSyncable* prefs =
+        profile_->GetTestingPrefService();
+    prefs->registry()->RegisterStringPref(kStringPref, std::string());
+    prefs->registry()->RegisterListPref(kListPref, base::ListValue());
+    prefs->SetString(kStringPref, kDefaultValue);
+    prefs->SetList(
+        kListPref,
+        base::ListValue().Append(kDefaultValue).Append(kRemoveValue));
 
     action_ = std::make_unique<UpdateUserPrefActionPerformer>();
   }
 
   void TearDown() override {
-    // action_->SetPrefsForTesting(nullptr);
-    profile_manager_->DeleteAllTestingProfiles();
-    profile_manager_.reset();
-    testing::Test::TearDown();
+    action_.reset();
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
   }
 
   UpdateUserPrefActionPerformer& action() { return *action_; }
@@ -109,38 +117,18 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
   }
 
   bool VerifyListPrefsEmpty() {
-    auto* prefs_ = ProfileManager::GetActiveUserProfile()->GetPrefs();
-    auto& pref_value = prefs_->GetList(kListPref);
-    // LOG(ERROR) << "pref_value " << pref_value;
-    return pref_value.empty();
+    return profile_->GetPrefs()->GetList(kListPref).empty();
   }
 
   bool VerifyPrefsValueEqual(const std::string& value) {
-    auto* prefs_ = ProfileManager::GetActiveUserProfile()->GetPrefs();
-    auto pref_value = prefs_->GetString(kStringPref);
-    return value == pref_value;
+    return value == profile_->GetPrefs()->GetString(kStringPref);
   }
 
   bool VerifyListPrefsContainsValue(const std::string& value) {
-    auto* prefs_ = ProfileManager::GetActiveUserProfile()->GetPrefs();
-    return prefs_->GetList(kListPref).contains(value);
+    return profile_->GetPrefs()->GetList(kListPref).contains(value);
   }
 
  private:
-  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
-  GetDefaultPrefs() const {
-    auto prefs =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterUserProfilePrefs(prefs->registry());
-    prefs->registry()->RegisterStringPref(kStringPref, std::string());
-    prefs->registry()->RegisterListPref(kListPref, base::ListValue());
-    prefs->SetString(kStringPref, kDefaultValue);
-    prefs->SetList(
-        kListPref,
-        base::ListValue().Append(kDefaultValue).Append(kRemoveValue));
-    return prefs;
-  }
-
   content::BrowserTaskEnvironment task_environment_;
 
   base::RunLoop action_success_run_loop_;
@@ -151,12 +139,12 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
   base::OnceClosure action_failed_closure_ =
       action_failed_run_loop_.QuitClosure();
 
-  std::unique_ptr<UpdateUserPrefActionPerformer> action_;
   growth::CampaignsLogger logger_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<UpdateUserPrefActionPerformer> action_;
 };
 
 TEST_F(UpdateUserPrefActionPerformerTest, TestValidSetPref) {

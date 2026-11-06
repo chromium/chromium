@@ -9,20 +9,24 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-constexpr char kTestProfileName[] = "user@gmail.com";
+constexpr auto kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@gmail.com",
+                                            GaiaId::Literal("1234567890"));
 
 constexpr char kAppInstallTemplate[] = R"(
     {
@@ -51,19 +55,18 @@ class InstallWebAppActionPerformerTest : public testing::Test {
   ~InstallWebAppActionPerformerTest() override = default;
 
   void SetUp() override {
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-
-    const user_manager::User* user =
-        user_manager_->AddUser(AccountId::FromUserEmail(kTestProfileName));
-    user_manager_->LoginUser(user->GetAccountId());
-    user_manager_->SwitchActiveUser(user->GetAccountId());
-
-    // Note that user profiles are created after user login in reality.
-    profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kAccountId));
+    ASSERT_TRUE(profile_);
 
     auto* provider = web_app::FakeWebAppProvider::Get(profile_);
     provider->SetOsIntegrationManager(
@@ -76,9 +79,9 @@ class InstallWebAppActionPerformerTest : public testing::Test {
   }
 
   void TearDown() override {
+    install_action_.reset();
     profile_ = nullptr;
-    profile_manager_->DeleteAllTestingProfiles();
-    profile_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
   bool EnsureWebAppInstalled(const std::string& url) {
@@ -122,11 +125,10 @@ class InstallWebAppActionPerformerTest : public testing::Test {
   base::OnceClosure install_action_failed_closure_ =
       action_failed_run_loop_.QuitClosure();
 
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   raw_ptr<Profile> profile_ = nullptr;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
   std::unique_ptr<InstallWebAppActionPerformer> install_action_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
 TEST_F(InstallWebAppActionPerformerTest, TestValidInstallation) {
