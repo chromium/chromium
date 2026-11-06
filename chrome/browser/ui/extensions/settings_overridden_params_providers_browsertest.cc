@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(expected_favicon_url, new_setting.value().favicon_url);
   // TODO(http://crbug.com/562972276): Use a mock image fetcher to assert that
   // the correct image was fetched.
-  EXPECT_FALSE(new_setting.value().image.IsEmpty());
+  EXPECT_TRUE(new_setting.value().image.IsVectorIcon());
   EXPECT_EQ(u"Changed to this by extension", new_setting.value().description);
 }
 

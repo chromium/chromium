@@ -48,11 +48,11 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/ui_util.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
@@ -62,6 +62,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace settings_overridden_params {
@@ -260,15 +261,8 @@ inline constexpr extension_misc::ExtensionIcons kDialogIconSize =
     extension_misc::EXTENSION_ICON_SMALLISH;
 
 // Creates a fallback icon for a search engine, in case a favicon can't be
-// fetched. If an extension is provided, it derives an icon from that name.
-ui::ImageModel CreateFallbackSearchIcon(const std::string& extension_name) {
-  if (!extension_name.empty()) {
-    return ui::ImageModel::FromImage(
-        extensions::ExtensionIconPlaceholder::CreateImage(kDialogIconSize,
-                                                          extension_name));
-  }
-
-  // This icon doesn't pertain to an extension. Fall back to a fixed icon.
+// fetched.
+ui::ImageModel CreateFallbackSearchIcon() {
   return ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                             ? vector_icons::kGlobeIcon
                                             : vector_icons::kGlobeOldIcon,
@@ -674,8 +668,7 @@ GetSearchOverriddenParams(Profile* profile) {
     previous_setting.text = secondary_search.name;
     previous_setting.description = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_PREVIOUS_CHOICE);
-    previous_setting.image =
-        CreateFallbackSearchIcon(/*extension_name=*/std::string());
+    previous_setting.image = CreateFallbackSearchIcon();
     if (secondary_search.favicon_url.is_valid()) {
       previous_setting.favicon_url = secondary_search.favicon_url;
     }
@@ -685,6 +678,7 @@ GetSearchOverriddenParams(Profile* profile) {
         params->content.new_setting.emplace();
     new_setting.description = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE);
+    new_setting.image = CreateFallbackSearchIcon();
 
     // Display the known name and favicon for the extension's search,
     // if it is known by the browser. Otherwise, show the formatted search URL
@@ -693,11 +687,8 @@ GetSearchOverriddenParams(Profile* profile) {
             GetPrepopulatedEngineForSearchUrl(search_url)) {
       new_setting.text = prepopulated_engine->name;
       new_setting.favicon_url = GURL(prepopulated_engine->favicon_url);
-      new_setting.image = CreateFallbackSearchIcon(extension->name());
     } else {
       new_setting.text = FormatSearchUrl(search_url);
-      new_setting.image =
-          CreateFallbackSearchIcon(/*extension_name=*/std::string());
     }
 
     LogMissingParams(*params);
