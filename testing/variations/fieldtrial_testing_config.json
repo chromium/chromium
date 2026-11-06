@@ -436,7 +436,6 @@
                         "ambient_autofill_supported_entity_types": "Vehicle,Flight Reservation,Order,Shipment"
                     },
                     "enable_features": [
-                        "AutofillAiShowPersonalContextFillingYourInfoDialog",
                         "AutofillAmbientAutofill",
                         "AutofillAmbientAutofillFilterEntitiesWithoutSource",
                         "AutofillAmbientAutofillSuppression",

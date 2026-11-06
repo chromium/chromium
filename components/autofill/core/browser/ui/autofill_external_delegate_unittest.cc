@@ -3816,9 +3816,6 @@ class AutofillExternalDelegateWithAmbientAutofillTest
         features::kAutofillAmbientAutofill,
         features::kAutofillAmbientAutofillSuppression,
         features::kAutofillAiWalletPrivatePasses,
-#if BUILDFLAG(IS_ANDROID)
-        features::kAutofillAiShowPersonalContextFillingYourInfoDialog,
-#endif  // BUILDFLAG(IS_ANDROID)
     };
     std::vector<base::test::FeatureRef> disabled_features;
     (IsRefactorEnabled() ? enabled_features : disabled_features)
