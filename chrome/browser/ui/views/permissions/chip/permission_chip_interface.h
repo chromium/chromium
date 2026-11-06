@@ -88,6 +88,8 @@ class PermissionChipInterface {
       base::RepeatingClosure callback) = 0;
 
   virtual void SetAccessibilityIgnored(bool is_ignored) = 0;
+  // Overrides the accessible name until the next `SetMessage()`, which resets
+  // it to the message.
   virtual void SetAccessibilityName(const std::u16string& name) = 0;
   virtual void AnnounceText(const std::u16string& text) = 0;
   virtual void AnnounceAlert(const std::u16string& text) = 0;

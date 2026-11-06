@@ -193,6 +193,25 @@ TEST_F(WebUIPermissionChipTest, GetTextForTesting) {
   EXPECT_EQ(chip.GetTextForTesting(), message);
 }
 
+// Like Views' `LabelButton::SetText()`, `SetMessage()` resets the accessible
+// name to the message, so a name set by `SetAccessibilityName()` only lasts
+// until the next message. Otherwise the indicator chip's aria-label would go
+// stale when its text changes (e.g. camera -> camera and microphone) or when
+// the shared chip switches tabs.
+TEST_F(WebUIPermissionChipTest, SetMessageResetsAccessibilityName) {
+  WebUIPermissionChip chip(location_bar_.get(),
+                           PermissionChipView::kIndicatorChipElementId);
+  chip.SetMessage(u"Camera in use");
+  EXPECT_EQ(chip.GetState()->accessibility_name, u"Camera in use");
+
+  chip.SetAccessibilityName(u"This page is accessing your camera.");
+  EXPECT_EQ(chip.GetState()->accessibility_name,
+            u"This page is accessing your camera.");
+
+  chip.SetMessage(u"Camera & microphone in use");
+  EXPECT_EQ(chip.GetState()->accessibility_name, u"Camera & microphone in use");
+}
+
 TEST_F(WebUIPermissionChipTest, GetIsRequestForTesting) {
   WebUIPermissionChip chip(location_bar_.get(),
                            PermissionChipView::kPermissionRequestChipElementId);

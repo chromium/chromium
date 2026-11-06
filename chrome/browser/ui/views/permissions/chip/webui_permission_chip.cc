@@ -121,6 +121,11 @@ void WebUIPermissionChip::SetChipIcon(const gfx::VectorIcon* icon) {
 
 void WebUIPermissionChip::SetMessage(std::u16string message) {
   message_ = message;
+  // Mirror Views' `LabelButton::SetTextInternal()`, which resets the accessible
+  // name to the new text. A name set by `SetAccessibilityName()` only lasts
+  // until the next message, so it can't go stale when the message changes or
+  // the chip switches tabs.
+  accessibility_name_ = message_;
   UpdateState();
 }
 
