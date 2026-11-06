@@ -7,11 +7,9 @@ found in the LICENSE file.
 
 <!-- A single download row in the download toolbar button tray: file-type icon and the file name
      with a status description below it. Clicking the row opens the download, as on desktop. -->
-<!-- TODO(crbug.com/574064718): Remove tools:ignore once the tray inflates this row. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/download_tray_item_min_height"
@@ -21,8 +19,7 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true"
-    tools:ignore="UnusedResources">
+    android:focusable="true">
 
     <ImageView
         android:id="@+id/download_tray_item_icon"

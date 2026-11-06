@@ -95,6 +95,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceAdapter.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceDialog.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadSettings.java",
+    "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayDelegate.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemProperties.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemViewBinder.java",
@@ -140,6 +141,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
     "//ui/edge_to_edge:java",
     "//url:gurl_java",
@@ -204,6 +206,7 @@ robolectric_library("junit_tests") {
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialogTest.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceDialogUnitTest.java",
+    "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMediatorTest.java",
   ]
@@ -235,6 +238,7 @@ robolectric_library("junit_tests") {
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/accessibility:ui_accessibility_test_support_java",
     "//ui/android:ui_full_java",
   ]
   resources_package = "org.chromium.chrome.browser.download"

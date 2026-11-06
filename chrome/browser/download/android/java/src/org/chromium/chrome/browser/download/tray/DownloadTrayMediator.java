@@ -24,6 +24,7 @@ import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -36,8 +37,12 @@ import java.util.function.Supplier;
 class DownloadTrayMediator implements DownloadStateModel.Observer {
     /** Shows and dismisses the tray popup on the mediator's behalf. */
     interface PopupController {
-        /** Shows {@code row} in a popup anchored to {@code anchor}, replacing any shown popup. */
-        void showCompletion(View anchor, PropertyModel row);
+        /**
+         * Shows {@code row} in a popup anchored to {@code anchor}, replacing any shown popup.
+         *
+         * @return Whether the popup is showing, e.g. false if there is no room for it.
+         */
+        boolean showCompletion(View anchor, PropertyModel row);
 
         /** Dismisses the popup, if showing. */
         void dismiss();
@@ -47,7 +52,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
      * Minimum time between two completion popups, so a burst of completions doesn't keep popping
      * up. Mirrors desktop's {@code kShowPartialViewMinInterval}.
      */
-    @VisibleForTesting static final long MIN_SHOW_INTERVAL_MS = 15_000;
+    @VisibleForTesting static final long MIN_SHOW_INTERVAL_MS = TimeUnit.SECONDS.toMillis(15);
 
     private final Context mContext;
     private final DownloadStateModel mModel;
@@ -59,6 +64,12 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
 
     /** The download in the showing popup, or null if no popup is showing. */
     private @Nullable ContentId mShownId;
+
+    /**
+     * The latest completion waiting to be shown once nothing is still downloading, or null. Kept so
+     * it is still shown if the last active download fails, is cancelled or is removed.
+     */
+    private @Nullable OfflineItem mPendingCompletion;
 
     /**
      * When the last popup was shown. Starts one interval in the past so the first completion always
@@ -108,16 +119,42 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
 
     @Override
     public void onItemChanged(OfflineItem item, @Nullable OfflineItem previous) {
+        // The model only caches active downloads, so a null previous means it wasn't active.
+        if (previous == null) return;
+        // As on desktop, an active download ends when it stops being active or is flagged as
+        // dangerous (desktop counts those as done). Pausing or waiting to auto-resume isn't an
+        // ending: a waiting completion is shown once that download ends.
+        if (DownloadStateModel.isActive(item) && !isDangerous(item)) return;
+
         // Only a download this window saw in progress that has just completed is shown.
-        boolean completed =
-                previous != null
-                        && DownloadStateModel.isActive(previous)
-                        && item.state == OfflineItemState.COMPLETE;
-        if (!completed
-                || DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)
-                || !mIsWindowFocused.getAsBoolean()) {
-            return;
+        if (item.state == OfflineItemState.COMPLETE && !isDangerous(item)) {
+            mPendingCompletion = item;
         }
+        // Any active download ending (completed or not) may leave nothing downloading.
+        maybeShowPendingCompletion();
+    }
+
+    @Override
+    public void onItemRemoved(ContentId id, @Nullable OfflineItem previous) {
+        // E.g. deleted from the Downloads page while its popup is showing.
+        if (id.equals(mShownId)) mPopupController.dismiss();
+
+        if (mPendingCompletion != null && id.equals(mPendingCompletion.id)) {
+            mPendingCompletion = null;
+        } else if (previous != null) {
+            // An active download removed, e.g. cancelled, may leave nothing downloading.
+            maybeShowPendingCompletion();
+        }
+    }
+
+    private void maybeShowPendingCompletion() {
+        // TODO(crbug.com/574064718): Show all recent completions in a list instead of only the
+        // last one, as desktop's partial view does.
+        if (mPendingCompletion == null || isAnythingDownloading()) return;
+        OfflineItem item = mPendingCompletion;
+        mPendingCompletion = null;
+
+        if (!mIsWindowFocused.getAsBoolean()) return;
 
         long now = TimeUtils.elapsedRealtimeMillis();
         if (now - mLastShownTimeMs < MIN_SHOW_INTERVAL_MS) return;
@@ -125,22 +162,35 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         View anchor = mAnchorSupplier.get();
         if (anchor == null || !anchor.isShown()) return;
 
-        mLastShownTimeMs = now;
         // Showing replaces any previous popup, whose dismissal resets mShownId, so set it after.
-        mPopupController.showCompletion(anchor, createCompletedItemModel(item));
+        if (!mPopupController.showCompletion(anchor, createCompletedItemModel(item))) return;
+        mLastShownTimeMs = now;
         mShownId = item.id;
-    }
-
-    @Override
-    public void onItemRemoved(ContentId id, @Nullable OfflineItem previous) {
-        // E.g. deleted from the Downloads page while its popup is showing.
-        if (id.equals(mShownId)) mPopupController.dismiss();
     }
 
     private void onOpen(OfflineItem item) {
         mOnActioned.run();
         mPopupController.dismiss();
         mDelegate.openItem(item);
+    }
+
+    /**
+     * Whether any download is still downloading. As on desktop ({@code IsAllDone()} in {@code
+     * DownloadDisplayController}), the popup waits for these so a burst of downloads ends in one
+     * popup. Paused downloads, pending ones (interrupted and waiting to auto-resume, e.g. for a
+     * network) and dangerous ones awaiting the user's decision (which desktop treats as done) don't
+     * hold it back.
+     */
+    private boolean isAnythingDownloading() {
+        for (OfflineItem active : mModel.getActiveItems()) {
+            if (active.state == OfflineItemState.IN_PROGRESS && !isDangerous(active)) return true;
+        }
+        return false;
+    }
+
+    /** Whether {@code item} is dangerous and so has its own warning UI instead of the tray. */
+    private static boolean isDangerous(OfflineItem item) {
+        return DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state);
     }
 
     private PropertyModel createCompletedItemModel(OfflineItem item) {

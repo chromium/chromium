@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -77,7 +78,7 @@ public class DownloadTrayMediatorTest {
         doAnswer(
                         invocation -> {
                             mMediator.onDismissed();
-                            return null;
+                            return true;
                         })
                 .when(mPopupController)
                 .showCompletion(any(), any());
@@ -162,6 +163,92 @@ public class DownloadTrayMediatorTest {
     }
 
     @Test
+    public void testCompletionWhileOthersDownloading_waitsUntilAllDone() {
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("b", OfflineItemState.IN_PROGRESS)));
+        mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        verify(mPopupController, never()).showCompletion(any(), any());
+
+        mModel.onItemUpdated(createItem("b", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        assertEquals("b.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+    }
+
+    @Test
+    public void testPausedPendingOrDangerousDownloads_doNotDelayPopup() {
+        // As on desktop, paused downloads, pending ones (waiting to auto-resume) and dangerous ones
+        // awaiting a decision don't block.
+        OfflineItem dangerous = createItem("dangerous", OfflineItemState.IN_PROGRESS);
+        dangerous.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("paused", OfflineItemState.PAUSED),
+                        createItem("pending", OfflineItemState.PENDING),
+                        dangerous));
+        mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        assertEquals("a.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+    }
+
+    @Test
+    public void testLastActiveDownloadPausedThenFlaggedDangerous_showsWaitingCompletion() {
+        // "a" completes while "b" runs.
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("b", OfflineItemState.IN_PROGRESS)));
+        mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+
+        // As on desktop, pausing "b" doesn't end it, so "a" keeps waiting.
+        mModel.onItemUpdated(createItem("b", OfflineItemState.PAUSED), /* updateDelta= */ null);
+        verify(mPopupController, never()).showCompletion(any(), any());
+
+        // Once resumed, "b" being flagged as dangerous ends it, as on desktop.
+        mModel.onItemUpdated(
+                createItem("b", OfflineItemState.IN_PROGRESS), /* updateDelta= */ null);
+        OfflineItem dangerous = createItem("b", OfflineItemState.IN_PROGRESS);
+        dangerous.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        mModel.onItemUpdated(dangerous, /* updateDelta= */ null);
+        assertEquals("a.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+    }
+
+    @Test
+    public void testLastActiveDownloadFailingOrRemoved_showsWaitingCompletion() {
+        // "a" completes while "b" runs; "b" then fails.
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("b", OfflineItemState.IN_PROGRESS)));
+        mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
+        assertEquals("a.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+
+        // "c" completes while "d" runs; "d" is then removed, e.g. cancelled.
+        clearInvocations(mPopupController);
+        mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS);
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("c", OfflineItemState.IN_PROGRESS),
+                        createItem("d", OfflineItemState.IN_PROGRESS)));
+        mModel.onItemUpdated(createItem("c", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        mModel.onItemRemoved(id("d"));
+        assertEquals("c.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+    }
+
+    @Test
+    public void testWaitingCompletionRemoved_isNotShown() {
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("b", OfflineItemState.IN_PROGRESS)));
+        mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        mModel.onItemRemoved(id("a"));
+        mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
+        verify(mPopupController, never()).showCompletion(any(), any());
+    }
+
+    @Test
     public void testOpen_marksActionedDismissesAndOpens() {
         OfflineItem item = runToState("report", OfflineItemState.COMPLETE);
 
@@ -182,6 +269,19 @@ public class DownloadTrayMediatorTest {
 
         mFakeTime.advanceMillis(1);
         runToState("c", OfflineItemState.COMPLETE);
+        verify(mPopupController, times(2)).showCompletion(any(), any());
+    }
+
+    @Test
+    public void testPopupThatCouldNotShow_doesNotStartMinInterval() {
+        // E.g. no room for the popup: the next completion must not be rate-limited.
+        doReturn(false).when(mPopupController).showCompletion(any(), any());
+        runToState("a", OfflineItemState.COMPLETE);
+        mModel.onItemRemoved(id("a"));
+        verify(mPopupController, never()).dismiss();
+
+        doReturn(true).when(mPopupController).showCompletion(any(), any());
+        runToState("b", OfflineItemState.COMPLETE);
         verify(mPopupController, times(2)).showCompletion(any(), any());
     }
 
