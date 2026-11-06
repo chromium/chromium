@@ -226,7 +226,8 @@ class SettingsUIWalletReminderNoticeTest : public SettingsUITest {
         /*enabled_features=*/
         {autofill::features::kAutofillEnableWalletReminderNotice},
         /*disabled_features=*/
-        {autofill::features::kAutofillEnableWalletDirectOffers});
+        {autofill::features::kAutofillEnableWalletDirectOffers,
+         autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings});
   }
 
  private:
@@ -269,7 +270,8 @@ class SettingsUIWalletDirectOffersTest : public SettingsUITest {
         /*enabled_features=*/
         {autofill::features::kAutofillEnableWalletReminderNotice,
          autofill::features::kAutofillEnableWalletDirectOffers},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings});
   }
 
  private:
@@ -313,7 +315,8 @@ class SettingsUIWalletDirectOffersTest_WalletReminderNoticeDisabled
         /*enabled_features=*/
         {autofill::features::kAutofillEnableWalletDirectOffers},
         /*disabled_features=*/
-        {autofill::features::kAutofillEnableWalletReminderNotice});
+        {autofill::features::kAutofillEnableWalletReminderNotice,
+         autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings});
   }
 
  private:
@@ -343,6 +346,100 @@ IN_PROC_BROWSER_TEST_F(
 
   std::string expected_label = base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
       IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS_WITH_OFFERS,
+      base::UTF8ToUTF16(autofill::payments::GetManageInstrumentsUrl().spec()),
+      base::UTF8ToUTF16(autofill::payments::GetManagePassesUrl().spec())));
+
+  EXPECT_EQ(label, expected_label);
+}
+
+class SettingsUIOffersAndLoyaltyCardsSettingsTest : public SettingsUITest {
+ public:
+  SettingsUIOffersAndLoyaltyCardsSettingsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {autofill::features::kAutofillEnableWalletReminderNotice,
+         autofill::features::kAutofillEnableWalletDirectOffers,
+         autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the payments Wallet link string does not mention loyalty cards or
+// offers when they are moved to their own settings leaf.
+IN_PROC_BROWSER_TEST_F(SettingsUIOffersAndLoyaltyCardsSettingsTest,
+                       ManageCreditCardsLabelWithoutLoyaltyCardsAndOffers) {
+  // Navigate to settings. This should not crash.
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Wait for settings UI to be loaded.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "customElements.whenDefined('settings-ui');"));
+
+  // Retrieve the string added to loadTimeData.
+  std::string label =
+      content::EvalJs(
+          web_contents,
+          "import('chrome://resources/js/load_time_data.js').then(m => "
+          "m.loadTimeData.getString('manageCreditCardsLabel'))")
+          .ExtractString();
+
+  std::string expected_label = base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+      IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA_AND_PASSES,
+      base::UTF8ToUTF16(autofill::payments::GetManageSettingsUrl().spec()),
+      base::UTF8ToUTF16(autofill::payments::GetManageInstrumentsUrl().spec()),
+      base::UTF8ToUTF16(autofill::payments::GetManagePassesUrl().spec())));
+
+  EXPECT_EQ(label, expected_label);
+}
+
+class SettingsUIOffersAndLoyaltyCardsSettingsTest_WalletReminderNoticeDisabled
+    : public SettingsUITest {
+ public:
+  SettingsUIOffersAndLoyaltyCardsSettingsTest_WalletReminderNoticeDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {autofill::features::kAutofillEnableWalletDirectOffers,
+         autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings},
+        /*disabled_features=*/
+        {autofill::features::kAutofillEnableWalletReminderNotice});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the payments Wallet link string does not mention loyalty cards or
+// offers when they are moved to their own settings leaf, with the Wallet
+// Reminder Notice disabled.
+IN_PROC_BROWSER_TEST_F(
+    SettingsUIOffersAndLoyaltyCardsSettingsTest_WalletReminderNoticeDisabled,
+    ManageCreditCardsLabelWithoutLoyaltyCardsAndOffers) {
+  // Navigate to settings. This should not crash.
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Wait for settings UI to be loaded.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "customElements.whenDefined('settings-ui');"));
+
+  // Retrieve the string added to loadTimeData.
+  std::string label =
+      content::EvalJs(
+          web_contents,
+          "import('chrome://resources/js/load_time_data.js').then(m => "
+          "m.loadTimeData.getString('manageCreditCardsLabel'))")
+          .ExtractString();
+
+  std::string expected_label = base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+      IDS_SETTINGS_PAYMENTS_MANAGE_PAYMENT_METHODS_AND_PASSES,
       base::UTF8ToUTF16(autofill::payments::GetManageInstrumentsUrl().spec()),
       base::UTF8ToUTF16(autofill::payments::GetManagePassesUrl().spec())));
 

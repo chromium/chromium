@@ -1622,6 +1622,53 @@ bool AutofillSettingsEnterprisePolicyEnabled() {
       autofill::features::kAutofillEnableAutofillSettingsEnterprisePolicy);
 }
 
+// Returns the label with Google Wallet links shown on the payments settings
+// page.
+std::u16string GetManageCreditCardsLabel() {
+  const std::u16string manage_instruments_url =
+      base::UTF8ToUTF16(autofill::payments::GetManageInstrumentsUrl().spec());
+  const std::u16string manage_passes_url =
+      base::UTF8ToUTF16(autofill::payments::GetManagePassesUrl().spec());
+  // When enabled, offers and loyalty cards are managed in their own settings
+  // leaf, so the payments string should not mention them.
+  const bool offers_and_loyalty_cards_settings_enabled =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings);
+  const bool wallet_direct_offers_enabled = base::FeatureList::IsEnabled(
+      autofill::features::kAutofillEnableWalletDirectOffers);
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletReminderNotice)) {
+    int message_id = IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA;
+    if (offers_and_loyalty_cards_settings_enabled) {
+      message_id = IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA_AND_PASSES;
+    } else if (wallet_direct_offers_enabled) {
+      message_id = IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA_WITH_OFFERS;
+    }
+    return l10n_util::GetStringFUTF16(
+        message_id,
+        base::UTF8ToUTF16(autofill::payments::GetManageSettingsUrl().spec()),
+        manage_instruments_url, manage_passes_url);
+  }
+
+  if (offers_and_loyalty_cards_settings_enabled) {
+    return l10n_util::GetStringFUTF16(
+        IDS_SETTINGS_PAYMENTS_MANAGE_PAYMENT_METHODS_AND_PASSES,
+        manage_instruments_url, manage_passes_url);
+  }
+
+  if (wallet_direct_offers_enabled) {
+    return l10n_util::GetStringFUTF16(
+        IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS_WITH_OFFERS,
+        manage_instruments_url, manage_passes_url);
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS,
+      base::UTF8ToUTF16(autofill::payments::GetManageLoyaltyCardsUrl().spec()),
+      manage_instruments_url);
+}
+
 void AddAutofillStrings(content::WebUIDataSource* html_source,
                         Profile* profile,
                         content::WebContents* web_contents) {
@@ -2007,41 +2054,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableWalletReminderNotice)) {
-    html_source->AddString(
-        "manageCreditCardsLabel",
-        l10n_util::GetStringFUTF16(
-            base::FeatureList::IsEnabled(
-                autofill::features::kAutofillEnableWalletDirectOffers)
-                ? IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA_WITH_OFFERS
-                : IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA,
-            base::UTF8ToUTF16(
-                autofill::payments::GetManageSettingsUrl().spec()),
-            base::UTF8ToUTF16(
-                autofill::payments::GetManageInstrumentsUrl().spec()),
-            base::UTF8ToUTF16(
-                autofill::payments::GetManagePassesUrl().spec())));
-  } else if (base::FeatureList::IsEnabled(
-                 autofill::features::kAutofillEnableWalletDirectOffers)) {
-    html_source->AddString(
-        "manageCreditCardsLabel",
-        l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS_WITH_OFFERS,
-            base::UTF8ToUTF16(
-                autofill::payments::GetManageInstrumentsUrl().spec()),
-            base::UTF8ToUTF16(
-                autofill::payments::GetManagePassesUrl().spec())));
-  } else {
-    html_source->AddString(
-        "manageCreditCardsLabel",
-        l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS,
-            base::UTF8ToUTF16(
-                autofill::payments::GetManageLoyaltyCardsUrl().spec()),
-            base::UTF8ToUTF16(
-                autofill::payments::GetManageInstrumentsUrl().spec())));
-  }
+  html_source->AddString("manageCreditCardsLabel", GetManageCreditCardsLabel());
   html_source->AddString("managePaymentMethodsUrl",
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("managePrivatePassesUrl",
