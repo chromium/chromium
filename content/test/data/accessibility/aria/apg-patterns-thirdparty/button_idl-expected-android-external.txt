@@ -3,7 +3,7 @@ WebView supplementalDescription:"Button Examples (IDL Version)" focusable focuse
 ++++TextView text:"Important" heading actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
 ++++++TextView text:"This example is coded using syntax that was not introduced until version 1.2 of the ARIA specification. When using a " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++View text:"null" contentDescription:"browser that does not yet provide support for ARIA attribute reflection" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="https://github.com/w3c/aria-practices/issues/1692"]
+++++++View text:null contentDescription:"browser that does not yet provide support for ARIA attribute reflection" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="https://github.com/w3c/aria-practices/issues/1692"]
 ++++++++TextView text:"browser that does not yet provide support for ARIA attribute reflection" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
 ++++++TextView text:", the buttons will not be styled correctly." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]

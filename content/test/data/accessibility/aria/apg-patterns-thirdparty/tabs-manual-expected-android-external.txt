@@ -8,7 +8,7 @@ WebView supplementalDescription:"Example of Tabs with Manual Activation" focusab
 ++++++View text:"Peter Müller" viewIdResName:"tab-4" clickable focusable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=3, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", clickableScore="300", roleDescription="tab"]
 ++++View viewIdResName:"tabpanel-1" supplementalDescription:"Maria Ahlefeldt" actions:[AX_FOCUS] bundle:[chromeRole="tabPanel", roleDescription="tab panel"]
 ++++++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
-++++++++View text:"null" contentDescription:"Maria Theresia Ahlefeldt" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="https://en.wikipedia.org/wiki/Maria_Theresia_Ahlefeldt"]
+++++++++View text:null contentDescription:"Maria Theresia Ahlefeldt" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="https://en.wikipedia.org/wiki/Maria_Theresia_Ahlefeldt"]
 ++++++++++TextView text:"Maria Theresia Ahlefeldt" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
 ++++++++TextView text:" (16 January 1755 – 20 December 1810) was a Danish, (originally German), composer. She is known as the first female composer in Denmark. Maria Theresia composed music for several ballets, operas, and plays of the royal theatre. She was given good critic as a composer and described as a “" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++++TextView text:"virkelig Tonekunstnerinde" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

@@ -25,7 +25,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++View containerTitle:"Toolbar actions" actions:[AX_FOCUS] bundle:[chromeRole="group"]
 ++++++Button text:"Bold" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button"]
 ++++++Button text:"Italic" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button"]
-++++++View text:"null" contentDescription:"Help" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", roleDescription="link"]
+++++++View text:null contentDescription:"Help" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", roleDescription="link"]
 ++++++++TextView text:"Help" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
 ++++TextView text:"Plain text" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

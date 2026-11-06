@@ -23,7 +23,7 @@ WebView supplementalDescription:"Toolbar Example" focusable focused actions:[CLE
 ++++++++View actions:[AX_FOCUS] bundle:[chromeRole="labelText", clickableScore="100"]
 ++++++++++CheckBox viewIdResName:"checkbox" supplementalDescription:"Night Mode" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", clickableScore="300"]
 ++++++++++TextView text:" Night Mode" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
-++++++++View text:"null" contentDescription:"Help" viewIdResName:"link" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/third_party/aria-practices/src/content/patterns/toolbar/examples/help.html"]
+++++++++View text:null contentDescription:"Help" viewIdResName:"link" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/third_party/aria-practices/src/content/patterns/toolbar/examples/help.html"]
 ++++++++++TextView text:"Help" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
 ++++View text:"Text Sample" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="labelText"]
 ++++View text:"\n" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="lineBreak"]

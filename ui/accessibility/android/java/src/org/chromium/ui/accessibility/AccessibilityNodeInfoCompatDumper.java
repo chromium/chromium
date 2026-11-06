@@ -56,7 +56,7 @@ public final class AccessibilityNodeInfoCompatDumper {
 
         // Print text unless it is empty (null is allowed).
         if (node.getText() == null) {
-            builder.append(" text:\"null\"");
+            builder.append(" text:null");
         } else if (!node.getText().toString().isEmpty()) {
             builder.append(" text:\"")
                     .append(node.getText().toString().replace("\n", "\\n"))

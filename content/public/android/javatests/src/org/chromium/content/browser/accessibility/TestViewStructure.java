@@ -155,7 +155,7 @@ public class TestViewStructure extends ViewStructure {
 
         // Print text unless it is empty (null is allowed).
         if (mText == null) {
-            builder.append(" text:\"null\"");
+            builder.append(" text:null");
         } else if (!mText.toString().isEmpty()) {
             builder.append(" text:\"").append(mText.toString().replace("\n", "\\n")).append("\"");
         }

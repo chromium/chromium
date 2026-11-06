@@ -21,7 +21,7 @@ WebView supplementalDescription:"Experimental Example of Tabs with Action Button
 ++++View viewIdResName:"tabpanel-1" supplementalDescription:"Nurse shark" actions:[AX_FOCUS] bundle:[chromeRole="tabPanel", clickableScore="100", roleDescription="tab panel"]
 ++++++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph", clickableScore="100"]
 ++++++++TextView text:"The " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
-++++++++View text:"null" contentDescription:"nurse shark" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="https://en.wikipedia.org/wiki/Nurse_shark"]
+++++++++View text:null contentDescription:"nurse shark" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="https://en.wikipedia.org/wiki/Nurse_shark"]
 ++++++++++TextView text:"nurse shark" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
 ++++++++TextView text:" (" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
 ++++++++TextView text:"Ginglymostoma cirratum" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
