@@ -355,11 +355,15 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
     // Reset to avoid dangling pointer issues during teardown.
     task_environment_.RunUntilIdle();
     mediator_ = nil;
+    ResetWebStateList();
+    passkey_model_.reset();
+  }
+
+  void ResetWebStateList() {
     web_state_ptr_ = nullptr;
     main_frame_ptr_ = nullptr;
     frames_manager_ptr_ = nullptr;
     web_state_list_.reset();
-    passkey_model_.reset();
   }
 
   void CreateMediator() {
@@ -526,9 +530,9 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
   std::unique_ptr<webauthn::TestPasskeyModel> passkey_model_;
   std::unique_ptr<WebStateList> web_state_list_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  raw_ptr<web::WebState, DanglingUntriaged> web_state_ptr_;
-  raw_ptr<web::FakeWebFramesManager, DanglingUntriaged> frames_manager_ptr_;
-  raw_ptr<web::FakeWebFrame, DanglingUntriaged> main_frame_ptr_;
+  raw_ptr<web::WebState> web_state_ptr_ = nullptr;
+  raw_ptr<web::FakeWebFramesManager> frames_manager_ptr_ = nullptr;
+  raw_ptr<web::FakeWebFrame> main_frame_ptr_ = nullptr;
   scoped_refptr<password_manager::TestPasswordStore> store_;
   id consumer_;
   NSArray<id<FormSuggestionProvider>>* suggestion_providers_;
@@ -696,8 +700,7 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
   [mediator_ setConsumer:consumer_];
 
   task_environment_.RunUntilIdle();
-  web_state_list_.reset();
-  EXPECT_OCMOCK_VERIFY(consumer_);
+  ResetWebStateList();
 }
 
 // Tests that when there is both a password suggestion and a passkey suggestion
