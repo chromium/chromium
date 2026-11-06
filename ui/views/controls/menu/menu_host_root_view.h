@@ -40,6 +40,9 @@ class MenuHostRootView : public internal::RootView {
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
 
+  // ViewTargeterDelegate:
+  View* TargetForRect(View* root, const gfx::Rect& rect) override;
+
   bool ProcessMousePressed(const ui::MouseEvent& event);
   bool ProcessMouseDragged(const ui::MouseEvent& event);
   void ProcessMouseReleased(const ui::MouseEvent& event);
