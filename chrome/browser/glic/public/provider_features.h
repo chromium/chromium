@@ -14,6 +14,7 @@
 // and flag registration may include this file.
 
 namespace glic {
+struct GlicExperimentalTriggeringFeatureParams;
 struct GlicIndigoFeatureParams;
 struct GlicMarketingAutoOpenFeatureParams;
 struct GlicPdfAutoOpenFeatureParams;
@@ -22,6 +23,13 @@ struct GlicSelectionInlineCueFeatureParams;
 }  // namespace glic
 
 namespace features {
+
+// Experimental triggering ("Spark"). See GlicFeature::kExperimentalTriggering.
+BASE_DECLARE_FEATURE(kGlicExperimentalTriggering);
+inline constexpr char kGlicExperimentalTriggeringOptInUrlParam[] =
+    "glic-experimental-triggering-opt-in-url";
+glic::GlicExperimentalTriggeringFeatureParams
+PopulateExperimentalTriggeringFeatureParams(const base::Feature& feature);
 
 // Auto-opening Glic for PDFs. See GlicFeature::kPdfAutoOpen.
 BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);

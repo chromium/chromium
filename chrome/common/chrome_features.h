@@ -183,8 +183,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicIgnoreDogfoodClient);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicExperimentalTriggering);
-COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringOptInTabFocus);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringScreenshot);
@@ -202,9 +200,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringScriptTools);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicBackgroundTriggering);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kGlicExperimentalTriggeringOptInURL;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kGlicExperimentalTriggeringTabFocusHosts;

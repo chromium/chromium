@@ -34,6 +34,10 @@ struct GeicProviderInitOptions {
   bool can_switch_between_gemini_providers = false;
 };
 
+struct GlicExperimentalTriggeringFeatureParams {
+  std::string opt_in_url = "https://gemini.google.com/glic/intro?";
+};
+
 struct GlicPdfAutoOpenFeatureParams {
   bool with_onboarding = true;
   base::TimeDelta cooldown = base::Hours(1);
@@ -186,6 +190,8 @@ class GlicProviderSpec {
   // feature's flag(s), if it has any. Callers still apply profile requirements
   // (e.g. Glic enablement or FRE consent).
   virtual bool SupportsFeature(GlicFeature feature) const = 0;
+  virtual GlicExperimentalTriggeringFeatureParams
+  GetExperimentalTriggeringFeatureParams() const = 0;
   virtual GlicPdfAutoOpenFeatureParams GetPdfAutoOpenFeatureParams() const = 0;
   virtual GlicPdfSummarizeFeatureParams GetPdfSummarizeFeatureParams()
       const = 0;

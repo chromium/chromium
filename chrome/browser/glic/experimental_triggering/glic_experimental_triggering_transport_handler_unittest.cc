@@ -9,12 +9,15 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
@@ -23,15 +26,22 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
+#include "components/browser_actuator/public/transport/transport_channel.h"
+#include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_service.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -504,6 +514,71 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
   declined_response.context_id = "test_session_id";
   declined_response.device_opt_in_result = DeviceOptInResult::kDeclined;
   captured_update_callback.Run(std::move(declined_response));
+}
+
+// Checks which profiles' GlicKeyedService registers the experimental
+// triggering factory on the BrowserActuator transport.
+class GlicExperimentalTriggeringTransportRegistrationTest
+    : public testing::Test {
+ public:
+  GlicExperimentalTriggeringTransportRegistrationTest() {
+    feature_list_.InitWithFeatures(
+        {features::kGlicExperimentalTriggering,
+         browser_actuator::kBrowserActuator,
+         browser_actuator::kEnableBrowserActuatorForGlicExperimentalTriggering},
+        {});
+  }
+
+  void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
+
+  // Creates a profile latched to `provider` and returns the factories
+  // registered for experimental triggering payloads on its transport channel.
+  std::vector<browser_actuator::transport::TransportHandlerFactory*>
+  GetRegisteredFactories(GlicProvider provider) {
+    ScopedGlicProviderOverride provider_override(provider);
+    TestingProfile::TestingFactories testing_factories;
+    testing_factories.emplace_back(
+        GlicKeyedServiceFactory::GetInstance(),
+        base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<GlicKeyedService>(
+              profile, IdentityManagerFactory::GetForProfile(profile),
+              profile_manager_.profile_manager(), &glic_profile_manager_,
+              /*contextual_cueing_service=*/nullptr,
+              /*actor_keyed_service=*/nullptr);
+        }));
+    TestingProfile* profile = profile_manager_.CreateTestingProfile(
+        "profile", std::move(testing_factories));
+    EXPECT_TRUE(GlicKeyedService::Get(profile));
+    browser_actuator::transport::TransportService* transport_service =
+        browser_actuator::transport::TransportServiceFactory::GetForProfile(
+            profile);
+    if (!transport_service || !transport_service->GetChannel()) {
+      ADD_FAILURE() << "No BrowserActuator transport channel";
+      return {};
+    }
+    return transport_service->GetChannel()
+        ->GetHandlerFactoryRegistry()
+        ->GetFactories(PayloadType::kExperimentalTriggering);
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  GlicProfileManager glic_profile_manager_;
+};
+
+TEST_F(GlicExperimentalTriggeringTransportRegistrationTest,
+       RegisteredForGemini) {
+  EXPECT_EQ(GetRegisteredFactories(GlicProvider::kGemini).size(), 1u);
+}
+
+TEST_F(GlicExperimentalTriggeringTransportRegistrationTest,
+       NotRegisteredForGeminiEnterprise) {
+  EXPECT_TRUE(GetRegisteredFactories(GlicProvider::kGeminiEnterprise).empty());
 }
 
 // Pins `ExpectedTypeUrl` to the generated proto; this layer may include it.

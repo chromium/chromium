@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"

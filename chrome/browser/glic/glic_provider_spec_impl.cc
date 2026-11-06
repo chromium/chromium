@@ -190,6 +190,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kOsEntryPoints:
         // No flag: OS entry points are controlled by prefs.
         return true;
+      case GlicFeature::kExperimentalTriggering:
+        return base::FeatureList::IsEnabled(
+            features::kGlicExperimentalTriggering);
       case GlicFeature::kPdfAutoOpen:
         return base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf);
       case GlicFeature::kPdfSummarize:
@@ -230,6 +233,11 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
         return base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools);
     }
     NOTREACHED();
+  }
+  GlicExperimentalTriggeringFeatureParams
+  GetExperimentalTriggeringFeatureParams() const override {
+    return features::PopulateExperimentalTriggeringFeatureParams(
+        features::kGlicExperimentalTriggering);
   }
   GlicPdfAutoOpenFeatureParams GetPdfAutoOpenFeatureParams() const override {
     return features::PopulatePdfAutoOpenFeatureParams(
@@ -317,6 +325,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kLive:
       case GlicFeature::kShareImage:
       case GlicFeature::kOsEntryPoints:
+      case GlicFeature::kExperimentalTriggering:
       case GlicFeature::kPdfAutoOpen:
       case GlicFeature::kPdfSummarize:
       case GlicFeature::kSelectionInlineCue:
@@ -336,6 +345,10 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
         return false;
     }
     NOTREACHED();
+  }
+  GlicExperimentalTriggeringFeatureParams
+  GetExperimentalTriggeringFeatureParams() const override {
+    return {};
   }
   GlicPdfAutoOpenFeatureParams GetPdfAutoOpenFeatureParams() const override {
     return {};

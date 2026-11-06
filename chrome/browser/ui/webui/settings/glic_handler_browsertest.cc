@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"

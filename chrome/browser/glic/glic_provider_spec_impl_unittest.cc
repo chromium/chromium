@@ -100,6 +100,12 @@ TEST(GlicProviderSpecImplTest, GeminiSupportsLiveAndShareImageWithoutFlags) {
 }
 
 TEST(GlicProviderSpecImplTest,
+     GeminiExperimentalTriggeringFollowsGlicExperimentalTriggering) {
+  ExpectGeminiFeatureFollowsFlag(GlicFeature::kExperimentalTriggering,
+                                 features::kGlicExperimentalTriggering);
+}
+
+TEST(GlicProviderSpecImplTest,
      GeminiSelectionInlineCueFollowsGlicSelectionPrompt) {
   ExpectGeminiFeatureFollowsFlag(GlicFeature::kSelectionInlineCue,
                                  features::kGlicSelectionPrompt);
@@ -168,6 +174,7 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
   std::vector<base::test::FeatureRef> enabled_features = {
       features::kGlicLiveMode,
       features::kGlicShareImage,
+      features::kGlicExperimentalTriggering,
       features::kAutoOpenGlicForPdf,
       features::kGlicSelectionPrompt,
       features::kGlicCaptureRegion,

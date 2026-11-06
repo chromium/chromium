@@ -17,6 +17,15 @@
 
 namespace features {
 
+BASE_FEATURE(kGlicExperimentalTriggering, base::FEATURE_DISABLED_BY_DEFAULT);
+glic::GlicExperimentalTriggeringFeatureParams
+PopulateExperimentalTriggeringFeatureParams(const base::Feature& feature) {
+  glic::GlicExperimentalTriggeringFeatureParams params;
+  params.opt_in_url = base::GetFieldTrialParamByFeatureAsString(
+      feature, kGlicExperimentalTriggeringOptInUrlParam, params.opt_in_url);
+  return params;
+}
+
 BASE_FEATURE(kAutoOpenGlicForPdf, base::FEATURE_DISABLED_BY_DEFAULT);
 glic::GlicPdfAutoOpenFeatureParams PopulatePdfAutoOpenFeatureParams(
     const base::Feature& feature) {

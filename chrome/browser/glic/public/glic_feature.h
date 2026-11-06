@@ -23,6 +23,8 @@ enum class GlicFeature {
   // `InstanceIndependentHotkeyManager`), unless another profile has the
   // OS-global hotkey registered, in which case that profile is launched.
   kOsEntryPoints,
+  // Experimental triggering ("Spark").
+  kExperimentalTriggering,
   // Auto-opening Glic for PDFs.
   kPdfAutoOpen,
   // The PDF viewer's summarize button and its API.

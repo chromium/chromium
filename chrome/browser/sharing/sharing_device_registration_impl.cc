@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_features.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -28,17 +27,19 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 
-
 using instance_id::InstanceID;
 using SharingFeature = syncer::DeviceInfo::SharingFeature;
 
 SharingDeviceRegistrationImpl::SharingDeviceRegistrationImpl(
     SharingSyncPreference* sharing_sync_preference,
     instance_id::InstanceIDDriver* instance_id_driver,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    bool glic_experimental_triggering_supported)
     : sharing_sync_preference_(sharing_sync_preference),
       instance_id_driver_(instance_id_driver),
-      sync_service_(sync_service) {}
+      sync_service_(sync_service),
+      glic_experimental_triggering_supported_(
+          glic_experimental_triggering_supported) {}
 
 SharingDeviceRegistrationImpl::~SharingDeviceRegistrationImpl() = default;
 
@@ -250,7 +251,7 @@ bool SharingDeviceRegistrationImpl::IsOneTimeTokenBackendNotificationSupported()
 
 bool SharingDeviceRegistrationImpl::IsGlicExperimentalTriggeringSupported()
     const {
-  return base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering);
+  return glic_experimental_triggering_supported_;
 }
 
 bool SharingDeviceRegistrationImpl::IsBrowserActuatorSupported() const {
@@ -261,4 +262,3 @@ void SharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(
     std::set<SharingFeature> enabled_features) {
   enabled_features_testing_value_ = std::move(enabled_features);
 }
-

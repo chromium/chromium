@@ -256,7 +256,6 @@ const base::FeatureParam<double> kGlicActorApcComparisonSamplingRate{
 
 BASE_FEATURE(kGlicIgnoreDogfoodClient, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicExperimentalTriggering, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringOptInTabFocus,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringScreenshot,
@@ -277,10 +276,6 @@ BASE_FEATURE(kGlicExperimentalTriggeringOsNotification,
 BASE_FEATURE(kGlicExperimentalTriggeringScriptTools,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicBackgroundTriggering, base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string> kGlicExperimentalTriggeringOptInURL{
-    &kGlicExperimentalTriggering, "glic-experimental-triggering-opt-in-url",
-    "https://gemini.google.com/glic/intro?"};
 
 const base::FeatureParam<std::string> kGlicExperimentalTriggeringTabFocusHosts{
     &kGlicExperimentalTriggeringOptInTabFocus,

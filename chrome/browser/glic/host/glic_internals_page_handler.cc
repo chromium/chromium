@@ -37,6 +37,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -592,7 +593,8 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
                                     ->GetBoolean(prefs::kGlicShowErrorAllowed);
 
   payload->experimental_triggering_enabled =
-      base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering);
+      GetGlicProviderSpec(Profile::FromBrowserContext(browser_context_))
+          .SupportsFeature(GlicFeature::kExperimentalTriggering);
 
   if (g_browser_process->local_state()) {
     payload->hotkey_global_scope_migrated_v2 =

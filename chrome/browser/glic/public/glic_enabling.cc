@@ -1567,7 +1567,8 @@ GlicEnabling::GlicEnabling(
                 "function call does not violate the 'no virtual functions in "
                 "constructors' style guide rule. Consider a 2-phase setup");
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
+  if (GetGlicProviderSpec(profile_).SupportsFeature(
+          GlicFeature::kExperimentalTriggering) &&
       base::FeatureList::IsEnabled(features::kGlicBackgroundActuation)) {
     background_actuation_capability_ =
         std::make_unique<BackgroundActuationCapability>(
@@ -1635,7 +1636,8 @@ bool GlicEnabling::IsExperimentalTriggeringUserControlled() const {
 }
 
 bool GlicEnabling::ShouldShowExperimentalTriggeringToggle() const {
-  if (!base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering)) {
+  if (!GetGlicProviderSpec(profile_).SupportsFeature(
+          GlicFeature::kExperimentalTriggering)) {
     return false;
   }
   if (!ShouldShowWebActuationToggle()) {
@@ -1802,7 +1804,8 @@ GlicEnabling::ComputeExperimentalTriggeringState() const {
     return {State::kUnavailable, Reason::kGlicNotEnabled};
   }
 
-  if (!base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering)) {
+  if (!GetGlicProviderSpec(profile_).SupportsFeature(
+          GlicFeature::kExperimentalTriggering)) {
     return {State::kUnavailable, Reason::kFeatureDisabled};
   }
 

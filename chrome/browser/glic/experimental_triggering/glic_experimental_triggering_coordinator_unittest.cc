@@ -39,6 +39,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"

@@ -21,9 +21,11 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -406,7 +408,8 @@ void GlicExperimentalTriggeringMessageHandler::ProcessValidatedMessage(
 }
 
 void GlicExperimentalTriggeringMessageHandler::CheckFeatureFlags() const {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering));
+  CHECK(glic::GetGlicProviderSpec(profile_).SupportsFeature(
+      glic::GlicFeature::kExperimentalTriggering));
 }
 
 glic::GlicExperimentalTriggeringUpdateCallback

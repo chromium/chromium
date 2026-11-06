@@ -9,12 +9,14 @@
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_metrics.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -62,7 +64,9 @@ GURL GetExperimentalTriggeringOptInURL(Profile* profile,
   GURL url = GURL(has_url_override
                       ? command_line->GetSwitchValueASCII(
                             ::switches::kGlicExperimentalFreURL)
-                      : features::kGlicExperimentalTriggeringOptInURL.Get());
+                      : GetGlicProviderSpec(profile)
+                            .GetExperimentalTriggeringFeatureParams()
+                            .opt_in_url);
   if (url.is_empty()) {
     LOG(ERROR) << "No glic experimental triggering opt in url";
     return GURL();
@@ -85,9 +89,10 @@ GlicExperimentalOptInUIConfig::~GlicExperimentalOptInUIConfig() = default;
 
 bool GlicExperimentalOptInUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
-         GlicEnabling::IsProfileEligible(
-             Profile::FromBrowserContext(browser_context));
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return GetGlicProviderSpec(profile).SupportsFeature(
+             GlicFeature::kExperimentalTriggering) &&
+         GlicEnabling::IsProfileEligible(profile);
 }
 
 GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)

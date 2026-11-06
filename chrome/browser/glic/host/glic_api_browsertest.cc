@@ -563,6 +563,18 @@ using GlicApiConsumerAuthTest = GlicApiTest;
 // Tests of captureRegion, which is consumer-only (not supported by GEiC).
 using GlicApiCaptureRegionTest = GlicApiTest;
 
+// Tests of experimental triggering ("Spark"), which is consumer-only: GEiC
+// doesn't bind `ExperimentalTriggeringClient`.
+class GlicApiExperimentalTriggeringTest : public GlicApiTest {
+ public:
+  GlicApiExperimentalTriggeringTest() {
+    feature_list_.InitAndEnableFeature(features::kGlicExperimentalTriggering);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class GlicApiTestWithWebContentsWarming : public GlicApiTest {
  public:
   GlicApiTestWithWebContentsWarming() {
@@ -663,7 +675,8 @@ class GlicApiTestWithExperimentalTriggeringScreenshot : public GlicApiTest {
  public:
   GlicApiTestWithExperimentalTriggeringScreenshot() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicExperimentalTriggeringScreenshot, {}},
+        {{features::kGlicExperimentalTriggering, {}},
+         {features::kGlicExperimentalTriggeringScreenshot, {}},
          {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}}},
         {});
@@ -4473,7 +4486,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
            actor::ActorSurfaceHandle::From(tab->GetHandle()).raw_value()))});
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetExperimentalTriggeringUpdates) {
+IN_PROC_BROWSER_TEST_P(GlicApiExperimentalTriggeringTest,
+                       testGetExperimentalTriggeringUpdates) {
   ASSERT_OK(OpenGlicForActiveTab());
   GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
   options.target.surface = DefaultSurface{
@@ -4512,7 +4526,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetExperimentalTriggeringUpdates) {
             mojom::SubscriberObservationType::kComplete);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetExperimentalTriggeringUpdatesError) {
+IN_PROC_BROWSER_TEST_P(GlicApiExperimentalTriggeringTest,
+                       testGetExperimentalTriggeringUpdatesError) {
   ASSERT_OK(OpenGlicForActiveTab());
   GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
   options.target.surface = DefaultSurface{
@@ -5203,7 +5218,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(result.error(), ScreenshotResult::Status::kErrorCapture);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSubmitConfirmationResponse) {
+IN_PROC_BROWSER_TEST_P(GlicApiExperimentalTriggeringTest,
+                       testSubmitConfirmationResponse) {
   ASSERT_OK(OpenGlicForActiveTab());
 
   ASSERT_TRUE(RunUntil(
@@ -5225,7 +5241,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSubmitConfirmationResponse) {
   EXPECT_TRUE(future.Get());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
+IN_PROC_BROWSER_TEST_P(GlicApiExperimentalTriggeringTest,
                        testConfirmationResponseNotAppliedOnDisconnect) {
   ASSERT_OK(OpenGlicForActiveTab());
 
@@ -5927,6 +5943,11 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiCaptureRegionTest,
+                         ConsumerOnlyTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiExperimentalTriggeringTest,
                          ConsumerOnlyTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

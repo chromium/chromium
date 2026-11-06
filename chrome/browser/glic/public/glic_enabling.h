@@ -855,7 +855,8 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   mojom::ProfileReadyState last_profile_ready_state_;
 #if BUILDFLAG(IS_ANDROID)
   // Tracks the "background_actuation" capability. Only created while
-  // `kGlicExperimentalTriggering` and `kGlicBackgroundActuation` are enabled.
+  // `GlicFeature::kExperimentalTriggering` is supported and
+  // `kGlicBackgroundActuation` is enabled.
   std::unique_ptr<BackgroundActuationCapability>
       background_actuation_capability_;
 #endif  // BUILDFLAG(IS_ANDROID)

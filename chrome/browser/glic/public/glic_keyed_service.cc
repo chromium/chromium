@@ -52,6 +52,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
@@ -262,7 +263,8 @@ GlicKeyedService::GlicKeyedService(
               &GlicKeyedService::OnExperimentalTriggeringStateChanged,
               base::Unretained(this)));
 
-  if (base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator) &&
+  if (provider_spec().SupportsFeature(GlicFeature::kExperimentalTriggering) &&
+      base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator) &&
       base::FeatureList::IsEnabled(
           browser_actuator::
               kEnableBrowserActuatorForGlicExperimentalTriggering)) {

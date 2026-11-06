@@ -4293,9 +4293,8 @@ TEST_F(GlicEnablingGeicPolicyTest,
 // profile, even with their features enabled.
 TEST_F(GlicEnablingGeicPolicyTest, ConsumerOnlyEntryPointsDisabledForGeic) {
   std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutoOpenGlicForPdf,
-      features::kGlicSelectionPrompt,
-      features::kGlicCaptureRegion,
+      features::kAutoOpenGlicForPdf, features::kGlicSelectionPrompt,
+      features::kGlicCaptureRegion,  features::kGlicExperimentalTriggering,
 #if BUILDFLAG(ENABLE_PDF)
       features::kPdfGlicSummarize,
 #endif
@@ -4312,6 +4311,12 @@ TEST_F(GlicEnablingGeicPolicyTest, ConsumerOnlyEntryPointsDisabledForGeic) {
   EXPECT_FALSE(GlicEnabling::IsInlineCueEnabledForProfile(profile()));
   EXPECT_FALSE(GetGlicProviderSpec(profile()).SupportsFeature(
       GlicFeature::kCaptureRegion));
+
+  GlicKeyedService* service = GlicKeyedService::Get(profile());
+  ASSERT_TRUE(service);
+  EXPECT_EQ(service->enabling().GetExperimentalTriggeringState(),
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+  EXPECT_FALSE(service->enabling().ShouldShowExperimentalTriggeringToggle());
 }
 
 // Contextual cueing and zero state suggestions stay off for a Gemini Enterprise

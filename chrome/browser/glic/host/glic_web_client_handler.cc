@@ -1032,6 +1032,10 @@ class GlicWebClientHandler
   void CreateExperimentalTriggeringClient(
       mojo::PendingRemote<mojom::ExperimentalTriggeringClient> client)
       override {
+    if (!glic_service_->provider_spec().SupportsFeature(
+            GlicFeature::kExperimentalTriggering)) {
+      return;
+    }
     if (auto* manager =
             host().instance_delegate().GetExperimentalTriggeringManager()) {
       manager->Bind(std::move(client));
