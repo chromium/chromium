@@ -538,7 +538,6 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KillProcessZerosAudioStreams) {
                                 shell()->web_contents()->GetPrimaryMainFrame(),
                                 run_loop.QuitClosure());
 
-    std::string result;
     EXPECT_EQ("OK", EvalJs(shell(), "StartOscillator();"))
         << "Failed to execute javascript.";
     run_loop.Run();
@@ -607,7 +606,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
-  std::string result;
   EXPECT_TRUE(ExecJs(shell(), "getUserMediaAndExpectSuccess({video: true});"))
       << "Failed to execute javascript.";
   EXPECT_EQ(1, rph->get_media_stream_count_for_testing());
@@ -622,7 +620,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
-  std::string result;
   EXPECT_TRUE(ExecJs(shell(), "getUserMediaAndStop({video: true});"))
       << "Failed to execute javascript.";
   EXPECT_EQ(0, rph->get_media_stream_count_for_testing());
@@ -646,7 +643,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
-  std::string result;
   EXPECT_TRUE(ExecJs(shell(), "getUserMediaAndExpectSuccess({video: true});"))
       << "Failed to execute javascript.";
   EXPECT_EQ(1, rph->get_media_stream_count_for_testing());
@@ -689,7 +685,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
-  std::string result;
   EXPECT_TRUE(ExecJs(
       shell(), "getUserMediaAndExpectSuccess({video: false, audio: true});"))
       << "Failed to execute javascript.";
@@ -706,7 +701,6 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
-  std::string result;
   EXPECT_TRUE(ExecJs(
       shell(), "getUserMediaAndExpectSuccess({video: false, audio: true});"))
       << "Failed to execute javascript.";

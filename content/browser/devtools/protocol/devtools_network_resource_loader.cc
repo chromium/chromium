@@ -138,7 +138,6 @@ void DevToolsNetworkResourceLoader::OnDataReceived(std::string_view chunk,
 void DevToolsNetworkResourceLoader::OnComplete(bool success) {
   const network::mojom::URLResponseHead* info = loader_->ResponseInfo();
   const net::HttpResponseHeaders* response_headers = nullptr;
-  std::string mime_type;
   if (info && info->headers) {
     response_headers = info->headers.get();
   }

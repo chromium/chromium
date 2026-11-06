@@ -1533,7 +1533,6 @@ TEST_F(BrowsingDataRemoverImplTest, MultipleIdenticalTasks) {
   MultipleTasksObserver observer(remover);
   BrowsingDataRemoverCompletionInhibitor completion_inhibitor(remover);
 
-  std::list<BrowsingDataRemoverImpl::RemovalTask> tasks;
   for (int i = 0; i < 10; i++) {
     remover->RemoveWithFilterAndReply(
         base::Time(), base::Time::Max(), BrowsingDataRemover::DATA_TYPE_COOKIES,

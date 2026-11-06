@@ -95,7 +95,6 @@ Response BrowserHandler::Disable() {
   // TODO: this leaks context ids for all contexts with overridden permissions.
   for (auto& browser_context_id : contexts_with_overridden_permissions_) {
     content::BrowserContext* browser_context = nullptr;
-    std::string error;
     std::optional<std::string> context_id =
         browser_context_id == ""
             ? std::nullopt

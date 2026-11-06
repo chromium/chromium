@@ -8840,7 +8840,6 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe, Basic) {
       embedded_test_server()->GetURL("/render-blocking-mainframe.html"));
   ASSERT_TRUE(NavigateToURL(web_contents, main_url));
 
-  const std::string iframe_id = "iframe_id";
   RenderFrameHostImpl* subframe_rfh = nullptr;
 
   {
@@ -8915,7 +8914,6 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe,
       embedded_test_server()->GetURL("/render-blocking-mainframe.html"));
   ASSERT_TRUE(NavigateToURL(web_contents, main_url));
 
-  const std::string iframe_id = "iframe_id";
   RenderFrameHostImpl* subframe_rfh = nullptr;
 
   {
@@ -9002,7 +9000,6 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe, CrossOrigin) {
       embedded_test_server()->GetURL("/render-blocking-mainframe.html"));
   ASSERT_TRUE(NavigateToURL(web_contents, main_url));
 
-  const std::string iframe_id = "iframe_id";
   RenderFrameHostImpl* subframe_rfh = nullptr;
 
   {
@@ -9078,7 +9075,6 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe,
       embedded_test_server()->GetURL("/render-blocking-mainframe.html"));
   ASSERT_TRUE(NavigateToURL(web_contents, main_url));
 
-  const std::string iframe_id = "iframe_id";
   RenderFrameHostImpl* subframe_rfh = nullptr;
 
   {

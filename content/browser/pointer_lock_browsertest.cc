@@ -814,14 +814,6 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   EXPECT_TRUE(ExecJs(root, "var pointerLockPromise;"));
-  std::string wait_for_pointer_lock_promise =
-      "(async ()=> {return await pointerLockPromise.then(()=>true, "
-      "()=>false);})()";
-  std::string set_pointer_lock_promise =
-      R"code(pointerLockPromise = new Promise( function(resolve, reject){
-                        document.addEventListener('pointerlockchange', resolve);
-                        document.addEventListener('pointerlockerror', reject)
-                     });)code";
 
   // Request a pointer lock.
   EXPECT_EQ(true, PointerLockHelper::RequestPointerLockOnBody(root));

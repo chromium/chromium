@@ -2112,7 +2112,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   base::DictValue params = WaitForNotification("Target.targetCreated", true);
   EXPECT_THAT(*params.FindStringByDottedPath("targetInfo.type"), Eq("page"));
-  std::string target_id = *params.FindStringByDottedPath("targetInfo.targetId");
 
   SendCommandSync("Debugger.enable");
 

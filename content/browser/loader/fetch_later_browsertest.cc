@@ -175,7 +175,6 @@ IN_PROC_BROWSER_TEST_F(FetchLaterBasicBrowserTest, CallInSameOriginChild) {
 // By default of `deferred-fetch-minimal` policy, `fetchLater()` should be
 // allowed in first X cross-origin child iframes.
 IN_PROC_BROWSER_TEST_F(FetchLaterBasicBrowserTest, CallInCrossOriginChild) {
-  const std::string target_url = kFetchLaterEndpoint;
   ASSERT_TRUE(server()->Start());
 
   RunScript(JsReplace(

@@ -640,9 +640,6 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, EncodeDecodeBlobJournal) {
-  std::vector<IndexedDBKeyPath> key_paths;
-  std::vector<std::string> encoded_paths;
-
   std::vector<BlobJournalType> journals;
 
   {  // Empty journal

@@ -3047,7 +3047,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FastNavigationAbort) {
   // NavigationHandleGrabber::SendingNavigationCommitted(). The navigation
   // should get aborted because of the document.open() in the navigating RFH.
   NavigationHandleGrabber observer(web_contents());
-  const std::u16string title = u"done";
   EXPECT_TRUE(ExecJs(web_contents(), "window.location.href='/title2.html'"));
   observer.WaitForTitle2();
   // Flush IPCs to make sure the renderer didn't tell us to navigate. Need to
@@ -4747,7 +4746,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   main_frame = web_contents()->GetPrimaryMainFrame();
-  BackForwardCacheBlockingDetails empty_vector;
   main_frame->DidChangeBackForwardCacheDisablingFeatures(
       CreateBlockingDetails({}));
 }
@@ -10718,7 +10716,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   RenderViewHostImpl* rvh_a =
       static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost());
-  std::vector<viz::SurfaceId> ids = rvh_a->CollectSurfaceIdsForEviction();
+  rvh_a->CollectSurfaceIdsForEviction();
 
   web_contents()->GetPrimaryMainFrame()->ActivateUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction,
@@ -10751,7 +10749,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   RenderViewHostImpl* rvh_a =
       static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost());
-  std::vector<viz::SurfaceId> ids = rvh_a->CollectSurfaceIdsForEviction();
+  rvh_a->CollectSurfaceIdsForEviction();
 
   // Navigate back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));

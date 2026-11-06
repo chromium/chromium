@@ -333,8 +333,6 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest, ParentNavigatesSubframes) {
   GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  std::string data_url1_str("data:text/html,test1");
-  std::string data_url2_str("data:text/html,test2");
   {
     std::string js_str = base::StringPrintf(
         "for (let i = 0; i < 2; i++) { "

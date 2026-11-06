@@ -806,7 +806,6 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
 // not. See also https://w3c.github.io/webappsec-csp/#security-inherit-csp.
 IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
                        MAYBE_ReceiveViolatingCSPRedirectInChildFrame) {
-  const std::string method = GetParam();
   auto request_handler =
       std::move(RegisterRequestHandlers({GetKeepAliveEndpoint("main")})[0]);
   ASSERT_TRUE(server()->Start());

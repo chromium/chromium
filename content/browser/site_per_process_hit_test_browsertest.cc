@@ -4750,7 +4750,6 @@ class SitePerProcessMouseWheelHitTestBrowserTest
         "document.body.style.background = 'black';";
 
     content::DOMMessageQueue msg_queue(rfh);
-    std::string reply;
     EXPECT_TRUE(ExecJs(rfh, script));
 
     // Wait until renderer's compositor thread is synced. Otherwise the event

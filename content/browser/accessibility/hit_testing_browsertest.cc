@@ -280,7 +280,6 @@ AccessibilityHitTestingBrowserTest::FormatHitTestAccessibilityTree() {
       {{"name=*", ui::AXPropertyFilter::ALLOW},
        {"location=*", ui::AXPropertyFilter::ALLOW},
        {"size=*", ui::AXPropertyFilter::ALLOW}});
-  std::string accessibility_tree;
   return accessibility_tree_formatter->Format(GetRootAndAssertNonNull());
 }
 

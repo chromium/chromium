@@ -1068,9 +1068,6 @@ void FrameTree::Init(SiteInstanceImpl* main_frame_site_instance,
                      RenderFrameHostImpl* opener_for_origin,
                      const blink::FramePolicy& frame_policy,
                      const base::UnguessableToken& devtools_frame_token) {
-  // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
-  // main frame - let's do the same thing here.
-  std::string unique_name;
   root_.render_manager()->InitRoot(main_frame_site_instance,
                                    renderer_initiated_creation, frame_policy,
                                    main_frame_name, devtools_frame_token);

@@ -19029,7 +19029,6 @@ IN_PROC_BROWSER_TEST_P(SandboxedNavigationControllerBrowserTest,
                             .root();
 
   std::string back_script = "history.back();";
-  std::string forward_script = "history.forward();";
 
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());

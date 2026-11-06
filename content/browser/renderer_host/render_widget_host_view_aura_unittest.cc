@@ -1077,8 +1077,7 @@ class RenderWidgetHostViewAuraOverscrollTest
   void ReleaseAndResetDispatchedMessages() {
     ReleaseTouchPoint(0);
     SendTouchEvent();
-    MockWidgetInputHandler::MessageVector events =
-        GetAndResetDispatchedMessages();
+    GetAndResetDispatchedMessages();
   }
 
   MockWidgetInputHandler::MessageVector ExpectGestureScrollEndForWheelScrolling(

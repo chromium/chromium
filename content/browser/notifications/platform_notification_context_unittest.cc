@@ -1330,8 +1330,8 @@ TEST_F(PlatformNotificationContextTest, GetOldestNotificationTime) {
         kFakeServiceWorkerRegistrationId;
 
     notification_database_data.origin = origin;
-    std::string notification_id = WriteNotificationDataSync(
-        context.get(), origin, notification_database_data);
+    WriteNotificationDataSync(context.get(), origin,
+                              notification_database_data);
 
     // This is done to simulate a change in time to have notifications from
     // different times and days.

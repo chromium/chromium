@@ -2171,7 +2171,6 @@ class ProactivelySwapBrowsingInstancesSameSiteCoopTest
  public:
   ProactivelySwapBrowsingInstancesSameSiteCoopTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::test::FeatureRef> features;
     feature_list_.InitAndEnableFeature(
         network::features::kCrossOriginOpenerPolicy);
   }

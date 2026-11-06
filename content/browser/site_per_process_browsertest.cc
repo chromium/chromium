@@ -8125,8 +8125,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       iframe_node->render_manager()->GetProxyToParent();
   EXPECT_TRUE(root_proxy->IsInertForTesting());
 
-  std::string focused_element;
-
   // Attempt to change focus in the inert subframe. This should work.
   // The setTimeout ensures that the inert bit can propagate before the
   // test JS code runs.

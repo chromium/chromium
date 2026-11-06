@@ -894,7 +894,6 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, DoomAllEntries) {
     mojo::Remote<SimpleCacheEntryEnumerator> enumerator;
     simple_cache->EnumerateEntries(enumerator.BindNewPipeAndPassReceiver());
 
-    std::vector<std::string> keys;
     auto result = OpenNextEntry(enumerator.get());
     EXPECT_EQ(result->error, net::ERR_FAILED);
     EXPECT_FALSE(result->entry);

@@ -546,7 +546,6 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
 TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
-  const std::string kBodyContent = "example body";
 
   std::unique_ptr<network::ResourceRequest> prefetch_request =
       std::make_unique<network::ResourceRequest>();
@@ -846,7 +845,6 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
 TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
-  const std::string kBodyContent = "example body";
 
   std::unique_ptr<network::ResourceRequest> prefetch_request =
       std::make_unique<network::ResourceRequest>();
@@ -897,7 +895,6 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
 TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
-  const std::string kBodyContent = "example body";
 
   std::unique_ptr<network::ResourceRequest> prefetch_request =
       std::make_unique<network::ResourceRequest>();
@@ -985,7 +982,6 @@ TEST_P(PrefetchStreamingURLLoaderTest,
        PausedEligibleRedirect_UrlLoaderDisconnect) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
-  const std::string kBodyContent = "example body";
 
   std::unique_ptr<network::ResourceRequest> prefetch_request =
       std::make_unique<network::ResourceRequest>();
@@ -1040,7 +1036,6 @@ TEST_P(PrefetchStreamingURLLoaderTest,
 TEST_P(PrefetchStreamingURLLoaderTest, UnexpectedUrlLoaderDisconnect) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
-  const std::string kBodyContent = "example body";
 
   std::unique_ptr<network::ResourceRequest> prefetch_request =
       std::make_unique<network::ResourceRequest>();
@@ -1138,7 +1133,6 @@ TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
 TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
-  const std::string kBodyContent = "example body";
 
   std::unique_ptr<network::ResourceRequest> prefetch_request =
       std::make_unique<network::ResourceRequest>();

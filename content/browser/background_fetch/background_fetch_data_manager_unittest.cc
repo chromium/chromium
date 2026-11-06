@@ -480,8 +480,6 @@ class BackgroundFetchDataManagerTest
   void StoreUserData(int64_t service_worker_registration_id,
                      const std::string& key,
                      const std::string& value) {
-    std::vector<std::string> data;
-
     base::RunLoop run_loop;
     embedded_worker_test_helper()->context_wrapper()->StoreRegistrationUserData(
         service_worker_registration_id, storage_key(), {{key, value}},

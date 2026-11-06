@@ -1685,7 +1685,7 @@ TEST_F(CSPEmbeddedEnforcementUnitTest, ChildSiblingNoCSP) {
   TestRenderFrameHost* child_document = AddChild(top_document);
   NavigateWithRequiredCSP(&child_document, "script-src 'none'");
   TestRenderFrameHost* sibling_document = AddChild(top_document);
-  std::string sec_required_csp = NavigateWithRequiredCSP(&sibling_document, "");
+  NavigateWithRequiredCSP(&sibling_document, "");
   EXPECT_FALSE(sibling_document->required_csp());
 }
 
