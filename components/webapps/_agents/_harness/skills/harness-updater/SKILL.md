@@ -1,9 +1,12 @@
 ---
 name: harness-updater
 description: >-
-  Maintains an AI Agent Harness (`_agents/` directory and `AGENTS.md` files):
-  repairs links and manifests, and routes new rules or procedures to the
-  correct file. Guides where to put requested additions in the harness.
+  Maintains an AI Agent Harness (`_agents/` directory and `AGENTS.md` files) by
+  auditing links, manifests, size limits, and rule placement. Use when adding
+  rules or gotchas to a project harness, repairing broken links in AGENTS.md,
+  or auditing harness freshness after structural code changes. Don't use for
+  authoring feature designs or execution plans (use harness-doc-writer), or
+  orchestrating multi-CL project implementation (use harness-project).
 ---
 
 # Harness Updater

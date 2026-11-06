@@ -23,19 +23,24 @@ The harness provides a per-project structure:
 The harness provides shared:
 
 - Templates for designs, plans, and reviews
-- Basic doc writing skill, and doc reviewing skill & agent.
-- Basic code reviewing agent.
-- Project harness bootstrap and updater skills.
+- Multi-CL project orchestration skill
+  ([harness-project](skills/harness-project/SKILL.md))
+- Doc writing skill ([harness-doc-writer](skills/harness-doc-writer/SKILL.md))
+  and design reviewing agent
+- Code reviewing agent and review workflow skill
+  ([general-code-review](skills/general-code-review/SKILL.md))
+- Project harness bootstrap
+  ([harness-bootstrap](skills/harness-bootstrap/SKILL.md)) and updater
+  ([harness-updater](skills/harness-updater/SKILL.md)) skills
 
 Finally, this provides a place to put all skills & agents a team member of this
 project should have included for agentic work in their area (in the
 `_agents/skills.json` and `_agents/agents.json` files).
 
-The harness is currently **quarantined** within
-`components/webapps/_agents/_harness/` as a pilot implementation. By keeping
-reusable templates, personas, and skills self-contained here, initial changes
-avoid modifying the shared repository root while remaining structurally
-identical for future promotion.
+The harness is **quarantined** within `components/webapps/_agents/_harness/` as
+a pilot implementation. By keeping reusable templates, personas, and skills
+self-contained here, initial changes avoid modifying the shared repository root
+while remaining structurally identical for future promotion.
 
 ## Directory Structure
 
@@ -54,6 +59,7 @@ _harness/
 │   ├── general-code-review/  # Owners code review workflow (used by reviewer)
 │   ├── harness-bootstrap/    # Project harness skeleton scaffolder
 │   ├── harness-doc-writer/   # Design/Plan authoring & review loop
+│   ├── harness-project/      # Design -> Plan -> Stack -> Chain Review
 │   └── harness-updater/      # Link audit & freshness maintenance
 ├── designs/                  # Harness's own design documentation
 │   └── 2026-08-25-webapps-ai-harness-mvp-design.md
@@ -77,6 +83,35 @@ _harness/
 - Document rules, methods, procedures, etc that the model can already inherently
   know or do.
 
+## Multi-CL Project Workflow
+
+The [harness-project](skills/harness-project/SKILL.md) skill drives multi-CL
+projects through five phases:
+
+1. **Design:** Author a [design](DESIGNS.md) using [REVIEWS.md](REVIEWS.md)
+   standards until human approval.
+2. **Plan:** Create an [execution plan](PLANS.md) and audit milestone splits.
+3. **Milestone loop:** Implement, test, and code-review each stacked CL.
+4. **Chain review:** Audit the full stack and refine branches autonomously.
+5. **Closeout:** Hand off for Gerrit review and run
+   [harness-updater](skills/harness-updater/SKILL.md).
+
+```mermaid
+flowchart LR
+  subgraph human["Human-gated"]
+    design["1. Design"]
+  end
+  subgraph auto["Autonomous"]
+    plan["2. Plan"] --> inner["3. Milestone loop<br/>(implement → code review)"]
+    inner --> outer["4. Chain review"]
+    outer -. "plan / split / test / doc fix" .-> inner
+  end
+  design -- approved --> plan
+  plan -. "design flaw" .-> design
+  outer -- "design change or blocker" --> stop["Stop: escalate"]
+  outer -- "chain approved" --> handoff["5. Hand off → Gerrit → closeout"]
+```
+
 ## How to Use
 
 Initially, the harness for a project should be extremely minimal (and can be
@@ -84,7 +119,7 @@ scaffolded by pointing your agent at
 [`skills/harness-bootstrap/SKILL.md`](skills/harness-bootstrap/SKILL.md)).
 
 - AGENTS.md files:
-  - No 'rules' or 'gotchas' yet.
+  - Start without 'rules' or 'gotchas'.
   - Simple directory mappings with links to the relevant agent/README.md/docs.
 - <project>-dev Skill:
   - Simply links to the central AGENTS.md file.

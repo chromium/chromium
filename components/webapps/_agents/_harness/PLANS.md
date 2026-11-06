@@ -1,14 +1,5 @@
 # Execution Plans (ExecPlans)
 
-<!--
-**Agent Preamble:**
-
-> **CRITICAL:** Before executing any milestone, you MUST read the project's
-> `AGENTS.md` (if it exists) to understand operating procedures. Run
-> `git cl format` and `git cl presubmit -u --force` before completing each
-> milestone. Proceed to next milestone only after user confirmation.
--->
-
 This document describes the requirements for authoring an Execution Plan
 (ExecPlan) in Chromium.
 
@@ -21,19 +12,25 @@ step-by-step across reviewable Gerrit Changelists (CLs).
 
 **Key Principles:**
 
-1. **Milestone = CL Boundary:** Each milestone MUST correspond to exactly ONE
-   Gerrit CL. Follow Chromium's small CL guidelines (`docs/cl_tips.md`).
-2. **Observable Verification:** Every milestone MUST list explicit build
-   commands (`autoninja`) and test commands (`tools/autotest.py` or test
-   binaries) with expected outcomes.
-3. **Idempotence:** Steps should be safe to re-run without breaking workspace
-   state.
-4. **Living State Tracking:** Keep the check-boxes up to date as milestones
-   complete. Document surprises, bugs, and architectural decisions discovered
-   along the way.
-5. **Harness Freshness Audit:** The final milestone must explicitly audit and
-   update `_agents/` (e.g., `AGENTS.md`) to reflect any architectural shifts
-   made during development.
+1. **Milestone = CL Boundary & Reviewability:** Map each milestone to one
+   focused Gerrit CL following Chromium's
+   [small CL guidelines](/docs/cl_tips.md). Separate mechanical edits (such as
+   moves, renames, or large fixture updates) from behavioral logic into distinct
+   milestones. Prefer incremental shims over flag-day flips for wide migrations,
+   and specify ordering, boundaries, and contracts instead of code dumps.
+2. **Independent Compilation & Testability:** Ensure every milestone compiles
+   and passes observable tests (`autoninja`, `tools/autotest.py`) across
+   affected platforms. Add verification guards where needed, such as keeping
+   parity coverage when replacing legacy logic or guarding files that must stay
+   in sync (via lint blocks or tests).
+3. **Idempotence & Explicit Scope:** Write milestone steps so agents can re-run
+   them safely, and list explicit target file paths for each milestone.
+4. **Living State Tracking:** Update milestone checkboxes,
+   `Surprises & Discoveries`, and `Decision Log` as implementation progresses.
+5. **Harness Freshness & Chain Review:** Ensure the final milestone audits
+   `_agents/` freshness. When orchestrated with
+   [harness-project](skills/harness-project/SKILL.md), also run its whole-chain
+   review.
 
 ## Authoring an Execution Plan
 
@@ -42,12 +39,11 @@ Simplified Technical English skill is available, use it.
 
 ### File Naming and Location
 
-All execution plans must be placed in the project's `plans/` subdirectory (e.g.,
-`path/to/project/_agents/plans/` or `_harness/plans/`). They must use lowercase
-letters, hyphens for separation, and be prefixed with their creation date
-(`YYYY-MM-DD`). They must follow the naming convention:
-`YYYY-MM-DD-feature-name-plan.md` (e.g., `2026-08-25-feature-refactor-plan.md`),
-and link back to their parent Design Document.
+Place execution plans in the project's `plans/` subdirectory (for example,
+`path/to/project/_agents/plans/` or `_harness/plans/`). Name each file
+`YYYY-MM-DD-feature-name-plan.md` using lowercase letters and hyphens (for
+example, `2026-08-25-feature-refactor-plan.md`), and link back to the parent
+Design Document.
 
 ### Required Structure
 
@@ -65,8 +61,12 @@ bug: "crbug.com/1234567"
 
 <!--
 **Agent Preamble:**
-> **CRITICAL:** Run git cl format and git cl presubmit before completing each
-> milestone.
+
+> Read the project's `AGENTS.md` (if present) before executing milestones.
+> Run `git cl format` and `git cl presubmit -u --force` before completing
+> each milestone. Pause for user confirmation between milestones on
+> standalone plans, or proceed autonomously when running under
+> `harness-project`.
 -->
 
 ## 1. Purpose / Big Picture
@@ -143,5 +143,9 @@ _(To be filled upon completion of the final milestone)_
 
 ## Review and Approval
 
-Once an Execution Plan is authored, it must be presented to the user for
-approval before executing Milestone 1.
+Present standalone Execution Plans to the user for approval before starting
+implementation. When orchestrating from an approved Design with
+[harness-project](skills/harness-project/SKILL.md), validate the Plan with
+`chromium_design_reviewer` and execute milestones autonomously. Pause for user
+confirmation between milestones on standalone plans, and escalate during
+orchestrated runs only on Design flaws, blockers, or final handoff.
