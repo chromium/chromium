@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -33,7 +34,7 @@ class SessionJournal;
 
 // Debug record of one TTC session, fed by the pipeline through the DebugSink
 // interface. It keeps:
-//  - pipeline counters (Snapshot),
+//  - per-stage pipeline health and counters (Snapshot),
 //  - a timeline of events for the whole session,
 //  - the exact audio sent and received (TtcSessionAudioRecorder).
 // Input is ignored once the session has ended. Observers (the debug page)
@@ -42,6 +43,24 @@ class SessionJournal;
 // Memory is bounded: text is truncated (kMaxTextLength).
 class TtcDebugSession final : public DebugSink {
  public:
+  enum class Stage {
+    kMic,
+    kEncode,
+    kSend,
+    kServer,
+    kReceive,
+    kSpeaker,
+    kMaxValue = kSpeaker,
+  };
+  static constexpr size_t kStageCount =
+      static_cast<size_t>(Stage::kMaxValue) + 1;
+  enum class Health { kIdle, kOk, kWarning, kError };
+
+  struct StageStatus {
+    Health health = Health::kIdle;
+    std::string detail;
+  };
+
   struct Snapshot {
     Snapshot();
     Snapshot(const Snapshot&);
@@ -62,6 +81,7 @@ class TtcDebugSession final : public DebugSink {
     size_t audio_bytes = 0;
     size_t audio_cap_bytes = 0;
     bool audio_cap_reached = false;
+    std::array<StageStatus, kStageCount> stages;
   };
 
   enum class EventKind {
@@ -110,6 +130,7 @@ class TtcDebugSession final : public DebugSink {
     virtual void OnDebugUpdate(const Update& update) = 0;
   };
 
+  static constexpr float kDigitalSilenceLevel = 1e-4f;
   static constexpr base::TimeDelta kFlushInterval = base::Milliseconds(100);
 
   // Memory bounds. The frequent events (IsFrequentEvent()), several a second
@@ -123,6 +144,16 @@ class TtcDebugSession final : public DebugSink {
   // Labels.
   static constexpr size_t kMaxTextLength = 4096;
 
+  // Stage health: how recent a signal must be to count.
+  static constexpr base::TimeDelta kActivityWindow = base::Seconds(1);
+  static constexpr base::TimeDelta kFrameDropWindow = base::Seconds(2);
+  static constexpr base::TimeDelta kReceiveWindow = base::Seconds(3);
+  static constexpr base::TimeDelta kErrorWindow = base::Seconds(5);
+
+  // Detector thresholds.
+  static constexpr int kMicSilenceIssueChunks = 30;  // 3 s.
+  static constexpr base::TimeDelta kPlaybackStallTimeout = base::Seconds(2);
+
   // `journal` is optional and is detached when the session ends. `clock` must
   // outlive this object.
   TtcDebugSession(SessionJournal* journal,
@@ -132,6 +163,8 @@ class TtcDebugSession final : public DebugSink {
   TtcDebugSession& operator=(const TtcDebugSession&) = delete;
   ~TtcDebugSession() override;
 
+  static std::string_view StageName(Stage stage);
+  static std::string_view HealthName(Health health);
   static std::string_view EventKindName(EventKind kind);
   // Whether events of `kind` come several a second while audio flows: mic and
   // output levels, chunks sent and playback. They're left out of ToValue().
@@ -158,6 +191,7 @@ class TtcDebugSession final : public DebugSink {
   }
 
   // DebugSink:
+  void OnCaptureFormat(const CaptureFormat& format) override;
   void OnCaptureMuted(bool muted) override;
   void OnMicLevel(float rms) override;
   void OnClientFrame(const ClientFrame& frame) override;
@@ -200,7 +234,11 @@ class TtcDebugSession final : public DebugSink {
   void HandleFrame(const UserTurnState& state);
   void HandleFrame(const UnknownFrame& frame);
   void LogToJournal(std::string_view name, std::string detail);
+  void ComputeStages(Snapshot& snapshot) const;
   void MaybeReportCapReached();
+  // Whether audio arrived after the last playback and wasn't dropped by an
+  // interruption.
+  bool HasUnplayedAudio() const;
   void MaybeStartFlushTimer();
   void Flush();
 
@@ -211,17 +249,34 @@ class TtcDebugSession final : public DebugSink {
   const base::TimeTicks start_time_;
   bool ended_ = false;
 
+  // Capture.
+  std::optional<CaptureFormat> capture_format_;
+  bool capture_muted_ = false;
+  std::optional<double> last_mic_level_ms_;
+  float last_mic_level_ = 0;
+  int consecutive_silent_chunks_ = 0;
+
   // Transport.
   bool transport_connected_ = false;
+  bool ever_connected_ = false;
   std::string server_session_id_;
   int64_t chunks_sent_ = 0;
   int64_t bytes_sent_ = 0;
+  std::optional<double> last_chunk_sent_ms_;
   int64_t frames_dropped_ = 0;
+  std::optional<double> last_frame_dropped_ms_;
   int64_t server_frames_ = 0;
+  std::optional<double> last_server_frame_ms_;
+  std::optional<double> last_server_error_ms_;
 
   // Output.
   int64_t audio_chunks_received_ = 0;
   int64_t audio_chunks_played_ = 0;
+  std::optional<double> last_audio_received_ms_;
+  std::optional<double> last_playback_ms_;
+  // Audio queued before an interruption is dropped rather than played.
+  std::optional<double> last_interrupted_ms_;
+  std::optional<double> last_render_error_ms_;
 
   std::string last_error_;
 

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/tick_clock.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/ttc/app/public/session_journal.h"
@@ -35,6 +36,19 @@ float Rms(base::span<const int16_t> pcm) {
     sum += v * v;
   }
   return static_cast<float>(std::sqrt(sum / pcm.size()));
+}
+
+bool Within(const std::optional<double>& t,
+            double now,
+            base::TimeDelta window) {
+  return t && now - *t <= window.InMillisecondsF();
+}
+
+std::string FormatAge(const std::optional<double>& t, double now) {
+  if (!t) {
+    return "never";
+  }
+  return base::StringPrintf("%.1f s ago", (now - *t) / 1000.0);
 }
 
 }  // namespace
@@ -82,6 +96,38 @@ std::string TtcDebugSession::Truncate(std::string_view text,
 void TtcDebugSession::TruncateInPlace(std::string& text, size_t max_length) {
   if (text.size() > max_length) {
     text = Truncate(text, max_length);
+  }
+}
+
+// static
+std::string_view TtcDebugSession::StageName(Stage stage) {
+  switch (stage) {
+    case Stage::kMic:
+      return "Mic";
+    case Stage::kEncode:
+      return "Encode";
+    case Stage::kSend:
+      return "Send";
+    case Stage::kServer:
+      return "Server";
+    case Stage::kReceive:
+      return "Receive";
+    case Stage::kSpeaker:
+      return "Speaker";
+  }
+}
+
+// static
+std::string_view TtcDebugSession::HealthName(Health health) {
+  switch (health) {
+    case Health::kIdle:
+      return "idle";
+    case Health::kOk:
+      return "ok";
+    case Health::kWarning:
+      return "warning";
+    case Health::kError:
+      return "error";
   }
 }
 
@@ -182,11 +228,21 @@ void TtcDebugSession::LogToJournal(std::string_view name, std::string detail) {
   journal_->Log(name, std::move(builder).Build());
 }
 
+void TtcDebugSession::OnCaptureFormat(const CaptureFormat& format) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ended_) {
+    return;
+  }
+  capture_format_ = format;
+  MaybeStartFlushTimer();
+}
+
 void TtcDebugSession::OnCaptureMuted(bool muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ended_) {
     return;
   }
+  capture_muted_ = muted;
   AddEvent(EventKind::kCaptureMuted, muted ? 1.0f : 0.0f);
 }
 
@@ -195,6 +251,11 @@ void TtcDebugSession::OnMicLevel(float rms) {
   if (ended_) {
     return;
   }
+  const double now = NowMs();
+  last_mic_level_ms_ = now;
+  last_mic_level_ = rms;
+  consecutive_silent_chunks_ =
+      rms < kDigitalSilenceLevel ? consecutive_silent_chunks_ + 1 : 0;
   AddEvent(EventKind::kMicLevel, rms);
 }
 
@@ -208,12 +269,14 @@ void TtcDebugSession::OnClientFrame(const ClientFrame& frame) {
     const base::TimeDelta now = Elapsed();
     ++chunks_sent_;
     bytes_sent_ += audio->pcm.size() * sizeof(int16_t);
+    last_chunk_sent_ms_ = now.InMillisecondsF();
     AddEvent(EventKind::kChunkSent, static_cast<float>(audio->pcm.size()));
     recorder_.Append(Stream::kInput, now, audio->pcm);
     MaybeReportCapReached();
   } else if (const auto* status = std::get_if<PlaybackStatus>(&frame)) {
     // Sent for each chunk played.
     ++audio_chunks_played_;
+    last_playback_ms_ = NowMs();
     AddEvent(EventKind::kPlayback,
              static_cast<float>(status->last_played_sequence_number));
   }
@@ -233,6 +296,7 @@ void TtcDebugSession::OnFrameDropped() {
     return;
   }
   ++frames_dropped_;
+  last_frame_dropped_ms_ = NowMs();
   AddEvent(EventKind::kFrameDropped);
 }
 
@@ -242,6 +306,7 @@ void TtcDebugSession::OnTransportStateChanged(bool connected) {
     return;
   }
   transport_connected_ = connected;
+  ever_connected_ |= connected;
   AddEvent(EventKind::kTransport, connected ? 1.0f : 0.0f,
            connected ? "connected" : "disconnected");
 }
@@ -252,6 +317,7 @@ void TtcDebugSession::OnServerFrame(const ServerFrame& frame) {
     return;
   }
   ++server_frames_;
+  last_server_frame_ms_ = NowMs();
   std::visit([this](const auto& typed_frame) { HandleFrame(typed_frame); },
              frame);
 }
@@ -270,6 +336,7 @@ void TtcDebugSession::HandleFrame(const SessionStatus& status) {
 
 void TtcDebugSession::HandleFrame(const AudioOutput& audio) {
   ++audio_chunks_received_;
+  last_audio_received_ms_ = NowMs();
   AddEvent(EventKind::kOutputLevel, Rms(audio.pcm));
   recorder_.Append(Stream::kOutput, Elapsed(), audio.pcm);
   MaybeReportCapReached();
@@ -289,6 +356,7 @@ void TtcDebugSession::HandleFrame(const TurnComplete& turn_complete) {
 
 void TtcDebugSession::HandleFrame(const Interrupted& interrupted) {
   AddServerFrameEvent("interrupted");
+  last_interrupted_ms_ = NowMs();
   AddEvent(EventKind::kInterrupted);
   // Playback stops now, so the rest of the reply was never heard.
   recorder_.DiscardAfter(Stream::kOutput, Elapsed());
@@ -300,6 +368,7 @@ void TtcDebugSession::HandleFrame(const DebugSink::ToolCall& frame) {
 
 void TtcDebugSession::HandleFrame(const ServerError& error) {
   AddServerFrameEvent("server_error", error.code);
+  last_server_error_ms_ = NowMs();
   last_error_ = Truncate(error.message.empty()
                              ? error.code
                              : base::StrCat({error.code, ": ", error.message}));
@@ -330,6 +399,7 @@ void TtcDebugSession::OnRenderError() {
   if (ended_) {
     return;
   }
+  last_render_error_ms_ = NowMs();
   last_error_ = "audio render error";
   AddEvent(EventKind::kError, 0, last_error_);
 }
@@ -360,7 +430,129 @@ TtcDebugSession::Snapshot TtcDebugSession::GetSnapshot() const {
   snapshot.audio_bytes = recorder_.bytes();
   snapshot.audio_cap_bytes = recorder_.cap_bytes();
   snapshot.audio_cap_reached = recorder_.cap_reached();
+  ComputeStages(snapshot);
   return snapshot;
+}
+
+void TtcDebugSession::ComputeStages(Snapshot& snapshot) const {
+  const double now = snapshot.now_ms;
+  auto& stages = snapshot.stages;
+  auto set = [&](Stage stage, Health health, std::string detail) {
+    stages[static_cast<size_t>(stage)] = {health, std::move(detail)};
+  };
+  const bool live = !ended_;
+  const bool mic_active = Within(last_mic_level_ms_, now, kActivityWindow);
+
+  // Mic.
+  if (!capture_format_ && !last_mic_level_ms_) {
+    set(Stage::kMic, Health::kIdle, "not capturing");
+  } else {
+    std::string detail =
+        capture_format_
+            ? base::StringPrintf(
+                  "%d Hz x%d, %s", capture_format_->sample_rate,
+                  capture_format_->channels,
+                  capture_format_->processing ? "processed" : "converted")
+            : std::string("format unknown");
+    base::StrAppend(&detail,
+                    {base::StringPrintf(", level %.3f", last_mic_level_)});
+    Health health = Health::kOk;
+    if (capture_muted_) {
+      health = Health::kWarning;
+      base::StrAppend(&detail, {", muted"});
+    } else if (live && !mic_active) {
+      // No audio at all is worse than silent audio.
+      health = Health::kError;
+      base::StrAppend(&detail,
+                      {", last audio ", FormatAge(last_mic_level_ms_, now)});
+    } else if (consecutive_silent_chunks_ >= kMicSilenceIssueChunks) {
+      health = Health::kWarning;
+      base::StrAppend(&detail, {", digital silence"});
+    }
+    set(Stage::kMic, health, std::move(detail));
+  }
+
+  // Encode.
+  set(Stage::kEncode, mic_active ? Health::kOk : Health::kIdle,
+      base::StringPrintf("PCM16 %d kHz mono",
+                         TtcSessionAudioRecorder::kInputSampleRate / 1000));
+
+  // Send.
+  {
+    std::string detail = base::StringPrintf(
+        "%lld chunks, %lld KB", static_cast<long long>(chunks_sent_),
+        static_cast<long long>(bytes_sent_ / 1024));
+    Health health = Health::kIdle;
+    if (Within(last_frame_dropped_ms_, now, kFrameDropWindow)) {
+      health = Health::kError;
+      base::StrAppend(&detail, {base::StringPrintf(
+                                   ", %lld dropped (no session)",
+                                   static_cast<long long>(frames_dropped_))});
+    } else if (Within(last_chunk_sent_ms_, now, kActivityWindow)) {
+      health = Health::kOk;
+    } else if (live && mic_active) {
+      health = Health::kWarning;
+      base::StrAppend(&detail, {", mic active but nothing sent"});
+    }
+    set(Stage::kSend, health, std::move(detail));
+  }
+
+  // Server.
+  {
+    std::string detail =
+        base::StrCat({transport_connected_ ? "connected" : "disconnected",
+                      ", last frame ", FormatAge(last_server_frame_ms_, now)});
+    Health health = Health::kIdle;
+    if (Within(last_server_error_ms_, now, kErrorWindow)) {
+      health = Health::kError;
+      base::StrAppend(&detail, {", ", last_error_});
+    } else if (live && ever_connected_ && !transport_connected_) {
+      health = Health::kError;
+    } else if (transport_connected_) {
+      health = Health::kOk;
+    }
+    set(Stage::kServer, health, std::move(detail));
+  }
+
+  // Receive.
+  {
+    std::string detail =
+        base::StringPrintf("%lld audio chunks, last %s",
+                           static_cast<long long>(audio_chunks_received_),
+                           FormatAge(last_audio_received_ms_, now).c_str());
+    set(Stage::kReceive,
+        Within(last_audio_received_ms_, now, kReceiveWindow) ? Health::kOk
+                                                             : Health::kIdle,
+        std::move(detail));
+  }
+
+  // Speaker.
+  {
+    std::string detail = base::StringPrintf(
+        "%lld chunks played", static_cast<long long>(audio_chunks_played_));
+    Health health = Health::kIdle;
+    if (Within(last_render_error_ms_, now, kErrorWindow)) {
+      health = Health::kError;
+      base::StrAppend(&detail, {", render error"});
+    } else if (Within(last_playback_ms_, now, kActivityWindow)) {
+      health = Health::kOk;
+    } else if (live && HasUnplayedAudio() &&
+               now - *last_audio_received_ms_ >
+                   kPlaybackStallTimeout.InMillisecondsF()) {
+      health = Health::kWarning;
+      base::StrAppend(&detail, {", audio received but not played"});
+    }
+    set(Stage::kSpeaker, health, std::move(detail));
+  }
+}
+
+bool TtcDebugSession::HasUnplayedAudio() const {
+  if (!last_audio_received_ms_) {
+    return false;
+  }
+  const double received = *last_audio_received_ms_;
+  return (!last_playback_ms_ || *last_playback_ms_ < received) &&
+         (!last_interrupted_ms_ || *last_interrupted_ms_ < received);
 }
 
 base::DictValue TtcDebugSession::ToValue() const {
@@ -384,6 +576,14 @@ base::DictValue TtcDebugSession::ToValue() const {
   snap.Set("audio_bytes", static_cast<double>(snapshot.audio_bytes));
   snap.Set("audio_cap_bytes", static_cast<double>(snapshot.audio_cap_bytes));
   snap.Set("audio_cap_reached", snapshot.audio_cap_reached);
+  base::ListValue stages;
+  for (size_t i = 0; i < kStageCount; ++i) {
+    stages.Append(base::DictValue()
+                      .Set("stage", StageName(static_cast<Stage>(i)))
+                      .Set("health", HealthName(snapshot.stages[i].health))
+                      .Set("detail", snapshot.stages[i].detail));
+  }
+  snap.Set("stages", std::move(stages));
   dict.Set("snapshot", std::move(snap));
 
   base::ListValue events;
@@ -449,7 +649,7 @@ void TtcDebugSession::Flush() {
   for (Observer& observer : observers_) {
     observer.OnDebugUpdate(update);
   }
-  // Keep ticking while live so that ages stay current.
+  // Keep ticking while live so that ages and stage health stay current.
   if (ended_) {
     flush_timer_.Stop();
   }

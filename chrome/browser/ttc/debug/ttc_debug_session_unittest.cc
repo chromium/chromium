@@ -22,6 +22,8 @@ namespace ttc {
 namespace {
 
 using EventKind = TtcDebugSession::EventKind;
+using Health = TtcDebugSession::Health;
+using Stage = TtcDebugSession::Stage;
 using testing::ElementsAre;
 
 class RecordingJournal : public SessionJournal {
@@ -92,11 +94,69 @@ class TtcDebugSessionTest : public testing::Test {
     return labels;
   }
 
+  Health StageHealth(Stage stage) const {
+    return session_->GetSnapshot().stages[static_cast<size_t>(stage)].health;
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   RecordingJournal journal_;
   std::unique_ptr<TtcDebugSession> session_;
 };
+
+TEST_F(TtcDebugSessionTest, StageHealth) {
+  // Nothing yet.
+  EXPECT_EQ(StageHealth(Stage::kMic), Health::kIdle);
+  EXPECT_EQ(StageHealth(Stage::kServer), Health::kIdle);
+
+  session_->OnCaptureFormat({.sample_rate = 48000, .channels = 2});
+  session_->OnTransportStateChanged(true);
+  Speak(3, 0.1f);
+  EXPECT_EQ(StageHealth(Stage::kMic), Health::kOk);
+  EXPECT_EQ(StageHealth(Stage::kSend), Health::kOk);
+  EXPECT_EQ(StageHealth(Stage::kServer), Health::kOk);
+
+  // Digital silence for 3 s.
+  Speak(30, 0.0f);
+  EXPECT_EQ(StageHealth(Stage::kMic), Health::kWarning);
+
+  // Dropped frames.
+  session_->OnFrameDropped();
+  EXPECT_EQ(StageHealth(Stage::kSend), Health::kError);
+
+  // Transport lost.
+  session_->OnTransportStateChanged(false);
+  EXPECT_EQ(StageHealth(Stage::kServer), Health::kError);
+
+  // Mic stalls.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(StageHealth(Stage::kMic), Health::kError);
+
+  // Received audio that never plays.
+  ReceiveAudio(1);
+  EXPECT_EQ(StageHealth(Stage::kReceive), Health::kOk);
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(StageHealth(Stage::kSpeaker), Health::kWarning);
+  session_->OnRenderError();
+  EXPECT_EQ(StageHealth(Stage::kSpeaker), Health::kError);
+}
+
+TEST_F(TtcDebugSessionTest, StageDetailsDescribeTheCapture) {
+  session_->OnCaptureFormat({.sample_rate = 48000,
+                             .channels = 1,
+                             .processing = DebugSink::CaptureFormat::Processing{
+                                 .echo_cancellation = true}});
+  Speak(1, 0.1f);
+  EXPECT_THAT(
+      session_->GetSnapshot().stages[static_cast<size_t>(Stage::kMic)].detail,
+      testing::StartsWith("48000 Hz x1, processed"));
+
+  // Playback reported by the client counts for the speaker.
+  ReceiveAudio(1);
+  session_->OnClientFrame(
+      DebugSink::PlaybackStatus{.last_played_sequence_number = 0});
+  EXPECT_EQ(StageHealth(Stage::kSpeaker), Health::kOk);
+}
 
 TEST_F(TtcDebugSessionTest, RecordsExactAudio) {
   using Stream = TtcSessionAudioRecorder::Stream;
@@ -206,6 +266,14 @@ TEST_F(TtcDebugSessionTest, CapReachedIsReportedOnce) {
   }
   EXPECT_EQ(cap_events, 1);
   EXPECT_TRUE(session->GetSnapshot().audio_cap_reached);
+}
+
+TEST_F(TtcDebugSessionTest, AudioDroppedByInterruptionIsNotFlagged) {
+  session_->OnTransportStateChanged(true);
+  ReceiveAudio(2);
+  session_->OnServerFrame(DebugSink::Interrupted());
+  task_environment_.FastForwardBy(TtcDebugSession::kPlaybackStallTimeout * 2);
+  EXPECT_NE(StageHealth(Stage::kSpeaker), Health::kWarning);
 }
 
 TEST_F(TtcDebugSessionTest, EndedSessionIgnoresFurtherInput) {
