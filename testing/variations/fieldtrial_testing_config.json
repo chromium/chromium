@@ -12398,11 +12398,7 @@
     "NewVoiceSearchUiInNtpRealbox": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "form_factors": [
                 "desktop"
@@ -12410,6 +12406,29 @@
             "experiments": [
                 {
                     "name": "Arm4_Transcript_AutoEndpoint_20260923",
+                    "params": {
+                        "VoiceSearchCoherenceRealboxAutoEndpoint": "true",
+                        "VoiceSearchCoherenceRealboxHelperText": "true",
+                        "VoiceSearchCoherenceSearchboxWithLiveTranscription": "true"
+                    },
+                    "enable_features": [
+                        "VoiceSearchCoherenceSearchbox"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NewVoiceSearchUiInNtpRealboxV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Arm4_Transcript_AutoEndpoint_20261105",
                     "params": {
                         "VoiceSearchCoherenceRealboxAutoEndpoint": "true",
                         "VoiceSearchCoherenceRealboxHelperText": "true",
