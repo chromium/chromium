@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!-- TODO(crbug.com/578631249): Remove tools:ignore once GlicBottomSheetFreCoordinator inflates this layout. -->
+<!-- TODO(crbug.com/582354339): Verify TalkBack. -->
+<org.chromium.chrome.browser.glic.ui.GlicFreRootView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/glic_fre_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="false"
+    android:importantForAccessibility="no"
+    tools:ignore="UnusedResources">
+
+    <LinearLayout
+        android:id="@+id/glic_fre_content_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="58dp"
+        android:paddingBottom="24dp">
+
+        <ScrollView
+            android:id="@+id/glic_fre_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/glic_fre_header_animation"
+                    android:layout_width="103dp"
+                    android:layout_height="48dp"
+                    android:importantForAccessibility="no"
+                    app:lottie_loop="false"
+                    app:lottie_rawRes="@raw/glic_fre_header_animation" />
+
+                <TextView
+                    android:id="@+id/glic_fre_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginTop="16dp"
+                    android:accessibilityHeading="true"
+                    android:gravity="center_horizontal"
+                    android:text="@string/glic_fre_dialog_title"
+                    android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+                <org.chromium.ui.widget.TextViewWithClickableSpans
+                    android:id="@+id/glic_fre_body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/glic_fre_card_background"
+                    android:gravity="start"
+                    android:minHeight="@dimen/min_touch_target_size"
+                    android:paddingHorizontal="16dp"
+                    android:paddingTop="18dp"
+                    android:paddingBottom="16dp"
+                    android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+            </LinearLayout>
+        </ScrollView>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/glic_fre_accept_button"
+            style="@style/FilledButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/glic_fre_dialog_accept" />
+    </LinearLayout>
+
+    <!-- TODO(crbug.com/582354339): Verify TalkBack. -->
+    <LinearLayout
+        android:id="@+id/glic_fre_skeleton_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="noHideDescendants"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="88dp"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:background="@drawable/glic_fre_skeleton_bar" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_marginEnd="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/glic_fre_skeleton_bar" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_marginEnd="112dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/glic_fre_skeleton_bar" />
+    </LinearLayout>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/glic_fre_close_button"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_gravity="top|end"
+        android:layout_margin="4dp"
+        android:background="@drawable/default_icon_background"
+        android:contentDescription="@string/close"
+        android:src="@drawable/btn_close"
+        app:tint="@color/default_icon_color_tint_list" />
+</org.chromium.chrome.browser.glic.ui.GlicFreRootView>
