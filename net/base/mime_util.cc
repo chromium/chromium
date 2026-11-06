@@ -239,6 +239,11 @@ static const MimeInfo kSecondaryMappings[] = {
      "docx"},
     {"application/x-gzip", "gz,tgz"},
     {"application/x-mpegurl", "m3u8"},
+#if BUILDFLAG(IS_CHROMEOS)
+    // ChromeOS builds without the XDG shared-mime-info database (USE="-mime")
+    // to save rootfs space, so the platform lookup cannot resolve .p12/.pfx.
+    {"application/x-pkcs12", "p12,pfx"},
+#endif
     {"application/x-shockwave-flash", "swf,swl"},
     {"application/x-tar", "tar"},
     {"application/x-x509-ca-cert", "cer,crt"},

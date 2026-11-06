@@ -98,6 +98,16 @@ TEST(MimeUtilTest, ExtensionTest) {
            "application/x-x509-ca-cert",
            "application/pkix-cert",  // System override for ChromeOS.
        }},
+      {FILE_PATH_LITERAL("p12"),
+       {
+           "application/x-pkcs12",
+           "application/pkcs12",  // System override for ChromeOS.
+       }},
+      {FILE_PATH_LITERAL("pfx"),
+       {
+           "application/x-pkcs12",
+           "application/pkcs12",  // System override for ChromeOS.
+       }},
       {FILE_PATH_LITERAL("zip"), {"application/zip"}},
       {FILE_PATH_LITERAL("ics"), {"text/calendar"}},
 #endif
