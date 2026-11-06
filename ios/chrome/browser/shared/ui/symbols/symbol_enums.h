@@ -323,6 +323,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolShowAction,
   SymbolSliderHorizontal,
   SymbolSort,
+  SymbolSparkle,
   SymbolSparkles,
   SymbolSparkles2,
   SymbolSpeedometer,

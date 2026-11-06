@@ -46,6 +46,12 @@ UIImage* ImageForIconResourceId(omnibox::IconResourceIds icon_id,
       return SymbolWithPointSize(SymbolCheckmark, point_size);
     case omnibox::IconResourceIds::PHOTO_PRINTS:
       return SymbolWithPointSize(SymbolPhoto, point_size);
+    case omnibox::IconResourceIds::PTM_TOOL:
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+      return SymbolWithPointSize(SymbolSparkleTrail, point_size);
+#else
+      return SymbolWithPointSize(SymbolSparkle, point_size);
+#endif
     case omnibox::IconResourceIds::DRIVE:
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
       return SymbolWithPointSize(SymbolGoogleDrive, point_size);

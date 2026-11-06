@@ -616,6 +616,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"slider.horizontal.3", SymbolType::kSystem};
     case SymbolSort:
       return {@"arrow.up.arrow.down", SymbolType::kSystem};
+    case SymbolSparkle:
+      return {@"sparkle", SymbolType::kSystem};
     case SymbolSparkles:
       return {@"sparkles", SymbolType::kSystem};
     case SymbolSparkles2:
