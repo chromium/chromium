@@ -190,6 +190,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @After
     public void tearDown() throws Exception {
+        ActivityTestUtils.clearActivityOrientation(mCtaTestRule.getActivity());
         if (mUserActionTester != null) {
             mUserActionTester.tearDown();
         }
@@ -818,24 +819,24 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/570204586")
     // Desktop can't rotate to portrait; it letterboxes the window instead.
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction({DeviceFormFactor.ONLY_TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Feature({"RenderTest"})
     public void testMessageResizedOnTablet() throws IOException {
-        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
-        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_PORTRAIT);
         addArchivedTab(new GURL("https://www.google.com/"), "test 2");
 
-        mInitialPage.openRegularTabSwitcher();
-        mRenderTestRule.render(
-                cta.findViewById(R.id.pane_frame), "archived_tabs_message_tablet_portrait");
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard();
 
-        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_LANDSCAPE);
+        tabSwitcherStation.rotateTo(ORIENTATION_PORTRAIT);
         mRenderTestRule.render(
-                cta.findViewById(R.id.pane_frame), "archived_tabs_message_tablet_landscape");
+                tabSwitcherStation.paneFrameElement.value(),
+                "archived_tabs_message_tablet_portrait");
 
-        ActivityTestUtils.clearActivityOrientation(cta);
+        tabSwitcherStation.rotateTo(ORIENTATION_LANDSCAPE);
+        mRenderTestRule.render(
+                tabSwitcherStation.paneFrameElement.value(),
+                "archived_tabs_message_tablet_landscape");
     }
 
     @Test
