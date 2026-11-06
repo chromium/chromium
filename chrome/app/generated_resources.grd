@@ -464,9 +464,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE" desc="The text to be displayed instead of the origin when a local file requests permissions. This string will be inserted into Message ID 2121121439878997796, the full sentence will read: [This file] wants to request a permission.">
         This file
       </message>
-      <message name="IDS_PERMISSION_CUSTOMIZE" desc="Label on text button to allow the user to customize a permissions request.">
-        Customize
-      </message>
 
       <message name="IDS_ALTERNATE_NAV_URL_VIEW_LABEL" desc="Label displayed in an infobar when a user searches for a term they may have meant to navigate to.">
         Did you mean to go to <ph name="SITE">$1<ex>http://intranetsite/</ex></ph>?
@@ -642,12 +639,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CONTENT_CONTEXT_INSPECTELEMENT" desc="The name of the Inspect Element command in the content area context menu">
           I&amp;nspect
         </message>
-        <message name="IDS_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI" desc="Context menu item for inspecting the element with Gemini.">
-          With Gemini
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS" desc="Context menu item for inspecting the element with DevTools.">
-          With DevTools
-        </message>
         <message name="IDS_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS" desc="The name of the Save to Memory Banks command in the context menu">
           Save to Memory
         </message>
@@ -692,14 +683,6 @@ are declared in tools/grit/grit_args.gni.
 
         <message name="IDS_NEW_ISOLATED_WINDOW" desc="The text label of a menu item for opening a new Isolated window">
           New &amp;Isolated window
-        </message>
-
-        <message name="IDS_INCOGNITO" desc="The text label for the Incognito button in the block header section of the App Menu">
-          Incognito
-        </message>
-
-        <message name="IDS_ISOLATED" desc="The text label for the Isolated button in the block header section of the App Menu">
-          Isolated
         </message>
 
         <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="The text label of a menu item that notifies the user that sync is on.">
@@ -791,9 +774,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE" desc="Context menu item to listen to this page">
            Listen to this page
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_CLOSE_GLIC" desc="Context menu item to close glic view">
-           Close
           </message>
           <message name="IDS_CONTENT_CONTEXT_ARCHIVE_GLIC" desc="Context menu item to archive Glic conversation">
            Archive
@@ -903,10 +883,6 @@ are declared in tools/grit/grit_args.gni.
             Add link to reading list
           </message>
 
-          <message name="IDS_CONTENT_CONTEXT_ADD_A_NOTE" desc="The name of the Add Note command in the content area context menu">
-            Add a note
-          </message>
-
           <message name="IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT" desc="The name of the Remove Highlights command in the content area context menu">
             Remove highlight
           </message>
@@ -926,9 +902,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENIMAGENEWTAB" desc="The name of the Open Image in New Tab command in the content area context menu">
             Open &amp;image in new tab
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB" desc="The name of the Open Original Image in New Tab command in the content area context menu">
-            Open original &amp;image in new tab
           </message>
           <message name="IDS_CONTENT_CONTEXT_LOAD_IMAGE" desc="The name of the Load Image command in the content area context menu">
             Load image
@@ -1023,9 +996,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_SEND_ONCE" desc="The context-menu sub-item that asks whether to integrate the accessibility image labeling service of Google to Chrome, for a single use.">
             Just once
           </message>
-          <message name="IDS_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION" desc="The context-menu item that runs a local machine intelligence model to extract visual layout semantics.">
-           Recognize visual layout semantics
-          </message>
           <message name="IDS_CONTENT_CONTEXT_SPELLING_ASK_GOOGLE" desc="The context-menu item that asks whether to integrate the spelling service of Google to Chrome.">
             Use enhanced spell check
           </message>
@@ -1053,32 +1023,17 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_V2" desc="The name of the Partial Translate command in the content area context menu when simplified menu is enabled.">
             &amp;Translate selection
           </message>
-          <message name="IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_SELECTION" desc="The name of the Translate command in the content area context menu when there is a text selection.">
-            &amp;Translate “<ph name="SELECTION">$1<ex>text</ex></ph>” to <ph name="LANGUAGE">$2<ex>English</ex></ph>
-          </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFOR" desc="The name of the Search the Web for “string” command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>”
           </message>
-          <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB" desc="The name of the Search the Web for “string” in New Tab command in the content area context menu">
-            &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>” in new tab
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFORIMAGE" desc="The name of the Search For Image command in the content area context menu">
-            &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for image
-          </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE" desc="The name of the Search Lens for Image command in the content area context menu">
             Search image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="The name of the Lens Region Search command in the content area context menu">
-            Search page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH" desc="The name of the Lens Region Search command in the content area context menu">
             Search images with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_GOTOURL" desc="The name of the Go to 'url' command in the content area context menu">
             &amp;Go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_GENERATEPASSWORD" desc="The name of the Generate Password command in the content area context menu">
-            Suggest password...
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE" desc="The name of the Use passkey from another device command in the content area context menu">
             Use passkey from another device
@@ -1136,16 +1091,10 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE" desc="In Title Case: Context menu item to listen to this page">
            Listen to This Page
           </message>
-          <message name="IDS_CONTENT_CONTEXT_CLOSE_GLIC" desc="Context menu item to close glic view">
-           Close
-          </message>
           <message name="IDS_CONTENT_CONTEXT_ARCHIVE_GLIC" desc="Context menu item to archive a Glic conversation">
            Archive
           </message>
           <!-- TODO(b/510738735) Placeholder for now so mark translateable=false -->
-          <message name="IDS_CONTENT_CONTEXT_DICTATION" desc="In Title Case: Context menu item to start dictation" translateable="false">
-           Start Dictation
-          </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="In Title Case: The name of the Reload command in the content area context menu">
             &amp;Reload
           </message>
@@ -1250,10 +1199,6 @@ are declared in tools/grit/grit_args.gni.
             Add Link to Reading List
           </message>
 
-          <message name="IDS_CONTENT_CONTEXT_ADD_A_NOTE" desc="In Title Case: The name of the Add Note command in the content area context menu">
-            Add a Note
-          </message>
-
           <message name="IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT" desc="In TitleCase: The name of the Remove Highlights command in the content area context menu">
             Remove Highlight
           </message>
@@ -1273,9 +1218,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENIMAGENEWTAB" desc="In Title Case: The name of the Open Image in New Tab command in the content area context menu">
             Open &amp;Image in New Tab
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB" desc="In Title Case: The name of the Open Original Image in New Tab command in the content area context menu">
-            Open Original &amp;Image in New Tab
           </message>
           <message name="IDS_CONTENT_CONTEXT_LOAD_IMAGE" desc="In Title Case: The name of the Load Image command in the content area context menu">
             Load Image
@@ -1382,12 +1324,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_SEND_ONCE" desc="The context-menu sub-item that asks whether to integrate the accessibility image labeling service of Google to Chrome, for a single use.">
             Just Once
           </message>
-          <message name="IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION" desc="The context-menu item that asks whether to use the PDF OCR service to convert image to text.">
-            Extract Text From PDF
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION" desc="In Title Case: The context-menu item that runs a local machine intelligence model to extract visual layout semantics.">
-           Recognize Visual Layout Semantics
-          </message>
           <message name="IDS_CONTENT_CONTEXT_SPELLING_ASK_GOOGLE" desc="In Title Case: The context-menu item that asks whether to integrate the spelling service of Google to Chrome.">
             Use Enhanced Spell Check
           </message>
@@ -1418,26 +1354,14 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFOR" desc="In Title Case: The name of the Search the Web for “string” command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>”
           </message>
-          <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB" desc="In Title Case: The name of the Search the Web for “string” in New Tab command in the content area context menu">
-            &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>” in New Tab
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFORIMAGE" desc="In Title Case: The name of the Search For Image command in the content area context menu">
-            &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for Image
-          </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE" desc="In Title Case: The name of the Search Lens for Image command in the content area context menu">
             Search Image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
-            Search Page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
             Search Images with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_GOTOURL" desc="In Title Case: The name of the Go to url for 'string' command in the content area context menu">
             &amp;Go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_GENERATEPASSWORD" desc="In Title Case: The name of the Generate Password command in the content area context menu">
-            Suggest Password...
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE" desc="In Title Case: The name of the Use passkey from another device command in the content area context menu">
             Use Passkey from Another Device
@@ -1446,9 +1370,6 @@ are declared in tools/grit/grit_args.gni.
             Help Improve Autofill
           </message>
           <!-- TODO(359570730): remove non translateable flag  -->
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu." translateable="false">
-            Autocomplete
-          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS" desc="In Title Case: This is a context menu entry. It opens chrome://password-manager. It can be either in the context menu (for non-syncing users) or in the passwords submenu (for syncing users).">
             Import Passwords
           </message>
@@ -1459,10 +1380,6 @@ are declared in tools/grit/grit_args.gni.
             &amp;Contact Info
           </message>
         </if>
-
-        <message name="IDS_SHARE_MENU_TITLE" desc="The label of the menu item used to share content (links, images, etc) with others.">
-          Share
-        </message>
       </if>
 
       <if expr="not use_titlecase">
@@ -1493,9 +1410,6 @@ are declared in tools/grit/grit_args.gni.
         Select password
       </message>
       <!-- Since Flash is a proper noun we don't have to distinguish between title and non-title case. -->
-      <message name="IDS_CONTENT_CONTEXT_ENABLE_FLASH" desc="The name of the Enable Flash command on the blocked plugin context menu. 'Flash' is the name of a plugin and should not be translated.">
-        Enable Flash
-      </message>
 
       <!-- Spelling submenu -->
       <if expr="is_macosx">
@@ -1535,9 +1449,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER" desc="Header title for the Tools and actions section in the main App Menu">
           Tools and actions
         </message>
-        <message name="IDS_APP_MENU_INCOGNITO" desc="Label for the Incognito block button in the main App Menu">
-          Incognito
-        </message>
         <message name="IDS_APP_MENU_BLOCK_INCOGNITO" desc="Label with a keyboard mnemonic for the Incognito block button in the main App Menu">
           &amp;Incognito
         </message>
@@ -1570,12 +1481,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="A label to indicate that the profile is signed in.">
             Signed in
-          </message>
-          <message name="IDS_PROFILE_ROW_TURN_ON_SYNC" desc="The text label of a menu item that prompts the user to turn on sync.">
-            Turn on &amp;sync...
-          </message>
-          <message name="IDS_PROFILE_ROW_SYNC_ERROR_MESSAGE" desc="The text label of a menu item that prompts the user to fix the profile sync issue.">
-            Fix &amp;sync issue
           </message>
           <message name="IDS_EDIT2" desc="The text label before the cut/copy/paste buttons in the merged menu">
             Edit
@@ -1655,15 +1560,6 @@ are declared in tools/grit/grit_args.gni.
             Signed in
           </message>
 
-          <message name="IDS_PROFILE_ROW_TURN_ON_SYNC" desc="In Title Case: The text label of a menu item that prompts the user to turn on sync.">
-            Turn on &amp;Sync...
-          </message>
-          <message name="IDS_PROFILE_ROW_SYNC_ERROR_MESSAGE" desc="In Title Case: The text label of a menu item that prompts the user to fix the profile sync issue.">
-            Fix &amp;Sync Issue
-          </message>
-           <message name="IDS_PROFILE_ROW_SIGN_IN_AGAIN" desc="In Title Case: The text label of a menu item that prompts the user to sign in again.">
-            &amp;Sign in Again
-          </message>
           <message name="IDS_EDIT2" desc="In Title Case: The text label before the cut/copy/paste buttons in the merged menu">
             Edit
           </message>
@@ -1688,9 +1584,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_SAVE_AND_SHARE_MENU" desc="In Title Case: The text label of the Save and share sub menu item">
             &amp;Save and Share
-          </message>
-          <message name="IDS_SAVE_SHARE_AND_CAST_MENU" desc="In Title Case: The text label of the Save, share, and cast sub menu item">
-            Save, Share, and Cast
           </message>
 
           <message name="IDS_SAVE_AND_SHARE_MENU_CAST" desc="In Title Case: The text label of the Cast section of the Save and share sub menu">
@@ -1933,23 +1826,14 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_SHOW_PERFORMANCE" desc="The text label of the Performance menu item">
           Performance
         </message>
-        <message name="IDS_SHOW_SEARCH_COMPANION" desc="The text label of the Chrome Search Companion menu item">
-          Sear&amp;ch this page with Google...
-        </message>
         <message name="IDS_SHOW_TRANSLATE" desc="The text label of the Translate menu item">
           T&amp;ranslate...
         </message>
         <message name="IDS_SETTINGS" desc="The text label of the Settings menu item">
           Settin&amp;gs
         </message>
-        <message name="IDS_OPTIONS" desc="The text label of the Options menu item">
-          &amp;Options
-        </message>
         <message name="IDS_HELP_PAGE" desc="The text label of the Help Center menu item">
           H&amp;elp center
-        </message>
-        <message name="IDS_BETA_FORUM" desc="The text label of the menu item that takes the user to the forum for Beta Chrome.">
-          Beta forum
         </message>
         <message name="IDS_GET_HELP" desc="The text label of the Get Help menu item">
           Get H&amp;elp
@@ -1985,23 +1869,14 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_SHOW_PERFORMANCE" desc="In Title Case: The text label of the Performance menu item">
           Performance
         </message>
-        <message name="IDS_SHOW_SEARCH_COMPANION" desc="In Title Case: The text label of the Chrome Search Companion menu item">
-          Sear&amp;ch This Page with Google...
-        </message>
         <message name="IDS_SHOW_TRANSLATE" desc="In Title Case: The text label of the Translate menu item">
           T&amp;ranslate...
         </message>
         <message name="IDS_SETTINGS" desc="In Title Case: The text label of the Settings menu item">
           &amp;Settings
         </message>
-        <message name="IDS_OPTIONS" desc="In Title Case: The text label of the Options menu item">
-          &amp;Options
-        </message>
         <message name="IDS_HELP_PAGE" desc="The text label of the Help Center menu item">
           H&amp;elp center
-        </message>
-        <message name="IDS_BETA_FORUM" desc="The text label of the menu item that takes the user to the forum for Beta Chrome.">
-          Beta Forum
         </message>
         <message name="IDS_GET_HELP" desc="The text label of the Get Help menu item">
           Get H&amp;elp
@@ -2015,18 +1890,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR" desc="The separator between a result in the autocomplete popup and its description." formatter_data="android_java">
         ''' - '''
       </message>
-      <if expr="not use_titlecase">
-        <message name="IDS_MANAGE_SEARCH_ENGINES"
-                 desc="Title of the popup menu item that takes the user to 'Manage search engines' in Settings.">
-          &amp;Manage search engines...
-        </message>
-      </if>
-      <if expr="use_titlecase">
-        <message name="IDS_MANAGE_SEARCH_ENGINES"
-                 desc="In Title Case: Title of the popup menu item that takes the user to 'Manage search engines' in Settings.">
-          &amp;Manage Search Engines...
-        </message>
-      </if>
       <if expr="not use_titlecase">
         <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH"
                  desc="Title of the popup menu item that takes the user to 'Manage search engines and site search' in Settings.">
@@ -2051,17 +1914,6 @@ are declared in tools/grit/grit_args.gni.
           &amp;Manage Search Engines and Shortcuts
         </message>
       </if>
-
-      <!-- Search Engine Settings -->
-      <message name="IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN"
-               desc="Title of the keyword column in the search engines editor">
-        Keyword
-      </message>
-      <message name="IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN"
-               desc="Title of the description column in the search engines editor"
-               translateable="false">
-        Name
-      </message>
 
       <message name="IDS_SEARCH_ENGINES_EDITOR_DEFAULT_ENGINE"
                desc="Engine name displayed for the engine in the list that is currently marked as default">
@@ -2383,10 +2235,6 @@ are declared in tools/grit/grit_args.gni.
         desc="Message shown in the download shelf when a download is being scanned for an Advanced Protection user">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is being scanned.
       </message>
-      <message name="IDS_PROMPT_CONFIRM_INSECURE_DOWNLOAD"
-        desc="Message shown to the user to validate the download when the download content is an insecure download.">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> can't be downloaded securely
-      </message>
       <message name="IDS_PROMPT_DOWNLOAD_BLOCKED_TOO_LARGE"
         desc="Message shown in the download shelf when a download is blocked for being too large">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is too big for a security check. You can open files up to 50 MB.
@@ -2422,10 +2270,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_PROMPT_DOWNLOAD_INSECURE_BLOCKED"
         desc="Message shown in the download shelf when a download is insecure, and Chrome has blocked it.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> can't be downloaded securely
-      </message>
-      <message name="IDS_PROMPT_APP_DEEP_SCANNING"
-        desc="Message shown in the download shelf when Chrome recommends uploading the file for additional scanning">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google Advanced Protection for scanning?
       </message>
         <message name="IDS_PROMPT_DEEP_SCANNING"
         desc="Message shown in the download shelf for all Advanced Protection and Enhanced Safe Browsing users when Chrome recommends uploading the file for additional scanning.">
@@ -3640,12 +3484,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
 
       <!-- "Install web app" confirmation bubble for simple install dialog, detailed install dialog as well as DIY apps. -->
-      <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE" desc="Title of the bubble for installing a web app to the operating system.">
-        Install app?
-      </message>
-      <message name="IDS_INSTALL_PWA_BUTTON_LABEL" desc="Text for button that installs a web app to the operating system.">
-        Install
-      </message>
       <message name="IDS_INSTALL_PWA_DIALOG_TITLE" meaning="Shown only on PWA install dialogs" desc="Title for dialog that shows up when a web app needs to be installed to the operating system.">
         Install app
       </message>
@@ -3783,24 +3621,7 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <!-- Finish policy app installation dialog -->
-      <message name="IDS_FINISH_POLICY_WEB_APP_INSTALLATION" desc="Main text for the Finish Policy Web App Installation dialog. This is a dialog message that appears on the first launch of an app after it was remotely installed by an enterprise administrator. The app has some cosmetic factors (like the app icon) that can only be fixed if the user launches and then restarts the app. After the initial launch, this dialog encourages users to restart the app to complete the installation.">
-          This app was added by your organization. Restart the app to finish installing it.
-      </message>
       <if expr="not use_titlecase">
-        <message name="IDS_FINISH_POLICY_WEB_APP_INSTALATION_RESTART" desc="The button in the Finish Policy Web App Installation dialog which closes the app and relaunches it.">
-          Restart
-        </message>
-        <message name="IDS_FINISH_POLICY_WEB_APP_INSTALLATION_NOT_NOW" desc="The button in the Finish Policy Web App Installation dialog which dismisses the dialog.">
-          Not now
-        </message>
-      </if>
-      <if expr="use_titlecase">
-        <message name="IDS_FINISH_POLICY_WEB_APP_INSTALATION_RESTART" desc="The button in the Finish Policy Web App Installation dialog which closes the app and relaunches it.">
-          Restart
-        </message>
-        <message name="IDS_FINISH_POLICY_WEB_APP_INSTALLATION_NOT_NOW" desc="The button in the Finish Policy Web App Installation dialog which dismisses the dialog.">
-          Not Now
-        </message>
       </if>
 
       <!-- Quit all apps confirmation dialog -->
@@ -4251,14 +4072,8 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CONTINUE_BLOCKING_BUTTON" desc="Text displayed on a button that reaffirms that notifications should remain disabled for a site. This button is part of the notifications status bubble, which is triggered when a user clicks on the blocked notifications icon in the omnibox.">
         Continue blocking
       </message>
-      <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_EARLY_PROMO" desc="Text of the blocked notifications indicator promo, that shows under the blocked notifications indicator in the address bar. The promo follows the user action of blocking notifications for the site they are visiting, and informs the user that we (Chrome) understood that they do not usually accept notification prompts, and we will automatically block notification prompts in the future.">
-        Got it. By default, new sites that you visit won't send you notifications.
-      </message>
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION" desc="Subtitle for the Notifications permission prompt, shown when a user clicks on a site's notifications permission request that is automatically blocked by Chrome, as this permission prompt is often denied by other users for this site.">
         Most people block notifications from this site
-      </message>
-      <message name="IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_CROWD_DENY_DESCRIPTION" desc="Subtitle for the Geolocation permission prompt, shown when a user clicks on a site's geolocation permission request that is automatically blocked by Chrome, as this permission prompt is often denied by other users for this site.">
-        Most people block sharing precise location for this site
       </message>
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ABUSIVE_DESCRIPTION" desc="Subtitle for the Notifications permission prompt, shown when a user clicks on a site's notifications permission request that is automatically blocked by Chrome because the site is known to employ dark patterns to trick users into accepting the permission.">
         This site may be trying to trick you into allowing intrusive notifications
@@ -4268,9 +4083,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION" desc="Text used as notification message when requesting permission for Web Notifications via a notification. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
         Chrome thinks you don't want notifications from this site. So, requests are hidden to reduce interruptions.
-      </message>
-      <message name="IDS_GEOLOCATION_OFF_EXPLANATORY_TEXT" desc="Explanatory animated text that appears (and then disappears) in the address bar as part of the less-prominent UX, when a website requests the geolocation permission.">
-        Location blocked
       </message>
       <message name="IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_TITLE" desc="Title for the geolocatoin permission prompt, which is triggered when a user clicks on the blocked geolocation permission chip in the omnibox.">
         Location blocked
@@ -4300,9 +4112,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE" desc="Subtitle shown on the cookie controls bubble when cookies are blocked guiding the user to the cookie controls toggle button.">
         Site not working?
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION" desc="Descriptive text in the trackings protection bubble mentioning the option to enable third-party cookies and mentions the trade off of doing so.">
-        Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION" desc="Descriptive text in the third-party cookies bubble describing the option to allow third-party cookies and the trade offs of doing so.">
         Try allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
@@ -4750,15 +4559,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CERTIFICATE_MANAGER_TITLE" desc="String to be displayed in the title bar of the certificate manager dialog">
           Certificate manager
         </message>
-        <message name="IDS_CERT_MANAGER_HARDWARE_BACKED_KEY_FORMAT" desc="A format used to create label for hardware-backed keys.">
-          <ph name="KEY_NAME">$1<ex>John Doe</ex></ph> (<ph name="DEVICE">$2<ex>hardware-backed</ex></ph>)
-        </message>
-        <message name="IDS_CERT_MANAGER_HARDWARE_BACKED" desc="A device name to be used for hardware-backed keys.">
-          hardware-backed
-        </message>
-        <message name="IDS_CERT_MANAGER_EXTENSION_PROVIDED_FORMAT" desc="Format used for showing extension provided certificates.">
-          <ph name="CERTIFICATE_NAME">$1<ex>Example Certificate</ex></ph> (extension provided)
-        </message>
       </if>
 
       <!-- DevTools shared process infobar -->
@@ -4854,12 +4654,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON" desc="The user is sharing (presenting) a tab via a screensharing app like Google Meet. This button allows the user to continue sharing a tab but view a different tab [url] at the same time. The URL should not appear in the middle of the button in any language; please observe the structure of [message: url].">
        View tab: <ph name="TAB_ORIGIN">$1<ex>meet.google.com</ex></ph>
-      </message>
-      <message name="IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURER_BUTTON" desc="Text displayed on an infobar button offering to change focus to the capturer if its hostname cannot be determined. (Otherwise, IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON will be used.)">
-       Switch to capturing tab
-      </message>
-      <message name="IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURED_BUTTON" desc="Text displayed on an infobar button offering to change focus to the capturer if its hostname cannot be determined. (Otherwise, IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON will be used.)">
-       Switch to captured tab
       </message>
       <message name="IDS_TAB_SHARING_INFOBAR_CAPTURED_SURFACE_CONTROL_PERMISSION_BUTTON" desc="Text informing users that shared tabs can be scrolled and zoomed.">
         Shared tabs can be scrolled and zoomed
@@ -5167,12 +4961,6 @@ are declared in tools/grit/grit_args.gni.
           Incognito PDF Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://example.com/document.pdf</ex></ph>
         </message>
       </if>
-      <message name="IDS_TASK_MANAGER_PORTAL_PREFIX" desc="The prefix for a portal row in the Task Manager (these processes are created when portals is enabled)">
-        Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-      </message>
-      <message name="IDS_TASK_MANAGER_PORTAL_INCOGNITO_PREFIX" desc="The prefix for an Incognito portal row in the Task Manager (these processes are created when portals is enabled, in Incognito mode)">
-        Incognito Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-      </message>
       <message name="IDS_TASK_MANAGER_ARC_PREFIX" desc="The prefix for an ARC general process row">
         App: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
       </message>
@@ -5205,13 +4993,7 @@ are declared in tools/grit/grit_args.gni.
           Profile Importer
         </message>
       </if>
-      <message name="IDS_UTILITY_PROCESS_QRCODE_GENERATOR_SERVICE_NAME" desc="The name of the utility process used for encoding QR Codes.">
-        QR Code Generator
-      </message>
       <if expr="is_win">
-        <message name="IDS_UTILITY_PROCESS_WIFI_CREDENTIALS_GETTER_NAME" desc="The name of the utility process used for getting the WiFi credentials">
-          WiFi Credentials Getter
-        </message>
       </if>
       <if expr="enable_extensions">
         <if expr="reven">
@@ -5225,9 +5007,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
         </if>
       </if>
-      <message name="IDS_UTILITY_PROCESS_NOOP_SERVICE_NAME" desc="The name of the utility process which does nothing, used for experimentation.">
-        No-op Service
-      </message>
       <message name="IDS_SERVICE_PROCESS_DOCUMENT_ANALYSIS_NAME" desc="The name of the service process used for document analysis operations as part of Safe Browsing.">
         Chrome Document Analysis
       </message>
@@ -5618,9 +5397,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_NATIVE_MESSAGING" desc="Permission string for Native Messaging API.">
           Communicate with cooperating native applications
         </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_SCREENLOCK_PRIVATE" desc="Permission string for locking an unlocking the screen.">
-          Lock and unlock the screen
-        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_ACTIVITY_LOG_PRIVATE" desc="Permission string for the observing other extensions' API calls">
           Monitor the behavior of other extensions, including visited URLs
         </message>
@@ -5785,11 +5561,6 @@ are declared in tools/grit/grit_args.gni.
 
       <!-- Extension installed bubble -->
       <if expr="enable_extensions_core">
-        <if expr="is_macosx">
-          <message name="IDS_EXTENSION_INSTALLED_APP_INFO" desc="Text displayed inside a link when an app is installed. Clicking this link opens up the New Tab Page to show the app's icon.">
-            Show me
-          </message>
-        </if>
         <message name="IDS_EXTENSION_INSTALLED_PAGE_ACTION_INFO" desc="Text displayed in the InfoBubble which explains that the UI of this extension is a Page Action icon which may appear for some pages.">
           This icon will be visible when the extension can act on the current page.
         </message>
@@ -5861,17 +5632,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
 
       <!-- Direct Sockets connection dialog -->
-      <if expr="not is_android">
-        <message name="IDS_DIRECT_SOCKETS_CONNECTION_BUBBLE_TITLE_LABEL" desc="Name shown in the direct sockets connection dialog's title">
-          Connection Dialog
-        </message>
-        <message name="IDS_DIRECT_SOCKETS_CONNECTION_BUBBLE_ADDRESS_LABEL" desc="The remote host name that direct sockets will connect to">
-          Address
-        </message>
-        <message name="IDS_DIRECT_SOCKETS_CONNECTION_BUBBLE_PORT_LABEL" desc="The remote port number that direct sockets will connect to">
-          Port
-        </message>
-      </if>
 
       <!-- Extensions strings, which are not used by chrome://extensions. -->
       <if expr="enable_extensions_core">
@@ -6068,9 +5828,6 @@ are declared in tools/grit/grit_args.gni.
       </if>
       <if expr="enable_extensions">
        <if expr="not use_titlecase">
-          <message name="IDS_EXTENSIONS_DISABLE" desc="The link for disabling an extension (sentence case).">
-            Disable
-          </message>
           <message name="IDS_EXTENSIONS_PIN_TO_TOOLBAR_ACCESSIBLE_NAME" desc="The accessible name for the menu item to pin an extension to the toolbar (sentence case).">
             Pin <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>
           </message>
@@ -6082,18 +5839,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
         </if>
         <if expr="use_titlecase">
-          <message name="IDS_EXTENSIONS_DISABLE" desc="The link for disabling an extension (title case).">
-            Disable
-          </message>
-          <message name="IDS_EXTENSIONS_HIDE_BUTTON" desc="The text for the Hide context menu item (title case).">
-            Hide Button
-          </message>
-          <message name="IDS_EXTENSIONS_KEEP_BUTTON_IN_TOOLBAR" desc="The text for the menu item to keep a button pinned in the toolbar (title case).">
-            Keep in Toolbar
-          </message>
-          <message name="IDS_EXTENSIONS_SHOW_BUTTON_IN_TOOLBAR" desc="The text for the menu item to move a button to the toolbar (title case).">
-            Show in Toolbar
-          </message>
           <message name="IDS_EXTENSIONS_PIN_TO_TOOLBAR_ACCESSIBLE_NAME" desc="The accessible name for the menu item to pin an extension to the toolbar (sentence case).">
             Pin <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>
           </message>
@@ -6461,12 +6206,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP_ACCESSIBLE_NAME" desc="Title of the context menu for individual extensions in the Extensions Menu">
           <ph name="EXTENSION_NAME">More options for $1<ex>MyExtension</ex></ph>
       </message>
-      <message name="IDS_EXTENSIONS_MENU_PIN_BUTTON_TOOLTIP" desc="The tooltip for the pinning button for individual extensions in the Extensions Menu">
-        Pin extension
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_UNPIN_BUTTON_TOOLTIP" desc="The tooltip for the pinning button for individual extensions in the Extensions Menu">
-        Unpin extension
-      </message>
       <message name="IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA_SHORT" desc="Header for section of extensions that are able to access the current site's data">
         Full access
       </message>
@@ -6678,17 +6417,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_DENY" desc="Text for the deny button on the document scanner start scan confirmation dialog">
         Deny
-      </message>
-
-      <message name="IDS_EXTENSIONS_NTP_CONTROLLED_FIRST_LINE" desc="Text displayed as the first line in the NTP bubble when an extension has changed the new tab page.">
-        An extension has changed what page is shown when you open a new tab.
-      </message>
-
-      <message name="IDS_EXTENSIONS_PROXY_CONTROLLED_FIRST_LINE" desc="Text displayed as the first line in the proxy bubble when an extension has changed the proxy but we are not pointing at it's icon (because it doesn't have one).">
-        The extension "<ph name="EXTENSION_NAME">$1<ex>AdBlock</ex></ph>" has taken control of your proxy settings, which means it can change, break, or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.
-      </message>
-      <message name="IDS_EXTENSIONS_PROXY_CONTROLLED_FIRST_LINE_EXTENSION_SPECIFIC" desc="Text displayed as the first line in the proxy bubble when an extension has changed the proxy and we are pointing at that extension's icon.">
-        This extension has taken control of your proxy settings, which means it can change, break, or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.
       </message>
 
       <message name="IDS_EXTENSIONS_SETTINGS_API_THIRD_LINE_CONFIRMATION" desc="Third line in the Settings API bubble, always appended after the first (and optional second) line to make one paragraph. See IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE for reason for triple quotes.">
@@ -6976,11 +6704,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PASSWORD_ERROR_VERIFY_BUTTON_TITLE" desc="The title of the verify button in the password manager error message.">
         Verify
       </message>
-      <if expr="is_android">
-        <message name="IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE" desc="The title of the sign in button in the password manager error message.">
-          Sign in
-        </message>
-      </if>
       <message name="IDS_SAVE_PASSWORD_DIFFERENT_DOMAINS_TITLE" desc="The title of the save password bubble when the submitted form origin isn't equal to the page origin.">
         Save password for <ph name="ORIGIN">$1<ex>example.com</ex></ph>?
       </message>
@@ -7076,29 +6799,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
         other {New passwords for this site}}
       </message>
       <!-- Password manager onboarding strings -->
-      <message name="IDS_PASSWORD_MANAGER_ONBOARDING_TITLE_A" desc="The title shown in the password manager onboarding dialog.">
-        Save your passwords?
-      </message>
-      <message name="IDS_PASSWORD_MANAGER_ONBOARDING_TITLE_B" desc="The title shown in the password manager onboarding dialog.">
-        Store once. Use everywhere
-      </message>
-      <message name="IDS_PASSWORD_MANAGER_ONBOARDING_TITLE_C" desc="The title shown in the password manager onboarding dialog.">
-        Never worry about your passwords
-      </message>
-      <message name="IDS_PASSWORD_MANAGER_ONBOARDING_DETAILS_A" desc="The explanation text that is shown below the title in the password manager onboarding dialog.">
-        Save passwords securely in your Google Account, and you'll never have to type them again
-      </message>
-      <message name="IDS_PASSWORD_MANAGER_ONBOARDING_DETAILS_B" desc="The explanation text that is shown below the title in the password manager onboarding dialog.">
-        Access your passwords whenever you're signed in to your Google Account
-      </message>
 
       <!-- Begin of Sync Promo strings for Desktop Identity Consistency. -->
-      <message name="IDS_PASSWORD_MANAGER_DICE_PROMO_SIGNIN_MESSAGE" desc="Text of the sync promo displayed at the bottom of the save password bubble asking the user to sign in and enable sync.">
-        To save passwords to your Google Account, sign in and turn on sync.
-      </message>
-      <message name="IDS_PASSWORD_MANAGER_DICE_PROMO_SYNC_MESSAGE" desc="Text of the sync promo displayed at the bottom of the save password bubble asking the user to enable sync.">
-        To save passwords to your Google Account, turn on sync.
-      </message>
       <!-- End of Sync Promo strings for Desktop Identity Consistency. -->
 
       <!-- WebRTC logs -->
@@ -7216,11 +6918,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Chrome is loading flags from a command-line file. Stability and security may be affected.
       </message>
 
-      <!-- Bad Environment Variables Infobar-->
-      <message name="IDS_BAD_ENVIRONMENT_VARIABLES_WARNING_MESSAGE" desc="Message shown when an unsupported environment variable is used [Keep it short so it fits in the infobar.]">
-        You are using an unsupported environment variable: <ph name="BAD_VAR">$1<ex>SSLKEYLOGFILE</ex></ph>. Stability and security will suffer.
-      </message>
-
       <!-- Blocked Displaying/Running Insecure Content bubble -->
       <message name="IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT_TITLE" desc="Title of the bubble shown when a message has asked Chrome to display mixed content.">
         Insecure content blocked
@@ -7238,14 +6935,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Load unsafe scripts
         </message>
       </if>
-
-      <!-- chromeos bookmark app add to shelf strings -->
-      <message name="IDS_ADD_TO_SHELF_INFOBAR_TITLE" desc="Label displayed in an infobar asking users to add to the site to their shelf">
-        Add this site to your shelf to use it any time
-      </message>
-      <message name="IDS_ADD_TO_SHELF_INFOBAR_ADD_BUTTON" desc="Text displayed on the button to allow users to add to the site to their shelf">
-        Add
-      </message>
 
       <!-- about:system strings -->
       <if expr="not is_android">
@@ -7463,14 +7152,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Pa&amp;ste and Go
         </message>
       </if>
-      <message name="IDS_OMNIBOX_KEYWORD_TEXT" desc="Text shown in the search button at the front of the omnibox when the user has selected a keyword">
-        Search <ph name="SITE_NAME">$1<ex>google.com</ex></ph>:
-      </message>
       <message name="IDS_OMNIBOX_CLEAR_ALL" desc="Accessibility text for the button that deletes all text input from the omnibox on touch devices.">
         Clear input
-      </message>
-      <message name="IDS_OMNIBOX_WHY_THIS_SUGGESTION" desc="The title of a menu entry and bubble that explains why this suggestion appears in the omnibox popup.">
-        Why this suggestion?
       </message>
       <message name="IDS_OMNIBOX_CLOSE_IPH_SUGGESTION" desc="The text displayed when hovering over the button to close the omnibox IPH suggestion.">
         Close
@@ -7533,10 +7216,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_PAGE_ARIA_LABEL" desc="The aria-label for the button that allows the user to ask a question about the content of their current page. The $1 is a placeholder for the page title.">
         Ask Google about this page: <ph name="PAGE_TITLE">$1</ph>
       </message>
-      <message name="IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_YOUR_TABS"
-        desc="Label for a button that guides the user to composebox's context menu using a suggestion like label.">
-        Ask about your tabs
-      </message>
       <message name="IDS_OMNIBOX_ASKG_LENS_ICON_IPH_ACCESSIBLE_TEXT" desc="Screen reader text announced when the promo highlighting the Google Lens button in the address bar dropdown appears. The visible promo text is 'Select any text or image to search with Google Lens'.">
         Use Google Lens to ask about any text or image on the page
       </message>
@@ -7587,79 +7266,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <!-- Contextual Search -->
       <if expr="use_titlecase">
         <then>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE_LENS" desc="In Title Case: The name of the Search with Google Lens contextual search command in the context menu">
-            Search with Google Lens
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_THIS_PAGE_WITH_GOOGLE" desc="In Title Case: The name of the Search this page with Google contextual search command in the context menu">
-            Search This Page with Google
-          </message>
           <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE" desc="In Title Case: The name of the Search with Google contextual search command in the context menu">
             Search with Google
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_THIS_IMAGE_WITH_GOOGLE" desc="In Title Case: The name of the Search this image with Google contextual search command in the context menu">
-            Search This Image with Google
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_GOOGLE_FOR" desc="In Title Case: The name of the Search Google for “string” contextual search command in the context menu">
-            Search Google for “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_FOR" desc="In Title Case: The name of the Search for “string” contextual search command in the context menu">
-            Search for “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
           </message>
           <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE" desc="In Title Case: The name of the Ask Google about this page contextual search command in the context menu">
             Ask Google About This Page
           </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT_THIS_PAGE" desc="In Title Case: The name of the Ask about this page contextual search command in the context menu">
-            Ask About This Page
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_IMAGE" desc="In Title Case: The name of the Ask Google about this image contextual search command in the context menu">
-            Ask Google About This Image
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT_THIS_IMAGE" desc="In Title Case: The name of the Ask about this image contextual search command in the context menu">
-            Ask About This Image
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT" desc="In Title Case: The name of the Ask Google about “string” contextual search command in the context menu">
-            Ask Google About “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT" desc="In Title Case: The name of the Ask about “string” contextual search command in the context menu">
-            Ask About “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
-          </message>
         </then>
         <else>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE_LENS" desc="The name of the Search with Google Lens contextual search command in the context menu">
-            Search with Google Lens
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_THIS_PAGE_WITH_GOOGLE" desc="The name of the Search this page with Google contextual search command in the context menu">
-            Search this page with Google
-          </message>
           <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE" desc="The name of the Search with Google contextual search command in the context menu">
             Search with Google
           </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_THIS_IMAGE_WITH_GOOGLE" desc="The name of the Search this image with Google contextual search command in the context menu">
-            Search this image with Google
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_GOOGLE_FOR" desc="The name of the Search Google for “string” contextual search command in the context menu">
-            Search Google for “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_SEARCH_FOR" desc="The name of the Search for “string” contextual search command in the context menu">
-            Search for “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
-          </message>
           <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE" desc="The name of the Ask Google about this page contextual search command in the context menu">
             Ask Google about this page
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT_THIS_PAGE" desc="The name of the Ask about this page contextual search command in the context menu">
-            Ask about this page
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_IMAGE" desc="The name of the Ask Google about this image contextual search command in the context menu">
-            Ask Google about this image
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT_THIS_IMAGE" desc="The name of the Ask about this image contextual search command in the context menu">
-            Ask about this image
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT" desc="The name of the Ask Google about “string” contextual search command in the context menu">
-            Ask Google about “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
-          </message>
-          <message name="IDS_CONTEXTUAL_SEARCH_ASK_ABOUT" desc="The name of the Ask about “string” contextual search command in the context menu">
-            Ask about “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
           </message>
         </else>
       </if>
@@ -7669,18 +7288,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- NTP -->
       <!-- Google Drive integration disclaimer for New Tab Page -->
-      <message name="IDS_NTP_DRIVE_CONNECT_TITLE" desc="Title of the dialog asking to connect Google Drive to AIM.">
-        Allow Search to access Drive content?
-      </message>
-      <message name="IDS_NTP_DRIVE_DISCLAIMER_BODY" desc="Body text explaining how Drive data is handled in AIM.">
-        Your Google Drive content is accessed only to provide this file search feature. It is not used to improve Google Search. Google will not access your Google Drive content unless you explicitly upload a file.
-      </message>
-      <message name="IDS_NTP_DRIVE_DISCLAIMER_CANCEL" desc="Label on the button to cancel the Google Drive connection to AIM.">
-        Cancel
-      </message>
-      <message name="IDS_NTP_DRIVE_DISCLAIMER_CONNECT" desc="Label on the button to proceed with connecting Google Drive.">
-        Connect
-      </message>
       <message name="IDS_NTP_DRIVE_DISCLAIMER_ERROR" desc="Error message displayed when connecting to Google Drive fails.">
         Couldn't connect to your Google Drive account
       </message>
@@ -7689,9 +7296,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD" desc="The text displayed in the fakebox (on the New Tab page) when it is empty, Google is the default search engine, and the Material Design UI is enabled.">
         Search Google or type a URL
-      </message>
-      <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_SHORT" desc="The text displayed in the fakebox (on the New Tab page) when it is empty, Google is the default search engine, and short hint text is enabled.">
-        Search Google
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL" desc="The text displayed in the multimodal searchbox when it is empty. It is meant to invite the user to add a text query to the existing image query in order to issue a 'multimodal' (image + text) query.">
         Add to your search
@@ -7757,30 +7361,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
         Ask Google
       </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_PLAN" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Make a plan
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_COMPARE" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Compare options
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Research anything
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TEACH" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Teach me a new skill
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_WRITE" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Write something new
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TAB" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Ask about a tab
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_IMAGE" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Describe your image
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_CANVAS" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Create anything
-      </message>
       <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH_TOPIC" desc="One of the dynamically changing placeholder texts for the NTP searchbox. Only shown to users eligible for AI Mode.">
         Research a topic
       </message>
@@ -7790,14 +7370,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_GET_ADVICE" desc="One of the dynamically changing placeholder texts for the NTP searchbox. Only shown to users eligible for AI Mode.">
         Get advice
       </message>
-      <message name="IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TOOLTIP" desc="The tooltip for adding a custom link shortcut. (On the New Tab Page)">
-        Add shortcut
-      </message>
       <message name="IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE" desc="The title of the custom link add shortcut dialog. (On the New Tab Page)">
         Add shortcut
-      </message>
-      <message name="IDS_NTP_CUSTOM_LINKS_EDIT_SHORTCUT_TOOLTIP" desc="The tooltip for editing a custom link shortcut. (On the New Tab Page)">
-        Edit shortcut
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_EDIT_SHORTCUT" desc="The title for custom link edit shortcut dialog. (On the New Tab Page)">
         Edit shortcut
@@ -7829,9 +7403,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_SHORTCUT_REORDER_A11Y" is_accessibility_with_no_ui="true" desc="The accessible label of a most visited tile when reordering shortcuts. (On the New Tab Page)">
         <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph>, use the Left and Right arrow keys to move the shortcut. Press Enter or Escape to finish.
       </message>
-      <message name="IDS_NTP_SHORTCUT_MOVED_A11Y" is_accessibility_with_no_ui="true" desc="The accessible label of a most visited tile when it has been moved. (On the New Tab Page)">
-        Moved <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph> to position <ph name="SHORTCUT_POSITION">$2<ex>3</ex></ph> of <ph name="TOTAL_SHORTCUTS">$3<ex>5</ex></ph>.
-      </message>
       <message name="IDS_NTP_MOST_VISITED_SITES_REMOVE" desc="The accessible label of the most visited tile remove button. (On the New Tab Page)">
         Remove <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph>
       </message>
@@ -7852,9 +7423,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_CANT_EDIT" desc="A catchall error message for when the shortcut cannot be edited. (On the New Tab Page)">
        Can't edit shortcut
-      </message>
-      <message name="IDS_NTP_CUSTOM_LINKS_CANT_REMOVE" desc="A catchall error message for when the shortcut cannot be removed. (On the New Tab Page)">
-       Can't remove shortcut
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_HELP_PIN" desc="The in-product help text instructing the user on how to pin a shortcut (On the New Tab Page)" formatter_data="android_java">
         Tap and hold to pin shortcuts
@@ -7880,35 +7448,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOM_BG_UPLOAD_AN_IMAGE" desc="The text label of the upload an image option for background customization. (On the New Tab Page)">
         Upload an image
       </message>
-      <message name="IDS_NTP_CUSTOM_BG_SELECT_A_COLLECTION" desc="The text label of the select a collection submenu for background customization. (On the New Tab Page)">
-        Select a collection
-      </message>
       <message name="IDS_NTP_CUSTOM_BG_DAILY_REFRESH" desc="The text label for the daily background randomization option.  (On the New Tab Page)">
         Refresh daily
-      </message>
-      <message name="IDS_NTP_CUSTOM_BG_RESTORE_DEFAULT" desc="The text label for the restore default option for background customization. (On the New Tab Page)">
-        Restore default background
-      </message>
-      <message name="IDS_NTP_CUSTOM_BG_CANCEL" desc="The text label for the cancel option for background customization. (On the New Tab Page)">
-        Cancel
-      </message>
-      <message name="IDS_NTP_CONNECTION_ERROR_NO_PERIOD" desc="Error message for when a connection cannot be established. (On the New Tab Page)">
-        Connection error
-      </message>
-      <message name="IDS_NTP_CONNECTION_ERROR" desc="Error message for when a connection cannot be established. (On the New Tab Page)">
-        Connection error.
-      </message>
-      <message name="IDS_NTP_ERROR_MORE_INFO" desc="Link to more detailed information when a connection cannot be established. (On the New Tab Page)">
-        More info
-      </message>
-      <message name="IDS_NTP_CUSTOM_BG_BACKGROUNDS_UNAVAILABLE" desc="Error message for when background customization is not available. (On the New Tab Page)">
-        Backgrounds are unavailable. Try again later.
-      </message>
-      <message name="IDS_NTP_CUSTOM_BG_BACK_LABEL" desc="Accessibility label for the back arrow on the background picker dialog. (On the New Tab Page)">
-        Back
-      </message>
-      <message name="IDS_NTP_CUSTOM_BG_IMAGE_SELECTED" desc="Label to indicate that an image has been selected in the background picker dialog. (On the New Tab Page)">
-       selected
       </message>
       <message name="IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_LABEL" desc="Accessibility label for the gear icon. (On the New Tab Page)">
         Customize this page
@@ -7922,14 +7463,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_DISMISS" desc="Used for Dismiss buttons">
         Dismiss
       </message>
-      <message name="IDS_NTP_DISMISS_PROMO" desc="The tooltip title and accessibility label for the (X) button to dismiss promotional messages on the middle / bottom of the New Tab page.">
-        Dismiss this message
-      </message>
       <message name="IDS_NTP_DOODLE_SHARE_LABEL" desc="The text label for the share button of a static or animated doodle that opens a sharing dialog.">
         Share Doodle
-      </message>
-      <message name="IDS_NTP_DOODLE_SHARE_DIALOG_CLOSE_LABEL" desc="The text label for the close button on the doodle sharing dialog.">
-        Close
       </message>
       <message name="IDS_NTP_DOODLE_SHARE_DIALOG_FACEBOOK_LABEL" desc="The text label for the Facebook button on the doodle sharing dialog.">
         Facebook
@@ -8011,9 +7546,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOMIZE_SHOW_FOOTER_LABEL" desc="The label for the option to show footer in the customization menu on the New Tab Page">
         Show footer on new tab page
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_SHOW_CHIPS_LABEL" desc="The label for the option to show the Google Search tools options in the New Tab Page" meaning="Toggle to display/hide the Search tool options in the New Tab Page.">
-        Show options
       </message>
       <message name="IDS_NTP_CUSTOMIZE_SHOW_SUGGESTIONS_CHIPS_LABEL" desc="The label for the option to show the Google Search tool suggestions in the New Tab Page" meaning="Toggle to display/hide the Search tool suggestions in the New Tab Page.">
         Show suggestions
@@ -8691,9 +8223,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Navigation
       </message>
       <if expr="use_titlecase">
-        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_SIDE_PANELS" desc="The label for the category of actions that open side panels, such as reading mode and show all bookmarks.">
-          Side Panels
-        </message>
         <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_TOOLS_AND_ACTIONS" desc="The label for the category of actions that open special purpose tools, such as Google Translate or developer tools.">
           Tools and Actions
         </message>
@@ -8702,9 +8231,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_SIDE_PANELS" desc="The label for the category of actions that open side panels, such as reading mode and show all bookmarks.">
-          Side panels
-        </message>
         <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_TOOLS_AND_ACTIONS" desc="The label for the category of actions that open special purpose tools, such as Google Translate or developer tools.">
           Tools and actions
         </message>
@@ -8720,9 +8246,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL" desc="The accessibility label for the compose entrypoint in the searchbox on the New Tab Page.">
         Ask AI Mode in Google Search
       </message>
-      <message name="IDS_NTP_COMPOSE_ENTRYPOINT_SHORTENED_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to enter AI Mode search.">
-        Ask in AI Mode
-      </message>
       <message name="IDS_NTP_COMPOSE_EXIT_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to exit AI Mode search.">
         Exit AI Mode
       </message>
@@ -8731,12 +8254,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT" desc="The placeholder for the input in the compose box.">
         Ask AI Mode
-      </message>
-      <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT_GREETING_NO_NAME" desc="The placeholder text for the searchbox input (Omnibox, Realbox) in AI Mode. Shown when the user is signed out.">
-        What's on your mind?
-      </message>
-      <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT_GREETING_NAMED" desc="The placeholder text for the searchbox input (Omnibox, Realbox) in AI Mode. Shown when the user is signed in.">
-        Hi <ph name="FIRST_NAME">$1<ex>Camille</ex></ph>, what's on your mind?
       </message>
       <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL" desc="The accessibility label for the cancel button on the compose box when there is no input." formatter_data="android_java">
         Dismiss
@@ -8800,14 +8317,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED">
         File upload has expired and been removed.
       </message>
-      <message name="IDS_NTP_COMPOSE_MOST_RECENT_TABS" desc="Heading for a list of tabs that can be added to a contextual search. This is a subsection of a menu.">
-        Most recent tabs
-      </message>
       <message name="IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE" desc="Title for the Composebox tab picker when no tabs are selected.">
         Add recent tabs
-      </message>
-      <message name="IDS_NTP_COMPOSEBOX_SHARE_TABS" desc="Label for the row in the Composebox context menu that opens a flyout listing all open tabs to share.">
-        Share tabs
       </message>
       <message name="IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX" desc="Suffix label appended after the title of the most recently active tab in the Share tabs flyout. Visual separation from the title is handled by CSS, not by leading white space in this string.">
         Recent tab
@@ -8820,9 +8331,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_DRIVE" desc="Label for the menu item in the Composebox context menu that lets users add a file from Google Drive to their search. 'Drive' refers to the Google Drive product." formatter_data="android_java">
         Add from Drive
-      </message>
-      <message name="IDS_NTP_COMPOSE_ADD_CONTEXT" desc="The text to display to ask user to add context to their search e.g. pdf or image.">
-        Add a tab and more
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_CONTEXTS" desc="The text to display to ask user to add context to their search.">
         Add tabs and more
@@ -8848,9 +8356,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_CANVAS" desc="The label for the canvas button in the context menu in the composebox as well as the chip that indicates that the user is in canvas mode.">
         Canvas
       </message>
-      <message name="IDS_NTP_COMPOSE_MODELS_LABEL" desc="The label for the models label in the context menu in the composebox.">
-        Models
-      </message>
       <message name="IDS_NTP_COMPOSE_AUTO_MODEL" desc="The label for the Auto model button in the context menu in the composebox as well as the chip that indicates that the user is using the Auto model.">
         Auto
       </message>
@@ -8859,12 +8364,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_COMPOSE_DEEP_SEARCH_PLACEHOLDER" desc="Placeholder text for the composebox when in deep search mode.">
         Research anything
-      </message>
-      <message name="IDS_COMPOSE_CREATE_IMAGE_IPH" desc="In-product help text to suggest adding an image as context to a composebox query with create image tool enabled.">
-        Add and edit an image
-      </message>
-      <message name="IDS_COMPOSE_DEEP_SEARCH_IPH" desc="In-product help text to explain what deep search mode does.">
-        Get deeper responses with more sources, in a little extra time
       </message>
       <message name="IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER" desc="Placeholder text for the composebox when in create image mode.">
         Describe your image
@@ -8899,42 +8398,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPOSE_ADD_TABS" desc="Label for the row in the Composebox context menu that opens a flyout listing all open tabs to share.">
         Add tabs
       </message>
-       <message name="IDS_COMPOSE_CURRENT_TAB" desc="Label for the row in the Composebox context menu flyout that shows the current tab the user has open.">
-        Current tab
-      </message>
-      <message name="IDS_COMPOSE_MAX_FILE_UPLOAD_ERROR" desc="Error message shown in toast when file limit maximum is reached.">
-        You can only add up to <ph name="COUNT">$1<ex>10</ex></ph> files
-      </message>
-      <message name="IDS_COMPOSE_RELOAD_TAB" desc="Label for a button in the composebox error message that reloads the inactive browser tabs that failed to be attached as context and retries adding them.">
-        Reload tabs
-      </message>
-      <message name="IDS_COMPOSE_STALE_TAB_ERROR" desc="Error message shown in the composebox when one or more inactive or stale browser tabs could not be attached as context for a query.">
-        Reload inactive tabs to add them to your search
-      </message>
 
       <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_1" desc="Heading of the tab action chip on the NTP." >
         Ask about previous tab
       </message>
-      <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_2" desc="Heading of the tab action chip on the NTP." >
-        Ask about a tab
-      </message>
-      <message name="IDS_NTP_ACTION_CHIP_TAB_BODY_1" desc="Body text in the tab action chip describing the use of the chip." >
-        Ask about this tab
-      </message>
-      <message name="IDS_NTP_ACTION_CHIP_TAB_BODY_2" desc="Body text in the tab action chip describing the use of the chip." >
-        Search deeply on a tab
-      </message>
-      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_HEADING" desc="Heading of the create image action chip on the NTP." >
-        Create image
-      </message>
       <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1" desc="Body text in the create image action chip describing the use of the chip.">
         Add an image and reimagine it
-      </message>
-      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_2" desc="Body text in the create image action chip describing the use of the chip.">
-        Reimagine a photo
-      </message>
-      <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_HEADING" desc="Heading of the deep search action chip on the NTP.">
-        Research a topic
       </message>
       <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY" desc="Body text in the deep search action chip describing the use of the chip.">
         Dive deep into something new
@@ -8959,18 +8428,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_COMPOSE_REMOVE_TOOL_CHIP_A11Y_LABEL" desc="A11y text for removing a tool in the composebox.">
         Remove <ph name="TOOL_NAME">$1<ex>Deep Search</ex></ph>
-      </message>
-      <message name="IDS_COMPOSE_ASK_ABOUT_THIS_TAB" desc="Label for a button in the composebox that allows the user to ask a question about the content of their most recent tab.">
-        Ask Google about previous tab
-      </message>
-      <message name="IDS_COMPOSE_ASK_ABOUT_THIS_TAB_ARIA_LABEL" desc="The aria-label for the button that allows the user to ask a question about the content of their most recent tab. The $1 is a placeholder for the tab title.">
-        Ask Google about previous tab: <ph name="TAB_TITLE">$1</ph>
-      </message>
-      <message name="IDS_COMPOSE_ASK_ABOUT_THIS_PAGE" desc="Label for a button in the composebox that allows the user to ask a question about the content of their most recent page." >
-        Ask Google about previous page
-      </message>
-      <message name="IDS_COMPOSE_ASK_ABOUT_THIS_PAGE_ARIA_LABEL" desc="The aria-label for the button that allows the user to ask a question about the content of their most recent tab. The $1 is a placeholder for the page title.">
-        Ask Google about previous page: <ph name="PAGE_TITLE">$1</ph>
       </message>
       <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING" desc="Heading of the brainstorm action chip on the NTP." >
         Brainstorm
@@ -9032,27 +8489,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
         Customize cards
-      </message>
-      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_TODAY" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
-        Viewed today
-      </message>
-      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_YESTERDAY" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
-        Viewed yesterday
-      </message>
-      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_PAST_WEEK" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
-        Viewed in the past week
-      </message>
-      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_PAST_MONTH" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
-        Viewed in the past month
-      </message>
-      <message name="IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_PREVIOUSLY" desc="Text shown in a tag on a stateful task module item indicating when an item was viewed.">
-        Viewed previously
-      </message>
-      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_SENTENCE" desc="Name of the shopping tasks module in sentence case shown in various UIs.">
-        Shopping suggestions
-      </message>
-      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_LOWER" desc="Name of the shopping tasks module in lowercase shown in various UIs.">
-        shopping suggestions
       </message>
       <message name="IDS_NTP_MODULES_DRIVE_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Drive module v2.">
        Never show Drive files
@@ -9156,9 +8592,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
        <ph name="BREAK">&lt;br&gt;</ph>
        You can manage settings from the card menu or see more options in Customize Chrome.
      </message>
-      <message name="IDS_NTP_MODULES_CALENDAR_DOUBLE_BOOKED" desc="Text displaying that the calendar event is booked at the same time as another." meaning="The meeting takes place at the same time as another.">
-        Double-Booked
-      </message>
       <message name="IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_TEXT" desc="Text shown on button on the NTP Calendar cards for joining a video conference." meaning="Click here to join your video conference meetings.">
         Join Meeting
       </message>
@@ -9195,17 +8628,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE" desc="Text shown on close button of a task module.">
         Close
       </message>
-      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_RELATED" desc="Text shown in a tag on a shopping task module product indicating that it is related to a previous search.">
-        Related to your search
-      </message>
       <message name="IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT" desc="Text shown on the chip that indicates there is a discount in the current cart of certain amount off. It can be either in percent (e.g. 15% off) or in dollar amount (e.g. 50$ off).">
         <ph name="DISCOUNT_AMOUNT">$1<ex>15%</ex></ph> off
       </message>
       <message name="IDS_NTP_MODULES_CART_DISCOUNT_CHIP_UP_TO_AMOUNT" desc="Text shown on the chip that indicates there is a discount in the current cart of up to certain amount off. It can be either in percent (e.g. Up to 15% off) or in dollar amount (e.g. Up to 50$ off).">
         Up to <ph name="DISCOUNT_UP_TO_AMOUNT">$1<ex>15%</ex></ph> off
-      </message>
-      <message name="IDS_NTP_MODULES_CUSTOMIZE_IPH" desc="The description of the IPH that shows for customizing NTP Desktop modules.">
-        Customize what you see on this page
       </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING" desc="A label for the title in NTP History clusters Module.">
         Resume browsing
@@ -9272,9 +8699,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_SINGLE_DISMISS" desc="String text for single tab dismissal in the Tab Resumption module.">
         Tab hidden
-      </message>
-      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED" desc="Default string text for when a tab was opened less than 60 seconds ago.">
-        Recently opened
       </message>
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_DEVICE_PREFIX" desc="Prefix for device name to be shown in various UIs.">
         From your
@@ -9361,17 +8785,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Shortcuts for your most visited sites were removed because you haven't used them recently
       </message>
 
-      <!-- Extensions NTP Middle Slot Promo -->
-      <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">
-        Web browsing should be fast. Take a moment to <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>check your extensions<ph name="END_LINK">&lt;/a&gt;</ph> now.
-      </message>
-      <message name="IDS_EXTENSIONS_PROMO_PRIVACY">
-        Safety matters. Take a moment and <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>check your extensions now<ph name="END_LINK">&lt;/a&gt;</ph>
-      </message>
-      <message name="IDS_EXTENSIONS_PROMO_NEUTRAL">
-        Got extensions? <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>Manage your extensions<ph name="END_LINK">&lt;/a&gt;</ph> in one easy place.
-      </message>
-
       <!-- New Tab Footer -->
       <message name="IDS_NEW_TAB_FOOTER_NAME" desc="The name of the New Tab Footer feature, a UI that may show at the bottom of the New Tab Page." translateable="false">
         New Tab Footer
@@ -9389,34 +8802,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="ATTRIBUTION_LINE_1">$1<ex>Background Name</ex></ph>, <ph name="ATTRIBUTION_LINE_2">$2<ex>Artist Name</ex></ph>
       </message>
       <!-- Star View menu -->
-      <if expr="use_titlecase">
-        <message name="IDS_STAR_VIEW_MENU_ADD_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for adding a bookmark.">
-          Add Bookmark
-        </message>
-        <message name="IDS_STAR_VIEW_MENU_EDIT_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for editing a bookmark.">
-          Edit Bookmark
-        </message>
-        <message name="IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER" desc="The item label of the menu triggered from the star icon in the location bar for moving the current tab to read later.">
-          Add to Reading List
-        </message>
-        <message name="IDS_STAR_VIEW_MENU_MARK_AS_READ" desc="The item label of the menu triggered from the star icon in the location bar for marking the current tab's read later entry as read.">
-          Mark as Read
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_STAR_VIEW_MENU_ADD_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for adding a bookmark.">
-          Add bookmark
-        </message>
-        <message name="IDS_STAR_VIEW_MENU_EDIT_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for editing a bookmark.">
-          Edit bookmark
-        </message>
-        <message name="IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER" desc="The item label of the menu triggered from the star icon in the location bar for moving the current tab to read later.">
-          Add to reading list
-        </message>
-        <message name="IDS_STAR_VIEW_MENU_MARK_AS_READ" desc="The item label of the menu triggered from the star icon in the location bar for marking the current tab's read later entry as read.">
-          Mark as read
-        </message>
-      </if>
 
       <!-- Read Later button and menu -->
       <if expr="use_titlecase">
@@ -9459,14 +8844,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READ_LATER_ADD_CURRENT_TAB" desc="Label for button to add the current tab to Read later">
         Add current tab
       </message>
-      <message name="IDS_READ_LATER_CANT_ADD_CURRENT_TAB" desc="Label for button when the current tab cannot be added to read later">
-        Can't add current tab
-      </message>
       <message name="IDS_READ_LATER_MARK_CURRENT_TAB_READ" desc="Label for button to mark the current tab as read in Read Later">
         Mark current tab as read
-      </message>
-      <message name="IDS_READ_LATER_REMOVE_CURRENT_TAB" desc="Label for button to remove the current tab from read later">
-        Remove current tab
       </message>
 
       <!-- Read Later context menu -->
@@ -9520,29 +8899,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
                desc="Accessible alert text used in IDS_SIDE_PANEL_RESIZE_ACCESSIBLE_ALERT for which side the window/pane is seen on.">
                Right
       </message>
-      <message name="IDS_ACCNAME_SIDE_PANEL_SELECTOR" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel header combobox is focused.">
-        Side Panel Selector
-      </message>
-      <message name="IDS_ACCNAME_SIDE_PANEL_COMPANION_SHOW" desc="Screen reader announcement when the toolbar super G icon is focused and Google Search side panel is closed.">
-        Open Google Search side panel
-      </message>
-      <message name="IDS_ACCNAME_SIDE_PANEL_COMPANION_HIDE" desc="Screen reader announcement when the toolbar super G icon is focused and Google Search side panel is open.">
-        Close Google Search side panel
-      </message>
       <message name="IDS_SIDE_PANEL_COMPANION_TITLE" desc="The name of the companion feature in the side panel combo box.">
         Search
-      </message>
-      <message name="IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP" desc="The tooltip for the companion feature toolbar button.">
-        Google Search side panel
-      </message>
-      <message name="IDS_SIDE_PANEL_COMPANION_PROMO" desc="Text shown on promotional UI appearing next to the pinned companion button, which encourages users to try the feature.">
-        Get a page summary, related searches, and other useful info about this page
-      </message>
-      <message name="IDS_SIDE_PANEL_COMPANION_PROMO_PINNING" desc="Text shown on promotional UI appearing next to the pinned companion button, which encourages users to try the feature when Side Panel Pinning is enabled.">
-        You can search this page with Google to get additional useful info
-      </message>
-      <message name="IDS_SIDE_PANEL_COMPANION_PROMO_SCREEN_READER" is_accessibility_with_no_ui="true" desc="Screen reader announcement on the promotional UI appearing next to the pinned companion button, which excourages users to try the feature.">
-        To get a page summary, related searches, and other useful info about this page, select Google Search side panel button in the toolbar
       </message>
       <message name="IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_FIRST_LINE" desc="Text shown on the side panel for the companion feature when there is a network or other navigation error. The texts informs the user the panel can not be loaded.">
         Can't load this panel right now
@@ -10114,9 +9472,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_NAVIGATE_NEXT_SENTENCE" desc="Accessibility label for button that moves speech in Read Aloud to the next sentence.">
         Next sentence
       </message>
-      <message name="IDS_READING_MODE_MORE_OPTIONS" desc="Accessibility label for button that contains more text style options for the reading mode feature.">
-        More options
-      </message>
       <message name="IDS_READING_MODE_SETTINGS" desc="Accessibility label for button that contains settings menu for the immersive reading mode feature.">
         Settings
       </message>
@@ -10288,47 +9643,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!-- Google Lens side panel -->
-      <message name="IDS_GOOGLE_LENS_TITLE" desc="Title of the Google Lens side panel">
-        Google Lens
-      </message>
       <message name="IDS_LENS_DEFAULT_TITLE" desc="Default title of the Lens side panel">
         Image Search
       </message>
       <message name="IDS_LENS_COBROWSE_CURRENT_TAB_IPH_DESCRIPTION" desc="Informs user that the content and URL of their current tab is shared with Google to get more relevant answers.">
         The page title, URL, and content of your current tab is shared with Google to give you more relevant answers. You can add or remove tabs as you browse.
       </message>
-      <message name="IDS_CONTEXTUAL_TASKS_ASK_ABOUT_THIS_PAGE" desc="Title for the zero state header in the Contextual Tasks side panel prompting the user to ask about the current page.">
-        Ask about this page
-      </message>
       <!-- TODO(crbug.com/576221905): Mark as translatable. -->
       <message name="IDS_LENS_SELECTION_SUGGESTION_DEFAULT_LABEL" desc="Default label for the Google Lens smart selection suggestion." translateable="false">
         Search with Google Lens
-      </message>
-
-      <!-- Contextual Tasks side panel identity -->
-      <message name="IDS_CONTEXTUAL_TASKS_IDENTITY_TOOLTIP_BODY" desc="Body text of the identity tooltip in the Contextual Tasks side panel informing the user which Google Account they are signed in to Search with.">
-        You're signed in to Search with your <ph name="USER_EMAIL">$1<ex>account@gmail.com</ex></ph> account
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_IDENTITY_TOOLTIP_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screen reader announcement for the identity tooltip in the Contextual Tasks side panel informing the user which Google Account they are signed in to Search with.">
-        You're signed in to Search with your <ph name="USER_EMAIL">$1<ex>account@gmail.com</ex></ph> account
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_IDENTITY_TOOLTIP_MANAGE_ACCOUNT_BUTTON" desc="Label for the button in the Contextual Tasks side panel identity tooltip that opens the user's Google Account page.">
-        Manage account
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_IDENTITY_TOOLTIP_CLOSE_BUTTON" desc="Accessible label and tooltip for the close button on the Contextual Tasks side panel identity tooltip.">
-        Close
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_BUTTON_TOOLTIP" desc="Tooltip and accessible label for the account avatar button in the Contextual Tasks side panel toolbar showing the signed-in user's name and email.">
-        Google Account: <ph name="USER_NAME">$1<ex>Jane Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>account@gmail.com</ex></ph>)
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_BUTTON_EMAIL_ONLY_TOOLTIP" desc="Tooltip and accessible label for the account avatar button in the Contextual Tasks side panel toolbar showing the signed-in user's email.">
-        Google Account: <ph name="USER_EMAIL">$1<ex>account@gmail.com</ex></ph>
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_BUTTON_SIGNED_OUT_TOOLTIP" desc="Tooltip and accessible label for the account avatar indicator in the Contextual Tasks side panel toolbar when the user is signed out of Search.">
-        Signed out
-      </message>
-      <message name="IDS_CONTEXTUAL_TASKS_MENU_SIGN_IN" desc="The 'Sign in' option in the Contextual Tasks 3-dot overflow menu shown when the user is signed out.">
-        Sign in
       </message>
 
       <!--Tooltip strings -->
@@ -10337,12 +9660,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ACCDESCRIPTION_BACK" desc="Help text that explains to keyboard users how to interact with the back button, similar to the tooltip presented to mouse users.">
         Press to go back, context menu to see history
-      </message>
-      <message name="IDS_TOOLTIP_CHROMELABS_BUTTON" desc="The tooltip for the Chrome Labs button in the toolbar">
-        Enable featured experiments
-      </message>
-      <message name="IDS_TOOLTIP_LEFT_ALIGNED_SIDE_PANEL_BUTTON" desc="The tooltip for the left aligned side panel toggle button">
-        Toggle left aligned side panel
       </message>
       <message name="IDS_TOOLTIP_CHROMELABS_COMBOBOX" desc="The tooltip for the Chrome Labs combobox to select between experiment states">
         Select experiment state for <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph>
@@ -10398,17 +9715,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Extensions allowed on this site. Select to open menu
       </message>
       </if>
-      <message name="IDS_TOOLTIP_EXTENSIONS_SITE_ACCESS_BUTTON" desc="The tooltip for the extensions site access button">
-        Extension permissions
-      </message>
       <message name="IDS_TOOLTIP_SIDE_PANEL_SHOW" desc="The tooltip for the side panel button, when closed">
         Show side panel
-      </message>
-      <message name="IDS_TOOLTIP_SIDE_PANEL_HIDE" desc="The tooltip for the side panel button, when open">
-        Hide side panel
-      </message>
-      <message name="IDS_TOOLTIP_SIDE_PANEL" desc="The tooltip for the side panel button">
-        Side panel
       </message>
       <if expr="is_macosx">
         <message name="IDS_TOOLTIP_CLOSE_TAB" desc="The tooltip for the close tab button">
@@ -10420,12 +9728,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TOOLTIP_NEW_TAB" desc="The tooltip for the new tab button">
         New tab
-      </message>
-      <message name="IDS_TOOLTIP_TAB_SCROLL_LEADING" desc="The tooltip for the leading scroll button">
-        Scroll to first tab
-      </message>
-      <message name="IDS_TOOLTIP_TAB_SCROLL_TRAILING" desc="The tooltip for the trailing scroll button">
-        Scroll to last tab
       </message>
       <message name="IDS_TOOLTIP_MIC_SEARCH" desc="The tooltip for search-by-voice button" formatter_data="android_java">
         Search by voice
@@ -10539,9 +9841,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_SPLIT_VIEW_NTP_TAB_TITLE" desc="The title of the split view new tab page as displayed in the tab strip.">
         Choose a tab
-      </message>
-      <message name="IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON" desc="The accessible name and tooltip for the menu button of the minitoolbar in a split view.">
-        Arrange split view
       </message>
       <message name="IDS_SPLIT_VIEW_NTP_CLOSE_BUTTON_ARIA_LABEL" desc="The screen reader text describing the split view new tab page close button.">
         Close this view
@@ -10768,9 +10067,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <!-- Organizer Panel Strings -->
       <if expr="use_titlecase">
         <then>
-          <message name="IDS_VIEW_ORGANIZER_PANEL" desc="In Title Case: The tooltip for the button in the top container that shows the organizer panel.">
-            View Organizer
-          </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="In Title Case: The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
@@ -10779,9 +10075,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
         </then>
         <else>
-          <message name="IDS_VIEW_ORGANIZER_PANEL" desc="The tooltip for the button in the top container that shows the organizer panel.">
-            View organizer
-          </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
@@ -10905,44 +10198,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!--TODO(crbug.com/339262105): Clean up the old password promo methods after the generic promo launch.-->
       <!--iOS password promo strings-->
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <if expr="use_titlecase">
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS promo bubble letting users know their password is saved.">
-              Your Password Is Saved
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-              Use Your Passwords on Your iOS Devices
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON" desc="In Title Case: The text inside the button inviting the user to get started.">
-              Get Started
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
-              No Thanks
-            </message>
-          </if>
-          <if expr="not use_titlecase">
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS promo bubble letting users know their password is saved.">
-              Your password is saved
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-              Use your passwords on your iOS devices
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON" desc="The text inside the button inviting the user to get started.">
-              Get started
-            </message>
-            <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
-              No thanks
-            </message>
-          </if>
-          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
-            You can access it on Google Password Manager.
-          </message>
-          <message name="IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_GENERIC" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: download Chrome for iOS and sign in to their account.">
-            To use your saved passwords on your phone, download Chrome for iOS and sign in to your Google Account.
-          </message>
-        </if>
-      </if>
 
       <!--Desktop to iOS promo strings-->
       <if expr="not is_android">
@@ -10982,12 +10237,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_IOS_DEVICE_TYPE_IPAD" desc="The product name 'iPad'.">
           iPad
-        </message>
-        <message name="IDS_NTP_MOBILE_PROMO_BODY" desc="Body text of the NTP promo that promotes Chrome on mobile.">
-          Scan this with your phone to get your bookmarks, passwords, and more on the go
-        </message>
-        <message name="IDS_NTP_MOBILE_PROMO_PASSWORDS_BODY" desc="Body text of the NTP promo that promotes Chrome on mobile for passwords.">
-          Scan this with your phone to save and autofill your passwords to easily sign in to sites and apps
         </message>
       </if>
 
@@ -11042,9 +10291,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <!--Desktop to iOS payment promo strings-->
       <if expr="not is_android">
         <if expr="use_titlecase">
-          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop payment promo bubble letting users know their card is saved.">
-            Your Card Is Saved
-          </message>
           <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
             Use This Card On Your iPhone
           </message>
@@ -11053,9 +10299,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
         </if>
         <if expr="not use_titlecase">
-          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop payment promo bubble letting users know their card is saved.">
-            Your card is saved
-          </message>
           <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
             Use this card on your iPhone
           </message>
@@ -11063,9 +10306,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
             No thanks
           </message>
         </if>
-        <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop payment promo bubble which lets the user know they can access their saved payment methods.">
-          You can access it in your Payment Methods
-        </message>
         <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop payment promo bubble footer which lets the user know how to use their saved payment methods on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
           Download Chrome with this QR code, and sign in to your Google Account.
         </message>
@@ -11116,9 +10356,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!--Desktop to iOS Wave 2 Promo Notification Titles-->
       <if expr="not is_android">
-        <message name="IDS_IOS_DESKTOP_AI_PROMO_NOTIFICATION_TITLE" desc="The notification title for the iOS desktop AI promo.">
-          Reminder: AI-powered browsing in your pocket
-        </message>
         <message name="IDS_IOS_DESKTOP_SHOPPING_PROMO_NOTIFICATION_TITLE" desc="The notification title for the iOS desktop Shopping promo.">
           Reminder: The best of online shopping in your pocket
         </message>
