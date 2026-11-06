@@ -857,7 +857,6 @@ TEST_F(OnDeviceModelServiceTest, AppendWithTokenLimits) {
   mojo::Remote<mojom::Session> session;
   model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
 
-  std::string input = "big cheese";
   ContextClientWaiter client1;
   auto max_input = MakeInput("big cheese");
   max_input->max_tokens = 4;

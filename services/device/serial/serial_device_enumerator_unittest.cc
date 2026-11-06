@@ -30,7 +30,7 @@ TEST_F(SerialDeviceEnumeratorTest, GetDevices) {
   auto enumerator = SerialDeviceEnumerator::Create(
       task_environment_.GetMainThreadTaskRunner());
   ASSERT_TRUE(enumerator);
-  std::vector<mojom::SerialPortInfoPtr> devices = enumerator->GetDevices();
+  enumerator->GetDevices();
 }
 
 }  // namespace

@@ -3373,7 +3373,6 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
       socket_manager.BindNewPipeAndPassReceiver());
 
   base::RunLoop run_loop;
-  std::vector<net::IPAddress> results;
   socket_manager->GetHostAddress(
       kHostname, std::nullopt /* address family */, false /* enable_mdns */,
       base::BindLambdaForTesting(
@@ -3462,7 +3461,6 @@ TEST_F(NetworkContextTest, P2PHostResolutionWithFamily) {
 
   {
     base::RunLoop run_loop;
-    std::vector<net::IPAddress> results;
     // Expect IPv4 address when family passed as AF_INET.
     socket_manager->GetHostAddress(
         kIPv4Hostname, net::AddressFamily::ADDRESS_FAMILY_IPV4,
@@ -3477,7 +3475,6 @@ TEST_F(NetworkContextTest, P2PHostResolutionWithFamily) {
 
   {
     base::RunLoop run_loop;
-    std::vector<net::IPAddress> results;
     // Expect IPv6 address when family passed as AF_INET6.
     socket_manager->GetHostAddress(
         kIPv6Hostname, net::AddressFamily::ADDRESS_FAMILY_IPV6,

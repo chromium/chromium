@@ -156,7 +156,6 @@ class GeolocationNetworkProviderTest : public testing::Test {
       int ap_count,
       int start_index,
       base::ListValue* wifi_access_point_list) {
-    std::vector<std::string> wifi_data;
     for (int i = 0; i < ap_count; ++i) {
       base::DictValue ap;
       ap.Set("macAddress", base::StringPrintf("%02d-34-56-78-54-32", i));

@@ -3145,7 +3145,6 @@ TEST_F(USBDeviceImplTest, IsochronousTransferInLengthOverLimit) {
                              /*interface_number=*/7);
 
   std::vector<uint32_t> fake_packet_lengths(2, kUsbTransferLengthLimit);
-  std::vector<uint8_t> fake_data(kUsbTransferLengthLimit * 2);
   EXPECT_CALL(mock_handle(), IsochronousTransferInInternal).Times(0);
   EXPECT_CALL(mock_handle(), Close());
   {

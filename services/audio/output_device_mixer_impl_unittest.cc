@@ -709,7 +709,6 @@ TEST_P(OutputDeviceMixerImplTest,
 
   int stream_count = GetParam();
   std::vector<StreamUnderTest> streams_under_test;
-  std::set<MixTrackMock*> playing_stream_mocks;
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
     OpenAndVerifyStreamUnderTest(streams_under_test.back(),

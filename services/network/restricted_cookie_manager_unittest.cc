@@ -533,7 +533,7 @@ TEST_P(RestrictedCookieManagerTest,
     options->name = "new-name";
     options->match_type = mojom::CookieMatchType::EQUALS;
     ExpectBadMessage("Incorrect url origin");
-    std::vector<net::CanonicalCookie> cookies = sync_service_->GetAllForUrl(
+    sync_service_->GetAllForUrl(
         kDefaultUrl, kDefaultSiteForCookies, kDefaultOrigin,
         net::StorageAccessApiStatus::kNone, std::move(options));
     EXPECT_TRUE(received_bad_message());

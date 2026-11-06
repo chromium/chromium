@@ -971,8 +971,6 @@ TEST_F(SCTAuditingHandlerTest, LogNotFound) {
   ASSERT_TRUE(net::ct::GetMerkleTreeLeaf(chain_.get(), sct_list.at(0).sct.get(),
                                          &merkle_tree_leaf));
   ASSERT_TRUE(net::ct::HashMerkleTreeLeaf(merkle_tree_leaf, &leaf_hash_string));
-  std::vector<uint8_t> leaf_hash(leaf_hash_string.begin(),
-                                 leaf_hash_string.end());
 
   for (mojom::SCTAuditingMode mode :
        {mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting,

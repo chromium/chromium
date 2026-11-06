@@ -417,8 +417,6 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeSucceedsAfterReset) {
 // Test where GetSize() is invoked with an error before the upload is
 // initialized.
 TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeFailsBeforeInit) {
-  const std::string kData = "1234567890";
-
   chunked_data_pipe_getter_ = std::make_unique<TestChunkedDataPipeGetter>();
   chunked_upload_stream_ = std::make_unique<ChunkedDataPipeUploadDataStream>(
       base::MakeRefCounted<network::ResourceRequestBody>(),
@@ -470,8 +468,6 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeFailsAfterReset) {
 // Test the case where GetSize() is passed an invalid error code. Tests both the
 // case of a positive value, and ERR_IO_PENDING.
 TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizePassedInvalidErrorCode) {
-  const std::string kData = "1234567890";
-
   const int kTestCases[] = {net::ERR_IO_PENDING, 1};
 
   for (int test_case : kTestCases) {

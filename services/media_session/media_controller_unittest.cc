@@ -1253,7 +1253,6 @@ TEST_F(MediaControllerTest,
     observer.WaitForState(mojom::MediaSessionInfo::SessionState::kActive);
   }
 
-  std::vector<MediaImage> images;
   MediaImage image1;
   image1.src = GURL("https://www.google.com");
   image1.sizes.push_back(gfx::Size(1, 1));

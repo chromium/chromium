@@ -979,7 +979,7 @@ TEST_F(MdnsResponderTest, AnnouncementRetriedAfterSendFailure) {
   // Mocked CreateSockets above only creates one socket.
   EXPECT_CALL(failing_socket_factory_, OnSendTo(expected_announcement))
       .Times(kNumAnnouncementsPerInterface + kNumMaxRetriesPerResponse);
-  const auto name = CreateNameForAddress(0, addr);
+  CreateNameForAddress(0, addr);
   RunUntilNoTasksRemain();
 }
 
@@ -1086,7 +1086,7 @@ TEST_F(MdnsResponderTest, AnnouncementsAndGoodbyesAreRateLimitedPerResponse) {
 TEST_F(MdnsResponderTest,
        MdnsNameGeneratorServiceResponsesAreRateLimitedPerRecord) {
   const auto& addr = kPublicAddrs[0];
-  const std::string name = CreateNameForAddress(0, addr);
+  CreateNameForAddress(0, addr);
   // After a name has been created for |addr|, let the responder receive
   // queries. Their responses should be scheduled sequentially, each separated
   // by at least one second. Note that responses to the mDNS name generator
@@ -1370,14 +1370,14 @@ TEST_F(MdnsResponderTest, IncompleteSendBlocksFollowingSends) {
   EXPECT_CALL(failing_socket_factory_, OnSendTo(expected_announcement1))
       .Times(1);
   failing_socket_factory_.BlockSend();
-  const auto name1 = CreateNameForAddress(0, addr1);
+  CreateNameForAddress(0, addr1);
   RunUntilNoTasksRemain();
 
   const auto& addr2 = kPublicAddrs[1];
   std::string expected_announcement2 =
       CreateResolutionResponse(kDefaultTtl, {{"1.local", addr2}});
   // The announcement for the following name should also be blocked.
-  const auto name2 = CreateNameForAddress(0, addr2);
+  CreateNameForAddress(0, addr2);
   EXPECT_CALL(failing_socket_factory_, OnSendTo(expected_announcement2))
       .Times(0);
   RunUntilNoTasksRemain();

@@ -271,7 +271,6 @@ void SharedDictionaryManagerInMemory::GetSharedDictionaryInfo(
   SharedDictionaryStorageInMemory* storage =
       reinterpret_cast<SharedDictionaryStorageInMemory*>(it->second.get());
 
-  std::vector<network::mojom::SharedDictionaryInfoPtr> dicts;
   for (const auto& it1 : storage->GetDictionaryMap()) {
     for (const auto& it2 : it1.second) {
       dictionaries.push_back(ToMojoSharedDictionaryInfo(it2.second));

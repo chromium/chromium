@@ -132,7 +132,7 @@ TEST_F(SessionCleanupCookieStoreTest, TestPersistence) {
 }
 
 TEST_F(SessionCleanupCookieStoreTest, TestNetLogIncludeCookies) {
-  CanonicalCookieVector cookies = CreateAndLoad();
+  CreateAndLoad();
   base::Time t = base::Time::Now();
   AddCookie("A", "B", "nonpersistent.com", "/", t);
 
@@ -158,7 +158,7 @@ TEST_F(SessionCleanupCookieStoreTest, TestNetLogIncludeCookies) {
 }
 
 TEST_F(SessionCleanupCookieStoreTest, TestNetLogDoNotIncludeCookies) {
-  CanonicalCookieVector cookies = CreateAndLoad();
+  CreateAndLoad();
   base::Time t = base::Time::Now();
   AddCookie("A", "B", "nonpersistent.com", "/", t);
 

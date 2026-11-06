@@ -69,7 +69,6 @@ TEST_F(NetworkStructTraitsTest, HttpRequestHeaders_InvalidHeaderName) {
     header.SetHeaderWithoutCheckForTesting(invalid_name, "foo");
     mojo::Remote<mojom::TraitsTestService> remote(GetTraitsTestRemote());
     remote->EchoHttpRequestHeaders(header, &output);
-    std::string value;
     EXPECT_TRUE(output.IsEmpty());
   }
 }

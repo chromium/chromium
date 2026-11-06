@@ -176,7 +176,6 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     // The `@query-param` derived component must have only a `name` parameter
     // with a string value, and a `req` parameter.
     if (*name == "@query-param") {
-      std::string name_value;
       if (!ItemHasStringParam(component, "name") ||
           !ItemHasBooleanParam(component, "req") ||
           component.params.size() != 2u) {

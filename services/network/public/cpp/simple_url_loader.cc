@@ -2062,7 +2062,6 @@ void SimpleURLLoaderImpl::OnReceiveRedirect(
   }
 
   network::HttpRequestHeadersUpdateParams headers_update_params;
-  std::vector<std::string> removed_headers;
   if (on_redirect_callback_) {
     base::WeakPtr<SimpleURLLoaderImpl> weak_this =
         weak_ptr_factory_.GetWeakPtr();
