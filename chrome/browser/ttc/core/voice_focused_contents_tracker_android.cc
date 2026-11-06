@@ -30,14 +30,15 @@ VoiceFocusedContentsTrackerAndroid::VoiceFocusedContentsTrackerAndroid(
   if (browsers) {
     browser_collection_observation_.Observe(browsers);
   }
-  TabModelList::AddObserver(this);
-  for (TabModel* tab_model : TabModelList::models()) {
+  TabModelList::AddObserver(this, &profile_.get());
+  TabModelList::ForEach(&profile_.get(), [&](TabModel* tab_model) {
     OnTabModelAdded(tab_model);
-  }
+    return true;
+  });
 }
 
 VoiceFocusedContentsTrackerAndroid::~VoiceFocusedContentsTrackerAndroid() {
-  TabModelList::RemoveObserver(this);
+  TabModelList::RemoveObserver(this, &profile_.get());
 }
 
 content::WebContents* VoiceFocusedContentsTrackerAndroid::GetActiveWebContents()
@@ -68,7 +69,7 @@ void VoiceFocusedContentsTrackerAndroid::OnTabModelAdded(TabModel* tab_model) {
   // persisted windows that aren't open, registered asynchronously on desktop
   // Android) and archived models also report IsActiveModel(), but their tabs
   // never have a WebContents, so binding to them loses the active tab.
-  if (!tab_model || tab_model->GetProfile() != &profile_.get() ||
+  if (!tab_model ||
       tab_model->GetTabModelType() != TabModel::TabModelType::kStandard) {
     return;
   }
@@ -205,14 +206,17 @@ TabModel* VoiceFocusedContentsTrackerAndroid::FindFocusedTabModel() {
   if (!browser) {
     return nullptr;
   }
-  for (TabModel* tab_model : TabModelList::models()) {
+  TabModel* focused_model = nullptr;
+  TabModelList::ForEach(&profile_.get(), [&](TabModel* tab_model) {
     if (tab_model_observations_.IsObservingSource(tab_model) &&
         tab_model->IsActiveModel() &&
         tab_model->GetSessionId() == browser->GetSessionID()) {
-      return tab_model;
+      focused_model = tab_model;
+      return false;
     }
-  }
-  return nullptr;
+    return true;
+  });
+  return focused_model;
 }
 
 }  // namespace ttc

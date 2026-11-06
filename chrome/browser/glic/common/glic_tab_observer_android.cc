@@ -73,10 +73,11 @@ class GlicTabObserverAndroid::TabContentObserver
 GlicTabObserverAndroid::GlicTabObserverAndroid(Profile* profile,
                                                EventCallback callback)
     : profile_(profile), callback_(std::move(callback)) {
-  for (auto& model : TabModelList::models()) {
+  TabModelList::AddObserver(this, profile_);
+  TabModelList::ForEach(profile_, [&](TabModel* model) {
     OnTabModelAdded(model);
-  }
-  TabModelList::AddObserver(this);
+    return true;
+  });
 }
 
 void GlicTabObserverAndroid::OnTabChanged(TabAndroid* tab) {
@@ -149,12 +150,11 @@ void GlicTabObserverAndroid::OnInitWebContents(TabAndroid* tab) {
 }
 
 GlicTabObserverAndroid::~GlicTabObserverAndroid() {
-  TabModelList::RemoveObserver(this);
+  TabModelList::RemoveObserver(this, profile_);
 }
 
 void GlicTabObserverAndroid::OnTabModelAdded(TabModel* model) {
-  if (model->GetProfile() != profile_ ||
-      model->GetTabModelType() != TabModel::TabModelType::kStandard ||
+  if (model->GetTabModelType() != TabModel::TabModelType::kStandard ||
       model->IsEmptyRegularModelForEphemeralOrIncognitoCct()) {
     return;
   }

@@ -39,12 +39,15 @@ namespace {
 // Returns the tab model backing the window the user is currently looking at,
 // for `profile`.
 TabModel* GetActiveTabModel(Profile* profile) {
-  for (TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() == profile && model->IsActiveModel()) {
-      return model;
+  TabModel* active_model = nullptr;
+  TabModelList::ForEach(profile, [&](TabModel* model) {
+    if (model->IsActiveModel()) {
+      active_model = model;
+      return false;
     }
-  }
-  return nullptr;
+    return true;
+  });
+  return active_model;
 }
 
 // Like GetActiveTabModel(), but restricted to models it is meaningful to open
