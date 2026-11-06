@@ -13372,6 +13372,28 @@
             ]
         }
     ],
+    "OnDeviceModelAsrTokenStability": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "interim_release_silence_ms": "300",
+                        "interim_stability_steps": "2",
+                        "interim_token_holdback": "0"
+                    },
+                    "enable_features": [
+                        "OnDeviceModelAsrTokenStability"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceModelBackgroundDownload": [
         {
             "platforms": [
