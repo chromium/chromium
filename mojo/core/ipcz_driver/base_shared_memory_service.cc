@@ -29,6 +29,7 @@
   BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 
 #if SHARED_MEMORY_SERVICE_REQUIRED()
+#include "base/files/scoped_file.h"
 #include "mojo/core/broker.h"
 #include "mojo/core/broker_host.h"
 #endif
@@ -39,9 +40,9 @@ namespace {
 
 #if SHARED_MEMORY_SERVICE_REQUIRED()
 
-void CreateBrokerHostOnIOThread(PlatformChannelEndpoint endpoint) {
+void CreateBrokerHostOnIOThread(base::ScopedFD socket) {
   // Self-owned.
-  new BrokerHost(std::move(endpoint));
+  new BrokerHost(std::move(socket));
 }
 
 void CreateServiceFromNextParcel(ScopedIpczHandle portal) {
@@ -66,7 +67,8 @@ void CreateServiceFromNextParcel(ScopedIpczHandle portal) {
   std::ignore = box.release();
   Transport::GetIOTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CreateBrokerHostOnIOThread, transport->TakeEndpoint()));
+      base::BindOnce(&CreateBrokerHostOnIOThread,
+                     transport->TakeEndpoint().TakePlatformHandle().TakeFD()));
 }
 
 void WaitForClientConnection(ScopedIpczHandle portal) {
@@ -177,7 +179,8 @@ void BaseSharedMemoryService::CreateClient(ScopedIpczHandle portal) {
   if (result == IPCZ_RESULT_OK) {
     // On success, ownership of the box is passed into the portal.
     std::ignore = box.release();
-    g_client = new Broker(channel.TakeLocalEndpoint().TakePlatformHandle());
+    g_client =
+        new Broker(channel.TakeLocalEndpoint().TakePlatformHandle().TakeFD());
   }
 #endif
 }

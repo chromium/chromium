@@ -127,11 +127,14 @@ source_set("impl_for_embedder") {
   # ipcz_driver/base_shared_memory_service.cc.
   if (is_posix && !is_apple && !is_android) {
     sources += [
-      "broker.h",
       "broker_host.cc",
+      "broker_posix.cc",
+    ]
+
+    public += [
+      "broker.h",
       "broker_host.h",
       "broker_messages.h",
-      "broker_posix.cc",
     ]
   }
 
@@ -172,6 +175,11 @@ source_set("test_sources") {
     "signals_unittest.cc",
     "trap_unittest.cc",
   ]
+
+  # Keep in sync with the condition guarding the broker sources above.
+  if (is_posix && !is_apple && !is_android) {
+    sources += [ "broker_unittest.cc" ]
+  }
 
   if (use_blink) {
     sources += [

@@ -5,67 +5,43 @@
 #ifndef MOJO_CORE_BROKER_MESSAGES_H_
 #define MOJO_CORE_BROKER_MESSAGES_H_
 
-#include "base/compiler_specific.h"
-#include "mojo/core/channel.h"
+#include <stdint.h>
 
-namespace mojo {
-namespace core {
+#include <type_traits>
 
-#pragma pack(push, 1)
+namespace mojo::core {
 
-enum BrokerMessageType : uint32_t {
-  BUFFER_REQUEST = 1,
-  BUFFER_RESPONSE = 2,
+// The wire format used between a Broker and its BrokerHost over their dedicated
+// socket. Out-of-tree Mojo peers also get a Broker, but never install the
+// shared memory hooks (see InstallMojoIpczBaseSharedMemoryHooks()) that send
+// requests through it. So every process that sends requests runs the same build
+// as its BrokerHost, and this format needs no versioning.
+//
+// The protocol is strictly request/response: the Broker sends one
+// BrokerBufferRequest and blocks until it has read the matching
+// BrokerBufferResponse before sending another request. Values are fixed-size
+// and copied directly to and from the socket as raw bytes.
+
+// Asks the BrokerHost for a new writable shared memory region of `num_bytes`.
+// No file descriptors are attached.
+struct BrokerBufferRequest {
+  uint32_t num_bytes;
 };
 
-struct BrokerMessageHeader {
-  BrokerMessageType type;
-  uint32_t padding;
+// The BrokerHost's reply to a BrokerBufferRequest. Stream sockets require at
+// least one data byte to carry SCM_RIGHTS descriptors and to distinguish a
+// reply from end-of-stream.
+enum class BrokerBufferResponse : uint8_t {
+  // Allocation failed. No file descriptors are attached.
+  kFailure = 0,
+  // Region created. Accompanied by two file descriptors: the region's writable
+  // descriptor followed by its read-only descriptor.
+  kSuccess = 1,
 };
 
-static_assert(IsAlignedForChannelMessage(sizeof(BrokerMessageHeader)),
-              "Invalid header size.");
+static_assert(std::has_unique_object_representations_v<BrokerBufferRequest>);
+static_assert(std::has_unique_object_representations_v<BrokerBufferResponse>);
 
-struct BufferRequestData {
-  uint32_t size;
-};
-
-struct BufferResponseData {
-  uint64_t guid_high;
-  uint64_t guid_low;
-};
-
-#pragma pack(pop)
-
-template <typename T>
-inline bool GetBrokerMessageData(Channel::Message* message, T** out_data) {
-  const size_t required_size = sizeof(BrokerMessageHeader) + sizeof(T);
-  if (message->payload_size() < required_size) {
-    return false;
-  }
-
-  auto* header = static_cast<BrokerMessageHeader*>(message->mutable_payload());
-  *out_data = reinterpret_cast<T*>(UNSAFE_TODO(header + 1));
-  return true;
-}
-
-template <typename T>
-inline Channel::MessagePtr CreateBrokerMessage(BrokerMessageType type,
-                                               size_t num_handles,
-                                               T** out_message_data) {
-  const size_t message_size =
-      sizeof(BrokerMessageHeader) + sizeof(**out_message_data);
-  Channel::MessagePtr message =
-      Channel::Message::CreateMessage(message_size, num_handles);
-  BrokerMessageHeader* header =
-      reinterpret_cast<BrokerMessageHeader*>(message->mutable_payload());
-  header->type = type;
-  header->padding = 0;
-  *out_message_data = reinterpret_cast<T*>(UNSAFE_TODO(header + 1));
-  return message;
-}
-
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core
 
 #endif  // MOJO_CORE_BROKER_MESSAGES_H_

@@ -5,18 +5,26 @@
 #ifndef MOJO_CORE_BROKER_H_
 #define MOJO_CORE_BROKER_H_
 
+#include <stddef.h>
+
+#include "base/files/scoped_file.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/synchronization/lock.h"
-#include "mojo/public/cpp/platform/platform_handle.h"
+#include "base/thread_annotations.h"
+#include "mojo/core/system_impl_export.h"
 
-namespace mojo {
-namespace core {
+namespace mojo::core {
 
-// The Broker is a channel to the broker process, which allows synchronous IPCs
-// to fulfill shared memory allocation requests on some platforms.
-class Broker {
+// Synchronously requests shared memory regions from a BrokerHost in the broker
+// process, using the protocol in broker_messages.h.
+//
+// Sandboxed processes on Linux and ChromeOS need it because they can't create
+// writable or read-only regions themselves: base creates the read-only
+// descriptor that these need by reopening the region's file (through
+// /proc/self/fd for a memfd), which the sandbox doesn't allow.
+class MOJO_SYSTEM_IMPL_EXPORT Broker {
  public:
-  explicit Broker(PlatformHandle handle);
+  explicit Broker(base::ScopedFD socket);
 
   Broker(const Broker&) = delete;
   Broker& operator=(const Broker&) = delete;
@@ -28,16 +36,16 @@ class Broker {
       size_t num_bytes);
 
  private:
-  // Handle to the broker process, used for synchronous IPCs.
-  PlatformHandle sync_channel_;
-
   // Lock to only allow one sync message at a time. This avoids having to deal
   // with message ordering since we can only have one request at a time
   // in-flight.
   base::Lock lock_;
+
+  // Socket connected to the BrokerHost in the broker process. Reset when a
+  // request fails in a way that leaves the connection unusable.
+  base::ScopedFD socket_ GUARDED_BY(lock_);
 };
 
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core
 
 #endif  // MOJO_CORE_BROKER_H_

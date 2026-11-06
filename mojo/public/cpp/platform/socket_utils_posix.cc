@@ -66,14 +66,16 @@ bool IsPeerAuthorized(base::PlatformFile fd) {
 
 ssize_t SocketWrite(base::PlatformFile socket,
                     const void* bytes,
-                    size_t num_bytes) {
-  return HANDLE_EINTR(send(socket, bytes, num_bytes, MSG_NOSIGNAL));
+                    size_t num_bytes,
+                    int flags) {
+  return HANDLE_EINTR(send(socket, bytes, num_bytes, MSG_NOSIGNAL | flags));
 }
 
 ssize_t SendmsgWithHandles(base::PlatformFile socket,
                            struct iovec* iov,
                            size_t num_iov,
-                           const std::vector<base::ScopedFD>& descriptors) {
+                           const std::vector<base::ScopedFD>& descriptors,
+                           int flags) {
   DCHECK(iov);
   DCHECK_GT(num_iov, 0u);
   DCHECK(!descriptors.empty());
@@ -94,7 +96,7 @@ ssize_t SendmsgWithHandles(base::PlatformFile socket,
     UNSAFE_TODO(reinterpret_cast<int*>(CMSG_DATA(cmsg))[i]) =
         descriptors[i].get();
   }
-  return HANDLE_EINTR(sendmsg(socket, &msg, MSG_NOSIGNAL));
+  return HANDLE_EINTR(sendmsg(socket, &msg, MSG_NOSIGNAL | flags));
 }
 
 ssize_t SocketRecvmsg(base::PlatformFile socket,

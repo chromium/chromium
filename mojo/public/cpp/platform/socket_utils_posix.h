@@ -28,11 +28,13 @@ constexpr size_t kMaxSendmsgHandles = 128;
 // and there wasn't a much better home for them. Consider moving them to
 // src/base or something.
 
-// Like |write()| but handles |EINTR| and never raises |SIGPIPE|.
+// Like |write()| but handles |EINTR| and never raises |SIGPIPE|. |flags| are
+// passed to |send()| along with |MSG_NOSIGNAL|.
 COMPONENT_EXPORT(MOJO_CPP_PLATFORM)
 ssize_t SocketWrite(base::PlatformFile socket,
                     const void* bytes,
-                    size_t num_bytes);
+                    size_t num_bytes,
+                    int flags = 0);
 
 // Wrapper around |sendmsg()| which makes it convenient to send attached file
 // descriptors. All entries in |descriptors| must be valid and |descriptors|
@@ -44,11 +46,14 @@ ssize_t SocketWrite(base::PlatformFile socket,
 //
 // Note that regardless of success or failure, descriptors in |descriptors| are
 // not closed.
+//
+// |flags| are passed to |sendmsg()| along with |MSG_NOSIGNAL|.
 COMPONENT_EXPORT(MOJO_CPP_PLATFORM)
 ssize_t SendmsgWithHandles(base::PlatformFile socket,
                            struct iovec* iov,
                            size_t num_iov,
-                           const std::vector<base::ScopedFD>& descriptors);
+                           const std::vector<base::ScopedFD>& descriptors,
+                           int flags = 0);
 
 // Like |recvmsg()|, but handles |EINTR|. Returns 0 if some file descriptors
 // failed to be received, -1 for other errors (in which case, refer to `errno`),

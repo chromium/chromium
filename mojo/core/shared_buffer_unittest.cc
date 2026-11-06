@@ -10,10 +10,13 @@
 #include <utility>
 
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/types.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo::core {
@@ -277,6 +280,49 @@ TEST_F(SharedBufferTest, MAYBE_CreateAndPassFromChildReadOnlyBuffer) {
     WriteMessage(h, "quit");
   });
 }
+
+// Keep in sync with SHARED_MEMORY_SERVICE_REQUIRED() in
+// ipcz_driver/base_shared_memory_service.cc.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
+// Installs the hooks with which sandboxed processes create shared memory
+// regions through the broker process, then creates a read-only region with
+// base's shared memory API and passes it to the parent.
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateReadOnlyRegionThroughBroker,
+                                  SharedBufferTest,
+                                  h) {
+  InstallMojoIpczBaseSharedMemoryHooks();
+
+  const std::string message = ReadMessage(h);
+  base::MappedReadOnlyRegion region =
+      base::ReadOnlySharedMemoryRegion::Create(message.size());
+  ASSERT_TRUE(region.IsValid());
+  region.mapping.GetMemoryAsSpan<char>().copy_from(message);
+  WriteMessageWithHandle(
+      h, "",
+      WrapReadOnlySharedMemoryRegion(std::move(region.region))
+          .release()
+          .value());
+
+  EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+TEST_F(SharedBufferTest, CreateReadOnlyRegionThroughBrokerInChild) {
+  RunTestClient("CreateReadOnlyRegionThroughBroker", [&](MojoHandle h) {
+    WriteMessage(h, "hello");
+
+    MojoHandle b;
+    EXPECT_EQ("", ReadMessageWithHandle(h, &b));
+    ExpectBufferContents(b, 0, "hello");
+    auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
+    EXPECT_EQ(buffer->region().GetMode(),
+              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+
+    WriteMessage(h, "quit");
+  });
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&
+        // !BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(USE_BLINK)
 

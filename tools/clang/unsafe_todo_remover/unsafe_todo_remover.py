@@ -131,7 +131,6 @@ EXCLUSIONS: list[Exclusion] = [
       "device/fido/cbor_extract.h",
       "gpu/command_buffer/common/cmd_buffer_common.h",
       "gpu/command_buffer/common/gles2_cmd_utils.h",
-      "mojo/core/broker_messages.h",
       "mojo/public/cpp/bindings/lib/array_internal.h",
       "mojo/public/cpp/bindings/lib/array_serialization.h",
       "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h",
