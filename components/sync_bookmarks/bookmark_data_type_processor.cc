@@ -24,7 +24,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/server_defined_unique_tags.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
@@ -840,9 +839,7 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
 
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    bookmark_model_->MaybeRemoveUnderlyingModelDuplicatesUponInitialSync();
-  }
+  bookmark_model_->MaybeRemoveUnderlyingModelDuplicatesUponInitialSync();
 
   LogDataTypeConfigurationTime(syncer::BOOKMARKS, activation_request_.sync_mode,
                                activation_request_.configuration_start_time);
