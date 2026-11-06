@@ -29,8 +29,6 @@ class FakePolicyInstance : public mojom::PolicyInstance {
   void OnCommandReceived(const std::string& command,
                          OnCommandReceivedCallback callback) override;
 
-  void CallGetPolicies(mojom::PolicyHost::GetPoliciesCallback callback);
-
   const std::string& command_payload() { return command_payload_; }
 
  private:

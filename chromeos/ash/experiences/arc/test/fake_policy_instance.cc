@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace arc {
@@ -34,12 +33,6 @@ void FakePolicyInstance::OnCommandReceived(const std::string& command,
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), mojom::CommandResultType::SUCCESS));
-}
-
-void FakePolicyInstance::CallGetPolicies(
-    mojom::PolicyHost::GetPoliciesCallback callback) {
-  host_remote_->GetPolicies(std::move(callback));
-  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace arc
