@@ -514,8 +514,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kMouseImposterCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNotificationLimit);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kNotificationCenterController);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationExpansionAnimation);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationsInContextMenu);
@@ -1004,7 +1002,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMacAddressRandomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldMigrateOwnerKeyToPrivateSlot();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationLimitEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEnrollmentNudgingForTestingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationCenterControllerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationExpansionAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsNotificationExperimentalShortTimeoutsEnabled();

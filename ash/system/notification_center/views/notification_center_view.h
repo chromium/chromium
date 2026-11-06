@@ -43,9 +43,6 @@ class ASH_EXPORT NotificationCenterView : public views::View,
 
   // Initializes the `NotificationListView` with existing notifications.
   // Should be called after ctor.
-  // Used when `NotificationCenterController` is disabled.
-  void Init();
-  // Used when `NotificationCenterController` is enabled.
   void Init(
       const std::vector<message_center::Notification*>& unpinned_notifications,
       std::unique_ptr<views::View> pinned_notification_list_view);
@@ -53,7 +50,7 @@ class ASH_EXPORT NotificationCenterView : public views::View,
   // Inits `scroller_`, adds `notification_list_view_` as its child view and
   // adds `notification_bar_` as a child view of the center view.
   void AddChildViews(
-      std::unique_ptr<views::View> pinned_notification_list_view = nullptr);
+      std::unique_ptr<views::View> pinned_notification_list_view);
 
   // Calls the notification bar `Update` function with the current unpinned,
   // pinned and stacked notification counts. Returns true if the state of the

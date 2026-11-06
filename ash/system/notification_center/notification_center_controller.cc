@@ -4,7 +4,6 @@
 
 #include "ash/system/notification_center/notification_center_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
@@ -28,8 +27,6 @@ constexpr gfx::Insets NotificationListDefaultMargins =
 }  // namespace
 
 NotificationCenterController::NotificationCenterController() {
-  CHECK(features::IsNotificationCenterControllerEnabled());
-
   auto* message_center = message_center::MessageCenter::Get();
   CHECK(message_center);
   message_center->AddObserver(this);

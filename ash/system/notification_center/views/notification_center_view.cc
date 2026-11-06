@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ash/system/notification_center/views/message_center_scroll_bar.h"
@@ -65,12 +64,6 @@ NotificationCenterView::NotificationCenterView()
 
 NotificationCenterView::~NotificationCenterView() {
   scroller_->RemoveObserver(this);
-}
-
-void NotificationCenterView::Init() {
-  CHECK(!features::IsNotificationCenterControllerEnabled());
-  notification_list_view_->Init();
-  AddChildViews();
 }
 
 void NotificationCenterView::Init(
@@ -150,7 +143,6 @@ void NotificationCenterView::OnNotificationSlidOut() {
 }
 
 void NotificationCenterView::OnNotificationAdded(const std::string& id) {
-  CHECK(features::IsNotificationCenterControllerEnabled());
   if (!notification_list_view_) {
     return;
   }
@@ -160,7 +152,6 @@ void NotificationCenterView::OnNotificationAdded(const std::string& id) {
 
 void NotificationCenterView::OnNotificationRemoved(const std::string& id,
                                                    bool by_user) {
-  CHECK(features::IsNotificationCenterControllerEnabled());
   if (!notification_list_view_) {
     return;
   }
@@ -169,7 +160,6 @@ void NotificationCenterView::OnNotificationRemoved(const std::string& id,
 }
 
 void NotificationCenterView::OnNotificationUpdated(const std::string& id) {
-  CHECK(features::IsNotificationCenterControllerEnabled());
   if (!notification_list_view_) {
     return;
   }

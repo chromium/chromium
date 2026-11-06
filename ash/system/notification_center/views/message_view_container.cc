@@ -4,7 +4,6 @@
 
 #include "ash/system/notification_center/views/message_view_container.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/metrics_utils.h"
@@ -13,6 +12,7 @@
 #include "ash/system/notification_center/views/notification_swipe_control_view.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/background.h"

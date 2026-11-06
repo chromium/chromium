@@ -8,10 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -35,7 +32,6 @@ class MessageViewContainer;
 // it's enclosed. This class is used only from NotificationCenterView.
 class ASH_EXPORT NotificationListView
     : public views::View,
-      public message_center::MessageCenterObserver,
       public message_center::NotificationViewController,
       public message_center::MessageView::Observer,
       public views::AnimationDelegateViews {
@@ -50,9 +46,6 @@ class ASH_EXPORT NotificationListView
 
   // Initializes the view with existing notifications. Should be called right
   // after ctor.
-  // Used when `NotificationCenterController` is disabled.
-  void Init();
-  // Used when `NotificationCenterController` is enabled.
   void Init(const std::vector<message_center::Notification*>& notifications);
 
   // Starts Clear All animation and removes all notifications. Notifications are
@@ -144,10 +137,10 @@ class ASH_EXPORT NotificationListView
       const std::string& parent_notification_id,
       const std::string& child_notification_id) override;
 
-  // message_center::MessageCenterObserver:
-  void OnNotificationAdded(const std::string& id) override;
-  void OnNotificationRemoved(const std::string& id, bool by_user) override;
-  void OnNotificationUpdated(const std::string& id) override;
+  // Called from `NotificationCenterView`.
+  void OnNotificationAdded(const std::string& id);
+  void OnNotificationRemoved(const std::string& id, bool by_user);
+  void OnNotificationUpdated(const std::string& id);
 
   // message_center::MessageView::Observer:
   void OnSlideStarted(const std::string& notification_id) override;
@@ -291,10 +284,6 @@ class ASH_EXPORT NotificationListView
   bool is_deleting_removed_notifications_ = false;
 
   const int message_view_width_;
-
-  base::ScopedObservation<message_center::MessageCenter,
-                          message_center::MessageCenterObserver>
-      message_center_observation_{this};
 
   base::ScopedMultiSourceObservation<message_center::MessageView,
                                      message_center::MessageView::Observer>
