@@ -65,7 +65,7 @@ class MockHatsService : public HatsServiceDesktop {
                const HatsService::SurveyOptions& survey_options),
               (override));
   MOCK_METHOD(void, HatsNextDialogClosed, (), (override));
-  MOCK_METHOD(bool, CanShowAnySurvey, (bool user_prompted), (const override));
+  MOCK_METHOD(bool, CanShowAnySurvey, (bool user_prompted), (const, override));
 };
 
 std::unique_ptr<KeyedService> BuildMockHatsService(
