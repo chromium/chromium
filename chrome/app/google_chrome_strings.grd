@@ -2122,6 +2122,12 @@ Google Chrome is unable to recover your settings.
           Pinned! You can access Google Lens again from the new button on the toolbar
         </message>
 
+        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_HEADER" desc="The header text of the IPH describing that the Contextual Tasks side panel is pinnable.">
+          Access Search from any tab
+        </message>
+        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_TEXT" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
+          Easily ask questions as you browse with Google Search
+        </message>
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
           You can pin Google Search AI Mode to ask questions as you browse
         </message>
@@ -2139,6 +2145,9 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_SHORTCUT" desc="The text on the button to pin the Contextual Tasks shortcut in the pinnable IPH.">
           Pin Shortcut
+        </message>
+        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_TO_TOOLBAR" desc="The text on the button in the pinnable IPH that pins the Contextual Tasks shortcut to the toolbar.">
+          Pin to toolbar
         </message>
         <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search AI Mode.">
           You can reopen Google Search AI Mode to ask questions while you browse
@@ -2240,6 +2249,12 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3_PANEL" desc="The body text of the third step of the Contextual Tasks tutorial.">
           Success! You can now easily ask questions as you browse with Google Search panel
+        </message>
+        <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_SUCCESS" desc="The body text of the tutorial completion bubble shown after the Contextual Tasks shortcut is pinned to the toolbar.">
+          Google Search in Chrome pinned to toolbar!
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_OPEN_GOOGLE_SEARCH_IN_CHROME" desc="Label for an action that opens Google Search in Chrome (the Contextual Tasks side panel).">
+          Open Google Search in Chrome
         </message>
 
         <!-- Overlay WebUI Strings -->
