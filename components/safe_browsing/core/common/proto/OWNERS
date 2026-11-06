@@ -2,6 +2,7 @@ per-file csd.proto=file://components/safe_browsing/core/common/SAFE_BROWSING_FEA
 per-file webui.proto=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS
 
 per-file client_model.proto=file://components/safe_browsing/core/common/phishing_classifier/OWNERS
+per-file realtimeallowlist.proto=file://components/safe_browsing/content/resources/real_time_url_checks_allowlist/OWNERS
 per-file realtimeapi.proto=file://components/safe_browsing/core/browser/realtime/OWNERS
 per-file safebrowsingv5.proto=file://components/safe_browsing/core/browser/db/OWNERS
 per-file safebrowsingv5.proto=file://components/safe_browsing/core/browser/hashprefix_realtime/OWNERS
