@@ -10,6 +10,7 @@
 #include <sys/types.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,6 +20,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
@@ -490,15 +492,22 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
 
 std::optional<std::vector<uint8_t>> PEBinary::SetTag(
     base::span<const uint8_t> tag) {
-  std::optional<std::vector<uint8_t>> ret = SetTagImpl(content_info_, tag);
-  if (!ret) {
+  std::optional<std::vector<uint8_t>> signed_data =
+      SetTagImpl(content_info_, tag);
+  if (!signed_data) {
     return std::nullopt;
   }
 
   // Recreate the header for the `WIN_CERTIFICATE` structure.
   static constexpr size_t kSizeofWinCertificateHeader = 8;
-  std::vector<uint8_t> win_certificate_header(kSizeofWinCertificateHeader);
-  const uint32_t certs_size = kSizeofWinCertificateHeader + ret->size();
+  std::array<uint8_t, kSizeofWinCertificateHeader> win_certificate_header = {};
+  const base::CheckedNumeric<uint32_t> certs_size_checked =
+      base::CheckedNumeric<uint32_t>(signed_data->size()) +
+      kSizeofWinCertificateHeader;
+  if (!certs_size_checked.IsValid()) {
+    return std::nullopt;
+  }
+  const uint32_t certs_size = certs_size_checked.ValueOrDie();
   {
     auto span_writer = base::SpanWriter<uint8_t>(win_certificate_header);
     span_writer.Write(base::byte_span_from_ref(certs_size));
@@ -507,18 +516,23 @@ std::optional<std::vector<uint8_t>> PEBinary::SetTag(
         base::byte_span_from_ref(kAttributeCertificateTypePKCS7SignedData));
   }
 
-  ret->insert(ret->begin(), win_certificate_header.begin(),
-              win_certificate_header.end());
-
   // SAFETY: test that `attr_cert_offset_` does not exceed the size of the
   // `binary_` span.
   CHECK_LE(attr_cert_offset_, binary_.size_bytes());
-  ret->insert(ret->begin(), binary_.data(),
-              binary_.subspan(attr_cert_offset_).data());
+  const base::CheckedNumeric<size_t> total_size =
+      base::CheckAdd(attr_cert_offset_, certs_size);
+  if (!total_size.IsValid()) {
+    return std::nullopt;
+  }
+  std::vector<uint8_t> ret;
+  ret.reserve(total_size.ValueOrDie());
+  base::Extend(ret, binary_.first(attr_cert_offset_));
+  base::Extend(ret, win_certificate_header);
+  base::Extend(ret, std::move(*signed_data));
 
   // Inject the updated length in the `IMAGE_DATA_DIRECTORY` structure that
   // delineates the `WIN_CERTIFICATE` structure.
-  base::span(*ret)
+  base::span(ret)
       .subspan(certs_size_offset_)
       .copy_prefix_from(base::byte_span_from_ref(certs_size));
   return ret;
@@ -576,6 +590,7 @@ std::vector<uint8_t> MSIBinary::ReadStream(const std::string& name,
         "mini fat", header_.first_mini_fat_sector,
         header_.num_mini_fat_sectors * sector_format_.size, true, false);
     mini_fat_entries = std::vector<uint32_t>();
+    mini_fat_entries->reserve(stream.size() / 4);
     for (size_t offset = 0; offset < stream.size(); offset += 4) {
       mini_fat_entries->push_back(
           *reinterpret_cast<uint32_t*>(&stream[offset]));
@@ -603,6 +618,7 @@ std::vector<uint8_t> MSIBinary::ReadStream(const std::string& name,
   uint32_t sector = start;
   uint64_t size = stream_size;
   std::vector<uint8_t> stream;
+  stream.reserve(stream_size);
   while (size > 0) {
     if (sector == kFatEndOfChain || sector == kFatFreeSector) {
       // Ran out of sectors in copying stream.
@@ -637,6 +653,11 @@ std::vector<uint8_t> MSIBinary::ReadStream(const std::string& name,
 
 void MSIBinary::PopulateFatEntries() {
   std::vector<uint32_t> fat_entries;
+  const base::CheckedNumeric<size_t> reserved_size =
+      base::CheckMul(header_.num_fat_sectors, sector_format_.ints);
+  if (reserved_size.IsValid()) {
+    fat_entries.reserve(reserved_size.ValueOrDie());
+  }
   for (size_t i = 0; i < difat_entries_.size(); ++i) {
     const uint32_t sector = difat_entries_[i];
 
@@ -651,7 +672,7 @@ void MSIBinary::PopulateFatEntries() {
           *reinterpret_cast<uint32_t*>(&contents_[offset + j * 4]));
     }
   }
-  fat_entries_ = fat_entries;
+  fat_entries_ = std::move(fat_entries);
 }
 
 void MSIBinary::PopulateDifatEntries() {
@@ -669,6 +690,7 @@ void MSIBinary::PopulateDifatEntries() {
   // bytes/ fat sector)
   // => files greater than ~457 MB in size require additional difat sectors.
   std::vector<uint32_t> difat_sectors;
+  difat_sectors.reserve(header_.num_difat_sectors);
   for (uint32_t i = 0; i < header_.num_difat_sectors; ++i) {
     uint32_t sector = 0;
     sector = i == 0 ? header_.first_difat_sector : difat_entries.back();
@@ -679,8 +701,8 @@ void MSIBinary::PopulateDifatEntries() {
           *reinterpret_cast<uint32_t*>(&contents_[start + j * 4]));
     }
   }
-  difat_entries_ = difat_entries;
-  difat_sectors_ = difat_sectors;
+  difat_entries_ = std::move(difat_entries);
+  difat_sectors_ = std::move(difat_sectors);
 }
 
 // SAFETY: byte manipulation of a C data structure.
@@ -764,10 +786,9 @@ void MSIBinary::EnsureFreeDifatEntry() {
   const int old_difat_tail = difat_entries_.size() - 1;
 
   // Allocate another sector of difat entries.
-  for (i = 0; i < sector_format_.ints; ++i) {
-    difat_entries_.push_back(kFatFreeSector);
-  }
-  difat_entries_[difat_entries_.size() - 1] = kFatEndOfChain;
+  difat_entries_.resize(difat_entries_.size() + sector_format_.ints,
+                        kFatFreeSector);
+  difat_entries_.back() = kFatEndOfChain;
 
   // Assign the new difat sector in the fat.
   uint64_t sector = EnsureFreeFatEntries(1);
@@ -806,9 +827,8 @@ uint64_t MSIBinary::EnsureFreeFatEntries(uint64_t n) {
   }
 
   // Append another fat sector.
-  for (size_t i = 0; i < sector_format_.ints; ++i) {
-    fat_entries_.push_back(kFatFreeSector);
-  }
+  fat_entries_.resize(fat_entries_.size() + sector_format_.ints,
+                      kFatFreeSector);
 
   // `first_free_index` is free; assign it to the created fat sector.
   // Do not change the order of these calls, since `AssignDifatEntry()` could
