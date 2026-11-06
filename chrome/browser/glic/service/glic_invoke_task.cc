@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/service/glic_invoke_task.h"
 
+#include <utility>
+
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -214,8 +216,10 @@ ShowInstanceTask::~ShowInstanceTask() = default;
 
 void ShowInstanceTask::Start(base::OnceClosure done_callback) {
   if (options_) {
-    instance_->Show(*options_);
-    options_.reset();
+    // Move `options_` out before `Show()`, as `Show()` can synchronously close
+    // the embedder and cancel/destroy the owning `GlicInvokeHandler` (and
+    // `this`).
+    instance_->Show(*std::exchange(options_, std::nullopt));
   }
   std::move(done_callback).Run();
 }
