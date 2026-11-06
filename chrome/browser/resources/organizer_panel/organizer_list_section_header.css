@@ -68,6 +68,7 @@
 }
 
 #headerTitle {
+  contain: inline-size;
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
