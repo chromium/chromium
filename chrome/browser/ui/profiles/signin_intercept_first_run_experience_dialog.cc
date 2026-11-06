@@ -93,7 +93,6 @@ SigninInterceptFirstRunExperienceDialog::
         InterceptHistorySyncOptinHelperDelegate(
             base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog)
     : dialog_(std::move(dialog)) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
 }
 
@@ -235,7 +234,6 @@ SigninInterceptFirstRunExperienceDialog::
       browser_(browser),
       account_id_(account_id),
       is_forced_intercept_(is_forced_intercept) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   // This is a brand new profile. There should be no enterprise confirmation
   // screens offering the option to create another profile. This class handles
   // management.
@@ -319,7 +317,6 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
       NOTREACHED();
     case Step::kStartHistorySyncOptin:
       CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
-      CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
       DoStartHistorySync();
       return;
     case Step::kShowHistorySyncScreen:
@@ -339,7 +336,6 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
 }
 
 void SigninInterceptFirstRunExperienceDialog::DoStartHistorySync() {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->GetProfile());
   CHECK(identity_manager);

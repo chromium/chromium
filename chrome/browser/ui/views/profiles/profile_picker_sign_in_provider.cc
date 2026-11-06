@@ -34,7 +34,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -342,9 +341,6 @@ void ProfilePickerSignInProvider::ShowSigninError(
     Profile* profile,
     content::WebContents* contents,
     const SigninUIError& error) {
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    return;
-  }
   delegate_->ShowSigninError(profile, error);
 }
 

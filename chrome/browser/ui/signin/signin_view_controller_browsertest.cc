@@ -88,7 +88,6 @@
 #include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/test_account_preview_data_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -1581,9 +1580,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       widget2->widget_delegate()->GetInitiallyFocusedView());
   ASSERT_TRUE(web_view2);
   std::string expected_default_subtitle = l10n_util::GetStringUTF8(
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS
-          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS);
   EXPECT_EQ(
       content::EvalJs(web_view2->GetWebContents(),
                       "document.querySelector('chrome-signin-app').shadowRoot."
