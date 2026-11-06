@@ -24,6 +24,13 @@ BASE_DECLARE_FEATURE(kEnableDynamicRouteFetching);
 // Feature flag controlling enterprise proxy error handling.
 BASE_DECLARE_FEATURE(kEnterpriseProxyErrorHandling);
 
+// Feature flag controlling whether trusted OS/platform management (e.g. AD, MDM
+// or EMM) counts as device management for the user affiliation check of
+// user-scoped ProxyOverrideRules and ProxyProvisioningDomains policies and of
+// extension-set proxy override rules. When disabled, only CBCM device
+// affiliation IDs mark the device as managed.
+BASE_DECLARE_FEATURE(kEnforceProxyAffiliationOnPlatformManagedDevices);
+
 // Feature param for the maximum size limit (in bytes) for Provisioning Domain
 // configuration downloads. Defaults to 3 MiB.
 extern const base::FeatureParam<int> kPvdConfigMaxSizeBytesParam;

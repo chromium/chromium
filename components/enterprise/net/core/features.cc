@@ -26,6 +26,18 @@ BASE_FEATURE(kEnterpriseProxyErrorHandling,
 #endif
 );
 
+// Enabled by default on Android and iOS, where user-scoped enterprise proxy
+// policies have not launched yet. Disabled by default elsewhere because
+// enabling it stops applying user-scoped and extension-set proxy override rules
+// on existing AD- or MDM-managed devices that are not enrolled in CBCM.
+BASE_FEATURE(kEnforceProxyAffiliationOnPlatformManagedDevices,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 constexpr size_t kDefaultPvdConfigMaxSizeBytes = 3 * 1024 * 1024;
 
 const base::FeatureParam<int> kPvdConfigMaxSizeBytesParam{

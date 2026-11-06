@@ -9,9 +9,11 @@
 #include <tuple>
 
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -358,6 +360,8 @@ TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
 
 TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
        PlatformManagedDeviceWithoutCbcm) {
+  base::test::ScopedFeatureList feature_list(
+      kEnforceProxyAffiliationOnPlatformManagedDevices);
   policy::ScopedManagementServiceOverrideForTesting platform_managed(
       policy::PlatformManagementService::GetInstance(),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -413,7 +417,68 @@ TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
 }
 
 TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
+       PlatformManagedDeviceWithoutCbcmNotEnforcedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kEnforceProxyAffiliationOnPlatformManagedDevices);
+  policy::ScopedManagementServiceOverrideForTesting platform_managed(
+      policy::PlatformManagementService::GetInstance(),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  ProxyProvisioningDomainsPolicyHandler handler(GetTestSchema());
+
+  // Without the feature, platform management alone does not make the device
+  // managed, so user-scoped policy is allowed.
+  policy::PolicyMap policy_map;
+  policy_map.SetUserAffiliationIds({"user_id"});
+  policy_map.Set(policy::key::kProxyProvisioningDomains,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
+
+  policy::PolicyErrorMap errors;
+  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+
+  // CBCM device affiliation IDs still require an affiliated user.
+  policy_map.SetDeviceAffiliationIds({"device_id"});
+  EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.HasError(policy::key::kProxyProvisioningDomains));
+}
+
+TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
+       PlatformManagedDeviceWithoutCbcmDefaultFeatureState) {
+  policy::ScopedManagementServiceOverrideForTesting platform_managed(
+      policy::PlatformManagementService::GetInstance(),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  ProxyProvisioningDomainsPolicyHandler handler(GetTestSchema());
+
+  policy::PolicyMap policy_map;
+  policy_map.SetUserAffiliationIds({"user_id"});
+  policy_map.Set(policy::key::kProxyProvisioningDomains,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
+
+  policy::PolicyErrorMap errors;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.HasError(policy::key::kProxyProvisioningDomains));
+#else
+  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+#endif
+}
+
+TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
        LowTrustPlatformManagementAllowsUserScopeWhenNoAffiliationIds) {
+  base::test::ScopedFeatureList feature_list(
+      kEnforceProxyAffiliationOnPlatformManagedDevices);
   policy::ScopedManagementServiceOverrideForTesting computer_local(
       policy::PlatformManagementService::GetInstance(),
       policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);

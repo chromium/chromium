@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/values.h"
+#include "components/enterprise/net/core/features.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -20,7 +22,38 @@ namespace enterprise_net {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+namespace {
+
+bool IsAffiliationEnforcedOnPlatformManagedDevices() {
+  // Policy handlers can run before `base::FeatureList` is initialized while
+  // Local State is created at startup. Use the feature's default state in that
+  // case instead of accessing the feature early; profile-scoped policies are
+  // re-evaluated once `FeatureList` is initialized, and proxy override rules
+  // are also checked by `proxy_config::ProxyOverrideRulesAllowed()` before
+  // being applied.
+  if (!base::FeatureList::GetInstance()) {
+    return kEnforceProxyAffiliationOnPlatformManagedDevices.GetDefaultState() ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+  return base::FeatureList::IsEnabled(
+      kEnforceProxyAffiliationOnPlatformManagedDevices);
+}
+
+}  // namespace
+
 bool IsDeviceManaged(const policy::PolicyMap& policies) {
+  if (!policies.GetDeviceAffiliationIds().empty()) {
+    return true;
+  }
+
+  // When disabled, `IsDeviceManaged()` reduces to
+  // `!policies.GetDeviceAffiliationIds().empty()`, matching the check prior to
+  // https://crrev.com/c/8618781 in both `CheckUserAffiliatedProxyPolicy()` and
+  // `proxy_config::AreUserProxyOverrideRulesAllowed()`.
+  if (!IsAffiliationEnforcedOnPlatformManagedDevices()) {
+    return false;
+  }
+
   // Note: On Android, `AndroidManagementStatusProvider` caches the EMM
   // management state in `local_state` (`kEnterpriseMDMManagementAndroid`) and
   // refreshes it asynchronously via JNI on startup. On the very first cold run
@@ -38,10 +71,9 @@ bool IsDeviceManaged(const policy::PolicyMap& policies) {
   // affiliation IDs enforce affiliation on `POLICY_SCOPE_USER` cloud policies
   // unless `EnableProxyOverrideRulesForAllUsers` is set to `1` at
   // `POLICY_SCOPE_MACHINE` (via MDM or CBCM).
-  return !policies.GetDeviceAffiliationIds().empty() ||
-         policy::PlatformManagementService::GetInstance()
-                 ->GetManagementAuthorityTrustworthiness() >=
-             policy::ManagementAuthorityTrustworthiness::TRUSTED;
+  return policy::PlatformManagementService::GetInstance()
+             ->GetManagementAuthorityTrustworthiness() >=
+         policy::ManagementAuthorityTrustworthiness::TRUSTED;
 }
 
 bool IsUnaffiliatedUserProxyPolicyAllowed(const policy::PolicyMap& policies) {

@@ -7,6 +7,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/net/test/enterprise_proxy_browsertest_base.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
+#include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -576,6 +578,10 @@ class EnterpriseProxyPlatformManagedDeviceBrowserTest
             .is_platform_managed = true,
             .affiliated = false,
         }) {}
+
+ private:
+  base::test::ScopedFeatureList affiliation_feature_list_{
+      enterprise_net::kEnforceProxyAffiliationOnPlatformManagedDevices};
 };
 
 // Verifies that user-scoped ProxyProvisioningDomains on a platform/EMM-managed

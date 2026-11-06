@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/enterprise/net/core/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/platform_management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -241,6 +243,8 @@ TEST_F(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
 
 TEST_F(ProxyPrefsUtilsTest,
        ProxyOverrideRulesAllowed_PlatformManagedWithoutCbcm) {
+  base::test::ScopedFeatureList feature_list(
+      enterprise_net::kEnforceProxyAffiliationOnPlatformManagedDevices);
   policy::ScopedManagementServiceOverrideForTesting platform_managed(
       policy::PlatformManagementService::GetInstance(),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -276,10 +280,67 @@ TEST_F(ProxyPrefsUtilsTest,
                    policy::POLICY_SCOPE_MACHINE);
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
   EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+
+  // Blocked for extension-controlled rules when
+  // EnableProxyOverrideRulesForAllUsers is 0, and allowed when it is 1.
+  prefs.RemoveManagedPref(prefs::kProxyOverrideRules);
+  prefs.SetExtensionPref(prefs::kProxyOverrideRules,
+                         base::Value(base::Value::Type::LIST));
+  EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 1);
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+}
+
+TEST_F(ProxyPrefsUtilsTest,
+       ProxyOverrideRulesAllowed_PlatformManagedWithoutCbcmFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      enterprise_net::kEnforceProxyAffiliationOnPlatformManagedDevices);
+  policy::ScopedManagementServiceOverrideForTesting platform_managed(
+      policy::PlatformManagementService::GetInstance(),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  TestingPrefServiceSimple prefs;
+  PrefProxyConfigTrackerImpl::RegisterProfilePrefs(prefs.registry());
+  testing::NiceMock<policy::MockPolicyService> policy_service;
+  policy::PolicyMap policy_map;
+  // No device affiliation IDs (no CBCM), only user affiliation IDs.
+  policy_map.SetUserAffiliationIds({"user_id"});
+  EXPECT_CALL(policy_service, GetPolicies(testing::_))
+      .WillRepeatedly(testing::ReturnRef(policy_map));
+
+  prefs.SetManagedPref(prefs::kProxyOverrideRules,
+                       base::Value(base::Value::Type::LIST));
+  prefs.SetInteger(prefs::kProxyOverrideRulesScope, policy::POLICY_SCOPE_USER);
+  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 0);
+
+  // Allowed because platform management alone does not make the device managed
+  // without the feature.
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+
+  // Extension-controlled rules are also allowed without the feature.
+  prefs.RemoveManagedPref(prefs::kProxyOverrideRules);
+  prefs.SetExtensionPref(prefs::kProxyOverrideRules,
+                         base::Value(base::Value::Type::LIST));
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+
+  // CBCM device affiliation IDs still require an affiliated user, matching the
+  // behavior prior to https://crrev.com/c/8618781.
+  policy_map.SetDeviceAffiliationIds({"device_id"});
+  EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+
+  policy_map.SetDeviceAffiliationIds({"user_id"});
+  EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
 }
 
 TEST_F(ProxyPrefsUtilsTest,
        ProxyOverrideRulesAllowed_LowTrustPlatformManagementWithoutCbcm) {
+  base::test::ScopedFeatureList feature_list(
+      enterprise_net::kEnforceProxyAffiliationOnPlatformManagedDevices);
   policy::ScopedManagementServiceOverrideForTesting computer_local(
       policy::PlatformManagementService::GetInstance(),
       policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);

@@ -20,6 +20,8 @@ namespace enterprise_net {
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Returns true if the browser/device is managed (either via CBCM device
 // affiliation IDs or trusted OS/platform management such as EMM/MDM/AD).
+// Trusted OS/platform management only counts when the
+// `kEnforceProxyAffiliationOnPlatformManagedDevices` feature is enabled.
 bool IsDeviceManaged(const policy::PolicyMap& policies);
 
 // Returns true if the machine-scoped EnableProxyOverrideRulesForAllUsers policy
