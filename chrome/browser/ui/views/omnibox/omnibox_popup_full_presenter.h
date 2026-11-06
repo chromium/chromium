@@ -187,6 +187,12 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // Returns the browser window's focus manager, or null if there is none.
   views::FocusManager* GetBrowserFocusManager();
 
+  // Activation moves between the browser window and the popup in two steps,
+  // deactivating one before activating the other. Keeps the browser window
+  // painting as active in between, until a posted task.
+  void KeepBrowserPaintingAsActiveAcrossHandoff();
+  void ReleaseBrowserPaintAsActiveLockIfPopupInactive();
+
   // Flag set when an ESC key event is intercepted before widget deactivation.
   bool is_handling_escape_key_ = false;
 
@@ -221,6 +227,11 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // which refocuses the popup, or when the omnibox is blurred or the popup is
   // hidden.
   bool refocus_on_activation_ = false;
+
+  // Keeps the browser window painting as active while the popup is active, and
+  // until a posted task after the browser window or popup deactivates.
+  std::unique_ptr<views::Widget::PaintAsActiveLock>
+      browser_paint_as_active_lock_;
 
   // Whether the "first shown" metrics have been logged at least once.
   bool logged_first_shown_metric_ = false;
