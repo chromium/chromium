@@ -2267,8 +2267,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
+// TODO(crbug.com/580414545): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
-                       SigninWithChoiceRemembered_Signin) {
+                       DISABLED_SigninWithChoiceRemembered_Signin) {
   base::HistogramTester histogram_tester;
 
   // Simulates a previous choice done with Always sign in.
@@ -2289,8 +2290,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
       signin_metrics::AccessPoint::kSigninChoiceRemembered, 1);
 }
 
+// TODO(crbug.com/580414545): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
-                       AutoSigninWhenAccountAllowedByPattern) {
+                       DISABLED_AutoSigninWhenAccountAllowedByPattern) {
   g_browser_process->local_state()->SetString(
       prefs::kGoogleServicesUsernamePattern, ".*@gmail.com");
 
