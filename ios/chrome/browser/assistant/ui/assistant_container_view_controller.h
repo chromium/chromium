@@ -20,6 +20,9 @@ enum class AssistantContainerDetent : NSInteger;
 @class LayoutGuideCenter;
 @class SceneLayoutState;
 
+using AccessibilityNotificationPoster =
+    void (^)(UIAccessibilityNotifications notification, id argument);
+
 // View Controller for the Assistant Container.
 @interface AssistantContainerViewController
     : UIViewController <AssistantContainerAnimatable>
@@ -68,6 +71,12 @@ enum class AssistantContainerDetent : NSInteger;
 // instead of moving VoiceOver focus to it.
 @property(nonatomic, assign) BOOL announceArrivalOnly;
 
+// Block used to post accessibility notifications. Defaults to calling
+// `UIAccessibilityPostNotification`. Setting to nil resets to the default
+// implementation.
+@property(nonatomic, copy)
+    AccessibilityNotificationPoster accessibilityNotificationPoster;
+
 // Sets whether the grabber button is hidden with optional animation.
 - (void)setGrabberHidden:(BOOL)hidden animated:(BOOL)animated;
 
@@ -92,6 +101,10 @@ enum class AssistantContainerDetent : NSInteger;
 // `presented` indicates whether the transition is a presentation or a
 // dismissal.
 - (void)animateAlongsideTransitionPresented:(BOOL)presented;
+
+// Completes the container presentation animation and updates accessibility
+// focus.
+- (void)completePresentationAnimation;
 
 // Default initializer.
 - (instancetype)initWithViewController:(UIViewController*)viewController

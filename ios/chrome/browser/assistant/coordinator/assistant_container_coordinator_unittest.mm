@@ -29,10 +29,19 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-// Fake delegate recording detent changes reported by the container.
+@interface AssistantContainerCoordinator (Testing)
+- (void)didCompletePresentationAnimationForContainer:
+    (AssistantContainerViewController*)containerViewController;
+@end
+
+// Fake delegate recording detent changes and appearance callbacks reported by
+// the container.
 @interface FakeAssistantContainerDelegate
     : NSObject <AssistantContainerDelegate>
 @property(nonatomic, assign) std::optional<AssistantContainerDetent> lastDetent;
+@property(nonatomic, assign) NSInteger didAppearCallCount;
+@property(nonatomic, weak)
+    AssistantContainerViewController* lastAppearedContainer;
 @end
 
 @implementation FakeAssistantContainerDelegate
@@ -40,6 +49,12 @@
 - (void)assistantContainer:(AssistantContainerViewController*)container
            didChangeDetent:(AssistantContainerDetent)detent {
   self.lastDetent = detent;
+}
+
+- (void)assistantContainer:(AssistantContainerViewController*)container
+         didAppearAnimated:(BOOL)animated {
+  self.didAppearCallCount++;
+  self.lastAppearedContainer = container;
 }
 
 @end
@@ -250,6 +265,40 @@ TEST_F(AssistantContainerCoordinatorTest,
   ASSERT_TRUE(next_container_view_controller);
   EXPECT_FALSE(
       next_container_view_controller.mediumDetentPercentage.has_value());
+}
+
+// Tests that a stale presentation completion callback from a container that
+// was dismissed and replaced by a new container is ignored and does not
+// prematurely complete the new container's presentation.
+TEST_F(AssistantContainerCoordinatorTest,
+       IgnoresStalePresentationCompletionFromReplacedContainer) {
+  UIViewController* first_content = [[UIViewController alloc] init];
+  [coordinator_ showAssistantContainerWithContent:first_content
+                                         delegate:delegate_];
+  AssistantContainerViewController* first_container =
+      GetPresentedContainerViewController();
+  ASSERT_TRUE(first_container);
+
+  // Immediately dismiss the first container without animation and present a
+  // second container while the first container's completion is still pending.
+  [coordinator_ dismissAssistantContainerAnimated:NO completion:nil];
+  UIViewController* second_content = [[UIViewController alloc] init];
+  [coordinator_ showAssistantContainerWithContent:second_content
+                                         delegate:delegate_];
+  AssistantContainerViewController* second_container =
+      GetPresentedContainerViewController();
+  ASSERT_TRUE(second_container);
+  ASSERT_NE(first_container, second_container);
+
+  // A stale completion for the first container must be ignored.
+  [coordinator_ didCompletePresentationAnimationForContainer:first_container];
+  EXPECT_EQ(0, delegate_.didAppearCallCount);
+  EXPECT_EQ(nil, delegate_.lastAppearedContainer);
+
+  // Completing the presentation for the active second container succeeds.
+  [coordinator_ didCompletePresentationAnimationForContainer:second_container];
+  EXPECT_EQ(1, delegate_.didAppearCallCount);
+  EXPECT_EQ(second_container, delegate_.lastAppearedContainer);
 }
 
 }  // namespace

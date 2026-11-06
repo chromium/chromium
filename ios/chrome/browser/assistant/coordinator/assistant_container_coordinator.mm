@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/check.h"
+#import "base/ios/block_types.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
@@ -187,8 +188,14 @@ enum class TransitionState {
   [self sizeClassDidChange];
 
   __weak __typeof(self) weakSelf = self;
-  void (^animations)(void) = ^{
+  __weak AssistantContainerViewController* weakContainerViewController =
+      _containerViewController;
+  ProceduralBlock animations = ^{
     [weakSelf animateCutoutRadiusPresented:YES];
+  };
+  ProceduralBlock completion = ^{
+    [weakSelf didCompletePresentationAnimationForContainer:
+                  weakContainerViewController];
   };
 
   if (IsUseSceneViewControllerEnabled()) {
@@ -196,13 +203,10 @@ enum class TransitionState {
         addAssistantContainerViewController:_containerViewController];
 
     if (self.sceneState.layoutState.containedLayoutSupported) {
-      [_animator
-          animateSidePanelPresentation:_containerViewController
-                    baseViewController:self.presenter
-                              animated:YES
-                            completion:^{
-                              [weakSelf didCompletePresentationAnimation];
-                            }];
+      [_animator animateSidePanelPresentation:_containerViewController
+                           baseViewController:self.presenter
+                                     animated:YES
+                                   completion:completion];
       return;
     }
 
@@ -210,9 +214,7 @@ enum class TransitionState {
     [_animator animatePresentation:_containerViewController
                           animated:YES
                         animations:animations
-                        completion:^{
-                          [weakSelf didCompletePresentationAnimation];
-                        }];
+                        completion:completion];
     return;
   }
 
@@ -250,9 +252,7 @@ enum class TransitionState {
   [_animator animatePresentation:_containerViewController
                         animated:YES
                       animations:animations
-                      completion:^{
-                        [weakSelf didCompletePresentationAnimation];
-                      }];
+                      completion:completion];
 }
 
 - (void)setAssistantContainerDetents:
@@ -354,7 +354,7 @@ enum class TransitionState {
     return;
   }
 
-  void (^animations)(void) = ^{
+  ProceduralBlock animations = ^{
     [weakSelf animateCutoutRadiusPresented:NO];
   };
 
@@ -373,12 +373,22 @@ enum class TransitionState {
   [_containerViewController animateAlongsideTransitionPresented:presented];
 }
 
-// Called when the presentation animation completes.
-- (void)didCompletePresentationAnimation {
+// Called when the presentation animation completes for
+// `containerViewController`.
+- (void)didCompletePresentationAnimationForContainer:
+    (AssistantContainerViewController*)containerViewController {
+  if (_transitionState != TransitionState::kPresenting ||
+      !containerViewController ||
+      _containerViewController != containerViewController) {
+    return;
+  }
   _transitionState = TransitionState::kIdle;
-  if ([_delegate respondsToSelector:@selector(assistantContainer:
-                                               didAppearAnimated:)]) {
-    [_delegate assistantContainer:_containerViewController didAppearAnimated:YES];
+  [_containerViewController completePresentationAnimation];
+  if ([_delegate
+          respondsToSelector:@selector(
+                                 assistantContainer:didAppearAnimated:)]) {
+    [_delegate assistantContainer:_containerViewController
+                didAppearAnimated:YES];
   }
 }
 
