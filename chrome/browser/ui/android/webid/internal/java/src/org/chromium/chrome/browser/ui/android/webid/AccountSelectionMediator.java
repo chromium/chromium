@@ -680,16 +680,17 @@ class AccountSelectionMediator {
                         : LoadingDialogResult.PROCEED;
         maybeRecordLoadingDialogResult();
 
-        if (accounts.size() == 1) {
-            // An account is automatically 'selected' if that is the
-            // only option.
-            if (!mIsMultipleIdps
-                    && !mIdpDataListForShowAccounts
-                            .get(0)
-                            .getIdpMetadata()
-                            .showUseDifferentAccountButton()) {
-                mSelectedAccount = accounts.get(0);
-            }
+        // In passive mode, an account is automatically 'selected' if that is the only option.
+        // Active mode first shows the single-account chooser without disclosure text, and
+        // updateSheet() selects the account for its continue button.
+        if (mRpMode == RpMode.PASSIVE
+                && accounts.size() == 1
+                && !mIsMultipleIdps
+                && !mIdpDataListForShowAccounts
+                        .get(0)
+                        .getIdpMetadata()
+                        .showUseDifferentAccountButton()) {
+            mSelectedAccount = accounts.get(0);
         }
 
         if (!showAccountsInternal(newAccounts)) {
@@ -993,10 +994,13 @@ class AccountSelectionMediator {
         IdentityProviderData uniqueIdp =
                 distinctIdps.size() == 1 ? distinctIdps.iterator().next() : null;
 
-        boolean showUseDifferentAccountInSingleAccountChooserActiveMode =
+        boolean isSingleAccountChooserActiveMode =
                 isSingleAccountChooser
+                        && !mIsMultipleIdps
                         && mRpMode == RpMode.ACTIVE
-                        && mHeaderType == HeaderType.SIGN_IN
+                        && mHeaderType == HeaderType.SIGN_IN;
+        boolean showUseDifferentAccountInSingleAccountChooserActiveMode =
+                isSingleAccountChooserActiveMode
                         && areAccountsClickable
                         && firstAccountIdp != null
                         && firstAccountIdp.getIdpMetadata().showUseDifferentAccountButton();
@@ -1027,6 +1031,8 @@ class AccountSelectionMediator {
 
         boolean isDataSharingConsentVisible = false;
         Callback<ButtonData> continueButtonCallback = null;
+        // The account that the continue button passes to `continueButtonCallback`, if any.
+        Account continueButtonAccount = mSelectedAccount;
         if (mHeaderType == HeaderType.SIGN_IN && mSelectedAccount != null) {
             isDataSharingConsentVisible = mSelectedAccount.getFields().length > 0;
             continueButtonCallback = this::onClickAccountSelected;
@@ -1044,9 +1050,12 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onLoginToIdP;
         }
 
-        if (showUseDifferentAccountInSingleAccountChooserActiveMode) {
+        if (isSingleAccountChooserActiveMode) {
+            // The active mode single-account chooser shows no disclosure text, and its continue
+            // button selects the only account. This doesn't set `mSelectedAccount`;
+            // onAccountSelected() does once the user selects the account.
             assert !isDataSharingConsentVisible;
-            mSelectedAccount = accounts.get(0);
+            continueButtonAccount = accounts.get(0);
             continueButtonCallback = this::onClickAccountSelected;
         }
 
@@ -1081,9 +1090,9 @@ class AccountSelectionMediator {
                 ItemProperties.CONTINUE_BUTTON,
                 (continueButtonCallback != null)
                         ? createContinueBtnItem(
-                                mSelectedAccount,
-                                mSelectedAccount != null
-                                        ? mSelectedAccount
+                                continueButtonAccount,
+                                continueButtonAccount != null
+                                        ? continueButtonAccount
                                                 .getIdentityProviderData()
                                                 .getIdpMetadata()
                                         : assertNonNull(mIdpMetadataForLoginOrError),

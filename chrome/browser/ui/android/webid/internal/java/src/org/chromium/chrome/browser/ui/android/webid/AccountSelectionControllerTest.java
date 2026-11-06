@@ -529,17 +529,30 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
     @Test
     public void testShowDataSharingConsentForSingleNewAccount() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 new RelyingPartyData(
                         mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* newAccounts= */ Collections.emptyList());
-        // For new user we expect header + account + consent text + continue btn. Also drag
-        // handlebar in active mode.
-        int expectedItemCount = mRpMode == RpMode.PASSIVE ? 4 : 5;
-        assertEquals(expectedItemCount, countAllItems());
-        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+        if (mRpMode == RpMode.ACTIVE) {
+            // In active mode, the single-account chooser is shown first without disclosure text,
+            // and selecting the account transitions to the request permission dialog.
+            assertEquals(4, countAllItems());
+            assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+            assertFalse(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+            assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+
+            mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
+            assertEquals(5, countAllItems());
+            assertEquals("Incorrect item sheet count", 0, mSheetAccountItems.size());
+            assertTrue(containsItemOfType(mModel, ItemProperties.ACCOUNT_CHIP));
+        } else {
+            // In passive mode, we expect header + account + consent text + continue button.
+            assertEquals(4, countAllItems());
+            assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+        }
         assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
 
         DataSharingConsentProperties.Properties dataSharingProperties =
@@ -755,6 +768,12 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mModel.get(ItemProperties.CONTINUE_BUTTON)
                         .get(ContinueButtonProperties.PROPERTIES)
                         .mSetFocusViewCallback);
+        if (mRpMode == RpMode.ACTIVE) {
+            // Active mode only shows the disclosure text on the request permission dialog, which
+            // opens once the account is selected.
+            assertNull(mModel.get(ItemProperties.DATA_SHARING_CONSENT));
+            mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
+        }
         assertNotNull(
                 mModel.get(ItemProperties.DATA_SHARING_CONSENT)
                         .get(DataSharingConsentProperties.PROPERTIES)

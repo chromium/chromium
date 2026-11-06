@@ -310,6 +310,38 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         verify(mMockBridge).onAccountSelected(any());
     }
 
+    /**
+     * Tests that the single-account chooser for a new user doesn't show the disclosure text when
+     * the IdP doesn't support adding an account, and that clicking continue shows it on the request
+     * permission dialog. Regression test for crbug.com/579901494.
+     */
+    @Test
+    @MediumTest
+    public void testAccountChooserWithoutAddAccountForNewUser() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            new RelyingPartyData(EXAMPLE_ETLD_PLUS_ONE, "", null),
+                            Arrays.asList(mNewBob),
+                            Arrays.asList(mIdpData),
+                            /* newAccounts= */ Collections.emptyList());
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        // The single-account chooser shows the continue button without the disclosure text.
+        assertEquals(HeaderType.SIGN_IN, mAccountSelection.getMediator().getHeaderType());
+        onView(withId(R.id.account_selection_continue_btn)).check(matches(isDisplayed()));
+        onView(withId(R.id.user_data_sharing_consent)).check(matches(not(isDisplayed())));
+
+        // Clicking continue shows the request permission dialog with the disclosure text.
+        clickContinueButton();
+        assertEquals(
+                HeaderType.REQUEST_PERMISSION_MODAL,
+                mAccountSelection.getMediator().getHeaderType());
+        onView(withId(R.id.user_data_sharing_consent)).check(matches(isDisplayed()));
+    }
+
     @Test
     @MediumTest
     public void testAccountChooserWithAddAccountReturningUser() {

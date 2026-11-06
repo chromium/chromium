@@ -27,8 +27,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -138,7 +141,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
                 /* newAccounts= */ Collections.emptyList());
-        mMediator.showRequestPermissionModalSheet(mNewUserAccount);
+        // The request permission dialog is opened from the single-account chooser.
+        clickContinueButton();
 
         // For request permission dialog, we expect drag handlebar + header + account chip +
         // disclosure text + continue button.
@@ -151,6 +155,48 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertTrue(containsItemOfType(mModel, ItemProperties.ACCOUNT_CHIP));
         assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
         assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+    }
+
+    /**
+     * Tests that the single-account chooser shows the continue button without disclosure text, even
+     * when the use-a-different-account button is not shown. Regression test for
+     * crbug.com/579901494.
+     */
+    @Test
+    public void testSingleNewAccountShowsAccountChooserWithoutDisclosureText() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        assertSingleAccountChooserWithoutDisclosureText(mNewUserAccount);
+    }
+
+    /**
+     * Tests that clicking continue on the single-account chooser opens the request permission
+     * dialog, and that pressing back on it returns to the chooser, which still shows the continue
+     * button. Regression test for crbug.com/579901494.
+     */
+    @Test
+    public void testBackPressOnRequestPermissionDialogShowsAccountChooser() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        clickContinueButton();
+        assertEquals(
+                HeaderType.REQUEST_PERMISSION_MODAL, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+
+        assertTrue(mBottomSheetContent.handleBackPress());
+
+        assertSingleAccountChooserWithoutDisclosureText(mNewUserAccount);
     }
 
     @Test
@@ -333,5 +379,34 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertEquals(-1, mMockModalDialogManager.getDialogType());
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.MORE_DETAILS_BUTTON);
         assertTrue(mMediator.wasDismissed());
+    }
+
+    /**
+     * Asserts that the sheet shows the single-account chooser for {@code account}, with a clickable
+     * account row and a continue button that selects it, without disclosure text.
+     */
+    private void assertSingleAccountChooserWithoutDisclosureText(Account account) {
+        // Drag handlebar + header + account + continue button.
+        assertEquals(4, countAllItems());
+        assertEquals(1, mSheetAccountItems.size());
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertFalse(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+        assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+        assertEquals(
+                account,
+                mModel.get(ItemProperties.CONTINUE_BUTTON)
+                        .get(ContinueButtonProperties.PROPERTIES)
+                        .mAccount);
+    }
+
+    /** Clicks the continue button the same way the view does. */
+    private void clickContinueButton() {
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
+        ContinueButtonProperties.Properties continueButton =
+                mModel.get(ItemProperties.CONTINUE_BUTTON).get(ContinueButtonProperties.PROPERTIES);
+        continueButton.mOnClickListener.onResult(
+                new ButtonData(continueButton.mAccount, continueButton.mIdpMetadata));
     }
 }
