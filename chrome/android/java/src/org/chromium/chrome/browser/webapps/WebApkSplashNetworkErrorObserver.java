@@ -11,7 +11,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -61,7 +60,6 @@ public class WebApkSplashNetworkErrorObserver implements TabObserver {
                 }
                 break;
         }
-        WebApkUmaRecorder.recordNetworkErrorWhenLaunch(-navigation.errorCode());
     }
 
     private void onNetworkChanged(Tab tab) {

@@ -154,15 +154,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Launch.NetworkError" enum="NetErrorCodes"
-    expires_after="2024-06-01">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records the error codes when a WebAPK is launched with network failures.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.LaunchFromViewIntent" enum="Boolean"
     expires_after="2026-12-14">
   <owner>hartmanng@chromium.org</owner>

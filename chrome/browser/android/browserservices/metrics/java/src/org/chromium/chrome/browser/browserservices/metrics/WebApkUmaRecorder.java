@@ -189,11 +189,6 @@ public class WebApkUmaRecorder {
         }
     }
 
-    /** Records the network error code caught when a WebAPK is launched. */
-    public static void recordNetworkErrorWhenLaunch(int errorCode) {
-        RecordHistogram.recordSparseHistogram("WebApk.Launch.NetworkError", -errorCode);
-    }
-
     /** Records number of unique origins for WebAPKs in WebappRegistry */
     public static void recordWebApksCount(int count) {
         RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.NumberOfOrigins", count);
