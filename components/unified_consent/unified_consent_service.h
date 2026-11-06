@@ -150,8 +150,7 @@ class UnifiedConsentService
   raw_ptr<syncer::SyncService> sync_service_;
 
   // Used to monitor changes to the history opt-in and the explicit-passphrase
-  // state. Only populated and used if `kReplaceSyncPromosWithSignInPromos` is
-  // enabled.
+  // state.
   SyncState last_sync_state_ = SyncState::kSignedOut;
 
   // Used for tracking the service pref states during the advanced sync opt-in.

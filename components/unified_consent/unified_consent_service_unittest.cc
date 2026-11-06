@@ -10,11 +10,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
@@ -161,10 +159,7 @@ TEST_F(UnifiedConsentServiceTest, EnableUrlKeyedAnonymizedDataCollection) {
 // UnifiedConsentService does not affect the
 // UrlKeyedAnonymizedDataCollectionEnabled state.
 TEST_F(UnifiedConsentServiceTest,
-       ReplaceSync_InitializeNoChangeToUrlKeyedAnonymizedDataCollection) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
+       InitializeNoChangeToUrlKeyedAnonymizedDataCollection) {
   CreateConsentService();
   EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
@@ -191,11 +186,7 @@ TEST_F(UnifiedConsentServiceTest,
 // Tests that on ChromeOS, initializing the UnifiedConsentService does not
 // affect the UrlKeyedAnonymizedDataCollectionEnabled state if it is an
 // existing profile.
-TEST_F(UnifiedConsentServiceTest,
-       ReplaceSync_InitializeNoChangeIfExistingProfile) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
+TEST_F(UnifiedConsentServiceTest, InitializeNoChangeIfExistingProfile) {
   // User is already signed in with history sync enabled.
   SignIn(signin::ConsentLevel::kSignin);
 
@@ -210,10 +201,7 @@ TEST_F(UnifiedConsentServiceTest,
 }
 
 TEST_F(UnifiedConsentServiceTest,
-       ReplaceSync_InitializeEnablesUrlKeyedAnonymizedDataCollection) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
+       InitializeEnablesUrlKeyedAnonymizedDataCollection) {
   // User is already signed in with history sync enabled.
   SignIn(signin::ConsentLevel::kSignin);
 
@@ -227,11 +215,7 @@ TEST_F(UnifiedConsentServiceTest,
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
-TEST_F(UnifiedConsentServiceTest,
-       ReplaceSync_InitializeNoChangeIfExplicitPassphrase) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
+TEST_F(UnifiedConsentServiceTest, InitializeNoChangeIfExplicitPassphrase) {
   // User is already signed in with history sync enabled and has an explicit
   // passphrase.
   SignIn(signin::ConsentLevel::kSignin);
@@ -250,7 +234,7 @@ TEST_F(UnifiedConsentServiceTest,
 
 // Tests that `kUrlKeyedAnonymizedDataCollectionEnabled` does not change for
 // sync users when history sync opt-in state changes.
-TEST_F(UnifiedConsentServiceTest, ReplaceSync_HistorySyncIgnoredForSyncUsers) {
+TEST_F(UnifiedConsentServiceTest, HistorySyncIgnoredForSyncUsers) {
   SignIn(signin::ConsentLevel::kSync);
   CreateConsentService();
   consent_service()->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
@@ -258,8 +242,6 @@ TEST_F(UnifiedConsentServiceTest, ReplaceSync_HistorySyncIgnoredForSyncUsers) {
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   ResetConsentService();
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
   CreateConsentService();
   ASSERT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
@@ -272,8 +254,7 @@ TEST_F(UnifiedConsentServiceTest, ReplaceSync_HistorySyncIgnoredForSyncUsers) {
 #if !BUILDFLAG(IS_CHROMEOS)
 // Tests that kUrlKeyedAnonymizedDataCollectionEnabled is enabled after
 // syncing user signs out, then in again and enabled history sync opt-in.
-TEST_F(UnifiedConsentServiceTest,
-       ReplaceSync_SyncUserMovesToSigninWithHistorySyncEnabled) {
+TEST_F(UnifiedConsentServiceTest, SyncUserMovesToSigninWithHistorySyncEnabled) {
   SignIn(signin::ConsentLevel::kSync);
   CreateConsentService();
   consent_service()->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
@@ -283,8 +264,6 @@ TEST_F(UnifiedConsentServiceTest,
 
   // Clearing the primary account and resetting history sync should disable
   // `kUrlKeyedAnonymizedDataCollectionEnabled`.
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
   CreateConsentService();
   ASSERT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
@@ -313,10 +292,7 @@ TEST_F(UnifiedConsentServiceTest,
 // Tests that any change to history sync opt-in, is reflected in the state
 // of `kUrlKeyedAnonymizedDataCollectionEnabled`.
 TEST_F(UnifiedConsentServiceTest,
-       ReplaceSync_HistorySyncEnablesUrlKeyedAnonymizedDataCollection) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
+       HistorySyncEnablesUrlKeyedAnonymizedDataCollection) {
   SignIn(signin::ConsentLevel::kSignin);
   SetHistorySyncEnabled(false);
 
@@ -337,11 +313,8 @@ TEST_F(UnifiedConsentServiceTest,
 
 // This low-level unit test explicitly checks all state transitions. Most
 // practical cases are (also) covered by browser tests, see
-// UnifiedConsentSyncToSigninBrowserTest.
-TEST_F(UnifiedConsentServiceTest, ReplaceSync_StateTransitions) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
+// UnifiedConsentSigninBrowserTest.
+TEST_F(UnifiedConsentServiceTest, StateTransitions) {
   enum Outcome {
     kNoChange,
     kEnable,

@@ -12,7 +12,6 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
@@ -24,18 +23,16 @@
 namespace unified_consent {
 namespace {
 
-class UnifiedConsentSyncToSigninBrowserTest : public SyncTest {
+class UnifiedConsentSigninBrowserTest : public SyncTest {
  public:
-  UnifiedConsentSyncToSigninBrowserTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-  }
+  UnifiedConsentSigninBrowserTest() : SyncTest(SINGLE_CLIENT) {}
 
-  UnifiedConsentSyncToSigninBrowserTest(
-      const UnifiedConsentSyncToSigninBrowserTest&) = delete;
-  UnifiedConsentSyncToSigninBrowserTest& operator=(
-      const UnifiedConsentSyncToSigninBrowserTest&) = delete;
+  UnifiedConsentSigninBrowserTest(const UnifiedConsentSigninBrowserTest&) =
+      delete;
+  UnifiedConsentSigninBrowserTest& operator=(
+      const UnifiedConsentSigninBrowserTest&) = delete;
 
-  ~UnifiedConsentSyncToSigninBrowserTest() override = default;
+  ~UnifiedConsentSigninBrowserTest() override = default;
 
   syncer::SyncServiceImpl* GetSyncService() {
     return SyncTest::GetSyncService(0);
@@ -75,12 +72,9 @@ class UnifiedConsentSyncToSigninBrowserTest : public SyncTest {
   bool WaitForNigoriOnServer(syncer::PassphraseType expected_passphrase_type) {
     return ServerPassphraseTypeChecker(expected_passphrase_type).Wait();
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
+IN_PROC_BROWSER_TEST_F(UnifiedConsentSigninBrowserTest,
                        EnablesAnonymizedDataCollectionOnSignInWithHistory) {
   ASSERT_TRUE(SetupClients());
 
@@ -104,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
   EXPECT_TRUE(IsAnonymizedDataCollectionEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
+IN_PROC_BROWSER_TEST_F(UnifiedConsentSigninBrowserTest,
                        EnablesAnonymizedDataCollectionOnHistoryOptIn) {
   ASSERT_TRUE(SetupClients());
 
@@ -119,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
   // AnonymizedDataCollection did NOT get enabled yet, because there is no
   // history opt-in.
   ASSERT_FALSE(GetSyncService()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer ::UserSelectableType::kHistory));
+      syncer::UserSelectableType::kHistory));
   ASSERT_FALSE(IsAnonymizedDataCollectionEnabled());
 
   // Opt in to history.
@@ -130,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
   EXPECT_TRUE(IsAnonymizedDataCollectionEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
+IN_PROC_BROWSER_TEST_F(UnifiedConsentSigninBrowserTest,
                        DisablesAnonymizedDataCollectionOnSignOut) {
   ASSERT_TRUE(SetupClients());
 
@@ -152,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     DoesNotEnableAnonymizedDataCollectionOnSignInWithHistoryAndCustomPassphrase) {
   const syncer::KeyParamsForTesting kKeyParams =
       syncer::Pbkdf2PassphraseKeyParamsForTesting("hunter2");
@@ -189,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     DoesNotEnableAnonymizedDataCollectionOnHistoryOptInWithCustomPassphrase) {
   const syncer::KeyParamsForTesting kKeyParams =
       syncer::Pbkdf2PassphraseKeyParamsForTesting("hunter2");
@@ -209,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(
   // AnonymizedDataCollection did NOT get enabled yet, because there is no
   // history opt-in.
   ASSERT_FALSE(GetSyncService()->GetUserSettings()->GetSelectedTypes().Has(
-      syncer ::UserSelectableType::kHistory));
+      syncer::UserSelectableType::kHistory));
   ASSERT_FALSE(IsAnonymizedDataCollectionEnabled());
 
   // Opt in to history.
@@ -222,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     DisablesAnonymizedDataCollectionWhenCustomPassphraseSetOnThisDevice) {
   ASSERT_TRUE(SetupClients());
 
@@ -243,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     DisablesAnonymizedDataCollectionWhenCustomPassphraseSetOnOtherDevice) {
   ASSERT_TRUE(SetupClients());
 
@@ -266,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     PRE_DisablesAnonymizedDataCollectionWhenCustomPassphraseSetOnOtherDeviceWhileNotRunning) {
   ASSERT_TRUE(SetupClients());
 
@@ -278,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     DisablesAnonymizedDataCollectionWhenCustomPassphraseSetOnOtherDeviceWhileNotRunning) {
   // The user sets up a custom passphrase on a different device, while this
   // instance of the browser isn't running.
@@ -295,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IsAnonymizedDataCollectionEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
+IN_PROC_BROWSER_TEST_F(UnifiedConsentSigninBrowserTest,
                        PRE_PreservesUsersOptOutAfterRestart) {
   ASSERT_TRUE(SetupClients());
 
@@ -313,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
   GetUnifiedConsentService()->SetUrlKeyedAnonymizedDataCollectionEnabled(false);
 }
 
-IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
+IN_PROC_BROWSER_TEST_F(UnifiedConsentSigninBrowserTest,
                        PreservesUsersOptOutAfterRestart) {
   ASSERT_TRUE(SetupClients());
 
@@ -327,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     PRE_PreservesUsersOptInAfterRestartWithCustomPassphrase) {
   const syncer::KeyParamsForTesting kKeyParams =
       syncer::Pbkdf2PassphraseKeyParamsForTesting("hunter2");
@@ -358,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(
   GetUnifiedConsentService()->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 }
 
-IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
+IN_PROC_BROWSER_TEST_F(UnifiedConsentSigninBrowserTest,
                        PreservesUsersOptInAfterRestartWithCustomPassphrase) {
   ASSERT_TRUE(SetupClients());
 
@@ -372,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
   EXPECT_TRUE(IsAnonymizedDataCollectionEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
+IN_PROC_BROWSER_TEST_F(UnifiedConsentSigninBrowserTest,
                        EnablesAnonymizedDataCollectionOnSignInWhileOffline) {
   ASSERT_TRUE(SetupClients());
 
@@ -402,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentSyncToSigninBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     PRE_DisablesAnonymizedDataCollectionAfterSignInWhileOfflineWithCustomPassphrase) {
   const syncer::KeyParamsForTesting kKeyParams =
       syncer::Pbkdf2PassphraseKeyParamsForTesting("hunter2");
@@ -438,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    UnifiedConsentSyncToSigninBrowserTest,
+    UnifiedConsentSigninBrowserTest,
     DisablesAnonymizedDataCollectionAfterSignInWhileOfflineWithCustomPassphrase) {
   ASSERT_TRUE(SetupClients());
 

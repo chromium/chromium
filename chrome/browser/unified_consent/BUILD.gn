@@ -39,7 +39,7 @@ source_set("browser_tests") {
   if (enable_dice_support) {
     sources += [
       "unified_consent_browsertest.cc",
-      "unified_consent_sync_to_signin_browsertest.cc",
+      "unified_consent_signin_browsertest.cc",
     ]
 
     deps += [

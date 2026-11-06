@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -19,8 +18,6 @@ namespace unified_consent {
 // static
 UnifiedConsentService::SyncState UnifiedConsentService::GetSyncState(
     const syncer::SyncService* sync_service) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-
   if (sync_service->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
     return SyncState::kSignedOut;
@@ -49,8 +46,6 @@ UnifiedConsentService::SyncState UnifiedConsentService::GetSyncState(
 bool UnifiedConsentService::ShouldEnableUrlKeyedAnonymizedDataCollection(
     SyncState old_sync_state,
     SyncState new_sync_state) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-
   // If nothing changed, leave UrlKeyedAnonymizedDataCollection alone.
   if (old_sync_state == new_sync_state) {
     return false;
@@ -100,8 +95,6 @@ bool UnifiedConsentService::ShouldEnableUrlKeyedAnonymizedDataCollection(
 bool UnifiedConsentService::ShouldDisableUrlKeyedAnonymizedDataCollection(
     SyncState old_sync_state,
     SyncState new_sync_state) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-
   // If nothing changed, leave UrlKeyedAnonymizedDataCollection alone.
   if (old_sync_state == new_sync_state) {
     return false;
@@ -171,19 +164,17 @@ UnifiedConsentService::UnifiedConsentService(
     MigrateProfileToUnifiedConsent();
 #endif
 
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    last_sync_state_ = GetSyncState(sync_service_);
+  last_sync_state_ = GetSyncState(sync_service_);
 #if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS, the user is signed in before this service is constructed.
-    // If this is a new profile, set the initial value of MSBB by simulating a
-    // transition from signed-out to the current sync state.
-    if (!sync_service_->HasSyncConsent() && is_new_profile) {
-      SetUrlKeyedAnonymizedDataCollectionEnabled(
-          ShouldEnableUrlKeyedAnonymizedDataCollection(SyncState::kSignedOut,
-                                                       last_sync_state_));
-    }
-#endif
+  // On ChromeOS, the user is signed in before this service is constructed.
+  // If this is a new profile, set the initial value of MSBB by simulating a
+  // transition from signed-out to the current sync state.
+  if (!sync_service_->HasSyncConsent() && is_new_profile) {
+    SetUrlKeyedAnonymizedDataCollectionEnabled(
+        ShouldEnableUrlKeyedAnonymizedDataCollection(SyncState::kSignedOut,
+                                                     last_sync_state_));
   }
+#endif
 
   pref_service_->AddObserver(this);
   identity_manager_->AddObserver(this);
@@ -237,24 +228,22 @@ void UnifiedConsentService::OnPrimaryAccountChanged(
 void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
   // Update the UrlKeyedAnonymizedDataCollectionEnabled if user changed the
   // history opt-in state or the explicit-passphrase state.
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    const SyncState new_sync_state = GetSyncState(sync_service_);
+  const SyncState new_sync_state = GetSyncState(sync_service_);
 
-    // Before updating the cached state, remember the old value, to detect
-    // if anything changed.
-    const SyncState old_sync_state = last_sync_state_;
-    last_sync_state_ = new_sync_state;
+  // Before updating the cached state, remember the old value, to detect
+  // if anything changed.
+  const SyncState old_sync_state = last_sync_state_;
+  last_sync_state_ = new_sync_state;
 
-    // Ignore syncing users - UrlKeyedAnonymizedDataCollectionEnabled is
-    // updated based on their sync opt-in state.
-    if (!sync_service_->HasSyncConsent()) {
-      if (ShouldDisableUrlKeyedAnonymizedDataCollection(old_sync_state,
-                                                        new_sync_state)) {
-        SetUrlKeyedAnonymizedDataCollectionEnabled(false);
-      } else if (ShouldEnableUrlKeyedAnonymizedDataCollection(old_sync_state,
-                                                              new_sync_state)) {
-        SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-      }
+  // Ignore syncing users - UrlKeyedAnonymizedDataCollectionEnabled is
+  // updated based on their sync opt-in state.
+  if (!sync_service_->HasSyncConsent()) {
+    if (ShouldDisableUrlKeyedAnonymizedDataCollection(old_sync_state,
+                                                      new_sync_state)) {
+      SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+    } else if (ShouldEnableUrlKeyedAnonymizedDataCollection(old_sync_state,
+                                                            new_sync_state)) {
+      SetUrlKeyedAnonymizedDataCollectionEnabled(true);
     }
   }
 
