@@ -16,8 +16,6 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.TestContentProvider;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -30,7 +28,6 @@ import java.io.FileWriter;
 
 /** Integration test suite for the BlobUrlStore. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class BlobUrlStoreTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

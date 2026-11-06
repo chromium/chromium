@@ -19,9 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
@@ -44,7 +42,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Instrumentation tests for {@link MostVisitedSitesMetadataUtils}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MostVisitedSitesMetadataUtilsTest {
     @Rule
     public FreshCtaTransitTestRule mTestSetupRule =

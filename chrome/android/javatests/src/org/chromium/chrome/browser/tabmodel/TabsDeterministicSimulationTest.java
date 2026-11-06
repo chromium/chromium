@@ -45,10 +45,7 @@ import java.util.Random;
  * "committed" mid-test. This also does not test multi-window.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_STARTUP_PROMOS
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
 @Batch(Batch.PER_CLASS)
 public class TabsDeterministicSimulationTest {
     private static final String TAG = "TDST";

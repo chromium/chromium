@@ -50,10 +50,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for the {@link TabImpl} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_STARTUP_PROMOS
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
 @Batch(Batch.PER_CLASS)
 public class TabImplTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";

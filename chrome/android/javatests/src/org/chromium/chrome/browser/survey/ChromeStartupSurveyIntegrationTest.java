@@ -38,10 +38,7 @@ import java.util.List;
 
 /** Integration test for {@link ChromeSurveyController} using {@link SurveyClient}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY,
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
-})
+@CommandLineFlags.Add(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)
 @Features.EnableFeatures(
         ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID
                 + ":autodismiss_duration_ms/500"

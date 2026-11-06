@@ -64,7 +64,6 @@ import java.util.concurrent.TimeoutException;
  * or multiple activities. For additional tests see {@link UndoTabModelUnitTest}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class UndoTabModelTest {
     @Rule

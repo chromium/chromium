@@ -61,10 +61,7 @@ import java.util.List;
 
 /** Tests for moving tabs between windows. These APIs are only available on desktop android. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_STARTUP_PROMOS
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
 @DoNotBatch(reason = "Multi-instance tests do not work with batching.")
 @MinAndroidSdkLevel(Build.VERSION_CODES.S)
 @Restriction(DeviceFormFactor.DESKTOP)

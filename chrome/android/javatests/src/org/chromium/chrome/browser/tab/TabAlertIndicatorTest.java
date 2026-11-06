@@ -38,7 +38,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCapturePickerDelegate;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager;
 import org.chromium.chrome.browser.media.PictureInPicture;
@@ -70,11 +69,10 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link TabAlert} and {@link MediaState}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
     ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM,
     "enable-experimental-web-platform-features",
-    "enable-features=UserMediaScreenCapturing,AndroidMediaPicker",
+    "enable-features=UserMediaScreenCapturing,AndroidMediaPicker"
 })
 @Batch(Batch.PER_CLASS)
 public class TabAlertIndicatorTest {
