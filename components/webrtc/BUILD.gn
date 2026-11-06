@@ -19,6 +19,20 @@ component("features") {
 }
 
 if (use_blink) {
+  component("media_capture_dispatcher") {
+    output_name = "components_webrtc_media_capture_dispatcher"
+    sources = [
+      "media_capture_dispatcher.cc",
+      "media_capture_dispatcher.h",
+    ]
+    defines = [ "IS_COMPONENTS_WEBRTC_MEDIA_CAPTURE_DISPATCHER_IMPL" ]
+    public_deps = [
+      "//base",
+      "//content/public/browser",
+      "//third_party/blink/public/common",
+    ]
+  }
+
   source_set("media_stream_device_enumerator") {
     sources = [
       "media_stream_device_enumerator.h",

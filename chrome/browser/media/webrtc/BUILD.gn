@@ -119,6 +119,7 @@ source_set("webrtc") {
     "//components/permissions",
     "//components/prefs",
     "//components/upload_list",
+    "//components/webrtc:media_capture_dispatcher",
     "//components/webrtc:media_stream_device_enumerator",
     "//components/webrtc_logging/browser",
     "//components/webrtc_logging/common",

@@ -122,18 +122,6 @@ void MediaCaptureDevicesDispatcher::RegisterProfilePrefs(
                                std::string());
 }
 
-void MediaCaptureDevicesDispatcher::AddObserver(Observer* observer) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  if (!observers_.HasObserver(observer)) {
-    observers_.AddObserver(observer);
-  }
-}
-
-void MediaCaptureDevicesDispatcher::RemoveObserver(Observer* observer) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  observers_.RemoveObserver(observer);
-}
-
 void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
@@ -170,6 +158,14 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
   std::move(callback).Run(blink::mojom::StreamDevicesSet(),
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
                           nullptr);
+}
+
+void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  ProcessMediaAccessRequest(web_contents, request, std::move(callback),
+                            /*extension=*/nullptr);
 }
 
 #if defined(TOOLKIT_VIEWS)
@@ -323,14 +319,16 @@ void MediaCaptureDevicesDispatcher::OnCreatingAudioStream(int render_process_id,
 
 void MediaCaptureDevicesDispatcher::NotifyAudioDevicesChangedOnUIThread() {
   MediaStreamDevices devices = GetAudioCaptureDevices();
-  for (auto& observer : observers_)
+  for (auto& observer : observers()) {
     observer.OnUpdateAudioDevices(devices);
+  }
 }
 
 void MediaCaptureDevicesDispatcher::NotifyVideoDevicesChangedOnUIThread() {
   MediaStreamDevices devices = GetVideoCaptureDevices();
-  for (auto& observer : observers_)
+  for (auto& observer : observers()) {
     observer.OnUpdateVideoDevices(devices);
+  }
 }
 
 void MediaCaptureDevicesDispatcher::UpdateMediaRequestStateOnUIThread(
@@ -350,7 +348,7 @@ void MediaCaptureDevicesDispatcher::UpdateMediaRequestStateOnUIThread(
     }
   }
 
-  for (auto& observer : observers_) {
+  for (auto& observer : observers()) {
     observer.OnRequestUpdate(render_process_id, render_frame_id, stream_type,
                              state);
   }
@@ -360,8 +358,9 @@ void MediaCaptureDevicesDispatcher::OnCreatingAudioStreamOnUIThread(
     int render_process_id,
     int render_frame_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  for (auto& observer : observers_)
+  for (auto& observer : observers()) {
     observer.OnCreatingAudioStream(render_process_id, render_frame_id);
+  }
 }
 
 bool MediaCaptureDevicesDispatcher::IsInsecureCapturingInProgress(

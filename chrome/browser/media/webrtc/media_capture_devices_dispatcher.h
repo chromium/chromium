@@ -11,8 +11,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/singleton.h"
-#include "base/observer_list.h"
 #include "chrome/browser/media/webrtc/select_audio_output_picker.h"
+#include "components/webrtc/media_capture_dispatcher.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
 #include "content/public/browser/media_observer.h"
 #include "content/public/browser/media_stream_request.h"
@@ -40,33 +40,9 @@ class PrefRegistrySyncable;
 // layer.
 class MediaCaptureDevicesDispatcher
     : public content::MediaObserver,
+      public webrtc::MediaCaptureDispatcher,
       public webrtc::MediaStreamDeviceEnumeratorImpl {
  public:
-  class Observer {
-   public:
-    // Handle an information update consisting of a up-to-date audio capture
-    // device lists. This happens when a microphone is plugged in or unplugged.
-    virtual void OnUpdateAudioDevices(
-        const blink::MediaStreamDevices& devices) {}
-
-    // Handle an information update consisting of a up-to-date video capture
-    // device lists. This happens when a camera is plugged in or unplugged.
-    virtual void OnUpdateVideoDevices(
-        const blink::MediaStreamDevices& devices) {}
-
-    // Handle an information update related to a media stream request.
-    virtual void OnRequestUpdate(int render_process_id,
-                                 int render_frame_id,
-                                 blink::mojom::MediaStreamType stream_type,
-                                 const content::MediaRequestState state) {}
-
-    // Handle an information update that a new stream is being created.
-    virtual void OnCreatingAudioStream(int render_process_id,
-                                       int render_frame_id) {}
-
-    virtual ~Observer() = default;
-  };
-
   static MediaCaptureDevicesDispatcher* GetInstance();
 
   MediaCaptureDevicesDispatcher(const MediaCaptureDevicesDispatcher&) = delete;
@@ -79,12 +55,6 @@ class MediaCaptureDevicesDispatcher
   // Returns true if the security origin is associated with casting.
   static bool IsOriginForCasting(const GURL& origin);
 
-  // Methods for observers. Called on UI thread.
-  // Observers should add themselves on construction and remove themselves
-  // on destruction.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   // Method called from WebCapturerDelegate implementations to process access
   // requests. |extension| is set to NULL if request was made from a drive-by
   // page.
@@ -92,6 +62,13 @@ class MediaCaptureDevicesDispatcher
                                  const content::MediaStreamRequest& request,
                                  content::MediaResponseCallback callback,
                                  const extensions::Extension* extension);
+
+  // webrtc::MediaCaptureDispatcher:
+  // Same as above with a null `extension`.
+  void ProcessMediaAccessRequest(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
 
 #if defined(TOOLKIT_VIEWS)
   void ProcessSelectAudioOutputRequest(
@@ -104,7 +81,7 @@ class MediaCaptureDevicesDispatcher
   // access permission. Note that this does not query the user.
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
-                                  blink::mojom::MediaStreamType type);
+                                  blink::mojom::MediaStreamType type) override;
 
   // Same as above but for an |extension|, which may not be NULL.
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
@@ -192,9 +169,6 @@ class MediaCaptureDevicesDispatcher
 
   // Only for testing, a list of cached video capture devices.
   blink::MediaStreamDevices test_video_devices_;
-
-  // A list of observers for the device update notifications.
-  base::ObserverList<Observer>::Unchecked observers_;
 
   // Flag used by unittests to disable device enumeration.
   bool is_device_enumeration_disabled_;
