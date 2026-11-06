@@ -1271,6 +1271,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Resets when the worker stops.
   uint64_t latest_external_keepalive_sequence_number_ = 0;
 
+  // True while the renderer has an active external keepalive from
+  // StartExternalRequest() that has not yet been cleared by ClearKeepAlive().
+  bool has_external_keepalive_ = false;
+
   // External request infos that were issued before this worker reached RUNNING.
   // Info contains UUID and timeout type.
   std::map<base::Uuid, ServiceWorkerExternalRequestTimeoutType>
