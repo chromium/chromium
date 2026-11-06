@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/observer_list.h"
+#include "services/network/public/cpp/features.h"
 
 namespace network {
 
@@ -25,11 +27,21 @@ ProxyConfigServiceMojo::ProxyConfigServiceMojo(
     // Only use the |proxy_poller_client| if there's a
     // |proxy_config_client_receiver|.
     if (!proxy_poller_client) {
-      // NullRemote() could be passed in unit tests. In that case, it can't be
-      // bound.
+      // NullRemote() is passed in unit tests and on platforms where the
+      // browser's ProxyConfigService does not use polling (e.g. macOS, Linux,
+      // ChromeOS, Android). Return before querying kRateLimitProxyConfigPolls
+      // so non-polling platforms never activate the field trial or dilute A/B
+      // experiment metrics.
       return;
     }
     proxy_poller_client_.Bind(std::move(proxy_poller_client));
+
+    // Cache the feature state and minimum interval once at construction time
+    // (one instance per NetworkContext) so the OnLazyPoll() hot path performs
+    // zero base::FeatureList or parameter map lookups during proxy resolution.
+    if (base::FeatureList::IsEnabled(features::kRateLimitProxyConfigPolls)) {
+      min_poll_interval_ = features::kRateLimitProxyConfigPollsInterval.Get();
+    }
   }
 }
 
@@ -73,10 +85,33 @@ ProxyConfigServiceMojo::GetLatestProxyConfig(
 }
 
 void ProxyConfigServiceMojo::OnLazyPoll() {
-  // TODO(mmenke): These should either be rate limited, or the other process
-  // should use another signal of activity.
-  if (proxy_poller_client_)
-    proxy_poller_client_->OnLazyProxyConfigPoll();
+  if (!proxy_poller_client_) {
+    return;
+  }
+
+  // `ConfiguredProxyResolutionService::ResolveProxy()` invokes `OnLazyPoll()`
+  // synchronously on every URL and socket proxy resolution. When rate-limiting
+  // is enabled (`min_poll_interval_.is_positive()`), compare against the
+  // precomputed `next_poll_time_` deadline (a plain 64-bit integer comparison,
+  // avoiding clamped `TimeDelta` subtraction on the fast return path) to
+  // suppress redundant cross-process IPCs and Browser UI thread wakeups during
+  // request bursts. When disabled, `min_poll_interval_` is zero and Control
+  // avoids calling `base::TimeTicks::Now()`.
+  if (min_poll_interval_.is_positive()) {
+    const base::TimeTicks now = base::TimeTicks::Now();
+    if (now < next_poll_time_) [[likely]] {
+      return;
+    }
+    next_poll_time_ = now + min_poll_interval_;
+  }
+
+  proxy_poller_client_->OnLazyProxyConfigPoll();
+}
+
+void ProxyConfigServiceMojo::FlushPollerForTesting() {
+  if (proxy_poller_client_) {
+    proxy_poller_client_.FlushForTesting();  // IN-TEST
+  }
 }
 
 }  // namespace network

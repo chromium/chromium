@@ -5,13 +5,22 @@
 #include "services/network/proxy_config_service_mojo.h"
 
 #include <array>
+#include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
+#include "services/network/public/mojom/proxy_config_with_annotation.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -22,15 +31,27 @@ namespace {
 class TestProxyConfigServiceObserver
     : public net::ProxyConfigService::Observer {
  public:
-  explicit TestProxyConfigServiceObserver(net::ProxyConfigService* service)
-      : service_(service) {}
+  TestProxyConfigServiceObserver() = default;
 
   TestProxyConfigServiceObserver(const TestProxyConfigServiceObserver&) =
       delete;
   TestProxyConfigServiceObserver& operator=(
       const TestProxyConfigServiceObserver&) = delete;
 
-  ~TestProxyConfigServiceObserver() override {}
+  ~TestProxyConfigServiceObserver() override { Observe(nullptr); }
+
+  // Switches observation to `service` (or detaches when `service` is null) so
+  // `service_` never dangles when `ProxyConfigServiceMojoTest` recreates its
+  // `ProxyConfigServiceMojo` instance.
+  void Observe(net::ProxyConfigService* service) {
+    if (service_) {
+      service_->RemoveObserver(this);
+    }
+    service_ = service;
+    if (service_) {
+      service_->AddObserver(this);
+    }
+  }
 
   void OnProxyConfigChanged(
       const net::ProxyConfigWithAnnotation& config,
@@ -64,40 +85,81 @@ class TestProxyConfigServiceObserver
  private:
   net::ProxyConfigWithAnnotation observed_config_;
 
-  const raw_ptr<net::ProxyConfigService> service_;
+  raw_ptr<net::ProxyConfigService> service_ = nullptr;
   int config_changes_ = 0;
 };
 
+// Test implementation of `mojom::ProxyConfigPollerClient` that counts incoming
+// `OnLazyProxyConfigPoll()` IPCs sent by `ProxyConfigServiceMojo`.
+class TestProxyConfigPollerClient : public mojom::ProxyConfigPollerClient {
+ public:
+  TestProxyConfigPollerClient() = default;
+  TestProxyConfigPollerClient(const TestProxyConfigPollerClient&) = delete;
+  TestProxyConfigPollerClient& operator=(const TestProxyConfigPollerClient&) =
+      delete;
+  ~TestProxyConfigPollerClient() override = default;
+
+  mojo::PendingRemote<mojom::ProxyConfigPollerClient>
+  BindNewPipeAndPassRemote() {
+    receiver_.reset();
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void OnLazyProxyConfigPoll() override { ++poll_count_; }
+
+  int GetAndResetPollCount() {
+    int count = poll_count_;
+    poll_count_ = 0;
+    return count;
+  }
+
+ private:
+  int poll_count_ = 0;
+  mojo::Receiver<mojom::ProxyConfigPollerClient> receiver_{this};
+};
+
 // Test fixture for notifying ProxyConfigServiceMojo of changes through the
-// client interface, and watching the subsequent values it emits to registered
-// net::ProxyConfigService::Observers.
+// client interface, watching the subsequent values it emits to registered
+// net::ProxyConfigService::Observers, and verifying lazy poll rate-limiting.
 class ProxyConfigServiceMojoTest : public testing::Test {
  public:
-  ProxyConfigServiceMojoTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        proxy_config_service_(config_client_.BindNewPipeAndPassReceiver(),
-                              std::optional<net::ProxyConfigWithAnnotation>(),
-                              mojo::NullRemote()),
-        observer_(&proxy_config_service_) {
-    proxy_config_service_.AddObserver(&observer_);
-  }
+  ProxyConfigServiceMojoTest() { CreateProxyConfigService(); }
 
   ProxyConfigServiceMojoTest(const ProxyConfigServiceMojoTest&) = delete;
   ProxyConfigServiceMojoTest& operator=(const ProxyConfigServiceMojoTest&) =
       delete;
 
-  ~ProxyConfigServiceMojoTest() override {
-    proxy_config_service_.RemoveObserver(&observer_);
-  }
+  ~ProxyConfigServiceMojoTest() override = default;
 
  protected:
+  // Creates (or recreates) `proxy_config_service_` and rebinds
+  // `config_client_`, `poller_client_` (when `bind_poller_client` is true), and
+  // `observer_`. Tests that override `base::FeatureList` via
+  // `ScopedFeatureList` call this after initializing feature overrides so
+  // `ProxyConfigServiceMojo`'s constructor caches the overridden feature state.
+  void CreateProxyConfigService(bool bind_poller_client = true) {
+    observer_.Observe(nullptr);
+    proxy_config_service_.reset();
+    config_client_.reset();
+
+    proxy_config_service_ = std::make_unique<ProxyConfigServiceMojo>(
+        config_client_.BindNewPipeAndPassReceiver(),
+        /*initial_proxy_config=*/std::nullopt,
+        bind_poller_client ? poller_client_.BindNewPipeAndPassRemote()
+                           : mojo::NullRemote());
+    observer_.Observe(proxy_config_service_.get());
+  }
+
   // After notifying a new configuration through |config_client_|, waits for the
   // observers to have been notified.
-  void WaitForConfig() { task_environment_.RunUntilIdle(); }
+  void WaitForConfig() { config_client_.FlushForTesting(); }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   mojo::Remote<mojom::ProxyConfigClient> config_client_;
-  ProxyConfigServiceMojo proxy_config_service_;
+  TestProxyConfigPollerClient poller_client_;
+  std::unique_ptr<ProxyConfigServiceMojo> proxy_config_service_;
   TestProxyConfigServiceObserver observer_;
 };
 
@@ -110,7 +172,7 @@ TEST_F(ProxyConfigServiceMojoTest, ObserveProxyChanges) {
   net::ProxyConfigWithAnnotation temp;
   // The service should start without a config.
   EXPECT_EQ(net::ProxyConfigService::CONFIG_PENDING,
-            proxy_config_service_.GetLatestProxyConfig(&temp));
+            proxy_config_service_->GetLatestProxyConfig(&temp));
 
   std::array<net::ProxyConfig, 3> proxy_configs;
   proxy_configs[0].proxy_rules().ParseFromString("http=foopy:80");
@@ -126,7 +188,7 @@ TEST_F(ProxyConfigServiceMojoTest, ObserveProxyChanges) {
     EXPECT_TRUE(proxy_config.Equals(observer_.observed_config().value()));
     net::ProxyConfigWithAnnotation retrieved_config;
     EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
-              proxy_config_service_.GetLatestProxyConfig(&retrieved_config));
+              proxy_config_service_->GetLatestProxyConfig(&retrieved_config));
     EXPECT_TRUE(proxy_config.Equals(retrieved_config.value()));
 
     // Set the proxy configuration to the same value again. There should be not
@@ -137,7 +199,7 @@ TEST_F(ProxyConfigServiceMojoTest, ObserveProxyChanges) {
     EXPECT_EQ(0, observer_.GetAndResetConfigChanges());
     EXPECT_TRUE(proxy_config.Equals(observer_.observed_config().value()));
     EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
-              proxy_config_service_.GetLatestProxyConfig(&retrieved_config));
+              proxy_config_service_->GetLatestProxyConfig(&retrieved_config));
     EXPECT_TRUE(proxy_config.Equals(retrieved_config.value()));
   }
 }
@@ -175,6 +237,121 @@ TEST_F(ProxyConfigServiceMojoTest, LargePacUrlNotTruncated) {
   // The URL should be unchanged, and not changed by the Mojo serialization.
   EXPECT_EQ(large_url, observed_url);
   EXPECT_EQ(url::kMaxURLChars + 1, observed_url.possibly_invalid_spec().size());
+}
+
+// Verifies that when `kRateLimitProxyConfigPolls` is disabled (Control arm),
+// every `OnLazyPoll()` call forwards an `OnLazyProxyConfigPoll()` Mojo message
+// without throttling.
+TEST_F(ProxyConfigServiceMojoTest, OnLazyPollUnthrottledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kRateLimitProxyConfigPolls);
+  CreateProxyConfigService();
+
+  for (int i = 0; i < 5; ++i) {
+    proxy_config_service_->OnLazyPoll();
+  }
+  proxy_config_service_->FlushPollerForTesting();
+  EXPECT_EQ(5, poller_client_.GetAndResetPollCount());
+}
+
+// Verifies that when `kRateLimitProxyConfigPolls` is enabled with its default
+// 1-second interval, the first `OnLazyPoll()` forwards immediately, burst calls
+// within the cooldown window are suppressed, and polling resumes once the
+// minimum interval elapses.
+TEST_F(ProxyConfigServiceMojoTest, OnLazyPollRateLimitedWhenFeatureEnabled) {
+  // Matches the default of `features::kRateLimitProxyConfigPollsInterval` so
+  // this can switch to the production constant once the feature is permanently
+  // enabled with a fixed interval.
+  constexpr base::TimeDelta kDefaultInterval = base::Seconds(1);
+  constexpr base::TimeDelta kDelta = base::Milliseconds(1);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kRateLimitProxyConfigPolls);
+  CreateProxyConfigService();
+
+  // The initial poll at t=0 must forward immediately, while subsequent burst
+  // calls at the same timestamp are suppressed.
+  for (int i = 0; i < 50; ++i) {
+    proxy_config_service_->OnLazyPoll();
+  }
+  proxy_config_service_->FlushPollerForTesting();
+  EXPECT_EQ(1, poller_client_.GetAndResetPollCount());
+
+  // Advancing just short of `kDefaultInterval` keeps suppression active.
+  task_environment_.FastForwardBy(kDefaultInterval - kDelta);
+  for (int i = 0; i < 50; ++i) {
+    proxy_config_service_->OnLazyPoll();
+  }
+  proxy_config_service_->FlushPollerForTesting();
+  EXPECT_EQ(0, poller_client_.GetAndResetPollCount());
+
+  // Reaching `kDefaultInterval` allows the next lazy poll through and starts a
+  // fresh cooldown window.
+  task_environment_.FastForwardBy(kDelta);
+  for (int i = 0; i < 10; ++i) {
+    proxy_config_service_->OnLazyPoll();
+  }
+  proxy_config_service_->FlushPollerForTesting();
+  EXPECT_EQ(1, poller_client_.GetAndResetPollCount());
+}
+
+// Verifies that a custom `RateLimitProxyConfigPollsInterval` feature parameter
+// overrides the default cooldown window.
+TEST_F(ProxyConfigServiceMojoTest, OnLazyPollCustomIntervalParam) {
+  constexpr base::TimeDelta kCustomInterval = base::Seconds(5);
+  constexpr base::TimeDelta kDelta = base::Milliseconds(1);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kRateLimitProxyConfigPolls,
+      {{features::kRateLimitProxyConfigPollsInterval.name, "5s"}});
+  CreateProxyConfigService();
+
+  proxy_config_service_->OnLazyPoll();
+  proxy_config_service_->FlushPollerForTesting();
+  EXPECT_EQ(1, poller_client_.GetAndResetPollCount());
+
+  // Advancing just short of `kCustomInterval` keeps suppression active.
+  task_environment_.FastForwardBy(kCustomInterval - kDelta);
+  proxy_config_service_->OnLazyPoll();
+  proxy_config_service_->FlushPollerForTesting();
+  EXPECT_EQ(0, poller_client_.GetAndResetPollCount());
+
+  // Reaching `kCustomInterval` allows the next lazy poll through.
+  task_environment_.FastForwardBy(kDelta);
+  proxy_config_service_->OnLazyPoll();
+  proxy_config_service_->FlushPollerForTesting();
+  EXPECT_EQ(1, poller_client_.GetAndResetPollCount());
+}
+
+// Verifies that platforms passing `mojo::NullRemote()` for
+// `proxy_poller_client` (such as macOS, Linux, ChromeOS, and Android) do not
+// query `kRateLimitProxyConfigPolls` or activate its associated field trial,
+// whereas polling platforms do activate the trial upon construction.
+TEST_F(ProxyConfigServiceMojoTest,
+       NonPollingPlatformDoesNotActivateFieldTrial) {
+  constexpr char kTrialName[] = "RateLimitProxyConfigPollsStudy";
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial(kTrialName, "Enabled");
+  feature_list->RegisterFieldTrialOverride(
+      features::kRateLimitProxyConfigPolls.name,
+      base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  ASSERT_FALSE(base::FieldTrialList::IsTrialActive(kTrialName));
+
+  // Constructing without a poller client must not activate the field trial.
+  CreateProxyConfigService(/*bind_poller_client=*/false);
+  proxy_config_service_->OnLazyPoll();
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kTrialName));
+
+  // Constructing with a valid poller client must activate the field trial.
+  CreateProxyConfigService(/*bind_poller_client=*/true);
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kTrialName));
 }
 
 }  // namespace

@@ -551,4 +551,15 @@ BASE_FEATURE(kForwardProxyAuthWithoutPrompt, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrewarmCryptbase, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRateLimitProxyConfigPolls, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Minimum interval between consecutive `OnLazyProxyConfigPoll()` Mojo IPCs sent
+// by `ProxyConfigServiceMojo`. Kept well below `PollingProxyConfigService`'s
+// 10-second `kPollIntervalSec` so IPC/queuing jitter cannot delay an eligible
+// browser-side poll window while still coalescing subresource request bursts.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kRateLimitProxyConfigPollsInterval,
+                   &kRateLimitProxyConfigPolls,
+                   base::Seconds(1));
+
 }  // namespace network::features

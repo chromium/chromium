@@ -15626,6 +15626,22 @@
             ]
         }
     ],
+    "RateLimitProxyConfigPolls": [
+        {
+            "platforms": [
+                "ios",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RateLimitProxyConfigPolls"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReactivePrefetchAndroidDiscardBody": [
         {
             "platforms": [
