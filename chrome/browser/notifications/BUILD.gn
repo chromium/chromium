@@ -257,6 +257,7 @@ source_set("impl") {
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/actor",
+      "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/sharing",

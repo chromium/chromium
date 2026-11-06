@@ -118,6 +118,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/actor/glic_actor_metrics.h:GlicActorTaskIdMismatchReason) -->
 
+<!-- LINT.IfChange(GlicActorTaskNotificationEvent) -->
+
+<enum name="GlicActorTaskNotificationEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Skipped (browser active)"/>
+  <int value="2" label="Clicked"/>
+  <int value="3" label="Closed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/notifications/glic_actor_task_notification_handler.h:GlicActorTaskNotificationEvent) -->
+
 <!-- LINT.IfChange(GlicAnchoredDespiteEligibilityReason) -->
 
 <enum name="GlicAnchoredDespiteEligibilityReason">

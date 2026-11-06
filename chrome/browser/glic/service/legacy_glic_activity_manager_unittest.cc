@@ -5,8 +5,10 @@
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
@@ -33,6 +35,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/notifications/glic_actor_task_notification_handler.h"
+#include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/ui/browser_manager_service.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#endif
+
 namespace glic {
 using actor::ActorKeyedServiceFake;
 using actor::TaskId;
@@ -55,6 +65,30 @@ class MockTaskListBubbleChangeSubscriber {
  public:
   MOCK_METHOD(void, OnStateChanged, (bool is_start_notification));
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+class FakeBrowserManagerService : public BrowserManagerService {
+ public:
+  explicit FakeBrowserManagerService(Profile* profile)
+      : BrowserManagerService(profile) {}
+  ~FakeBrowserManagerService() override = default;
+
+  void set_mock_browser(BrowserWindowInterface* browser) {
+    mock_browser_ = browser;
+  }
+
+  // ProfileBrowserCollection:
+  BrowserVector GetBrowsers(Order order) override {
+    if (mock_browser_) {
+      return {mock_browser_};
+    }
+    return {};
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> mock_browser_ = nullptr;
+};
+#endif
 
 class LegacyGlicActivityManagerTest : public testing::Test,
                                       public testing::WithParamInterface<bool> {
@@ -86,6 +120,15 @@ class LegacyGlicActivityManagerTest : public testing::Test,
         base::BindRepeating(
             &LegacyGlicActivityManagerTest::BuildMockGlicKeyedService,
             base::Unretained(this)));
+#if !BUILDFLAG(IS_ANDROID)
+    factories.emplace_back(
+        BrowserManagerServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<FakeBrowserManagerService>(
+              Profile::FromBrowserContext(context));
+        }));
+#endif
 
     profile_ = testing_profile_manager_.CreateTestingProfile(
         "profile", std::move(factories));
@@ -722,6 +765,7 @@ class LegacyGlicActivityManagerOsNotificationTest
 // task starts and no browser window is active.
 TEST_F(LegacyGlicActivityManagerOsNotificationTest,
        ExperimentalTriggeringTask_NoActiveBrowser_ShowsNotification) {
+  base::HistogramTester histogram_tester;
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
@@ -743,6 +787,37 @@ TEST_F(LegacyGlicActivityManagerOsNotificationTest,
                     NotificationHandler::Type::GLIC_ACTOR_TASK)
                 .size(),
             1u);
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskOsNotification.Event",
+                                      GlicActorTaskNotificationEvent::kShown,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.Actor.TaskOsNotification.Event",
+      GlicActorTaskNotificationEvent::kShown, 1);
+}
+
+// Verifies that no OS notification is displayed when a browser window for the
+// profile is active, and kSkippedBrowserActive is recorded.
+TEST_F(
+    LegacyGlicActivityManagerOsNotificationTest,
+    ExperimentalTriggeringTask_ActiveBrowser_SkipsNotificationAndRecordsMetric) {
+  base::HistogramTester histogram_tester;
+  auto* fake_browser_manager = static_cast<FakeBrowserManagerService*>(
+      BrowserManagerServiceFactory::GetForProfile(profile_.get()));
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser;
+  ON_CALL(mock_browser, IsActive()).WillByDefault(testing::Return(true));
+  ON_CALL(mock_browser, IsDeleteScheduled())
+      .WillByDefault(testing::Return(false));
+  fake_browser_manager->set_mock_browser(&mock_browser);
+  base::ScopedClosureRunner reset_mock_browser(
+      base::BindOnce(&FakeBrowserManagerService::set_mock_browser,
+                     base::Unretained(fake_browser_manager), nullptr));
+
+  auto notification = StartTaskAndGetNotification(
+      actor_service()->CreateExperimentalTriggeringTaskForTesting());
+  EXPECT_FALSE(notification.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskOsNotification.Event",
+      GlicActorTaskNotificationEvent::kSkippedBrowserActive, 1);
 }
 
 // Verifies the updated notification copy for a task without a title: the
@@ -830,6 +905,7 @@ TEST_F(LegacyGlicActivityManagerOsNotificationTest,
 // processed and dismisses the notification.
 TEST_F(LegacyGlicActivityManagerOsNotificationTest,
        ExperimentalTriggeringTask_NotificationClicked_ProcessesRow) {
+  base::HistogramTester histogram_tester;
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
@@ -853,6 +929,43 @@ TEST_F(LegacyGlicActivityManagerOsNotificationTest,
   EXPECT_FALSE(manager()->actor_task_list_bubble_rows().at(task_id));
   EXPECT_FALSE(
       display_service_tester()->GetNotification(notification_id).has_value());
+  histogram_tester.ExpectTotalCount("Glic.Actor.TaskOsNotification.Event", 2);
+  histogram_tester.ExpectBucketCount("Glic.Actor.TaskOsNotification.Event",
+                                     GlicActorTaskNotificationEvent::kShown, 1);
+  histogram_tester.ExpectBucketCount("Glic.Actor.TaskOsNotification.Event",
+                                     GlicActorTaskNotificationEvent::kClicked,
+                                     1);
+}
+
+// Verifies that closing the OS notification (whether by user or OS) records
+// kClosed.
+TEST_F(LegacyGlicActivityManagerOsNotificationTest,
+       ExperimentalTriggeringTask_NotificationClosed_RecordsMetric) {
+  base::HistogramTester histogram_tester;
+  auto user_closed_notification = StartTaskAndGetNotification(
+      actor_service()->CreateExperimentalTriggeringTaskForTesting());
+  ASSERT_TRUE(user_closed_notification.has_value());
+
+  display_service_tester()->RemoveNotification(
+      NotificationHandler::Type::GLIC_ACTOR_TASK,
+      user_closed_notification->id(),
+      /*by_user=*/true);
+
+  auto system_closed_notification = StartTaskAndGetNotification(
+      actor_service()->CreateExperimentalTriggeringTaskForTesting());
+  ASSERT_TRUE(system_closed_notification.has_value());
+
+  display_service_tester()->RemoveNotification(
+      NotificationHandler::Type::GLIC_ACTOR_TASK,
+      system_closed_notification->id(),
+      /*by_user=*/false);
+
+  histogram_tester.ExpectTotalCount("Glic.Actor.TaskOsNotification.Event", 4);
+  histogram_tester.ExpectBucketCount("Glic.Actor.TaskOsNotification.Event",
+                                     GlicActorTaskNotificationEvent::kShown, 2);
+  histogram_tester.ExpectBucketCount("Glic.Actor.TaskOsNotification.Event",
+                                     GlicActorTaskNotificationEvent::kClosed,
+                                     2);
 }
 
 // Verifies that no OS notification is displayed when the feature flag is
@@ -860,6 +973,7 @@ TEST_F(LegacyGlicActivityManagerOsNotificationTest,
 TEST_F(LegacyGlicActivityManagerTest,
        ExperimentalTriggeringTask_FeatureDisabled_DoesNotShowNotification) {
 #if !BUILDFLAG(IS_ANDROID)
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kGlicExperimentalTriggeringOsNotification);
@@ -879,12 +993,14 @@ TEST_F(LegacyGlicActivityManagerTest,
       "actor_task_start_" + base::NumberToString(task_id.value());
   EXPECT_FALSE(
       display_service_tester.GetNotification(notification_id).has_value());
+  histogram_tester.ExpectTotalCount("Glic.Actor.TaskOsNotification.Event", 0);
 #endif
 }
 
 // Verifies that non-experimental actor tasks do not trigger an OS notification.
 TEST_F(LegacyGlicActivityManagerOsNotificationTest,
        NonExperimentalTask_DoesNotShowNotification) {
+  base::HistogramTester histogram_tester;
   TaskId task_id = actor_service()->CreateTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
   task->SetState(actor::ActorTask::State::kActing);
@@ -898,12 +1014,15 @@ TEST_F(LegacyGlicActivityManagerOsNotificationTest,
       "actor_task_start_" + base::NumberToString(task_id.value());
   EXPECT_FALSE(
       display_service_tester()->GetNotification(notification_id).has_value());
+  histogram_tester.ExpectTotalCount("Glic.Actor.TaskOsNotification.Event", 0);
 }
 
 // Verifies that completing an experimental triggering task automatically
-// dismisses its OS notification.
+// dismisses its OS notification and clears tracked state without recording
+// kClosed.
 TEST_F(LegacyGlicActivityManagerOsNotificationTest,
        ExperimentalTriggeringTask_TaskComplete_ClosesNotification) {
+  base::HistogramTester histogram_tester;
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
@@ -925,6 +1044,19 @@ TEST_F(LegacyGlicActivityManagerOsNotificationTest,
 
   EXPECT_FALSE(
       display_service_tester()->GetNotification(notification_id).has_value());
+
+  // Simulate a subsequent OnClose (e.g. from MessageCenter::Close) to verify
+  // that Close() erased the task from `displayed_tasks_` and does not emit
+  // kClosed.
+  auto* handler =
+      NotificationDisplayServiceImpl::GetForProfile(profile_.get())
+          ->GetNotificationHandler(NotificationHandler::Type::GLIC_ACTOR_TASK);
+  ASSERT_TRUE(handler);
+  handler->OnClose(profile_.get(), GURL(), notification_id, /*by_user=*/false,
+                   base::DoNothing());
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskOsNotification.Event",
+                                      GlicActorTaskNotificationEvent::kShown,
+                                      1);
 }
 
 // Verifies that stopping/cancelling an experimental triggering task

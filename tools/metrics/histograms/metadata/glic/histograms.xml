@@ -1959,6 +1959,23 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Actor.TaskOsNotification.Event"
+    enum="GlicActorTaskNotificationEvent" expires_after="2027-05-04">
+  <owner>romanarora@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records lifecycle events for the desktop OS-level task-start notification
+    for an experimental triggering actor task: whether display was requested
+    (&quot;Shown&quot;, recorded when handed to the platform bridge or display
+    queue, even if queued behind a blocker or disabled at the OS level), skipped
+    because a browser window was active, clicked, or closed by the user or OS
+    (e.g. dismissal, expiry, or notification center cleanup; excludes
+    programmatic closes by Chrome when clicked or when the task ends). Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Api.Client.ErrorDialogShown"
     enum="GlicClientErrorDialogType" expires_after="2027-04-24">
   <owner>carlosk@chromium.org</owner>

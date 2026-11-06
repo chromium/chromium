@@ -1049,7 +1049,10 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/background",
       "//chrome/browser/glic/media:unit_tests",
+      "//chrome/browser/notifications",
       "//chrome/browser/status_icons",
+      "//chrome/browser/ui:browser_manager_service",
+      "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/common:chrome_features",
       "//chrome/test/base:scoped_metrics_service",
       "//components/live_caption",
