@@ -304,8 +304,10 @@ class CONTENT_EXPORT DatabaseConnection {
   FRIEND_TEST_ALL_PREFIXES(DatabaseConnectionTest, TooNew);
 
   // Destroys the DatabaseConnection pointed to by `db`, if appropriate, i.e. if
-  // `db` is the last weak pointer.
-  static void MaybeSelfDestruct(base::WeakPtr<DatabaseConnection> db);
+  // `db` is the last weak pointer. `was_delayed` indicates whether this was
+  // invoked after the destruction grace period elapsed.
+  static void MaybeSelfDestruct(base::WeakPtr<DatabaseConnection> db,
+                                bool was_delayed);
 
   static void CloseDatabase(
       std::unique_ptr<sql::Database> db,

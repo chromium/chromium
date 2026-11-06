@@ -278,7 +278,8 @@ class IndexedDBTestBaseWithExtras : public IndexedDBTestBase {
           sqlite::DatabaseConnection::GetDestructionGracePeriodForTesting());
     }
     task_environment_.FastForwardBy(
-        BucketContext::GetBackingStoreGracePeriodForTesting());
+        BucketContext::GetBackingStoreGracePeriodForTesting(
+            IsSqliteBackingStoreEnabled()));
   }
 
   bool IsThirdPartyStoragePartitioningEnabled() {
@@ -1411,8 +1412,13 @@ TEST_P(IndexedDBTest, CloseWithReceiversActive) {
   // Something triggers starting the close sequence and the grace period
   // elapses.
   NudgeBackingStoreCloseLogic(bucket_context.get());
-  task_environment_.FastForwardBy(
-      BucketContext::GetBackingStoreGracePeriodForTesting());
+  const base::TimeDelta grace_period =
+      BucketContext::GetBackingStoreGracePeriodForTesting(
+          IsSqliteBackingStoreEnabled());
+  task_environment_.FastForwardBy(grace_period / 2);
+  VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
+                      /*expected_backing_store_exists=*/true);
+  task_environment_.FastForwardBy(grace_period / 2);
 
   // This destroys the backing store, but the bucket context itself still
   // exists...
@@ -1453,7 +1459,8 @@ TEST_P(IndexedDBTest, CloseWithReceiversInactive) {
   // Something triggers backing store shutdown and the grace period elapses.
   NudgeBackingStoreCloseLogic(bucket_context.get());
   task_environment_.FastForwardBy(
-      BucketContext::GetBackingStoreGracePeriodForTesting());
+      BucketContext::GetBackingStoreGracePeriodForTesting(
+          IsSqliteBackingStoreEnabled()));
 
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/false);
   EXPECT_FALSE(bucket_context);
@@ -1487,7 +1494,8 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
               GetBucketContext(bucket_locator.id)->closing_stage());
 
     task_environment_.FastForwardBy(
-        BucketContext::GetBackingStoreGracePeriodForTesting());
+        BucketContext::GetBackingStoreGracePeriodForTesting(
+            IsSqliteBackingStoreEnabled()));
 
     // The factory should be closed, as the pre close tasks are delayed.
     VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,

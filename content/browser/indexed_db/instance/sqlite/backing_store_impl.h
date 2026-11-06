@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
@@ -103,6 +104,9 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   void DestroyConnection(const std::u16string& name,
                          std::vector<PartitionedLock> locks = {});
 
+  // Adds to `self_destructed_connections_`.
+  void DestructionGracePeriodElapsed(const std::u16string& name);
+
   storage::mojom::BlobStorageContext& blob_storage_context() {
     return *blob_storage_context_;
   }
@@ -148,6 +152,12 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   // that databases with committed version `NO_VERSION` are "zygotic" and hence
   // deleted during cleanup.
   std::unordered_map<std::u16string, int64_t> cached_versions_;
+
+  // Keeps a record of when a DatabaseConnection self-destructed due to having
+  // no open connections from script. Used for metrics that should help
+  // determine an appropriate destruction grace period.
+  std::unordered_map<std::u16string, base::TimeTicks>
+      self_destructed_connections_;
 
   // The count of async database cleanups in progress.
   unsigned int cleanups_in_progress_ = 0;

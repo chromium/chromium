@@ -105,6 +105,10 @@ BASE_FEATURE_ENUM_PARAM(SqliteRolloutStage,
 // the backing store.
 constexpr base::TimeDelta kBackingStoreGracePeriod = base::Seconds(2);
 
+// SQLite connections close independently. Keep the lightweight backing store
+// around longer to track how soon destroyed connections are needed again.
+constexpr base::TimeDelta kSqliteBackingStoreGracePeriod = base::Minutes(3);
+
 // If this switch is present, the backing store is shut down near-synchronously
 // when the last `Database` closes. Used by blink perf tests to exercise
 // database cold-open.
@@ -995,7 +999,9 @@ void BucketContext::MaybeStartClosing() {
   // in the mean time.
   CHECK(!close_timer_.IsRunning());
   closing_stage_ = ClosingState::kPreCloseGracePeriod;
-  close_timer_.Start(FROM_HERE, kBackingStoreGracePeriod,
+  close_timer_.Start(FROM_HERE,
+                     IsUsingSqlite() ? kSqliteBackingStoreGracePeriod
+                                     : kBackingStoreGracePeriod,
                      base::BindOnce(&BucketContext::StartPreCloseTasks,
                                     weak_factory_.GetWeakPtr()));
 }
@@ -1098,8 +1104,9 @@ void BucketContext::InsertTeardownStepForTesting(
 }
 
 // static
-base::TimeDelta BucketContext::GetBackingStoreGracePeriodForTesting() {
-  return kBackingStoreGracePeriod;
+base::TimeDelta BucketContext::GetBackingStoreGracePeriodForTesting(
+    bool use_sqlite) {
+  return use_sqlite ? kSqliteBackingStoreGracePeriod : kBackingStoreGracePeriod;
 }
 
 // static

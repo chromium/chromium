@@ -1733,18 +1733,13 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeValueIsWrapped) {
     }
     ASSERT_FALSE(db_file.empty());
 
-    shell()->Close();
+    base::RunLoop closed;
+    GetControl().ForceClose(bucket_info.id, closed.QuitClosure());
+    closed.Run();
 
-    // We have to try to open the database multiple times because the files
-    // (both main DB file and -wal journal) may still be held open by the
-    // backing store.
-    std::unique_ptr<sql::Database> db;
-    ASSERT_TRUE(base::test::RunUntil([&db, &db_file]() {
-      db = std::make_unique<sql::Database>(sql::test::kTestTag);
-      return db->Open(db_file);
-    }));
-
-    sql::Statement s(db->GetUniqueStatement("SELECT COUNT(*) FROM blobs"));
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(db_file));
+    sql::Statement s(db.GetUniqueStatement("SELECT COUNT(*) FROM blobs"));
     ASSERT_TRUE(s.Step());
     EXPECT_EQ(0, s.ColumnInt(0));
   } else {

@@ -111,8 +111,8 @@ class CONTENT_EXPORT BucketContext
   enum class ClosingState {
     // BucketContext isn't closing.
     kNotClosing,
-    // BucketContext is pausing for kBackingStoreGracePeriodSeconds
-    // to allow new references to open before closing the backing store.
+    // BucketContext is pausing to allow new references to open before closing
+    // the backing store.
     kPreCloseGracePeriod,
     // The `pre_close_task_queue` is running any pre-close tasks.
     kRunningPreCloseTasks,
@@ -194,7 +194,7 @@ class CONTENT_EXPORT BucketContext
   // crbug.com/340398745.
   static void InsertTeardownStepForTesting(base::OnceClosure on_teardown);
 
-  static base::TimeDelta GetBackingStoreGracePeriodForTesting();
+  static base::TimeDelta GetBackingStoreGracePeriodForTesting(bool use_sqlite);
   static base::TimeDelta GetIdleTimeoutForTesting();
 
   // Whether the backing store is using SQLite. `CHECK`s that the backing store
