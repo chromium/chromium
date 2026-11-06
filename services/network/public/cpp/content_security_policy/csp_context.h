@@ -78,9 +78,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) CSPContext {
       GURL* blocked_url,
       mojom::SourceLocation* source_location) const;
 
-  // Returns true if the request URL needs to be modified (e.g. upgraded to
-  // HTTPS) according to the CSP.
-  bool ShouldModifyRequestUrlForCsp(bool is_subresource_or_form_submssion);
 
   // This is declared virtual only so that it can be overridden for unit
   // testing.
