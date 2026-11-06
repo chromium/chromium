@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -188,15 +189,20 @@ class MockDataChannel : public webrtc::DataChannelInterface {
         *signaling_thread_, FROM_HERE,
         CrossThreadBindOnce(
             [](MockDataChannel* channel, uint64_t buffer_size,
+               webrtc::RTCErrorType send_error,
                absl::AnyInvocable<void(webrtc::RTCError) &&>* adapter) {
               channel->SendOnSignalingThread(buffer_size);
               if (*adapter) {
-                std::move (*adapter)(webrtc::RTCError::OK());
+                std::move (*adapter)(webrtc::RTCError(send_error));
               }
               delete adapter;
             },
-            CrossThreadUnretained(this), buffer.size(),
+            CrossThreadUnretained(this), buffer.size(), send_error_,
             CrossThreadUnretained(adapter)));
+  }
+
+  void set_send_error(webrtc::RTCErrorType send_error) {
+    send_error_ = send_error;
   }
 
   // For testing.
@@ -254,6 +260,7 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   uint64_t buffered_amount_;
   raw_ptr<webrtc::DataChannelObserver> observer_;
   webrtc::DataChannelInterface::DataState state_;
+  webrtc::RTCErrorType send_error_ = webrtc::RTCErrorType::NONE;
 };
 
 class RTCDataChannelTest : public ::testing::Test {
@@ -386,6 +393,48 @@ TEST_F(RTCDataChannelTest, Message) {
   EXPECT_CALL(*onmessage_handler, Invoke(_, _));
 
   channel->OnMessage(webrtc::DataBuffer("A"));
+}
+
+TEST_F(RTCDataChannelTest, SendFailureFiresError) {
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  auto* onerror_handler = MakeGarbageCollected<MockEventListener>();
+  auto* channel =
+      MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
+  channel->addEventListener(event_type_names::kError, onerror_handler);
+  webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
+  webrtc_channel->set_send_error(webrtc::RTCErrorType::INVALID_STATE);
+
+  bool error_fired = false;
+  EXPECT_CALL(*onerror_handler, Invoke(_, _)).WillOnce([&] {
+    error_fired = true;
+  });
+  channel->send("TEST", IGNORE_EXCEPTION_FOR_TESTING);
+  signaling_thread()->RunPendingTasks();
+  EXPECT_TRUE(base::test::RunUntil([&] { return error_fired; }));
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kOpen, channel->readyState());
+}
+
+TEST_F(RTCDataChannelTest, SendFailureAfterCloseDoesNotFireError) {
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  auto* onerror_handler = MakeGarbageCollected<MockEventListener>();
+  auto* channel =
+      MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
+  channel->addEventListener(event_type_names::kError, onerror_handler);
+  webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
+  webrtc_channel->set_send_error(webrtc::RTCErrorType::INVALID_STATE);
+
+  EXPECT_CALL(*onerror_handler, Invoke(_, _)).Times(0);
+  channel->send("TEST", IGNORE_EXCEPTION_FOR_TESTING);
+  channel->OnStateChange(webrtc::DataChannelInterface::kClosed);
+  signaling_thread()->RunPendingTasks();
+  // Runs after the task that delivers the send failure.
+  base::RunLoop run_loop;
+  execution_context_->GetTaskRunner(TaskType::kNetworking)
+      ->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosed, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, SendAfterContextDestroyed) {

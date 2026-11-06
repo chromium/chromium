@@ -187,12 +187,16 @@ class MODULES_EXPORT RTCDataChannel final
     void OnMessage(const webrtc::DataBuffer& buffer) override;
     bool IsOkToCallOnTheNetworkThread() override;
 
+    // Called from the network thread when SendAsync() fails.
+    void OnSendFailed(webrtc::RTCErrorType type);
+
    private:
     // webrtc::DataChannelObserver implementation on the main thread.
     void OnStateChangeImpl(webrtc::DataChannelInterface::DataState state);
     void OnBufferedAmountChangeImpl(unsigned sent_data_size);
     void OnMaxMessageSizeImpl(int max_message_size);
     void OnMessageImpl(webrtc::DataBuffer buffer);
+    void OnSendFailedImpl(webrtc::RTCErrorType type);
 
     const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
     WeakPersistent<RTCDataChannel> blink_channel_;
@@ -205,6 +209,7 @@ class MODULES_EXPORT RTCDataChannel final
   void OnBufferedAmountChange(unsigned previous_amount);
   void OnMaxMessageSizeChange(int max_message_size);
   void OnMessage(webrtc::DataBuffer buffer);
+  void OnSendFailed(webrtc::RTCErrorType type);
 
   void Dispose();
 
@@ -226,6 +231,8 @@ class MODULES_EXPORT RTCDataChannel final
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Message);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, BufferedAmountLow);
+  FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest,
+                           SendFailureAfterCloseDoesNotFireError);
 
   // This handle notifies the scheduler about a connected data channel
   // associated with a frame. The handle should be destroyed when the channel

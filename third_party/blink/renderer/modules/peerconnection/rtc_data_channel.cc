@@ -284,6 +284,13 @@ bool RTCDataChannel::Observer::IsOkToCallOnTheNetworkThread() {
   return true;
 }
 
+void RTCDataChannel::Observer::OnSendFailed(webrtc::RTCErrorType type) {
+  PostCrossThreadTask(
+      *main_thread_, FROM_HERE,
+      CrossThreadBindOnce(&RTCDataChannel::Observer::OnSendFailedImpl,
+                          scoped_refptr<Observer>(this), type));
+}
+
 void RTCDataChannel::Observer::OnStateChangeImpl(
     webrtc::DataChannelInterface::DataState state) {
   DCHECK(main_thread_->BelongsToCurrentThread());
@@ -309,6 +316,13 @@ void RTCDataChannel::Observer::OnMessageImpl(webrtc::DataBuffer buffer) {
   DCHECK(main_thread_->BelongsToCurrentThread());
   if (blink_channel_)
     blink_channel_->OnMessage(std::move(buffer));
+}
+
+void RTCDataChannel::Observer::OnSendFailedImpl(webrtc::RTCErrorType type) {
+  DCHECK(main_thread_->BelongsToCurrentThread());
+  if (blink_channel_) {
+    blink_channel_->OnSendFailed(type);
+  }
 }
 
 // static
@@ -848,25 +862,35 @@ void RTCDataChannel::SendDataBuffer(webrtc::DataBuffer data_buffer) {
 
   // SCTP data channels queue the packet on failure and always return true, so
   // Send can be called asynchronously for them.
-  channel()->SendAsync(std::move(data_buffer), [](webrtc::RTCError error) {
-    // TODO(orphis): Use this callback in combination with SendAsync to report
-    // completion of the send API to the JS layer.
-    // The possible failures per the spec are:
-    // - Channel not in open state. Although we check the state in each Send()
-    // implementation, it's possible to have a short race between the WebRTC
-    // state and the Chrome state, i.e. sending while a remote close event is
-    // pending. In this case, it's safe to ignore send failures.
-    // - Data longer than the transport maxMessageSize (not yet implemented in
-    // WebRTC or Blink).
-    // - Send Buffers full (buffered amount accounting in Blink layer to check
-    // for it).
-    if (!error.ok()) {
-      // TODO(orphis): Add collect UMA stats about failure.
-      // Note that when we get this callback, we're on WebRTC's network thread
-      // So the callback needs to be propagated to the main (JS) thread.
-      LOG(ERROR) << "Send failed" << webrtc::ToString(error.type());
-    }
-  });
+  // The possible failures per the spec are:
+  // - Channel not in open state. Although we check the state in each Send()
+  // implementation, it's possible to have a short race between the WebRTC
+  // state and the Chrome state, i.e. sending while a remote close event is
+  // pending.
+  // - Data longer than the transport maxMessageSize (not yet implemented in
+  // WebRTC or Blink).
+  // - Send Buffers full (buffered amount accounting in Blink layer to check
+  // for it).
+  channel()->SendAsync(std::move(data_buffer),
+                       [observer = observer_](webrtc::RTCError error) {
+                         if (!error.ok()) {
+                           observer->OnSendFailed(error.type());
+                         }
+                       });
+}
+
+void RTCDataChannel::OnSendFailed(webrtc::RTCErrorType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(orphis): Add collect UMA stats about failure.
+  LOG(ERROR) << "Send failed: " << webrtc::ToString(type);
+  // A failure racing with a close is reported by the close itself.
+  if (state_ != webrtc::DataChannelInterface::kOpen) {
+    return;
+  }
+  webrtc::RTCError error(type, "Failed to send data");
+  error.set_error_detail(webrtc::RTCErrorDetailType::DATA_CHANNEL_FAILURE);
+  DispatchEvent(
+      *MakeGarbageCollected<RTCErrorEvent>(event_type_names::kError, error));
 }
 
 void RTCDataChannel::CreateFeatureHandleForScheduler() {
