@@ -67,6 +67,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
@@ -140,6 +142,7 @@ public class CrossDeviceSettingImporterUnitTest {
     @Mock private CrossDevicePrefTracker mCrossDevicePrefTracker;
     @Mock private CrossDeviceThemeTracker.Natives mCrossDeviceThemeTrackerNatives;
     @Mock private CrossDeviceThemeTracker mCrossDeviceThemeTracker;
+    @Mock private NtpSyncedThemeManager mNtpSyncedThemeManager;
     @Mock private SyncedSetUpUtilsBridge.Natives mSyncedSetUpUtilsBridgeNatives;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private SyncService mSyncService;
@@ -149,6 +152,7 @@ public class CrossDeviceSettingImporterUnitTest {
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
     @Captor private ArgumentCaptor<CrossDevicePrefTrackerObserver> mPrefTrackerObserverCaptor;
     @Captor private ArgumentCaptor<CrossDeviceThemeTracker.Observer> mThemeTrackerObserverCaptor;
+    @Captor private ArgumentCaptor<Runnable> mNtpSyncedThemeReadinessCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<@Nullable Bitmap>> mBitmapCallbackCaptor;
 
     private final SettableNullableObservableSupplier<Tab> mActivityTabSupplier =
@@ -192,6 +196,8 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mCrossDeviceThemeTrackerNatives.getForProfile(mProfile))
                 .thenReturn(mCrossDeviceThemeTracker);
         when(mCrossDeviceThemeTracker.getServiceStatus()).thenReturn(ACTIVE);
+        NtpSyncedThemeManager.setInstanceForTesting(mNtpSyncedThemeManager);
+        when(mNtpSyncedThemeManager.isSyncedThemeReady()).thenReturn(true);
         SyncedSetUpUtilsBridgeJni.setInstanceForTesting(mSyncedSetUpUtilsBridgeNatives);
 
         // Native pref mocks.
@@ -2073,6 +2079,25 @@ public class CrossDeviceSettingImporterUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testIsThemeFeatureEnabled_NtpCustomizationV2Disabled_ReturnsFalse() {
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        assertFalse(importer.isThemeFeatureEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testIsThemeFeatureEnabled_DisabledByPolicy_ReturnsFalse() {
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        assertFalse(importer.isThemeFeatureEnabled());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
     public void testOnTabChange_ThemeSyncDisabled_DoesNotStallNonThemeImports() {
@@ -3008,5 +3033,107 @@ public class CrossDeviceSettingImporterUnitTest {
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(
                                 ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_ALL_SETTINGS, false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void
+            testOnTabChangeOrGainFocus_waitsForNtpSyncedThemeManagerReadiness_initialSyncNotReady_showsApplySnackbar() {
+        CrossDeviceSettingImporter importer =
+                triggerNtpSyncedThemeManagerReadinessWaitAndComplete(
+                        /* isContinuousSyncedImageDownloading= */ false);
+
+        // Because initial theme sync itself was not ready
+        // (isContinuousSyncedImageDownloading == false), availableImmediately is false when the
+        // callback fires, so Offer Apply snackbar is shown.
+        verify(mHomeModulesConfigManager, never()).setPrefAllCardsEnabled(anyBoolean());
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        assertEquals(
+                mActivity.getString(R.string.synced_set_up_snackbar_ask_to_apply),
+                mSnackbarCaptor.getValue().getTextForTesting());
+        assertEquals(
+                mActivity.getString(R.string.apply), mSnackbarCaptor.getValue().getActionText());
+        importer.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void
+            testOnTabChangeOrGainFocus_waitsForNtpSyncedThemeManagerReadiness_onlyWaitingForImageDownload_autoAppliesWithUndoSnackbar() {
+        CrossDeviceSettingImporter importer =
+                triggerNtpSyncedThemeManagerReadinessWaitAndComplete(
+                        /* isContinuousSyncedImageDownloading= */ true);
+
+        // Because all sync trackers were ready on initial check and we were only waiting for the
+        // image download, availableImmediately is preserved as true: settings auto-apply
+        // immediately and the Undo snackbar is shown.
+        verify(mHomeModulesConfigManager).setPrefAllCardsEnabled(false);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        assertEquals(
+                mActivity.getString(R.string.synced_set_up_snackbar_applied_confirmation),
+                mSnackbarCaptor.getValue().getTextForTesting());
+        assertEquals(
+                mActivity.getString(R.string.undo), mSnackbarCaptor.getValue().getActionText());
+        importer.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testOnTabChangeOrGainFocus_syncDisabled_doesNotWaitForNtpSyncedThemeManager() {
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        when(mCrossDeviceThemeTracker.getServiceStatus()).thenReturn(SYNC_DISABLED);
+        when(mNtpSyncedThemeManager.isSyncedThemeReady()).thenReturn(false);
+
+        SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
+                Map.of(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, false));
+        when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        importer.onTabChangeOrGainFocus(mTab);
+
+        verify(mNtpSyncedThemeManager, never()).addOneShotReadinessCallback(any());
+        verify(mSnackbarManager).showSnackbar(any());
+        importer.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testDestroy_removesNtpSyncedThemeManagerReadinessCallback() {
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        when(mCrossDeviceThemeTracker.getServiceStatus()).thenReturn(ACTIVE);
+        when(mNtpSyncedThemeManager.isSyncedThemeReady()).thenReturn(false);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        importer.onTabChangeOrGainFocus(mTab);
+        verify(mNtpSyncedThemeManager)
+                .addOneShotReadinessCallback(mNtpSyncedThemeReadinessCallbackCaptor.capture());
+
+        importer.destroy();
+        verify(mNtpSyncedThemeManager)
+                .removeReadinessCallback(mNtpSyncedThemeReadinessCallbackCaptor.getValue());
+    }
+
+    private CrossDeviceSettingImporter triggerNtpSyncedThemeManagerReadinessWaitAndComplete(
+            boolean isContinuousSyncedImageDownloading) {
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        when(mCrossDeviceThemeTracker.getServiceStatus()).thenReturn(ACTIVE);
+        when(mNtpSyncedThemeManager.isSyncedThemeReady()).thenReturn(false);
+        when(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading())
+                .thenReturn(isContinuousSyncedImageDownloading);
+
+        SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
+                Map.of(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, false));
+        when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        importer.onTabChangeOrGainFocus(mTab);
+
+        verify(mNtpSyncedThemeManager)
+                .addOneShotReadinessCallback(mNtpSyncedThemeReadinessCallbackCaptor.capture());
+        verify(mSnackbarManager, never()).showSnackbar(any());
+
+        when(mNtpSyncedThemeManager.isSyncedThemeReady()).thenReturn(true);
+        mNtpSyncedThemeReadinessCallbackCaptor.getValue().run();
+        return importer;
     }
 }

@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.CROSS_DEVICE_P
 import static org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsMediator.MODULE_TYPE_TO_USER_PREFS_KEY;
 import static org.chromium.chrome.browser.ntp_customization.theme_sync.ServiceStatus.ACTIVE;
 import static org.chromium.chrome.browser.ntp_customization.theme_sync.ServiceStatus.INITIALIZING;
+import static org.chromium.chrome.browser.ntp_customization.theme_sync.ServiceStatus.SYNC_DISABLED;
 import static org.chromium.chrome.browser.sync.synced_set_up.SyncedSetUpUtilsBridge.getCrossDevicePrefsFromRemoteDevice;
 import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.computeToolbarPositionAndSource;
 import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.setToolbarPositionAndSource;
@@ -312,6 +313,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private @Nullable CrossDevicePrefTrackerObserver mPrefTrackerObserver;
     private @Nullable CrossDeviceThemeTracker mThemeTrackerBeingObserved;
     private CrossDeviceThemeTracker.@Nullable Observer mThemeTrackerObserver;
+    private @Nullable Runnable mNtpSyncedThemeReadinessCallback;
     private @Nullable ModalDialogManager mModalDialogManagerBeingObserved;
     private @Nullable ModalDialogManagerObserver mModalDialogObserver;
     private @Nullable PendingSnackbar mActivePendingSnackbar;
@@ -404,6 +406,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
         mThemeTrackerObserver = null;
         mThemeTrackerBeingObserved = null;
+    }
+
+    private void stopObservingNtpSyncedThemeManager() {
+        if (mNtpSyncedThemeReadinessCallback == null) return;
+
+        NtpSyncedThemeManager.getInstance()
+                .removeReadinessCallback(mNtpSyncedThemeReadinessCallback);
+        mNtpSyncedThemeReadinessCallback = null;
     }
 
     private void stopObservingModalDialogManager() {
@@ -542,29 +552,38 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         boolean prefTrackerReady = !NOT_READY_YET_STATES.contains(status);
 
         @Nullable CrossDeviceThemeTracker crossDeviceThemeTracker = null;
+        @Nullable NtpSyncedThemeManager ntpSyncedThemeManager = null;
         boolean themeTrackerReady = true;
+        boolean ntpSyncedThemeReady = true;
         if (isThemeFeatureEnabled()) {
             crossDeviceThemeTracker = CrossDeviceThemeTracker.getForProfile(profile);
             if (crossDeviceThemeTracker == null) return;
             int themeStatus = crossDeviceThemeTracker.getServiceStatus();
             themeTrackerReady = themeStatus != INITIALIZING;
+
+            ntpSyncedThemeManager = NtpSyncedThemeManager.getInstance();
+            if (themeStatus != SYNC_DISABLED) {
+                ntpSyncedThemeReady = ntpSyncedThemeManager.isSyncedThemeReady();
+            }
         }
 
         if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
             Log.i(
                     TAG,
                     "onTabChangeOrGainFocus - localStateReady = %s, prefTrackerReady = %s,"
-                            + " themeTrackerReady = %s",
+                            + " themeTrackerReady = %s, ntpSyncedThemeReady = %s",
                     localStateReady,
                     prefTrackerReady,
-                    themeTrackerReady);
+                    themeTrackerReady,
+                    ntpSyncedThemeReady);
         }
 
         // If all dependencies are ready, stop any active observation and proceed to import.
-        if (localStateReady && prefTrackerReady && themeTrackerReady) {
+        if (localStateReady && prefTrackerReady && themeTrackerReady && ntpSyncedThemeReady) {
             stopObservingLocalState();
             stopObservingPrefTracker();
             stopObservingThemeTracker();
+            stopObservingNtpSyncedThemeManager();
             onDependenciesReady(
                     crossDevicePrefTracker, status, profile, currentTab, availableImmediately);
             return;
@@ -587,6 +606,26 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             ensureObservingThemeTracker(crossDeviceThemeTracker, profile);
         } else {
             stopObservingThemeTracker();
+        }
+
+        if (ntpSyncedThemeManager != null && !ntpSyncedThemeReady) {
+            // If all sync trackers (localState, prefTracker, themeTracker, and
+            // NtpAndroidThemeSyncBridge) were already ready on the initial check
+            // (availableImmediately == true), and we are only waiting for
+            // NtpSyncedThemeManager to finish its asynchronous bitmap download, preserve
+            // availableImmediately = true so that once the bitmap is staged we auto-apply
+            // the prefs and theme together (showing the Undo snackbar) rather than showing
+            // the Apply snackbar while NewTabPage auto-applies the staged theme in the
+            // background.
+            boolean onlyWaitingForThemeImageDownload =
+                    availableImmediately
+                            && localStateReady
+                            && prefTrackerReady
+                            && themeTrackerReady
+                            && ntpSyncedThemeManager.isContinuousSyncedImageDownloading();
+            ensureObservingNtpSyncedThemeManager(profile, onlyWaitingForThemeImageDownload);
+        } else {
+            stopObservingNtpSyncedThemeManager();
         }
     }
 
@@ -673,6 +712,35 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                 };
         mThemeTrackerBeingObserved = themeTracker;
         themeTracker.addObserver(mThemeTrackerObserver);
+    }
+
+    /**
+     * Registers a one-shot readiness callback on {@link NtpSyncedThemeManager}.
+     *
+     * @param profile The active {@link Profile} when observation started.
+     * @param autoApplyWhenReady Whether settings should be auto-applied (passing {@code
+     *     availableImmediately = true}) when {@link NtpSyncedThemeManager} becomes ready. This is
+     *     {@code true} when all sync trackers were already ready on the initial check and we were
+     *     only waiting for an in-flight theme image download to finish staging.
+     */
+    private void ensureObservingNtpSyncedThemeManager(Profile profile, boolean autoApplyWhenReady) {
+        if (mNtpSyncedThemeReadinessCallback != null) return;
+
+        mNtpSyncedThemeReadinessCallback =
+                () -> {
+                    mNtpSyncedThemeReadinessCallback = null;
+
+                    @Nullable Tab currentTab = mActivityTabSupplier.get();
+                    if (currentTab == null) return;
+
+                    @Nullable Profile currentProfile = currentTab.getProfile();
+                    if (!profile.equals(currentProfile)) return;
+
+                    onTabChangeOrGainFocus(
+                            currentTab, /* availableImmediately= */ autoApplyWhenReady);
+                };
+        NtpSyncedThemeManager.getInstance()
+                .addOneShotReadinessCallback(mNtpSyncedThemeReadinessCallback);
     }
 
     /**
@@ -1412,13 +1480,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
 
     /**
      * Returns whether cross-device theme import is enabled and supported on this device. Notably,
-     * this checks whether we're in any group besides the control group and that underlying theme
-     * sync is supported.
+     * this checks whether we're in any group besides the control group and that underlying NTP
+     * theme customization and theme sync are enabled by flag and policy.
      */
     @VisibleForTesting
     boolean isThemeFeatureEnabled() {
         return ChromeFeatureList.sXplatSyncedSetupThemes.isEnabled()
-                && ChromeFeatureList.sNewTabPageCustomizationThemeSync.isEnabled();
+                && ChromeFeatureList.sNewTabPageCustomizationThemeSync.isEnabled()
+                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
     }
 
     /**
@@ -1846,6 +1915,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         stopObservingLocalState();
         stopObservingPrefTracker();
         stopObservingThemeTracker();
+        stopObservingNtpSyncedThemeManager();
         stopObservingModalDialogManager();
     }
 }
