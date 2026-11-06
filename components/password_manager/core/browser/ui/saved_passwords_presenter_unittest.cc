@@ -463,8 +463,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsernameClearsPartialIssues) {
       [&] { return !presenter().GetSavedCredentials().empty(); }));
   EXPECT_FALSE(GetAllLoginsSync(&store()).empty());
 
-  std::vector<PasswordForm> forms = {form};
-
   const std::u16string kNewUsername = u"new_username";
   // The result of the update should have a new username and weak and reused
   // password issues.
@@ -625,7 +623,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
   store().AddLogin(FromPasswordForm(form));
   ASSERT_TRUE(base::test::RunUntil(
       [&] { return !presenter().GetSavedCredentials().empty(); }));
-  std::vector<PasswordForm> forms = {form};
 
   const std::u16string kNewNoteValue = u"new note";
 
@@ -652,7 +649,6 @@ TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.notes = {PasswordNote(u"existing note", base::Time::Now())};
-  std::vector<PasswordForm> forms = {form};
 
   store().AddLogin(FromPasswordForm(form));
   ASSERT_TRUE(base::test::RunUntil(
@@ -1813,7 +1809,6 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
                                ElementsAre(profile_store_form))));
 
   auto new_username = account_store_form.username_value;
-  std::vector<PasswordForm> forms_to_edit{profile_store_form};
   CredentialUIEntry credential_to_edit(profile_store_form);
   credential_to_edit.username = new_username;
 

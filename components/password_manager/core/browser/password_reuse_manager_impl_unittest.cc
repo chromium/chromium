@@ -533,7 +533,6 @@ TEST_F(PasswordReuseManagerImplTest, ReportMetrics) {
 
   // Save password.
   const std::u16string not_sync_password = u"password";
-  const std::u16string input = u"123password";
   reuse_manager()->SaveGaiaPasswordHash(
       "not_sync_username", not_sync_password,
       /*is_primary_account=*/false,

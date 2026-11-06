@@ -84,8 +84,6 @@ Matcher<Suggestion> EqualsDomainPasswordSuggestion(
     const std::u16string& realm_label,
     const gfx::Image& custom_icon,
     Suggestion::Icon trailing_icon = Suggestion::Icon::kNoIcon) {
-  const std::u16string voice_over_suffix =
-      realm_label.empty() ? u"" : base::StrCat({u", ", realm_label});
   return AllOf(
       EqualsSuggestion(id, main_text, Suggestion::Icon::kGlobe),
       Field("additional_label", &Suggestion::additional_label, realm_label),

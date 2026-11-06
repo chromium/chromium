@@ -268,7 +268,6 @@ TEST_F(PasswordAffiliationSourceAdapterTest,
 TEST_F(PasswordAffiliationSourceAdapterTest,
        DuplicateCredentialsArePrefetchWithMultiplicity) {
   adapter()->StartObserving(mock_source_observer());
-  std::vector<FacetURI> expected_facets;
 
   EXPECT_CALL(*mock_source_observer(),
               OnFacetsAdded(ElementsAre(

@@ -956,7 +956,6 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
   store_->AddLogin(password_manager::FromPasswordForm(affiliated_form2_));
 
-  std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
   affiliated_realms.push_back(kTestAndroidRealm1);
   SetupAffiliatedAndGroupedRealms(

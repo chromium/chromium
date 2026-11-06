@@ -165,8 +165,6 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromPasskey) {
 }
 
 TEST(CredentialUIEntryTest, TestGetAffiliatedDomains) {
-  std::vector<PasswordForm> forms;
-
   PasswordForm android_form;
   android_form.signon_realm = kAndroidSignonRealm;
   android_form.app_display_name = "g3.com";

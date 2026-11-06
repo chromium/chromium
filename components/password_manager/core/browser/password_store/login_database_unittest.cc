@@ -2695,7 +2695,6 @@ class LoginDatabaseGetUndecryptableLoginsTest
 // Test getting auto sign in logins when there are undecryptable ones
 TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
   base::HistogramTester histogram_tester;
-  std::vector<StoredCredential> forms;
   auto form1 =
       AddDummyLogin("foo1", GURL("https://foo1.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
@@ -2760,7 +2759,6 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(
       db.Init(on_undecryptable_passwords_removed.Get(), CreateEncryptor()));
-  std::vector<PasswordForm> result;
   StoredCredential cred = GenerateExampleStoredCredential();
 
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {

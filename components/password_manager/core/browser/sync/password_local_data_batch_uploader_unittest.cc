@@ -550,8 +550,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
 
 TEST_F(PasswordLocalDataBatchUploaderTest, MigrationUploadsEmptyKeys) {
   base::HistogramTester histogram_tester;
-  std::vector<PasswordForm> passwords =
-      CreatePasswordFormsInStore(3, profile_store());
+  CreatePasswordFormsInStore(3, profile_store());
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload with an empty list.
