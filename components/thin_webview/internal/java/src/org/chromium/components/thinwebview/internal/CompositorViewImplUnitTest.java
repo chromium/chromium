@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -32,6 +31,7 @@ import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,7 +73,8 @@ public class CompositorViewImplUnitTest {
     @Before
     public void setUp() {
         CompositorViewImplJni.setInstanceForTesting(mMockJni);
-        when(mMockJni.init(any(), any(), anyInt())).thenReturn(NATIVE_PTR);
+        when(mMockJni.init(any(), any(), anyInt()))
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_PTR));
         when(mXrSceneCoreSessionManager.createSurfaceEntity(anyInt()))
                 .thenReturn(mXrSurfaceEntityHolder);
         mContext = ApplicationProvider.getApplicationContext();
@@ -102,10 +103,10 @@ public class CompositorViewImplUnitTest {
 
         // Surface texture available
         listener.onSurfaceTextureAvailable(surfaceTexture, 100, 200);
-        verify(mMockJni).surfaceCreated(NATIVE_PTR);
+        verify(mMockJni).surfaceCreated(any());
         verify(mMockJni)
                 .surfaceChanged(
-                        eq(NATIVE_PTR),
+                        any(),
                         eq(PixelFormat.OPAQUE),
                         eq(100),
                         eq(200),
@@ -116,7 +117,7 @@ public class CompositorViewImplUnitTest {
         listener.onSurfaceTextureSizeChanged(surfaceTexture, 300, 400);
         verify(mMockJni)
                 .surfaceChanged(
-                        eq(NATIVE_PTR),
+                        any(),
                         eq(PixelFormat.OPAQUE),
                         eq(300),
                         eq(400),
@@ -129,11 +130,13 @@ public class CompositorViewImplUnitTest {
         // Surface texture destroyed
         boolean result = listener.onSurfaceTextureDestroyed(surfaceTexture);
         assertFalse(result);
-        verify(mMockJni).surfaceDestroyed(NATIVE_PTR);
+        verify(mMockJni).surfaceDestroyed(any());
 
         // Surface texture available again
         listener.onSurfaceTextureAvailable(surfaceTexture, 300, 400);
-        verify(mMockJni, times(2)).surfaceCreated(NATIVE_PTR);
+        verify(mMockJni, times(2)).surfaceCreated(any());
+
+        compositorView.destroy();
     }
 
     @Test
@@ -151,17 +154,16 @@ public class CompositorViewImplUnitTest {
         textureView.setSurfaceTexture(surfaceTexture);
 
         compositorView.destroy();
-        verify(mMockJni).destroy(NATIVE_PTR);
 
         // All subsequent callbacks should no-op
         listener.onSurfaceTextureAvailable(surfaceTexture, 100, 200);
         listener.onSurfaceTextureSizeChanged(surfaceTexture, 100, 200);
         listener.onSurfaceTextureDestroyed(surfaceTexture);
 
-        verify(mMockJni, never()).surfaceCreated(anyLong());
-        verify(mMockJni, never()).surfaceDestroyed(anyLong());
+        verify(mMockJni, never()).surfaceCreated(any());
+        verify(mMockJni, never()).surfaceDestroyed(any());
         verify(mMockJni, never())
-                .surfaceChanged(anyLong(), anyInt(), anyInt(), anyInt(), anyBoolean(), any());
+                .surfaceChanged(any(), anyInt(), anyInt(), anyInt(), anyBoolean(), any());
     }
 
     @Test
@@ -188,20 +190,17 @@ public class CompositorViewImplUnitTest {
         Surface surface = holder.getSurface();
 
         callback.surfaceCreated(holder);
-        verify(mMockJni).surfaceCreated(NATIVE_PTR);
+        verify(mMockJni).surfaceCreated(any());
 
         callback.surfaceChanged(holder, PixelFormat.RGBA_8888, 640, 480);
         verify(mMockJni)
                 .surfaceChanged(
-                        eq(NATIVE_PTR),
-                        eq(PixelFormat.RGBA_8888),
-                        eq(640),
-                        eq(480),
-                        eq(true),
-                        eq(surface));
+                        any(), eq(PixelFormat.RGBA_8888), eq(640), eq(480), eq(true), eq(surface));
 
         callback.surfaceDestroyed(holder);
-        verify(mMockJni).surfaceDestroyed(NATIVE_PTR);
+        verify(mMockJni).surfaceDestroyed(any());
+
+        compositorView.destroy();
     }
 
     @Test
@@ -218,16 +217,15 @@ public class CompositorViewImplUnitTest {
         SurfaceHolder holder = surfaceView.getHolder();
 
         compositorView.destroy();
-        verify(mMockJni).destroy(NATIVE_PTR);
 
         callback.surfaceCreated(holder);
         callback.surfaceChanged(holder, PixelFormat.RGBA_8888, 640, 480);
         callback.surfaceDestroyed(holder);
 
-        verify(mMockJni, never()).surfaceCreated(anyLong());
-        verify(mMockJni, never()).surfaceDestroyed(anyLong());
+        verify(mMockJni, never()).surfaceCreated(any());
+        verify(mMockJni, never()).surfaceDestroyed(any());
         verify(mMockJni, never())
-                .surfaceChanged(anyLong(), anyInt(), anyInt(), anyInt(), anyBoolean(), any());
+                .surfaceChanged(any(), anyInt(), anyInt(), anyInt(), anyBoolean(), any());
     }
 
     @Test
@@ -253,12 +251,12 @@ public class CompositorViewImplUnitTest {
         Surface mockSurface = mock(Surface.class);
 
         callback.surfaceCreated(mockSurface);
-        verify(mMockJni).surfaceCreated(NATIVE_PTR);
+        verify(mMockJni).surfaceCreated(any());
 
         callback.surfaceChanged(mockSurface, 800, 600);
         verify(mMockJni)
                 .surfaceChanged(
-                        eq(NATIVE_PTR),
+                        any(),
                         eq(PixelFormat.OPAQUE),
                         eq(800),
                         eq(600),
@@ -266,10 +264,9 @@ public class CompositorViewImplUnitTest {
                         eq(mockSurface));
 
         callback.surfaceDestroyed();
-        verify(mMockJni).surfaceDestroyed(NATIVE_PTR);
+        verify(mMockJni).surfaceDestroyed(any());
 
         compositorView.destroy();
-        verify(mMockJni).destroy(NATIVE_PTR);
         verify(mXrSurfaceEntityHolder).dispose();
     }
 
@@ -289,16 +286,15 @@ public class CompositorViewImplUnitTest {
         Surface mockSurface = mock(Surface.class);
 
         compositorView.destroy();
-        verify(mMockJni).destroy(NATIVE_PTR);
 
         callback.surfaceCreated(mockSurface);
         callback.surfaceChanged(mockSurface, 800, 600);
         callback.surfaceDestroyed();
 
-        verify(mMockJni, never()).surfaceCreated(anyLong());
-        verify(mMockJni, never()).surfaceDestroyed(anyLong());
+        verify(mMockJni, never()).surfaceCreated(any());
+        verify(mMockJni, never()).surfaceDestroyed(any());
         verify(mMockJni, never())
-                .surfaceChanged(anyLong(), anyInt(), anyInt(), anyInt(), anyBoolean(), any());
+                .surfaceChanged(any(), anyInt(), anyInt(), anyInt(), anyBoolean(), any());
     }
 
     @Test
@@ -310,11 +306,9 @@ public class CompositorViewImplUnitTest {
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
 
         compositorView.destroy();
-        verify(mMockJni, times(1)).destroy(NATIVE_PTR);
 
-        // Calling destroy() again should be a no-op and not call native destroy again
+        // Calling destroy() again should be a no-op
         compositorView.destroy();
-        verify(mMockJni, times(1)).destroy(NATIVE_PTR);
     }
 
     @Test
@@ -327,6 +321,9 @@ public class CompositorViewImplUnitTest {
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
 
         assertThrows(IllegalStateException.class, compositorView::destroy);
+
+        when(mWindowAndroid.getDestroyStack()).thenReturn(null);
+        compositorView.destroy();
     }
 
     @Test
@@ -338,11 +335,11 @@ public class CompositorViewImplUnitTest {
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
 
         compositorView.requestRender();
-        verify(mMockJni).setNeedsComposite(NATIVE_PTR);
+        verify(mMockJni).setNeedsComposite(any());
 
         compositorView.destroy();
         compositorView.requestRender();
-        verify(mMockJni, times(1)).setNeedsComposite(NATIVE_PTR);
+        verify(mMockJni, times(1)).setNeedsComposite(any());
     }
 
     @Test
@@ -355,11 +352,11 @@ public class CompositorViewImplUnitTest {
         Runnable runnable = mock(Runnable.class);
 
         compositorView.runOnNextFrame(runnable);
-        verify(mMockJni).runOnNextFrame(NATIVE_PTR, runnable);
+        verify(mMockJni).runOnNextFrame(any(), eq(runnable));
 
         compositorView.destroy();
         compositorView.runOnNextFrame(runnable);
-        verify(mMockJni, times(1)).runOnNextFrame(NATIVE_PTR, runnable);
+        verify(mMockJni, times(1)).runOnNextFrame(any(), eq(runnable));
     }
 
     @Test
@@ -375,7 +372,7 @@ public class CompositorViewImplUnitTest {
 
         compositorView.destroy();
         compositorView.setAlpha(0.8f);
-        // After destroy with mNativeCompositorViewImpl == 0, setAlpha returns early without
+        // After destroy with mNativeCompositorViewImpl == null, setAlpha returns early without
         // updating view alpha
         assertEquals(0.5f, compositorView.getView().getAlpha(), 0.01f);
     }

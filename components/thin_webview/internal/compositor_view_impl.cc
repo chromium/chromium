@@ -12,6 +12,7 @@
 #include "cc/slim/solid_color_layer.h"
 #include "components/thin_webview/features.h"
 #include "content/public/browser/android/compositor.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
@@ -27,16 +28,15 @@ namespace {
 const int kPixelFormatUnknown = 0;
 }  // namespace
 
-static int64_t JNI_CompositorViewImpl_Init(
+static jni_zero::JniUniquePtr<CompositorViewImpl> JNI_CompositorViewImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jwindow_android,
     int32_t java_background_color) {
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
-  auto compositor_view = std::make_unique<CompositorViewImpl>(
-      env, obj, window_android, java_background_color);
-  return reinterpret_cast<intptr_t>(compositor_view.release());
+  return jni_zero::MakeUnique<CompositorViewImpl>(env, obj, window_android,
+                                                  java_background_color);
 }
 
 static bool JNI_CompositorViewImpl_ShouldUseSurfaceView(JNIEnv* env) {
@@ -47,12 +47,12 @@ static bool JNI_CompositorViewImpl_ShouldUseSurfaceView(JNIEnv* env) {
 // static
 CompositorView* CompositorView::FromJavaObject(
     const base::android::JavaRef<jobject>& jcompositor_view) {
-  if (jcompositor_view.is_null())
+  if (jcompositor_view.is_null()) {
     return nullptr;
+  }
 
-  return reinterpret_cast<CompositorViewImpl*>(
-      Java_CompositorViewImpl_getNativePtr(base::android::AttachCurrentThread(),
-                                           jcompositor_view));
+  return Java_CompositorViewImpl_getNativePtr(
+      base::android::AttachCurrentThread(), jcompositor_view);
 }
 
 CompositorViewImpl::CompositorViewImpl(
@@ -73,10 +73,6 @@ CompositorViewImpl::CompositorViewImpl(
 }
 
 CompositorViewImpl::~CompositorViewImpl() = default;
-
-void CompositorViewImpl::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void CompositorViewImpl::SurfaceCreated(JNIEnv* env) {
   compositor_->SetRootLayer(root_layer_);

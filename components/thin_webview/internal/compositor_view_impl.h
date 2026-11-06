@@ -43,8 +43,6 @@ class CompositorViewImpl : public CompositorView,
 
   ~CompositorViewImpl() override;
 
-  void Destroy(JNIEnv* env);
-
   void SetNeedsComposite(JNIEnv* env);
   void RunOnNextFrame(JNIEnv* env, base::OnceClosure callback);
   void SurfaceCreated(JNIEnv* env);

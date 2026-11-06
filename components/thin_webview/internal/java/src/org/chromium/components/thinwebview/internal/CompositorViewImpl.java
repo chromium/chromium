@@ -15,7 +15,10 @@ import android.view.View;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -36,11 +39,14 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
 @JNINamespace("thin_webview::android")
 @NullMarked
 public class CompositorViewImpl implements CompositorView {
+    @JniType("::thin_webview::android::CompositorViewImpl")
+    interface NativeCompositorViewImpl extends JniTypeToken {}
+
     private final Context mContext;
     private final View mView;
     private final WindowAndroid mWindowAndroid;
     private final ThinWebViewConstraints mViewConstraints;
-    private long mNativeCompositorViewImpl;
+    private @Nullable JniUniquePtr<NativeCompositorViewImpl> mNativeCompositorViewImpl;
 
     /**
      * Creates a {@link CompositorView} backed by a {@link Surface}. The surface is provided by
@@ -87,9 +93,9 @@ public class CompositorViewImpl implements CompositorView {
             throw new IllegalStateException(
                     "WindowAndroid destroyed before CompositorViewImpl", windowAndroidDestroy);
         }
-        if (mNativeCompositorViewImpl != 0) {
-            CompositorViewImplJni.get().destroy(mNativeCompositorViewImpl);
-            mNativeCompositorViewImpl = 0;
+        if (mNativeCompositorViewImpl != null) {
+            mNativeCompositorViewImpl.destroy();
+            mNativeCompositorViewImpl = null;
             if (mView instanceof XrSurfaceEntityView entityView) {
                 entityView.getHolder().dispose();
             }
@@ -98,21 +104,21 @@ public class CompositorViewImpl implements CompositorView {
 
     @Override
     public void requestRender() {
-        if (mNativeCompositorViewImpl != 0) {
+        if (mNativeCompositorViewImpl != null) {
             CompositorViewImplJni.get().setNeedsComposite(mNativeCompositorViewImpl);
         }
     }
 
     @Override
     public void runOnNextFrame(Runnable runnable) {
-        if (mNativeCompositorViewImpl == 0) return;
+        if (mNativeCompositorViewImpl == null) return;
         CompositorViewImplJni.get().runOnNextFrame(mNativeCompositorViewImpl, runnable);
     }
 
     @Override
     public void setAlpha(float alpha) {
         assert mViewConstraints.supportsOpacity;
-        if (mNativeCompositorViewImpl == 0) return;
+        if (mNativeCompositorViewImpl == null) return;
         mView.setAlpha(alpha);
     }
 
@@ -125,7 +131,7 @@ public class CompositorViewImpl implements CompositorView {
                         new SurfaceHolder.Callback() {
                             @Override
                             public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                                if (mNativeCompositorViewImpl == 0) return;
+                                if (mNativeCompositorViewImpl == null) return;
                                 CompositorViewImplJni.get()
                                         .surfaceCreated(mNativeCompositorViewImpl);
                             }
@@ -136,7 +142,7 @@ public class CompositorViewImpl implements CompositorView {
                                     int format,
                                     int width,
                                     int height) {
-                                if (mNativeCompositorViewImpl == 0) return;
+                                if (mNativeCompositorViewImpl == null) return;
                                 CompositorViewImplJni.get()
                                         .surfaceChanged(
                                                 mNativeCompositorViewImpl,
@@ -149,7 +155,7 @@ public class CompositorViewImpl implements CompositorView {
 
                             @Override
                             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-                                if (mNativeCompositorViewImpl == 0) return;
+                                if (mNativeCompositorViewImpl == null) return;
                                 CompositorViewImplJni.get()
                                         .surfaceDestroyed(mNativeCompositorViewImpl);
                             }
@@ -170,7 +176,7 @@ public class CompositorViewImpl implements CompositorView {
                     @Override
                     public void onSurfaceTextureSizeChanged(
                             SurfaceTexture surfaceTexture, int width, int height) {
-                        if (mNativeCompositorViewImpl == 0) return;
+                        if (mNativeCompositorViewImpl == null) return;
                         assert textureView.getSurfaceTexture() == surfaceTexture;
                         CompositorViewImplJni.get()
                                 .surfaceChanged(
@@ -185,7 +191,7 @@ public class CompositorViewImpl implements CompositorView {
                     @Override
                     public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
                         assert textureView.getSurfaceTexture() == surfaceTexture;
-                        if (mNativeCompositorViewImpl != 0) {
+                        if (mNativeCompositorViewImpl != null) {
                             CompositorViewImplJni.get().surfaceDestroyed(mNativeCompositorViewImpl);
                         }
 
@@ -200,7 +206,7 @@ public class CompositorViewImpl implements CompositorView {
                     @Override
                     public void onSurfaceTextureAvailable(
                             SurfaceTexture surfaceTexture, int width, int height) {
-                        if (mNativeCompositorViewImpl == 0) return;
+                        if (mNativeCompositorViewImpl == null) return;
                         assert textureView.getSurfaceTexture() == surfaceTexture;
                         CompositorViewImplJni.get().surfaceCreated(mNativeCompositorViewImpl);
                         CompositorViewImplJni.get()
@@ -232,13 +238,13 @@ public class CompositorViewImpl implements CompositorView {
                 new XrSurfaceEntityHolder.Callback() {
                     @Override
                     public void surfaceCreated(Surface surface) {
-                        if (mNativeCompositorViewImpl == 0) return;
+                        if (mNativeCompositorViewImpl == null) return;
                         CompositorViewImplJni.get().surfaceCreated(mNativeCompositorViewImpl);
                     }
 
                     @Override
                     public void surfaceChanged(Surface surface, int width, int height) {
-                        if (mNativeCompositorViewImpl == 0) return;
+                        if (mNativeCompositorViewImpl == null) return;
                         CompositorViewImplJni.get()
                                 .surfaceChanged(
                                         mNativeCompositorViewImpl,
@@ -251,7 +257,7 @@ public class CompositorViewImpl implements CompositorView {
 
                     @Override
                     public void surfaceDestroyed() {
-                        if (mNativeCompositorViewImpl == 0) return;
+                        if (mNativeCompositorViewImpl == null) return;
                         CompositorViewImplJni.get().surfaceDestroyed(mNativeCompositorViewImpl);
                     }
                 });
@@ -265,8 +271,7 @@ public class CompositorViewImpl implements CompositorView {
     }
 
     @CalledByNative
-    private long getNativePtr() {
-        assert mNativeCompositorViewImpl != 0;
+    @Nullable JniPtr<NativeCompositorViewImpl> getNativePtr() {
         return mNativeCompositorViewImpl;
     }
 
@@ -288,27 +293,27 @@ public class CompositorViewImpl implements CompositorView {
 
     @NativeMethods
     interface Natives {
-        long init(CompositorViewImpl caller, WindowAndroid windowAndroid, int backgroundColor);
+        JniUniquePtr<NativeCompositorViewImpl> init(
+                CompositorViewImpl caller, WindowAndroid windowAndroid, int backgroundColor);
 
-        void destroy(long nativeCompositorViewImpl);
+        void surfaceCreated(JniPtr<NativeCompositorViewImpl> self);
 
-        void surfaceCreated(long nativeCompositorViewImpl);
-
-        void surfaceDestroyed(long nativeCompositorViewImpl);
+        void surfaceDestroyed(JniPtr<NativeCompositorViewImpl> self);
 
         void surfaceChanged(
-                long nativeCompositorViewImpl,
+                JniPtr<NativeCompositorViewImpl> self,
                 int format,
                 int width,
                 int height,
                 boolean canBeUsedWithSurfaceControl,
                 Surface surface);
 
-        void setNeedsComposite(long nativeCompositorViewImpl);
+        void setNeedsComposite(JniPtr<NativeCompositorViewImpl> self);
 
         boolean shouldUseSurfaceView();
 
         void runOnNextFrame(
-                long nativeCompositorViewImpl, @JniType("base::OnceClosure") Runnable runnable);
+                JniPtr<NativeCompositorViewImpl> self,
+                @JniType("base::OnceClosure") Runnable runnable);
     }
 }
