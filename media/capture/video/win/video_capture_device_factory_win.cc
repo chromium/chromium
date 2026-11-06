@@ -103,11 +103,6 @@ enum BlockedCameraNames {
   BLOCKED_CAMERA_MAX = BLOCKED_CAMERA_PLEORA_EBUS,
 };
 
-#define UWP_ENUM_ERROR_HANDLER(hr, err_log)                         \
-  DLOG(WARNING) << err_log << logging::SystemErrorCodeToString(hr); \
-  origin_task_runner_->PostTask(                                    \
-      FROM_HERE, base::BindOnce(std::move(device_info_callback), nullptr))
-
 // Blocked devices are identified by a characteristic prefix of the name.
 // This prefix is used case-insensitively. This list must be kept in sync with
 // |BlockedCameraNames|.
@@ -912,14 +907,18 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::GetDevicesInfoOnComThread(
 void VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP(
     std::vector<VideoCaptureDeviceInfo> devices_info,
     GetDevicesInfoCallback result_callback) {
+  DCHECK(com_thread_runner_->BelongsToCurrentThread());
   DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
-  // When an error occurs below, the `UWP_ENUM_ERROR_HANDLER()` macro runs
-  // `device_info_callback` with a `nullptr` operation.
   auto device_info_callback = base::BindOnce(
       &VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP,
       scoped_refptr<ComThreadData>(this), std::move(devices_info),
       std::move(result_callback));
+  const auto handle_error = [&device_info_callback](HRESULT hr,
+                                                    const char* error_message) {
+    DLOG(WARNING) << error_message << logging::SystemErrorCodeToString(hr);
+    std::move(device_info_callback).Run(nullptr);
+  };
 
   ComPtr<ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
       dev_info_statics;
@@ -932,7 +931,7 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP(
       RuntimeClass_Windows_Devices_Enumeration_DeviceInformation>(
       &dev_info_statics);
   if (FAILED(hr)) {
-    UWP_ENUM_ERROR_HANDLER(hr, "DeviceInformation factory failed: ");
+    handle_error(hr, "DeviceInformation factory failed: ");
     return;
   }
 
@@ -941,7 +940,7 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP(
       ScopedHString::Create(kVideoAndSensorCamerasAqsString);
   hr = dev_info_statics->FindAllAsyncAqsFilter(aqs_filter.get(), &async_op);
   if (FAILED(hr)) {
-    UWP_ENUM_ERROR_HANDLER(hr, "Find all devices asynchronously failed: ");
+    handle_error(hr, "Find all devices asynchronously failed: ");
     return;
   }
 
@@ -974,6 +973,7 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
     std::vector<VideoCaptureDeviceInfo> devices_info,
     GetDevicesInfoCallback result_callback,
     IAsyncOperation<DeviceInformationCollection*>* operation) {
+  DCHECK(com_thread_runner_->BelongsToCurrentThread());
   if (!operation) {
     origin_task_runner_->PostTask(
         FROM_HERE,
