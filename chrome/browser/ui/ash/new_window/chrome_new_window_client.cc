@@ -343,13 +343,9 @@ void ChromeNewWindowClient::OpenFileManager() {
   CHECK(result, base::NotFatalUntil::M162);
 }
 
-void ChromeNewWindowClient::OpenDownloadsFolder() {
-  // TODO(crbug.com/563546692): Take the AccountId from the caller, so that the
-  // folder belongs to the user who asked for it.
-  const session_manager::Session& session =
-      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
-  const user_manager::User& user = CHECK_DEREF(
-      user_manager::UserManager::Get()->FindUser(session.account_id()));
+void ChromeNewWindowClient::OpenDownloadsFolder(const AccountId& account_id) {
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
   const base::FilePath target_directory =
       file_manager::util::GetDownloadsFolder(user);
 

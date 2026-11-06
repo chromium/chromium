@@ -38,7 +38,7 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
                Disposition disposition) override;
   void OpenCalculator() override;
   void OpenFileManager() override;
-  void OpenDownloadsFolder() override;
+  void OpenDownloadsFolder(const AccountId& account_id) override;
   void OpenCrosh() override;
   void OpenGetHelp() override;
   void RestoreTab(const AccountId& account_id) override;

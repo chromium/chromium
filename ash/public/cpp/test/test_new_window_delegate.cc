@@ -27,7 +27,7 @@ void TestNewWindowDelegate::OpenUrl(const GURL& url,
                                     Disposition disposition) {}
 void TestNewWindowDelegate::OpenCalculator() {}
 void TestNewWindowDelegate::OpenFileManager() {}
-void TestNewWindowDelegate::OpenDownloadsFolder() {}
+void TestNewWindowDelegate::OpenDownloadsFolder(const AccountId& account_id) {}
 void TestNewWindowDelegate::OpenCrosh() {}
 void TestNewWindowDelegate::OpenDiagnostics() {}
 void TestNewWindowDelegate::OpenGetHelp() {}

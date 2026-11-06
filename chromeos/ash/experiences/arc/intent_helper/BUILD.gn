@@ -51,6 +51,7 @@ static_library("intent_helper") {
     ":arc_intent_helper_constants",
     "//ash/public/cpp",
     "//base",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_metrics_constants",
     "//chromeos/ash/experiences/arc/mojom",

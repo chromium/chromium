@@ -10,12 +10,14 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system/power/power_button_controller_base.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "base/check_deref.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
@@ -25,6 +27,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/url_formatter/url_fixer.h"
+#include "components/user_manager/user.h"
 #include "net/base/url_util.h"
 #include "url/url_constants.h"
 
@@ -177,7 +180,12 @@ void ArcIntentHelperBridge::OnIntentFiltersUpdated(
 
 void ArcIntentHelperBridge::OnOpenDownloads() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  ash::NewWindowDelegate::GetInstance()->OpenDownloadsFolder();
+  // The bridge is created per browser context, so the folder belongs to the
+  // user ARC is running for.
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_));
+  ash::NewWindowDelegate::GetInstance()->OpenDownloadsFolder(
+      user.GetAccountId());
 }
 
 void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {

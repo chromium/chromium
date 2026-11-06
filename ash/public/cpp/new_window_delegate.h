@@ -94,8 +94,8 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Invoked when an accelerator is used to open the file manager.
   virtual void OpenFileManager() = 0;
 
-  // Opens File Manager in the MyFiles/Downloads folder.
-  virtual void OpenDownloadsFolder() = 0;
+  // Opens File Manager in `account_id`'s MyFiles/Downloads folder.
+  virtual void OpenDownloadsFolder(const AccountId& account_id) = 0;
 
   // Invoked when the user opens Crosh.
   virtual void OpenCrosh() = 0;

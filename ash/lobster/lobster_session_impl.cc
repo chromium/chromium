@@ -24,6 +24,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -32,6 +33,8 @@
 #include "base/types/expected.h"
 #include "build/branding_buildflags.h"
 #include "components/feedback/feedback_constants.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -102,8 +105,16 @@ std::string BuildFeedbackDescription(std::string_view query,
       model_version, user_description);
 }
 
+// TODO(crbug.com/563546692): Take the account id from the caller.
+// LobsterSessionImpl holds a LobsterClient, which knows the account its
+// profile was built for, so the notification can carry it down here.
 void OpenDownloadsFolder() {
-  ash::NewWindowDelegate::GetInstance()->OpenDownloadsFolder();
+  // The session runs for whoever is using Lobster, and the notification this
+  // hangs off is only ever shown inside their session.
+  const session_manager::Session& session =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
+  ash::NewWindowDelegate::GetInstance()->OpenDownloadsFolder(
+      session.account_id());
 }
 
 message_center::RichNotificationData CreateRichNotificationData(

@@ -1,7 +1,9 @@
 include_rules = [
   "+ash/public",
+  "+chromeos/ash/components/browser_context_helper",
   "+components/google/core",
   "+components/url_formatter",
+  "+components/user_manager",
   "+ui/aura",
   "+ui/base",
   "+ui/gfx",
