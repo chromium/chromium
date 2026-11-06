@@ -4615,8 +4615,8 @@ suite('NewTabPageAppTest', () => {
                 'open-composebox', {detail: {text: '', files: []}}));
             await microtasksFinished();
 
-            const composebox = app.shadowRoot.querySelector<HTMLElement>(
-                'ntp-composebox, cr-composebox');
+            const composebox =
+                app.shadowRoot.querySelector<HTMLElement>('ntp-composebox');
             assertTrue(!!composebox);
             composebox.toggleAttribute('in-voice-search-mode', true);
             await microtasksFinished();
@@ -6005,8 +6005,7 @@ suite('NewTabPageAppTest', () => {
           }));
           await microtasksFinished();
 
-          const composebox =
-              app.shadowRoot.querySelector('ntp-composebox, cr-composebox');
+          const composebox = app.shadowRoot.querySelector('ntp-composebox');
           assertTrue(!!composebox);
           composebox.dispatchEvent(new CustomEvent(
               'voice-search-action',
@@ -6041,8 +6040,7 @@ suite('NewTabPageAppTest', () => {
           }));
           await microtasksFinished();
 
-          const composebox =
-              app.shadowRoot.querySelector('ntp-composebox, cr-composebox');
+          const composebox = app.shadowRoot.querySelector('ntp-composebox');
           assertTrue(!!composebox);
           composebox.dispatchEvent(new CustomEvent(
               'voice-search-action',
