@@ -1729,9 +1729,6 @@ TabDragController::Detach(ReleaseCapture release_capture) {
     }
   }
 
-  const std::vector<tab_groups::TabGroupId> groups_to_move =
-      attached_model->GetGroupsDestroyedFromRemovingIndices(dragged_indices);
-
   // If we are detaching from the source tabstrip, make sure the tab that was
   // initially active is selected. This ensures that when the currently active
   // dragged tab is removed, TabStripModel will fall back to activating the

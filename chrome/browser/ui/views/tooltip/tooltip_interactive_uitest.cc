@@ -333,7 +333,6 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
                        MAYBE_ScriptFocusHidesKeyboardTriggeredTooltip) {
   NavigateToURL("/tooltip_two_buttons.html");
   std::u16string expected_text_1 = u"my tooltip 1";
-  std::u16string expected_text_2 = u"my tooltip 2";
 
   // Trigger the tooltip from the keyboard with a TAB keypress.
   event_generator()->PressKey(ui::VKEY_TAB, ui::EF_NONE);

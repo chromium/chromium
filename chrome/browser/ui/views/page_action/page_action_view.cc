@@ -598,8 +598,6 @@ void PageActionView::UpdateAnchoredMessage(
 
 void PageActionView::CreateAndShowAnchoredMessage(
     const PageActionModelInterface& model) {
-  const std::u16string chip_text(label()->GetText());
-
   if (anchored_message_) {
     anchored_message_->UpdateContent(model);
     anchored_message_->AnimateIn();

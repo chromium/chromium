@@ -121,7 +121,6 @@ EmbeddedPermissionPrompt::GetPromptDisposition() const {
 
 std::vector<permissions::ElementAnchoredBubbleVariant>
 EmbeddedPermissionPrompt::GetPromptVariants() const {
-  std::vector<permissions::ElementAnchoredBubbleVariant> variants;
   return prompt_model_->GetPromptVariants();
 }
 

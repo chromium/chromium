@@ -229,7 +229,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   const base::FilePath test_file = CreateTestFile("");
-  const std::string file_contents = "file contents to write";
   GURL frame_url = embedded_test_server()->GetURL("/title1.html");
 
   ui::SelectFileDialog::SetFactory(

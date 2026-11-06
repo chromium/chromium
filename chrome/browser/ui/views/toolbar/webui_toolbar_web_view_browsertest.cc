@@ -4291,8 +4291,6 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
       LoadAndPinExtension(temp_dir, /*has_background_script=*/false);
   ASSERT_TRUE(extension);
 
-  std::string extension_id = extension->id();
-
   auto wait_for_extensions_button_tooltip =
       [&](std::string_view expected_tooltip) {
         return base::test::RunUntil([&]() {

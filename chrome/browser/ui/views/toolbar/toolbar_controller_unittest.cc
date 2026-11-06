@@ -533,7 +533,6 @@ TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
   event_generator()->PressLeftButton();
 
   const ui::SimpleMenuModel* menu = overflow_menu_for_testing();
-  const auto overflowed_buttons = GetOverflowedElements();
 
   // Overflowed buttons should match overflow menu.
   EXPECT_TRUE(menu);
@@ -972,7 +971,6 @@ TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
   event_generator()->PressLeftButton();
 
   const ui::SimpleMenuModel* menu = overflow_menu_for_testing();
-  const auto overflowed_buttons = GetOverflowedElements();
 
   EXPECT_TRUE(menu);
   const auto& responsive_elements = GetResponsiveElements(toolbar_controller());

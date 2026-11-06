@@ -2989,7 +2989,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        DefaultBadgeDisabledbyPolicy) {
-  std::u16string work_label = u"Work";
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
   browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kEnterpriseProfileBadgeToolbarSettings, 1);

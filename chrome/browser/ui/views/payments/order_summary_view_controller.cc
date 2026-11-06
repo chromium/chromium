@@ -204,13 +204,6 @@ void OrderSummaryViewController::FillContentView(views::View* content_view) {
             .release());
   }
 
-  std::u16string total_label_value = l10n_util::GetStringFUTF16(
-      IDS_PAYMENT_REQUEST_ORDER_SUMMARY_SHEET_TOTAL_FORMAT,
-      base::UTF8ToUTF16(
-          spec()->GetTotal(state()->selected_app())->amount->currency),
-      spec()->GetFormattedCurrencyAmount(
-          spec()->GetTotal(state()->selected_app())->amount));
-
   content_view->AddChildViewRaw(
       CreateLineItemView(
           base::UTF8ToUTF16(spec()->GetTotal(state()->selected_app())->label),

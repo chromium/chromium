@@ -140,8 +140,6 @@ TEST_F(TabListViewUnitTest, CloseButtonRemovesListItem) {
       std::make_unique<TabListModel>(GetPageContextAtIndices({0, 1}));
   auto tab_list_view = std::make_unique<TabListView>(tab_list_model.get());
 
-  std::vector<resource_attribution::PageContext> page_contexts =
-      tab_list_model->page_contexts();
   auto children = tab_list_view->children();
   ASSERT_EQ(children.size(), 2u);
 
@@ -168,8 +166,6 @@ TEST_F(TabListViewUnitTest, TabListRowViewAccessibleName) {
       std::make_unique<TabListModel>(GetPageContextAtIndices({0, 1}));
   auto tab_list_view = std::make_unique<TabListView>(tab_list_model.get());
 
-  std::vector<resource_attribution::PageContext> page_contexts =
-      tab_list_model->page_contexts();
   auto children = tab_list_view->children();
   ASSERT_EQ(children.size(), 2u);
 
@@ -221,8 +217,6 @@ TEST_F(TabListViewUnitTest, TabListViewAccessibleName) {
       std::make_unique<TabListModel>(GetPageContextAtIndices({0, 1}));
   auto tab_list_view = std::make_unique<TabListView>(tab_list_model.get());
 
-  std::vector<resource_attribution::PageContext> page_contexts =
-      tab_list_model->page_contexts();
   auto children = tab_list_view->children();
   ASSERT_EQ(children.size(), 2u);
 
@@ -268,8 +262,6 @@ TEST_F(TabListViewUnitTest, CloseButtonShowsAndHidesUpdate) {
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       GetContext(), widget->GetNativeWindow());
 
-  std::vector<resource_attribution::PageContext> page_contexts =
-      tab_list_model->page_contexts();
   auto children = tab_list_view->children();
   ASSERT_EQ(children.size(), 2u);
 
@@ -318,8 +310,6 @@ TEST_F(TabListViewUnitTest, CloseButtonShowsAndHidesWithFocus) {
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       GetContext(), widget->GetNativeWindow());
 
-  std::vector<resource_attribution::PageContext> page_contexts =
-      tab_list_model->page_contexts();
   auto children = tab_list_view->children();
   ASSERT_EQ(children.size(), 2u);
 

@@ -1153,10 +1153,6 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleReturningAccounts) {
 
 TEST_F(AccountSelectionBubbleViewTest,
        MultipleReturningAccountsWithTimestamps) {
-  const std::vector<std::string> kAccountSuffixes1 = {"new1", "returning1",
-                                                      "returning2"};
-  const std::vector<std::string> kAccountSuffixes2 = {"new2", "returning3",
-                                                      "returning4"};
   std::vector<IdentityProviderDataPtr> idp_list = {
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, content::IdentityProviderMetadata(),
