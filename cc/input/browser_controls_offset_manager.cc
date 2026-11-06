@@ -862,20 +862,20 @@ void BrowserControlsOffsetManager::SetupAnimation(
   const float max_stop_ratio =
       direction == BrowserControlsAnimation::Direction::kShowingControls ? 1
                                                                          : -1;
+  const BrowserControlsAnimation::Curve curve(tween_type);
   float top_start_ratio = TopControlsShownRatio();
   float top_stop_ratio = top_start_ratio + max_stop_ratio;
   top_controls_animation_.Initialize(direction, top_start_ratio, top_stop_ratio,
                                      base::Milliseconds(duration_ms),
-                                     /*jump_to_end_on_reset=*/false,
-                                     tween_type);
+                                     /*jump_to_end_on_reset=*/false, curve);
   top_controls_animation_.SetBounds(TopControlsMinShownRatio(), 1.0f);
 
   float bottom_start_ratio = BottomControlsShownRatio();
   float bottom_stop_ratio = bottom_start_ratio + max_stop_ratio;
-  bottom_controls_animation_.Initialize(
-      direction, bottom_start_ratio, bottom_stop_ratio,
-      base::Milliseconds(duration_ms),
-      /*jump_to_end_on_reset=*/false, tween_type);
+  bottom_controls_animation_.Initialize(direction, bottom_start_ratio,
+                                        bottom_stop_ratio,
+                                        base::Milliseconds(duration_ms),
+                                        /*jump_to_end_on_reset=*/false, curve);
   bottom_controls_animation_.SetBounds(BottomControlsMinShownRatio(), 1.0f);
 
   client().DidChangeBrowserControlsPosition();
@@ -927,7 +927,8 @@ void BrowserControlsOffsetManager::InitAnimationForHeightChange(
           : BrowserControlsAnimation::Direction::kHidingControls;
   animation->Initialize(direction, start_ratio, stop_ratio,
                         base::Milliseconds(kHeightChangeDurationMs),
-                        /*jump_to_end_on_reset=*/true, gfx::Tween::LINEAR);
+                        /*jump_to_end_on_reset=*/true,
+                        BrowserControlsAnimation::Curve(gfx::Tween::LINEAR));
 }
 
 float BrowserControlsOffsetManager::OldTopControlsMinShownRatio() {

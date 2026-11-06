@@ -5,24 +5,46 @@
 #include "cc/input/browser_controls_animation.h"
 
 #include <algorithm>
+#include <variant>
+
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cc {
 
+BrowserControlsAnimation::Curve::Curve(gfx::Tween::Type type) : curve_(type) {}
+
+BrowserControlsAnimation::Curve::Curve(const gfx::CubicBezier& bezier)
+    : curve_(bezier) {}
+
+double BrowserControlsAnimation::Curve::Solve(double progress) const {
+  return std::visit(absl::Overload{
+                        [progress](gfx::Tween::Type type) {
+                          return gfx::Tween::CalculateValue(type, progress);
+                        },
+                        [progress](const gfx::CubicBezier& bezier) {
+                          return bezier.Solve(progress);
+                        },
+                    },
+                    curve_);
+}
+
 BrowserControlsAnimation::BrowserControlsAnimation() = default;
+
+BrowserControlsAnimation::~BrowserControlsAnimation() = default;
 
 void BrowserControlsAnimation::Initialize(Direction direction,
                                           float start_value,
                                           float stop_value,
                                           base::TimeDelta duration,
                                           bool jump_to_end_on_reset,
-                                          gfx::Tween::Type tween_type) {
+                                          const Curve& curve) {
   direction_ = direction;
   start_value_ = start_value;
   stop_value_ = stop_value;
   duration_ = duration;
   initialized_ = true;
   jump_to_end_on_reset_ = jump_to_end_on_reset;
-  tween_type_ = tween_type;
+  curve_ = curve;
   SetBounds(std::min(start_value_, stop_value_),
             std::max(start_value_, stop_value_));
 }
@@ -39,9 +61,7 @@ std::optional<float> BrowserControlsAnimation::Tick(
     started_ = true;
   }
 
-  float value = gfx::Tween::ClampedFloatValueBetween(
-      monotonic_time, start_time_, start_value_, stop_time_, stop_value_,
-      tween_type_);
+  float value = ValueAt(monotonic_time);
 
   if (IsComplete(value)) {
     value = FinalValue();
@@ -49,6 +69,19 @@ std::optional<float> BrowserControlsAnimation::Tick(
   }
 
   return value;
+}
+
+float BrowserControlsAnimation::ValueAt(base::TimeTicks monotonic_time) const {
+  if (monotonic_time <= start_time_) {
+    return start_value_;
+  }
+  if (monotonic_time >= stop_time_) {
+    return stop_value_;
+  }
+  const double linear_progress =
+      (monotonic_time - start_time_) / (stop_time_ - start_time_);
+  return gfx::Tween::FloatValueBetween(curve_.Solve(linear_progress),
+                                       start_value_, stop_value_);
 }
 
 void BrowserControlsAnimation::SetBounds(float min, float max) {
@@ -71,6 +104,7 @@ std::optional<float> BrowserControlsAnimation::Reset() {
   min_value_ = 0.0f;
   max_value_ = 1.0f;
   jump_to_end_on_reset_ = false;
+  curve_ = Curve(gfx::Tween::LINEAR);
 
   return ret;
 }

@@ -8,10 +8,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_export.h"
 
-namespace base {
-class TimeTicks;
-}
-
 namespace gfx {
 
 class Rect;
@@ -127,13 +123,6 @@ class ANIMATION_EXPORT Tween {
   static SkColor ColorValueBetween(double value, SkColor start, SkColor target);
   static double DoubleValueBetween(double value, double start, double target);
   static float FloatValueBetween(double value, float start, float target);
-  static float ClampedFloatValueBetween(
-      const base::TimeTicks& time,
-      const base::TimeTicks& start_time,
-      float start,
-      const base::TimeTicks& target_time,
-      float target,
-      gfx::Tween::Type type = gfx::Tween::LINEAR);
 
   // Interpolated between start and target, with every integer in this range
   // given equal weight.

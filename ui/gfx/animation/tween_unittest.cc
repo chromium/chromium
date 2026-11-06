@@ -6,7 +6,6 @@
 
 #include <math.h>
 
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -141,24 +140,6 @@ TEST(TweenTest, LinearIntValueBetweenNegative) {
   EXPECT_EQ(0, Tween::LinearIntValueBetween(3.0 / 4.0, -2, 0));
   EXPECT_EQ(0, Tween::LinearIntValueBetween(3.5 / 4.0, -2, 0));
   EXPECT_EQ(0, Tween::LinearIntValueBetween(4.0 / 4.0, -2, 0));
-}
-
-TEST(TweenTest, ClampedFloatValueBetweenTimeTicks) {
-  const float v1 = 10.0f;
-  const float v2 = 20.0f;
-
-  const auto t0 = base::TimeTicks();
-
-  base::TimeTicks from = t0 + base::Seconds(1);
-  base::TimeTicks to = t0 + base::Seconds(2);
-
-  base::TimeTicks t_before = t0 + base::Seconds(0.9);
-  base::TimeTicks t_between = t0 + base::Seconds(1.6);
-  base::TimeTicks t_after = t0 + base::Seconds(2.2);
-
-  EXPECT_EQ(v1, Tween::ClampedFloatValueBetween(t_before, from, v1, to, v2));
-  EXPECT_EQ(16.0, Tween::ClampedFloatValueBetween(t_between, from, v1, to, v2));
-  EXPECT_EQ(v2, Tween::ClampedFloatValueBetween(t_after, from, v1, to, v2));
 }
 
 // Verifies the corners of the rect are animated, rather than the origin/size

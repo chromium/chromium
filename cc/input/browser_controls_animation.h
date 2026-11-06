@@ -6,10 +6,12 @@
 #define CC_INPUT_BROWSER_CONTROLS_ANIMATION_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/cubic_bezier.h"
 
 namespace cc {
 
@@ -22,7 +24,21 @@ class CC_EXPORT BrowserControlsAnimation {
     kHidingControls,
   };
 
+  // Easing curve that maps normalized time progress in [0, 1] to eased
+  // progress.
+  class CC_EXPORT Curve {
+   public:
+    explicit Curve(gfx::Tween::Type type);
+    explicit Curve(const gfx::CubicBezier& bezier);
+
+    double Solve(double progress) const;
+
+   private:
+    std::variant<gfx::Tween::Type, gfx::CubicBezier> curve_;
+  };
+
   BrowserControlsAnimation();
+  ~BrowserControlsAnimation();
 
   // Whether the animation is initialized with a direction and start and stop
   // values.
@@ -33,7 +49,7 @@ class CC_EXPORT BrowserControlsAnimation {
                   float stop_value,
                   base::TimeDelta duration,
                   bool jump_to_end_on_reset,
-                  gfx::Tween::Type tween_type);
+                  const Curve& curve);
   // Returns the animated value for the given monotonic time tick if the
   // animation is initialized. Otherwise, returns `std::nullopt`.
   std::optional<float> Tick(base::TimeTicks monotonic_time);
@@ -58,6 +74,9 @@ class CC_EXPORT BrowserControlsAnimation {
 
  private:
   bool IsComplete(float value) const;
+  // Returns the value at `monotonic_time`, clamped to the start and stop
+  // values outside of the animation's time range.
+  float ValueAt(base::TimeTicks monotonic_time) const;
 
   // Whether the animation is running.
   bool started_ = false;
@@ -81,7 +100,8 @@ class CC_EXPORT BrowserControlsAnimation {
   // responsibility to actually set the shown ratios using the value returned
   // by ::Reset().
   bool jump_to_end_on_reset_ = false;
-  gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
+  // The easing applied to the animation progress.
+  Curve curve_{gfx::Tween::LINEAR};
 };
 
 }  // namespace cc

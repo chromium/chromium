@@ -17,8 +17,7 @@ class COMPONENT_EXPORT(GEOMETRY) CubicBezier {
  public:
   CubicBezier(double p1x, double p1y, double p2x, double p2y);
   CubicBezier(const CubicBezier& other);
-
-  CubicBezier& operator=(const CubicBezier&) = delete;
+  CubicBezier& operator=(const CubicBezier& other);
 
   double SampleCurveX(double t) const {
     // `ax t^3 + bx t^2 + cx t' expanded using Horner's rule.
