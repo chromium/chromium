@@ -155,6 +155,15 @@ class WebState : public base::SupportsUserData {
     std::optional<std::string> internal_scroll_to_text_fragment;
   };
 
+  // Parameters for the `CreatePdf()` method.
+  struct CreatePdfParams {
+    // Portion of the document to render, in the document's coordinate space
+    // (CSS pixels, independent of the current scroll position and page zoom),
+    // at one PDF point per CSS pixel. When `std::nullopt`, the entire web page
+    // is rendered.
+    std::optional<CGRect> document_rect;
+  };
+
   // InterfaceBinder can be instantiated by subclasses of WebState and returned
   // by GetInterfaceBinderForMainFrame().
   class InterfaceBinder {
@@ -488,10 +497,16 @@ class WebState : public base::SupportsUserData {
   // callback is invoked with a nil snapshot.
   virtual void TakeSnapshot(const CGRect rect, SnapshotCallback callback) = 0;
 
-  // Creates PDF representation of the web page and invokes the `callback` with
-  // the NSData of the PDF or nil if a PDF couldn't be generated.
-  virtual void CreateFullPagePdf(
-      base::OnceCallback<void(NSData*)> callback) = 0;
+  // Creates a PDF representation of the web page according to `params` and
+  // invokes `callback` with the NSData of the PDF, or `nil` if a PDF couldn't
+  // be generated (including when `params.document_rect` is set to a null or
+  // infinite rectangle, or has a width or height under one CSS pixel).
+  virtual void CreatePdf(const CreatePdfParams& params,
+                         base::OnceCallback<void(NSData*)> callback) = 0;
+
+  // Deprecated: use `CreatePdf()` instead.
+  // TODO(crbug.com/582795698): Migrate callers to `CreatePdf()` and remove.
+  virtual void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback);
 
   // Tries to dismiss the presented states of the media (fullscreen or Picture
   // in Picture).

@@ -936,10 +936,12 @@ void WebStateImpl::RealizedWebState::TakeSnapshot(const CGRect rect,
                              }];
 }
 
-void WebStateImpl::RealizedWebState::CreateFullPagePdf(
+void WebStateImpl::RealizedWebState::CreatePdf(
+    const CreatePdfParams& params,
     base::OnceCallback<void(NSData*)> callback) {
-  [web_controller_ createFullPagePDFWithCompletion:base::CallbackToBlock(
-                                                       std::move(callback))];
+  [web_controller_
+      createPDFWithDocumentRect:params.document_rect
+                     completion:base::CallbackToBlock(std::move(callback))];
 }
 
 void WebStateImpl::RealizedWebState::CloseMediaPresentations() {

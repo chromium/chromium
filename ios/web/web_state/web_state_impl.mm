@@ -915,10 +915,10 @@ void WebStateImpl::TakeSnapshot(const CGRect rect, SnapshotCallback callback) {
   RealizedState()->TakeSnapshot(rect, std::move(callback));
 }
 
-void WebStateImpl::CreateFullPagePdf(
-    base::OnceCallback<void(NSData*)> callback) {
+void WebStateImpl::CreatePdf(const CreatePdfParams& params,
+                             base::OnceCallback<void(NSData*)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RealizedState()->CreateFullPagePdf(std::move(callback));
+  RealizedState()->CreatePdf(params, std::move(callback));
 }
 
 void WebStateImpl::CloseMediaPresentations() {

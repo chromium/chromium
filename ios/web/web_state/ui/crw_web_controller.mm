@@ -929,9 +929,12 @@ JavaScriptCompletionBlock WrapCompletionBlock(
                   }];
 }
 
-- (void)createFullPagePDFWithCompletion:(void (^)(NSData*))completionBlock {
-  // Invoke the `completionBlock` with nil rather than a blank PDF for certain
-  // URLs or if there is a javascript dialog running.
+- (void)createPDFWithDocumentRect:(std::optional<CGRect>)documentRect
+                       completion:
+                           (void (^)(NSData* PDFDocumentData))completion {
+  CHECK(completion, base::NotFatalUntil::M160);
+  // Invoke `completion` with nil rather than a blank PDF for certain URLs or if
+  // there is a JavaScript dialog running.
   const std::string& mimeType = self.webState->GetContentsMimeType();
   const bool contentSupported =
       web::IsContentTypeHtml(mimeType) || web::IsContentTypePdf(mimeType);
@@ -940,11 +943,12 @@ JavaScriptCompletionBlock WrapCompletionBlock(
       web::GetWebClient()->IsAppSpecificURL(URL) ||
       self.webStateImpl->IsJavaScriptDialogRunning()) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      completionBlock(nil);
+      completion(nil);
     });
     return;
   }
-  web::CreateFullPagePdf(self.webView, base::BindOnce(completionBlock));
+
+  web::CreatePdf(self.webView, documentRect, base::BindOnce(completion));
 }
 
 - (void)closeMediaPresentations {

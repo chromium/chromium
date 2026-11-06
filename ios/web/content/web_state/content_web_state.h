@@ -167,7 +167,8 @@ class ContentWebState : public WebState,
   void SetHasOpener(bool has_opener) override;
   bool CanTakeSnapshot() const override;
   void TakeSnapshot(const CGRect rect, SnapshotCallback callback) override;
-  void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) override;
+  void CreatePdf(const CreatePdfParams& params,
+                 base::OnceCallback<void(NSData*)> callback) override;
   void CloseMediaPresentations() override;
 
  protected:

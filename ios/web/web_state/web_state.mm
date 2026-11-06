@@ -105,6 +105,10 @@ WebState::InterfaceBinder* WebState::GetInterfaceBinderForMainFrame() {
   return nullptr;
 }
 
+void WebState::CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) {
+  CreatePdf(CreatePdfParams(), std::move(callback));
+}
+
 WebState* WebState::ForceRealized() {
   return ForceRealizedWithPolicy(RealizationPolicy::kDefault);
 }

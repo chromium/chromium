@@ -590,8 +590,8 @@ void FakeWebState::TakeSnapshot(const CGRect rect, SnapshotCallback callback) {
   std::move(callback).Run([[UIImage alloc] init]);
 }
 
-void FakeWebState::CreateFullPagePdf(
-    base::OnceCallback<void(NSData*)> callback) {
+void FakeWebState::CreatePdf(const CreatePdfParams& params,
+                             base::OnceCallback<void(NSData*)> callback) {
   std::move(callback).Run([[NSData alloc] init]);
 }
 

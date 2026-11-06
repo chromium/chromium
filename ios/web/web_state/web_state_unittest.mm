@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <cmath>
+
+#import "base/apple/scoped_cftyperef.h"
 #import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
@@ -177,97 +180,171 @@ TEST_F(WebStateTest, Snapshot) {
   }));
 }
 
-// Tests that the create PDF method returns a PDF of a rendered html page.
+// Tests that `CreatePdf()` returns a PDF of a rendered HTML page.
 // TODO(crbug.com/433740395): Re-enable tests
 #if TARGET_OS_SIMULATOR
-#define MAYBE_CreateFullPagePdf_ValidURL CreateFullPagePdf_ValidURL
+#define MAYBE_CreatePdfValidUrl CreatePdfValidUrl
 #else
-#define MAYBE_CreateFullPagePdf_ValidURL DISABLED_CreateFullPagePdf_ValidURL
+#define MAYBE_CreatePdfValidUrl DISABLED_CreatePdfValidUrl
 #endif
-TEST_F(WebStateTest, MAYBE_CreateFullPagePdf_ValidURL) {
-  [GetAnyKeyWindow() addSubview:web_state()->GetView()];
+TEST_F(WebStateTest, MAYBE_CreatePdfValidUrl) {
+  UIWindow* window = GetAnyKeyWindow();
+  [window addSubview:web_state()->GetView()];
+  ASSERT_TRUE(LoadHtml("<html><div style='background-color:#FF0000; width:50%; "
+                       "height:100%;'></div></html>"));
 
-  // Load a URL and some HTML in the WebState.
-  GURL url("https://www.chromium.org");
-  NavigationManager::WebLoadParams load_params(url);
-  web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return web_state()->GetLastCommittedURL() == url &&
-           !web_state()->IsLoading();
-  }));
-
-  NSString* data_html =
-      @"<html><div style='background-color:#FF0000; width:50%; "
-       "height:100%;'></div></html>";
-  web_state()->LoadData([data_html dataUsingEncoding:NSUTF8StringEncoding],
-                        @"text/html", url);
-
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return !web_state()->IsLoading();
-  }));
-
-  // Create a PDF for this page and validate the data.
   __block NSData* callback_data = nil;
-  web_state()->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
-    callback_data = [pdf_document_data copy];
-  }));
+  __block bool callback_called = false;
+  web_state()->CreatePdf({}, base::BindOnce(^(NSData* pdf_document_data) {
+                           callback_data = [pdf_document_data copy];
+                           callback_called = true;
+                         }));
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return callback_data;
+    return callback_called;
   }));
+  ASSERT_TRUE(callback_data);
 
-  CGPDFDocumentRef pdf = CGPDFDocumentCreateWithProvider(
-      CGDataProviderCreateWithCFData((CFDataRef)callback_data));
-  CGSize pdf_size =
-      CGPDFPageGetBoxRect(CGPDFDocumentGetPage(pdf, 1), kCGPDFMediaBox).size;
+  base::apple::ScopedCFTypeRef<CGDataProviderRef> provider(
+      CGDataProviderCreateWithCFData((__bridge CFDataRef)callback_data));
+  base::apple::ScopedCFTypeRef<CGPDFDocumentRef> pdf(
+      CGPDFDocumentCreateWithProvider(provider.get()));
+  ASSERT_TRUE(pdf);
+  ASSERT_GE(CGPDFDocumentGetNumberOfPages(pdf.get()), 1u);
+  const CGSize pdf_size =
+      CGPDFPageGetBoxRect(CGPDFDocumentGetPage(pdf.get(), 1), kCGPDFMediaBox)
+          .size;
 
-  CGFloat kSaveAreaTopInset = GetAnyKeyWindow().safeAreaInsets.top;
   EXPECT_GE(pdf_size.height,
-            UIScreen.mainScreen.bounds.size.height - kSaveAreaTopInset);
-  EXPECT_GE(pdf_size.width, [[UIScreen mainScreen] bounds].size.width);
-
-  CGPDFDocumentRelease(pdf);
+            window.bounds.size.height - window.safeAreaInsets.top);
+  EXPECT_GE(pdf_size.width, window.bounds.size.width);
 }
 
-// Tests that CreateFullPagePdf invokes completion callback nil when an invalid
-// URL is loaded.
-TEST_F(WebStateTest, CreateFullPagePdf_InvalidURLs) {
+// Tests that `CreatePdf()` invokes the completion callback with nil when an
+// invalid URL is loaded.
+TEST_F(WebStateTest, CreatePdfInvalidUrls) {
   GURL app_specific_url(
       base::StringPrintf("%s://app_specific_url", kTestAppSpecificScheme));
 
   // Empty URL and app-specific URLs (e.g. app_specific_url) should get nil
   // data through the completion callback.
   std::vector<GURL> invalid_urls = {GURL(), app_specific_url};
-  NSString* data_html = @(kTestPageHTML);
-  for (auto& url : invalid_urls) {
-    web_state()->LoadData([data_html dataUsingEncoding:NSUTF8StringEncoding],
-                          @"text/html", url);
-
+  for (const GURL& url : invalid_urls) {
     NavigationManager::WebLoadParams load_params(url);
     load_params.transition_type = ui::PAGE_TRANSITION_TYPED;
     web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
-    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForPageLoadTimeout, ^bool {
-          return web_state()->GetLastCommittedURL() == url;
-        }));
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return web_state()->GetLastCommittedURL() == url &&
+             !web_state()->IsLoading();
+    }));
 
     __block NSData* callback_data = nil;
     __block bool callback_called = false;
-    web_state()->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
-      callback_data = [pdf_document_data copy];
-      callback_called = true;
-    }));
+    web_state()->CreatePdf({}, base::BindOnce(^(NSData* pdf_document_data) {
+                             callback_data = [pdf_document_data copy];
+                             callback_called = true;
+                           }));
 
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
       return callback_called;
     }));
-
-    ASSERT_FALSE(callback_data);
+    EXPECT_FALSE(callback_data);
   }
 }
 
-// Tests that CreateFullPagePdf returns PDF data when the WebState content is a
-// PDF file.
+// Tests that `CreatePdf()` renders the requested rectangle of the document in
+// document coordinates regardless of the current scroll position.
+TEST_F(WebStateTest, CreatePdfRendersRequestedDocumentRect) {
+  constexpr int kRedSquareTop = 1000;
+  constexpr int kRedSquareSize = 100;
+  constexpr int kScrollOffset = 500;
+
+  web_state()->GetView().frame = CGRectMake(0, 0, 300, 300);
+  [GetAnyKeyWindow() addSubview:web_state()->GetView()];
+  ASSERT_TRUE(LoadHtml(base::StringPrintf(
+      "<html><head><meta name='viewport' content='width=device-width, "
+      "initial-scale=1'></head><body style='margin:0;width:600px;height:3000px;"
+      "background:#FFFFFF'><div style='position:absolute;left:0;top:%dpx;"
+      "width:%dpx;height:%dpx;background:#FF0000'></div></body></html>",
+      kRedSquareTop, kRedSquareSize, kRedSquareSize)));
+  // Scroll away from the requested rectangle so that a view-relative
+  // interpretation would render different content.
+  ExecuteJavaScript(
+      [NSString stringWithFormat:@"window.scrollTo(0, %d)", kScrollOffset]);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return std::abs([ExecuteJavaScript(@"window.scrollY") doubleValue] -
+                    kScrollOffset) < 1.0;
+  }));
+
+  const CGRect document_rect = CGRectMake(0, kRedSquareTop, 200, 200);
+  __block NSData* callback_data = nil;
+  __block bool callback_called = false;
+  web_state()->CreatePdf({.document_rect = document_rect},
+                         base::BindOnce(^(NSData* pdf_document_data) {
+                           callback_data = [pdf_document_data copy];
+                           callback_called = true;
+                         }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return callback_called;
+  }));
+  ASSERT_TRUE(callback_data);
+
+  base::apple::ScopedCFTypeRef<CGDataProviderRef> provider(
+      CGDataProviderCreateWithCFData((__bridge CFDataRef)callback_data));
+  base::apple::ScopedCFTypeRef<CGPDFDocumentRef> pdf(
+      CGPDFDocumentCreateWithProvider(provider.get()));
+  ASSERT_TRUE(pdf);
+  ASSERT_EQ(1u, CGPDFDocumentGetNumberOfPages(pdf.get()));
+  CGPDFPageRef page = CGPDFDocumentGetPage(pdf.get(), 1);
+  const CGRect media_box = CGPDFPageGetBoxRect(page, kCGPDFMediaBox);
+  EXPECT_EQ(document_rect.size.width, media_box.size.width);
+  EXPECT_EQ(document_rect.size.height, media_box.size.height);
+
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat defaultFormat];
+  format.scale = 1;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:media_box.size
+                                             format:format];
+  UIImage* image =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        CGContextRef cg_context = context.CGContext;
+        [[UIColor whiteColor] setFill];
+        CGContextFillRect(cg_context, CGRectMake(0, 0, media_box.size.width,
+                                                 media_box.size.height));
+        // PDF user space is y-up; flip it to match UIKit's y-down space.
+        CGContextTranslateCTM(cg_context, 0, media_box.size.height);
+        CGContextScaleCTM(cg_context, 1, -1);
+        CGContextDrawPDFPage(cg_context, page);
+      }];
+  ASSERT_TRUE(image);
+  gfx::test::CheckColors(gfx::test::GetPlatformImageColor(image, 50, 50),
+                         SK_ColorRED);
+  gfx::test::CheckColors(gfx::test::GetPlatformImageColor(image, 150, 150),
+                         SK_ColorWHITE);
+}
+
+// Tests that `CreatePdf()` invokes the completion callback with nil when the
+// requested document rectangle is empty.
+TEST_F(WebStateTest, CreatePdfReturnsNilForEmptyDocumentRect) {
+  [GetAnyKeyWindow() addSubview:web_state()->GetView()];
+  ASSERT_TRUE(LoadHtml(kTestPageHTML));
+
+  __block NSData* callback_data = nil;
+  __block bool callback_called = false;
+  web_state()->CreatePdf({.document_rect = CGRectZero},
+                         base::BindOnce(^(NSData* pdf_document_data) {
+                           callback_data = [pdf_document_data copy];
+                           callback_called = true;
+                         }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return callback_called;
+  }));
+  EXPECT_FALSE(callback_data);
+}
+
+// Tests that the deprecated `CreateFullPagePdf()` forwarding wrapper returns
+// PDF data when the WebState content is a PDF file.
 TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
   [GetAnyKeyWindow() addSubview:web_state()->GetView()];
   CGRect fake_bounds = CGRectMake(0, 0, 100, 100);
@@ -280,23 +357,14 @@ TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
         [context fillRect:fake_bounds];
       }];
 
-  GURL test_url("https://www.chromium.org/somePDF.pdf");
-  web::NavigationManager::WebLoadParams load_params(test_url);
-  web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^bool {
-        return web_state()->GetLastCommittedURL() == test_url &&
-               !web_state()->IsLoading();
-      }));
-
-  std::string mime_type = "application/pdf";
-  web_state()->LoadData(
-      pdf_data, [NSString stringWithUTF8String:mime_type.c_str()], test_url);
-
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^bool {
-        return !web_state()->IsLoading();
-      }));
+  ASSERT_TRUE(LoadHtml("<html></html>"));
+  const GURL test_url("https://chromium.test/somePDF.pdf");
+  web_state()->LoadData(pdf_data, @"application/pdf", test_url);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    return web_state()->GetLastCommittedURL() == test_url &&
+           web_state()->GetContentsMimeType() == "application/pdf" &&
+           !web_state()->IsLoading();
+  }));
 
   __block NSData* callback_data = nil;
   __block bool callback_called = false;
@@ -308,8 +376,7 @@ TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
     return callback_called;
   }));
-
-  ASSERT_TRUE(callback_data);
+  EXPECT_TRUE(callback_data);
 }
 
 // Tests that the web state has an opener after calling SetHasOpener().

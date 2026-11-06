@@ -623,7 +623,10 @@ bool ContentWebState::CanTakeSnapshot() const {
 void ContentWebState::TakeSnapshot(const CGRect rect,
                                    SnapshotCallback callback) {}
 
-void ContentWebState::CreateFullPagePdf(base::OnceCallback<void(NSData*)>) {}
+void ContentWebState::CreatePdf(const CreatePdfParams& params,
+                                base::OnceCallback<void(NSData*)> callback) {
+  std::move(callback).Run(nil);
+}
 
 void ContentWebState::CloseMediaPresentations() {}
 

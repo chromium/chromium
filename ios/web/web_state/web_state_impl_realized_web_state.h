@@ -216,7 +216,8 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void SetHasOpener(bool has_opener);
   bool CanTakeSnapshot() const;
   void TakeSnapshot(const CGRect rect, SnapshotCallback callback);
-  void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback);
+  void CreatePdf(const CreatePdfParams& params,
+                 base::OnceCallback<void(NSData*)> callback);
   void CloseMediaPresentations();
   void CloseWebState();
   bool SetSessionStateData(NSData* data);

@@ -7,6 +7,7 @@
 #import <stddef.h>
 
 #import <memory>
+#import <optional>
 
 #import "base/apple/foundation_util.h"
 #import "base/base64.h"
@@ -94,6 +95,47 @@ class WebStateImplTest : public WebTestWithWebStateImpl {
   using PassKey = base::PassKey<WebStateImplTest>;
   WebStateImplTest() : WebTestWithWebStateImpl(PassKey{}) {
     IgnoreOverRealizationCheck();
+  }
+
+ protected:
+  // Creates a `WebStateImpl` with `delegate` and loads a simple HTML page.
+  // Returns nullptr if the page fails to load.
+  std::unique_ptr<WebStateImpl> CreateWebStateForPdfDialogTest(
+      FakeWebStateDelegate* delegate) {
+    std::unique_ptr<WebStateImpl> web_state =
+        CreateWebStateImpl(WebState::CreateParams(GetBrowserState()));
+    web_state->SetDelegate(delegate);
+    NSString* html_content =
+        @"<html><body><div style='background-color:#FF0000; width:50%; "
+         "height:100%;'></div>Hello world</body></html>";
+    [web_state->GetWebController() loadHTML:html_content
+                                     forURL:GURL("http://example.org")];
+    if (!test::WaitForWebViewContainingText(web_state.get(), "Hello world")) {
+      return nullptr;
+    }
+
+    return web_state;
+  }
+
+  // Calls `CreatePdf()` with `params` on `web_state` and waits for completion.
+  // Returns whether non-nil PDF data was produced, or `std::nullopt` on
+  // timeout. Assumes `web_state` is non-null.
+  std::optional<bool> CreatePdfProducesData(
+      WebStateImpl* web_state,
+      const WebState::CreatePdfParams& params) {
+    __block NSData* callback_data = nil;
+    __block bool callback_called = false;
+    web_state->CreatePdf(params, base::BindOnce(^(NSData* pdf_document_data) {
+                           callback_data = [pdf_document_data copy];
+                           callback_called = true;
+                         }));
+    if (!WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+          return callback_called;
+        })) {
+      return std::nullopt;
+    }
+
+    return callback_data != nil;
   }
 };
 
@@ -865,63 +907,46 @@ TEST_F(WebStateImplTest, VerifyDialogRunningBoolean) {
   EXPECT_FALSE(web_state->IsJavaScriptDialogRunning());
 }
 
-// Tests that CreateFullPagePdf invokes completion callback nil when a
-// javascript dialog is running
-TEST_F(WebStateImplTest, CreateFullPagePdfJavaScriptDialog) {
-  std::unique_ptr<WebStateImpl> web_state =
-      CreateWebStateImpl(WebState::CreateParams(GetBrowserState()));
-
+// Tests that `CreatePdf()` with default full-page parameters invokes the
+// completion callback with nil while a JavaScript dialog is running, and
+// produces PDF data once the dialog is dismissed.
+TEST_F(WebStateImplTest, CreatePdfJavaScriptDialog) {
   FakeWebStateDelegate delegate;
-  web_state->SetDelegate(&delegate);
+  std::unique_ptr<WebStateImpl> web_state =
+      CreateWebStateForPdfDialogTest(&delegate);
+  ASSERT_TRUE(web_state);
 
-  // Load the HTML content.
-  CRWWebController* web_controller = web_state->GetWebController();
-  NSString* html_content =
-      @"<html><body><div style='background-color:#FF0000; width:50%; "
-       "height:100%;'></div>Hello world</body></html>";
-  [web_controller loadHTML:html_content forURL:GURL("http://example.org")];
-
-  ASSERT_TRUE(
-      test::WaitForWebViewContainingText(web_state.get(), "Hello world"));
-
-  // Pause the callback execution to allow testing while the dialog is
-  // presented.
   delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       true);
   web_state->RunJavaScriptAlertDialog(url::Origin(), @"message",
                                       base::DoNothing());
+  EXPECT_EQ(false, CreatePdfProducesData(web_state.get(), {}));
 
-  // Attempt to create a PDF for this page and validate that it return nil.
-  __block NSData* callback_data_when_dialog = nil;
-  __block BOOL callback_called_when_dialog = NO;
-  web_state->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
-    callback_data_when_dialog = [pdf_document_data copy];
-    callback_called_when_dialog = YES;
-  }));
-
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return callback_called_when_dialog;
-  }));
-
-  EXPECT_FALSE(callback_data_when_dialog);
-
-  // Unpause the presenter and verify that it return data instead of nil when
-  // the dialog is no longer on the screen
   delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       false);
+  EXPECT_EQ(true, CreatePdfProducesData(web_state.get(), {}));
+}
 
-  __block NSData* callback_data_no_dialog = nil;
-  __block BOOL callback_called_no_dialog = NO;
-  web_state->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
-    callback_data_no_dialog = [pdf_document_data copy];
-    callback_called_no_dialog = YES;
-  }));
+// Tests that `CreatePdf()` with a document rect invokes the completion callback
+// with nil while a JavaScript dialog is running, and produces PDF data once the
+// dialog is dismissed.
+TEST_F(WebStateImplTest, CreatePdfWithDocumentRectJavaScriptDialog) {
+  FakeWebStateDelegate delegate;
+  std::unique_ptr<WebStateImpl> web_state =
+      CreateWebStateForPdfDialogTest(&delegate);
+  ASSERT_TRUE(web_state);
 
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return callback_called_no_dialog;
-  }));
+  const WebState::CreatePdfParams params{.document_rect =
+                                             CGRectMake(0, 0, 100, 100)};
+  delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
+      true);
+  web_state->RunJavaScriptAlertDialog(url::Origin(), @"message",
+                                      base::DoNothing());
+  EXPECT_EQ(false, CreatePdfProducesData(web_state.get(), params));
 
-  EXPECT_TRUE(callback_data_no_dialog);
+  delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
+      false);
+  EXPECT_EQ(true, CreatePdfProducesData(web_state.get(), params));
 }
 
 // Tests that the WebView is removed from the view hierarchy and the
