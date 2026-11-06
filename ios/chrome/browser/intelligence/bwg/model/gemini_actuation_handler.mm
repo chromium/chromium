@@ -59,7 +59,7 @@ NSString* const kConfirmationUserResponse =
 constexpr char kConfirmationTitle[] = "Input needed";
 
 // Label of the confirming button of confirmation prompts.
-// TODO(crbug.com/556739755): Localize the button text.
+// TODO(crbug.com/573515833): Localize the button text.
 constexpr char kConfirmationButtonText[] = "Continue";
 
 // Populates a TabObservation proto with data from a PageContext.
@@ -87,14 +87,6 @@ void PopulateTabObservationFromPageContext(
       hasContent ? optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK
                  : optimization_guide::proto::TabObservation::
                        TAB_OBSERVATION_FETCH_ERROR);
-}
-
-// Serializes a Protobuf message to NSData.
-template <typename ProtoMessage>
-NSData* SerializeProtoToNSData(const ProtoMessage& message) {
-  std::string serialized;
-  message.SerializeToString(&serialized);
-  return [NSData dataWithBytes:serialized.data() length:serialized.size()];
 }
 
 // Returned when the task's actuated tab no longer exists.
@@ -489,7 +481,7 @@ absl::flat_hash_set<url::Origin> ParseWritableMainframeOrigins(
   const bool hasActions = request.actionProtos != nil;
   const bool hasYield = request.yieldAction != nil;
   if (hasActions == hasYield) {
-    // TODO(crbug.com/556739755): Add monitoring for invalid actuation requests.
+    // TODO(crbug.com/582694320): Add monitoring for invalid actuation requests.
     completionBlock([[GeminiActuationResponse alloc]
         initWithResultCode:actor::mojom::ActionResultCode::kArgumentsInvalid
               errorMessage:"Invalid actuation request: actionProtos and "

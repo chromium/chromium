@@ -251,10 +251,7 @@ TEST_F(GeminiActuationHandlerTest,
   click->set_click_type(optimization_guide::proto::ClickAction::LEFT);
   click->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
 
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
 
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
@@ -302,10 +299,7 @@ TEST_F(GeminiActuationHandlerTest,
   navigate->set_tab_id(123);
   navigate->set_url("https://example.com");
 
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
 
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
@@ -345,10 +339,7 @@ TEST_F(GeminiActuationHandlerTest,
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
 
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
 
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
@@ -613,10 +604,7 @@ TEST_F(GeminiActuationHandlerTest,
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
 
   optimization_guide::proto::Action action;
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
 
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data, data ]
@@ -1017,10 +1005,7 @@ TEST_F(GeminiActuationHandlerTest, Disconnect_CancelsInFlightRequest) {
 
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
 
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
@@ -1051,10 +1036,7 @@ TEST_F(GeminiActuationHandlerTest, ExternalStop_CancelsInFlightRequest) {
 
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
 
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
@@ -1082,10 +1064,7 @@ TEST_F(GeminiActuationHandlerTest, ExternalStop_FollowUp) {
 
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
                                                 taskUpdate:@"Action"
@@ -1126,10 +1105,7 @@ TEST_F(GeminiActuationHandlerTest, ConcurrentActions_Rejected) {
 
   optimization_guide::proto::Action action;
   action.mutable_create_tab();
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
   GeminiActuationRequest* actions_request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
                                                 taskUpdate:@"Action"
@@ -1228,10 +1204,7 @@ TEST_F(GeminiActuationHandlerTest,
 
   optimization_guide::proto::Action action;
   action.mutable_wait()->set_wait_time_ms(0);
-  std::string serialized;
-  action.SerializeToString(&serialized);
-  NSData* data = [NSData dataWithBytes:serialized.data()
-                                length:serialized.size()];
+  NSData* data = SerializeProtoToNSData(action);
   GeminiActuationRequest* request =
       [[GeminiActuationRequest alloc] initWithActionProtos:@[ data ]
                                                 taskUpdate:@"Update"

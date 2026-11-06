@@ -11,6 +11,14 @@
 
 #import "components/actor/public/mojom/actor_types.mojom.h"
 
+// Serializes a Protobuf message to `NSData`.
+template <typename ProtoMessage>
+NSData* SerializeProtoToNSData(const ProtoMessage& message) {
+  std::string serialized;
+  message.SerializeToString(&serialized);
+  return [NSData dataWithBytes:serialized.data() length:serialized.size()];
+}
+
 // Reasons why Gemini yields control back to the user.
 enum class GeminiYieldReason {
   // Unknown or unrecognized reason.

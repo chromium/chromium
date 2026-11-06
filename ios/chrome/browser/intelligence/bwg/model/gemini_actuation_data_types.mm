@@ -6,19 +6,6 @@
 
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 
-namespace {
-
-// TODO(crbug.com/556739755): Extract SerializeProtoToNSData to a shared helper.
-// Serializes a Protobuf message to NSData.
-template <typename ProtoMessage>
-NSData* SerializeProtoToNSData(const ProtoMessage& message) {
-  std::string serialized;
-  message.SerializeToString(&serialized);
-  return [NSData dataWithBytes:serialized.data() length:serialized.size()];
-}
-
-}  // namespace
-
 @implementation GeminiYieldAction
 
 - (instancetype)initWithReason:(GeminiYieldReason)reason {
