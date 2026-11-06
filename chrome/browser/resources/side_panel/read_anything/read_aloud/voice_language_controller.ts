@@ -375,19 +375,23 @@ export class VoiceLanguageController {
     if (!currentVoice || !this.isVoiceAvailable(currentVoice)) {
       const defaultVoice = this.getDefaultVoice_();
       if (defaultVoice) {
-        this.setUserPreferredVoice(defaultVoice);
+        this.model_.setIsVoiceUserSelected(false);
+        this.setCurrentVoice_(defaultVoice);
       }
     }
     this.anchorToActiveVoice_();
   }
 
   setUserPreferredVoice(selectedVoice: SpeechSynthesisVoice): void {
+    this.model_.setIsVoiceUserSelected(true);
+    this.model_.setCurrentLanguage(selectedVoice.lang.toLowerCase());
     this.setCurrentVoice_(selectedVoice);
     this.audioBrowserProxy_.onVoiceChange(
         selectedVoice.name, selectedVoice.lang);
   }
 
   onPageLanguageChanged() {
+    this.model_.setIsVoiceUserSelected(false);
     const lang = this.audioBrowserProxy_.getBaseLanguageForSpeech();
     this.model_.setCurrentLanguage(lang);
 
@@ -428,7 +432,18 @@ export class VoiceLanguageController {
     }
   }
 
+  private hasAvailableUserSelectedVoice_(): boolean {
+    const currentVoice = this.getCurrentVoice();
+    return this.model_.isVoiceUserSelected() && !!currentVoice &&
+        this.isVoiceAvailable(currentVoice);
+  }
+
   private setUserPreferredVoiceFromPrefs_(): void {
+    if (this.hasAvailableUserSelectedVoice_()) {
+      this.enableLang(this.getCurrentVoice()!.lang);
+      return;
+    }
+
     const storedVoiceName = this.audioBrowserProxy_.getStoredVoice();
     if (!storedVoiceName) {
       this.setCurrentVoice_(this.getDefaultVoice_());
@@ -454,7 +469,7 @@ export class VoiceLanguageController {
 
     const naturalVoicesForLang = this.getAvailableVoices().filter(
         voice => hasNaturalIdentifier(voice) &&
-            voice.lang.startsWith(this.getCurrentLanguage()));
+            voice.lang.toLowerCase().startsWith(this.getCurrentLanguage()));
     if (!naturalVoicesForLang.length || !naturalVoicesForLang[0]) {
       return;
     }
@@ -470,6 +485,7 @@ export class VoiceLanguageController {
     }
     const currentVoice = this.getCurrentVoice();
     if (currentVoice && !this.isVoiceAvailable(currentVoice)) {
+      this.model_.setIsVoiceUserSelected(false);
       this.setCurrentVoice_(this.getDefaultVoice_());
     }
   }
@@ -484,6 +500,7 @@ export class VoiceLanguageController {
   }
 
   onLanguageUnavailableError(): void {
+    this.model_.setIsVoiceUserSelected(false);
     const possibleNewLanguage = convertLangToAnAvailableLangIfPresent(
         this.getCurrentLanguage(), this.getAvailableLangs(),
         /* allowCurrentLanguageIfExists */ false);
@@ -498,6 +515,7 @@ export class VoiceLanguageController {
   // the previously unavailable voice as an extra measure. This method should
   // only be called when speech synthesis returns an error.
   onVoiceUnavailableError(): void {
+    this.model_.setIsVoiceUserSelected(false);
     const currentVoice = this.getCurrentVoice();
     const newVoice = this.getDefaultVoice_();
 
@@ -512,7 +530,7 @@ export class VoiceLanguageController {
     const baseLang = this.getCurrentLanguage();
     this.refreshAvailableVoices_();
     const voicesForLanguage = this.getAvailableVoices().filter(
-        voice => voice.lang.startsWith(baseLang));
+        voice => voice.lang.toLowerCase().startsWith(baseLang));
 
     // TODO: crbug.com/40927698 - It's possible we can get stuck in an infinite
     // loop of jumping back and forth between two or more invalid voices, if
@@ -614,8 +632,10 @@ export class VoiceLanguageController {
     // We need to make sure the languages we choose correspond to voices, so
     // refresh the list of voices and available langs
     this.refreshAvailableVoices_();
-    this.model_.setCurrentLanguage(
-        this.audioBrowserProxy_.getBaseLanguageForSpeech());
+    if (!this.hasAvailableUserSelectedVoice_()) {
+      this.model_.setCurrentLanguage(
+          this.audioBrowserProxy_.getBaseLanguageForSpeech());
+    }
     const storedLanguagesPref =
         this.audioBrowserProxy_.getLanguagesEnabledInPref();
     const langOfDefaultVoice = this.getDefaultVoice_()?.lang;
@@ -624,7 +644,7 @@ export class VoiceLanguageController {
     // voice to ensure we have the right voices available, and prior to updating
     // the preferences so we can check against what's available and enabled.
     const langs = createInitialListOfEnabledLanguages(
-        this.audioBrowserProxy_.getBaseLanguageForSpeech(), storedLanguagesPref,
+        this.getCurrentLanguage(), storedLanguagesPref,
         this.getAvailableLangs(), langOfDefaultVoice);
     langs.forEach((l: string) => this.enableLang(l));
 
@@ -980,6 +1000,10 @@ export class VoiceLanguageController {
   }
 
   private currentVoiceIsUserChosen_(): boolean {
+    if (this.hasAvailableUserSelectedVoice_()) {
+      return true;
+    }
+
     const storedVoiceName = this.audioBrowserProxy_.getStoredVoice();
 
     // getCurrentVoice() is not necessarily chosen by the user, it is just
@@ -996,7 +1020,8 @@ export class VoiceLanguageController {
     this.refreshAvailableVoices_();
     const allPossibleVoices = this.getAvailableVoices();
     const voicesForLanguage = allPossibleVoices.filter(
-        voice => voice.lang.startsWith(this.getCurrentLanguage()));
+        voice =>
+            voice.lang.toLowerCase().startsWith(this.getCurrentLanguage()));
 
     if (!voicesForLanguage.length) {
       // Stay with the current voice if no voices are available for this

@@ -245,4 +245,12 @@ suite('VoiceLanguageModel', () => {
     assertFalse(voiceLanguageModel.hasPendingLanguageRequest(lang2));
     assertEquals(0, voiceLanguageModel.getPendingLanguageRequests().size);
   });
+
+  test('isVoiceUserSelected', () => {
+    assertFalse(voiceLanguageModel.isVoiceUserSelected());
+    voiceLanguageModel.setIsVoiceUserSelected(true);
+    assertTrue(voiceLanguageModel.isVoiceUserSelected());
+    voiceLanguageModel.setIsVoiceUserSelected(false);
+    assertFalse(voiceLanguageModel.isVoiceUserSelected());
+  });
 });

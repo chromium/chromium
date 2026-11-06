@@ -1802,5 +1802,91 @@ suite('VoiceLanguageController', () => {
       assertEquals(null, voiceLanguageController.getPendingTargetLanguage());
       assertEquals(0, audioBrowserProxy.installedLangs.length);
     });
+
+    test(
+        'preserves selected language and voice after restoreFromPrefs ' +
+            '(tab switch)',
+        () => {
+          createAndSetVoices(speech, [
+            {lang: 'en-us', name: 'Voice US'},
+            {lang: 'en-gb', name: 'Voice GB'},
+            {lang: 'es-es', name: 'Voice ES'},
+          ]);
+          audioBrowserProxy.baseLanguageForSpeech = 'en';
+
+          voiceLanguageController.onLanguageSelected('es-es');
+          assertEquals('es-es', voiceLanguageController.getCurrentLanguage());
+          assertEquals(
+              'Voice ES', voiceLanguageController.getCurrentVoice()?.name);
+          assertArrayEquals(
+              ['es-es'], audioBrowserProxy.getLanguagesEnabledInPref());
+
+          // Simulate switching tabs and returning, which invokes
+          // restoreFromPrefs while baseLanguageForSpeech is still 'en'.
+          voiceLanguageController.restoreFromPrefs();
+
+          assertEquals('es-es', voiceLanguageController.getCurrentLanguage());
+          assertEquals(
+              'Voice ES', voiceLanguageController.getCurrentVoice()?.name);
+          assertTrue(voiceLanguageController.isLangEnabled('es-es'));
+          assertFalse(voiceLanguageController.isLangEnabled('en-us'));
+          assertArrayEquals(
+              ['es-es'], audioBrowserProxy.getLanguagesEnabledInPref());
+        });
   });
+
+  test(
+      'setUserPreferredVoice preserves voice and language across ' +
+          'restoreFromPrefs',
+      () => {
+        const spanishVoice =
+            createSpeechSynthesisVoice({lang: 'es-ES', name: 'Voice ES'});
+        speech.setVoices([
+          defaultVoice,
+          spanishVoice,
+        ]);
+        voiceLanguageController.onVoicesChanged();
+        audioBrowserProxy.baseLanguageForSpeech = 'en';
+
+        voiceLanguageController.setUserPreferredVoice(spanishVoice);
+        assertEquals(spanishVoice, voiceLanguageController.getCurrentVoice());
+        assertEquals('es-es', voiceLanguageController.getCurrentLanguage());
+
+        // Simulate switching tabs and returning.
+        voiceLanguageController.restoreFromPrefs();
+
+        assertEquals(spanishVoice, voiceLanguageController.getCurrentVoice());
+        assertEquals('es-es', voiceLanguageController.getCurrentLanguage());
+      });
+
+  test(
+      'onPageLanguageChanged resets user-selected voice and switches to ' +
+          'new page language',
+      () => {
+        const spanishVoice =
+            createSpeechSynthesisVoice({lang: 'es-es', name: 'Voice ES'});
+        const frenchVoice =
+            createSpeechSynthesisVoice({lang: 'fr-fr', name: 'Voice FR'});
+        speech.setVoices([
+          defaultVoice,
+          spanishVoice,
+          frenchVoice,
+        ]);
+        voiceLanguageController.onVoicesChanged();
+        audioBrowserProxy.baseLanguageForSpeech = 'en';
+
+        voiceLanguageController.setUserPreferredVoice(spanishVoice);
+        assertEquals(spanishVoice, voiceLanguageController.getCurrentVoice());
+
+        // Navigating to a French page updates page language.
+        audioBrowserProxy.baseLanguageForSpeech = 'fr';
+        voiceLanguageController.onPageLanguageChanged();
+
+        assertEquals('fr', voiceLanguageController.getCurrentLanguage());
+        assertEquals(frenchVoice, voiceLanguageController.getCurrentVoice());
+
+        // Subsequent tab switch preserves the page language voice.
+        voiceLanguageController.restoreFromPrefs();
+        assertEquals('fr', voiceLanguageController.getCurrentLanguage());
+      });
 });
