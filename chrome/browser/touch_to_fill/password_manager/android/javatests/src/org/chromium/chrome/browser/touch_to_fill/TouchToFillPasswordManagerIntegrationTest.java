@@ -62,6 +62,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
@@ -342,6 +344,15 @@ public class TouchToFillPasswordManagerIntegrationTest {
 
                                         @Override
                                         public void destroy() {}
+
+                                        @Override
+                                        public BottomSheetType getSheetType() {
+                                            return new BottomSheetType.Builder()
+                                                    .setUserCritical(
+                                                            UserCriticalFeature
+                                                                    .TOUCH_TO_FILL_PASSWORD_MANAGER)
+                                                    .build();
+                                        }
 
                                         @Override
                                         public int getPriority() {
