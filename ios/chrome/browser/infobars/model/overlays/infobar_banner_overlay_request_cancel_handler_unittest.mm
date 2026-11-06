@@ -76,6 +76,7 @@ TEST_F(InfobarBannerOverlayRequestCancelHandlerTest,
   std::unique_ptr<InfoBarIOS> second_passed_infobar =
       std::make_unique<FakeInfobarIOS>();
   InfoBarIOS* second_infobar = second_passed_infobar.get();
+  params.infobar = nullptr;
   manager()->ReplaceInfoBar(first_infobar, std::move(second_passed_infobar));
   EXPECT_EQ(second_infobar, GetFrontRequestInfobar());
   EXPECT_EQ(1U, queue()->size());

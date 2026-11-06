@@ -39,7 +39,7 @@ struct InsertParams {
   explicit InsertParams(InfoBarIOS* infobar);
   InsertParams() = delete;
 
-  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar;
+  raw_ptr<InfoBarIOS> infobar = nullptr;
   InfobarOverlayType overlay_type = InfobarOverlayType::kBanner;
   size_t insertion_index = 0;
   InfobarOverlayInsertionSource source =

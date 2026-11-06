@@ -70,6 +70,7 @@ TEST_F(InfobarOverlayRequestCancelHandlerTest, CancelForInfobarRemoval) {
   ASSERT_EQ(infobar, GetFrontRequestInfobar());
   // Remove the InfoBar from its manager and verify that the request has been
   // removed from the queue.
+  params.infobar = nullptr;
   manager()->RemoveInfoBar(infobar);
   EXPECT_FALSE(queue()->front_request());
 }
@@ -88,6 +89,7 @@ TEST_F(InfobarOverlayRequestCancelHandlerTest, CancelForInfobarReplacement) {
   inserter()->InsertOverlayRequest(params);
   ASSERT_EQ(first_infobar, GetFrontRequestInfobar());
   // Replace with a new infobar and verify that the request has been cancelled.
+  params.infobar = nullptr;
   manager()->ReplaceInfoBar(first_infobar, std::make_unique<FakeInfobarIOS>());
   EXPECT_FALSE(queue()->front_request());
 }
