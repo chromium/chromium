@@ -16,7 +16,9 @@ _SRC_MODULE_NAME = 'chromium_src'
 # directly as the module named in the key of this dictionary.
 # Those are globally importable so they can potentially cause
 # conflicts in names.
-# TODO(crbug.com/488362708): Consider handling global imports through venv.
+# Third-party packages come from the vpython environment instead. This is only
+# for in-tree libraries that import themselves by their top-level name, like
+# typ, which therefore can't be imported through chromium_src.
 _EXTRA_MODULES: typing.Dict[str, str] = {
   'typ': 'third_party/catapult/third_party/typ'
 }
