@@ -118,7 +118,6 @@ ExportedCanvasResource::ExportedCanvasResource(
         if (is_lost) {
           resource->NotifyResourceLost();
         }
-        CanvasResource::DropRefOnOwningThread(std::move(resource));
       },
       resource);
 }
