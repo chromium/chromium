@@ -225,26 +225,16 @@ class NavigationControllerBrowserTest
   }
 
  protected:
-  // Verifies that `actual_offset` is the result of scrolling to `css_offset`,
-  // which may land between physical pixels, and returns the offset that
-  // subsequent scrolls to the same position must report. With
-  // FractionalScrollOffsets Blink keeps a fractional offset, which the page
-  // scale factor may still quantize; without it the offset is truncated to a
-  // physical pixel. https://crbug.com/414283.
-  double VerifyScrollOffset(double css_offset, double actual_offset) {
-    if (EvalJs(shell(), "internals.runtimeFlags.fractionalScrollOffsetsEnabled")
-            .ExtractBool()) {
-      EXPECT_NEAR(css_offset, actual_offset, 1);
-      return actual_offset;
-    }
-    float device_scale_factor = shell()
-                                    ->web_contents()
-                                    ->GetRenderWidgetHostView()
-                                    ->GetDeviceScaleFactor();
-    double expected_offset =
-        round(device_scale_factor * css_offset) / device_scale_factor;
-    EXPECT_FLOAT_EQ(expected_offset, actual_offset);
-    return expected_offset;
+  // TODO(bokan): There's one test whose result depends on whether the
+  // FractionalScrollOffsets feature is enabled in Blink's
+  // RuntimeEnabledFeatures. Since there's just one, we can determine the
+  // status of the feature using script, rather than plumbing this state across
+  // the browser/renderer boundary. This can be removed once the feature is
+  // shipped to stable and the flag removed. https://crbug.com/414283.
+  bool IsFractionalScrollOffsetsEnabled() {
+    std::string script =
+        "internals.runtimeFlags.fractionalScrollOffsetsEnabled";
+    return EvalJs(shell(), script).ExtractBool();
   }
 
   // Creates a form and submits it to |form_submit_url|. Returns the POST ID of
@@ -4108,8 +4098,27 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadWithUrlAnchor) {
 
   double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
 
+  // TODO(bokan): The round hack below can go
+  // away once FractionalScrolLOffsets ships. The reason it's required is that,
+  // at certain device scale factors, the given CSS pixel scroll value may land
+  // between physical pixels. Without the feature Blink will truncate to the
+  // nearest physical pixel so the expectation must account for that. When the
+  // feature is enabled, Blink stores the fractional offset so the truncation
+  // is unnecessary. https://crbug.com/414283.
+  bool fractional_scroll_offsets_enabled = IsFractionalScrollOffsetsEnabled();
+
   // The 'center-element' y-position is 2000px. 2000px is an arbitrary value.
-  double expected_window_scroll_y = VerifyScrollOffset(2000, window_scroll_y);
+  double expected_window_scroll_y = 2000;
+  if (!fractional_scroll_offsets_enabled) {
+    float device_scale_factor = shell()
+                                    ->web_contents()
+                                    ->GetRenderWidgetHostView()
+                                    ->GetDeviceScaleFactor();
+    expected_window_scroll_y =
+        round(device_scale_factor * expected_window_scroll_y) /
+        device_scale_factor;
+  }
+  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
 
   // Reload.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -4133,7 +4142,26 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
 
-  double expected_window_scroll_y = VerifyScrollOffset(2100, window_scroll_y);
+  // TODO(bokan): The round hack below can go
+  // away once FractionalScrolLOffsets ships. The reason it's required is that,
+  // at certain device scale factors, the given CSS pixel scroll value may land
+  // between physical pixels. Without the feature Blink will truncate to the
+  // nearest physical pixel so the expectation must account for that. When the
+  // feature is enabled, Blink stores the fractional offset so the truncation
+  // is unnecessary. https://crbug.com/414283.
+  bool fractional_scroll_offsets_enabled = IsFractionalScrollOffsetsEnabled();
+
+  double expected_window_scroll_y = 2100;
+  if (!fractional_scroll_offsets_enabled) {
+    float device_scale_factor = shell()
+                                    ->web_contents()
+                                    ->GetRenderWidgetHostView()
+                                    ->GetDeviceScaleFactor();
+    expected_window_scroll_y =
+        round(device_scale_factor * expected_window_scroll_y) /
+        device_scale_factor;
+  }
+  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
 
   // Reload.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -4161,8 +4189,26 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
 
-  double window_scroll_y_with_user_scroll =
-      VerifyScrollOffset(2100, window_scroll_y);
+  // TODO(bokan): The round hack below can go
+  // away once FractionalScrolLOffsets ships. The reason it's required is that,
+  // at certain device scale factors, the given CSS pixel scroll value may land
+  // between physical pixels. Without the feature Blink will truncate to the
+  // nearest physical pixel so the expectation must account for that. When the
+  // feature is enabled, Blink stores the fractional offset so the truncation
+  // is unnecessary. https://crbug.com/414283.
+  bool fractional_scroll_offsets_enabled = IsFractionalScrollOffsetsEnabled();
+
+  double window_scroll_y_with_user_scroll = 2100;
+  if (!fractional_scroll_offsets_enabled) {
+    float device_scale_factor = shell()
+                                    ->web_contents()
+                                    ->GetRenderWidgetHostView()
+                                    ->GetDeviceScaleFactor();
+    window_scroll_y_with_user_scroll =
+        round(device_scale_factor * window_scroll_y_with_user_scroll) /
+        device_scale_factor;
+  }
+  EXPECT_FLOAT_EQ(window_scroll_y_with_user_scroll, window_scroll_y);
 
   // Navigate to the same url and user scroll should be dropped.
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -4208,8 +4254,26 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
 
-  double window_scroll_y_with_user_scroll =
-      VerifyScrollOffset(2100, window_scroll_y);
+  // TODO(bokan): The round hack below can go
+  // away once FractionalScrolLOffsets ships. The reason it's required is that,
+  // at certain device scale factors, the given CSS pixel scroll value may land
+  // between physical pixels. Without the feature Blink will truncate to the
+  // nearest physical pixel so the expectation must account for that. When the
+  // feature is enabled, Blink stores the fractional offset so the truncation
+  // is unnecessary. https://crbug.com/414283.
+  bool fractional_scroll_offsets_enabled = IsFractionalScrollOffsetsEnabled();
+
+  double window_scroll_y_with_user_scroll = 2100;
+  if (!fractional_scroll_offsets_enabled) {
+    float device_scale_factor = shell()
+                                    ->web_contents()
+                                    ->GetRenderWidgetHostView()
+                                    ->GetDeviceScaleFactor();
+    window_scroll_y_with_user_scroll =
+        round(device_scale_factor * window_scroll_y_with_user_scroll) /
+        device_scale_factor;
+  }
+  EXPECT_FLOAT_EQ(window_scroll_y_with_user_scroll, window_scroll_y);
 
   // Navigate to the same url and user scroll should be dropped.
   EXPECT_TRUE(NavigateToURL(shell(), url));

@@ -1330,7 +1330,7 @@
     "expires": "Jul 1, 2027"
   },
   {
-    "prefix": "fractional-scroll-offsets-disabled",
+    "prefix": "fractional-scroll-offsets",
     "owners": [
       "bokan@chromium.org",
       "skobes@chromium.org"
@@ -1356,9 +1356,9 @@
       "paint/invalidation/scroll/repaint-during-scroll-with-zoom.html"
     ],
     "args": [
-      "--disable-blink-features=FractionalScrollOffsets"
+      "--enable-blink-features=FractionalScrollOffsets"
     ],
-    "expires": "Jan 1, 2027"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "fragmented-oof-in-cb",
