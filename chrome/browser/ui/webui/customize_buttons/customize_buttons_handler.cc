@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -16,7 +17,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_contents.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeButtonsHandler,
                                       kCustomizeChromeButtonElementId);
@@ -26,17 +27,17 @@ CustomizeButtonsHandler::CustomizeButtonsHandler(
         pending_handler,
     mojo::PendingRemote<customize_buttons::mojom::CustomizeButtonsDocument>
         pending_page,
-    content::WebUI* web_ui,
+    content::WebContents* web_contents,
     tabs::TabInterface* tab_interface,
     std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper)
-    : profile_(Profile::FromWebUI(web_ui)),
-      web_ui_(web_ui),
+    : profile_(Profile::FromBrowserContext(
+          CHECK_DEREF(web_contents).GetBrowserContext())),
+      web_contents_(web_contents),
       tab_interface_(tab_interface),
       feature_promo_helper_(std::move(customize_chrome_feature_promo_helper)),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_handler)} {
-  CHECK(web_ui_);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(feature_promo_helper_);
 #endif
@@ -77,7 +78,7 @@ tabs::TabInterface* CustomizeButtonsHandler::GetActiveTab() {
   }
 
   auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_ui_->GetWebContents());
+      webui::GetBrowserWindowInterface(web_contents_);
   if (!browser_window_interface) {
     return nullptr;
   }

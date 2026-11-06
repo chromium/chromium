@@ -20,7 +20,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -84,9 +83,6 @@ class MockCustomizeChromeTabHelper
 class CustomizeButtonsHandlerBrowserTestBase : public PlatformBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    web_ui_ = std::make_unique<content::TestWebUI>();
-    web_ui_->set_web_contents(GetActiveTab()->GetContents());
-
     tabs::TabInterface* tab = GetActiveTab();
     tabs::TabFeatures* tab_features = tab->GetTabFeatures();
     tab_features->SetCustomizeChromeSidePanelControllerForTesting(nullptr);
@@ -109,7 +105,7 @@ class CustomizeButtonsHandlerBrowserTestBase : public PlatformBrowserTest {
     handler_ = std::make_unique<CustomizeButtonsHandler>(
         mojo::PendingReceiver<
             customize_buttons::mojom::CustomizeButtonsHandler>(),
-        doc_.BindAndGetRemote(), web_ui_.get(), tab,
+        doc_.BindAndGetRemote(), GetActiveTab()->GetContents(), tab,
         std::move(promo_helper_ptr));
   }
 
@@ -131,7 +127,6 @@ class CustomizeButtonsHandlerBrowserTestBase : public PlatformBrowserTest {
   }
 
   MockCustomizeButtonsDocument doc_;
-  std::unique_ptr<content::TestWebUI> web_ui_;
   raw_ptr<MockFeaturePromoHelper> promo_helper_;
   std::unique_ptr<CustomizeButtonsHandler> handler_;
   raw_ptr<MockCustomizeChromeTabHelper> mock_controller_;

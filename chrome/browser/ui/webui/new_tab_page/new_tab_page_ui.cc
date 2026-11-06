@@ -1369,7 +1369,7 @@ void NewTabPageUI::CreateCustomizeButtonsHandler(
   promo_helper = std::make_unique<NewTabPageFeaturePromoHelper>();
 #endif
   customize_buttons_handler_ = std::make_unique<CustomizeButtonsHandler>(
-      std::move(pending_page_handler), std::move(pending_page), web_ui(),
+      std::move(pending_page_handler), std::move(pending_page), web_contents(),
       webui::GetTabInterface(web_contents()), std::move(promo_helper));
 }
 

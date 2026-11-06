@@ -17,6 +17,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/interaction/element_identifier.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace customize_chrome {
 class SidePanelController;
 }  // namespace customize_chrome
@@ -31,7 +35,7 @@ class CustomizeButtonsHandler
           pending_handler,
       mojo::PendingRemote<customize_buttons::mojom::CustomizeButtonsDocument>
           pending_page,
-      content::WebUI* web_ui,
+      content::WebContents* web_contents,
       // `CustomizeButtonsHandler` can be embedded either in a tab or a
       // BrowserView. If embedded in a tab, the caller should pass the
       // corresponding `TabInterface`. Otherwise, the handler will fall back to
@@ -69,7 +73,7 @@ class CustomizeButtonsHandler
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   raw_ptr<Profile> profile_;
-  const raw_ptr<content::WebUI> web_ui_;
+  const raw_ptr<content::WebContents> web_contents_;
   raw_ptr<tabs::TabInterface> tab_interface_;
   std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
 
