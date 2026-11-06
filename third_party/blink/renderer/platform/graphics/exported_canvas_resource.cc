@@ -113,6 +113,12 @@ ExportedCanvasResource::ExportedCanvasResource(
       use_legacy_external_canvas_resource_bitmap_path_(true) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
+
+  wait_sync_token_ = base::BindRepeating(
+      [](scoped_refptr<CanvasResource> resource, gpu::SyncToken sync_token) {
+        resource->WaitSyncToken(sync_token);
+      },
+      resource_);
 }
 
 ExportedCanvasResource::ExportedCanvasResource(
@@ -136,9 +142,18 @@ ExportedCanvasResource::ExportedCanvasResource(
       use_legacy_external_canvas_resource_bitmap_path_(false) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
+
+  wait_sync_token_ = base::BindRepeating(
+      [](scoped_refptr<CanvasResource> resource, gpu::SyncToken sync_token) {
+        resource->WaitSyncToken(sync_token);
+      },
+      resource_);
 }
 
 ExportedCanvasResource::~ExportedCanvasResource() {
+  // `wait_sync_token_` might hold ref to the resource, so drop it first.
+  wait_sync_token_ = base::NullCallback();
+
   // We PostTask ExportedCanvasResource to the CanvasResource owning thread, but
   // if the thread gets destroyed before, destructor will still run, but we
   // can't tell CanvasResource to recycle.
@@ -238,7 +253,7 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
            const gpu::SyncToken& sync_token, bool lost_resource) {
           CHECK(exported_resource->resource_);
 
-          exported_resource->resource_->WaitSyncToken(sync_token);
+          exported_resource->wait_sync_token_.Run(sync_token);
           if (lost_resource) {
             exported_resource->is_lost_ = true;
           }
@@ -271,7 +286,7 @@ void ExportedCanvasResource::EndDisplayCompositorAccess(
 void ExportedCanvasResource::EndDisplayCompositorAccess(
     gpu::SyncToken sync_token,
     bool is_lost) {
-  resource_->WaitSyncToken(sync_token);
+  wait_sync_token_.Run(sync_token);
   if (is_lost) {
     is_lost_ = true;
   }

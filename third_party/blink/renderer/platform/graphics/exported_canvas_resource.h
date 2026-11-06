@@ -63,6 +63,8 @@ class PLATFORM_EXPORT ExportedCanvasResource
   bool origin_clean_ = true;
   bool is_lost_ = false;
 
+  base::RepeatingCallback<void(gpu::SyncToken)> wait_sync_token_;
+
   scoped_refptr<CanvasResource> resource_;
   const base::PlatformThreadRef owning_thread_ref_;
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
