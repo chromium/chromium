@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TABSTRIP_NTB_TABSTRIP_NTB_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_TABSTRIP_NTB_TABSTRIP_NTB_UI_H_
 
-#include <optional>
 #include <string_view>
 
 #include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb.mojom.h"
@@ -17,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class WebContents;
@@ -60,13 +58,17 @@ class TabStripNtbUI : public TopChromeWebUIController,
       content::WebContents* web_contents,
       tabs_api::TabStripService* service);
 
+  // Sets whether the new tab button in the page hosted in `web_contents` is
+  // visible. Calls made before the page binds (or while a reload is in flight)
+  // are buffered on `web_contents` and delivered once bound.
+  static void SetButtonVisibleForWebContents(content::WebContents* web_contents,
+                                             bool visible);
+
   void BindInterface(
       mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver);
 
   void BindInterface(
       mojo::PendingReceiver<tabstrip_ntb::mojom::PageHandlerFactory> receiver);
-
-  void SetButtonVisible(bool visible);
 
   // tabstrip_ntb::mojom::PageHandlerFactory:
   void BindPage(mojo::PendingRemote<tabstrip_ntb::mojom::Page> page) override;
@@ -80,8 +82,6 @@ class TabStripNtbUI : public TopChromeWebUIController,
 
   mojo::Receiver<tabstrip_ntb::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
-  mojo::Remote<tabstrip_ntb::mojom::Page> page_;
-  std::optional<bool> button_visible_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

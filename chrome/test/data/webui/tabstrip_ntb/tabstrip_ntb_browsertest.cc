@@ -18,7 +18,6 @@
 #include "components/browser_apis/tab_strip/testing/injector.h"
 #include "components/browser_apis/tab_strip/testing/toy_tab_strip.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -100,10 +99,6 @@ IN_PROC_BROWSER_TEST_F(TabStripNtbBrowserTest, SetButtonVisible) {
   ASSERT_TRUE(content::NavigateToURL(web_contents,
                                      GURL(chrome::kChromeUITabStripNtbURL)));
 
-  auto* ntb_ui =
-      web_contents->GetWebUI()->GetController()->GetAs<TabStripNtbUI>();
-  ASSERT_TRUE(ntb_ui);
-
   constexpr char kIsButtonVisibleJs[] =
       "Boolean(document.querySelector('tabstrip-ntb-app')"
       "?.shadowRoot?.querySelector('new-tab-button')"
@@ -117,13 +112,13 @@ IN_PROC_BROWSER_TEST_F(TabStripNtbBrowserTest, SetButtonVisible) {
   }));
   EXPECT_EQ("auto", content::EvalJs(web_contents, kButtonPointerEventsJs));
 
-  ntb_ui->SetButtonVisible(false);
+  TabStripNtbUI::SetButtonVisibleForWebContents(web_contents, false);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !content::EvalJs(web_contents, kIsButtonVisibleJs).ExtractBool();
   }));
   EXPECT_EQ("none", content::EvalJs(web_contents, kButtonPointerEventsJs));
 
-  ntb_ui->SetButtonVisible(true);
+  TabStripNtbUI::SetButtonVisibleForWebContents(web_contents, true);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(web_contents, kIsButtonVisibleJs).ExtractBool();
   }));

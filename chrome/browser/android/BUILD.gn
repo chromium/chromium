@@ -1346,8 +1346,10 @@ source_set("unit_tests") {
   if (enable_webui_tabstrip_ntb) {
     sources += [ "compositor/tab_strip_ntb_webui_host_unittest.cc" ]
     deps += [
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/ui/android/tab_model:test_support",
+      "//chrome/browser/ui/webui/tabstrip_ntb",
     ]
   }
 }

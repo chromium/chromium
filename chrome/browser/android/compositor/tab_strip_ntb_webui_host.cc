@@ -7,8 +7,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -24,7 +26,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -42,6 +43,13 @@
 namespace android {
 
 namespace {
+
+// Maximum number of immediate recoveries before delaying retries.
+constexpr uint32_t kMaxCrashRecoveryTimes = 3;
+// Time without a crash after which `crash_count_` is reset.
+constexpr base::TimeDelta kCrashRecoverResetInterval = base::Seconds(10);
+// Delay before retrying recovery once `kMaxCrashRecoveryTimes` is exceeded.
+constexpr base::TimeDelta kCrashRecoverRetryInterval = base::Minutes(1);
 
 std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
                                                         const GURL& url) {
@@ -107,9 +115,7 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(
     input_event_observation_.Observe(main_frame->GetRenderWidgetHost());
   }
 
-  content::NavigationController::LoadURLParams load_params(url);
-  load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-  web_contents_->GetController().LoadURLWithParams(load_params);
+  LoadWebUi();
 }
 
 TabStripNtbWebUiHost::~TabStripNtbWebUiHost() {
@@ -136,10 +142,21 @@ void TabStripNtbWebUiHost::OnTabModelRemoved(TabModel* tab_model) {
   Reset();
 }
 
+void TabStripNtbWebUiHost::LoadWebUi() {
+  if (!web_contents_) {
+    return;
+  }
+  content::NavigationController::LoadURLParams load_params(
+      (GURL(chrome::kChromeUITabStripNtbURL)));
+  load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  web_contents_->GetController().LoadURLWithParams(load_params);
+}
+
 void TabStripNtbWebUiHost::Reset() {
   if (!web_contents_) {
     return;
   }
+  weak_ptr_factory_.InvalidateWeakPtrs();
   TabModelList::RemoveObserver(this, profile_observation_.GetSource());
   profile_observation_.Reset();
   input_event_observation_.Reset();
@@ -169,17 +186,8 @@ void TabStripNtbWebUiHost::SetButtonVisible(bool visible) {
   if (!web_contents_) {
     return;
   }
-  content::WebUI* web_ui = web_contents_->GetWebUI();
-  if (!web_ui) {
-    return;
-  }
-  content::WebUIController* controller = web_ui->GetController();
-  if (!controller) {
-    return;
-  }
-  if (auto* ntb_ui = controller->GetAs<tabstrip_ntb::TabStripNtbUI>()) {
-    ntb_ui->SetButtonVisible(visible);
-  }
+  tabstrip_ntb::TabStripNtbUI::SetButtonVisibleForWebContents(
+      web_contents_.get(), visible);
 }
 
 scoped_refptr<cc::slim::Layer> TabStripNtbWebUiHost::GetLayer() {
@@ -204,6 +212,29 @@ void TabStripNtbWebUiHost::RenderFrameHostChanged(
   }
   input_event_observation_.Reset();
   input_event_observation_.Observe(new_host->GetRenderWidgetHost());
+}
+
+void TabStripNtbWebUiHost::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  // Reload on all termination statuses, including
+  // TERMINATION_STATUS_NORMAL_TERMINATION, which Android reports when the OS
+  // kills a renderer while Chrome is in the background or holds a waived
+  // binding.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  if (now - last_crash_time_ >= kCrashRecoverResetInterval) {
+    crash_count_ = 0;
+  }
+  last_crash_time_ = now;
+  base::OnceCallback callback = base::BindOnce(&TabStripNtbWebUiHost::LoadWebUi,
+                                               weak_ptr_factory_.GetWeakPtr());
+  if (++crash_count_ <= kMaxCrashRecoveryTimes) {
+    // PostTask avoids re-entering RenderProcessHostImpl::ProcessDied().
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+  } else {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(callback), kCrashRecoverRetryInterval);
+  }
 }
 
 void TabStripNtbWebUiHost::OnFirstContentfulPaintInPrimaryMainFrame(

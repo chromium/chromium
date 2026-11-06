@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -34,10 +36,12 @@ namespace tabstrip_ntb {
 
 namespace {
 
-// Associates a `tabs_api::TabStripService` with the WebContents hosting
-// chrome://tabstrip-ntb.top-chrome/. If a `TabStripNtbUI` is created before
-// there is a service, it leaves the service end of its pipe here, and the
-// service picks it up when it is set.
+// Associates a `tabs_api::TabStripService` and button visibility state with the
+// WebContents hosting chrome://tabstrip-ntb.top-chrome/. Stored on the
+// WebContents rather than on `TabStripNtbUI` so they survive renderer crashes
+// and reloads. If a `TabStripNtbUI` is created before there is a service, it
+// leaves the service end of its pipe here, and the service picks it up when it
+// is set.
 class TabStripServiceUserData
     : public content::WebContentsUserData<TabStripServiceUserData> {
  public:
@@ -57,6 +61,23 @@ class TabStripServiceUserData
     MaybeConnect();
   }
 
+  void BindPage(mojo::PendingRemote<tabstrip_ntb::mojom::Page> page) {
+    page_.reset();
+    page_.Bind(std::move(page));
+    if (button_visible_.has_value()) {
+      // If the button visibility was set before the page was bound (or before a
+      // renderer crash recreated the controller), set it now.
+      page_->SetButtonVisible(*button_visible_);
+    }
+  }
+
+  void SetButtonVisible(bool visible) {
+    button_visible_ = visible;
+    if (page_.is_bound()) {
+      page_->SetButtonVisible(visible);
+    }
+  }
+
  private:
   explicit TabStripServiceUserData(content::WebContents* web_contents)
       : content::WebContentsUserData<TabStripServiceUserData>(*web_contents) {}
@@ -72,6 +93,8 @@ class TabStripServiceUserData
 
   raw_ptr<tabs_api::TabStripService> service_ = nullptr;
   mojo::PendingReceiver<tabs_api::mojom::TabStripService> pending_service_end_;
+  mojo::Remote<tabstrip_ntb::mojom::Page> page_;
+  std::optional<bool> button_visible_;
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabStripServiceUserData);
@@ -118,6 +141,15 @@ void TabStripNtbUI::SetTabStripServiceForWebContents(
       ->SetService(service);
 }
 
+// static
+void TabStripNtbUI::SetButtonVisibleForWebContents(
+    content::WebContents* web_contents,
+    bool visible) {
+  CHECK(web_contents);
+  TabStripServiceUserData::GetOrCreateForWebContents(web_contents)
+      ->SetButtonVisible(visible);
+}
+
 void TabStripNtbUI::BindInterface(
     mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver) {
   CHECK(tab_strip_client_end_.is_valid())
@@ -133,19 +165,8 @@ void TabStripNtbUI::BindInterface(
 
 void TabStripNtbUI::BindPage(
     mojo::PendingRemote<tabstrip_ntb::mojom::Page> page) {
-  page_.reset();
-  page_.Bind(std::move(page));
-  if (button_visible_.has_value()) {
-    // If the button visibility was set before the page was bound, set it now.
-    page_->SetButtonVisible(*button_visible_);
-  }
-}
-
-void TabStripNtbUI::SetButtonVisible(bool visible) {
-  button_visible_ = visible;
-  if (page_.is_bound()) {
-    page_->SetButtonVisible(visible);
-  }
+  TabStripServiceUserData::GetOrCreateForWebContents(web_ui()->GetWebContents())
+      ->BindPage(std::move(page));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TabStripNtbUI)

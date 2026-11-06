@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "cc/slim/layer.h"
@@ -62,6 +63,8 @@ class TabStripNtbWebUiHost
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void OnFirstContentfulPaintInPrimaryMainFrame(
       base::TimeTicks presentation_time) override;
 
@@ -82,6 +85,7 @@ class TabStripNtbWebUiHost
   void OnTabModelRemoved(TabModel* tab_model) override;
 
  private:
+  void LoadWebUi();
   void Reset();
 
   // The TabModel the service operates on. Caller is responsible for calling
@@ -89,6 +93,10 @@ class TabStripNtbWebUiHost
   raw_ptr<TabModel> tab_model_;
   base::TimeTicks activity_creation_time_;
   bool recorded_first_paint_ = false;
+  // How many times the NTB WebUI renderer has exited. Cleared after
+  // `kCrashRecoverResetInterval` has passed without a crash.
+  uint32_t crash_count_ = 0;
+  base::TimeTicks last_crash_time_;
   base::android::ScopedJavaGlobalRef<jobject> java_coordinator_;
   // Declared before |web_contents_| so that it is destroyed after it. Null
   // once |tab_model_| is destroyed.
@@ -100,6 +108,7 @@ class TabStripNtbWebUiHost
                           content::RenderWidgetHost::InputEventObserver>
       input_event_observation_{this};
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  base::WeakPtrFactory<TabStripNtbWebUiHost> weak_ptr_factory_{this};
 };
 
 }  // namespace android
