@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -44,6 +45,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -74,12 +76,15 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninFunnelEvent;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -130,6 +135,7 @@ public class FullscreenSigninMediatorTest {
     @Mock private LocalStatePrefs.Natives mLocalStatePrefsNativeMock;
     @Mock private PrefService mLocalPrefsServiceMock;
     @Captor private ArgumentCaptor<SignInCallback> mSignInCallbackCaptor;
+    @Captor private ArgumentCaptor<Runnable> mSignOutCallbackCaptor;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
             new OneshotSupplierImpl<>();
@@ -183,6 +189,21 @@ public class FullscreenSigninMediatorTest {
     @After
     public void tearDown() {
         destroyMediator();
+    }
+
+    @Test
+    public void testInitialLoadWhenAllInputsReadyAtConstruction_doesNotRecordLoadHistograms() {
+        setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mNativeInitializationPromise.fulfill(null);
+
+        createMediator();
+
+        assertLoadingSpinnerVisibility(false);
+        assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
+        verify(mDelegateMock, times(1)).onInitialLoadCompleted();
+        verify(mDelegateMock, never()).recordNativeInitializedHistogram();
+        verify(mDelegateMock, never()).recordLoadCompletedHistograms(anyInt());
     }
 
     @Test
@@ -324,6 +345,24 @@ public class FullscreenSigninMediatorTest {
     }
 
     @Test
+    public void testSignInWithChildAccount_usesForcedSigninAccessPoint() {
+        setUpSigninSupported(true);
+        // Skip the account management check, so that sign-in is requested directly.
+        when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
+        FullscreenSigninCoordinator.disableAnimationsForTesting();
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        createMediator();
+        initializeNative();
+
+        // Child accounts can't skip sign-in, so they sign in with FORCED_SIGNIN rather than the
+        // configured access point.
+        assertTrue(mModel.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON));
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        verify(mSigninManagerMock)
+                .signin(eq(TestAccounts.CHILD_ACCOUNT), eq(SigninAccessPoint.FORCED_SIGNIN), any());
+    }
+
+    @Test
     public void testChildBadgeIsRemovedWhenAccountStopsBeingSupervised() {
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         createMediator();
@@ -382,13 +421,14 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSignInWithDefaultLogoWaitsForAnimation() {
+        setUpSigninSupported(true);
         // Skip the account management check, so that sign-in is requested directly.
         when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
 
-        mMediator.proceedWithSignIn();
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
 
         assertTrue(mModel.get(FullscreenSigninProperties.START_ANIMATION));
         AnimatorListener listener = mModel.get(FullscreenSigninProperties.ANIMATOR_LISTENER);
@@ -405,6 +445,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSignInWithCustomLogoCompletesWithoutAnimation() {
+        setUpSigninSupported(true);
         // Skip the account management check, so that sign-in is requested directly.
         when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -412,7 +453,7 @@ public class FullscreenSigninMediatorTest {
         createMediator();
         initializeNative();
 
-        mMediator.proceedWithSignIn();
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
 
         // The animation view is hidden when a custom logo is used, so the animation isn't started.
         assertFalse(mModel.get(FullscreenSigninProperties.SHOW_ANIMATION));
@@ -427,8 +468,8 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_promoShownWithAccount() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         verify(mSigninMetricsUtilsJniMock, never()).logSigninFunnelEvent(anyInt(), anyInt());
 
@@ -453,8 +494,8 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_notLoggedWhenSigninNotSupported() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSigninSupported(false);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
 
         initializeNative();
@@ -466,8 +507,8 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_notLoggedAfterDestroy() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         destroyMediator();
 
@@ -478,6 +519,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_promoShownLoggedAgainOnReset_coordinatorReused() {
+        setUpSigninSupported(true);
         // Simulates a flow that reuses the coordinator on back press, like the FRE.
         doAnswer(
                         invocation -> {
@@ -488,7 +530,6 @@ public class FullscreenSigninMediatorTest {
                 .when(mDelegateMock)
                 .logPromoShownFunnelEventOnBackPress(anyInt(), anyInt());
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setUpSigninSupported(true);
         createMediator();
         initializeNative();
 
@@ -501,10 +542,10 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_promoShownNotLoggedAgainOnReset_coordinatorRecreated() {
+        setUpSigninSupported(true);
         // Simulates a flow that recreates the coordinator on back press, like the fullscreen
         // sign-in promo, where the delegate doesn't log the event again.
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setUpSigninSupported(true);
         createMediator();
         initializeNative();
 
@@ -516,9 +557,22 @@ public class FullscreenSigninMediatorTest {
     }
 
     @Test
-    public void testPendingChildAccountShowsSupervisedUi() {
-        // The selected account isn't on the device yet, so it becomes a pending selection.
+    public void testSigninFunnel_resetWithNoAccount_notifiesDelegate() {
         setUpSigninSupported(true);
+        createMediator();
+        initializeNative();
+
+        mMediator.reset();
+
+        verify(mDelegateMock)
+                .logPromoShownFunnelEventOnBackPress(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.PROMO_SHOWN_NO_ACCOUNT);
+    }
+
+    @Test
+    public void testPendingChildAccountShowsSupervisedUi() {
+        setUpSigninSupported(true);
+        // The selected account isn't on the device yet, so it becomes a pending selection.
         mSelectedAccountEmail = TestAccounts.CHILD_ACCOUNT.getEmail();
         createMediator();
         initializeNative();
@@ -541,39 +595,48 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_signinButtonClicked_ignoredIfAlreadyClicked() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
 
         mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        assertTrue(mMediator.isContinueOrDismissClicked());
         mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
 
         verify(mSigninMetricsUtilsJniMock, times(1))
                 .logSigninFunnelEvent(
                         SigninAccessPoint.START_PAGE, SigninFunnelEvent.SIGNIN_BUTTON_CLICKED);
+        verify(mDelegateMock, times(1)).acceptTermsOfService(true);
+        verify(mDelegateMock, times(1))
+                .recordUserSignInHistograms(
+                        AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
     }
 
     @Test
     public void testSigninFunnel_signinDeclinedButtonClicked_ignoredIfAlreadyClicked() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
 
         mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        assertTrue(mMediator.isContinueOrDismissClicked());
         mModel.get(FullscreenSigninProperties.ON_DISMISS_CLICKED).onClick(null);
 
         verify(mSigninMetricsUtilsJniMock, never())
                 .logSigninFunnelEvent(
                         SigninAccessPoint.START_PAGE,
                         SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED);
+        verify(mDelegateMock, never()).recordSigninDismissedHistograms();
+        verify(mDelegateMock, times(1)).acceptTermsOfService(true);
+        verify(mDelegateMock, never()).advanceToNextPage();
     }
 
     @Test
     public void testSigninFunnel_accountPickerShown() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
 
@@ -590,9 +653,9 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_defaultAccountSelected() {
+        setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        setUpSigninSupported(true);
         createMediator();
         initializeNative();
 
@@ -606,9 +669,9 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_nonDefaultAccountSelected() {
+        setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        setUpSigninSupported(true);
         createMediator();
         initializeNative();
 
@@ -623,9 +686,9 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_pendingSelectedAccount_noAccountSelectedEventLogged() {
+        setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        setUpSigninSupported(true);
         mSelectedAccountEmail = TestAccounts.ACCOUNT2.getEmail();
         createMediator();
         initializeNative();
@@ -639,8 +702,8 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_accountPickerDismissed() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
 
@@ -653,8 +716,8 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_accountPickerDismissed_notLoggedAfterDestroy() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
 
@@ -695,6 +758,7 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSignInAbortedKeepsForcedSigninTitle() {
+        setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         enableForcedSigninPolicy();
         when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
@@ -707,7 +771,7 @@ public class FullscreenSigninMediatorTest {
                         .getString(R.string.signin_fre_title_signin_forced_by_policy);
         assertEquals(forcedTitle, mModel.get(FullscreenSigninProperties.TITLE_STRING));
 
-        mMediator.proceedWithSignIn();
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
         verify(mSigninManagerMock).signin(any(), anyInt(), mSignInCallbackCaptor.capture());
         // The title shows the welcome text while signing in.
         assertNotEquals(forcedTitle, mModel.get(FullscreenSigninProperties.TITLE_STRING));
@@ -715,6 +779,150 @@ public class FullscreenSigninMediatorTest {
         mSignInCallbackCaptor.getValue().onSignInAborted();
 
         assertEquals(forcedTitle, mModel.get(FullscreenSigninProperties.TITLE_STRING));
+        assertFalse(mMediator.isContinueOrDismissClicked());
+    }
+
+    @Test
+    public void testSyncDataManagedByPolicy_showsSubtitleWithoutSync() {
+        setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mSyncServiceMock.isTypeManagedByPolicy(anyInt())).thenReturn(false);
+        when(mSyncServiceMock.isTypeManagedByPolicy(UserSelectableType.LAST_TYPE)).thenReturn(true);
+
+        createMediator();
+        initializeNative();
+
+        assertEquals(
+                RuntimeEnvironment.getApplication()
+                        .getString(R.string.signin_fre_subtitle_without_sync),
+                mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+    }
+
+    @Test
+    public void testReset_afterSignInComplete_resetsStateAndAllowsContinueAgain() {
+        setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
+        FullscreenSigninCoordinator.disableAnimationsForTesting();
+        createMediator();
+        initializeNative();
+        assertFalse(mMediator.isContinueOrDismissClicked());
+
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        assertTrue(mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT));
+        assertTrue(mMediator.isContinueOrDismissClicked());
+        verify(mSigninManagerMock).signin(any(), anyInt(), mSignInCallbackCaptor.capture());
+        // In production, the account is primary once sign-in completes.
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mSignInCallbackCaptor.getValue().onSignInComplete();
+        verify(mDelegateMock).advanceToNextPage();
+        assertTrue(mMediator.isContinueOrDismissClicked());
+
+        mMediator.reset();
+
+        assertFalse(mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT));
+        assertFalse(mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER));
+        assertFalse(mMediator.isContinueOrDismissClicked());
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        // The selected account is already signed in, so the screen advances without signing in
+        // again.
+        verify(mDelegateMock, times(2)).advanceToNextPage();
+        verify(mSigninManagerMock, times(1)).signin(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testDismissWhenSignedIn_signsOutThenAdvances() {
+        setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        createMediator();
+        initializeNative();
+
+        mModel.get(FullscreenSigninProperties.ON_DISMISS_CLICKED).onClick(null);
+
+        assertTrue(mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER));
+        verify(mSigninManagerMock)
+                .signOut(eq(SignoutReason.ABORT_SIGNIN), mSignOutCallbackCaptor.capture());
+        verify(mDelegateMock).recordSigninDismissedHistograms();
+        verify(mDelegateMock).acceptTermsOfService(true);
+        verify(mDelegateMock, never()).advanceToNextPage();
+
+        // In production, sign-out clears the primary account before calling back.
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(null);
+        mSignOutCallbackCaptor.getValue().run();
+        verify(mDelegateMock).advanceToNextPage();
+    }
+
+    @Test
+    public void testDismissWhenSignedIn_ignoresClicksUntilReset() {
+        setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        createMediator();
+        initializeNative();
+        assertFalse(mMediator.isContinueOrDismissClicked());
+
+        mModel.get(FullscreenSigninProperties.ON_DISMISS_CLICKED).onClick(null);
+        assertTrue(mMediator.isContinueOrDismissClicked());
+        mModel.get(FullscreenSigninProperties.ON_DISMISS_CLICKED).onClick(null);
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+
+        verify(mSigninManagerMock, times(1))
+                .signOut(eq(SignoutReason.ABORT_SIGNIN), mSignOutCallbackCaptor.capture());
+        verify(mDelegateMock, times(1)).recordSigninDismissedHistograms();
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+
+        // Stays locked after sign-out completes, until the screen is reset. In production,
+        // sign-out clears the primary account before calling back.
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(null);
+        mSignOutCallbackCaptor.getValue().run();
+        assertTrue(mMediator.isContinueOrDismissClicked());
+        mMediator.reset();
+        assertFalse(mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER));
+        assertFalse(mMediator.isContinueOrDismissClicked());
+    }
+
+    @Test
+    public void testContinueOnAutomotive_displaysDeviceLockBeforeSignin() {
+        setUpSigninSupported(true);
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
+        FullscreenSigninCoordinator.disableAnimationsForTesting();
+        createMediator();
+        initializeNative();
+
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        verify(mDelegateMock).displayDeviceLockPage(TestAccounts.ACCOUNT1.getId());
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+        verify(mDelegateMock, never()).acceptTermsOfService(anyBoolean());
+        verify(mDelegateMock, never()).recordUserSignInHistograms(anyInt());
+
+        mMediator.proceedWithSignIn();
+        verify(mDelegateMock).acceptTermsOfService(true);
+        verify(mDelegateMock)
+                .recordUserSignInHistograms(
+                        AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
+        verify(mSigninManagerMock)
+                .signin(eq(TestAccounts.ACCOUNT1), eq(SigninAccessPoint.START_PAGE), any());
+    }
+
+    @Test
+    public void testContinueOnAutomotive_deviceLockCanceled_allowsRetry() {
+        setUpSigninSupported(true);
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        createMediator();
+        initializeNative();
+
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        // The legacy mediator doesn't lock the screen while device lock is shown, so the cancel
+        // only has an effect in the state-machine mediator, which must accept Continue again.
+        mMediator.onDeviceLockCanceled();
+
+        assertFalse(mMediator.isContinueOrDismissClicked());
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        verify(mDelegateMock, times(2)).displayDeviceLockPage(TestAccounts.ACCOUNT1.getId());
     }
 
     @Test
@@ -733,8 +941,8 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSetConfig_preservesForcedByPolicyTitleAndSubtitle() {
-        enableForcedSigninPolicy();
         setUpSigninSupported(true);
+        enableForcedSigninPolicy();
         createMediator();
         initializeNative();
         Context context = RuntimeEnvironment.getApplication();
