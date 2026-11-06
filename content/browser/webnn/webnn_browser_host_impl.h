@@ -60,6 +60,7 @@ class CONTENT_EXPORT WebNNBrowserHostImpl
   // Public so std::make_unique() (used by Create()) can construct it; the
   // PassKey ensures only Create() can.
   explicit WebNNBrowserHostImpl(base::PassKey<WebNNBrowserHostImpl>);
+  static std::unique_ptr<WebNNBrowserHostImpl> CreateForTesting();
 
   WebNNBrowserHostImpl(const WebNNBrowserHostImpl&) = delete;
   WebNNBrowserHostImpl& operator=(const WebNNBrowserHostImpl&) = delete;

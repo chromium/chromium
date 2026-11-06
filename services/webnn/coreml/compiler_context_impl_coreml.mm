@@ -225,13 +225,11 @@ void CompilerContextImplCoreml::CompileOnBackgroundThread(
                   return;
                 }
 
-                base::FilePath dest_compiled_model_path =
-                    compiled_model_dir.GetPath().AppendASCII("model.mlmodelc");
                 if (!base::Move(raw_compiled_model_path,
-                                dest_compiled_model_path)) {
+                                compiled_model_dir.GetPath())) {
                   LOG(ERROR) << "[WebNN] Failed to move compiled model from "
                              << raw_compiled_model_path << " to "
-                             << dest_compiled_model_path;
+                             << compiled_model_dir.GetPath();
                   std::move(compile_callback)
                       .Run(base::unexpected(mojom::Error::New(
                           mojom::Error::Code::kUnknownError,
@@ -266,7 +264,7 @@ void CompilerContextImplCoreml::DidCompile(
   std::unique_ptr<CompilationResult> compilation = std::move(result.value());
 
   auto compiled_graph = mojom::CompiledGraph::New(
-      compilation->compiled_model_dir.GetPath().AppendASCII("model.mlmodelc"),
+      compilation->compiled_model_dir.GetPath(),
       std::move(compilation->input_name_to_coreml_name),
       std::move(compilation->output_name_to_coreml_name));
 
