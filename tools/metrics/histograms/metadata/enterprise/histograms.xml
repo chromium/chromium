@@ -414,6 +414,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Dasherless" summary="non-google-backed 3P identity"/>
 </variants>
 
+<variants name="MergedPolicyValueType">
+  <variant name="Dictionary" summary="dictionary policy"/>
+  <variant name="List" summary="list policy"/>
+</variants>
+
 <variants name="PolicyLevel">
   <variant name="Mandatory" summary="Mandatory Policy"/>
   <variant name="Recommended" summary="Recommended Policy"/>
@@ -4323,6 +4328,22 @@ chromium-metrics-reviews@google.com.
     <variant name="Decompression"
         summary="decompressing and deserializing log entries from gzip"/>
   </token>
+</histogram>
+
+<histogram
+    name="Enterprise.PolicyMerge.NonChromeNamespace.ValueChanged.{ValueType}"
+    enum="BooleanChanged" expires_after="2027-04-01">
+  <owner>shadmehr@google.com</owner>
+  <owner>enterprise-policy-review@google.com</owner>
+  <summary>
+    Whether merging a {ValueType} outside the Chrome namespace (e.g. an
+    extension's) from multiple sources produced a value different from what
+    precedence alone would have selected. Recorded by each profile-level
+    PolicyService when such a merged policy first appears or its merge result
+    changes, so a merge of machine-level policies is reported once per profile
+    that sees it, in every session.
+  </summary>
+  <token key="ValueType" variants="MergedPolicyValueType"/>
 </histogram>
 
 <histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"

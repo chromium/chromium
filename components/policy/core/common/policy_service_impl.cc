@@ -438,6 +438,10 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // Swap first, so that observers that call GetPolicies() see the current
   // values.
   std::swap(policy_bundle_, bundle);
+
+  // Record before notifying, as an observer might destroy `this`.
+  RecordNonChromeNamespaceMergeMetrics(bundle);
+
   NotifyPoliciesUpdated(bundle);
 }
 
@@ -526,6 +530,49 @@ PolicyBundle PolicyServiceImpl::MergePolicyBundles(
   }
 
   return bundle;
+}
+
+void PolicyServiceImpl::RecordNonChromeNamespaceMergeMetrics(
+    const PolicyBundle& old_bundle) {
+  // Extension policy is read from the profile's PolicyService, and recording
+  // from the browser-level service as well would double count machine-level
+  // merges that both services perform.
+  if (scope_for_metrics_ != ScopeForMetrics::kUser) {
+    return;
+  }
+
+  for (const auto& [ns, policies] : policy_bundle_) {
+    if (ns.domain == POLICY_DOMAIN_CHROME) {
+      continue;
+    }
+    const PolicyMap& old_policies = old_bundle.Get(ns);
+
+    for (const auto& [policy_name, entry] : policies) {
+      if (entry.source != POLICY_SOURCE_MERGED || entry.ignored()) {
+        continue;
+      }
+
+      // Skip entries whose merge result is unchanged since the last update.
+      const PolicyMap::Entry* old_entry = old_policies.Get(policy_name);
+      if (old_entry && old_entry->Equals(entry)) {
+        continue;
+      }
+
+      // DoMerge() appends the pre-merge winner as the last conflict.
+      if (entry.conflicts.empty()) {
+        continue;
+      }
+
+      const base::Value* previous_value =
+          entry.conflicts.back().entry().value_unsafe();
+      const base::Value* merged_value = entry.value_unsafe();
+      const bool value_changed = *previous_value != *merged_value;
+      const std::string histogram = base::StrCat(
+          {"Enterprise.PolicyMerge.NonChromeNamespace.ValueChanged.",
+           entry.value(base::Value::Type::LIST) ? "List" : "Dictionary"});
+      base::UmaHistogramBoolean(histogram, value_changed);
+    }
+  }
 }
 
 std::vector<PolicyDomain> PolicyServiceImpl::UpdatePolicyDomainStatus() {

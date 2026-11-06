@@ -173,6 +173,13 @@ class POLICY_EXPORT PolicyServiceImpl
   // of namespaces whose policies have been modified.
   void MergeAndTriggerUpdates();
 
+  // Records, for each POLICY_SOURCE_MERGED entry outside the Chrome namespace,
+  // whether its merged value differs from what precedence alone would have
+  // selected. Samples are taken when an entry first appears and whenever its
+  // merge result differs from `old_bundle`, split by list vs. dictionary
+  // policy. Only profile-level services (`ScopeForMetrics::kUser`) record.
+  void RecordNonChromeNamespaceMergeMetrics(const PolicyBundle& old_bundle);
+
   // Checks if all providers are initialized or have loaded their policies and
   // sets |policy_domain_status_| accordingly.
   // Returns the updated domains. The returned domains should be passed to
