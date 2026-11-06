@@ -21,7 +21,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       const gpu::SyncToken& sync_token,
       viz::TransferableResource::ResourceSource resource_source,
       const gfx::HDRMetadata& hdr_metadata,
-      viz::ReleaseCallback out_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
   void NotifyResourceLost() override { resource_is_lost_ = true; }
@@ -43,7 +42,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       context_provider_wrapper_;
   viz::TransferableResource::ResourceSource resource_source_;
   const gfx::HDRMetadata hdr_metadata_;
-  viz::ReleaseCallback release_callback_;
   bool resource_is_lost_ = false;
 
   // SyncToken to wait on at destruction.
@@ -61,13 +59,11 @@ ExternalCanvasResource::ExternalCanvasResource(
     const gpu::SyncToken& sync_token,
     viz::TransferableResource::ResourceSource resource_source,
     const gfx::HDRMetadata& hdr_metadata,
-    viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
     : CanvasResource(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       resource_source_(resource_source),
-      hdr_metadata_(hdr_metadata),
-      release_callback_(std::move(out_callback)) {
+      hdr_metadata_(hdr_metadata) {
   CHECK(GetSharedImage());
   SetReleaseSyncToken(sync_token);
 }
@@ -89,23 +85,21 @@ ExportedCanvasResource::ExportedCanvasResource(
       accelerated_raster_(true),
       context_provider_wrapper_(provider),
       use_legacy_external_canvas_resource_bitmap_path_(true) {
-  auto resource = base::MakeRefCounted<ExternalCanvasResource>(
-      shared_image_, sync_token, resource_source, hdr_metadata,
-      std::move(callback), provider);
-
+  // Unretained is safe because wait_sync_token_ is private callback that is
+  // destroyed in dtor.
   wait_sync_token_ = base::BindRepeating(
-      [](scoped_refptr<CanvasResource> resource, gpu::SyncToken sync_token) {
-        resource->WaitSyncToken(sync_token);
+      [](ExportedCanvasResource* resource, gpu::SyncToken sync_token) {
+        resource->last_access_sync_token_ = sync_token;
       },
-      resource);
+      base::Unretained(this));
   release_callback_ = base::BindOnce(
-      [](scoped_refptr<ExternalCanvasResource> resource, bool is_lost) {
-        if (resource->release_callback_) {
-          std::move(resource->release_callback_)
-              .Run(resource->destruction_sync_token_, is_lost);
+      [](ExportedCanvasResource* resource, viz::ReleaseCallback callback,
+         bool is_lost) {
+        if (callback) {
+          std::move(callback).Run(resource->last_access_sync_token_, is_lost);
         }
       },
-      resource);
+      base::Unretained(this), std::move(callback));
 }
 
 ExportedCanvasResource::ExportedCanvasResource(

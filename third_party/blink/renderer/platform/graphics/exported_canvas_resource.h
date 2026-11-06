@@ -62,6 +62,7 @@ class PLATFORM_EXPORT ExportedCanvasResource
 
   bool origin_clean_ = true;
   bool is_lost_ = false;
+  gpu::SyncToken last_access_sync_token_;
 
   base::RepeatingCallback<void(gpu::SyncToken)> wait_sync_token_;
   base::OnceCallback<void(bool)> release_callback_;
