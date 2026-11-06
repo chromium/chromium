@@ -10,7 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,13 +46,17 @@ base::ListValue ToValueList(const std::vector<T>& values) {
 }
 }  // namespace
 
+BASE_FEATURE(kAutofillPrivateEventRouterObserveOnDemand,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 AutofillPrivateEventRouter::AutofillPrivateEventRouter(
     content::BrowserContext* context)
     : context_(context) {
-  // Register with the event router so we know when renderers are listening to
-  // our events. We first check and see if there *is* an event router, because
-  // some unit tests try to create all context services, but don't initialize
-  // the event router first.
+  // Get the event router used to broadcast our events (and, when
+  // `kAutofillPrivateEventRouterObserveOnDemand` is enabled, to know when
+  // renderers are listening to them). We first check and see if there *is* an
+  // event router, because some unit tests try to create all context services,
+  // but don't initialize the event router first.
   event_router_ = EventRouter::Get(context_);
   if (!event_router_) {
     return;
@@ -58,20 +64,33 @@ AutofillPrivateEventRouter::AutofillPrivateEventRouter(
 
   personal_data_ =
       autofill::PersonalDataManagerFactory::GetForBrowserContext(context_);
-  if (personal_data_) {
-    pdm_observer_.Observe(personal_data_);
-  }
+  if (base::FeatureList::IsEnabled(
+          kAutofillPrivateEventRouterObserveOnDemand)) {
+    // Observe `PersonalDataManager`, `SyncService` and `EntityDataManager`
+    // only while listeners exist for the corresponding events.
+    event_router_->RegisterObserver(
+        this, api::autofill_private::OnPersonalDataChanged::kEventName);
+    event_router_->RegisterObserver(
+        this, api::autofill_private::OnEntityInstancesChanged::kEventName);
+    UpdateObservations();
+  } else {
+    // Observe `PersonalDataManager`, `SyncService` and `EntityDataManager`
+    // (when available) whether or not there are listeners.
+    if (personal_data_) {
+      pdm_observer_.Observe(personal_data_);
+    }
 
-  autofill::EntityDataManager* entity_data_manager =
-      autofill::AutofillEntityDataManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(context_));
-  if (entity_data_manager) {
-    entity_data_manager_observer_.Observe(entity_data_manager);
-  }
+    autofill::EntityDataManager* entity_data_manager =
+        autofill::AutofillEntityDataManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(context_));
+    if (entity_data_manager) {
+      entity_data_manager_observer_.Observe(entity_data_manager);
+    }
 
-  if (syncer::SyncService* sync = SyncServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context_))) {
-    sync_observer_.Observe(sync);
+    if (syncer::SyncService* sync = SyncServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(context_))) {
+      sync_observer_.Observe(sync);
+    }
   }
 }
 
@@ -81,13 +100,31 @@ void AutofillPrivateEventRouter::Shutdown() {
   pdm_observer_.Reset();
   entity_data_manager_observer_.Reset();
   sync_observer_.Reset();
+  if (event_router_) {
+    event_router_->UnregisterObserver(this);
+    event_router_ = nullptr;
+  }
+  personal_data_ = nullptr;
+}
+
+void AutofillPrivateEventRouter::OnListenerAdded(
+    const EventListenerInfo& details) {
+  UpdateObservations();
+}
+
+void AutofillPrivateEventRouter::OnListenerRemoved(
+    const EventListenerInfo& details) {
+  UpdateObservations();
 }
 
 void AutofillPrivateEventRouter::RebindPersonalDataManagerForTesting(
     autofill::PersonalDataManager* personal_data) {
   pdm_observer_.Reset();
   personal_data_ = personal_data;
-  if (personal_data_) {
+  if (base::FeatureList::IsEnabled(
+          kAutofillPrivateEventRouterObserveOnDemand)) {
+    UpdateObservations();
+  } else if (personal_data_) {
     pdm_observer_.Observe(personal_data_);
   }
 }
@@ -132,6 +169,40 @@ void AutofillPrivateEventRouter::OnStateChanged(syncer::SyncService*) {
 void AutofillPrivateEventRouter::OnSyncShutdown(syncer::SyncService*) {
   // Unreachable, since this service is Shutdown() before the SyncService.
   NOTREACHED();
+}
+
+void AutofillPrivateEventRouter::UpdateObservations() {
+  CHECK(
+      base::FeatureList::IsEnabled(kAutofillPrivateEventRouterObserveOnDemand));
+  if (!event_router_) {
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(context_);
+  if (event_router_->HasEventListener(
+          api::autofill_private::OnPersonalDataChanged::kEventName)) {
+    if (personal_data_ && !pdm_observer_.IsObserving()) {
+      pdm_observer_.Observe(personal_data_);
+    }
+    syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
+    if (sync && !sync_observer_.IsObserving()) {
+      sync_observer_.Observe(sync);
+    }
+  } else {
+    pdm_observer_.Reset();
+    sync_observer_.Reset();
+  }
+
+  if (event_router_->HasEventListener(
+          api::autofill_private::OnEntityInstancesChanged::kEventName)) {
+    autofill::EntityDataManager* entity_data_manager =
+        autofill::AutofillEntityDataManagerFactory::GetForProfile(profile);
+    if (entity_data_manager && !entity_data_manager_observer_.IsObserving()) {
+      entity_data_manager_observer_.Observe(entity_data_manager);
+    }
+  } else {
+    entity_data_manager_observer_.Reset();
+  }
 }
 
 void AutofillPrivateEventRouter::BroadcastCurrentData() {

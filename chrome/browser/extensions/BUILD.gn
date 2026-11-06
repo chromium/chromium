@@ -2138,6 +2138,7 @@ source_set("unit_tests") {
   if (enable_extensions) {
     deps += [ "//chrome/browser/extensions/api/experimental_ai_data" ]
     sources += [
+      "api/autofill_private/autofill_private_event_router_unittest.cc",
       "api/device_permissions_manager_unittest.cc",
       "api/enterprise_reporting_private/enterprise_reporting_private_unittest.cc",
       "api/experimental_ai_data/experimental_ai_data_api_unittest.cc",
@@ -2177,7 +2178,9 @@ source_set("unit_tests") {
 
     deps += [
       "//chrome/browser/affiliations",
+      "//chrome/browser/autofill",
       "//chrome/browser/custom_handlers",
+      "//chrome/browser/extensions/api/autofill_private",
       "//chrome/browser/extensions/api/glic_private",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/password_manager",
@@ -2189,7 +2192,10 @@ source_set("unit_tests") {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webauthn:test_support",
+      "//chrome/common/extensions/api",
       "//components/affiliations/core/browser:test_support",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/browser:test_support",
       "//components/device_reauth:test_support",
       "//components/enterprise:test_support",
       "//components/password_manager/content/browser",

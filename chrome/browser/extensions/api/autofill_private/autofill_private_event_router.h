@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_EVENT_ROUTER_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -20,6 +21,8 @@ class BrowserContext;
 }
 
 namespace extensions {
+
+BASE_DECLARE_FEATURE(kAutofillPrivateEventRouterObserveOnDemand);
 
 // An event router that observes changes to autofill addresses and credit cards
 // and notifies listeners to the autofill API events.
@@ -45,6 +48,10 @@ class AutofillPrivateEventRouter : public KeyedService,
   // KeyedService overrides:
   void Shutdown() override;
 
+  // EventRouter::Observer overrides:
+  void OnListenerAdded(const EventListenerInfo& details) override;
+  void OnListenerRemoved(const EventListenerInfo& details) override;
+
   // PersonalDataManagerObserver implementation.
   void OnPersonalDataChanged() override;
 
@@ -56,6 +63,11 @@ class AutofillPrivateEventRouter : public KeyedService,
   void OnSyncShutdown(syncer::SyncService*) override;
 
  private:
+  // Attaches or detaches `pdm_observer_`, `sync_observer_`, and
+  // `entity_data_manager_observer_` depending on whether `event_router_` has
+  // active listeners for the corresponding events.
+  void UpdateObservations();
+
   // Triggers an event on the router with current user's data.
   void BroadcastCurrentData();
 

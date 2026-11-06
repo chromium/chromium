@@ -10,6 +10,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -43,6 +44,8 @@ AutofillPrivateEventRouterFactory::AutofillPrivateEventRouterFactory()
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+  // `EventRouter` must outlive the service, which unregisters in `Shutdown()`.
+  DependsOn(EventRouterFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
