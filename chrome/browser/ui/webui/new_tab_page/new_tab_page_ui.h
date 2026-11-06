@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
@@ -390,11 +389,6 @@ class NewTabPageUI
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_;
-  // Time the NTP started loading. Used for logging the WebUI NTP's load
-  // performance. `navigation_start_time_ticks_` is the matching monotonic-
-  // clock instant, stamped together with `navigation_start_time_`.
-  base::Time navigation_start_time_;
-  base::TimeTicks navigation_start_time_ticks_;
   const std::vector<ntp::ModuleIdDetail> module_id_details_;
 
   // Mojo implementations for modules:

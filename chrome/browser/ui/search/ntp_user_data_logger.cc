@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -234,15 +235,11 @@ const char* LoggingEventToShortcutUserActionName(NTPLoggingEventType event) {
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Seconds(60), 100)
 
-NTPUserDataLogger::NTPUserDataLogger(
-    Profile* profile,
-    const GURL& ntp_url,
-    base::TimeTicks ntp_navigation_start_time_ticks)
+NTPUserDataLogger::NTPUserDataLogger(Profile* profile, const GURL& ntp_url)
     : MostVisitedMetricsLogger("NewTabPage"),
       during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()),
       ntp_url_(ntp_url),
-      profile_(profile),
-      ntp_navigation_start_time_(ntp_navigation_start_time_ticks) {}
+      profile_(profile) {}
 
 NTPUserDataLogger::~NTPUserDataLogger() = default;
 
@@ -444,11 +441,10 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
 
 void NTPUserDataLogger::EmitNtpTraceEvent(const char* event_name,
                                           base::TimeDelta duration) {
+  const base::TimeTicks now = base::TimeTicks::Now();
   TRACE_EVENT_BEGIN(kUIEventCategory, perfetto::DynamicString(event_name),
-                    perfetto::Track::FromPointer(this),
-                    ntp_navigation_start_time_);
-  TRACE_EVENT_END(kUIEventCategory, perfetto::Track::FromPointer(this),
-                  ntp_navigation_start_time_ + duration);
+                    perfetto::Track::FromPointer(this), now - duration);
+  TRACE_EVENT_END(kUIEventCategory, perfetto::Track::FromPointer(this), now);
 }
 
 void NTPUserDataLogger::RecordDoodleImpression(base::TimeDelta time,

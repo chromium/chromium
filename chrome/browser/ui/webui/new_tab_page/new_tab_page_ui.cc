@@ -1033,11 +1033,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       ntp_custom_background_service_(
           NtpCustomBackgroundServiceFactory::GetForProfile(profile_)),
       ntp_custom_background_service_observation_(this),
-      // We initialize navigation_start_time_ to a reasonable value to account
-      // for the unlikely case where the NewTabPageHandler is created before we
-      // received the DidStartNavigation event.
-      navigation_start_time_(base::Time::Now()),
-      navigation_start_time_ticks_(base::TimeTicks::Now()),
       module_id_details_(
           ntp::MakeModuleIdDetails(NewTabPageUI::IsManagedProfile(profile_),
                                    profile_)) {
@@ -1343,8 +1338,7 @@ void NewTabPageUI::CreatePageHandler(
       SyncServiceFactory::GetForProfile(profile_),
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile_),
-      web_contents(), navigation_start_time_, navigation_start_time_ticks_,
-      &module_id_details_);
+      web_contents(), &module_id_details_);
 }
 
 void NewTabPageUI::ConnectToParentDocument(
@@ -1392,10 +1386,8 @@ void NewTabPageUI::CreatePageHandler(
   most_visited_page_handler_ = std::make_unique<MostVisitedHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       web_contents(),
-      std::make_unique<NTPUserDataLogger>(profile_,
-                                          chrome::ChromeUINewTabPageURLAsGURL(),
-                                          navigation_start_time_ticks_),
-      navigation_start_time_);
+      std::make_unique<NTPUserDataLogger>(
+          profile_, chrome::ChromeUINewTabPageURLAsGURL()));
   most_visited_pref_observer_ = std::make_unique<MostVisitedPrefObserver>(
       profile_, most_visited_page_handler_.get());
 }
@@ -1521,21 +1513,17 @@ void NewTabPageUI::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->GetURL() == chrome::ChromeUINewTabPageURLAsGURL()) {
-    navigation_start_time_ = base::Time::Now();
-    navigation_start_time_ticks_ = base::TimeTicks::Now();
-
+    const base::Time now = base::Time::Now();
     OnLoad();
 
     auto prev_navigation_time =
         profile_->GetPrefs()->GetTime(kPrevNavigationTimePrefName);
     if (!prev_navigation_time.is_null()) {
-      base::UmaHistogramCustomTimes(
-          "NewTabPage.TimeSinceLastNTP",
-          navigation_start_time_ - prev_navigation_time, base::Seconds(1),
-          base::Days(1), 100);
+      base::UmaHistogramCustomTimes("NewTabPage.TimeSinceLastNTP",
+                                    now - prev_navigation_time,
+                                    base::Seconds(1), base::Days(1), 100);
     }
-    profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName,
-                                  navigation_start_time_);
+    profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName, now);
     base::UmaHistogramBoolean("NewTabPage.HasCredentials",
                               HasCredentials(profile_));
   }
@@ -1543,8 +1531,6 @@ void NewTabPageUI::DidStartNavigation(
 
 void NewTabPageUI::OnLoad() {
   base::DictValue update;
-  update.Set("navigationStartTime",
-             navigation_start_time_.InMillisecondsFSinceUnixEpoch());
   const bool modules_enabled = ntp::HasModulesEnabled(
       module_id_details_, IdentityManagerFactory::GetForProfile(profile_));
   update.Set("modulesEnabled", modules_enabled);

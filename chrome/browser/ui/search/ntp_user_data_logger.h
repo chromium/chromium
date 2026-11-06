@@ -60,11 +60,7 @@ enum LogoClickType {
 class NTPUserDataLogger : public MostVisitedMetricsLogger {
  public:
   // Creates a NTPUserDataLogger. MUST be called only when the NTP is active.
-  // `ntp_navigation_start_time_ticks` is the monotonic-clock timestamp of the
-  // NTP navigation start; it is used directly as the anchor for trace events.
-  NTPUserDataLogger(Profile* profile,
-                    const GURL& ntp_url,
-                    base::TimeTicks ntp_navigation_start_time_ticks);
+  NTPUserDataLogger(Profile* profile, const GURL& ntp_url);
 
   NTPUserDataLogger(const NTPUserDataLogger&) = delete;
   NTPUserDataLogger& operator=(const NTPUserDataLogger&) = delete;
@@ -130,9 +126,6 @@ class NTPUserDataLogger : public MostVisitedMetricsLogger {
 
   // The profile in which this New Tab Page was loaded.
   raw_ptr<Profile> profile_;
-
-  // Keeps the starting time of NTP navigation.
-  const base::TimeTicks ntp_navigation_start_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_NTP_USER_DATA_LOGGER_H_

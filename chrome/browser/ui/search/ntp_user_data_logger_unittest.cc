@@ -68,7 +68,7 @@ std::vector<base::Bucket> FillImpressions(int numImpressions, int count) {
 class TestNTPUserDataLogger : public NTPUserDataLogger {
  public:
   explicit TestNTPUserDataLogger(const GURL& ntp_url)
-      : NTPUserDataLogger(nullptr, ntp_url, base::TimeTicks::Now()) {}
+      : NTPUserDataLogger(nullptr, ntp_url) {}
 
   ~TestNTPUserDataLogger() override = default;
 

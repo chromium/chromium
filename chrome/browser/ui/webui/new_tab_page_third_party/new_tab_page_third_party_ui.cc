@@ -189,9 +189,7 @@ NewTabPageThirdPartyUI::NewTabPageThirdPartyUI(content::WebUI* web_ui)
       page_factory_receiver_(this),
       most_visited_page_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
-      web_contents_(web_ui->GetWebContents()),
-      navigation_start_time_(base::Time::Now()),
-      navigation_start_time_ticks_(base::TimeTicks::Now()) {
+      web_contents_(web_ui->GetWebContents()) {
   CreateAndAddNewTabPageThirdPartyUiHtmlSource(profile_, web_contents_);
   content::URLDataSource::Add(
       profile_, std::make_unique<FaviconSource>(
@@ -252,9 +250,7 @@ void NewTabPageThirdPartyUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       web_contents_,
       std::make_unique<NTPUserDataLogger>(
-          profile_, GURL(chrome::kChromeUINewTabPageThirdPartyURL),
-          navigation_start_time_ticks_),
-      navigation_start_time_);
+          profile_, GURL(chrome::kChromeUINewTabPageThirdPartyURL)));
   most_visited_page_handler_->EnableTileTypes(
       ntp_tiles::MostVisitedSites::EnableTileTypesOptions().with_top_sites(
           true));

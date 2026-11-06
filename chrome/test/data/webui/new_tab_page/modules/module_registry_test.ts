@@ -5,7 +5,6 @@
 import {ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {newTabPageProxyFactory, PageHandlerRemote, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ModuleIdName, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -22,7 +21,6 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
   let metrics: MetricsTracker;
 
   setup(() => {
-    loadTimeData.overrideValues({navigationStartTime: 0.0});
     metrics = fakeMetricsPrivate();
     windowProxy = installMock(WindowProxy);
     handler = installMock(PageHandlerRemote, (mock: PageHandlerRemote) => {

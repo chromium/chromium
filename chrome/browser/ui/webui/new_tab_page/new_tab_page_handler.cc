@@ -34,6 +34,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_pref_names.h"
@@ -433,14 +434,10 @@ NewTabPageHandler::NewTabPageHandler(
     segmentation_platform::SegmentationPlatformService*
         segmentation_platform_service,
     content::WebContents* web_contents,
-    const base::Time& ntp_navigation_start_time,
-    base::TimeTicks ntp_navigation_start_time_ticks,
     const std::vector<ntp::ModuleIdDetail>* module_id_details)
     : SettingsEnabledObserver(
           optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
-      logger_(profile,
-              chrome::ChromeUINewTabPageURLAsGURL(),
-              ntp_navigation_start_time_ticks),
+      logger_(profile, chrome::ChromeUINewTabPageURLAsGURL()),
       ntp_custom_background_service_(ntp_custom_background_service),
       logo_service_(logo_service),
 // TODO(b/502297163): Implement for Android.
@@ -458,7 +455,6 @@ NewTabPageHandler::NewTabPageHandler(
 #if !BUILDFLAG(IS_ANDROID)
       feature_promo_helper_(std::make_unique<NewTabPageFeaturePromoHelper>()),
 #endif
-      ntp_navigation_start_time_(ntp_navigation_start_time),
       module_id_details_(module_id_details),
       microsoft_auth_service_(
           MicrosoftAuthServiceFactory::GetForProfile(profile)),
@@ -888,14 +884,11 @@ void NewTabPageHandler::UpdateFooterVisibility() {
 }
 
 void NewTabPageHandler::OnAppRendered(double time) {
-  LogEvent(NTP_APP_RENDERED, base::Time::FromMillisecondsSinceUnixEpoch(time) -
-                                 ntp_navigation_start_time_);
+  LogEvent(NTP_APP_RENDERED, base::Milliseconds(time));
 }
 
 void NewTabPageHandler::OnOneGoogleBarRendered(double time) {
-  LogEvent(NTP_ONE_GOOGLE_BAR_SHOWN,
-           base::Time::FromMillisecondsSinceUnixEpoch(time) -
-               ntp_navigation_start_time_);
+  LogEvent(NTP_ONE_GOOGLE_BAR_SHOWN, base::Milliseconds(time));
 }
 
 void NewTabPageHandler::OnCustomizeDialogAction(
@@ -982,14 +975,10 @@ void NewTabPageHandler::OnDoodleImageRendered(
     OnDoodleImageRenderedCallback callback) {
   switch (type) {
     case new_tab_page::mojom::DoodleImageType::kAnimation:
-      LogEvent(NTP_ANIMATED_LOGO_SHOWN_FROM_CACHE,
-               base::Time::FromMillisecondsSinceUnixEpoch(time) -
-                   ntp_navigation_start_time_);
+      LogEvent(NTP_ANIMATED_LOGO_SHOWN_FROM_CACHE, base::Milliseconds(time));
       break;
     case new_tab_page::mojom::DoodleImageType::kStatic:
-      LogEvent(NTP_STATIC_LOGO_SHOWN_FROM_CACHE,
-               base::Time::FromMillisecondsSinceUnixEpoch(time) -
-                   ntp_navigation_start_time_);
+      LogEvent(NTP_STATIC_LOGO_SHOWN_FROM_CACHE, base::Milliseconds(time));
       break;
     default:
       NOTREACHED();

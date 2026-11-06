@@ -26,7 +26,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
 
   setup(async () => {
     windowProxy = installMock(WindowProxy);
-    windowProxy.setResultFor('now', startTime);
+    windowProxy.setResultFor('currentTimeMs', startTime);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.style.width = '300px';
     element = document.createElement('ntp-calendar-event');

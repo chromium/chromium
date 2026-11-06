@@ -130,7 +130,7 @@ export class CalendarElement extends CrLitElement {
   }
 
   private computeExpandedEventIndex_(): number {
-    const now = WindowProxy.getInstance().now();
+    const now = WindowProxy.getInstance().currentTimeMs();
 
     // Find the indices of all meetings that are not over.
     let expandableEventIndices: number[] = this.events.map((_, i) => i);

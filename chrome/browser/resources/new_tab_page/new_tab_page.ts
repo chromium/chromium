@@ -32,7 +32,7 @@ export {C2PA_MARKER, hasC2paMetadata, MAX_C2PA_PIXELS, MAX_C2PA_SEARCH_BYTES, pr
 export type {ProcessedFile} from './image_processor.js';
 export {LeftHandSideElement, NtpLhsMessageType} from './left_hand_side.js';
 export {LogoElement} from './logo.js';
-export {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash, recordVoiceAction, VoiceAction, VoiceError} from './metrics_utils.js';
+export {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash, recordVoiceAction, VoiceAction, VoiceError} from './metrics_utils.js';
 export {NtpSearchboxElement} from './ntp_searchbox.js';
 export {checkTransparency, isBMP, isPNG, isWebP} from './transparency.js';
 export {$$} from './utils.js';

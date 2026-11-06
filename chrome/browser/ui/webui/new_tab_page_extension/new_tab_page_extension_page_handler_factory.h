@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
@@ -95,11 +94,6 @@ class NewTabPageExtensionPageHandlerFactory
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
   void ClearContextualSessionHandle();
-
-  // Approximates the NTP navigation start time used for logging, since this
-  // factory is created when the document first requests one of its interfaces.
-  const base::Time navigation_start_time_;
-  const base::TimeTicks navigation_start_time_ticks_;
 
   // The NTP component extension does not support modules. `NewTabPageHandler`
   // holds a raw pointer to this, so it must outlive `page_handler_`.

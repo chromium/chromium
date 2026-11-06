@@ -10,8 +10,11 @@ export class MostVisitedWindowProxy {
     return window.matchMedia(query);
   }
 
+  /**
+   * Returns milliseconds elapsed since navigation start (`performance.now()`).
+   */
   now(): number {
-    return Date.now();
+    return performance.now();
   }
 
   static getInstance(): MostVisitedWindowProxy {

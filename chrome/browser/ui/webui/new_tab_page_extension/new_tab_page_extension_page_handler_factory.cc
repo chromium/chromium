@@ -30,9 +30,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(NewTabPageExtensionPageHandlerFactory);
 
 NewTabPageExtensionPageHandlerFactory::NewTabPageExtensionPageHandlerFactory(
     content::RenderFrameHost* rfh)
-    : content::DocumentUserData<NewTabPageExtensionPageHandlerFactory>(rfh),
-      navigation_start_time_(base::Time::Now()),
-      navigation_start_time_ticks_(base::TimeTicks::Now()) {}
+    : content::DocumentUserData<NewTabPageExtensionPageHandlerFactory>(rfh) {}
 
 NewTabPageExtensionPageHandlerFactory::
     ~NewTabPageExtensionPageHandlerFactory() = default;
@@ -73,8 +71,7 @@ void NewTabPageExtensionPageHandlerFactory::CreatePageHandler(
       SyncServiceFactory::GetForProfile(profile),
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile),
-      web_contents, navigation_start_time_, navigation_start_time_ticks_,
-      &module_id_details_);
+      web_contents, &module_id_details_);
 }
 
 void NewTabPageExtensionPageHandlerFactory::CreatePageHandler(

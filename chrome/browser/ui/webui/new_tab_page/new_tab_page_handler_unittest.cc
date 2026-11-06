@@ -338,8 +338,8 @@ class NewTabPageHandlerTest : public testing::Test {
         mock_page_.BindAndGetRemote(), profile_.get(),
         &mock_ntp_custom_background_service_, &mock_theme_service_,
         &mock_logo_service_, &test_sync_service_,
-        &mock_segmentation_platform_service_, web_contents_, base::Time::Now(),
-        base::TimeTicks::Now(), &module_id_details);
+        &mock_segmentation_platform_service_, web_contents_,
+        &module_id_details);
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);

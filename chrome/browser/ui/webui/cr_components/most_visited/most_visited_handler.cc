@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
@@ -74,14 +75,12 @@ MostVisitedHandler::MostVisitedHandler(
     mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
     Profile* profile,
     content::WebContents* web_contents,
-    std::unique_ptr<MostVisitedMetricsLogger> logger,
-    const base::Time& navigation_start_time)
+    std::unique_ptr<MostVisitedMetricsLogger> logger)
     : profile_(profile),
       most_visited_sites_(
           ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       web_contents_(web_contents),
       logger_(std::move(logger)),
-      navigation_start_time_(navigation_start_time),
       page_handler_(this, std::move(pending_page_handler)),
       page_(std::move(pending_page)) {
   CHECK(logger_);
@@ -244,8 +243,7 @@ void MostVisitedHandler::OnMostVisitedTilesRendered(
   bool is_expanded =
       profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles);
   logger_->LogMostVisitedLoaded(
-      base::Time::FromMillisecondsSinceUnixEpoch(time) - navigation_start_time_,
-      most_visited_sites_->IsTopSitesEnabled(),
+      base::Milliseconds(time), most_visited_sites_->IsTopSitesEnabled(),
       most_visited_sites_->IsCustomLinksEnabled(),
       most_visited_sites_->IsEnterpriseShortcutsEnabled(),
       most_visited_sites_->IsShortcutsVisible(), is_expanded);

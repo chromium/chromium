@@ -875,7 +875,6 @@ suite('NewTabPageAppTest', () => {
   function modulesCommonTests(modulesElementTag: string) {
     test('modules loaded', async () => {
       // Arrange.
-      loadTimeData.overrideValues({navigationStartTime: 0.0});
       windowProxy.setResultFor('now', 123.0);
       const modules = $$(app, modulesElementTag)!;
       assertTrue(!!modules);
@@ -6112,7 +6111,7 @@ suite('NewTabPageAppReducedMotionTest', () => {
     windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
     windowProxy.setResultFor('ensureLazyLoaded', Promise.resolve());
     windowProxy.setResultFor('createIframeSrc', '');
-    windowProxy.setResultFor('now', new Date());
+    windowProxy.setResultFor('now', 0);
     windowProxy.setResultFor('url', url);
     windowProxy.setResultFor('matchMedia', {
       matches: false,
@@ -6295,7 +6294,7 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
     windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
     windowProxy.setResultFor('ensureLazyLoaded', Promise.resolve());
     windowProxy.setResultFor('createIframeSrc', '');
-    windowProxy.setResultFor('now', new Date());
+    windowProxy.setResultFor('now', 0);
     windowProxy.setResultFor('url', new URL(location.href));
     windowProxy.setResultFor('matchMedia', {
       matches: false,

@@ -45,7 +45,15 @@ export class WindowProxy {
     return window.matchMedia(query);
   }
 
+  /**
+   * Returns milliseconds elapsed since navigation start (`performance.now()`).
+   */
   now(): number {
+    return performance.now();
+  }
+
+  /** Returns milliseconds elapsed since the Unix epoch (`Date.now()`). */
+  currentTimeMs(): number {
     return Date.now();
   }
 

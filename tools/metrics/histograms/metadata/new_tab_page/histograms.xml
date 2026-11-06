@@ -431,6 +431,10 @@ chromium-metrics-reviews@google.com.
     lazy loading completes, if applicable) following a click on the compose
     entrypoint on desktop. This only gets recorded if the compose button leads
     to a compose session starting (i.e. the composebox opening).
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
   </summary>
 </histogram>
 
@@ -1216,7 +1220,12 @@ chromium-metrics-reviews@google.com.
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Histogram of the time, in milliseconds, it took for the NTP to load all of
-    its tiles since navigation start. {NewTabPageTimings}
+    its tiles since navigation start.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
+    {NewTabPageTimings}
   </summary>
   <token key="NewTabPageTimings">
     <variant name=""/>
@@ -1314,6 +1323,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     The amount of time between opening an NTP and the logo appearing. Only
     recorded when there is a logo, and only recorded once per NTP.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
   </summary>
 </histogram>
 
@@ -1344,6 +1357,10 @@ chromium-metrics-reviews@google.com.
     Records the time until the top-level ntp-app Custom Element's |ready|
     callback is called. The intention is to measure how quickly the contents of
     new_tab_page.rollup.js (main JS bundle) are rendered.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
   </summary>
 </histogram>
 
@@ -1769,7 +1786,12 @@ chromium-metrics-reviews@google.com.
     an NTP module header is mostly visible in the window's content area
     (viewport). If the module header is mostly below the page fold, the time
     delta will include the time it takes for the user to scroll the module into
-    view. {NewTabPageModules}
+    view.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
+    {NewTabPageModules}
   </summary>
   <token key="NewTabPageModules" variants="NewTabPageModules">
     <variant name=""/>
@@ -1827,6 +1849,10 @@ chromium-metrics-reviews@google.com.
     an NTP module loaded.
 
     Logged for modules that were loaded after the initial NTP load.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
   </summary>
 </histogram>
 
@@ -1853,6 +1879,10 @@ chromium-metrics-reviews@google.com.
     an NTP module loaded.
 
     Logged for modules that were loaded during the initial NTP load.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
   </summary>
 </histogram>
 
@@ -1890,6 +1920,10 @@ chromium-metrics-reviews@google.com.
     an NTP module loaded.
 
     Logged by all modules, regardless of if they loaded at or before NTP load.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
     {NewTabPageModules}
   </summary>
   <token key="NewTabPageModules" variants="NewTabPageModules">
@@ -1962,6 +1996,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram of the time, in milliseconds since navigation start, it took until
     the modules showed up on the NTP.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
   </summary>
 </histogram>
 
@@ -2161,6 +2199,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram of the time, in milliseconds since navigation start, it took until
     the OneGoogleBar showed up on the NTP. Recorded only on the local NTP.
+
+    Note: https://crrev.com/c/8710958 switched this from subtracting a
+    browser-captured base::Time::Now() navigation start from renderer Date.now()
+    to renderer performance.now(), which may slightly shift recorded values.
   </summary>
 </histogram>
 

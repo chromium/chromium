@@ -40,7 +40,7 @@ import {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import type {IframeElement} from './iframe.js';
 import type {LogoElement} from './logo.js';
-import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordSparseValueWithPersistentHash, recordVoiceAction, VoiceAction} from './metrics_utils.js';
+import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordSparseValueWithPersistentHash, recordVoiceAction, VoiceAction} from './metrics_utils.js';
 import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 import type {PageCallbackRouter, PageHandlerInterface, Theme} from './new_tab_page.mojom-webui.js';
 import {browserProxyFactory as newTabPageProxyFactory, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
@@ -1092,7 +1092,7 @@ export class AppElement extends AppElementBase {
           ?.focusInput();
     }
     if (!this.wasComposeboxOpened_) {
-      recordLoadDuration(
+      recordDuration(
           'NewTabPage.Composebox.FromNTPLoadToSessionStart',
           WindowProxy.getInstance().now());
       this.wasComposeboxOpened_ = true;
@@ -1455,7 +1455,7 @@ export class AppElement extends AppElementBase {
   private onModulesLoadedChange_() {
     if (this.modulesLoaded_ &&
         loadTimeData.getBoolean('modulesEnabled')) {
-      recordLoadDuration(
+      recordDuration(
           'NewTabPage.Modules.ShownTime', WindowProxy.getInstance().now());
     }
   }

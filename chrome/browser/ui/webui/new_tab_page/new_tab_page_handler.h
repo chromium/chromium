@@ -94,8 +94,6 @@ class NewTabPageHandler
                     segmentation_platform::SegmentationPlatformService*
                         segmentation_platform_service,
                     content::WebContents* web_contents,
-                    const base::Time& ntp_navigation_start_time,
-                    base::TimeTicks ntp_navigation_start_time_ticks,
                     const std::vector<ntp::ModuleIdDetail>* module_id_details);
 
   NewTabPageHandler(const NewTabPageHandler&) = delete;
@@ -273,7 +271,6 @@ class NewTabPageHandler
   raw_ptr<Profile> const profile_;
   raw_ptr<content::WebContents> const web_contents_;
   std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
-  base::Time ntp_navigation_start_time_;
   raw_ptr<const std::vector<ntp::ModuleIdDetail>> const module_id_details_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>

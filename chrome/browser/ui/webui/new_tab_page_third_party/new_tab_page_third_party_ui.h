@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -93,10 +92,6 @@ class NewTabPageThirdPartyUI
       most_visited_page_factory_receiver_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  // Time the NTP started loading. Used for logging the WebUI NTP's load
-  // performance.
-  base::Time navigation_start_time_;
-  base::TimeTicks navigation_start_time_ticks_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
