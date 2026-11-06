@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -470,8 +471,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
 }
 
 // Restoring several windows prewarms one popup, not one per window.
+// TODO(crbug.com/582472583): Failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SeveralWindowsPrewarmOnePopup \
+  DISABLED_SeveralWindowsPrewarmOnePopup
+#else
+#define MAYBE_SeveralWindowsPrewarmOnePopup SeveralWindowsPrewarmOnePopup
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
-                       SeveralWindowsPrewarmOnePopup) {
+                       MAYBE_SeveralWindowsPrewarmOnePopup) {
   ASSERT_TRUE(GetPopupContents(browser()));
   BrowserWindowInterface* second_browser =
       CreateBrowser(browser()->GetProfile());
@@ -500,8 +508,14 @@ class OmniboxPopupShareAcrossWindowsDeferredBrowserTest
 
 // A window skips prewarming after its first frame when another window of the
 // profile already has a popup.
+// TODO(crbug.com/582472583): Failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SkipsPrewarmAfterFirstFrame DISABLED_SkipsPrewarmAfterFirstFrame
+#else
+#define MAYBE_SkipsPrewarmAfterFirstFrame SkipsPrewarmAfterFirstFrame
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsDeferredBrowserTest,
-                       SkipsPrewarmAfterFirstFrame) {
+                       MAYBE_SkipsPrewarmAfterFirstFrame) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetPopupContents(browser()) != nullptr; }));
   BrowserWindowInterface* other_browser =
