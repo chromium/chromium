@@ -368,6 +368,25 @@ class CSSProperties(object):
         properties = [
             Property(**x) for x in css_properties_file.name_dictionaries
         ]
+        for property_ in properties:
+            runtime_enabled_keyword_groups = (
+                property_.runtime_enabled_keywords.values()
+            )
+            runtime_enabled_keywords = [
+                keyword
+                for keywords in runtime_enabled_keyword_groups
+                for keyword in keywords
+            ]
+            assert len(runtime_enabled_keywords) == len(
+                set(runtime_enabled_keywords)
+            ), 'Runtime-enabled keywords must be unique [%s]' % property_.name
+            assert not set(runtime_enabled_keywords).intersection(
+                property_.keywords
+            ), (
+                'Runtime-enabled keywords must not also appear in keywords [%s]'
+                % (property_.name)
+            )
+            property_.keywords.extend(runtime_enabled_keywords)
 
         # Process extra fields, if any.
         self._extra_fields = []

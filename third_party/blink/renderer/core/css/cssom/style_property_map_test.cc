@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -84,6 +85,73 @@ TEST_F(StylePropertyMapTest, SetCustomIdentExcludedByTheProperty) {
       SetKeyword(GetDocument(), style_map, "container-name", "default"));
   EXPECT_FALSE(
       SetKeyword(GetDocument(), style_map, "animation-name", "default"));
+}
+
+TEST_F(StylePropertyMapTest, SetRuntimeEnabledKeyword) {
+  StylePropertyMap* style_map = GetDocument().body()->attributeStyleMap();
+
+  {
+    ScopedCSSTextAlignMatchParentForTest feature(false);
+    EXPECT_FALSE(
+        SetKeyword(GetDocument(), style_map, "text-align", "match-parent"));
+  }
+  {
+    ScopedCSSTextAlignMatchParentForTest feature(true);
+    EXPECT_TRUE(
+        SetKeyword(GetDocument(), style_map, "text-align", "match-parent"));
+  }
+
+  {
+    ScopedCSSGridLanesLayoutForTest feature(false);
+    EXPECT_FALSE(SetKeyword(GetDocument(), style_map, "reading-flow",
+                            "grid-lanes-track"));
+  }
+  {
+    ScopedCSSGridLanesLayoutForTest feature(true);
+    EXPECT_TRUE(SetKeyword(GetDocument(), style_map, "reading-flow",
+                           "grid-lanes-track"));
+  }
+
+  {
+    ScopedCSSTextDecorationSkipInkAllForTest feature(false);
+    EXPECT_FALSE(SetKeyword(GetDocument(), style_map,
+                            "text-decoration-skip-ink", "all"));
+  }
+  {
+    ScopedCSSTextDecorationSkipInkAllForTest feature(true);
+    EXPECT_TRUE(SetKeyword(GetDocument(), style_map, "text-decoration-skip-ink",
+                           "all"));
+  }
+
+  {
+    ScopedCSSUserSelectContainForTest feature(false);
+    EXPECT_FALSE(
+        SetKeyword(GetDocument(), style_map, "user-select", "contain"));
+  }
+  {
+    ScopedCSSUserSelectContainForTest feature(true);
+    EXPECT_TRUE(SetKeyword(GetDocument(), style_map, "user-select", "contain"));
+  }
+
+  {
+    ScopedCSSScrollSnapStopBeforeForTest feature(false);
+    EXPECT_FALSE(
+        SetKeyword(GetDocument(), style_map, "scroll-snap-stop", "before"));
+  }
+  {
+    ScopedCSSScrollSnapStopBeforeForTest feature(true);
+    EXPECT_TRUE(
+        SetKeyword(GetDocument(), style_map, "scroll-snap-stop", "before"));
+  }
+
+  {
+    ScopedCSSResizeAutoForTest feature(false);
+    EXPECT_FALSE(SetKeyword(GetDocument(), style_map, "resize", "auto"));
+  }
+  {
+    ScopedCSSResizeAutoForTest feature(true);
+    EXPECT_TRUE(SetKeyword(GetDocument(), style_map, "resize", "auto"));
+  }
 }
 
 TEST_F(StylePropertyMapTest, SetRevertWithFeatureEnabled) {

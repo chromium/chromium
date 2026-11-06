@@ -10,6 +10,9 @@
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+{% if properties|selectattr('runtime_enabled_keyword_features')|list %}
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+{% endif %}
 
 namespace blink {
 
@@ -51,10 +54,17 @@ bool CSSOMKeywords::ValidKeywordForProperty(CSSPropertyID id,
   {% for property in properties if property.keywordIDs and 'Keyword' in property.typedom_types %}
   case CSSPropertyID::{{property.enum_key}}: {
     switch (valueID) {
-    {% for keywordValueID in property.keywordIDs %}
+    {% for keywordValueID in property.keywordIDs if keywordValueID not in property.runtime_enabled_keyword_features %}
     case CSSValueID::{{keywordValueID}}:
-    {% endfor %}
+      {% if loop.last %}
       return true;
+      {% endif %}
+    {% endfor %}
+    {% for keywordValueID in property.keywordIDs if keywordValueID in property.runtime_enabled_keyword_features %}
+    case CSSValueID::{{keywordValueID}}:
+      return RuntimeEnabledFeatures::
+          {{property.runtime_enabled_keyword_features[keywordValueID]}}Enabled();
+    {% endfor %}
     default:
       return false;
     }

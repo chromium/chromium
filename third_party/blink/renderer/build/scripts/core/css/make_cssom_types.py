@@ -35,9 +35,31 @@ class CSSOMTypesWriter(json5_generator.Writer):
                 keywords = property_.typedom_keywords
             else:
                 keywords = property_.keywords
+            keywords = list(
+                dict.fromkeys(
+                    keywords
+                    + [
+                        keyword
+                        for feature_keywords in property_.runtime_enabled_keywords.values()
+                        for keyword in feature_keywords
+                    ]
+                )
+            )
 
             # Generate CSSValueID values from keywords.
             property_.keywordIDs = list(map(enum_key_for_css_keyword, keywords))
+            runtime_enabled_keywords = {
+                keyword: feature
+                for feature, feature_keywords in property_.runtime_enabled_keywords.items()
+                for keyword in feature_keywords
+            }
+            property_.runtime_enabled_keyword_features = {
+                enum_key_for_css_keyword(keyword): runtime_enabled_keywords[
+                    keyword
+                ]
+                for keyword in keywords
+                if keyword in runtime_enabled_keywords
+            }
 
         self._outputs = {
             'cssom_types.cc': self.generate_types,

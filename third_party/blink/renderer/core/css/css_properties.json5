@@ -430,6 +430,12 @@
       default: [],
     },
 
+    // Maps runtime feature names to the keywords they enable.
+    runtime_enabled_keywords: {
+      default: {},
+      valid_type: "dict",
+    },
+
     // - default_value: "keyword-value"
     // This specifies the default value for this field.
     // - for keyword fields, this is the initial keyword
@@ -5449,7 +5455,12 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
-      keywords: ["normal", "flex-visual", "flex-flow", "grid-rows", "grid-columns", "grid-order", "grid-lanes-flow", "grid-lanes-track", "grid-lanes-order", "source-order"],
+      keywords: ["normal", "flex-visual", "flex-flow", "grid-rows", "grid-columns", "grid-order", "source-order"],
+      runtime_enabled_keywords: {
+        CSSGridLanesLayout: [
+          "grid-lanes-flow", "grid-lanes-track", "grid-lanes-order"
+        ],
+      },
       typedom_types: ["Keyword"],
       default_value: "normal",
       invalidate: ["layout"],
@@ -5475,6 +5486,9 @@
       computed_style_protected_functions: ["getter"],
       style_builder_custom_functions: ["value"],
       keywords: ["none", "both", "horizontal", "vertical", "block", "inline"],
+      runtime_enabled_keywords: {
+        CSSResizeAuto: ["auto"],
+      },
       typedom_types: ["Keyword"],
       default_value: "none",
       invalidate: ["paint"],
@@ -5909,7 +5923,10 @@
       default_value: "cc::SnapStop::kNormal",
       type_name: "cc::SnapStop",
       converter: "ConvertSnapStop",
-      keywords: ["normal", "always", "before"],
+      keywords: ["normal", "always"],
+      runtime_enabled_keywords: {
+        CSSScrollSnapStopBefore: ["before"],
+      },
       typedom_types: ["Keyword"],
     },
     {
@@ -6233,8 +6250,11 @@
       field_template: "keyword",
       keywords: [
         "left", "right", "center", "justify", "-webkit-left", "-webkit-right",
-        "-webkit-center", "start", "end", "match-parent"
+        "-webkit-center", "start", "end"
       ],
+      runtime_enabled_keywords: {
+        CSSTextAlignMatchParent: ["match-parent"],
+      },
       // `match-parent` is an experimental keyword and currently behind the
       // CSSTextAlignMatchParent flag. Since it is not fully supported yet,
       // it is not being exposed to devtools.
@@ -6255,9 +6275,12 @@
       inherited: true,
       field_group: "*",
       field_template: "keyword",
-      keywords: ["auto", "start", "end", "left", "right", "center", "justify",
-        "match-parent"
+      keywords: [
+        "auto", "start", "end", "left", "right", "center", "justify"
       ],
+      runtime_enabled_keywords: {
+        CSSTextAlignMatchParent: ["match-parent"],
+      },
       // `match-parent` is an experimental keyword and currently behind the
       // CSSTextAlignMatchParent flag. Since it is not fully supported yet,
       // it is not being exposed to devtools.
@@ -6403,7 +6426,10 @@
       inherited: true,
       field_group: "*",
       field_template: "keyword",
-      keywords: ["none", "auto", "all"],
+      keywords: ["none", "auto"],
+      runtime_enabled_keywords: {
+        CSSTextDecorationSkipInkAll: ["all"],
+      },
       typedom_types: ["Keyword"],
       default_value: "auto",
       valid_for_first_letter: true,
@@ -7021,7 +7047,11 @@
       // we invalidate for EffectiveAppearance rather than appearance
       keywords: ["auto", "none", "checkbox", "radio", "button", "listbox",
                 "menulist", "menulist-button", "meter", "progress-bar",
-                "searchfield", "textfield", "textarea", "base-select"]
+                "searchfield", "textfield", "textarea", "base-select"],
+      runtime_enabled_keywords: {
+        AppearanceBase: ["base"],
+        NonStandardAppearanceValueSliderVertical: ["slider-vertical"],
+      },
     },
     {
       name: "-webkit-appearance",
@@ -8178,7 +8208,10 @@
       inherited: true,
       field_group: "*",
       field_template: "keyword",
-      keywords: ["auto", "none", "text", "all", "contain"],
+      keywords: ["auto", "none", "text", "all"],
+      runtime_enabled_keywords: {
+        CSSUserSelectContain: ["contain"],
+      },
       // `contain` is an experimental keyword and currenly behind the
       // CSSUserSelectContain flag.
       // Since it is not fully supported yet, we are not exposing it to
