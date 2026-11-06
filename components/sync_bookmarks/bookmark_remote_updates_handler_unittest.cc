@@ -987,8 +987,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 
   const base::Uuid kMissingParentGuid = base::Uuid::GenerateRandomV4();
   const base::Uuid kChildGuid = base::Uuid::GenerateRandomV4();
-  const std::string kChildId = "child_id";
-  const std::string kTitle = "Title";
   const GURL kUrl("http://www.url.com");
 
   syncer::UpdateResponseDataList updates;
@@ -1154,7 +1152,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 // to that entity should update the sync id in the tracker.
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldUpdateSyncIdWhenRecevingUpdateForNewlyCreatedLocalNode) {
-  const std::string kCacheGuid = "generated_id";
   const base::Uuid kBookmarkGuid = base::Uuid::GenerateRandomV4();
   const std::string kOriginatorClientItemId = kBookmarkGuid.AsLowercaseString();
   const std::string kSyncId = "server_id";
@@ -1395,7 +1392,6 @@ TEST_F(
   tracker()->set_data_type_state(data_type_state);
 
   // Create the bookmark with same encryption key name.
-  const std::string kTitle = "title";
   const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
 
   syncer::UpdateResponseDataList updates;

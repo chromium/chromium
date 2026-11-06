@@ -373,7 +373,6 @@ TEST_F(NigoriDataTypeProcessorTest,
   });
 
   // The commit should still be pending.
-  CommitResponseDataList commit_response_list;
   processor()->GetLocalChanges(
       /*max_entries=*/10,
       /*max_target_specifics_bytes=*/std::numeric_limits<size_t>::max(),

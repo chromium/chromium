@@ -1256,8 +1256,6 @@ TEST_F(DataTypeWorkerTest, EncryptionBlocksUpdates) {
   // Update local cryptographer, verify everything is pushed to processor.
   DecryptPendingKey();
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
-  std::vector<const UpdateResponseData*> updates_list =
-      processor()->GetNthUpdateResponse(0);
   EXPECT_EQ(
       server()->GetProgress().SerializeAsString(),
       processor()->GetNthUpdateState(0).progress_marker().SerializeAsString());

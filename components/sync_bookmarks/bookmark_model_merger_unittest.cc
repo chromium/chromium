@@ -1010,10 +1010,8 @@ TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByUuidAndReparent) {
 }
 
 TEST(BookmarkModelMergerTest, ShouldMergeFolderByUuidAndNotSemantics) {
-  const std::string kFolderId = "Folder Id";
   const std::u16string kTitle1 = u"Title 1";
   const std::u16string kTitle2 = u"Title 2";
-  const std::string kUrl = "http://www.foo.com/";
   const base::Uuid kUuid1 = base::Uuid::GenerateRandomV4();
   const base::Uuid kUuid2 = base::Uuid::GenerateRandomV4();
 
@@ -1074,7 +1072,6 @@ TEST(BookmarkModelMergerTest, ShouldMergeFolderByUuidAndNotSemantics) {
 }
 
 TEST(BookmarkModelMergerTest, ShouldIgnoreChildrenForNonFolderNodes) {
-  const std::string kChildId = "child_id";
   const std::u16string kParentTitle = u"Parent Title";
   const std::u16string kChildTitle = u"Child Title";
   const base::Uuid kUuid1 = base::Uuid::GenerateRandomV4();
@@ -1131,8 +1128,6 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreChildrenForNonFolderNodes) {
 TEST(
     BookmarkModelMergerTest,
     ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithSemanticsNodeFirst) {
-  const std::string kFolderId1 = "Folder Id 1";
-  const std::string kFolderId2 = "Folder Id 2";
   const std::u16string kOriginalTitle = u"Original Title";
   const std::u16string kNewTitle = u"New Title";
   const base::Uuid kUuid1 = base::Uuid::GenerateRandomV4();
@@ -1212,8 +1207,6 @@ TEST(
 
 TEST(BookmarkModelMergerTest,
      ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithUuidNodeFirst) {
-  const std::string kFolderId1 = "Folder Id 1";
-  const std::string kFolderId2 = "Folder Id 2";
   const std::u16string kOriginalTitle = u"Original Title";
   const std::u16string kNewTitle = u"New Title";
   const base::Uuid kUuid1 = base::Uuid::GenerateRandomV4();
@@ -1448,7 +1441,6 @@ TEST(BookmarkModelMergerTest,
 // remote node should be ignored and the local bookmark included in the merged
 // tree.
 TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteUuidIfOrphanNode) {
-  const std::string kInexistentParentId = "InexistentParentId";
   const std::u16string kTitle = u"Title";
   const std::string kUrl = "http://www.foo.com/";
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
@@ -1633,7 +1625,6 @@ TEST(BookmarkModelMergerTest,
 
   const base::Uuid kFolder1Uuid = base::Uuid::GenerateRandomV4();
   const base::Uuid kFolder2Uuid = base::Uuid::GenerateRandomV4();
-  const std::string kUrl1Id = "Url1Id";
 
   // It is needed to use at least two folders to reproduce the crash. It is
   // needed because the bookmarks are processed in the order of remote entities
@@ -2106,7 +2097,6 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentFolderDuplicatesByUuid) {
 TEST(BookmarkModelMergerTest, ShouldEnsureLimitDepthOfTree) {
   const std::u16string kLocalTitle = u"local";
   const std::u16string kRemoteTitle = u"remote";
-  const std::string folderIdPrefix = "folder_";
   // Maximum depth to sync bookmarks tree to protect against stack overflow.
   // This matches |kMaxBookmarkTreeDepth| in bookmark_model_merger.cc.
   const size_t kMaxBookmarkTreeDepth = 200;

@@ -672,7 +672,6 @@ TEST_F(ProcessorEntityTest, ShouldResetUniquePositionOnLocalDeletion) {
 
 TEST_F(ProcessorEntityTest, LocalDeletionWithSpecifiedOrigin) {
   std::unique_ptr<ProcessorEntity> entity = CreateSynced();
-  const std::string specifics_hash = entity->metadata().specifics_hash();
   const base::Location location = FROM_HERE;
 
   // Make a local delete.

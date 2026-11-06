@@ -198,8 +198,6 @@ TEST(BookmarkUpdatePreprocessingTest, ShouldInferGuid) {
 
 TEST(BookmarkUpdatePreprocessingTest,
      ShouldNotInferGuidIfNoOriginatorInformation) {
-  const std::string kOriginatorClientItemId = "1";
-
   sync_pb::SyncEntity entity;
   entity.mutable_specifics()->mutable_bookmark();
 

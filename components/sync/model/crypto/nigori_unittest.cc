@@ -271,7 +271,6 @@ TEST(SyncNigoriTest, ExportImport) {
 
   std::string original("test");
   std::string plaintext;
-  std::string ciphertext;
 
   EXPECT_TRUE(nigori2->Decrypt(nigori1->Encrypt(original), &plaintext));
   EXPECT_EQ(original, plaintext);

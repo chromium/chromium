@@ -951,8 +951,6 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
       SessionStore::GetTabClientTagForTest(kLocalCacheGuid, kTabNodeId1);
   const std::string tab_client_tag2 =
       SessionStore::GetTabClientTagForTest(kLocalCacheGuid, kTabNodeId2);
-  const std::string tab_client_tag3 =
-      SessionStore::GetTabClientTagForTest(kLocalCacheGuid, kTabNodeId3);
 
   InitializeBridge();
   StartSyncing();
@@ -1804,8 +1802,6 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
   // The TabNodeId gets re-used now that tab1 is gone.
   const std::string tab_storage_key2_reused =
       SessionStore::GetTabStorageKey(kLocalCacheGuid, kTabNodeId1);
-  const std::string tab_client_tag2_reused =
-      SessionStore::GetTabClientTagForTest(kLocalCacheGuid, kTabNodeId1);
 
   // The header and non-placeholder tab should both be restored, but the
   // placeholder tab got lost.

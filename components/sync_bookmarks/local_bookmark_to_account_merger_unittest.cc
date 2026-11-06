@@ -309,8 +309,6 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBySemantics) {
 
 TEST_F(LocalBookmarkToAccountMergerTest,
        ShouldDeduplicateBySemanticsWhenSelected) {
-  const std::u16string kFolder1Title = u"folder1";
-
   const std::u16string kUrl1Title = u"url1";
   const std::u16string kUrl2Title = u"url2";
   const std::u16string kUrl3Title = u"url3";

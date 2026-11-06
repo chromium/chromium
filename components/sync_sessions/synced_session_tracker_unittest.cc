@@ -348,7 +348,6 @@ TEST_F(SyncedSessionTrackerTest, Complex) {
   ASSERT_EQ(0U, windows.size());
 
   // The sessions don't have valid tabs, lookup should not succeed.
-  std::vector<const SyncedSession*> sessions;
   EXPECT_THAT(
       tracker_.LookupAllForeignSessions(SyncedSessionTracker::PRESENTABLE),
       IsEmpty());
@@ -480,7 +479,6 @@ TEST_F(SyncedSessionTrackerTest, SessionTracking) {
 TEST_F(SyncedSessionTrackerTest, DeleteForeignTab) {
   int tab_node_id_1 = 1;
   int tab_node_id_2 = 2;
-  std::set<int> result;
 
   tracker_.OnTabNodeSeen(kTag, tab_node_id_1, kTab1);
   tracker_.OnTabNodeSeen(kTag, tab_node_id_2, kTab2);

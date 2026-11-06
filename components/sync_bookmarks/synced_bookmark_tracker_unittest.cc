@@ -140,7 +140,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
       SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
-  const std::string kTitle = "Title";
   const GURL kUrl("http://www.foo.com");
   const int64_t kId = 1;
   const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
@@ -216,7 +215,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldBuildBookmarkModelMetadata) {
       SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
-  const std::string kTitle = "Title";
   const GURL kUrl("http://www.foo.com");
   const int64_t kId = 1;
   const int64_t kServerVersion = 1000;
@@ -1200,7 +1198,6 @@ TEST(SyncedBookmarkTrackerTest,
   base::test::ScopedFeatureList override_features;
   override_features.InitAndDisableFeature(switches::kSyncReuploadBookmarks);
 
-  const std::string kTitle = "Title";
   const GURL kUrl("http://www.foo.com");
 
   TestBookmarkModelView bookmark_model;

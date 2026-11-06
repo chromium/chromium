@@ -14,7 +14,6 @@ namespace {
 
 TEST(SyncErrorTest, ModelError) {
   base::Location location = FROM_HERE;
-  std::string msg = "test";
   ModelError model_error(location, ModelError::Type::kGenericTestError);
   SyncError error = SyncError::CreateFromModelError(model_error);
   EXPECT_EQ(location.line_number(), error.location().line_number());

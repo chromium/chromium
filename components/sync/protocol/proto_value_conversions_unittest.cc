@@ -244,8 +244,6 @@ TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {
   const base::ListValue* meta_info_list = value.FindList("meta_info");
 
   EXPECT_EQ(2u, meta_info_list->size());
-  std::string meta_key;
-  std::string meta_value;
   const auto& meta_info_value = (*meta_info_list)[0].GetDict();
   ASSERT_TRUE((*meta_info_list)[0].is_dict());
   EXPECT_STREQ("key1", meta_info_value.FindString("key")->c_str());

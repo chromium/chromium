@@ -896,11 +896,9 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeSyncMetadata) {
 }
 
 TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
-  const std::string kNodeId1 = "node_id1";
   const std::string kTitle1 = "title1";
   const GURL kUrl1("http://www.url1.com");
 
-  const std::string kNodeId2 = "node_id2";
   const std::string kTitle2 = "title2";
   const GURL kUrl2("http://www.url2.com");
 
@@ -1482,7 +1480,6 @@ TEST_F(
   const std::string kNodeId = "node_id1";
   const std::string kTitle = "title1";
   const std::string kUrl = "http://www.url1.com";
-  const std::string kIconUrl = "http://www.url1.com/favicon";
 
   // Add a new bookmark to exceed the limit.
   const bookmarks::BookmarkNode* bookmark_bar_node =
@@ -1532,10 +1529,8 @@ TEST_F(
   SimulateOnSyncStarting();
   SimulateConnectSync();
 
-  const std::string kNodeId = "node_id1";
   const std::string kTitle = "title1";
   const std::string kUrl = "http://www.url1.com";
-  const std::string kIconUrl = "http://www.url1.com/favicon";
 
   // Add a new bookmark to exceed the limit.
   const bookmarks::BookmarkNode* bookmark_bar_node =

@@ -793,10 +793,6 @@ TEST_P(BookmarkModelObserverImplTest,
 
   // Node should be tracked now.
   ASSERT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 4U);
-  const std::string id = bookmark_tracker()
-                             ->GetEntityForBookmarkNode(folder_node)
-                             ->metadata()
-                             .server_id();
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
 
   // Remove the folder.
