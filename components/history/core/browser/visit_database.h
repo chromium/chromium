@@ -277,9 +277,6 @@ class VisitDatabase {
       base::Time end_time,
       VisitQuery404sPolicy policy_for_404_visits);
 
-  // Get the time of the first item in our database.
-  bool GetStartDate(base::Time* first_visit);
-
   // Returns the maximum VisitID that is currently used in the DB. Due to
   // AUTOINCREMENT, any VisitIDs created after this call are guaranteed to be
   // larger than the returned value.

@@ -868,8 +868,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // code to avoid syncing visits that would immediately be expired).
   bool IsExpiredVisitTime(const base::Time& time) const override;
 
-  base::Time GetFirstRecordedTimeForTest() { return first_recorded_time_; }
-
   static int GetForeignVisitsToDeletePerBatchForTest();
 
   sql::Database& GetDBForTesting();
@@ -1159,12 +1157,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // destination of the redirect (i.e., the key into recent_redirects_);
   typedef base::LRUCache<GURL, RedirectList> RedirectCache;
   RedirectCache recent_redirects_;
-
-  // Timestamp of the first entry in our database.
-  // TODO(crbug.com/580789349): Remove. Nothing reads this anymore since
-  // QueryResults::has_more_results() replaced reached_beginning(); all
-  // remaining references only maintain the value.
-  base::Time first_recorded_time_;
 
   // When set, this is the task that should be invoked on destruction.
   scoped_refptr<base::SingleThreadTaskRunner> backend_destroy_task_runner_;

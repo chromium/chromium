@@ -1315,18 +1315,6 @@ DailyVisitsResult VisitDatabase::GetDailyVisitsToOrigin(
   return result;
 }
 
-bool VisitDatabase::GetStartDate(base::Time* first_visit) {
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT MIN(visit_time) FROM visits WHERE visit_time != 0"));
-  if (!statement.Step() || statement.ColumnInt64(0) == 0) {
-    *first_visit = base::Time::Now();
-    return false;
-  }
-  *first_visit = statement.ColumnTime(0);
-  return true;
-}
-
 VisitID VisitDatabase::GetMaxVisitIDInUse() {
   sql::Statement statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE, "SELECT MAX(id) FROM visits"));

@@ -3703,7 +3703,6 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
     args[i].context_annotations = {.response_code = (i == 5 ? 404 : 200)};
     backend_->AddPage(args[i]);
   }
-  EXPECT_EQ(base::Time(), backend_->GetFirstRecordedTimeForTest());
 
   URLRow row;
   for (auto& arg : args) {
@@ -3716,8 +3715,6 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   times.insert(base::Time() + base::Microseconds(10));
   backend_->ExpireHistoryForTimes(times, base::Time() + base::Microseconds(2),
                                   base::Time() + base::Microseconds(8));
-
-  EXPECT_EQ(base::Time(), backend_->GetFirstRecordedTimeForTest());
 
   // Visits to http://example.com are untouched.
   VisitVector visit_vector;
@@ -3740,8 +3737,6 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   ASSERT_EQ(2u, visit_vector.size());
   EXPECT_EQ(base::Time() + base::Microseconds(9), visit_vector[0].visit_time);
   EXPECT_EQ(base::Time() + base::Microseconds(1), visit_vector[1].visit_time);
-
-  EXPECT_EQ(base::Time(), backend_->GetFirstRecordedTimeForTest());
 }
 
 TEST_F(HistoryBackendTest, ExpireHistory) {
@@ -3793,9 +3788,6 @@ TEST_F(HistoryBackendTest, ExpireHistory) {
   EXPECT_EQ(visits[0].url_id, url_rows[1].id());
   EXPECT_EQ(visits[1].url_id, url_rows[2].id());
   EXPECT_EQ(visits[2].url_id, url_rows[3].id());
-
-  // The first recorded time should also get updated.
-  EXPECT_EQ(backend_->GetFirstRecordedTimeForTest(), args[1].time);
 
   // Now delete the rest of the visits in one call.
   for (unsigned int i = 1; i < std::size(args); ++i) {
