@@ -711,6 +711,27 @@ public class FuseboxMediatorUnitTest {
                 mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ICON));
     }
 
+    /**
+     * Mirrors the production wiring where dismissing the popup completes the interaction, and
+     * LocationBarMediator ends the input session synchronously from that callback.
+     */
+    private void endInputWhenPopupDismissed() {
+        mModel.addObserver(
+                (source, key) -> {
+                    if (key == FuseboxProperties.POPUP_STATE
+                            && mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN) {
+                        mMediator.onPopupDismissed();
+                    }
+                });
+        doAnswer(
+                        i -> {
+                            mMediator.endInput();
+                            return null;
+                        })
+                .when(mOnInteractionCompletedCallback)
+                .onResult(anyBoolean());
+    }
+
     @Test
     public void testDestroy() {
         mAttachments = mFuseboxAttachmentModelList;
@@ -1261,6 +1282,65 @@ public class FuseboxMediatorUnitTest {
         mMediator.onPopupDismissed();
 
         verify(mOnInteractionCompletedCallback, never()).onResult(anyBoolean());
+    }
+
+    @Test
+    public void plusButtonToggleClose_ntpPlusMenu_sessionEndedByPopupDismiss_doesNotCrash() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", false)
+                        .build();
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+        assertNotEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+        endInputWhenPopupDismissed();
+
+        // Toolbar plus button tapped while the NTP plus menu is open.
+        mMediator.onPlusButtonClicked();
+
+        verify(mOnInteractionCompletedCallback).onResult(false);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void popupToolButtonClicked_sessionEndedByPopupDismiss_doesNotCrash() {
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.onPlusButtonClicked();
+        endInputWhenPopupDismissed();
+
+        clickToolButton(ToolMode.TOOL_MODE_CANVAS);
+
+        verify(mOnInteractionCompletedCallback).onResult(true);
+        assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
+    }
+
+    @Test
+    public void popupModelButtonClicked_sessionEndedByPopupDismiss_doesNotCrash() {
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.onPlusButtonClicked();
+        endInputWhenPopupDismissed();
+
+        mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).get(0).onClicked.run();
+
+        verify(mOnInteractionCompletedCallback).onResult(true);
+        verify(mComposeboxQueryControllerBridge, never()).setActiveModel(anyInt());
+    }
+
+    @Test
+    public void popupAttachCurrentTab_sessionEndedByPopupDismiss_doesNotCrash() {
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+        doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
+        doReturn(true).when(mTab1).isInitialized();
+        doReturn(mWebContents).when(mTab1).getWebContents();
+        doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.onPlusButtonClicked();
+        endInputWhenPopupDismissed();
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
+
+        verify(mOnInteractionCompletedCallback).onResult(true);
+        verify(mComposeboxQueryControllerBridge, never()).addTabContext(any(), anyBoolean());
     }
 
     @Test

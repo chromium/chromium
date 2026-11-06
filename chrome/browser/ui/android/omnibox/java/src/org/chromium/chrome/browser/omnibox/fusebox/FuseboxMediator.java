@@ -25,6 +25,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.annotation.CheckResult;
 import androidx.annotation.ColorInt;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
@@ -277,14 +278,14 @@ class FuseboxMediator implements BackPressHandler {
 
     /**
      * Starts a picker interaction launched from the popup. Must be called before the picker is
-     * launched: hidePopup() synchronously dismisses the popup, and the pending flag keeps that
+     * launched: dismissPopup() synchronously dismisses the popup, and the pending flag keeps that
      * dismissal from completing the interaction.
      */
     @RequiresNonNull("mMetrics")
     private void beginPickerInteraction(@FuseboxAttachmentButtonType int buttonType) {
         mIsPickerPending = true;
         mPopupItemSelected = true;
-        hidePopup();
+        dismissPopup();
         mMetrics.notifyAttachmentButtonUsed(buttonType);
     }
 
@@ -406,7 +407,7 @@ class FuseboxMediator implements BackPressHandler {
 
     /** Called when the user stops interacting with the Omnibox. */
     /* package */ void endInput() {
-        hidePopup();
+        dismissPopup();
         setModelList(null);
         setController(null);
         setAutocompleteInput(null);
@@ -541,7 +542,7 @@ class FuseboxMediator implements BackPressHandler {
     private void maybeActivateAiMode(@AiModeActivationSource int activationReason) {
         if (!isInInputSession()) return;
 
-        hidePopup();
+        if (!hidePopup()) return;
         if (mInput.getRequestType() != AutocompleteRequestType.SEARCH) return;
 
         activateAiMode(AutocompleteRequestType.AI_MODE, activationReason);
@@ -652,15 +653,20 @@ class FuseboxMediator implements BackPressHandler {
     /* package */ void onPlusButtonClicked() {
         if (!isInInputSession()) return;
 
-        if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
-            hidePopup();
-        } else {
+        // Resolve everything the metrics call needs before toggling: for NTP plus-menu sessions,
+        // hiding the popup completes the interaction and LocationBarMediator may end the input
+        // session synchronously, which clears mProfile and mMetrics.
+        boolean toShowPopup = mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN;
+        FuseboxMetrics metrics = mMetrics;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
+
+        if (toShowPopup) {
             showPopup();
+        } else {
+            dismissPopup();
         }
 
-        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
-        mMetrics.notifyAttachmentsPopupToggled(
-                mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN, mModel, tracker);
+        metrics.notifyAttachmentsPopupToggled(toShowPopup, mModel, tracker);
     }
 
     private void showPopup() {
@@ -702,7 +708,7 @@ class FuseboxMediator implements BackPressHandler {
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, mScrimAnchorViewSupplier.get())
                         .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
-                        .with(ScrimProperties.CLICK_DELEGATE, this::hidePopup)
+                        .with(ScrimProperties.CLICK_DELEGATE, this::dismissPopup)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, isBottomSheet)
                         .build();
         if (!isBottomSheet) {
@@ -727,12 +733,41 @@ class FuseboxMediator implements BackPressHandler {
         if (mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN) {
             return false;
         } else {
-            hidePopup();
+            dismissPopup();
             return true;
         }
     }
 
-    private void hidePopup() {
+    /**
+     * Hides the popup and reports whether the input session survived it.
+     *
+     * <p>Dismissing the popup synchronously completes the interaction. For sessions where the popup
+     * does not imply Omnibox focus (NTP plus menu), LocationBarMediator may respond by ending the
+     * input session, which clears mInput, mProfile, mModelList and mMetrics. Callers that keep
+     * using session state afterwards must stop when this returns false.
+     *
+     * @return Whether the input session is still active after the popup was hidden.
+     */
+    @CheckResult
+    @EnsuresNonNullIf(
+            value = {
+                "mProfile",
+                "mInput",
+                "mModelList",
+                "mComposeboxQueryControllerBridge",
+                "mMetrics"
+            })
+    private boolean hidePopup() {
+        dismissPopup();
+        return isInInputSession();
+    }
+
+    /**
+     * Hides the popup without checking the session afterwards. Only for callers that do not touch
+     * session state after the call (session teardown, picker launches with the pending flag set, or
+     * when all needed state was captured beforehand); everyone else uses {@link #hidePopup()}.
+     */
+    private void dismissPopup() {
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
             FuseboxMetrics.notifyAttachmentsPopupClosed(mPopupItemSelected);
         }
@@ -853,6 +888,10 @@ class FuseboxMediator implements BackPressHandler {
         mMetrics.notifyAttachmentButtonUsed(source);
         mPopupItemSelected = true;
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
+        // Handle sessions where the popup does not imply Omnibox focus (NTP plus menu): hiding
+        // the popup completes the interaction, and LocationBarMediator may end the input session
+        // synchronously in response.
+        if (!isInInputSession()) return;
 
         if (!FuseboxTabUtils.hasLoadedContent(tab)) {
             TabLoadingService.getInstance().queueLoadIfNeeded(tab);
@@ -1790,7 +1829,7 @@ class FuseboxMediator implements BackPressHandler {
     private boolean trySetRequestType(@AutocompleteRequestType int requestType) {
         if (!isInInputSession()) return false;
 
-        hidePopup();
+        if (!hidePopup()) return false;
         if (mInput.getRequestType() == requestType) return false;
 
         mInput.setRequestType(requestType);
@@ -1818,10 +1857,9 @@ class FuseboxMediator implements BackPressHandler {
     private void setModelMode(@ModelMode int modelMode) {
         if (!isInInputSession()) return;
 
-        hidePopup();
+        if (!hidePopup()) return;
 
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
-
         mInput.setModelMode(modelMode);
         // TODO(https://crbug.com/476434460): Consider replacing with wiring in session state.
         FuseboxMetrics.notifySetActiveModelSource(SetActiveModelSource.SET_FROM_MODEL_SELECTION);
