@@ -2457,8 +2457,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private void handleDebugIntent(Intent intent) {
         if (ACTION_CLOSE_TABS.equals(intent.getAction())) {
+            TabModelSelector tabModelSelector = assertNonNull(getTabModelSelectorSupplier().get());
             CloseAllTabsHelper.closeAllTabsHidingTabGroups(
-                    assertNonNull(getTabModelSelectorSupplier().get()),
+                    tabModelSelector,
+                    () ->
+                            ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(
+                                    tabModelSelector),
                     /* allowUndo= */ true,
                     TabClosingSource.UNKNOWN,
                     /* closePinnedTabs= */ true);
@@ -4843,7 +4847,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             TabModelSelector tabModelSelector = assertNonNull(getTabModelSelectorSupplier().get());
             Callback<Boolean> closeAllTabsCallback =
                     CloseAllTabsHelper.buildCloseAllTabsCallback(
-                            tabModelSelector, /* isIncognitoOnly= */ false, allowUndo);
+                            tabModelSelector,
+                            () ->
+                                    ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(
+                                            tabModelSelector),
+                            allowUndo);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier().asNonNull(),
@@ -4857,8 +4865,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             // Close only incognito tabs
             TabModelSelector tabModelSelector = assertNonNull(getTabModelSelectorSupplier().get());
             Callback<Boolean> closeAllTabsCallback =
-                    CloseAllTabsHelper.buildCloseAllTabsCallback(
-                            tabModelSelector, /* isIncognitoOnly= */ true, allowUndo);
+                    CloseAllTabsHelper.buildCloseAllIncognitoTabsCallback(
+                            tabModelSelector, allowUndo);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier().asNonNull(),

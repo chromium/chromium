@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -160,13 +159,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         when(mArchivedTabModelOrchestrator.getProfile()).thenReturn(mProfile);
         when(mArchivedTabModelOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
         when(mArchivedTabModelOrchestrator.isTabModelInitialized()).thenReturn(true);
-        doAnswer(
-                        invocation -> {
-                            invocation.<Runnable>getArgument(0).run();
-                            return null;
-                        })
-                .when(mArchivedTabModelOrchestrator)
-                .runOnTabStateInitialized(any());
+        when(mArchivedTabModelOrchestrator.runOnTabStateInitialized(any())).thenReturn(() -> {});
         when(mArchivedTabModelOrchestrator.acquireLease(LeaseReason.DRAG_TO_ARCHIVE))
                 .thenReturn(mLease);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
@@ -303,6 +296,13 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testOnDropListener() {
+        doAnswer(
+                        invocation -> {
+                            invocation.<Runnable>getArgument(0).run();
+                            return (Destroyable) () -> {};
+                        })
+                .when(mArchivedTabModelOrchestrator)
+                .runOnTabStateInitialized(any());
         OnDropOnArchivalMessageCardEventListener onDropObserver =
                 createServiceAndCaptureOnDropListener();
         onDropObserver.onDropTab(TAB_ID);
@@ -315,8 +315,6 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testOnDropListener_asyncTabStateInitialization() {
-        doNothing().when(mArchivedTabModelOrchestrator).runOnTabStateInitialized(any());
-
         OnDropOnArchivalMessageCardEventListener onDropObserver =
                 createServiceAndCaptureOnDropListener();
         onDropObserver.onDropTab(TAB_ID);
@@ -333,8 +331,6 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testOnDropListener_asyncTabStateInitialization_tabDestroyedBeforeInitCompletes() {
-        doNothing().when(mArchivedTabModelOrchestrator).runOnTabStateInitialized(any());
-
         OnDropOnArchivalMessageCardEventListener onDropObserver =
                 createServiceAndCaptureOnDropListener();
         onDropObserver.onDropTab(TAB_ID);
@@ -352,8 +348,6 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Test
     public void
             testOnDropListener_asyncTabStateInitialization_orchestratorDestroyedBeforeInitCompletes() {
-        doNothing().when(mArchivedTabModelOrchestrator).runOnTabStateInitialized(any());
-
         OnDropOnArchivalMessageCardEventListener onDropObserver =
                 createServiceAndCaptureOnDropListener();
         onDropObserver.onDropTab(TAB_ID);
@@ -393,7 +387,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         doAnswer(
                         invocation -> {
                             invocation.<Runnable>getArgument(0).run();
-                            return null;
+                            return (Destroyable) () -> {};
                         })
                 .when(newOrchestrator)
                 .runOnTabStateInitialized(any());

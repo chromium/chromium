@@ -87,10 +87,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
   ],
-  "CloseAllTabsHelper.*\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiver.java",
-  ],
   "GroupWindowChecker.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
   ],

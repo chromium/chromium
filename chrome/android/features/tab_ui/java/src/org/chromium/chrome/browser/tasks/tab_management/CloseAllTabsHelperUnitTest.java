@@ -4,14 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -22,29 +18,29 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.StubTabModel;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit test for {@link CloseAllTabsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,31 +48,24 @@ public class CloseAllTabsHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabModel mRegularTabModel;
     @Mock private TabModel mIncognitoTabModel;
-    @Mock private TabModel mArchivedTabModel;
     @Mock private TabRemover mRegularTabRemover;
     @Mock private TabRemover mIncognitoTabRemover;
     @Mock private Profile mProfile;
-    @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
-    @Mock private TabArchiver mTabArchiver;
+    @Mock private Supplier<Runnable> mUnarchiveAndGetUndoRunnable;
+    @Mock private Runnable mUndoRunnable;
 
     @Before
     public void setUp() {
-        when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-        when(mTabModelSelector.getTabCreatorManager()).thenReturn(mTabCreatorManager);
-        when(mRegularTabModel.getTabRemover()).thenReturn(mRegularTabRemover);
         when(mIncognitoTabModel.getTabRemover()).thenReturn(mIncognitoTabRemover);
+    }
 
-        // Setup deps for tab archiving.
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mRegularTabModel);
-        when(mRegularTabModel.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mArchivedTabModelOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
-        when(mArchivedTabModelOrchestrator.getTabModel()).thenReturn(mArchivedTabModel);
-        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+    private void setUpCloseAllTabsMocks() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
+        when(mRegularTabModel.getTabRemover()).thenReturn(mRegularTabRemover);
+        when(mUnarchiveAndGetUndoRunnable.get()).thenReturn(mUndoRunnable);
     }
 
     @Test
@@ -90,83 +79,98 @@ public class CloseAllTabsHelperUnitTest {
     }
 
     private void testCloseAllTabsHidingTabGroups(boolean shouldAllowUndo) {
+        setUpCloseAllTabsMocks();
         CloseAllTabsHelper.closeAllTabsHidingTabGroups(
-                mTabModelSelector, shouldAllowUndo, /* closePinnedTabs= */ false);
+                mTabModelSelector,
+                mUnarchiveAndGetUndoRunnable,
+                shouldAllowUndo,
+                TabClosingSource.GRID_TAB_SWITCHER,
+                /* closePinnedTabs= */ false);
 
-        ArgumentMatcher<TabClosureParams> tabClosureParamsMatcher =
+        ArgumentMatcher<TabClosureParams> regularMatcher =
+                params ->
+                        params.isAllTabs
+                                && (params.allowUndo == shouldAllowUndo)
+                                && (shouldAllowUndo
+                                        ? params.undoRunnable == mUndoRunnable
+                                        : params.undoRunnable == null);
+        ArgumentMatcher<TabClosureParams> incognitoMatcher =
                 params -> params.isAllTabs && (params.allowUndo == shouldAllowUndo);
-        verify(mRegularTabRemover)
-                .closeTabs(argThat(tabClosureParamsMatcher), /* allowDialog= */ eq(false));
+        verify(mRegularTabRemover).closeTabs(argThat(regularMatcher), /* allowDialog= */ eq(false));
         verify(mIncognitoTabRemover)
-                .closeTabs(argThat(tabClosureParamsMatcher), /* allowDialog= */ eq(false));
+                .closeTabs(argThat(incognitoMatcher), /* allowDialog= */ eq(false));
     }
 
     @Test
     public void testBuildCloseAllTabsCallback_Regular_AllowUndo() {
-        testBuildCloseAllTabsCallback(/* isIncognitoOnly= */ false, /* allowUndo= */ true);
+        testBuildCloseAllTabsCallback(/* allowUndo= */ true);
     }
 
     @Test
-    public void testBuildCloseAllTabsCallback_Regular_DisAllowUndo() {
-        testBuildCloseAllTabsCallback(/* isIncognitoOnly= */ false, /* allowUndo= */ false);
+    public void testBuildCloseAllTabsCallback_Regular_DisallowUndo() {
+        testBuildCloseAllTabsCallback(/* allowUndo= */ false);
     }
 
     @Test
-    public void testBuildCloseAllTabsCallback_Incognito_AllowUndo() {
-        testBuildCloseAllTabsCallback(/* isIncognitoOnly= */ true, /* allowUndo= */ true);
+    public void testBuildCloseAllIncognitoTabsCallback_AllowUndo() {
+        testBuildCloseAllIncognitoTabsCallback(/* allowUndo= */ true);
     }
 
     @Test
-    public void testBuildCloseAllTabsCallback_Incognito_DisAllowUndo() {
-        testBuildCloseAllTabsCallback(/* isIncognitoOnly= */ true, /* allowUndo= */ false);
+    public void testBuildCloseAllIncognitoTabsCallback_DisallowUndo() {
+        testBuildCloseAllIncognitoTabsCallback(/* allowUndo= */ false);
     }
 
-    private void testBuildCloseAllTabsCallback(boolean isIncognitoOnly, boolean allowUndo) {
+    private void testBuildCloseAllTabsCallback(boolean allowUndo) {
+        setUpCloseAllTabsMocks();
         Callback<Boolean> callback =
                 CloseAllTabsHelper.buildCloseAllTabsCallback(
-                        mTabModelSelector, isIncognitoOnly, allowUndo);
+                        mTabModelSelector, mUnarchiveAndGetUndoRunnable, allowUndo);
 
         callback.onResult(/* result= */ false);
 
-        ArgumentMatcher<TabClosureParams> tabClosureParamsMatcher =
+        ArgumentMatcher<TabClosureParams> regularMatcher =
+                params ->
+                        params.isAllTabs
+                                && (params.allowUndo == allowUndo)
+                                && (allowUndo
+                                        ? params.undoRunnable == mUndoRunnable
+                                        : params.undoRunnable == null);
+        ArgumentMatcher<TabClosureParams> incognitoMatcher =
                 params -> params.isAllTabs && (params.allowUndo == allowUndo);
-        if (isIncognitoOnly) {
-            verify(mRegularTabRemover, never()).closeTabs(any(), anyBoolean());
-            verify(mIncognitoTabRemover)
-                    .closeTabs(argThat(tabClosureParamsMatcher), /* allowDialog= */ eq(false));
-        } else {
-            verify(mRegularTabRemover)
-                    .closeTabs(argThat(tabClosureParamsMatcher), /* allowDialog= */ eq(false));
-            verify(mIncognitoTabRemover)
-                    .closeTabs(argThat(tabClosureParamsMatcher), /* allowDialog= */ eq(false));
-        }
+        verify(mRegularTabRemover).closeTabs(argThat(regularMatcher), /* allowDialog= */ eq(false));
+        verify(mIncognitoTabRemover)
+                .closeTabs(argThat(incognitoMatcher), /* allowDialog= */ eq(false));
     }
 
-    @Test
-    public void testUninitializedArchivedTabModelReturnsEmptyRunnable() {
-        when(mArchivedTabModelOrchestrator.areTabModelsInitialized()).thenReturn(false);
-        Runnable r =
-                CloseAllTabsHelper.removeArchivedTabsAndGetUndoRunnable(
-                        mArchivedTabModelOrchestrator, mTabModelSelector);
-        assertEquals(CallbackUtils.emptyRunnable(), r);
+    private void testBuildCloseAllIncognitoTabsCallback(boolean allowUndo) {
+        Callback<Boolean> callback =
+                CloseAllTabsHelper.buildCloseAllIncognitoTabsCallback(mTabModelSelector, allowUndo);
+
+        callback.onResult(/* result= */ false);
+
+        ArgumentMatcher<TabClosureParams> incognitoMatcher =
+                params -> params.isAllTabs && (params.allowUndo == allowUndo);
+        verify(mUnarchiveAndGetUndoRunnable, never()).get();
+        verify(mRegularTabRemover, never()).closeTabs(any(), anyBoolean());
+        verify(mIncognitoTabRemover)
+                .closeTabs(argThat(incognitoMatcher), /* allowDialog= */ eq(false));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS)
     public void testBuildCloseAllTabsCallback_RetainsPinnedTabsWhenUnchecked() {
-        Tab pinnedTab = mock(Tab.class);
-        when(pinnedTab.getIsPinned()).thenReturn(true);
-        Tab unpinnedTab = mock(Tab.class);
-        when(unpinnedTab.getIsPinned()).thenReturn(false);
-
-        when(mRegularTabModel.getPinnedTabsCount()).thenReturn(1);
-        when(mRegularTabModel.getCount()).thenReturn(2);
-        when(mRegularTabModel.getTabAt(0)).thenReturn(pinnedTab);
-        when(mRegularTabModel.getTabAt(1)).thenReturn(unpinnedTab);
+        MockTabModel regularTabModel = new MockTabModel(mProfile, /* delegate= */ null);
+        regularTabModel.setTabRemoverForTesting(mRegularTabRemover);
+        MockTab pinnedTab = regularTabModel.addTab(1);
+        pinnedTab.setIsPinned(true);
+        MockTab unpinnedTab = regularTabModel.addTab(2);
+        when(mTabModelSelector.getModel(false)).thenReturn(regularTabModel);
+        when(mUnarchiveAndGetUndoRunnable.get()).thenReturn(mUndoRunnable);
 
         Callback<Boolean> callback =
                 CloseAllTabsHelper.buildCloseAllTabsCallback(
-                        mTabModelSelector, /* isIncognitoOnly= */ false, /* allowUndo= */ true);
+                        mTabModelSelector, mUnarchiveAndGetUndoRunnable, /* allowUndo= */ true);
         callback.onResult(/* result= */ false);
 
         ArgumentMatcher<TabClosureParams> regularMatcher =
@@ -174,13 +178,10 @@ public class CloseAllTabsHelperUnitTest {
                         !params.isAllTabs
                                 && List.of(unpinnedTab).equals(params.tabs)
                                 && params.allowUndo
-                                && params.hideTabGroups;
+                                && params.hideTabGroups
+                                && params.undoRunnable == mUndoRunnable;
         ArgumentMatcher<TabClosureParams> incognitoMatcher =
                 params -> params.isAllTabs && params.allowUndo && params.hideTabGroups;
-
-        InOrder inOrder = inOrder(mArchivedTabModelOrchestrator, mRegularTabModel);
-        inOrder.verify(mArchivedTabModelOrchestrator).areTabModelsInitialized();
-        inOrder.verify(mRegularTabModel).getTabAt(0);
 
         verify(mRegularTabRemover).closeTabs(argThat(regularMatcher), /* allowDialog= */ eq(false));
         verify(mIncognitoTabRemover)
@@ -190,6 +191,8 @@ public class CloseAllTabsHelperUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS)
     public void testBuildCloseAllTabsCallback_OnlyPinnedTabs_SkipsRegularTabRemover() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
+        when(mUnarchiveAndGetUndoRunnable.get()).thenReturn(mUndoRunnable);
         Tab pinnedTab1 = mock(Tab.class);
         when(pinnedTab1.getIsPinned()).thenReturn(true);
         Tab pinnedTab2 = mock(Tab.class);
@@ -202,14 +205,14 @@ public class CloseAllTabsHelperUnitTest {
 
         Callback<Boolean> callback =
                 CloseAllTabsHelper.buildCloseAllTabsCallback(
-                        mTabModelSelector, /* isIncognitoOnly= */ false, /* allowUndo= */ true);
+                        mTabModelSelector, mUnarchiveAndGetUndoRunnable, /* allowUndo= */ true);
         callback.onResult(/* result= */ false);
 
         ArgumentMatcher<TabClosureParams> incognitoMatcher =
                 params -> params.isAllTabs && params.allowUndo && params.hideTabGroups;
 
         verify(mRegularTabRemover, never()).closeTabs(any(), anyBoolean());
-        verify(mArchivedTabModelOrchestrator).areTabModelsInitialized();
+        verify(mUnarchiveAndGetUndoRunnable).get();
         verify(mIncognitoTabRemover)
                 .closeTabs(argThat(incognitoMatcher), /* allowDialog= */ eq(false));
     }
@@ -217,31 +220,25 @@ public class CloseAllTabsHelperUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS)
     public void testBuildCloseAllTabsCallback_OnlyPinnedTabsWithArchivedTabs_ClosesArchivedTabs() {
-        Tab pinnedTab = mock(Tab.class);
-        when(pinnedTab.getIsPinned()).thenReturn(true);
-        Tab unarchivedTab = mock(Tab.class);
-        when(unarchivedTab.getIsPinned()).thenReturn(false);
-
-        List<Tab> regularTabs = new ArrayList<>(List.of(pinnedTab));
-        when(mRegularTabModel.getPinnedTabsCount()).thenReturn(1);
-        when(mRegularTabModel.getCount()).thenAnswer(inv -> regularTabs.size());
-        when(mRegularTabModel.getTabAt(anyInt()))
-                .thenAnswer(inv -> regularTabs.get(inv.getArgument(0)));
-
-        when(mArchivedTabModelOrchestrator.areTabModelsInitialized()).thenReturn(true);
-        when(mArchivedTabModel.getCount()).thenReturn(1);
-        when(mArchivedTabModel.iterator()).thenAnswer(inv -> List.of(unarchivedTab).iterator());
-        doAnswer(
-                        inv -> {
-                            regularTabs.add(unarchivedTab);
-                            return null;
-                        })
-                .when(mTabArchiver)
-                .unarchiveAndRestoreTabs(any(), eq(List.of(unarchivedTab)), eq(true), eq(false));
+        MockTabModel regularTabModel = new MockTabModel(mProfile, /* delegate= */ null);
+        regularTabModel.setTabRemoverForTesting(mRegularTabRemover);
+        MockTab pinnedTab = regularTabModel.addTab(1);
+        pinnedTab.setIsPinned(true);
+        MockTab unarchivedTab = new MockTab(2, mProfile);
+        when(mTabModelSelector.getModel(false)).thenReturn(regularTabModel);
 
         Callback<Boolean> callback =
                 CloseAllTabsHelper.buildCloseAllTabsCallback(
-                        mTabModelSelector, /* isIncognitoOnly= */ false, /* allowUndo= */ true);
+                        mTabModelSelector,
+                        () -> {
+                            regularTabModel.addTab(
+                                    unarchivedTab,
+                                    /* index= */ 0,
+                                    TabLaunchType.FROM_RESTORE,
+                                    TabCreationState.FROZEN_ON_RESTORE);
+                            return mUndoRunnable;
+                        },
+                        /* allowUndo= */ true);
         callback.onResult(/* result= */ false);
 
         ArgumentMatcher<TabClosureParams> regularMatcher =
@@ -249,7 +246,8 @@ public class CloseAllTabsHelperUnitTest {
                         !params.isAllTabs
                                 && List.of(unarchivedTab).equals(params.tabs)
                                 && params.allowUndo
-                                && params.hideTabGroups;
+                                && params.hideTabGroups
+                                && params.undoRunnable == mUndoRunnable;
         ArgumentMatcher<TabClosureParams> incognitoMatcher =
                 params -> params.isAllTabs && params.allowUndo && params.hideTabGroups;
 
@@ -261,19 +259,31 @@ public class CloseAllTabsHelperUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS)
     public void testBuildCloseAllTabsCallback_ClosesAllWhenChecked() {
-        when(mRegularTabModel.getPinnedTabsCount()).thenReturn(1);
+        MockTabModel regularTabModel = new MockTabModel(mProfile, /* delegate= */ null);
+        regularTabModel.setTabRemoverForTesting(mRegularTabRemover);
+        MockTab pinnedTab = regularTabModel.addTab(1);
+        pinnedTab.setIsPinned(true);
+        regularTabModel.addTab(2);
+        when(mTabModelSelector.getModel(false)).thenReturn(regularTabModel);
+        when(mUnarchiveAndGetUndoRunnable.get()).thenReturn(mUndoRunnable);
 
         Callback<Boolean> callback =
                 CloseAllTabsHelper.buildCloseAllTabsCallback(
-                        mTabModelSelector, /* isIncognitoOnly= */ false, /* allowUndo= */ true);
+                        mTabModelSelector, mUnarchiveAndGetUndoRunnable, /* allowUndo= */ true);
         callback.onResult(/* result= */ true);
 
-        ArgumentMatcher<TabClosureParams> allTabsMatcher =
+        ArgumentMatcher<TabClosureParams> regularMatcher =
+                params ->
+                        params.isAllTabs
+                                && params.allowUndo
+                                && params.hideTabGroups
+                                && params.undoRunnable == mUndoRunnable;
+        ArgumentMatcher<TabClosureParams> incognitoMatcher =
                 params -> params.isAllTabs && params.allowUndo && params.hideTabGroups;
 
-        verify(mRegularTabRemover).closeTabs(argThat(allTabsMatcher), /* allowDialog= */ eq(false));
+        verify(mRegularTabRemover).closeTabs(argThat(regularMatcher), /* allowDialog= */ eq(false));
         verify(mIncognitoTabRemover)
-                .closeTabs(argThat(allTabsMatcher), /* allowDialog= */ eq(false));
+                .closeTabs(argThat(incognitoMatcher), /* allowDialog= */ eq(false));
     }
 
     @Test
@@ -282,18 +292,28 @@ public class CloseAllTabsHelperUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(stubRegularModel);
 
         CloseAllTabsHelper.closeAllTabsHidingTabGroups(
-                mTabModelSelector, /* allowUndo= */ false, /* closePinnedTabs= */ false);
+                mTabModelSelector,
+                mUnarchiveAndGetUndoRunnable,
+                /* allowUndo= */ false,
+                TabClosingSource.GRID_TAB_SWITCHER,
+                /* closePinnedTabs= */ false);
         verify(mIncognitoTabRemover).closeTabs(any(), eq(false));
+        verify(mUnarchiveAndGetUndoRunnable, never()).get();
     }
 
     @Test
     public void testCloseAllTabsWithStubIncognitoModel() {
+        setUpCloseAllTabsMocks();
         StubTabModel stubIncognitoModel =
                 new StubTabModel(/* isIncognito= */ true, /* profile= */ null);
         when(mTabModelSelector.getModel(true)).thenReturn(stubIncognitoModel);
 
         CloseAllTabsHelper.closeAllTabsHidingTabGroups(
-                mTabModelSelector, /* allowUndo= */ false, /* closePinnedTabs= */ false);
+                mTabModelSelector,
+                mUnarchiveAndGetUndoRunnable,
+                /* allowUndo= */ false,
+                TabClosingSource.GRID_TAB_SWITCHER,
+                /* closePinnedTabs= */ false);
         verify(mRegularTabRemover).closeTabs(any(), eq(false));
     }
 }
