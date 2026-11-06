@@ -168,8 +168,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Sets `initial_invocation_source_` if it has not been set yet.
   void MaybeSetInitialInvocationSource(mojom::InvocationSource source);
 
-  // Called before showing the instance to record return source if the
-  // instance has conversation history.
+  // Called before showing the instance to resolve any unseen completed response
+  // and record return source if the instance has conversation history.
   void OnWillShow(glic::mojom::InvocationSource source,
                   bool has_conversation_id);
 
@@ -338,6 +338,27 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   bool IsVisible() const;
 
+  // Tracks a response that has finished streaming while the panel was
+  // hidden or in an inactive window, pending resolution when the panel
+  // becomes showing or active (or finalization if the instance is
+  // destroyed first).
+  struct PendingCompletedResponse {
+    base::TimeTicks completion_time;
+    bool is_actor = false;
+    bool was_showing = false;
+    std::optional<mojom::InvocationSource> return_source;
+  };
+
+  void RecordTurnShowingOutcome(bool is_actor, GlicTurnShowingOutcome outcome);
+  void RecordCompletedWhileHiddenShown(bool is_actor,
+                                       mojom::InvocationSource return_source,
+                                       base::TimeDelta time_to_show);
+  void RecordCompletedWhileHiddenDestroyed(
+      bool is_actor,
+      base::TimeDelta time_until_destroyed);
+  void MaybeResolvePendingResponse();
+  void FinalizePendingResponse(base::TimeTicks now);
+
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
 
@@ -378,6 +399,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // The last invocation source that was used to show the panel.
   mojom::InvocationSource last_invocation_source_ =
       mojom::InvocationSource::kUnsupported;
+  std::optional<PendingCompletedResponse> pending_completed_response_;
   std::optional<uint64_t> active_invocation_id_ = std::nullopt;
   // When `active_invocation_id_` was set. Null when there is no invocation in
   // flight. Used to report how far into an invocation a failure happened.

@@ -230,6 +230,17 @@ chromium-metrics-reviews@google.com.
   <variant name=".Enterprise" summary="Gemini Enterprise in Chrome only"/>
 </variants>
 
+<variants name="GlicTurnMode">
+  <variant name="" summary="all turns (default and actor combined)"/>
+  <variant name=".Actor"
+      summary="actor turns following an action result submission (excludes
+               the initial prompt/plan-card turn before action execution,
+               which is recorded under Default)"/>
+  <variant name=".Default"
+      summary="standard chat turns, as well as the initial turn of an actor
+               task before action execution begins"/>
+</variants>
+
 <variants name="MemoryTriggerEvent">
   <variant name="CriticalPressure"
       summary="recorded upon critical memory pressure"/>
@@ -3803,6 +3814,50 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram
+    name="Glic{GlicProvider}.Turn.CompletedWhileHidden.ReturnSource{Mode}"
+    enum="GlicInvocationSource" expires_after="2027-06-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the invocation source that caused a Glic instance to be shown when
+    the user returns to a response that completed while the instance was hidden
+    (panel closed or on a backgrounded tab), for {Mode}. Logged only when the
+    instance is shown before destruction (kHiddenThenShowing). Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="Mode" variants="GlicTurnMode"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.CompletedWhileHidden.TimeToShow{Mode}"
+    units="ms" expires_after="2027-06-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the duration from when a turn response completed while hidden until
+    the instance was shown again, for {Mode}. Logged only when the instance is
+    shown before destruction (kHiddenThenShowing). Scope: {GlicProvider}.
+  </summary>
+  <token key="Mode" variants="GlicTurnMode"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Turn.CompletedWhileHidden.TimeUntilDestroyed{Mode}"
+    units="ms" expires_after="2027-06-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the duration from when a turn response completed while hidden until
+    the instance was destroyed (or superseded by another completed response)
+    without ever being shown (kHiddenNeverShowing), for {Mode}. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="Mode" variants="GlicTurnMode"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Turn.Duration.{Model}" units="ms"
     expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
@@ -3931,6 +3986,26 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     <variant name="Other"/>
     <variant name="UnknownCause"/>
   </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Turn.ShowingOutcome{Mode}"
+    enum="GlicTurnShowingOutcome" expires_after="2027-06-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the panel showing state and window activation outcome for a
+    completed turn response, for {Mode}. 'Showing' means the Glic side panel is
+    open on its browser window's active tab or the floating panel is open
+    (OS-level window occlusion by other windows is not tracked). 'Active' means
+    the browser window (for side panel) or floating widget (for floaty, or while
+    microphone is listening) has window focus. 'Hidden' means the panel is
+    explicitly closed or attached to a backgrounded tab. Recorded immediately at
+    response completion when both showing and active; otherwise recorded when
+    the missing state (active or showing) is later reached, or upon instance
+    destruction if never reached. Scope: {GlicProvider}.
+  </summary>
+  <token key="Mode" variants="GlicTurnMode"/>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 

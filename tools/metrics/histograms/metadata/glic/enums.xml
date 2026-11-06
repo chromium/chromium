@@ -1336,6 +1336,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicTabPinnedForSharingResult) -->
 
+<!-- LINT.IfChange(GlicTurnShowingOutcome) -->
+
+<enum name="GlicTurnShowingOutcome">
+  <int value="0"
+      label="Showing and active (panel open in focused window/widget)"/>
+  <int value="1"
+      label="Showing but inactive (panel open in unfocused window/widget;
+             occlusion unknown), became active later"/>
+  <int value="2"
+      label="Showing but inactive (panel open in unfocused window/widget;
+             occlusion unknown), never became active"/>
+  <int value="3"
+      label="Hidden (panel closed or on background tab), shown later"/>
+  <int value="4"
+      label="Hidden (panel closed or on background tab), never shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicTurnShowingOutcome) -->
+
 <!-- LINT.IfChange(GlicTurnSource) -->
 
 <enum name="GlicTurnSource">

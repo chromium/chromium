@@ -2172,6 +2172,498 @@ TEST_F(GlicInstanceMetricsTest,
       "Glic.Instance.TimeToInputFocus.NonOnboarded", 2);
 }
 
+TEST_F(GlicInstanceMetricsTest, ShowingOutcome_Default_VisibleAndActive) {
+  ShowOptions show_options = ShowOptions::ForSidePanel(mock_tab_);
+
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnActivationChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  histogram_tester_.ExpectBucketCount("Glic.Turn.ShowingOutcome.Default",
+                                      GlicTurnShowingOutcome::kShowingAndActive,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kShowingAndActive, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, ShowingOutcome_Actor_VisibleAndActive) {
+  ShowOptions show_options{FloatingShowOptions{}};
+
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnActivationChanged(true);
+
+  // Actor turn: submit prompt, submit action result, stop response.
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnActionSubmitted(/*is_retry=*/false);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  histogram_tester_.ExpectBucketCount("Glic.Turn.ShowingOutcome.Actor",
+                                      GlicTurnShowingOutcome::kShowingAndActive,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kShowingAndActive, 1);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome.Default", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, ShowingOutcome_ShowingInactiveThenActive) {
+  ShowOptions show_options = ShowOptions::ForSidePanel(mock_tab_);
+
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnActivationChanged(false);
+
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  // Visible but inactive when response completes: pending, not recorded yet.
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome.Default", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome", 0);
+
+  // Window becomes active later.
+  metrics_.OnActivationChanged(true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome.Default",
+      GlicTurnShowingOutcome::kShowingInactiveThenActive, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome",
+      GlicTurnShowingOutcome::kShowingInactiveThenActive, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, ShowingOutcome_ShowingInactiveNeverActive) {
+  ShowOptions show_options{FloatingShowOptions{}};
+
+  {
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
+    metrics.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                       /*has_conversation_id=*/false);
+    metrics.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+    metrics.OnVisibilityChanged(true);
+    metrics.OnActivationChanged(false);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kTypedText);
+    metrics.OnResponseStarted();
+    metrics.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+    histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome.Default", 0);
+    histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome", 0);
+  }  // Destructor calls OnInstanceDestroyed().
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Turn.ShowingOutcome.Default",
+      GlicTurnShowingOutcome::kShowingInactiveNeverActive, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Turn.ShowingOutcome",
+      GlicTurnShowingOutcome::kShowingInactiveNeverActive, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, CompletedWhileHidden_ShownOutcomesAndTimes) {
+  ShowOptions show_options = ShowOptions::ForSidePanel(mock_tab_);
+
+  // 1. Shown via tab switch back:
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnActivationChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  // Tab switched away.
+  metrics_.OnVisibilityChanged(false);
+  // Response completes while hidden.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  // Still hidden, so outcome, return source, and time to show not recorded yet.
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome.Default", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", 0);
+
+  // User switches back to tab after 5 seconds.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  metrics_.OnWillShow(mojom::InvocationSource::kReshowInactive,
+                      /*has_conversation_id=*/true);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome.Default",
+      GlicTurnShowingOutcome::kHiddenThenShowing, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kHiddenThenShowing,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default",
+      mojom::InvocationSource::kReshowInactive, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource",
+      mojom::InvocationSource::kReshowInactive, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", base::Seconds(5), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", base::Seconds(5), 1);
+
+  // 2. Shown via panel reopen:
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/true);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome.Default",
+      GlicTurnShowingOutcome::kHiddenThenShowing, 2);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kHiddenThenShowing,
+      2);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default",
+      mojom::InvocationSource::kTopChromeButton, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource",
+      mojom::InvocationSource::kTopChromeButton, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", base::Seconds(10),
+      1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", base::Seconds(10), 1);
+
+  // 3. Shown via activity hub:
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+  metrics_.OnWillShow(mojom::InvocationSource::kActivityListBubble,
+                      /*has_conversation_id=*/true);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome.Default",
+      GlicTurnShowingOutcome::kHiddenThenShowing, 3);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kHiddenThenShowing,
+      3);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default",
+      mojom::InvocationSource::kActivityListBubble, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource",
+      mojom::InvocationSource::kActivityListBubble, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", base::Seconds(3), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", base::Seconds(3), 1);
+
+  // 4. Shown via conversation switch:
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  task_environment_.FastForwardBy(base::Seconds(8));
+  metrics_.OnWillShow(mojom::InvocationSource::kConversationSwitch,
+                      /*has_conversation_id=*/true);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome.Default",
+      GlicTurnShowingOutcome::kHiddenThenShowing, 4);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kHiddenThenShowing,
+      4);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default",
+      mojom::InvocationSource::kConversationSwitch, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource",
+      mojom::InvocationSource::kConversationSwitch, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", base::Seconds(8), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", base::Seconds(8), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", 4);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", 4);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed", 0);
+
+  // 5. Surface move while already visible does not re-trigger.
+  metrics_.OnWillShow(mojom::InvocationSource::kDetachAttachButton,
+                      /*has_conversation_id=*/true);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", 4);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome.Default", 4);
+
+  // 6. User-stopped response does not start pending state or record outcomes.
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/true);
+  metrics_.OnVisibilityChanged(true);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", 4);
+  histogram_tester_.ExpectTotalCount("Glic.Turn.ShowingOutcome.Default", 4);
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, CompletedWhileHidden_NeverShowing) {
+  ShowOptions show_options{FloatingShowOptions{}};
+
+  // 1. Default instance destroyed while hidden:
+  {
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
+    metrics.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                       /*has_conversation_id=*/false);
+    metrics.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+    metrics.OnVisibilityChanged(true);
+    metrics.OnActivationChanged(true);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kTypedText);
+    metrics.OnResponseStarted();
+    metrics.OnVisibilityChanged(false);
+    metrics.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+    task_environment_.FastForwardBy(base::Seconds(12));
+  }  // Destructor calls OnInstanceDestroyed().
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Turn.ShowingOutcome.Default",
+      GlicTurnShowingOutcome::kHiddenNeverShowing, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kHiddenNeverShowing,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed.Default",
+      base::Seconds(12), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed", base::Seconds(12),
+      1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Consumer.Turn.CompletedWhileHidden.TimeUntilDestroyed.Default",
+      base::Seconds(12), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Consumer.Turn.CompletedWhileHidden.TimeUntilDestroyed",
+      base::Seconds(12), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", 0);
+
+  // 2. Actor instance destroyed while hidden:
+  {
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
+    metrics.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                       /*has_conversation_id=*/false);
+    metrics.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+    metrics.OnVisibilityChanged(true);
+    metrics.OnActivationChanged(true);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kTypedText);
+    metrics.OnActionSubmitted(/*is_retry=*/false);
+    metrics.OnResponseStarted();
+    metrics.OnVisibilityChanged(false);
+    metrics.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+    task_environment_.FastForwardBy(base::Seconds(7));
+  }  // Destructor calls OnInstanceDestroyed().
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Turn.ShowingOutcome.Actor",
+      GlicTurnShowingOutcome::kHiddenNeverShowing, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kHiddenNeverShowing,
+      2);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Actor", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed.Actor",
+      base::Seconds(7), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed", base::Seconds(7), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Consumer.Turn.CompletedWhileHidden.TimeUntilDestroyed.Actor",
+      base::Seconds(7), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Consumer.Turn.CompletedWhileHidden.TimeUntilDestroyed",
+      base::Seconds(7), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Actor", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(
+    GlicInstanceMetricsTest,
+    CompletedWhileHidden_MultiStepActorTaskDoesNotRecordIntermediateNeverShown) {
+  ShowOptions show_options{FloatingShowOptions{}};
+
+  metrics_.OnWillShow(mojom::InvocationSource::kTopChromeButton,
+                      /*has_conversation_id=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnActivationChanged(true);
+
+  // Turn 1: user submits prompt. Instance is hidden and response completes.
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Seconds(2));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  // Step 1: action result submitted in background. Intermediate response
+  // completes.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  metrics_.OnActionSubmitted(/*is_retry=*/false);
+  metrics_.OnResponseStarted();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  // Step 2: another action result submitted in background. Final response
+  // completes.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  metrics_.OnActionSubmitted(/*is_retry=*/false);
+  metrics_.OnResponseStarted();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  // Intermediate steps should NOT emit false never-shown events.
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome.Actor",
+      GlicTurnShowingOutcome::kHiddenNeverShowing, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome.Default",
+      GlicTurnShowingOutcome::kHiddenNeverShowing, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kHiddenNeverShowing,
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed.Actor", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed.Default", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.CompletedWhileHidden.TimeUntilDestroyed", 0);
+
+  // User views response 4s after final step completes.
+  task_environment_.FastForwardBy(base::Seconds(4));
+  metrics_.OnWillShow(mojom::InvocationSource::kReshowInactive,
+                      /*has_conversation_id=*/true);
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome.Actor",
+      GlicTurnShowingOutcome::kHiddenThenShowing, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.ShowingOutcome", GlicTurnShowingOutcome::kHiddenThenShowing,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource.Actor",
+      mojom::InvocationSource::kReshowInactive, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.CompletedWhileHidden.ReturnSource",
+      mojom::InvocationSource::kReshowInactive, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow.Actor", base::Seconds(4), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Turn.CompletedWhileHidden.TimeToShow", base::Seconds(4), 1);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
 TEST_F(GlicInstanceMetricsTest, ReturnSource_RecordedCorrectly) {
   ShowOptions show_options = ShowOptions::ForSidePanel(mock_tab_);
 

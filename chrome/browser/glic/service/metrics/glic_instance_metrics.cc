@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -194,6 +195,10 @@ ToStructuredReason(ClientLoadErrorReason reason) {
 }
 #endif
 
+std::string_view GetTurnModeSuffix(bool is_actor) {
+  return is_actor ? ".Actor" : ".Default";
+}
+
 }  // namespace
 
 GlicInstanceMetrics::TurnInfo::TurnInfo() = default;
@@ -332,6 +337,8 @@ void GlicInstanceMetrics::RecordTabPinningStatusEvent(
 }
 
 void GlicInstanceMetrics::OnInstanceDestroyed() {
+  FinalizePendingResponse(base::TimeTicks::Now());
+
   session_manager_.OnOwnerDestroyed();
 
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Destroyed"));
@@ -395,6 +402,7 @@ void GlicInstanceMetrics::OnActivationChanged(bool is_active) {
   is_active_ = is_active;
 
   if (is_active) {
+    MaybeResolvePendingResponse();
     // If this is not the first activation, log the time since the last one.
     if (!last_active_time_.is_null()) {
       base::TimeDelta time_since_last_active =
@@ -422,12 +430,14 @@ void GlicInstanceMetrics::OnVisibilityChanged(bool is_visible) {
   if (was_visible && !is_visible) {
     OnInstanceHidden();
   }
-  if (!was_visible && is_visible &&
-      guest_actionable_.frame_submitted_while_hidden &&
-      !actionable_invocation_state_.start_time.is_null()) {
-    // The guest's frame was ready while the panel was briefly hidden; it's on
-    // screen as soon as the panel is shown again.
-    RecordTimeToActionable(base::TimeTicks::Now());
+  if (!was_visible && is_visible) {
+    MaybeResolvePendingResponse();
+    if (guest_actionable_.frame_submitted_while_hidden &&
+        !actionable_invocation_state_.start_time.is_null()) {
+      // The guest's frame was ready while the panel was briefly hidden; it's on
+      // screen as soon as the panel is shown again.
+      RecordTimeToActionable(base::TimeTicks::Now());
+    }
   }
   MaybeRecordOptInImpression();
 }
@@ -847,8 +857,92 @@ bool GlicInstanceMetrics::IsVisible() const {
   return visibility_tracker_ ? visibility_tracker_->state() : false;
 }
 
+void GlicInstanceMetrics::RecordTurnShowingOutcome(
+    bool is_actor,
+    GlicTurnShowingOutcome outcome) {
+  metric_reporter_.RecordEnumeration("Turn.ShowingOutcome", outcome);
+  metric_reporter_.RecordEnumeration(
+      base::StrCat({"Turn.ShowingOutcome", GetTurnModeSuffix(is_actor)}),
+      outcome);
+}
+
+void GlicInstanceMetrics::RecordCompletedWhileHiddenShown(
+    bool is_actor,
+    mojom::InvocationSource return_source,
+    base::TimeDelta time_to_show) {
+  std::string_view suffix = GetTurnModeSuffix(is_actor);
+  metric_reporter_.RecordEnumeration("Turn.CompletedWhileHidden.ReturnSource",
+                                     return_source);
+  metric_reporter_.RecordEnumeration(
+      base::StrCat({"Turn.CompletedWhileHidden.ReturnSource", suffix}),
+      return_source);
+  metric_reporter_.RecordCustomTimes("Turn.CompletedWhileHidden.TimeToShow",
+                                     time_to_show, base::Milliseconds(100),
+                                     base::Hours(24), 50);
+  metric_reporter_.RecordCustomTimes(
+      base::StrCat({"Turn.CompletedWhileHidden.TimeToShow", suffix}),
+      time_to_show, base::Milliseconds(100), base::Hours(24), 50);
+}
+
+void GlicInstanceMetrics::RecordCompletedWhileHiddenDestroyed(
+    bool is_actor,
+    base::TimeDelta time_until_destroyed) {
+  std::string_view suffix = GetTurnModeSuffix(is_actor);
+  metric_reporter_.RecordCustomTimes(
+      "Turn.CompletedWhileHidden.TimeUntilDestroyed", time_until_destroyed,
+      base::Milliseconds(100), base::Hours(24), 50);
+  metric_reporter_.RecordCustomTimes(
+      base::StrCat({"Turn.CompletedWhileHidden.TimeUntilDestroyed", suffix}),
+      time_until_destroyed, base::Milliseconds(100), base::Hours(24), 50);
+}
+
+void GlicInstanceMetrics::MaybeResolvePendingResponse() {
+  if (!pending_completed_response_) {
+    return;
+  }
+  if (!pending_completed_response_->was_showing && IsVisible()) {
+    PendingCompletedResponse pending =
+        *std::exchange(pending_completed_response_, std::nullopt);
+    mojom::InvocationSource return_source =
+        pending.return_source.value_or(last_invocation_source_);
+    RecordTurnShowingOutcome(pending.is_actor,
+                             GlicTurnShowingOutcome::kHiddenThenShowing);
+    RecordCompletedWhileHiddenShown(
+        pending.is_actor, return_source,
+        base::TimeTicks::Now() - pending.completion_time);
+  } else if (pending_completed_response_->was_showing && IsVisible() &&
+             is_active_) {
+    PendingCompletedResponse pending =
+        *std::exchange(pending_completed_response_, std::nullopt);
+    RecordTurnShowingOutcome(
+        pending.is_actor, GlicTurnShowingOutcome::kShowingInactiveThenActive);
+  }
+}
+
+void GlicInstanceMetrics::FinalizePendingResponse(base::TimeTicks now) {
+  std::optional<PendingCompletedResponse> pending =
+      std::exchange(pending_completed_response_, std::nullopt);
+  if (!pending) {
+    return;
+  }
+  if (pending->was_showing) {
+    RecordTurnShowingOutcome(
+        pending->is_actor, GlicTurnShowingOutcome::kShowingInactiveNeverActive);
+  } else {
+    RecordTurnShowingOutcome(pending->is_actor,
+                             GlicTurnShowingOutcome::kHiddenNeverShowing);
+    RecordCompletedWhileHiddenDestroyed(pending->is_actor,
+                                        now - pending->completion_time);
+  }
+}
+
 void GlicInstanceMetrics::OnWillShow(glic::mojom::InvocationSource source,
                                      bool has_conversation_id) {
+  if (!IsVisible() && pending_completed_response_ &&
+      !pending_completed_response_->was_showing) {
+    pending_completed_response_->return_source = source;
+  }
+
   // Record when a hidden conversation becomes visible again, or when the user
   // selects an existing conversation from the web client's Recent Chats menu
   // (which may reuse an already-visible blank instance in-place in
@@ -1381,7 +1475,7 @@ void GlicInstanceMetrics::OnResponseStarted() {
     return;
   }
 
-  if (!visibility_tracker_->state()) {
+  if (!IsVisible() && !is_response_for_actuation) {
     metric_reporter_.RecordEnumeration(
         "Instance.Metrics.Error",
         GlicInstanceMetricsError::kResponseStartWhileHidingOrHidden);
@@ -1477,6 +1571,22 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
           latency);
     }
     RecordResponseLatencyByAttachedTabCount(latency);
+
+    if (cause == mojom::ResponseStopCause::kUnknown) {
+      FinalizePendingResponse(now);
+      const bool is_actor = !turn_.action_result_submitted_time_.is_null();
+      const bool is_showing = IsVisible();
+      if (is_showing && is_active_) {
+        RecordTurnShowingOutcome(is_actor,
+                                 GlicTurnShowingOutcome::kShowingAndActive);
+      } else {
+        pending_completed_response_ = PendingCompletedResponse{
+            .completion_time = now,
+            .is_actor = is_actor,
+            .was_showing = is_showing,
+        };
+      }
+    }
   }
 
   GlicTurnSource turn_source;
@@ -1615,6 +1725,9 @@ void GlicInstanceMetrics::OnInputFocused() {
 
 void GlicInstanceMetrics::OnActionSubmitted(bool is_retry) {
   turn_.action_result_submitted_time_ = base::TimeTicks::Now();
+  // In a multi-step actor loop, submitting an action result means the previous
+  // response was an intermediate step rather than a final unshown response.
+  pending_completed_response_.reset();
   metric_reporter_.RecordBoolean("Turn.Actuation.IsRetry", is_retry);
 }
 

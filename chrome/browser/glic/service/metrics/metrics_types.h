@@ -413,6 +413,17 @@ enum class OnboardingFunnelStep {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicOnboardingFunnelStep)
 
+// LINT.IfChange(GlicTurnShowingOutcome)
+enum class GlicTurnShowingOutcome {
+  kShowingAndActive = 0,
+  kShowingInactiveThenActive = 1,
+  kShowingInactiveNeverActive = 2,
+  kHiddenThenShowing = 3,
+  kHiddenNeverShowing = 4,
+  kMaxValue = kHiddenNeverShowing,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTurnShowingOutcome)
+
 std::string GetDaisyChainSourceString(DaisyChainSource source);
 
 ResponseSegmentation GetResponseSegmentation(bool attached,
