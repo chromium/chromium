@@ -7,11 +7,13 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_manager.h"
@@ -81,8 +83,11 @@ bool HWDataCollectionScreen::MaybeSkip(WizardContext& context) {
     // of the test flow. This value is important, as we rely on it during update
     // flow from CloudReady to Chrome OS Flex and it should be set after owner
     // of the device has already logged in.
-    HWDataUsageController::Get()->Set(ProfileManager::GetActiveUserProfile(),
-                                      base::Value(false));
+    CHECK(context.onboarding_user);
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+            context.onboarding_user.get()));
+    HWDataUsageController::Get()->Set(profile, base::Value(false));
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -106,7 +111,11 @@ void HWDataCollectionScreen::HideImpl() {
 void HWDataCollectionScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionAcceptButtonClicked) {
-    HWDataUsageController::Get()->Set(ProfileManager::GetActiveUserProfile(),
+    CHECK(context()->onboarding_user);
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+            context()->onboarding_user.get()));
+    HWDataUsageController::Get()->Set(profile,
                                       base::Value(hw_data_usage_enabled_));
     exit_callback_.Run(hw_data_usage_enabled_
                            ? Result::ACCEPTED_WITH_HW_DATA_USAGE

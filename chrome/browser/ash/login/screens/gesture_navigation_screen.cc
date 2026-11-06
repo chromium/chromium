@@ -7,14 +7,15 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "ui/display/screen.h"
 
 namespace ash {
@@ -47,12 +48,18 @@ GestureNavigationScreen::GestureNavigationScreen(
 GestureNavigationScreen::~GestureNavigationScreen() = default;
 
 bool GestureNavigationScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  const user_manager::User& user = CHECK_DEREF(context.onboarding_user.get());
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-  if (context.skip_post_login_screens_for_tests ||
-      chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() ||
+  if (chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() ||
       !features::IsHideShelfControlsInTabletModeEnabled() ||
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled) ||
+      CHECK_DEREF(user.GetProfilePrefs())
+          .GetBoolean(
+              prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled) ||
       accessibility_manager->IsSpokenFeedbackEnabled() ||
       accessibility_manager->IsAutoclickEnabled() ||
       accessibility_manager->IsSwitchAccessEnabled()) {

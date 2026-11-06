@@ -6,11 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/smart_privacy_protection_screen_handler.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 
@@ -68,13 +69,15 @@ void SmartPrivacyProtectionScreen::HideImpl() {}
 void SmartPrivacyProtectionScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionFeatureTurnOn) {
-    Profile* profile = ProfileManager::GetActiveUserProfile();
-    profile->GetPrefs()->SetBoolean(prefs::kPowerQuickDimEnabled,
-                                    features::IsQuickDimEnabled());
+    user_manager::User& user = CHECK_DEREF(context()->onboarding_user.get());
+    CHECK_DEREF(user.GetProfilePrefs())
+        .SetBoolean(prefs::kPowerQuickDimEnabled,
+                    features::IsQuickDimEnabled());
     exit_callback_.Run(Result::kProceedWithFeatureOn);
   } else if (action_id == kUserActionFeatureTurnOff) {
-    Profile* profile = ProfileManager::GetActiveUserProfile();
-    profile->GetPrefs()->SetBoolean(prefs::kPowerQuickDimEnabled, false);
+    user_manager::User& user = CHECK_DEREF(context()->onboarding_user.get());
+    CHECK_DEREF(user.GetProfilePrefs())
+        .SetBoolean(prefs::kPowerQuickDimEnabled, false);
     exit_callback_.Run(Result::kProceedWithFeatureOff);
   } else if (action_id == kUserActionShowLearnMore) {
     // TODO(crbug.com/1293320): add p-link once available

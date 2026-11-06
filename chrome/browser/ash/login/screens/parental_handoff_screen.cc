@@ -6,14 +6,12 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -21,14 +19,6 @@ namespace ash {
 namespace {
 
 constexpr char kUserActionNext[] = "next";
-
-std::u16string GetActiveUserName() {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  if (!user || !user->IsChild())
-    return std::u16string();
-  return user->GetDisplayName();
-}
 
 }  // namespace
 
@@ -56,13 +46,8 @@ ParentalHandoffScreen::ParentalHandoffScreen(
 ParentalHandoffScreen::~ParentalHandoffScreen() = default;
 
 bool ParentalHandoffScreen::MaybeSkip(WizardContext& context) {
-  if (context.skip_post_login_screens_for_tests) {
-    exit_callback_.Run(Result::kSkipped);
-    return true;
-  }
-
-  const Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile->IsChild()) {
+  if (context.skip_post_login_screens_for_tests ||
+      !CHECK_DEREF(context.onboarding_user.get()).IsChild()) {
     exit_callback_.Run(Result::kSkipped);
     return true;
   }
@@ -74,7 +59,9 @@ void ParentalHandoffScreen::ShowImpl() {
   if (!view_)
     return;
 
-  view_->Show(GetActiveUserName());
+  const user_manager::User& user =
+      CHECK_DEREF(context()->onboarding_user.get());
+  view_->Show(user.IsChild() ? user.GetDisplayName() : std::u16string());
 }
 
 void ParentalHandoffScreen::HideImpl() {}

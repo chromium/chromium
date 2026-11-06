@@ -6,17 +6,17 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
 #include "chrome/browser/ui/ash/login/oobe_ui_dialog_delegate.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_onboarding.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "components/user_manager/user.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -56,7 +56,7 @@ EduCoexistenceLoginScreen::~EduCoexistenceLoginScreen() = default;
 
 bool EduCoexistenceLoginScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests ||
-      !ProfileManager::GetActiveUserProfile()->IsChild()) {
+      !CHECK_DEREF(context.onboarding_user.get()).IsChild()) {
     exit_callback_.Run(Result::SKIPPED);
     return true;
   }

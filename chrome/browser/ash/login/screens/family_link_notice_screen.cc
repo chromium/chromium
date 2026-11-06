@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 
+#include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
@@ -42,7 +41,7 @@ FamilyLinkNoticeScreen::~FamilyLinkNoticeScreen() = default;
 
 bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext& context) {
   if (!context.skip_post_login_screens_for_tests && context.sign_in_as_child &&
-      !ProfileManager::GetActiveUserProfile()->IsChild()) {
+      !CHECK_DEREF(context.onboarding_user.get()).IsChild()) {
     return false;
   }
   exit_callback_.Run(Result::kSkipped);
@@ -52,11 +51,12 @@ bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext& context) {
 void FamilyLinkNoticeScreen::ShowImpl() {
   if (!view_)
     return;
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (profile->GetProfilePolicyConnector()->IsManaged() &&
-      !profile->IsChild()) {
-    std::string display_email =
-        user_manager::UserManager::Get()->GetActiveUser()->GetDisplayEmail();
+  const user_manager::User& user =
+      CHECK_DEREF(context()->onboarding_user.get());
+  // The policy status is known by post-login OOBE. If it isn't, show the
+  // unmanaged notice, matching ProfileUserManagerController's default.
+  if (user.is_managed().value_or(false) && !user.IsChild()) {
+    std::string display_email = user.GetDisplayEmail();
     view_->SetDisplayEmail(display_email);
     view_->SetDomain(gaia::ExtractDomainName(display_email));
   } else {
