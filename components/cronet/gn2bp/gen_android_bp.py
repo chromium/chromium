@@ -75,30 +75,21 @@ def create_cc_defaults_module(context: translation_context.TranslationContext):
         'cc_defaults', context.cc_defaults_module, '//gn:default_deps', context
     )
     defaults.cflags = [
-        # TODO: this list is brittle and painful to maintain. We are too easily
-        # broken by changes to Chromium cflags, e.g. https://crbug.com/406704769.
-        # Ideally this list should be deduced from GN cflags.
+        # Flags below are required to neutralize warnings enabled by Soong's
+        # global C/C++ defaults (build/soong/cc/config/global.go) or differences
+        # between Chromium's and Android's Clang versions. Target-specific and
+        # Chromium-wide warning flags (-Wno-*, -fPIC, etc.) are propagated
+        # directly from GN cflags/cflags_cc in translators.py.
         '-DGOOGLE_PROTOBUF_NO_RTTI',
         '-Wno-error=return-type',
         '-Wno-non-virtual-dtor',
         '-Wno-macro-redefined',
-        '-Wno-missing-field-initializers',
         '-Wno-sign-compare',
         '-Wno-sign-promo',
-        '-Wno-unused-parameter',
-        '-Wno-null-pointer-subtraction',  # Needed to libevent
         '-Wno-ambiguous-reversed-operator',  # needed for icui18n
         '-Wno-unreachable-code-loop-increment',  # needed for icui18n
-        '-fPIC',
-        '-Wno-c++11-narrowing',
-        # Needed for address_space_randomization.h on riscv
-        # Can be removed after 125.0.6375.0 is imported
-        '-Wno-invalid-constexpr',
         # b/330508686 disable coverage profiling for files or function in this list.
         '-fprofile-list=external/cronet/exclude_coverage.list',
-        # https://crrev.com/c/6396655/7/build/config/compiler/BUILD.gn
-        # https://crbug.com/406704769
-        '-Wno-nullability-completeness',
         # Stops warning about unknown options. This usually happens when
         # Chromium uses a newer version of Clang that supports a flag which
         # Android's clang does not know about.
