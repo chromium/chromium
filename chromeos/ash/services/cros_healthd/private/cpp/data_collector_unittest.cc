@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/cros_healthd/private/cpp/data_collector.h"
 
+#include "base/task/execution_fence.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -89,6 +90,17 @@ TEST_F(DataCollectorTest, GetTouchscreenDevices) {
 }
 
 TEST_F(DataCollectorTest, GetTouchpadLibraryName) {
+  base::test::TestFuture<const std::string&> future;
+  remote_->GetTouchpadLibraryName(future.GetCallback());
+  EXPECT_EQ(future.Get(), kFakeTouchpadLibraryName);
+}
+
+TEST_F(DataCollectorTest, GetTouchpadLibraryNameDuringBestEffortFence) {
+  // Simulate BrowserMainLoop's startup BEST_EFFORT execution fence, which
+  // remains active for 3 minutes when Chrome starts without a visible window
+  // (e.g. Guest mode with --no-startup-window).
+  base::ScopedBestEffortExecutionFence best_effort_fence;
+
   base::test::TestFuture<const std::string&> future;
   remote_->GetTouchpadLibraryName(future.GetCallback());
   EXPECT_EQ(future.Get(), kFakeTouchpadLibraryName);

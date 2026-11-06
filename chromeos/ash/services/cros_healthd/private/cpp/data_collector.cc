@@ -172,8 +172,13 @@ void DataCollector::GetTouchscreenDevices(
 
 void DataCollector::GetTouchpadLibraryName(
     GetTouchpadLibraryNameCallback callback) {
+  // Use USER_VISIBLE rather than BEST_EFFORT because cros_healthd's
+  // FetchInputInfo blocks on this on-demand Mojo IPC reply, while BEST_EFFORT
+  // tasks are held for up to 3 minutes by ScopedBestEffortExecutionFence when
+  // Chrome starts without a visible window (e.g. Guest mode with
+  // --no-startup-window). Keep MayBlock() on ThreadPool for /dev/input/ I/O.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&Delegate::GetTouchpadLibraryName,
                      base::Unretained(delegate_)),
       std::move(callback));
