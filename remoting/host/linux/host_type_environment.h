@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 
@@ -24,9 +25,17 @@ class HostTypeEnvironment {
 
   virtual ~HostTypeEnvironment();
 
-  // Returns whether the systemd unit `unit` (e.g. `foo@user.service`) is
-  // active.
-  virtual bool IsUnitActive(const std::string& unit) const = 0;
+  // Returns the active state of the systemd unit `unit` (e.g.
+  // `foo@user.service`) as printed by `systemctl is-active`, e.g. "active",
+  // "activating", "reloading", "deactivating", "inactive" or "failed". Returns
+  // an empty string if the state can't be determined.
+  virtual std::string GetUnitActiveState(const std::string& unit) const = 0;
+
+  // Returns whether `unit` is running or about to run, i.e. its active state
+  // (see GetUnitActiveState()) is "active", "activating", "reloading" or
+  // "refreshing". Unlike the exit status of `systemctl is-active`, this
+  // includes "activating", e.g. for a host that is starting up.
+  bool IsUnitActive(const std::string& unit) const;
 
   // Returns whether `systemctl is-enabled` succeeds for `unit`. Note that this
   // is also true for states other than `enabled`, e.g. `static`, `alias` and
@@ -38,6 +47,12 @@ class HostTypeEnvironment {
 
   // Disables and stops `unit`. Returns false on failure.
   virtual bool DisableAndStopUnit(const std::string& unit) = 0;
+
+  // Returns whether any unit matching the glob `unit_pattern` (e.g.
+  // `foo@*.service`) is enabled or active. Also returns true if this can't be
+  // determined, so that callers err on the side of assuming that such a unit
+  // exists.
+  virtual bool HasEnabledOrActiveUnits(std::string_view unit_pattern) const = 0;
 
   // Returns the path of the session routing config file.
   virtual base::FilePath GetSessionRoutingConfigPath() const = 0;
