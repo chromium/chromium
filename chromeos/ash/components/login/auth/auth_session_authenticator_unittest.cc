@@ -9,12 +9,15 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -216,6 +219,43 @@ PrepareEphemeralVaultReply BuildPrepareEphemeralVaultReply() {
   return reply;
 }
 
+// Reply for an attempt on an already locked out PinWeaver-backed factor (the
+// secret is not checked), as observed on devices.
+AuthenticateAuthFactorReply BuildAuthenticateFactorLockedReply() {
+  AuthenticateAuthFactorReply reply;
+  reply.set_error(user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  reply.mutable_error_info()->set_primary_action(
+      user_data_auth::PRIMARY_FACTOR_LOCKED_OUT);
+  return reply;
+}
+
+// Reply for the wrong attempt that triggers the lockout of a PinWeaver-backed
+// factor, as observed on devices.
+AuthenticateAuthFactorReply BuildAuthenticateFactorLockTriggeredReply() {
+  AuthenticateAuthFactorReply reply;
+  reply.set_error(user_data_auth::CRYPTOHOME_ERROR_CREDENTIAL_LOCKED);
+  reply.mutable_error_info()->set_primary_action(
+      user_data_auth::PRIMARY_FACTOR_LOCKED_OUT);
+  return reply;
+}
+
+// Reply for an attempt during a TPM-wide dictionary attack lockout.
+AuthenticateAuthFactorReply BuildAuthenticateFactorTpmLockoutReply() {
+  AuthenticateAuthFactorReply reply;
+  reply.set_error(user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  reply.mutable_error_info()->set_primary_action(
+      user_data_auth::PRIMARY_TPM_LOCKOUT);
+  return reply;
+}
+
+// Reply for an attempt on a locked out factor from a cryptohome that doesn't
+// report the error info.
+AuthenticateAuthFactorReply BuildAuthenticateFactorLockedReplyWithoutInfo() {
+  AuthenticateAuthFactorReply reply;
+  reply.set_error(user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  return reply;
+}
+
 AuthFactor PasswordFactor(const std::string& label) {
   AuthFactor factor;
   factor.set_type(AUTH_FACTOR_TYPE_PASSWORD);
@@ -231,6 +271,15 @@ AuthFactor KioskFactor() {
   factor.set_label(kCryptohomePublicMountLabel);
   factor.mutable_common_metadata();
   factor.mutable_kiosk_metadata();
+  return factor;
+}
+
+AuthFactor RecoveryFactor() {
+  AuthFactor factor;
+  factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
+  factor.set_label(kCryptohomeRecoveryKeyLabel);
+  factor.mutable_common_metadata();
+  factor.mutable_cryptohome_recovery_metadata();
   return factor;
 }
 
@@ -857,6 +906,182 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
 
   // Assert.
   EXPECT_EQ(auth_failure.reason(), AuthFailure::UNLOCK_FAILED);
+}
+
+// Tests for routing a password lockout during online re-authentication to
+// cryptohome recovery for users who have a recovery factor
+// (PasswordLockoutRecoveryRouting feature).
+class AuthSessionAuthenticatorRecoveryRoutingTest
+    : public AuthSessionAuthenticatorTest {
+ protected:
+  AuthSessionAuthenticatorRecoveryRoutingTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPasswordLockoutRecoveryRouting);
+  }
+
+  std::unique_ptr<UserContext> CreatePasswordUserContext() {
+    auto user_context = std::make_unique<UserContext>(
+        user_manager::UserType::kRegular, kAccountId);
+    user_context->SetKey(Key(kPassword));
+    return user_context;
+  }
+
+  // Sets up an auth session for a user with a GAIA password factor (and a
+  // recovery factor if `with_recovery`), where authenticating with the
+  // password replies with `reply`. The factor status is never checked.
+  void ExpectPasswordAuthentication(bool with_recovery,
+                                    const AuthenticateAuthFactorReply& reply) {
+    std::vector<AuthFactor> factors = {PasswordFactor(kCryptohomeGaiaKeyLabel)};
+    if (with_recovery) {
+      factors.push_back(RecoveryFactor());
+    }
+    EXPECT_CALL(
+        userdataauth(),
+        StartAuthSession(WithPersistentAccountId(AUTH_INTENT_DECRYPT), _))
+        .WillOnce(ReplyWith(BuildStartReply(kFirstAuthSessionId,
+                                            /*user_exists=*/true, factors)));
+    EXPECT_CALL(userdataauth(),
+                AuthenticateAuthFactor(
+                    AllOf(WithFirstAuthSessionId(),
+                          WithPasswordFactorAuth(kCryptohomeGaiaKeyLabel)),
+                    _))
+        .WillOnce(ReplyWith(reply));
+    EXPECT_CALL(userdataauth(), ListAuthFactors(_, _)).Times(0);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// The online re-authentication attempt that triggers the lockout: a user with
+// a recovery factor is sent to recovery.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockTriggeredWithRecovery) {
+  CreateAuthenticator();
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorLockTriggeredReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_password_change_detected_future().Get().GetAccountId(),
+            kAccountId);
+  EXPECT_FALSE(on_auth_failure_future().IsReady());
+}
+
+// Online re-authentication of a user with a recovery factor whose password is
+// already locked out: sent to recovery as well.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockedWithRecovery) {
+  CreateAuthenticator();
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorLockedReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_password_change_detected_future().Get().GetAccountId(),
+            kAccountId);
+  EXPECT_FALSE(on_auth_failure_future().IsReady());
+}
+
+// A TPM-wide dictionary attack lockout isn't a password lockout: today's
+// behavior.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginTpmLockoutWithRecoveryUnchanged) {
+  CreateAuthenticator();
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorTpmLockoutReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_auth_failure_future().Get().reason(),
+            AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+}
+
+// Without the error info (e.g. older cryptohome), nothing changes.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockedWithoutInfoUnchanged) {
+  CreateAuthenticator();
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorLockedReplyWithoutInfo());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_auth_failure_future().Get().reason(),
+            AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+}
+
+// Without a recovery factor, nothing changes.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockTriggeredWithoutRecovery) {
+  CreateAuthenticator();
+  ExpectPasswordAuthentication(/*with_recovery=*/false,
+                               BuildAuthenticateFactorLockTriggeredReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_auth_failure_future().Get().reason(),
+            AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+}
+
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       CompleteLoginLockedWithoutRecovery) {
+  CreateAuthenticator();
+  ExpectPasswordAuthentication(/*with_recovery=*/false,
+                               BuildAuthenticateFactorLockedReply());
+
+  authenticator().CompleteLogin(/*ephemeral=*/false,
+                                CreatePasswordUserContext());
+
+  EXPECT_EQ(on_auth_failure_future().Get().reason(),
+            AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+}
+
+// The login pod is not affected.
+TEST_F(AuthSessionAuthenticatorRecoveryRoutingTest,
+       AuthenticateToLoginLockedWithRecoveryUnchanged) {
+  CreateAuthenticator();
+  ExpectPasswordAuthentication(/*with_recovery=*/true,
+                               BuildAuthenticateFactorLockedReply());
+
+  authenticator().AuthenticateToLogin(/*ephemeral=*/false,
+                                      CreatePasswordUserContext());
+
+  EXPECT_EQ(on_auth_failure_future().Get().reason(),
+            AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+}
+
+// With the feature disabled, a locked out password keeps today's behavior even
+// with a recovery factor.
+TEST_F(AuthSessionAuthenticatorTest, RecoveryRoutingIgnoredWhenFeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPasswordLockoutRecoveryRouting);
+  CreateAuthenticator();
+  auto user_context = std::make_unique<UserContext>(
+      user_manager::UserType::kRegular, kAccountId);
+  user_context->SetKey(Key(kPassword));
+  EXPECT_CALL(userdataauth(),
+              StartAuthSession(WithPersistentAccountId(AUTH_INTENT_DECRYPT), _))
+      .WillOnce(ReplyWith(BuildStartReply(
+          kFirstAuthSessionId, /*user_exists=*/true,
+          /*factors=*/
+          {PasswordFactor(kCryptohomeGaiaKeyLabel), RecoveryFactor()})));
+  EXPECT_CALL(userdataauth(),
+              AuthenticateAuthFactor(
+                  AllOf(WithFirstAuthSessionId(),
+                        WithPasswordFactorAuth(kCryptohomeGaiaKeyLabel)),
+                  _))
+      .WillOnce(ReplyWith(BuildAuthenticateFactorLockTriggeredReply()));
+  EXPECT_CALL(userdataauth(), ListAuthFactors(_, _)).Times(0);
+
+  authenticator().CompleteLogin(/*ephemeral=*/false, std::move(user_context));
+
+  EXPECT_EQ(on_auth_failure_future().Get().reason(),
+            AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
 }
 
 }  // namespace ash

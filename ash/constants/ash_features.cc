@@ -1318,6 +1318,13 @@ BASE_FEATURE(kOrcaSupportDemoMode, base::FEATURE_ENABLED_BY_DEFAULT);
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// During online re-authentication, routes users whose PinWeaver-backed
+// password auth factor is locked out (too many wrong attempts) to cryptohome
+// recovery if they have a recovery factor, instead of failing with a generic
+// error until the lockout expires. See b/578979328.
+BASE_FEATURE(kPasswordLockoutRecoveryRouting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Limits the items on the shelf to the ones associated with windows the
 // currently active desk.
 BASE_FEATURE(kPerDeskShelf, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2500,6 +2507,10 @@ bool IsOobeSplitModifierKeyboardInfoEnabled() {
 
 bool IsParentAccessJellyEnabled() {
   return base::FeatureList::IsEnabled(kParentAccessJelly);
+}
+
+bool IsPasswordLockoutRecoveryRoutingEnabled() {
+  return base::FeatureList::IsEnabled(kPasswordLockoutRecoveryRouting);
 }
 
 bool IsPerDeskShelfEnabled() {

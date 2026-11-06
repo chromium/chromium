@@ -197,14 +197,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void NotifyFailure(AuthFailure::FailureReason reason,
                      std::unique_ptr<UserContext> context);
 
-  // Handles errors specific to authenticating existing users with the password:
-  //   if password is known to be correct (e.g. it comes from online auth flow),
-  //   special error code would be raised in case of "incorrect password" to
-  //   indicate a need to replace password.
+  // Handles errors specific to authenticating existing users with the online
+  // password, which is known to be correct (it comes from the online auth
+  // flow): an "incorrect password" error, or a lockout of the password factor
+  // of a user who can use recovery (see the PasswordLockoutRecoveryRouting
+  // feature), indicates a need to replace the password and is reported as an
+  // online password mismatch.
   // Other errors are handled by `fallback`.
-  void HandlePasswordChangeDetected(AuthErrorCallback fallback,
-                                    std::unique_ptr<UserContext> context,
-                                    AuthenticationError error);
+  void HandleOnlinePasswordAuthFailure(AuthErrorCallback fallback,
+                                       std::unique_ptr<UserContext> context,
+                                       AuthenticationError error);
   // Handles errors specific to the encryption migration:
   //   if the encryption migration is required, triggers OnOldEncryptionDetected
   //   method on the consumer.

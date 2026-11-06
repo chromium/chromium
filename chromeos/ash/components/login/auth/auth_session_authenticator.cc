@@ -47,6 +47,30 @@ std::unique_ptr<UserContext> RecordConfiguredFactors(
   return context;
 }
 
+// Whether `error`, returned for the online password during online
+// re-authentication, means that the (PinWeaver-backed) password factor is
+// locked out after too many wrong attempts, and the user can use cryptohome
+// recovery instead. Recovery doesn't depend on the locked password factor and
+// replaces it with the online password, which also clears the lockout.
+// Cryptohome reports both the attempt that triggers the lockout
+// (CREDENTIAL_LOCKED) and attempts on an already locked out factor
+// (TPM_DEFEND_LOCK) with the PRIMARY_FACTOR_LOCKED_OUT primary action.
+// A TPM-wide dictionary attack lockout (PRIMARY_TPM_LOCKOUT) is deliberately
+// not matched: recovery wouldn't help with it.
+bool ShouldRouteLockoutToRecovery(const UserContext& context,
+                                  const AuthenticationError& error) {
+  if (!features::IsPasswordLockoutRecoveryRoutingEnabled() ||
+      error.get_origin() != AuthenticationError::Origin::kCryptohome) {
+    return false;
+  }
+  const cryptohome::ErrorWrapper cryptohome_error =
+      error.get_cryptohome_error();
+  return cryptohome_error.info().has_value() &&
+         cryptohome_error.info()->primary_action() ==
+             user_data_auth::PRIMARY_FACTOR_LOCKED_OUT &&
+         context.GetAuthFactorsData().FindRecoveryFactor() != nullptr;
+}
+
 }  // namespace
 
 AuthSessionAuthenticator::AuthSessionAuthenticator(
@@ -350,7 +374,7 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       // We are sure that password is correct, so intercept authentication
       // failure events and treat them as password change signals.
       error_callback = base::BindOnce(
-          &AuthSessionAuthenticator::HandlePasswordChangeDetected,
+          &AuthSessionAuthenticator::HandleOnlinePasswordAuthFailure,
           weak_factory_.GetWeakPtr(), std::move(error_callback));
     }
     // Existing users might require encryption migration: intercept related
@@ -1056,10 +1080,19 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
   NotifyFailure(error.get_resolved_failure(), std::move(context));
 }
 
-void AuthSessionAuthenticator::HandlePasswordChangeDetected(
+void AuthSessionAuthenticator::HandleOnlinePasswordAuthFailure(
     AuthErrorCallback fallback,
     std::unique_ptr<UserContext> context,
     AuthenticationError error) {
+  if (ShouldRouteLockoutToRecovery(*context, error)) {
+    // Same as a password change: the alternative authentication flow uses
+    // recovery.
+    LOGIN_LOG(EVENT) << "Password is locked out, using recovery: "
+                     << error.get_cryptohome_error();
+    NotifyOnlinePasswordUnusable(std::move(context),
+                                 /*online_password_mismatch=*/true);
+    return;
+  }
   if (cryptohome::ErrorMatches(
           error.get_cryptohome_error(),
           user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED)) {
