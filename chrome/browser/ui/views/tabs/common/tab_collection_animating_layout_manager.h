@@ -135,9 +135,9 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
       views::View* view_to_reparent,
       std::unique_ptr<SourceLayoutInfo> source_layout_info);
 
-  // Recalculates the target layout, and `views_to_snap` to the new target,
-  // skipping animations.
-  void ResetViewsToTargetLayout(
+  // Recalculates the target layout and updates the starting layout for
+  // `views_to_snap` so they snap to their target bounds without animating.
+  void SnapViewsToTargetLayout(
       const std::vector<const views::View*>& views_to_snap);
 
   // Animates the removal of `child_view` from the `host_view()` associated with

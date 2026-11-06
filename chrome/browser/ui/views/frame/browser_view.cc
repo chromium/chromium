@@ -4910,12 +4910,17 @@ void BrowserView::Layout(PassKey) {
     // However, if the window size changed since the last layout pass, do not
     // defer; child views must be laid out to match the new window size.
     //
-    // Also, if the active contents container has not yet received its
-    // initial non-empty bounds (e.g. during tab restore or when the first tab
-    // is added to the window), allow this layout pass so that the web contents
-    // gets properly sized before it starts loading.
+    // Also, if the active contents container or visible tab strip has not yet
+    // received initial non-empty bounds (e.g. during tab restore or when the
+    // first tab is added or attached to the window), allow this layout pass so
+    // views get properly sized before loading or computing drag offsets.
+    const bool needs_initial_tab_strip_layout =
+        GetTabStripVisible() && !browser_->GetTabStripModel()->empty() &&
+        tab_strip_view() && tab_strip_view()->GetTabStripView() &&
+        tab_strip_view()->GetTabStripView()->size().IsEmpty();
     const bool size_changed = size() != last_laid_out_size_;
-    if (!size_changed && (size().IsEmpty() || !GetContentsSize().IsEmpty())) {
+    if (!size_changed && !needs_initial_tab_strip_layout &&
+        (size().IsEmpty() || !GetContentsSize().IsEmpty())) {
       layout_deferred_while_invisible_ = true;
       return;
     }

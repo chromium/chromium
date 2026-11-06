@@ -1903,8 +1903,13 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       can_release_capture_ ? ReleaseCapture::kReleaseCapture
                            : ReleaseCapture::kDontReleaseCapture;
 #endif
+  // Lay out the new browser window before detaching so
+  // `GetTabStripDraggableBounds()` is valid.
+  dragged_widget->LayoutRootViewIfNecessary();
+
   TabDragContext* new_context =
       attached_context_->GetContextForNewBrowser(dragged_browser_view);
+  new_context->PrepareForDetachedWindowDrag(attached_context_, point_in_screen);
   DetachAndAttachToNewContext(release_capture, new_context);
 
   if (ShouldDragWindowUsingSystemDnD()) {
@@ -1920,9 +1925,9 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
                            drag_bounds);
   }
 
-  const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
-
 #if (!BUILDFLAG(IS_MAC))
+  dragged_widget->LayoutRootViewIfNecessary();
+  const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
   // Set the window origin before making it visible, to avoid flicker on
   // Windows. See https://crbug.com/394529650
   dragged_widget->SetBounds(
@@ -1971,6 +1976,8 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 #if BUILDFLAG(IS_MAC)
   // Set the window origin after making it visible, to avoid child windows (such
   // as the find bar) being misplaced on Mac. See https://crbug.com/403129048
+  dragged_widget->LayoutRootViewIfNecessary();
+  const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
   dragged_widget->SetBounds(
       gfx::Rect(point_in_screen - drag_offset, widget_size));
   last_sized_display_id_ =
@@ -3052,20 +3059,15 @@ gfx::Point TabDragController::GetCursorScreenPoint() {
 gfx::Vector2d TabDragController::CalculateWindowDragOffset() {
   const views::View* source_view =
       drag_data_.attached_views()[drag_data_.source_view_index_];
-  const gfx::Rect source_tab_bounds = source_view->bounds();
   const int cursor_x_offset_within_tab = base::ClampRound(
-      source_tab_bounds.width() * drag_data_.mouse_offset_to_size_ratios.x());
+      source_view->width() * drag_data_.mouse_offset_to_size_ratios.x());
   const int cursor_y_offset_within_tab = base::ClampRound(
-      source_tab_bounds.height() * drag_data_.mouse_offset_to_size_ratios.y());
-  gfx::Point desired_cursor_pos_in_widget(
-      attached_context_->GetMirroredXInView(source_tab_bounds.x() +
-                                            cursor_x_offset_within_tab),
-      source_tab_bounds.y() + cursor_y_offset_within_tab);
-  desired_cursor_pos_in_widget = views::View::ConvertPointToTarget(
-      source_view->parent(), attached_context_, desired_cursor_pos_in_widget);
-  views::View::ConvertPointToWidget(attached_context_,
-                                    &desired_cursor_pos_in_widget);
-  return desired_cursor_pos_in_widget.OffsetFromOrigin();
+      source_view->height() * drag_data_.mouse_offset_to_size_ratios.y());
+  gfx::Point desired_cursor_pos(
+      source_view->GetMirroredXInView(cursor_x_offset_within_tab),
+      cursor_y_offset_within_tab);
+  views::View::ConvertPointToWidget(source_view, &desired_cursor_pos);
+  return desired_cursor_pos.OffsetFromOrigin();
 }
 
 TabDragController::Liveness TabDragController::GetLocalProcessWindow(

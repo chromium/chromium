@@ -164,6 +164,12 @@ class TabDragContext : public views::View {
   // Used by TabDragController when the user starts or stops dragging.
   virtual void StartedDragging(const std::vector<views::View*>& views) = 0;
 
+  // Called when tabs are detached into a new browser window before the move
+  // loop starts, allowing the context to preserve initial tab bounds/offsets.
+  virtual void PrepareForDetachedWindowDrag(TabDragContext* source_context,
+                                            const gfx::Point& point_in_screen) {
+  }
+
   // Invoked when TabDragController detaches a set of tabs.
   virtual void DraggedTabsDetached() = 0;
 

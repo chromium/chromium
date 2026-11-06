@@ -334,9 +334,9 @@ views::ScrollView* UnpinnedTabContainerView::GetScrollViewForContainer() const {
       const_cast<UnpinnedTabContainerView*>(this));
 }
 
-void UnpinnedTabContainerView::UpdateTargetLayoutForDrag(
+void UnpinnedTabContainerView::SnapViewsToTargetLayout(
     const std::vector<const views::View*>& views_to_snap) {
-  layout_manager_->ResetViewsToTargetLayout(views_to_snap);
+  layout_manager_->SnapViewsToTargetLayout(views_to_snap);
 }
 const views::ProposedLayout& UnpinnedTabContainerView::GetLayoutForDrag()
     const {

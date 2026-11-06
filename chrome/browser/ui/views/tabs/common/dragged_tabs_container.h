@@ -135,9 +135,8 @@ class DraggedTabsContainer : public TabDragTarget,
   // Returns the scroll view for the container.
   virtual views::ScrollView* GetScrollViewForContainer() const = 0;
 
-  // Updates the target layout of the host view, and snaps `views_to_snap` to
-  // their target layout, skipping animations.
-  virtual void UpdateTargetLayoutForDrag(
+  // Snaps `views_to_snap` to their target layout without animating.
+  virtual void SnapViewsToTargetLayout(
       const std::vector<const views::View*>& views_to_snap) = 0;
 
   // Get the layout of the host view, skipping animations.

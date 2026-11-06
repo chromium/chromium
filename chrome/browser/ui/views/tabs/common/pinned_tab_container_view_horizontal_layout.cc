@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -59,7 +61,12 @@ PinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
           : TabCollectionNode::ChildViews();
 
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
-  int x = 0;
+  const gfx::Range detached_range = GetDetachedDragRange();
+  int x = detached_range.start();
+  if (size_bounds.width().is_bounded() && !detached_range.is_empty()) {
+    x = std::min(x, std::max(0, size_bounds.width().value() -
+                                    static_cast<int>(detached_range.length())));
+  }
   const int container_height = TabStyle::Get()->GetStandardHeight();
   size_t visible_count = 0;
 
@@ -93,4 +100,12 @@ PinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
   const int host_width = visible_count > 0 ? (x + tab_overlap) : 0;
   layouts.host_size = gfx::Size(host_width, container_height);
   return layouts;
+}
+
+gfx::Range PinnedTabContainerViewHorizontalLayout::GetDetachedDragRange()
+    const {
+  if (!PinnedTabContainerView().collection_node_) {
+    return gfx::Range();
+  }
+  return PinnedTabContainerView().GetDragHandler().detached_drag_range();
 }

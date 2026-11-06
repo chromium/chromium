@@ -1047,5 +1047,8 @@ bool TabStripCollectionController::ShouldAnimateLayout() const {
   if (SessionRestore::IsRestoring(profile)) {
     return false;
   }
+  if (!drag_handler_->detached_drag_range().is_empty()) {
+    return false;
+  }
   return is_animating_layout_change_ || drag_handler_->IsDragging();
 }

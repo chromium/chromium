@@ -62,7 +62,7 @@ class PinnedTabContainerView
 
   // DraggedTabsContainer:
   views::ScrollView* GetScrollViewForContainer() const override;
-  void UpdateTargetLayoutForDrag(
+  void SnapViewsToTargetLayout(
       const std::vector<const views::View*>& views_to_snap) override;
   const views::ProposedLayout& GetLayoutForDrag() const override;
   const TabCollectionNode* GetCollectionNodeFromView(

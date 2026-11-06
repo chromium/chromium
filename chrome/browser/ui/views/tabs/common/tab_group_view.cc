@@ -424,9 +424,9 @@ views::ScrollView* TabGroupView::GetScrollViewForContainer() const {
       const_cast<views::View*>(parent()));
 }
 
-void TabGroupView::UpdateTargetLayoutForDrag(
+void TabGroupView::SnapViewsToTargetLayout(
     const std::vector<const views::View*>& views_to_snap) {
-  layout_manager_->ResetViewsToTargetLayout(views_to_snap);
+  layout_manager_->SnapViewsToTargetLayout(views_to_snap);
 }
 
 const views::ProposedLayout& TabGroupView::GetLayoutForDrag() const {

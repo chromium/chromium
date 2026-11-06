@@ -29,6 +29,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -182,9 +183,9 @@ void DraggedTabsContainer::HandleTabDragEnteredContainer() {
 
   // We don't need to snap any views here, since the layout manager already
   // skips animating dragged views.
-  // The target layout just needs to be recalculated so that nodes added to this
-  // container will haver their views tracked in the layout manager.
-  UpdateTargetLayoutForDrag({});
+  // Invalidate layout so that nodes added to this container will have their
+  // views tracked in the layout manager's target layout.
+  host_view_->InvalidateLayout();
 }
 
 base::CallbackListSubscription
@@ -252,8 +253,9 @@ void DraggedTabsContainer::InitializeDragState(
   BuildDragLayout(session_data);
 
   InitializeDragStartAnimation(controller);
-  // Recalculate the target layout now that `dragging_views_` is populated.
-  UpdateTargetLayoutForDrag({});
+  // Invalidate layout so the target layout recalculates now that
+  // `dragging_views_` is populated.
+  host_view_->InvalidateLayout();
 }
 
 void DraggedTabsContainer::InitializeDragStartAnimation(
@@ -492,10 +494,15 @@ void DraggedTabsContainer::ResetDragState() {
     // The next layout update should allow the view to be shown by the host.
     visual_data.should_hide = false;
   }
-  // The dragged view's bounds need to be snapped. While dragging, the bounds
-  // are set to (0,0), but afterward the drag, the bounds must be updated to
-  // the actual position, without animating.
-  UpdateTargetLayoutForDrag(GetDraggingViews());
+  if (!dragging_views_.empty()) {
+    // The dragged view's bounds need to be snapped. While dragging, the bounds
+    // are set to (0,0), but afterward the drag, the bounds must be updated to
+    // the actual position, without animating.
+    SnapViewsToTargetLayout(GetDraggingViews());
+    if (views::Widget* widget = host_view_->GetWidget()) {
+      widget->LayoutRootViewIfNecessary();
+    }
+  }
   dragging_views_.clear();
   dragged_view_observations_.RemoveAllObservations();
   animating_views_start_offsets_.clear();

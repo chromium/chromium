@@ -131,12 +131,28 @@ UnpinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
     return layouts;
   }
 
+  const gfx::Range detached_range = GetDetachedDragRange();
+  if (!detached_range.is_empty()) {
+    collection.leading_padding = detached_range.start();
+    if (size_bounds.width().is_bounded()) {
+      collection.leading_padding =
+          std::min(collection.leading_padding,
+                   std::max(0, size_bounds.width().value() -
+                                   static_cast<int>(detached_range.length())));
+    }
+  }
+
   const int horizontal_padding =
       collection.leading_padding + collection.trailing_padding;
   const int net_preferred_width = horizontal_padding +
                                   collection.total_preferred_width -
                                   collection.overlap_total;
-  int available_width = net_preferred_width;
+  int available_width =
+      detached_range.is_empty()
+          ? net_preferred_width
+          : std::min(
+                net_preferred_width,
+                horizontal_padding + static_cast<int>(detached_range.length()));
   // If in tab closing mode, constrain the available width to the locked
   // override so remaining tabs do not expand under the cursor.
   if (std::optional<int> override_width = GetClosingModeOverrideWidth()) {
@@ -226,4 +242,12 @@ UnpinnedTabContainerViewHorizontalLayout::GetClosingModeOverrideWidth() const {
         ->override_available_width_for_tabs();
   }
   return std::nullopt;
+}
+
+gfx::Range UnpinnedTabContainerViewHorizontalLayout::GetDetachedDragRange()
+    const {
+  if (!UnpinnedTabContainerView().collection_node_) {
+    return gfx::Range();
+  }
+  return UnpinnedTabContainerView().GetDragHandler().detached_drag_range();
 }

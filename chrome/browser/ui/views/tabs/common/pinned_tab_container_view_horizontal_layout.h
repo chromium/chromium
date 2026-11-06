@@ -29,6 +29,9 @@ class PinnedTabContainerViewHorizontalLayout
   // views::LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+
+ private:
+  gfx::Range GetDetachedDragRange() const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_PINNED_TAB_CONTAINER_VIEW_HORIZONTAL_LAYOUT_H_

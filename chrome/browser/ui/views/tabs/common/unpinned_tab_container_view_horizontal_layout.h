@@ -36,6 +36,7 @@ class UnpinnedTabContainerViewHorizontalLayout
       const views::SizeBounds& size_bounds) const override;
 
  private:
+  gfx::Range GetDetachedDragRange() const;
   std::optional<int> GetClosingModeOverrideWidth() const;
 };
 

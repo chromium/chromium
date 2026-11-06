@@ -644,7 +644,7 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   return true;
 }
 
-void TabCollectionAnimatingLayoutManager::ResetViewsToTargetLayout(
+void TabCollectionAnimatingLayoutManager::SnapViewsToTargetLayout(
     const std::vector<const views::View*>& views_to_snap) {
   InvalidateHost(/*mark_layouts_changed=*/true);
   for (const auto* view : views_to_snap) {
@@ -655,6 +655,8 @@ void TabCollectionAnimatingLayoutManager::ResetViewsToTargetLayout(
     auto* starting_child_layout = starting_layout_.GetLayoutFor(view);
     if (starting_child_layout) {
       starting_child_layout->bounds = target_child_layout->bounds;
+    } else {
+      starting_layout_.child_layouts.push_back(*target_child_layout);
     }
   }
   SetStartingLayout(starting_layout_);
