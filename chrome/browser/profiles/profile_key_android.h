@@ -9,8 +9,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-
-class ProfileKey;
+#include "chrome/browser/profiles/profile_key.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Android wrapper around ProfileKey that provides safe passage from java and
 // native.
@@ -35,5 +35,24 @@ class ProfileKeyAndroid {
   raw_ptr<ProfileKey> key_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 };
+
+namespace jni_zero {
+template <>
+inline ProfileKey* FromJniType<ProfileKey*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_profile_key) {
+  return ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<ProfileKey>(
+    JNIEnv* env,
+    ProfileKey* profile_key) {
+  if (!profile_key) {
+    return nullptr;
+  }
+  return profile_key->GetProfileKeyAndroid()->GetJavaObject();
+}
+}  // namespace jni_zero
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_KEY_ANDROID_H_
