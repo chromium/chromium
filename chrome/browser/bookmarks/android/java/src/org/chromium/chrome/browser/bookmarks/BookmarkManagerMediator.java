@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -363,6 +364,19 @@ class BookmarkManagerMediator
                 }
             };
 
+    private final ProfileManager.Observer mProfileManagerObserver =
+            new ProfileManager.Observer() {
+                @Override
+                public void onProfileAdded(Profile profile) {}
+
+                @Override
+                public void onProfileDestroyed(Profile destroyedProfile) {
+                    if (Objects.equals(mProfile, destroyedProfile)) {
+                        mProfile = mOriginalProfile;
+                    }
+                }
+            };
+
     private final ObserverList<BookmarkUiObserver> mUiObservers = new ObserverList<>();
     private final BookmarkDragStateDelegate mDragStateDelegate = new BookmarkDragStateDelegate();
     private final Context mContext;
@@ -380,7 +394,7 @@ class BookmarkManagerMediator
     // Whether we're showing in a dialog UI which is only true for phones.
     private final boolean mIsDialogUi;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier;
-    private final Profile mProfile;
+    private Profile mProfile;
     private final Profile mOriginalProfile;
     private final BookmarkUndoController mBookmarkUndoController;
     private final BookmarkQueryHandler mBookmarkQueryHandler;
@@ -463,9 +477,10 @@ class BookmarkManagerMediator
         mDragTouchHandler.setLongPressDragDelegate(() -> mDragStateDelegate.getDragActive());
         mIsDialogUi = isDialogUi;
         mBackPressStateSupplier = backPressStateSupplier;
-        mProfile = profile;
         // Expected to already be the original profile, but calling this getter to be safe.
         mOriginalProfile = profile.getOriginalProfile();
+        mProfile = profile.shutdownStarted() ? mOriginalProfile : profile;
+        ProfileManager.addObserver(mProfileManagerObserver);
         mModelList = modelList;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
@@ -552,6 +567,7 @@ class BookmarkManagerMediator
 
     void onDestroy() {
         mIsDestroyed = true;
+        ProfileManager.removeObserver(mProfileManagerObserver);
         mBookmarkModel.removeObserver(mBookmarkModelObserver);
 
         mBookmarkImageFetcher.destroy();

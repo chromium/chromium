@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -761,9 +762,13 @@ public class BookmarkManagerCoordinatorTest {
         verify(mImageServiceBridgeJni).init(mProfile);
         verify(mImageServiceBridgeJni, never()).init(mOtrProfile);
 
+        BookmarkId bookmarkId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
+        otrCoordinator.openBookmark(bookmarkId);
+        verify(mBookmarkOpener).openBookmarkInCurrentTab(bookmarkId, /* incognito= */ true);
+
         // Simulate OTR profile native destruction while the coordinator remains open.
         doReturn(null).when(mOtrProfile).getOriginalProfile();
-        BookmarkId bookmarkId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
+        ProfileManager.onProfileDestroyed(mOtrProfile);
         otrCoordinator
                 .getBookmarkDelegateForTesting()
                 .getSelectionDelegate()
@@ -772,7 +777,7 @@ public class BookmarkManagerCoordinatorTest {
         verify(mIncognitoUtilsJni, never()).getIncognitoModeEnabled(mOtrProfile);
 
         otrCoordinator.openBookmark(bookmarkId);
-        verify(mBookmarkOpener).openBookmarkInCurrentTab(bookmarkId, /* incognito= */ true);
+        verify(mBookmarkOpener).openBookmarkInCurrentTab(bookmarkId, /* incognito= */ false);
 
         otrCoordinator.onDestroyed();
     }

@@ -97,6 +97,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -232,6 +233,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private SelectionDelegate<BookmarkId> mSelectionDelegate;
     @Mock private BookmarkUiObserver mBookmarkUiObserver;
     @Mock private Profile mProfile;
+    @Mock private Profile mOriginalProfile;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -486,7 +488,7 @@ public class BookmarkManagerMediatorTest {
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
 
         // Setup Profile
-        doReturn(mProfile).when(mProfile).getOriginalProfile();
+        doReturn(mOriginalProfile).when(mProfile).getOriginalProfile();
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
 
         // Setup ShoppingServiceFactory
@@ -1709,6 +1711,58 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkOpener)
                 .openBookmarksInNewWindow(
                         eq(Collections.singletonList(mBookmarkId21)), eq(true), any(Bundle.class));
+    }
+
+    @Test
+    public void testCreateListMenuForBookmark_incognitoProfileDestroyed() {
+        doReturn(true).when(mProfile).isOffTheRecord();
+        doReturn(true).when(mIncognitoUtilsNatives).getIncognitoModeEnabled(mOriginalProfile);
+        doReturn(true).when(mBookmarkOpener).isOpenInNewWindowSupported();
+        finishLoading();
+        mMediator.openFolder(mFolderId2);
+
+        ProfileManager.onProfileDestroyed(mProfile);
+
+        PropertyModel model = mModelList.get(1).model;
+        ModelList menuModelList =
+                mMediator.createListMenuModelList(
+                        model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY),
+                        model.get(BookmarkManagerProperties.REORDER_LOCATION));
+        // After the OTR profile is destroyed, the mediator falls back to the original regular
+        // profile, so "Open in Incognito tab" is shown again.
+        verifyMenuListItemTitles(
+                menuModelList,
+                R.string.bookmark_item_select,
+                R.string.bookmark_item_edit,
+                R.string.bookmark_item_copy_link,
+                R.string.bookmark_item_move,
+                R.string.bookmark_item_delete,
+                R.string.contextmenu_open_in_new_tab,
+                R.string.contextmenu_open_in_incognito_tab,
+                R.string.contextmenu_open_in_new_window);
+
+        BasicListMenu menu = (BasicListMenu) mMediator.createListMenuForBookmark(model);
+        assertNotNull(menu);
+
+        // Open in new tab.
+        clickChildAt(menu, /* i= */ 5);
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(
+                        eq(Collections.singletonList(mBookmarkId21)),
+                        /* incognito= */ eq(false),
+                        /* tabLaunchType= */ eq(null),
+                        any(Bundle.class));
+
+        // Open in other window.
+        clickChildAt(menu, /* i= */ 7);
+        verify(mBookmarkOpener)
+                .openBookmarksInNewWindow(
+                        eq(Collections.singletonList(mBookmarkId21)),
+                        /* incognito= */ eq(false),
+                        any(Bundle.class));
+
+        mMediator.openBookmark(mBookmarkId21);
+        verify(mBookmarkOpener).openBookmarkInCurrentTab(mBookmarkId21, /* incognito= */ false);
     }
 
     @Test
