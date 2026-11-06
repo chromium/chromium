@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -222,7 +223,7 @@ void ReadingListPageHandler::UpdateReadStatus(const GURL& url, bool read) {
 
 void ReadingListPageHandler::MarkCurrentTabAsRead() {
   BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+      webui::GetBrowserWindowInterface(web_contents());
   if (!browser) {
     return;
   }
@@ -234,7 +235,7 @@ void ReadingListPageHandler::MarkCurrentTabAsRead() {
 
 void ReadingListPageHandler::AddCurrentTab() {
   BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+      webui::GetBrowserWindowInterface(web_contents());
   if (!browser) {
     return;
   }
@@ -256,7 +257,10 @@ void ReadingListPageHandler::ShowContextMenuForURL(const GURL& url,
                                                    int32_t y) {
   auto embedder = reading_list_ui_->embedder();
   BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+      webui::GetBrowserWindowInterface(web_contents());
+  if (!browser) {
+    return;
+  }
   if (embedder) {
     embedder->ShowContextMenu(
         gfx::Point(x, y),

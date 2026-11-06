@@ -59,8 +59,8 @@ class SidePanelWebUIView : public views::WebView,
  private:
   base::RepeatingClosure on_show_cb_;
   base::RepeatingClosure close_cb_;
-  std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
