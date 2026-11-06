@@ -92,7 +92,7 @@ source_set("history") {
     sources += [ "history_ui_platform_handlers_android.cc" ]
     deps += [
       "//chrome/browser/flags:flags_android",
-      "//chrome/browser/quick_delete:jni_headers",
+      "//chrome/browser/settings:jni_headers",
       "//ui/android",
     ]
   }
@@ -143,12 +143,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (is_android) {
-    deps += [
-      "//chrome/browser/flags:flags_android",
-      "//ui/android",
-    ]
-  } else {
+  if (!is_android) {
     sources += [
       "browsing_history_handler_unittest.cc",
       "foreign_session_handler_unittest.cc",
