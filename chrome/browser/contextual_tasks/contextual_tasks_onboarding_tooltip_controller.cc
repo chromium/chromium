@@ -223,7 +223,8 @@ void ContextualTasksOnboardingTooltipController::OnFaviconsElementBoundsChanged(
 // LINT.IfChange(ContextualTasksTooltipLogic)
 void ContextualTasksOnboardingTooltipController::MaybeShowBubble(
     ui::TrackedElement* anchor_element) {
-  if (IsBubbleShowing() || !anchor_element || !entry_point_.has_value()) {
+  if (IsBubbleShowing() || !anchor_element || !entry_point_.has_value() ||
+      !views::Widget::GetWidgetForNativeView(anchor_element->GetNativeView())) {
     return;
   }
   if (bubble_widget_) {

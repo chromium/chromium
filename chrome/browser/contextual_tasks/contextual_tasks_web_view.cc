@@ -259,7 +259,9 @@ void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
   }
 
   if (wc) {
-    wc->WasShown();
+    if (GetWidget()) {
+      wc->WasShown();
+    }
     wc->SetDelegate(this);
     extensions::SetViewType(wc, extensions::mojom::ViewType::kComponent);
   }
@@ -303,6 +305,12 @@ void ContextualTasksWebView::SetErrorPageVisible(bool visible) {
 bool ContextualTasksWebView::IsErrorPageVisible() const {
   return scrim_view_ && scrim_view_->GetVisible() &&
          scrim_view_->is_showing_error_page();
+}
+
+void ContextualTasksWebView::AddedToWidget() {
+  if (content_web_view_ && content_web_view_->web_contents()) {
+    content_web_view_->web_contents()->WasShown();
+  }
 }
 
 void ContextualTasksWebView::OnThemeChanged() {

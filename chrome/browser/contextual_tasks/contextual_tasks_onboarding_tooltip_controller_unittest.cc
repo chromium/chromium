@@ -132,6 +132,33 @@ TEST_F(ContextualTasksOnboardingTooltipControllerTest,
 }
 
 TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       ElementWithoutWidgetDoesNotCrashOrShowBubbleUntilWidgetAttached) {
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  test_element_ = std::make_unique<ui::test::TestElement>(
+      kContextualTasksFaviconsElementId, kTestContext);
+  test_element_->SetScreenBounds(gfx::Rect(100, 100, 50, 50));
+  test_element_->Show();
+
+  // When the anchor element is shown before its WebContents native view is
+  // attached to a Widget, MaybeShowBubble must not crash or create the bubble.
+  EXPECT_FALSE(controller()->IsBubbleShowing());
+
+  // Re-triggering via SetEntryPoint while still unattached also does not crash.
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+  EXPECT_FALSE(controller()->IsBubbleShowing());
+
+  // Once the element is backed by a Widget and shown, the bubble appears.
+  test_element_->Hide();
+  test_element_->SetNativeView(anchor_widget_->GetNativeView());
+  test_element_->Show();
+  EXPECT_TRUE(controller()->IsBubbleShowing());
+  EXPECT_EQ(controller()->active_variant_for_testing(),
+            ContextualTasksOnboardingBubbleView::Variant::kAskGoogle);
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
        ElementBoundsChangedRepositionsBubble) {
   controller()->SetEntryPoint(
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
