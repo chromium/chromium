@@ -12,12 +12,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,6 +62,7 @@ TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_EmptyCache) {
 }
 
 TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_NoMatch) {
+  base::HistogramTester histogram_tester;
   backend_.ProcessCallbacks(base::ok(
       OneTimeToken(OneTimeTokenType::kGmail, "123456", base::TimeTicks::Now(),
                    "noreply@other.com", base::Time::Now())));
@@ -69,9 +72,16 @@ TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_NoMatch) {
       url::Origin::Create(GURL("https://example.com")),
       /*allow_psl_matching=*/false, future.GetCallback());
   EXPECT_FALSE(future.Get().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailNonAgentic.SenderDomainMatchRejectionReason.Cached",
+      GmailOtpSenderDomainMatchType::kNoMatch, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailNonAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      0);
 }
 
 TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_FreshestMatchingReturned) {
+  base::HistogramTester histogram_tester;
   base::Time older_time = base::Time::Now() - base::Seconds(30);
   base::Time newer_time = base::Time::Now() - base::Seconds(10);
 
@@ -93,6 +103,12 @@ TEST_F(GmailOtpServiceImplTest, GetFreshestCachedOtp_FreshestMatchingReturned) {
   std::optional<OneTimeToken> result = future.Take();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), "222222");
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailNonAgentic.SenderDomainMatchRejectionReason.Cached",
+      GmailOtpSenderDomainMatchType::kNoMatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailNonAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      GmailOtpSenderDomainMatchType::kExact, 1);
 }
 
 TEST_F(GmailOtpServiceImplTest,
@@ -191,6 +207,7 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_OpaqueOrigin) {
 }
 
 TEST_F(GmailOtpServiceImplTest, Subscribe_ReceivesMatchingToken) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
@@ -208,9 +225,18 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_ReceivesMatchingToken) {
       future.Take();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), "654321");
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailNonAgentic."
+      "SenderDomainMatchAcceptedMatchType.Received",
+      GmailOtpSenderDomainMatchType::kExact, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailNonAgentic."
+      "SenderDomainMatchRejectionReason.Received",
+      0);
 }
 
 TEST_F(GmailOtpServiceImplTest, Subscribe_IgnoresNonMatchingToken) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
@@ -229,6 +255,14 @@ TEST_F(GmailOtpServiceImplTest, Subscribe_IgnoresNonMatchingToken) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch);
+  histogram_tester.ExpectUniqueSample(
+      "OneTimeTokens.GmailNonAgentic."
+      "SenderDomainMatchRejectionReason.Received",
+      GmailOtpSenderDomainMatchType::kNoMatch, 1);
+  histogram_tester.ExpectTotalCount(
+      "OneTimeTokens.GmailNonAgentic."
+      "SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(GmailOtpServiceImplTest, Subscribe_DispatchesErrorToSubscribers) {

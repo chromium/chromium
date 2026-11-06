@@ -65,6 +65,12 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.cc:AttemptOtpFillingStepSuffix) -->
 
+<variants name="GmailOtpFlowType">
+  <variant name="GmailAgentic" summary="the agentic flow (GmailOtpRetriever)"/>
+  <variant name="GmailNonAgentic"
+      summary="the non-agentic flow (GmailOtpService)"/>
+</variants>
+
 <variants name="GmailOtpTokenSource">
   <variant name="Cached" summary="a cached"/>
   <variant name="Received" summary="a received (fresh)"/>
@@ -334,25 +340,28 @@ found in the LICENSE file.
 </histogram>
 
 <histogram
-    name="OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.{Source}"
+    name="OneTimeTokens.{Type}.SenderDomainMatchAcceptedMatchType.{Source}"
     enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
     Records the match type for an accepted sender domain match for {Source} OTP
-    in GmailOtpRetriever. Recorded only when a token is accepted.
+    in {Type}. Recorded only when a token is accepted.
   </summary>
+  <token key="Type" variants="GmailOtpFlowType"/>
   <token key="Source" variants="GmailOtpTokenSource"/>
 </histogram>
 
-<histogram name="OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.{Source}"
+<histogram
+    name="OneTimeTokens.{Type}.SenderDomainMatchRejectionReason.{Source}"
     enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
     Records the reason why a sender domain match was rejected for {Source} OTP
-    in GmailOtpRetriever. Recorded only when a token is rejected.
+    in {Type}. Recorded only when a token is rejected.
   </summary>
+  <token key="Type" variants="GmailOtpFlowType"/>
   <token key="Source" variants="GmailOtpTokenSource"/>
 </histogram>
 

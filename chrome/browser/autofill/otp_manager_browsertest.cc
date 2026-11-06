@@ -328,12 +328,12 @@ class OtpManagerGmailOtpBrowserTest : public OtpManagerBrowserTest {
     ASSERT_TRUE(base::test::RunUntil([&] {
       return !histogram_tester
                   .GetAllSamples(
-                      "OneTimeTokens.Gmail."
+                      "OneTimeTokens.GmailAgentic."
                       "SenderDomainMatchAcceptedMatchType.Received")
                   .empty() ||
              !histogram_tester
                   .GetAllSamples(
-                      "OneTimeTokens.Gmail."
+                      "OneTimeTokens.GmailAgentic."
                       "SenderDomainMatchRejectionReason.Received")
                   .empty();
     }));
@@ -342,7 +342,7 @@ class OtpManagerGmailOtpBrowserTest : public OtpManagerBrowserTest {
     // `RendererShouldTriggerSuggestions()`. For rejected tokens, simulate a
     // click on the field to request suggestions and verify none are shown.
     if (histogram_tester
-            .GetAllSamples("OneTimeTokens.Gmail."
+            .GetAllSamples("OneTimeTokens.GmailAgentic."
                            "SenderDomainMatchAcceptedMatchType.Received")
             .empty()) {
       content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());

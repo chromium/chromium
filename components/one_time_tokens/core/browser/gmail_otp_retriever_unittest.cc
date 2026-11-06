@@ -77,14 +77,16 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromCache) {
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kCache);
 
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached", 0);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Received",
+      0);
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
       GmailOtpSenderDomainMatchType::kExact, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromSubscription) {
@@ -108,14 +110,16 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromSubscription) {
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached", 0);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Received",
+      0);
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
       GmailOtpSenderDomainMatchType::kExact, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_Superseded) {
@@ -183,10 +187,11 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_WwwExactMatch) {
   EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
       GmailOtpSenderDomainMatchType::kFrameIsWwwPsl, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
@@ -211,10 +216,11 @@ TEST_F(GmailOtpRetrieverTest,
   EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
       GmailOtpSenderDomainMatchType::kPsl, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(
@@ -240,10 +246,11 @@ TEST_F(
   EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
       GmailOtpSenderDomainMatchType::kExact, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(
@@ -269,10 +276,11 @@ TEST_F(
   EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
       GmailOtpSenderDomainMatchType::kFrameIsWwwPsl, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(
@@ -300,10 +308,11 @@ TEST_F(
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
       GmailOtpSenderDomainMatchType::kFrameIsWwwPsl, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_AffiliatedMatch) {
@@ -329,10 +338,11 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_AffiliatedMatch) {
   EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
       GmailOtpSenderDomainMatchType::kAffiliated, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
@@ -355,10 +365,11 @@ TEST_F(GmailOtpRetrieverTest,
   EXPECT_EQ(future.Get()->token.value(), kOtp);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
       GmailOtpSenderDomainMatchType::kPsl, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
@@ -386,10 +397,11 @@ TEST_F(GmailOtpRetrieverTest,
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
       GmailOtpSenderDomainMatchType::kPsl, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
@@ -427,15 +439,17 @@ TEST_F(GmailOtpRetrieverTest,
   EXPECT_EQ(future.Get()->token.value(), "111222");
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached",
       GmailOtpSenderDomainMatchType::kPsl, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Received",
+      0);
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
       GmailOtpSenderDomainMatchType::kExact, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,
@@ -663,14 +677,17 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_NoMatch_LogsRejection) {
             OneTimeTokenRetrievalError::kSubscriptionExpired);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached",
       GmailOtpSenderDomainMatchType::kNoMatch, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Received",
+      0);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      0);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_Grouped_LogsRejection) {
@@ -700,12 +717,14 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_CachedToken_Grouped_LogsRejection) {
   ASSERT_FALSE(future.Get().has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Cached",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached",
       GmailOtpSenderDomainMatchType::kGrouped, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      0);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_ReceivedToken_RejectionsLogged) {
@@ -731,14 +750,16 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_ReceivedToken_RejectionsLogged) {
             OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch);
 
   histogram_tester.ExpectUniqueSample(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Received",
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Received",
       GmailOtpSenderDomainMatchType::kNoMatch, 1);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchRejectionReason.Cached", 0);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Cached",
+      0);
   histogram_tester.ExpectTotalCount(
-      "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received", 0);
+      "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
+      0);
 }
 
 TEST_F(GmailOtpRetrieverTest,

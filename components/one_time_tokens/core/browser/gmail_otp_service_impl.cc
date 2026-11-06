@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
@@ -50,6 +51,28 @@ bool IsMatchTypeAllowed(GmailOtpSenderDomainMatchType match_type,
     case GmailOtpSenderDomainMatchType::kGrouped:
       return false;
   }
+}
+
+void RecordSenderDomainMatchRejectionReason(
+    GmailOtpSenderDomainMatchType reason,
+    bool is_cached) {
+  base::UmaHistogramEnumeration(
+      is_cached ? "OneTimeTokens.GmailNonAgentic."
+                  "SenderDomainMatchRejectionReason.Cached"
+                : "OneTimeTokens.GmailNonAgentic."
+                  "SenderDomainMatchRejectionReason.Received",
+      reason);
+}
+
+void RecordSenderDomainMatchAcceptedMatchType(
+    GmailOtpSenderDomainMatchType match_type,
+    bool is_cached) {
+  base::UmaHistogramEnumeration(
+      is_cached ? "OneTimeTokens.GmailNonAgentic."
+                  "SenderDomainMatchAcceptedMatchType.Cached"
+                : "OneTimeTokens.GmailNonAgentic."
+                  "SenderDomainMatchAcceptedMatchType.Received",
+      match_type);
 }
 
 }  // namespace
@@ -170,6 +193,7 @@ void GmailOtpServiceImpl::OnCachedTokenMatchChecked(
       << ", allow_psl_matching=" << allow_psl_matching;
   if (allowed) {
     domain_matchers_.erase(check_handle);
+    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/true);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -177,6 +201,7 @@ void GmailOtpServiceImpl::OnCachedTokenMatchChecked(
     return;
   }
 
+  RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/true);
   StartCachedOtpCheck(std::move(check_handle), std::move(tokens),
                       current_index + 1, allow_psl_matching,
                       std::move(callback));
@@ -301,8 +326,10 @@ void GmailOtpServiceImpl::OnSubscriberDomainMatchChecked(
       << ", match_type=" << match_type
       << ", allow_psl_matching=" << allow_psl_matching;
   if (allowed) {
+    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false);
     callback.Run(base::ok(std::move(token)));
   } else {
+    RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/false);
     callback.Run(base::unexpected(
         OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch));
   }

@@ -30,28 +30,23 @@ namespace {
 void RecordSenderDomainMatchRejectionReason(
     GmailOtpSenderDomainMatchType reason,
     bool is_cached) {
-  if (is_cached) {
-    base::UmaHistogramEnumeration(
-        "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Cached", reason);
-  } else {
-    base::UmaHistogramEnumeration(
-        "OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.Received",
-        reason);
-  }
+  base::UmaHistogramEnumeration(
+      is_cached ? "OneTimeTokens.GmailAgentic."
+                  "SenderDomainMatchRejectionReason.Cached"
+                : "OneTimeTokens.GmailAgentic."
+                  "SenderDomainMatchRejectionReason.Received",
+      reason);
 }
 
 void RecordSenderDomainMatchAcceptedMatchType(
     GmailOtpSenderDomainMatchType match_type,
     bool is_cached) {
-  if (is_cached) {
-    base::UmaHistogramEnumeration(
-        "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Cached",
-        match_type);
-  } else {
-    base::UmaHistogramEnumeration(
-        "OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.Received",
-        match_type);
-  }
+  base::UmaHistogramEnumeration(
+      is_cached ? "OneTimeTokens.GmailAgentic."
+                  "SenderDomainMatchAcceptedMatchType.Cached"
+                : "OneTimeTokens.GmailAgentic."
+                  "SenderDomainMatchAcceptedMatchType.Received",
+      match_type);
 }
 
 }  // namespace
