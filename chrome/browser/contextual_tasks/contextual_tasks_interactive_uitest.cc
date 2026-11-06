@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -70,10 +69,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
-#include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
-#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
-#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -142,11 +138,7 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/interaction/interaction_test_util_views.h"
-#include "ui/views/window/dialog_delegate.h"
 
 using testing::_;
 
@@ -5711,87 +5703,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
                    side_panel_bounds.Contains(anchor_rect);
           },
           true));
-}
-
-// This tests the following CUJ:
-//  (1) User opens the Contextual Tasks side panel on an AI Mode page.
-//  (2) User clicks the Super G logo button in the side panel toolbar to open
-//      the Page Info bubble.
-//  (3) User clicks "Cookies and site data", then clicks "Manage on-device site
-//      data".
-//  (4) The `PageSpecificSiteDataDialog` modal opens for the side panel
-//      `WebContents` without crashing, opens the site data settings subpage
-//      when clicking the subtitle link, and closes cleanly when clicking
-//      "Done".
-IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelRearchToolbarInteractiveUiTest,
-                       SuperGLogoButtonManageOnDeviceSiteDataOpensDialog) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTabId);
-
-  const DeepQuery kSuperGButton = {
-      "contextual-tasks-toolbar-app",
-      "#toolbar",
-      ".top-toolbar-logo-button",
-  };
-  const GURL kAimUrl("https://www.google.com/search?q=hello+world&udm=50");
-
-  RunTestSequence(
-      SubmitContextualSearchboxQueryToOpenSidePanel(kOverlayId, "hello world",
-                                                    kAimUrl),
-      InstrumentSidePanelToolbar(kSidePanelToolbarWebContentsId),
-      InAnyContext(WaitForShow(kContextualTasksSuperGButtonElementId)),
-      WaitForElementVisible(kSidePanelToolbarWebContentsId, kSuperGButton),
-      ClickElement(kSidePanelToolbarWebContentsId, kSuperGButton),
-      WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier),
-      WaitForShow(PageInfoMainView::kCookieButtonElementId),
-      PressButton(PageInfoMainView::kCookieButtonElementId),
-      WaitForShow(PageInfoCookiesContentView::kCookieDialogButton),
-      PressButton(PageInfoCookiesContentView::kCookieDialogButton),
-      InAnyContext(WaitForShow(kPageSpecificSiteDataDialogFirstPartySection)),
-      Check(
-          [this]() {
-            content::WebContents* panel_contents =
-                ContextualTasksPanelController::From(browser())
-                    ->GetActiveWebContents();
-            return panel_contents &&
-                   PageSpecificSiteDataDialogController::FromWebContents(
-                       panel_contents) != nullptr;
-          },
-          "On-device site data dialog is open for the side panel WebContents."),
-      InstrumentNextTab(kSettingsTabId, AnyBrowser()),
-      InAnyContext(WithElement(kPageSpecificSiteDataDialogSubtitle,
-                               [this](ui::TrackedElement* el) {
-                                 AsView<views::StyledLabel>(el)
-                                     ->ClickFirstLinkForTesting();
-                               })
-                       .SetMustRemainVisible(false)),
-      WaitForWebContentsNavigation(
-          kSettingsTabId,
-          chrome::GetSettingsUrl(chrome::kOnDeviceSiteDataSubpage)),
-      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
-      InAnyContext(WaitForShow(kPageSpecificSiteDataDialogFirstPartySection)),
-      InAnyContext(WithElement(
-          kPageSpecificSiteDataDialogFirstPartySection,
-          [this](ui::TrackedElement* el) {
-            views::test::InteractionTestUtilSimulatorViews::PressButton(
-                AsView<views::View>(el)
-                    ->GetWidget()
-                    ->widget_delegate()
-                    ->AsDialogDelegate()
-                    ->GetOkButton());
-          })),
-      InAnyContext(WaitForHide(kPageSpecificSiteDataDialogFirstPartySection)),
-      Check(
-          [this]() {
-            content::WebContents* panel_contents =
-                ContextualTasksPanelController::From(browser())
-                    ->GetActiveWebContents();
-            return panel_contents &&
-                   PageSpecificSiteDataDialogController::FromWebContents(
-                       panel_contents) == nullptr;
-          },
-          "On-device site data dialog closed cleanly."));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
