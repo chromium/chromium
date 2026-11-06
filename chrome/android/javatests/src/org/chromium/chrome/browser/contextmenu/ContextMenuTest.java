@@ -133,10 +133,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Instrumentation tests for the context menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.GOOGLE_BASE_URL + "=http://example.com/"
-})
+@CommandLineFlags.Add({ChromeSwitches.GOOGLE_BASE_URL + "=http://example.com/"})
 @DisableFeatures({
     ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING,
     // Keep the exhaustive menu-structure assertions deterministic. The "Ask Gemini"

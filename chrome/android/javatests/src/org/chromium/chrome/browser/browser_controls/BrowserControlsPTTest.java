@@ -32,10 +32,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 /** Browser test for {@link TopControlsStacker}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class BrowserControlsPTTest {
 

@@ -33,10 +33,7 @@ import org.chromium.ui.base.DeviceFormFactor;
  * relevant UI.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION)
 @Batch(Batch.PER_CLASS)
 // On tablets, the context is showing using a popup window. This currently doesn't work well with
 // the espresso matching in the public transit framework. See https://crbug.com/363047177.

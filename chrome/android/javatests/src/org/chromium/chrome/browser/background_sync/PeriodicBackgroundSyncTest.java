@@ -21,7 +21,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -47,7 +46,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Instrumentation test for Periodic Background Sync. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "enable-features=PeriodicBackgroundSync<BackgroundSync",
     "force-fieldtrials=BackgroundSync/BackgroundSync",
     "force-fieldtrial-params=BackgroundSync.BackgroundSync:"
