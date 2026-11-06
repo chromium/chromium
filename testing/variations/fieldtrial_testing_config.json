@@ -15243,6 +15243,22 @@
             ]
         }
     ],
+    "PrioritizeResizeTaskRunnerOnStartupStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrioritizeCompositorTaskRunnerOnStartup",
+                        "PrioritizeResizeTaskRunnerOnStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivateInsights": [
         {
             "platforms": [
@@ -20137,6 +20153,7 @@
                         "OmniboxAimPopupDeferCreation",
                         "OmniboxWebUIPopupDeferCreation",
                         "PerDependencyDeadlines",
+                        "PrioritizeCompositorTaskRunnerOnStartup",
                         "PrioritizeResizeTaskRunnerOnStartup",
                         "SendGPUChannelEarly",
                         "SkipIPCChannelPausingForNonGuests",
