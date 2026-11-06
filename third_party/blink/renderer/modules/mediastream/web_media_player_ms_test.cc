@@ -37,13 +37,21 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_renderer_factory.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/web_media_player_ms_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -265,18 +273,28 @@ class MockMediaStreamAudioRenderer : public MediaStreamAudioRenderer {
  public:
   MockMediaStreamAudioRenderer() {}
 
-  void Start() override {}
-  void Stop() override {}
-  void Play() override {}
-  void Pause() override {}
+  void Start() override { started_ = true; }
+  void Stop() override {
+    started_ = false;
+    playing_ = false;
+  }
+  void Play() override { playing_ = true; }
+  void Pause() override { playing_ = false; }
   MOCK_METHOD(void, SetVolume, (float volume));
 
   void SwitchOutputDevice(const std::string& device_id,
                           media::OutputDeviceStatusCB callback) override {}
   base::TimeDelta GetCurrentRenderTime() override { return base::TimeDelta(); }
 
+  bool Started() const { return started_; }
+  bool Playing() const { return playing_; }
+
  protected:
   ~MockMediaStreamAudioRenderer() override {}
+
+ private:
+  bool started_ = false;
+  bool playing_ = false;
 };
 
 void MockMediaStreamVideoRenderer::Start() {
@@ -464,6 +482,11 @@ class MockRenderFactory : public MediaStreamRendererFactory {
       WebLocalFrame* web_frame,
       const WebString& device_id,
       base::RepeatingCallback<void()> on_render_error_callback) override {
+    if (!web_stream.IsNull() && static_cast<MediaStreamDescriptor*>(web_stream)
+                                    ->AudioComponents()
+                                    .empty()) {
+      return nullptr;
+    }
     return audio_renderer_;
   }
 
@@ -478,11 +501,16 @@ class MockRenderFactory : public MediaStreamRendererFactory {
 
   bool support_video_renderer() const { return support_video_renderer_; }
 
+  int video_renderer_creation_count() const {
+    return video_renderer_creation_count_;
+  }
+
  private:
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<MediaStreamVideoRenderer> provider_;
   const raw_ptr<ReusableMessageLoopEvent> message_loop_controller_;
   bool support_video_renderer_ = true;
+  int video_renderer_creation_count_ = 0;
   scoped_refptr<MediaStreamAudioRenderer> audio_renderer_;
   raw_ptr<base::test::TaskEnvironment> task_environment_;
 };
@@ -492,9 +520,14 @@ scoped_refptr<MediaStreamVideoRenderer> MockRenderFactory::GetVideoRenderer(
     const MediaStreamVideoRenderer::RepaintCB& repaint_cb,
     scoped_refptr<base::SequencedTaskRunner> video_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner) {
-  if (!support_video_renderer_)
+  if (!support_video_renderer_ ||
+      (!web_stream.IsNull() && static_cast<MediaStreamDescriptor*>(web_stream)
+                                   ->VideoComponents()
+                                   .empty())) {
     return nullptr;
+  }
 
+  ++video_renderer_creation_count_;
   provider_ = base::MakeRefCounted<MockMediaStreamVideoRenderer>(
       task_runner_, message_loop_controller_, repaint_cb, task_environment_);
 
@@ -625,7 +658,7 @@ class WebMediaPlayerMSTest
     base::RunLoop().RunUntilIdle();
   }
 
-  void InitializeWebMediaPlayerMS();
+  void InitializeWebMediaPlayerMS(WebLocalFrame* frame = nullptr);
 
   MockMediaStreamVideoRenderer* LoadAndGetFrameProvider(bool algorithm_enabled);
 
@@ -767,11 +800,10 @@ void TestMediaPlayerClient::OnRequestVideoFrameCallback() {
   }
 }
 
-void WebMediaPlayerMSTest::InitializeWebMediaPlayerMS() {
+void WebMediaPlayerMSTest::InitializeWebMediaPlayerMS(WebLocalFrame* frame) {
   CHECK(!player_);
   player_ = std::make_unique<WebMediaPlayerMS>(
-      nullptr, client_.Get(), &delegate_,
-      std::make_unique<media::NullMediaLog>(),
+      frame, client_.Get(), &delegate_, std::make_unique<media::NullMediaLog>(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -1894,6 +1926,247 @@ TEST_P(WebMediaPlayerMSTest, ReparentFrameSinkHierarchy) {
   EXPECT_CALL(*surface_layer_bridge_ptr_, ReparentFrameSinkHierarchy(_));
   viz::FrameSinkId new_id(1, 2);
   player_->ReparentFrameSinkHierarchy(new_id);
+}
+
+MediaStreamComponent* CreateTestAudioComponent(const String& id) {
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      id, MediaStreamSource::kTypeAudio, id, /*remote=*/false,
+      /*platform_source=*/nullptr);
+  return MakeGarbageCollected<MediaStreamComponentImpl>(
+      id, source,
+      std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true));
+}
+
+MediaStreamComponent* CreateTestVideoComponent(const String& id) {
+  auto video_source = std::make_unique<MockMediaStreamVideoSource>();
+  auto* video_source_ptr = video_source.get();
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      id, MediaStreamSource::kTypeVideo, id, /*remote=*/false,
+      std::move(video_source));
+  return MakeGarbageCollected<MediaStreamComponentImpl>(
+      id, source,
+      std::make_unique<MediaStreamVideoTrack>(
+          video_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),
+          /*enabled=*/true));
+}
+
+TEST_P(WebMediaPlayerMSTest, ReloadAudioDuringNetworkStateChange) {
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  test::MainThreadIsolate main_thread_isolate;
+  // `web_view_helper` is destroyed before `player_->Shutdown()` runs in
+  // `~WebMediaPlayerMSTest()`. This is safe because
+  // `MediaStreamInternalFrameWrapper` holds the frame weakly and `Shutdown()`
+  // never dereferences `web_frame()`.
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  InitializeWebMediaPlayerMS(web_view_helper.LocalMainFrame());
+
+  auto* video_component = CreateTestVideoComponent("video_track_id");
+  MediaStreamComponentVector audio_tracks;
+  MediaStreamComponentVector video_tracks = {video_component};
+  auto* descriptor =
+      MakeGarbageCollected<MediaStreamDescriptor>(audio_tracks, video_tracks);
+
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading));
+  EXPECT_CALL(*this,
+              DoReadyStateChanged(WebMediaPlayer::kReadyStateHaveNothing));
+  player_->Load(WebMediaPlayer::kLoadTypeMediaStream,
+                WebMediaPlayerSource(WebMediaStream(descriptor)),
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  auto* audio_component_1 = CreateTestAudioComponent("audio_track_1");
+  auto* audio_component_2 = CreateTestAudioComponent("audio_track_2");
+  auto* audio_component_3 = CreateTestAudioComponent("audio_track_3");
+
+  auto first_renderer =
+      base::MakeRefCounted<NiceMock<MockMediaStreamAudioRenderer>>();
+  auto second_renderer =
+      base::MakeRefCounted<NiceMock<MockMediaStreamAudioRenderer>>();
+  auto third_renderer =
+      base::MakeRefCounted<NiceMock<MockMediaStreamAudioRenderer>>();
+  auto fourth_renderer =
+      base::MakeRefCounted<NiceMock<MockMediaStreamAudioRenderer>>();
+
+  render_factory_->set_audio_renderer(first_renderer);
+
+  bool reentered = false;
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading))
+      .Times(2)
+      .WillRepeatedly([&](WebMediaPlayer::NetworkState) {
+        if (reentered) {
+          return;
+        }
+        reentered = true;
+        EXPECT_TRUE(first_renderer->Started());
+        render_factory_->set_audio_renderer(second_renderer);
+        descriptor->RemoveComponent(audio_component_1);
+        descriptor->AddComponent(audio_component_2);
+      });
+
+  descriptor->AddComponent(audio_component_1);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_TRUE(reentered);
+  EXPECT_FALSE(first_renderer->Started());
+  EXPECT_TRUE(second_renderer->Started());
+  EXPECT_TRUE(second_renderer->Playing());
+
+  // Verify subsequent non-reentrant track replacement also stops the active
+  // renderer and starts the new one.
+  render_factory_->set_audio_renderer(third_renderer);
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading));
+  descriptor->RemoveComponent(audio_component_2);
+  descriptor->AddComponent(audio_component_3);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_FALSE(second_renderer->Started());
+  EXPECT_TRUE(third_renderer->Started());
+  EXPECT_TRUE(third_renderer->Playing());
+
+  // Verify ActiveStateChanged(false) stops the active audio renderer before
+  // SetNetworkState(kNetworkStateIdle) so a track added during that
+  // notification remains started.
+  EXPECT_CALL(*this, DoNetworkStateChanged(WebMediaPlayer::kNetworkStateIdle))
+      .WillOnce([&](WebMediaPlayer::NetworkState) {
+        EXPECT_FALSE(third_renderer->Started());
+        render_factory_->set_audio_renderer(fourth_renderer);
+        descriptor->RemoveComponent(audio_component_3);
+        descriptor->AddComponent(audio_component_1);
+      });
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading));
+  descriptor->SetActive(false);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_TRUE(fourth_renderer->Started());
+  EXPECT_TRUE(fourth_renderer->Playing());
+}
+
+TEST_P(WebMediaPlayerMSTest, ReloadVideoDuringNetworkStateChange) {
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  InitializeWebMediaPlayerMS();
+
+  auto* video_component_1 = CreateTestVideoComponent("video_track_1");
+  auto* video_component_2 = CreateTestVideoComponent("video_track_2");
+
+  MediaStreamComponentVector audio_tracks;
+  MediaStreamComponentVector video_tracks = {video_component_1};
+  auto* descriptor =
+      MakeGarbageCollected<MediaStreamDescriptor>(audio_tracks, video_tracks);
+
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading));
+  EXPECT_CALL(*this,
+              DoReadyStateChanged(WebMediaPlayer::kReadyStateHaveNothing));
+  player_->Load(WebMediaPlayer::kLoadTypeMediaStream,
+                WebMediaPlayerSource(WebMediaStream(descriptor)),
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  scoped_refptr<MockMediaStreamVideoRenderer> initial_provider =
+      render_factory_->provider();
+  ASSERT_TRUE(initial_provider);
+  EXPECT_TRUE(initial_provider->Started());
+
+  descriptor->RemoveComponent(video_component_1);
+  EXPECT_FALSE(initial_provider->Started());
+
+  scoped_refptr<MockMediaStreamVideoRenderer> first_reload_provider;
+  scoped_refptr<MockMediaStreamVideoRenderer> second_reload_provider;
+  bool reentered = false;
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading))
+      .Times(2)
+      .WillRepeatedly([&](WebMediaPlayer::NetworkState) {
+        if (reentered) {
+          return;
+        }
+        reentered = true;
+        first_reload_provider = render_factory_->provider();
+        ASSERT_TRUE(first_reload_provider);
+        EXPECT_TRUE(first_reload_provider->Started());
+        descriptor->RemoveComponent(video_component_1);
+        descriptor->AddComponent(video_component_2);
+        second_reload_provider = render_factory_->provider();
+      });
+
+  descriptor->AddComponent(video_component_1);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_TRUE(reentered);
+  ASSERT_TRUE(first_reload_provider);
+  ASSERT_TRUE(second_reload_provider);
+  EXPECT_NE(first_reload_provider, second_reload_provider);
+  EXPECT_FALSE(first_reload_provider->Started());
+  EXPECT_TRUE(second_reload_provider->Started());
+}
+
+TEST_P(WebMediaPlayerMSTest, AddTrackDuringInitialLoadNetworkStateChange) {
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  InitializeWebMediaPlayerMS();
+
+  auto* video_component = CreateTestVideoComponent("video_track_1");
+  MediaStreamComponentVector audio_tracks;
+  MediaStreamComponentVector video_tracks;
+  auto* descriptor =
+      MakeGarbageCollected<MediaStreamDescriptor>(audio_tracks, video_tracks);
+
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading))
+      .WillOnce([&](WebMediaPlayer::NetworkState) {
+        descriptor->AddComponent(video_component);
+      });
+  EXPECT_CALL(*this,
+              DoReadyStateChanged(WebMediaPlayer::kReadyStateHaveNothing));
+  player_->Load(WebMediaPlayer::kLoadTypeMediaStream,
+                WebMediaPlayerSource(WebMediaStream(descriptor)),
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_EQ(1, render_factory_->video_renderer_creation_count());
+  ASSERT_TRUE(render_factory_->provider());
+  EXPECT_TRUE(render_factory_->provider()->Started());
+}
+
+TEST_P(WebMediaPlayerMSTest, AddTrackAfterEmptyStreamLoadError) {
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  InitializeWebMediaPlayerMS();
+
+  MediaStreamComponentVector audio_tracks;
+  MediaStreamComponentVector video_tracks;
+  auto* descriptor =
+      MakeGarbageCollected<MediaStreamDescriptor>(audio_tracks, video_tracks);
+
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading));
+  EXPECT_CALL(*this,
+              DoReadyStateChanged(WebMediaPlayer::kReadyStateHaveNothing));
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateNetworkError));
+  player_->Load(WebMediaPlayer::kLoadTypeMediaStream,
+                WebMediaPlayerSource(WebMediaStream(descriptor)),
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
+  testing::Mock::VerifyAndClearExpectations(this);
+  EXPECT_EQ(0, render_factory_->video_renderer_creation_count());
+  EXPECT_FALSE(render_factory_->provider());
+
+  auto* video_component = CreateTestVideoComponent("video_track_1");
+  EXPECT_CALL(*this,
+              DoNetworkStateChanged(WebMediaPlayer::kNetworkStateLoading));
+  descriptor->AddComponent(video_component);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_EQ(1, render_factory_->video_renderer_creation_count());
+  ASSERT_TRUE(render_factory_->provider());
+  EXPECT_TRUE(render_factory_->provider()->Started());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -483,8 +483,6 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   elapsed_playback_time_ = base::TimeDelta();
   playback_started_at_ = base::TimeTicks::Now();
   web_stream_ = source.GetAsMediaStream();
-  if (!web_stream_.IsNull())
-    web_stream_.AddObserver(weak_this_);
 
   watch_time_reporter_.reset();
 
@@ -502,6 +500,9 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
 
   SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
   SetReadyState(WebMediaPlayer::kReadyStateHaveNothing);
+  if (!client_) {
+    return WebMediaPlayer::LoadTiming::kImmediate;
+  }
   std::string stream_id =
       web_stream_.IsNull() ? std::string() : web_stream_.Id().Utf8();
   media_log_->AddEvent<media::MediaLogEvent::kLoad>(stream_id);
@@ -530,6 +531,11 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
                            weak_factory_.GetWeakPtr()));
 
   if (!video_frame_provider_ && !audio_renderer_) {
+    // Register the observer before notifying `client_` and returning so that
+    // tracks added to an initially empty stream still trigger `Reload()`.
+    if (!web_stream_.IsNull()) {
+      web_stream_.AddObserver(weak_this_);
+    }
     SetNetworkState(WebMediaPlayer::kNetworkStateNetworkError);
     SendLogMessage(StrCat(
         {__func__, " => (ERROR: WebMediaPlayer::kNetworkStateNetworkError)"}));
@@ -584,6 +590,14 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
       }
     }
   }
+
+  // Defer observer registration until `frame_deliverer_` and initial renderers
+  // are set up so that synchronous client notifications earlier in `Load()`
+  // cannot re-enter `Reload()` before initialization is complete.
+  if (!web_stream_.IsNull()) {
+    web_stream_.AddObserver(weak_this_);
+  }
+
   // When associated with an <audio> element, we don't want to wait for the
   // first video frame to become available as we do for <video> elements
   // (<audio> elements can also be assigned video tracks).
@@ -593,6 +607,9 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
     SendLogMessage(StrCat({__func__, " => (audio only mode)"}));
     SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
     SetReadyState(WebMediaPlayer::kReadyStateHaveEnoughData);
+    if (!client_) {
+      return WebMediaPlayer::LoadTiming::kImmediate;
+    }
     MaybeCreateWatchTimeReporter();
   }
 
@@ -648,15 +665,13 @@ void WebMediaPlayerMS::TrackRemoved(const WebString& track_id) {
 
 void WebMediaPlayerMS::ActiveStateChanged(bool is_active) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!client_) {
+    return;
+  }
   SendLogMessage(Format("{}({{is_active={}}})", __func__, is_active));
   // The case when the stream becomes active is handled by TrackAdded().
   if (is_active)
     return;
-
-  // This makes the media element eligible to be garbage collected. Otherwise,
-  // the element will be considered active and will never be garbage
-  // collected.
-  SetNetworkState(kNetworkStateIdle);
 
   // Stop the audio renderer to free up resources that are not required for an
   // inactive stream. This is useful if the media element is not garbage
@@ -665,6 +680,11 @@ void WebMediaPlayerMS::ActiveStateChanged(bool is_active) {
   // track is expected to produce a black frame after becoming inactive.
   if (audio_renderer_)
     audio_renderer_->Stop();
+
+  // This makes the media element eligible to be garbage collected. Otherwise,
+  // the element will be considered active and will never be garbage
+  // collected.
+  SetNetworkState(kNetworkStateIdle);
 }
 
 void WebMediaPlayerMS::EnabledStateChangedForWebRtcAudio(bool is_enabled) {
@@ -706,6 +726,11 @@ void WebMediaPlayerMS::Reload() {
 void WebMediaPlayerMS::ReloadVideo() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!web_stream_.IsNull());
+  // `frame_deliverer_` should always be non-null while observing `web_stream_`,
+  // but check it defensively in case `ReloadVideo()` is reached early.
+  if (!client_ || !frame_deliverer_) {
+    return;
+  }
   MediaStreamDescriptor& descriptor = *web_stream_;
   auto video_components = descriptor.VideoComponents();
 
@@ -725,7 +750,6 @@ void WebMediaPlayerMS::ReloadVideo() {
       if (video_frame_provider_)
         video_frame_provider_->Stop();
 
-      SetNetworkState(kNetworkStateLoading);
       video_frame_provider_ = renderer_factory_->GetVideoRenderer(
           web_stream_,
           ConvertToBaseRepeatingCallback(
@@ -733,6 +757,9 @@ void WebMediaPlayerMS::ReloadVideo() {
           video_task_runner_, main_render_task_runner_);
       DCHECK(video_frame_provider_);
       video_frame_provider_->Start();
+      // Notify the client after updating `video_frame_provider_`, as the
+      // notification may synchronously modify the stream's tracks.
+      SetNetworkState(kNetworkStateLoading);
       break;
 
     case RendererReloadAction::REMOVE_RENDERER:
@@ -745,6 +772,9 @@ void WebMediaPlayerMS::ReloadVideo() {
   }
 
   DCHECK_NE(renderer_action, RendererReloadAction::KEEP_RENDERER);
+  if (!client_) {
+    return;
+  }
   if (!paused_) {
     client_->DidPlayerSizeChange(NaturalSize());
     if (watch_time_reporter_)
@@ -765,8 +795,9 @@ void WebMediaPlayerMS::ReloadVideo() {
 void WebMediaPlayerMS::ReloadAudio() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!web_stream_.IsNull());
-  if (!internal_frame_->web_frame())
+  if (!client_ || !internal_frame_->web_frame()) {
     return;
+  }
   SendLogMessage(StrCat({__func__, "()"}));
 
   MediaStreamDescriptor& descriptor = *web_stream_;
@@ -788,7 +819,6 @@ void WebMediaPlayerMS::ReloadAudio() {
       if (audio_renderer_)
         audio_renderer_->Stop();
 
-      SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
       audio_renderer_ = renderer_factory_->GetAudioRenderer(
           web_stream_, internal_frame_->web_frame(),
           initial_audio_output_device_id_,
@@ -796,12 +826,14 @@ void WebMediaPlayerMS::ReloadAudio() {
                                weak_factory_.GetWeakPtr()));
 
       // |audio_renderer_| can be null in tests.
-      if (!audio_renderer_)
-        break;
-
-      audio_renderer_->SetVolume(volume_);
-      audio_renderer_->Start();
-      audio_renderer_->Play();
+      if (audio_renderer_) {
+        audio_renderer_->SetVolume(volume_);
+        audio_renderer_->Start();
+        audio_renderer_->Play();
+      }
+      // Notify the client after updating `audio_renderer_`, as the
+      // notification may synchronously modify the stream's tracks.
+      SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
       break;
 
     case RendererReloadAction::REMOVE_RENDERER:
@@ -811,6 +843,10 @@ void WebMediaPlayerMS::ReloadAudio() {
 
     default:
       break;
+  }
+
+  if (!client_) {
+    return;
   }
 
   // TODO(perkj, magjed): We use OneShot focus type here so that it takes
@@ -1314,6 +1350,9 @@ void WebMediaPlayerMS::OnFirstFrameReceived(
     bool is_opaque) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!client_) {
+    return;
+  }
 
   has_first_frame_ = true;
 
@@ -1323,6 +1362,9 @@ void WebMediaPlayerMS::OnFirstFrameReceived(
 
   SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
   SetReadyState(WebMediaPlayer::kReadyStateHaveEnoughData);
+  if (!client_) {
+    return;
+  }
   TriggerResize();
   ResetCanvasCache();
   MaybeCreateWatchTimeReporter();
@@ -1356,7 +1398,9 @@ void WebMediaPlayerMS::SetNetworkState(WebMediaPlayer::NetworkState state) {
       {__func__, " => (state=", NetworkStateToString(network_state_), ")"}));
   network_state_ = state;
   // Always notify to ensure client has the latest value.
-  get_client()->NetworkStateChanged();
+  if (auto* client = get_client()) {
+    client->NetworkStateChanged();
+  }
 }
 
 void WebMediaPlayerMS::SetReadyState(WebMediaPlayer::ReadyState state) {
@@ -1365,7 +1409,9 @@ void WebMediaPlayerMS::SetReadyState(WebMediaPlayer::ReadyState state) {
       StrCat({__func__, " => (state=", ReadyStateToString(ready_state_), ")"}));
   ready_state_ = state;
   // Always notify to ensure client has the latest value.
-  get_client()->ReadyStateChanged();
+  if (auto* client = get_client()) {
+    client->ReadyStateChanged();
+  }
 }
 
 media::PaintCanvasVideoRenderer*
