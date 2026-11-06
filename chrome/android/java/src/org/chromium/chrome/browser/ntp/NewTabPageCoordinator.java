@@ -1267,7 +1267,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         boolean showFakeSearchBoxWithoutLogo =
                 !mSearchProviderInfoDelegate.getSearchProviderHasLogo();
         mCurrentNtpFakeSearchBoxTransitionStartOffset =
-                getNtpSearchBoxTransitionStartOffset(showFakeSearchBoxWithoutLogo);
+                getNtpSearchBoxTransitionStartOffset(showFakeSearchBoxWithoutLogo) + mTopInset;
 
         if (mNtpSearchBox != null) {
             int topMargin = showFakeSearchBoxWithoutLogo ? mNtpSearchBoxTopMarginWithoutLogo : 0;
