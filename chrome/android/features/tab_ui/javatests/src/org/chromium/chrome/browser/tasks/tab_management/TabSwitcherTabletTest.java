@@ -27,19 +27,16 @@ import android.view.ViewStub;
 
 import androidx.annotation.IdRes;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -50,33 +47,27 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 /** Tests for the {@link TabSwitcher} on tablet */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -98,36 +89,6 @@ public class TabSwitcherTabletTest {
         mPage = mActivityTestRule.startOnBlankPage();
         ChromeTabbedActivity cta = mPage.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelectorSupplier().get()::isTabStateInitialized);
-    }
-
-    @After
-    public void cleanup() throws TimeoutException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-
-        LayoutManagerChrome layoutManager = cta.getLayoutManager();
-        if (layoutManager.isLayoutVisible(LayoutType.HUB)
-                && !layoutManager.isLayoutStartingToHide(LayoutType.HUB)) {
-            TabModelSelector selector = cta.getTabModelSelectorSupplier().get();
-            if (getTabCountOnUiThread(selector.getModel(false)) == 0) {
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            TabCreator tabCreator = cta.getTabCreator(/* incognito= */ false);
-                            return tabCreator.createNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_CHROME_UI,
-                                    null,
-                                    0);
-                        });
-                LayoutTestUtils.waitForBrowsingLayout(cta);
-            } else {
-                if (selector.getCurrentModel().isIncognito()) {
-                    clickIncognitoToggleButton();
-                }
-                exitSwitcherWithTabClick(0);
-            }
-        } else {
-            LayoutTestUtils.waitForBrowsingLayout(cta);
-        }
     }
 
     @Test
@@ -167,7 +128,7 @@ public class TabSwitcherTabletTest {
         assertTrue("Expected to be in Incognito model", cta.getCurrentTabModel().isIncognito());
 
         // Toggle to normal switcher.
-        clickIncognitoToggleButton();
+        hopOnIncognitoTabSwitcher().selectRegularTabsPane();
 
         final Tab newTab =
                 ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getTabAt(0));
@@ -250,7 +211,7 @@ public class TabSwitcherTabletTest {
         TabUiTestHelper.enterTabSwitcher(cta);
 
         // Toggle to normal switcher.
-        clickIncognitoToggleButton();
+        hopOnIncognitoTabSwitcher().selectRegularTabsPane();
 
         checkTabSwitcherViewHolderVisibility(true);
     }
@@ -309,40 +270,11 @@ public class TabSwitcherTabletTest {
                 .check(matches(isDisplayed()));
     }
 
-    protected void clickIncognitoToggleButton() {
-        final CallbackHelper tabModelSelectedCallback = new CallbackHelper();
-        Callback<TabModel> observer =
-                (tabModel) -> {
-                    tabModelSelectedCallback.notifyCalled();
-                };
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    return mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelectorSupplier()
-                            .get()
-                            .getCurrentTabModelSupplier()
-                            .addSyncObserverAndPostIfNonNull(observer);
-                });
-        StripLayoutHelperManager manager =
-                TabStripUtils.getStripLayoutHelperManager(mActivityTestRule.getActivity());
-        TabStripUtils.clickCompositorButton(
-                manager.getModelSelectorButton(),
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity());
-        try {
-            tabModelSelectedCallback.waitForCallback(0);
-        } catch (TimeoutException e) {
-            throw new AssertionError("Tab model selected event never occurred.", e);
-        }
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .getCurrentTabModelSupplier()
-                            .removeObserver(observer);
-                });
+    // Hop on at the incognito tab switcher, which these tests enter without Public Transit.
+    private IncognitoTabSwitcherStation hopOnIncognitoTabSwitcher() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        return TrafficControl.hopOnAt(
+                cta, IncognitoTabSwitcherStation.from(cta.getTabModelSelectorSupplier().get()));
     }
 
     private void prepareTabs(int numTabs, int numIncognitoTabs) {

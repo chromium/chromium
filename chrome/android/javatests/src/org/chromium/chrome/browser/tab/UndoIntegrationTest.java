@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.os.SystemClock;
-
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
@@ -23,8 +21,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -33,11 +32,11 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.util.MotionEventUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -124,27 +123,41 @@ public class UndoIntegrationTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTabletCloseTabAndCommitDoesNotCrash() {
-        WebPageStation secondPage =
-                mActivityTestRule.startOnBlankPage().openFakeLinkToWebPage("about:blank");
-        final ChromeTabbedActivity cta = secondPage.getActivity();
-        TabStripUtils.settleDownCompositor(
-                TabStripUtils.getStripLayoutHelperManager(cta).getStripLayoutHelper(false));
+        WebPageStation firstPage = mActivityTestRule.startOnBlankPage();
+        int firstTabId = firstPage.getTab().getId();
+        WebPageStation secondPage = firstPage.openFakeLinkToWebPage("about:blank");
+        int secondTabId = secondPage.getTab().getId();
 
-        TabModel model = cta.getTabModelSelector().getModel(/* incognito= */ false);
+        // Wait for the strip to settle with both close buttons clickable.
+        TabStripFacility<CtaPageStation> tabStrip = secondPage.expectTabStrip();
+        CompositorButton firstCloseButton =
+                tabStrip.expectTab(firstTabId).closeButtonElement.checkPresent();
+        CompositorButton secondCloseButton =
+                tabStrip.expectTab(secondTabId).closeButtonElement.checkPresent();
+        StripLayoutHelperManager manager = tabStrip.stripLayoutHelperManagerElement.value();
+
+        // Click both close buttons and commit in the same UI thread task, so that the commit runs
+        // while both closes are still animating on the strip.
+        TabModel model = secondPage.getTabModel();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    closeTabViaButton(cta, model.getTabAt(1).getId());
-                    closeTabViaButton(cta, model.getTabAt(0).getId());
+                    clickOnStrip(manager, secondCloseButton);
+                    clickOnStrip(manager, firstCloseButton);
+                    Assert.assertTrue(
+                            "Both tabs should be closing",
+                            model.isClosurePending(secondTabId)
+                                    && model.isClosurePending(firstTabId));
 
                     model.commitAllTabClosures();
                 });
     }
 
-    private void closeTabViaButton(ChromeTabbedActivity cta, int tabId) {
-        final StripLayoutTab tab =
-                TabStripUtils.findStripLayoutTab(cta, /* incognito= */ false, tabId);
-        tab.getCloseButton()
-                .handleClick(
-                        SystemClock.uptimeMillis(), MotionEventUtils.MOTION_EVENT_BUTTON_NONE, 0);
+    /** Clicks the center of a strip view where it is drawn now. Run on the UI thread. */
+    private static void clickOnStrip(StripLayoutHelperManager manager, StripLayoutView view) {
+        manager.simulateClick(
+                view.getDrawX() + view.getWidth() / 2,
+                view.getDrawY() + view.getHeight() / 2,
+                /* buttons= */ 0,
+                /* modifiers= */ 0);
     }
 }
