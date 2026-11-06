@@ -1,0 +1,98 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ios.gemini_spark_settings",
+      "default_value": 1,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
+  },
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "GeminiSparkSettings (0) is rejected and stays at default (1) when GeminiSettings is disabled (1).",
+        "policies": {
+          "GeminiSettings": 1,
+          "GeminiSparkSettings": 0
+        },
+        "prefs": {
+          "ios.gemini_spark_settings": {
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "note": "GeminiSparkSettings (0) is rejected and stays at default (1) when GenAiDefaultSettings is disabled (2) and GeminiSettings is unset.",
+        "policies": {
+          "GenAiDefaultSettings": 2,
+          "GeminiSparkSettings": 0
+        },
+        "prefs": {
+          "ios.gemini_spark_settings": {
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "note": "GeminiSparkSettings (0) is applied when GeminiSettings is explicitly allowed (0), overriding GenAiDefaultSettings disabled (2).",
+        "policies": {
+          "GenAiDefaultSettings": 2,
+          "GeminiSettings": 0,
+          "GeminiSparkSettings": 0
+        },
+        "prefs": {
+          "ios.gemini_spark_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "GeminiSparkSettings (0) is rejected and stays at default (1) when GeminiActOnWebSettings is disabled (1).",
+        "policies": {
+          "GeminiActOnWebSettings": 1,
+          "GeminiSparkSettings": 0
+        },
+        "prefs": {
+          "ios.gemini_spark_settings": {
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "note": "GeminiSparkSettings (1) is applied as a managed value even when GeminiSettings and GeminiActOnWebSettings are disabled.",
+        "policies": {
+          "GeminiSettings": 1,
+          "GeminiActOnWebSettings": 1,
+          "GeminiSparkSettings": 1
+        },
+        "prefs": {
+          "ios.gemini_spark_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "note": "GeminiSparkSettings (0) is applied when all dependencies allow it.",
+        "policies": {
+          "GeminiSettings": 0,
+          "GeminiActOnWebSettings": 0,
+          "GenAiDefaultSettings": 1,
+          "GeminiSparkSettings": 0
+        },
+        "prefs": {
+          "ios.gemini_spark_settings": {
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]
