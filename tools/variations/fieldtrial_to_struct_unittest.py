@@ -114,7 +114,7 @@ class FieldTrialToStruct(unittest.TestCase):
   _MULTIPLE_PLATFORM_CONFIG = {
     'Trial1': [
       {
-        'platforms': ['windows', 'ios'],
+        'platforms': ['windows', 'ios', 'android_desktop'],
         'is_low_end_device': 'true',
         'experiments': [
           {
@@ -201,6 +201,61 @@ class FieldTrialToStruct(unittest.TestCase):
                 {
                   'name': 'OtherGroup',
                   'platforms': ['Study::PLATFORM_MAC'],
+                  'form_factors': [],
+                },
+              ],
+            },
+          ]
+        }
+      }
+    }
+    self.maxDiff = None
+    self.assertEqual(expected, result)
+
+  def test_FieldTrialToDescriptionMultiplePlatforms(self):
+    result = fieldtrial_to_struct._FieldTrialConfigToDescription(
+      self._MULTIPLE_PLATFORM_CONFIG, ['ios', 'android_desktop']
+    )
+    expected = {
+      'elements': {
+        'kFieldTrialConfig': {
+          'studies': [
+            {
+              'name': 'Trial1',
+              'experiments': [
+                {
+                  'name': 'Group1',
+                  'platforms': [
+                    'Study::PLATFORM_IOS',
+                    'Study::PLATFORM_ANDROID_DESKTOP',
+                  ],
+                  'params': [
+                    {'key': 'x', 'value': '1'},
+                    {'key': 'y', 'value': '2'},
+                  ],
+                  'enable_features': ['A', 'B'],
+                  'disable_features': ['C'],
+                  'is_low_end_device': 'true',
+                  'form_factors': [],
+                },
+                {
+                  'name': 'Group2',
+                  'platforms': [
+                    'Study::PLATFORM_IOS',
+                    'Study::PLATFORM_ANDROID_DESKTOP',
+                  ],
+                  'params': [
+                    {'key': 'x', 'value': '3'},
+                    {'key': 'y', 'value': '4'},
+                  ],
+                  'enable_features': ['D', 'E'],
+                  'disable_features': ['F'],
+                  'is_low_end_device': 'true',
+                  'form_factors': [],
+                },
+                {
+                  'name': 'IOSOnly',
+                  'platforms': ['Study::PLATFORM_IOS'],
                   'form_factors': [],
                 },
               ],

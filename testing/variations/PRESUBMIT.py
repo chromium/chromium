@@ -237,6 +237,7 @@ def _ValidateStudyConfig(study_config, create_message_fn):
     return create_message_fn('Expecting list for platforms')
   supported_platforms = [
     'android',
+    'android_desktop',
     'android_webview',
     'chromeos',
     'fuchsia',

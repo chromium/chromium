@@ -34,9 +34,10 @@ action("field_trial_testing_config_action") {
     "--output=$out_name",
   ]
 
-  # At build-time, Android Chrome and WebView use the platform "android", but
-  # at run-time, variations has separate platforms "android" and
-  # "android_webview" . So if building "android", also include WebView.
+  # At build-time, Android Chrome, Android Desktop, and WebView use the
+  # platform "android", but at run-time, variations has separate platforms
+  # "android", "android_desktop", and "android_webview". So if building
+  # "android", also include Android Desktop and WebView.
   if (platform == "android") {
     args += [
       # TODO(peilinwang) investigate impact on test runtime, then enable the
@@ -44,6 +45,7 @@ action("field_trial_testing_config_action") {
       # isn't loaded.
       # "--java",
 
+      "--platform=android_desktop",
       "--platform=android_webview",
     ]
   }

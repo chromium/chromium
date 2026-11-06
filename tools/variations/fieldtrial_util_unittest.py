@@ -27,6 +27,29 @@ class FieldTrialUtilUnittest(unittest.TestCase):
     args = fieldtrial_util.GenerateArgs('', 'linux')
     self.assertEqual([], args)
 
+  def test_GenArgsAndroidDesktop(self):
+    config = '''{
+      "DesktopStudy": [
+        {
+          "platforms": ["android_desktop"],
+          "experiments": [
+            {
+              "name": "Enabled",
+              "enable_features": ["DesktopFeature"]
+            }
+          ]
+        }
+      ]
+    }'''
+    result = self.runGenerateArgs(config, 'android_desktop')
+    self.assertEqual(
+      [
+        '--force-fieldtrials=DesktopStudy/Enabled',
+        '--enable-features=DesktopFeature<DesktopStudy',
+      ],
+      result,
+    )
+
   def test_GenArgsOneConfig(self):
     config = '''{
       "BrowserBlackList": [

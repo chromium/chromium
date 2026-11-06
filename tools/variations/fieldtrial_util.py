@@ -230,6 +230,7 @@ def main():
 
   supported_platforms = [
     'android',
+    'android_desktop',
     'android_webview',
     'chromeos',
     'ios',
