@@ -18,7 +18,6 @@
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Utöka den delade flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />, med etiketten <ph name="CARD_LABEL" />.}other{Utöka den delade flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />, med etiketten <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Du hittar alla dina flikgrupper här</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Skapades för <ph name="NUM_MINS_ONE" /> minut sedan}other{Skapades för <ph name="NUM_MINS_MANY" /> minuter sedan}}</translation>
-<translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
 <translation id="1501480321619201731">Ta bort grupp</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktivt objekt}other{<ph name="TABS_COUNT_MANY" /> inaktiva objekt}}</translation>
 <translation id="1568067597247500137">Stäng av webbplatsens ljud</translation>
@@ -27,7 +26,6 @@
 <translation id="1657719826150349398">Flytta fliken nedåt</translation>
 <translation id="1670942869417022142">Ljudet är av</translation>
 <translation id="1697284962337958118">Lägg till i</translation>
-<translation id="1713541401465507417">Stäng alla flikar och grupper</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> flikgrupp är inte längre tillgänglig}other{<ph name="TAB_GROUPS_COUNT_MANY" /> flikgrupper är inte längre tillgängliga}}</translation>
 <translation id="1759122978835002237">Flytta flikgruppen uppåt</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Läs mer<ph name="END_LINK1" /></translation>
@@ -43,7 +41,6 @@
 <translation id="2074527029802029717">Lossa flik</translation>
 <translation id="2111670510994270194">Ny flik till höger</translation>
 <translation id="2118649612461486615">Butiksinformation</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper. Inkognitofliken är inte tillgänglig.}other{Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper. Dina # inkognitoflikar är inte tillgängliga.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Sätt på webbplatsens ljud}other{Sätt på webbplatsernas ljud}}</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164232689984783657">Flytta flikgruppen nedåt</translation>
@@ -61,7 +58,6 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
 <translation id="257674075312929031">Grupp</translation>
-<translation id="2628148780487543078">Stäng även fästa flikar</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Återställ och öppna flikgruppen med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Återställ och öppna flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg</translation>
 <translation id="266935134738038806">Besök webbplatsen</translation>
@@ -124,7 +120,6 @@
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{Lägg till <ph name="TABS_COUNT_ONE" /> markerad flik i gruppen}other{Lägg till <ph name="TABS_COUNT_MANY" /> markerade flikar i gruppen}}</translation>
 <translation id="4861611890274104875">Stäng kortet.</translation>
 <translation id="4861953997778766866">Alla kan göra ändringar i dina delade flikgrupper</translation>
-<translation id="4870911314065352661">Vill du stänga alla flikar?</translation>
 <translation id="4871719318659334896">Stäng grupp</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Återställ och öppna flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Återställ och öppna flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Öppna</translation>
@@ -247,11 +242,9 @@
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8714939927607906138">Lägre pris</translation>
 <translation id="8730621377337864115">Klart</translation>
-<translation id="8730999928494395583">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Skapades för <ph name="NUM_MONTHS_ONE" /> månad sedan}other{Skapades för <ph name="NUM_MONTHS_MANY" /> månader sedan}}</translation>
 <translation id="8813708480179818649">Ta bort fliken från gruppen</translation>
 <translation id="8820741577754260431">Se sänkta priser på flikar</translation>
-<translation id="8887921976452567404">Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper.</translation>
 <translation id="8915916167043355778">Stäng alla</translation>
 <translation id="9090098097337832354">Informationen om den här butiken stängdes</translation>
 <translation id="9114502155681725011">Öppna åtgärdsmenyn för flikgruppen <ph name="TITLE_OF_GROUP" /> med färgen <ph name="COLOR_NAME" /></translation>

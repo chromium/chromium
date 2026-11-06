@@ -18,7 +18,6 @@
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />" и ярлык "<ph name="CARD_LABEL" />". В ней <ph name="TABS_COUNT_ONE" /> вкладка.}one{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />" и ярлык "<ph name="CARD_LABEL" />". В ней <ph name="TABS_COUNT_MANY" /> вкладка.}few{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />" и ярлык "<ph name="CARD_LABEL" />". В ней <ph name="TABS_COUNT_MANY" /> вкладки.}many{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />" и ярлык "<ph name="CARD_LABEL" />". В ней <ph name="TABS_COUNT_MANY" /> вкладок.}other{Развернуть группу вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />" и ярлык "<ph name="CARD_LABEL" />". В ней <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="1486715732399361704">Здесь вы найдете все группы вкладок</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Создано <ph name="NUM_MINS_ONE" /> минуту назад}one{Создано <ph name="NUM_MINS_MANY" /> минуту назад}few{Создано <ph name="NUM_MINS_MANY" /> минуты назад}many{Создано <ph name="NUM_MINS_MANY" /> минут назад}other{Создано <ph name="NUM_MINS_MANY" /> минуты назад}}</translation>
-<translation id="1499635324672558517">Закрыть все вкладки инкогнито?</translation>
 <translation id="1501480321619201731">Удалить группу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивный объект}one{<ph name="TABS_COUNT_MANY" /> неактивный объект}few{<ph name="TABS_COUNT_MANY" /> неактивных объекта}many{<ph name="TABS_COUNT_MANY" /> неактивных объектов}other{<ph name="TABS_COUNT_MANY" /> неактивных объекта}}</translation>
 <translation id="1568067597247500137">Отключить звук на сайте</translation>
@@ -27,7 +26,6 @@
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1670942869417022142">Звук отключен</translation>
 <translation id="1697284962337958118">Куда добавить</translation>
-<translation id="1713541401465507417">Закрыть все вкладки и группы</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> группа вкладок больше не доступна.}one{<ph name="TAB_GROUPS_COUNT_MANY" /> группа вкладок больше не доступна.}few{<ph name="TAB_GROUPS_COUNT_MANY" /> группы вкладок больше не доступны.}many{<ph name="TAB_GROUPS_COUNT_MANY" /> групп вкладок больше не доступны.}other{<ph name="TAB_GROUPS_COUNT_MANY" /> группы вкладок больше не доступны.}}</translation>
 <translation id="1759122978835002237">Переместить группу вкладок вверх</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
@@ -43,7 +41,6 @@
 <translation id="2074527029802029717">Открепить вкладку</translation>
 <translation id="2111670510994270194">Новая вкладка справа</translation>
 <translation id="2118649612461486615">Сведения о магазине</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". Вкладка инкогнито не сохранится.}one{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". # вкладка инкогнито не сохранится.}few{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". # вкладки инкогнито не сохранятся.}many{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". # вкладок инкогнито не сохранится.}other{Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок". # вкладки инкогнито не сохранится.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Включить звук на сайте}one{Включить звук на сайтах}few{Включить звук на сайтах}many{Включить звук на сайтах}other{Включить звук на сайтах}}</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164232689984783657">Переместить группу вкладок вниз</translation>
@@ -61,7 +58,6 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="2569352796411618312">Подсказка: вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
 <translation id="257674075312929031">Объединить</translation>
-<translation id="2628148780487543078">Также закрыть закрепленные вкладки</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Восстановить и открыть группу, которая содержит <ph name="TABS_COUNT_ONE" /> вкладку и отмечена следующим цветом: <ph name="COLOR_NAME" />.}one{Восстановить и открыть группу, которая содержит <ph name="TABS_COUNT_MANY" /> вкладку и отмечена следующим цветом: <ph name="COLOR_NAME" />.}few{Восстановить и открыть группу, которая содержит <ph name="TABS_COUNT_MANY" /> вкладки и отмечена следующим цветом: <ph name="COLOR_NAME" />.}many{Восстановить и открыть группу, которая содержит <ph name="TABS_COUNT_MANY" /> вкладок и отмечена следующим цветом: <ph name="COLOR_NAME" />.}other{Восстановить и открыть группу, которая содержит <ph name="TABS_COUNT_MANY" /> вкладки и отмечена следующим цветом: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Открыть сайт</translation>
@@ -124,7 +120,6 @@
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{Добавить в группу <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Добавить в группу <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Добавить в группу <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Добавить в группу <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Добавить в группу <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
 <translation id="4861611890274104875">Закрыть карточку.</translation>
 <translation id="4861953997778766866">Любой может изменять ваши группы вкладок с общим доступом</translation>
-<translation id="4870911314065352661">Закрыть все вкладки?</translation>
 <translation id="4871719318659334896">Закрыть группу</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Восстановить и открыть группу "<ph name="TITLE_OF_GROUP" />", которая содержит <ph name="TABS_COUNT_ONE" /> вкладку и отмечена следующим цветом: <ph name="COLOR_NAME" />.}one{Восстановить и открыть группу "<ph name="TITLE_OF_GROUP" />", которая содержит <ph name="TABS_COUNT_MANY" /> вкладку и отмечена следующим цветом: <ph name="COLOR_NAME" />.}few{Восстановить и открыть группу "<ph name="TITLE_OF_GROUP" />", которая содержит <ph name="TABS_COUNT_MANY" /> вкладки и отмечена следующим цветом: <ph name="COLOR_NAME" />.}many{Восстановить и открыть группу "<ph name="TITLE_OF_GROUP" />", которая содержит <ph name="TABS_COUNT_MANY" /> вкладок и отмечена следующим цветом: <ph name="COLOR_NAME" />.}other{Восстановить и открыть группу "<ph name="TITLE_OF_GROUP" />", которая содержит <ph name="TABS_COUNT_MANY" /> вкладки и отмечена следующим цветом: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Открыть</translation>
@@ -247,11 +242,9 @@
 <translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Более низкая цена</translation>
 <translation id="8730621377337864115">Готово</translation>
-<translation id="8730999928494395583">Информация о действиях на этих вкладках инкогнито будет удалена с устройства.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Создано <ph name="NUM_MONTHS_ONE" /> месяц назад}one{Создано <ph name="NUM_MONTHS_MANY" /> месяц назад}few{Создано <ph name="NUM_MONTHS_MANY" /> месяца назад}many{Создано <ph name="NUM_MONTHS_MANY" /> месяцев назад}other{Создано <ph name="NUM_MONTHS_MANY" /> месяца назад}}</translation>
 <translation id="8813708480179818649">Удалить вкладку из группы</translation>
 <translation id="8820741577754260431">Показывать скидки на вкладках</translation>
-<translation id="8887921976452567404">Вернуть закрытые вкладки и группы можно в разделах "Недавние вкладки" и "Группы вкладок".</translation>
 <translation id="8915916167043355778">Закрыть все</translation>
 <translation id="9090098097337832354">Информация об этом магазине закрыта</translation>
 <translation id="9114502155681725011">Открыть меню действий для группы вкладок "<ph name="TITLE_OF_GROUP" />", которой присвоен цвет "<ph name="COLOR_NAME" />".</translation>

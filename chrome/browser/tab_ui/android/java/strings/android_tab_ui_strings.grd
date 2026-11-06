@@ -247,6 +247,31 @@
       <message name="IDS_REMOVE_FROM_GROUP_DESCRIPTION" desc="Description of the action of removing all tabs in a group, shown in a confirmation dialog.">
         This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
       </message>
+
+      <!-- Close All Tabs Dialog Strings -->
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_TITLE" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the title of the dialog.">
+        Close all tabs?
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_TITLE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the title of the dialog.">
+        Close all Incognito tabs?
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the message of the dialog.">
+        Your activity in these Incognito tabs will be removed from this device
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_ALSO_CLOSE_PINNED_TABS" desc="Checkbox label in the 'Close all tabs' confirmation dialog allowing the user to also close pinned tabs instead of keeping them open.">
+        Also close pinned tabs
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_AND_GROUPS_DIALOG_MESSAGE" desc="Description of the action of closing all tabs and groups, shown in a confirmation dialog.">
+        Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_AND_GROUPS_DIALOG_MESSAGE_WITH_INCOGNITO_TABS" desc="Description of the action of closing all tabs and group, shown in a confirmation dialog. If there are any Incognito tabs opened this message would warn users that those Incognito tabs would be lost.">
+      {INCOGNITO_TABS_COUNT, plural,
+        =1 {Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your Incognito tab won't be available.}
+        other {Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}}
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_AND_GROUPS_ACTION" desc="Button text in a confirmation dialog which will close all tabs and groups.">
+        Close all tabs and groups
+      </message>
     </messages>
   </release>
 </grit>

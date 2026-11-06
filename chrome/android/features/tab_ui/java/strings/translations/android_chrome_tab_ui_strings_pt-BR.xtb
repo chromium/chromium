@@ -18,7 +18,6 @@
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" /> e o rótulo <ph name="CARD_LABEL" />.}one{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" /> e o rótulo <ph name="CARD_LABEL" />.}other{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" /> e o rótulo <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Todos os seus grupos de guias vão aparecer aqui</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Criado há <ph name="NUM_MINS_ONE" /> minuto}one{Criado há <ph name="NUM_MINS_MANY" /> minuto}other{Criado há <ph name="NUM_MINS_MANY" /> minutos}}</translation>
-<translation id="1499635324672558517">Fechar todas as guias anônimas?</translation>
 <translation id="1501480321619201731">Excluir grupo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item inativo}one{<ph name="TABS_COUNT_MANY" /> item inativo}other{<ph name="TABS_COUNT_MANY" /> itens inativos}}</translation>
 <translation id="1568067597247500137">Desativar som do site</translation>
@@ -27,7 +26,6 @@
 <translation id="1657719826150349398">Mover guia para baixo</translation>
 <translation id="1670942869417022142">Áudio silenciado</translation>
 <translation id="1697284962337958118">Adicionar a</translation>
-<translation id="1713541401465507417">Fechar todos os grupos e guias</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> grupo de guias não está mais disponível}one{<ph name="TAB_GROUPS_COUNT_MANY" /> grupo de guias não está mais disponível}other{<ph name="TAB_GROUPS_COUNT_MANY" /> grupos de guias não estão mais disponíveis}}</translation>
 <translation id="1759122978835002237">Mover grupo de guias para cima</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Saiba mais<ph name="END_LINK1" /></translation>
@@ -43,7 +41,6 @@
 <translation id="2074527029802029717">Liberar guia</translation>
 <translation id="2111670510994270194">Nova guia à direita</translation>
 <translation id="2118649612461486615">Informações da loja</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". A guia anônima não estará disponível.}one{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". # guia anônima não estará disponível.}other{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". # guias anônimas não estarão disponíveis.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Ativar som do site}one{Ativar som do site}other{Ativar som dos sites}}</translation>
 <translation id="2162620598375156287">Agora por <ph name="CURRENT_PRICE" /> nesta loja: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164232689984783657">Mover grupo de guias para baixo</translation>
@@ -61,7 +58,6 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
 <translation id="257674075312929031">Grupo</translation>
-<translation id="2628148780487543078">Fechar também as guias fixadas</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Restaurar e abrir o grupo de guias com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Restaurar e abrir o grupo de guias com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Restaurar e abrir o grupo de guias com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar o site</translation>
@@ -124,7 +120,6 @@
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> guia selecionada ao grupo}one{Adicionar <ph name="TABS_COUNT_MANY" /> guia selecionada ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> guias selecionadas ao grupo}}</translation>
 <translation id="4861611890274104875">Dispensar o card.</translation>
 <translation id="4861953997778766866">Todos os participantes podem fazer mudanças em grupos de guias compartilhados</translation>
-<translation id="4870911314065352661">Fechar todas as guias?</translation>
 <translation id="4871719318659334896">Fechar grupo</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Restaurar e abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Restaurar e abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Restaurar e abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Abrir</translation>
@@ -247,11 +242,9 @@
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8714939927607906138">Preço menor</translation>
 <translation id="8730621377337864115">Concluído</translation>
-<translation id="8730999928494395583">Sua atividade nessas guias anônimas será removida deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_MONTHS_ONE" /> mês}one{Criado há <ph name="NUM_MONTHS_MANY" /> mês}other{Criado há <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8813708480179818649">Remover guia do grupo</translation>
 <translation id="8820741577754260431">Ver reduções no preço nas suas guias</translation>
-<translation id="8887921976452567404">Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias".</translation>
 <translation id="8915916167043355778">Fechar todas</translation>
 <translation id="9090098097337832354">As informações sobre a loja estão fechadas</translation>
 <translation id="9114502155681725011">Abrir o menu de ações do grupo de guias <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>

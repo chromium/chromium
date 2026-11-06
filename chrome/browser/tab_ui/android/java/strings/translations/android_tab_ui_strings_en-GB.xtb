@@ -6,7 +6,11 @@
 If you delete it, everyone will immediately lose access to the '<ph name="TITLE_OF_GROUP" />' tab group and it will be deleted from all devices.</translation>
 <translation id="1340839264183302272">Leave group</translation>
 <translation id="1419023007528516122">This will permanently delete the group from your device</translation>
+<translation id="1499635324672558517">Close all Incognito tabs?</translation>
 <translation id="1501480321619201731">Delete group</translation>
+<translation id="1713541401465507417">Close all tabs and groups</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your Incognito tab won't be available.}other{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}}</translation>
+<translation id="2628148780487543078">Also close pinned tabs</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="3547352561153509682">This will delete the group from all devices signed in to <ph name="USER_EMAIL" /></translation>
 <translation id="381219490185664296">Ungroup tab group?</translation>
@@ -14,13 +18,16 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="4431937619879060901">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="4777866634702576038">Delete tab group?</translation>
+<translation id="4870911314065352661">Close all tabs?</translation>
 <translation id="5094423602314093681">Remove tab(s) and delete group?</translation>
 <translation id="5647702255748985085">Leave group?</translation>
 <translation id="742664698522525515">Keep group?</translation>
 <translation id="750886945254958667">Keep this group to add tabs later, or leave it if you no longer want access to it</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="870736955561925754">Close tab and delete group?</translation>
+<translation id="8730999928494395583">Your activity in these Incognito tabs will be removed from this device</translation>
 <translation id="8804742093141782941">Keep group</translation>
+<translation id="8887921976452567404">Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.</translation>
 <translation id="9169141410816678175">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all devices</translation>
 <translation id="9216898458513705996">The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="USER_EMAIL" /></translation>
 <translation id="94870150074703282">Delete group?</translation>

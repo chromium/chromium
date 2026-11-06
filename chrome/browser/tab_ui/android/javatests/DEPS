@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "CloseAllTabsDialogTest\\.java": [
+    "+chrome/browser/ui/android/appmenu/test",
+    "+chrome/browser/ui/messages/android",
+  ],
+}

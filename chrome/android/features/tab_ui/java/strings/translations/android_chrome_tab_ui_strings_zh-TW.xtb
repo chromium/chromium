@@ -18,7 +18,6 @@
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />，標籤為「<ph name="CARD_LABEL" />」。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />，標籤為「<ph name="CARD_LABEL" />」。}}</translation>
 <translation id="1486715732399361704">你可以在這裡找到所有分頁群組</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前建立}other{<ph name="NUM_MINS_MANY" /> 分鐘前建立}}</translation>
-<translation id="1499635324672558517">要關閉所有無痕分頁嗎？</translation>
 <translation id="1501480321619201731">刪除群組</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個閒置項目}other{<ph name="TABS_COUNT_MANY" /> 個閒置項目}}</translation>
 <translation id="1568067597247500137">關閉網站音訊</translation>
@@ -27,7 +26,6 @@
 <translation id="1657719826150349398">將分頁向下移</translation>
 <translation id="1670942869417022142">音訊已設為靜音</translation>
 <translation id="1697284962337958118">新增至</translation>
-<translation id="1713541401465507417">關閉所有分頁和群組</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> 個分頁群組已無法使用}other{<ph name="TAB_GROUPS_COUNT_MANY" /> 個分頁群組已無法使用}}</translation>
 <translation id="1759122978835002237">將分頁群組上移</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
@@ -43,7 +41,6 @@
 <translation id="2074527029802029717">取消分頁固定</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
 <translation id="2118649612461486615">商店資訊</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組，但無痕分頁無法重新開啟。}other{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組，但這 # 個無痕分頁無法重新開啟。}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{將網站取消靜音}other{將多個網站取消靜音}}</translation>
 <translation id="2162620598375156287">「<ph name="SOURCE_WEBSITE" />」目前售價　<ph name="CURRENT_PRICE" /></translation>
 <translation id="2164232689984783657">將分頁群組下移</translation>
@@ -61,7 +58,6 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="2569352796411618312">建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
 <translation id="257674075312929031">群組</translation>
-<translation id="2628148780487543078">一併關閉固定分頁</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{還原並開啟這個分頁群組，群組中有 <ph name="TABS_COUNT_ONE" /> 個分頁，顏色是<ph name="COLOR_NAME" />。}other{還原並開啟這個分頁群組，群組中有 <ph name="TABS_COUNT_MANY" /> 個分頁，顏色是<ph name="COLOR_NAME" />。}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>
 <translation id="266935134738038806">造訪網站</translation>
@@ -124,7 +120,6 @@
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{將選取的 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組}other{將選取的 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組}}</translation>
 <translation id="4861611890274104875">關閉資訊卡。</translation>
 <translation id="4861953997778766866">所有人都能變更你的共用分頁群組</translation>
-<translation id="4870911314065352661">要關閉所有分頁嗎？</translation>
 <translation id="4871719318659334896">關閉群組</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{還原並開啟「<ph name="TITLE_OF_GROUP" />」分頁群組，群組中有 <ph name="TABS_COUNT_ONE" /> 個分頁，顏色是<ph name="COLOR_NAME" />。}other{還原並開啟「<ph name="TITLE_OF_GROUP" />」分頁群組，群組中有 <ph name="TABS_COUNT_MANY" /> 個分頁，顏色是<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4881695831933465202">開啟</translation>
@@ -247,11 +242,9 @@
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730621377337864115">完成</translation>
-<translation id="8730999928494395583">你在這些無痕分頁中的活動將從這部裝置上移除</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前建立}other{<ph name="NUM_MONTHS_MANY" /> 個月前建立}}</translation>
 <translation id="8813708480179818649">將分頁從群組中移除</translation>
 <translation id="8820741577754260431">在分頁上查看降價資訊</translation>
-<translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="9090098097337832354">這間店的資訊已關閉</translation>
 <translation id="9114502155681725011">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」(<ph name="COLOR_NAME" />) 的動作選單。</translation>

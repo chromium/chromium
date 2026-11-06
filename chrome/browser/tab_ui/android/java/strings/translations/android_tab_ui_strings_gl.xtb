@@ -6,7 +6,11 @@
 Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="TITLE_OF_GROUP" />", que se eliminará de todos os dispositivos.</translation>
 <translation id="1340839264183302272">Saír do grupo</translation>
 <translation id="1419023007528516122">Con esta acción eliminarase permanentemente o grupo do teu dispositivo</translation>
+<translation id="1499635324672558517">Queres pechar todas as pestanas do modo de incógnito?</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
+<translation id="1713541401465507417">Pechar todas as pestanas e grupos</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. A pestana do modo de incógnito non estará dispoñible.}other{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. As # pestanas do modo de incógnito non estarán dispoñibles.}}</translation>
+<translation id="2628148780487543078">Pechar tamén pestanas fixadas</translation>
 <translation id="2677748264148917807">Saír</translation>
 <translation id="3547352561153509682">Eliminarase o grupo de todos os dispositivos nos que teñas a sesión iniciada con <ph name="USER_EMAIL" /></translation>
 <translation id="381219490185664296">Queres desagrupar as pestanas?</translation>
@@ -14,13 +18,16 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="4431937619879060901">Perderás inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" />, que se eliminará de todos os dispositivos</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4777866634702576038">Queres eliminar o grupo de pestanas?</translation>
+<translation id="4870911314065352661">Queres pechar todas as pestanas?</translation>
 <translation id="5094423602314093681">Queres quitar as pestanas e eliminar o grupo?</translation>
 <translation id="5647702255748985085">Queres saír do grupo?</translation>
 <translation id="742664698522525515">Queres manter o grupo?</translation>
 <translation id="750886945254958667">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non vas acceder a el</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="870736955561925754">Queres pechar a pestana e eliminar o grupo?</translation>
+<translation id="8730999928494395583">A túa actividade nestas pestanas do modo de incógnito quitarase deste dispositivo</translation>
 <translation id="8804742093141782941">Manter grupo</translation>
+<translation id="8887921976452567404">As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas.</translation>
 <translation id="9169141410816678175">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" />, que se eliminará de todos os dispositivos</translation>
 <translation id="9216898458513705996">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de todos os dispositivos nos que teñas a sesión iniciada con <ph name="USER_EMAIL" /></translation>
 <translation id="94870150074703282">Queres eliminar o grupo?</translation>

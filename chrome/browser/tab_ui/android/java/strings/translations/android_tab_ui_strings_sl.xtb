@@ -6,7 +6,11 @@
 Če jo izbrišete, bodo vsi takoj izgubili dostop do skupine zavihkov »<ph name="TITLE_OF_GROUP" />« in izbrisana bo iz vseh naprav.</translation>
 <translation id="1340839264183302272">Zapusti skupino</translation>
 <translation id="1419023007528516122">S tem boste skupino trajno izbrisali iz naprave</translation>
+<translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
 <translation id="1501480321619201731">Izbriši skupino</translation>
+<translation id="1713541401465507417">Zapri vse zavihke in skupine</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. Anonimni zavihek ne bo na voljo.}one{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihek ne bo na voljo.}two{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimna zavihka ne bosta na voljo.}few{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihki ne bodo na voljo.}other{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimnih zavihkov ne bo na voljo.}}</translation>
+<translation id="2628148780487543078">Zapri tudi pripete zavihke</translation>
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="3547352561153509682">S tem boste skupino izbrisali iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" />.</translation>
 <translation id="381219490185664296">Želite razdružiti skupino zavihkov?</translation>
@@ -14,13 +18,16 @@
 <translation id="4431937619879060901">Takoj boste izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh vaših naprav</translation>
 <translation id="4460014764210899310">Razdruži</translation>
 <translation id="4777866634702576038">Želite izbrisati skupino zavihkov?</translation>
+<translation id="4870911314065352661">Želite zapreti vse zavihke?</translation>
 <translation id="5094423602314093681">Želite odstraniti zavihke in izbrisati skupino?</translation>
 <translation id="5647702255748985085">Želite zapustiti skupino?</translation>
 <translation id="742664698522525515">Želite ohraniti skupino?</translation>
 <translation id="750886945254958667">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo zapustite, če ne želite več dostopati do nje</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="870736955561925754">Želite zapreti zavihek in izbrisati skupino?</translation>
+<translation id="8730999928494395583">Vaša dejavnost na teh anonimnih zavihkih bo odstranjena iz te naprave</translation>
 <translation id="8804742093141782941">Ohrani skupino</translation>
+<translation id="8887921976452567404">Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov.</translation>
 <translation id="9169141410816678175">Vsi bodo takoj izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh naprav</translation>
 <translation id="9216898458513705996">Zavihki bodo ostali odprti v tej napravi, vendar bo skupina izbrisana iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" /></translation>
 <translation id="94870150074703282">Želite izbrisati skupino?</translation>

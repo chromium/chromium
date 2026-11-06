@@ -18,7 +18,6 @@
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> című, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}other{<ph name="TITLE_OF_GROUP" /> című, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}}</translation>
 <translation id="1486715732399361704">Itt találja az összes lapcsoportot</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> perce létrehozva}other{<ph name="NUM_MINS_MANY" /> perce létrehozva}}</translation>
-<translation id="1499635324672558517">Bezárja az összes inkognitó lapot?</translation>
 <translation id="1501480321619201731">Csoport törlése</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktív elem}other{<ph name="TABS_COUNT_MANY" /> inaktív elem}}</translation>
 <translation id="1568067597247500137">Webhely némítása</translation>
@@ -27,7 +26,6 @@
 <translation id="1657719826150349398">Lap mozgatása lefelé</translation>
 <translation id="1670942869417022142">Némítva van a hang</translation>
 <translation id="1697284962337958118">Hozzáadás</translation>
-<translation id="1713541401465507417">Az összes lap és csoport bezárása</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> lapcsoport már nem áll rendelkezésre}other{<ph name="TAB_GROUPS_COUNT_MANY" /> lapcsoport már nem áll rendelkezésre}}</translation>
 <translation id="1759122978835002237">Lapcsoport mozgatása felfelé</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />További információ<ph name="END_LINK1" />.</translation>
@@ -43,7 +41,6 @@
 <translation id="2074527029802029717">Ne legyen rögzítve</translation>
 <translation id="2111670510994270194">Új lap jobbra</translation>
 <translation id="2118649612461486615">Üzletadatok</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. Az inkognitó lap nem lesz hozzáférhető.}other{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. # inkognitó lap nem lesz hozzáférhető.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Webhely némításának feloldása}other{Webhelyek némításának feloldása}}</translation>
 <translation id="2162620598375156287">Most <ph name="CURRENT_PRICE" /> áron a következő webhelyen: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164232689984783657">Lapcsoport mozgatása lefelé</translation>
@@ -61,7 +58,6 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása.}}</translation>
 <translation id="2569352796411618312">Javaslat: <ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
 <translation id="257674075312929031">Csoport</translation>
-<translation id="2628148780487543078">A rögzített lapok is záródjanak be</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{A(z) <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása és megnyitása.}other{A(z) <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása és megnyitása.}}</translation>
 <translation id="2662028055331606429">Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="266935134738038806">Webhely felkeresése</translation>
@@ -124,7 +120,6 @@
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap hozzáadása csoporthoz}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap hozzáadása csoporthoz}}</translation>
 <translation id="4861611890274104875">A kártya elvetése.</translation>
 <translation id="4861953997778766866">Bárki módosíthatja a megosztott lapcsoportokat</translation>
-<translation id="4870911314065352661">Az összes lapot bezárja?</translation>
 <translation id="4871719318659334896">Csoport bezárása</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása és megnyitása.}other{A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása és megnyitása}}</translation>
 <translation id="4881695831933465202">Megnyitás</translation>
@@ -247,11 +242,9 @@
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8714939927607906138">Alacsonyabb ár</translation>
 <translation id="8730621377337864115">Kész</translation>
-<translation id="8730999928494395583">Az ezeken az inkognitó lapokon végzett tevékenységei el lesznek távolítva erről az eszközről.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> hónapja létrehozva}other{<ph name="NUM_MONTHS_MANY" /> hónapja létrehozva}}</translation>
 <translation id="8813708480179818649">Lap eltávolítása a csoportból</translation>
 <translation id="8820741577754260431">Láthatja az árcsökkenéseket a megnyitott lapokon</translation>
-<translation id="8887921976452567404">A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban.</translation>
 <translation id="8915916167043355778">Az összes bezárása</translation>
 <translation id="9090098097337832354">Az üzlettel kapcsolatos információs panel be van zárva</translation>
 <translation id="9114502155681725011">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű lapcsoport műveleti menüjének megnyitása.</translation>

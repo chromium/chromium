@@ -247,9 +247,6 @@ specific_include_rules = {
   "ArchivedTabsMessageServiceUnitTest\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiver.java",
   ],
-  "CloseAllTabsDialogTest\\.java": [
-    "+chrome/browser/ui/android/appmenu/test",
-  ],
   "IncognitoReauthPromoMessageServiceUnitTest\\.java": [
     "+chrome/browser/device_reauth/android",
   ],

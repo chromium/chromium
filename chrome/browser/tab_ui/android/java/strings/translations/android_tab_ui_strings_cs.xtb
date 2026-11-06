@@ -6,7 +6,11 @@
 Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okamžitě ztratí přístup a smaže se ze všech zařízení.</translation>
 <translation id="1340839264183302272">Opustit skupinu</translation>
 <translation id="1419023007528516122">Tímto skupinu trvale smažete ze svého zařízení</translation>
+<translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
 <translation id="1501480321619201731">Smazat skupinu</translation>
+<translation id="1713541401465507417">Zavřít všechny karty a skupiny</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. Vaše anonymní karta nebude k dispozici.}few{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vaše anonymní karty nebudou k dispozici.}many{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vaší anonymní karty nebude k dispozici.}other{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vašich anonymních karet nebude k dispozici.}}</translation>
+<translation id="2628148780487543078">Zavřít také připnuté karty</translation>
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="3547352561153509682">Tímto skupinu smažete ze všech zařízení přihlášených k účtu <ph name="USER_EMAIL" /></translation>
 <translation id="381219490185664296">Odebrat karty ze skupiny?</translation>
@@ -14,13 +18,16 @@ Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okam�
 <translation id="4431937619879060901">Ke skupině karet „<ph name="GROUP_NAME" />“ okamžitě ztratíte přístup a bude smazána ze všech vašich zařízení</translation>
 <translation id="4460014764210899310">Zrušit seskupení</translation>
 <translation id="4777866634702576038">Smazat skupinu karet?</translation>
+<translation id="4870911314065352661">Zavřít všechny karty?</translation>
 <translation id="5094423602314093681">Odstranit karty a smazat skupinu?</translation>
 <translation id="5647702255748985085">Opustit skupinu?</translation>
 <translation id="742664698522525515">Zachovat skupinu?</translation>
 <translation id="750886945254958667">Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete opustit, pokud k ní už nechcete mít přístup.</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="870736955561925754">Zavřít kartu a smazat skupinu?</translation>
+<translation id="8730999928494395583">Vaše aktivita na těchto anonymních kartách bude z tohoto zařízení vymazána</translation>
 <translation id="8804742093141782941">Zachovat skupinu</translation>
+<translation id="8887921976452567404">Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet.</translation>
 <translation id="9169141410816678175">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a bude smazána ze všech zařízení</translation>
 <translation id="9216898458513705996">Karty zůstanou na tomto zařízení otevřené, ale skupina bude smazána ze všech zařízení přihlášených k účtu <ph name="USER_EMAIL" /></translation>
 <translation id="94870150074703282">Smazat skupinu?</translation>

@@ -6,7 +6,11 @@
 Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fitxa talderako sarbidea, eta gailu guztietatik ezabatuko da.</translation>
 <translation id="1340839264183302272">Irten taldetik</translation>
 <translation id="1419023007528516122">Taldea betiko ezabatuko da gailutik</translation>
+<translation id="1499635324672558517">Ezkutuko moduko fitxa guztiak itxi nahi dituzu?</translation>
 <translation id="1501480321619201731">Ezabatu taldea</translation>
+<translation id="1713541401465507417">Itxi fitxa eta talde guztiak</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko fitxa ez da egongo erabilgarri.}other{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko # fitxak ez dira egongo erabilgarri.}}</translation>
+<translation id="2628148780487543078">Itxi fitxa ainguratuak ere</translation>
 <translation id="2677748264148917807">Irten</translation>
 <translation id="3547352561153509682"><ph name="USER_EMAIL" /> kontuan saioa hasita daukaten gailuetan ezabatuko da taldea</translation>
 <translation id="381219490185664296">Fitxa taldea desegin nahi duzu?</translation>
@@ -14,13 +18,16 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="4431937619879060901">Berehala galduko duzu "<ph name="GROUP_NAME" />" fitxa talderako sarbidea, eta zure gailu guztietatik ezabatuko da</translation>
 <translation id="4460014764210899310">Desegin taldea</translation>
 <translation id="4777866634702576038">Fitxa taldea ezabatu nahi duzu?</translation>
+<translation id="4870911314065352661">Fitxa guztiak itxi nahi dituzu?</translation>
 <translation id="5094423602314093681">Fitxak kendu eta taldea ezabatu nahi duzu?</translation>
 <translation id="5647702255748985085">Taldetik irten nahi duzu?</translation>
 <translation id="742664698522525515">Taldea mantendu nahi duzu?</translation>
 <translation id="750886945254958667">Mantendu talde hau geroago fitxak gehitzeko. Aurrerantzean hura atzitu nahi ez baduzu, irten bertatik.</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="870736955561925754">Fitxa itxi eta taldea ezabatu nahi duzu?</translation>
+<translation id="8730999928494395583">Ezkutuko moduko fitxa hauetan egin dituzun jarduerak kendu egingo dira gailu honetatik</translation>
 <translation id="8804742093141782941">Mantendu taldea</translation>
+<translation id="8887921976452567404">Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro.</translation>
 <translation id="9169141410816678175">Berehala galduko dute denek "<ph name="GROUP_NAME" />" fitxa talderako sarbidea, eta gailu guztietatik ezabatuko da</translation>
 <translation id="9216898458513705996">Fitxak irekita mantenduko dira gailu honetan, baina <ph name="USER_EMAIL" /> kontuan saioa hasita daukaten gailu guztietan ezabatuko da taldea</translation>
 <translation id="94870150074703282">Taldea ezabatu nahi duzu?</translation>

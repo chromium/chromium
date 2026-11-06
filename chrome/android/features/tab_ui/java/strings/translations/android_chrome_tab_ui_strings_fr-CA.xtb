@@ -18,7 +18,6 @@
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> intitulé <ph name="TITLE_OF_GROUP" />, qui contient <ph name="TABS_COUNT_ONE" /> onglet, avec l'étiquette <ph name="CARD_LABEL" />.}one{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> intitulé <ph name="TITLE_OF_GROUP" />, qui contient <ph name="TABS_COUNT_MANY" /> onglet, avec l'étiquette <ph name="CARD_LABEL" />.}other{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> intitulé <ph name="TITLE_OF_GROUP" />, qui contient <ph name="TABS_COUNT_MANY" /> onglets, avec l'étiquette <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Vous pouvez trouver tous vos groupes d'onglets ici</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Créé il y a <ph name="NUM_MINS_ONE" /> minute}one{Créé il y a <ph name="NUM_MINS_MANY" /> minute}other{Créé il y a <ph name="NUM_MINS_MANY" /> minutes}}</translation>
-<translation id="1499635324672558517">Fermer tous les onglets de navigation privée?</translation>
 <translation id="1501480321619201731">Supprimer le groupe</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> élément inactif}one{<ph name="TABS_COUNT_MANY" /> élément inactif}other{<ph name="TABS_COUNT_MANY" /> éléments inactifs}}</translation>
 <translation id="1568067597247500137">Désactiver le son sur le site</translation>
@@ -27,7 +26,6 @@
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1670942869417022142">Son désactivé</translation>
 <translation id="1697284962337958118">Ajouter à</translation>
-<translation id="1713541401465507417">Fermer tous les onglets et tous les groupes</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> groupe d'onglets n'est plus accessible}one{<ph name="TAB_GROUPS_COUNT_MANY" /> groupe d'onglets n'est plus accessible}other{<ph name="TAB_GROUPS_COUNT_MANY" /> groupes d'onglets ne sont plus accessibles}}</translation>
 <translation id="1759122978835002237">Déplacer le groupe d'onglets vers le haut</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
@@ -43,7 +41,6 @@
 <translation id="2074527029802029717">Annuler l'épinglage de l'onglet</translation>
 <translation id="2111670510994270194">Nouvel onglet à droite</translation>
 <translation id="2118649612461486615">Renseignements sur le magasin</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. Votre onglet de navigation privée ne sera pas accessible.}one{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. # onglet de navigation privée ne sera pas accessible.}other{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. Vos # onglets de navigation privée ne seront pas accessibles.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Réactiver le son sur le site}one{Réactiver le son sur le site}other{Réactiver le son sur les sites}}</translation>
 <translation id="2162620598375156287">Maintenant <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164232689984783657">Déplacer le groupe d'onglets vers le bas</translation>
@@ -61,7 +58,6 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduire <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduire le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduire le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> de vos onglets n'ont pas été utilisés récemment. Les fermer?</translation>
 <translation id="257674075312929031">Groupe</translation>
-<translation id="2628148780487543078">Fermer également les onglets épinglés</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Restaurer et ouvrir le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Restaurer et ouvrir le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Restaurer et ouvrir le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2662028055331606429">Note : <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visiter le site</translation>
@@ -124,7 +120,6 @@
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné au groupe}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné au groupe}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés au groupe}}</translation>
 <translation id="4861611890274104875">Fermer la carte.</translation>
 <translation id="4861953997778766866">Tout le monde peut apporter des modifications à vos groupes d'onglets partagés</translation>
-<translation id="4870911314065352661">Fermer tous les onglets?</translation>
 <translation id="4871719318659334896">Fermer le groupe</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Restaurer et ouvrir le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Restaurer et ouvrir le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Restaurer et ouvrir le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
@@ -247,11 +242,9 @@
 <translation id="8712637175834984815">OK</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730621377337864115">Terminé</translation>
-<translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera retirée de cet appareil</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_MONTHS_ONE" /> mois}one{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}other{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
 <translation id="8813708480179818649">Retirer l'onglet du groupe</translation>
 <translation id="8820741577754260431">Faites le suivi des baisses de prix dans vos onglets</translation>
-<translation id="8887921976452567404">Vos onglets et groupes fermés peuvent être rouverts à partir de la section Onglets récents et de la section Groupes d'onglets.</translation>
 <translation id="8915916167043355778">Tout fermer</translation>
 <translation id="9090098097337832354">Les renseignements à propos de ce magasin sont fermés</translation>
 <translation id="9114502155681725011">Ouvrir le menu Action du groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" />.</translation>

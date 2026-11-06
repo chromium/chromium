@@ -6,7 +6,11 @@
 如果刪除，所有人將立即無法存取「<ph name="TITLE_OF_GROUP" />」分頁群組，且該群組將從所有裝置中刪除。</translation>
 <translation id="1340839264183302272">離開群組</translation>
 <translation id="1419023007528516122">這麼做會將群組從裝置中永久刪除</translation>
+<translation id="1499635324672558517">要關閉所有無痕式分頁嗎？</translation>
 <translation id="1501480321619201731">刪除群組</translation>
+<translation id="1713541401465507417">關閉所有分頁和群組</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。你將無法查看無痕式分頁。}other{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。你將無法查看 # 個無痕式分頁。}}</translation>
+<translation id="2628148780487543078">同時關閉固定分頁</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="3547352561153509682">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="381219490185664296">要將所有分頁移出群組嗎？</translation>
@@ -14,13 +18,16 @@
 <translation id="4431937619879060901">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
 <translation id="4460014764210899310">未分組</translation>
 <translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
+<translation id="4870911314065352661">要關閉所有分頁嗎？</translation>
 <translation id="5094423602314093681">要移除分頁並刪除群組嗎？</translation>
 <translation id="5647702255748985085">要離開群組嗎？</translation>
 <translation id="742664698522525515">要保留群組嗎？</translation>
 <translation id="750886945254958667">如果保留群組，你之後可新增分頁；如果不再使用，亦可離開群組</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="870736955561925754">要關閉分頁並刪除群組嗎？</translation>
+<translation id="8730999928494395583">系統將會從此裝置移除你在這些無痕式分頁中的活動</translation>
 <translation id="8804742093141782941">保留群組</translation>
+<translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
 <translation id="9169141410816678175">所有人將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從所有裝置刪除</translation>
 <translation id="9216898458513705996">分頁會在此裝置上保持開啟，但該群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="94870150074703282">要刪除群組嗎？</translation>
