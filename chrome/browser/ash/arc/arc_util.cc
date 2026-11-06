@@ -16,12 +16,14 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -328,14 +330,15 @@ void ShowContactAdminDialog() {
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_CONTACT_ADMIN_CONTEXT));
 }
 
-void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
+void SharePathIfRequired(base::WeakPtr<Profile> profile_weak_ptr,
+                         ConvertToContentUrlsAndShareCallback callback,
                          const std::vector<GURL>& content_urls,
                          const std::vector<base::FilePath>& paths_to_share) {
   CHECK(arc::IsArcVmEnabled() || paths_to_share.empty(),
         base::NotFatalUntil::M160);
   std::vector<base::FilePath> path_list;
-  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
-  CHECK(profile, base::NotFatalUntil::M160);
+  Profile* const profile = profile_weak_ptr.get();
+  CHECK(profile);
   for (const auto& path : paths_to_share) {
     if (!guest_os::GuestOsSharePathFactory::GetForProfile(profile)
              ->IsPathShared(kArcVmName, path)) {
@@ -851,7 +854,8 @@ void ConvertToContentUrlsAndShare(
     ConvertToContentUrlsAndShareCallback callback) {
   file_manager::util::ConvertToContentUrls(
       profile, std::move(file_system_urls),
-      base::BindOnce(&SharePathIfRequired, std::move(callback)));
+      base::BindOnce(&SharePathIfRequired, profile->GetWeakPtr(),
+                     std::move(callback)));
 }
 
 }  // namespace arc

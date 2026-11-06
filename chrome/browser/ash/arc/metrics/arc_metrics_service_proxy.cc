@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 
 // Enable VLOG level 1.
@@ -57,7 +57,8 @@ ArcMetricsServiceProxy* ArcMetricsServiceProxy::GetForBrowserContext(
 ArcMetricsServiceProxy::ArcMetricsServiceProxy(
     content::BrowserContext* context,
     ArcBridgeService* arc_bridge_service)
-    : arc_app_list_prefs_(ArcAppListPrefs::Get(context)),
+    : browser_context_(context),
+      arc_app_list_prefs_(ArcAppListPrefs::Get(context)),
       arc_metrics_service_(ArcMetricsService::GetForBrowserContext(context)) {
   // Exceptionally allow `g_browser_process` here since this class is created by
   // `ArcMetricsServiceProxyFactory`, which lives in a base::Singleton.
@@ -92,7 +93,7 @@ void ArcMetricsServiceProxy::OnArcStarted() {
 }
 
 void ArcMetricsServiceProxy::OnArcSessionStopped(ArcStopReason stop_reason) {
-  const auto* profile = ProfileManager::GetPrimaryUserProfile();
+  const Profile* profile = Profile::FromBrowserContext(browser_context_);
   if (arc::IsArcAllowedForProfile(profile)) {
     std::string metric_name =
         GetHistogramNameByUserType("Arc.Session.StopReason", profile);

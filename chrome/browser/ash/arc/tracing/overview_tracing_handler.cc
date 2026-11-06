@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -30,12 +31,15 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
 #include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -408,15 +412,19 @@ void OverviewTracingHandler::StopTracingOnController(
 
 OverviewTracingHandler::AppWindowList OverviewTracingHandler::AllAppWindows()
     const {
-  auto* app_service = apps::AppServiceProxyFactory::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile());
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  auto* app_service =
+      apps::AppServiceProxyFactory::GetForProfile(Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              primary_session->account_id())));
+  CHECK(app_service);
   AppWindowList windows;
-  if (app_service) {
-    app_service->InstanceRegistry().ForEachInstance(
-        [&windows](const auto& update) {
-          windows.emplace_back(update.Window());
-        });
-  }
+  app_service->InstanceRegistry().ForEachInstance(
+      [&windows](const auto& update) {
+        windows.emplace_back(update.Window());
+      });
   return windows;
 }
 

@@ -61,6 +61,7 @@ class ArcMetricsServiceProxy : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
+  const raw_ptr<content::BrowserContext> browser_context_;
   const raw_ptr<ArcAppListPrefs> arc_app_list_prefs_;
   const raw_ptr<ArcMetricsService> arc_metrics_service_;
 };

@@ -6,18 +6,21 @@
 
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_delegate.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -194,7 +197,12 @@ void ArcGhostWindowShellSurface::InitContentOverlay(
   std::string app_name;
   // TODO(sstan): Move this part out of shell surface.
   // In test env, ArcAppListPrefs or App maybe null.
-  auto* pref = ArcAppListPrefs::Get(ProfileManager::GetPrimaryUserProfile());
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  auto* pref = ArcAppListPrefs::Get(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   if (pref) {
     auto app_info = pref->GetApp(app_id);
     if (app_info)
