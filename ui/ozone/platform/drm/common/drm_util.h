@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "ui/display/display_features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
@@ -37,16 +36,11 @@ class DisplayMode;
 namespace ui {
 class HardwareDisplayControllerInfo;
 
-// TODO(b/193019614): clean |kMaxDrmCount|'s and |kMaxDrmConnectors|'s
-// assignment up once EDID-based ID migration is complete and the flag is
-// removed.
-// It is safe to assume there will be no more than 256 connected DRM devices.
-const size_t kMaxDrmCount =
-    display::features::IsEdidBasedDisplayIdsEnabled() ? 256u : 16u;
+// It is safe to assume there will be no more than 16 connected DRM devices.
+inline constexpr size_t kMaxDrmCount = 16u;
 
-// It is safe to assume there will be no more than 256 connectors per DRM.
-const size_t kMaxDrmConnectors =
-    display::features::IsEdidBasedDisplayIdsEnabled() ? 256u : 16u;
+// It is safe to assume there will be no more than 16 connectors per DRM.
+inline constexpr size_t kMaxDrmConnectors = 16u;
 
 // Using a moderate size e.g. 256 for the cursor is enough in most cases.
 const int kMaxCursorBufferSize = 256;

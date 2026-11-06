@@ -17,7 +17,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "ui/display/display_features.h"
 #include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -153,18 +152,11 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
   }
 
   const int64_t alternate_id = ProduceAlternativeSchemeIdForId(id_);
-  if (features::IsEdidBasedDisplayIdsEnabled()) {
-    edid_display_id_ = id_;
-    connector_index_ = GetNextSynthesizedEdidDisplayConnectorIndex();
+  port_display_id_ = id_;
+  // Output index is stored in the first 8 bits.
+  connector_index_ = id_ & 0xFF;
 
-    port_display_id_ = alternate_id;
-  } else {
-    port_display_id_ = id_;
-    // Output index is stored in the first 8 bits.
-    connector_index_ = id_ & 0xFF;
-
-    edid_display_id_ = alternate_id;
-  }
+  edid_display_id_ = alternate_id;
 
   // Add a name if none is provided.
   if (name_.empty())

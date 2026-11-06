@@ -7,8 +7,6 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "ui/display/display_features.h"
-#include "ui/display/util/display_util.h"
 
 namespace display {
 
@@ -17,23 +15,17 @@ namespace {
 constexpr int64_t kSynthesizedDisplayIdStart = 2200000000LL;
 
 int64_t next_synthesized_display_id = kSynthesizedDisplayIdStart;
-uint8_t edid_device_index = 0;
-uint8_t edid_display_index = 0;
 
 }  // namespace
 
 void ResetDisplayIdForTest() {
   next_synthesized_display_id = kSynthesizedDisplayIdStart;
-  edid_device_index = 0;
-  edid_display_index = 0;
 }
 
 int64_t GetASynthesizedDisplayId() {
   const int64_t id = next_synthesized_display_id;
   next_synthesized_display_id =
-      features::IsEdidBasedDisplayIdsEnabled()
-          ? next_synthesized_display_id += 0x100
-          : SynthesizeDisplayIdFromSeed(next_synthesized_display_id);
+      SynthesizeDisplayIdFromSeed(next_synthesized_display_id);
   return id;
 }
 
@@ -48,21 +40,6 @@ int64_t SynthesizeDisplayIdFromSeed(int64_t id) {
     return id + 0x100 + next_output_index;
   }
   return base + next_output_index;
-}
-
-int64_t GetNextSynthesizedEdidDisplayConnectorIndex() {
-  if (edid_display_index == 255) {
-    edid_display_index = 0;
-    edid_device_index++;
-  } else {
-    edid_display_index++;
-  }
-  // Synthesized IDs are limited to 256^2 unique IDs.
-  DCHECK_LT(edid_device_index, 255)
-      << "Connector index exceeded 65536. Cannot "
-         "synthesize any more unique display IDs.";
-
-  return ConnectorIndex16(edid_device_index, edid_display_index);
 }
 
 int64_t ProduceAlternativeSchemeIdForId(int64_t id) {

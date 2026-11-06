@@ -21,10 +21,6 @@ DISPLAY_MANAGER_EXPORT int64_t GetASynthesizedDisplayId();
 // Uses |id| as a seed to produce the next synthesized ID.
 DISPLAY_MANAGER_EXPORT int64_t SynthesizeDisplayIdFromSeed(int64_t id);
 
-// Generates the next fake connector index for displays who's ID was generated
-// by hashing their EDIDs.
-DISPLAY_MANAGER_EXPORT int64_t GetNextSynthesizedEdidDisplayConnectorIndex();
-
 // Increases the most significant digit of |id| by one. For example:
 // for 2200000000, this function returns 3200000000.
 // Note: this method is chosen for readability purposes only. It creates a an

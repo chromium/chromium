@@ -6,9 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/display_features.h"
 
 namespace display {
 
@@ -25,21 +23,14 @@ TEST(DisplayManagerTestUtilTest, TestResetDisplayIdForTest) {
 
   const int64_t kFirstId = GetASynthesizedDisplayId();
   EXPECT_EQ(kSynthesizedDisplayIdStart, kFirstId);
-  const int64_t kFirstEdidConnectorIndex =
-      GetNextSynthesizedEdidDisplayConnectorIndex();
-  EXPECT_EQ(1L, kFirstEdidConnectorIndex);
 
-  // Synthesize a hundred different display IDs and EDID-based display connector
-  // indices.
+  // Synthesize a hundred different display IDs.
   for (size_t i = 0; i < 100; ++i) {
     GetASynthesizedDisplayId();
-    GetNextSynthesizedEdidDisplayConnectorIndex();
   }
   ResetDisplayIdForTest();
 
   EXPECT_EQ(kFirstId, GetASynthesizedDisplayId());
-  EXPECT_EQ(kFirstEdidConnectorIndex,
-            GetNextSynthesizedEdidDisplayConnectorIndex());
 }
 
 TEST(DisplayManagerTestUtilTest, TestGetASynthesizedDisplayId) {
@@ -54,21 +45,6 @@ TEST(DisplayManagerTestUtilTest, TestGetASynthesizedDisplayId) {
   EXPECT_EQ(2200000260, GetASynthesizedDisplayId());
   EXPECT_EQ(2200000261, GetASynthesizedDisplayId());
   EXPECT_EQ(2200000262, GetASynthesizedDisplayId());
-
-  // Test EDID-based synthesized IDs, which are incremented by 0x100 after the
-  // initial value of kSynthesizedDisplayIdStart.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      display::features::kEnableEdidBasedDisplayIds);
-  ResetDisplayIdForTest();
-
-  EXPECT_EQ(kSynthesizedDisplayIdStart, GetASynthesizedDisplayId());
-  EXPECT_EQ(2200000256, GetASynthesizedDisplayId());
-  EXPECT_EQ(2200000512, GetASynthesizedDisplayId());
-  EXPECT_EQ(2200000768, GetASynthesizedDisplayId());
-  EXPECT_EQ(2200001024, GetASynthesizedDisplayId());
-  EXPECT_EQ(2200001280, GetASynthesizedDisplayId());
-  EXPECT_EQ(2200001536, GetASynthesizedDisplayId());
 }
 
 TEST(DisplayManagerTestUtilTest, TestSynthesizeDisplayIdFromSeed) {

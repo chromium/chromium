@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/display.h"
-#include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/manager/util/display_manager_util.h"
@@ -721,18 +720,11 @@ ManagedDisplayInfo CreateDisplayInfo(int64_t id, const gfx::Rect& bounds) {
       id, base::StringPrintf("Display-%d", static_cast<int>(id)), false);
 
   const int64_t alternate_id = ProduceAlternativeSchemeIdForId(id);
-  if (features::IsEdidBasedDisplayIdsEnabled()) {
-    info.set_edid_display_id(id);
-    info.set_connector_index(GetNextSynthesizedEdidDisplayConnectorIndex());
+  info.set_port_display_id(id);
+  // Output index is stored in the first 8 bits.
+  info.set_connector_index(id & 0xFF);
 
-    info.set_port_display_id(alternate_id);
-  } else {
-    info.set_port_display_id(id);
-    // Output index is stored in the first 8 bits.
-    info.set_connector_index(id & 0xFF);
-
-    info.set_edid_display_id(alternate_id);
-  }
+  info.set_edid_display_id(alternate_id);
   if (!bounds.IsEmpty()) {
     info.SetBounds(bounds);
   }

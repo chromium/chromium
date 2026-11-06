@@ -7811,15 +7811,6 @@ inline constexpr char kEnableRootNsDnsProxyDescription[] =
     "When enabled, DNS proxy service runs on the root network namespace "
     "instead of inside a specified network namespace";
 
-inline constexpr char kEnableEdidBasedDisplayIdsName[] =
-    "Enable EDID-based display IDs";
-inline constexpr char kEnableEdidBasedDisplayIdsDescription[] =
-    "When enabled, a display's ID will be produced by hashing certain values "
-    "in the display's EDID blob. EDID-based display IDs allow ChromeOS to "
-    "consistently identify previously connected displays, regardless of the "
-    "physical port they were connected to, and load user display layouts more "
-    "accurately.";
-
 inline constexpr char kTiledDisplaySupportName[] =
     "Enable tile display support";
 inline constexpr char kTiledDisplaySupportDescription[] =
