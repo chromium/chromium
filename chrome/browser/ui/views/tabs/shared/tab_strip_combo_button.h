@@ -89,6 +89,10 @@ class TabStripComboButton : public views::View,
       views::LayoutOrientation orientation);
 
   void OnMenuClosedForTesting() { OnMenuClosed(); }
+  void ShowEverythingMenuForTesting() { ShowEverythingMenu(); }
+  tab_groups::STGEverythingMenu* everything_menu_for_testing() {
+    return everything_menu_.get();
+  }
   const base::OneShotTimer& hide_tab_search_timer_for_testing() const {
     return hide_tab_search_timer_;
   }

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
@@ -31,6 +32,7 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -228,6 +230,49 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       // Button should still be visible.
       CheckView(kTabSearchButtonElementId,
                 [](views::View* view) { return view->GetVisible(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
+                       EverythingMenuLogsVerticalMetrics) {
+  RunTestSequence(
+      EnsureBothButtonsVisible(),
+      PressButton(kSavedTabGroupButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      CheckUserAction(
+          "TabGroups_SavedTabGroups_EverythingButtonPressed_Vertical", 1),
+      CheckUserAction(
+          "TabGroups_SavedTabGroups_EverythingButtonPressed_Horizontal", 0),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->GetProfile()
+                ->GetPrefs()
+                ->GetTime(prefs::kVerticalTabsEverythingMenuLastPressed)
+                .is_null();
+          },
+          false),
+      EnsurePresent(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
+      WithView(kTabStripComboButtonElementId,
+               [](TabStripComboButton* combo) {
+                 ASSERT_NE(combo->everything_menu_for_testing(), nullptr);
+                 combo->everything_menu_for_testing()->ExecuteCommand(
+                     IDC_CREATE_NEW_TAB_GROUP, 0);
+               }),
+      WaitForShow(kTabGroupEditorBubbleId),
+      WithView(kTabGroupEditorBubbleId,
+               [](views::View* bubble) {
+                 bubble->GetWidget()->CloseWithReason(
+                     views::Widget::ClosedReason::kEscKeyPressed);
+               }),
+      WaitForHide(kTabGroupEditorBubbleId),
+      Do([]() { base::RunLoop().RunUntilIdle(); }),
+      CheckUserAction(
+          "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromVerticalTabs",
+          1),
+      CheckUserAction(
+          "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_"
+          "2",
+          0));
 }
 
 class TabStripComboButtonOrganizerPanelInteractiveUiTest
@@ -478,8 +523,15 @@ class TabStripComboButtonHorizontalInteractiveUiTest
         });
   }
 
+  auto CheckUserAction(const std::string& action, int expected_count) {
+    return CheckResult(
+        [this, action]() { return user_action_tester_.GetActionCount(action); },
+        expected_count);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::UserActionTester user_action_tester_;
 };
 
 IN_PROC_BROWSER_TEST_P(TabStripComboButtonHorizontalInteractiveUiTest,
@@ -503,6 +555,48 @@ IN_PROC_BROWSER_TEST_P(TabStripComboButtonHorizontalInteractiveUiTest,
   RunTestSequence(SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
                   WaitForShow(kTabSearchButtonElementId),
                   CheckTabSearchIcon(expected_icon));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripComboButtonHorizontalInteractiveUiTest,
+                       EverythingMenuLogsHorizontalMetrics) {
+  RunTestSequence(
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      WaitForShow(kTabSearchButtonElementId),
+      WithView(kTabStripComboButtonElementId,
+               [](TabStripComboButton* combo) {
+                 combo->ShowEverythingMenuForTesting();
+                 ASSERT_NE(combo->everything_menu_for_testing(), nullptr);
+                 combo->everything_menu_for_testing()->ExecuteCommand(
+                     IDC_CREATE_NEW_TAB_GROUP, 0);
+               }),
+      WaitForShow(kTabGroupEditorBubbleId),
+      WithView(kTabGroupEditorBubbleId,
+               [](views::View* bubble) {
+                 bubble->GetWidget()->CloseWithReason(
+                     views::Widget::ClosedReason::kEscKeyPressed);
+               }),
+      WaitForHide(kTabGroupEditorBubbleId),
+      Do([]() { base::RunLoop().RunUntilIdle(); }),
+      CheckUserAction(
+          "TabGroups_SavedTabGroups_EverythingButtonPressed_Horizontal", 1),
+      CheckUserAction(
+          "TabGroups_SavedTabGroups_EverythingButtonPressed_Vertical", 0),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->GetProfile()
+                ->GetPrefs()
+                ->GetTime(prefs::kVerticalTabsEverythingMenuLastPressed)
+                .is_null();
+          },
+          true),
+      CheckUserAction(
+          "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromVerticalTabs",
+          0),
+      CheckUserAction(
+          "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_"
+          "2",
+          1));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

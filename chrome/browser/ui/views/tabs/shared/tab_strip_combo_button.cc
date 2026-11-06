@@ -188,13 +188,16 @@ void TabStripComboButton::ChildVisibilityChanged(views::View* child) {
 }
 
 void TabStripComboButton::ShowEverythingMenu() {
+  const bool is_vertical = BrowserView::GetBrowserViewForBrowser(browser_)
+                               ->ShouldDrawVerticalTabStrip();
   base::RecordAction(base::UserMetricsAction(
-      BrowserView::GetBrowserViewForBrowser(browser_)
-              ->ShouldDrawVerticalTabStrip()
+      is_vertical
           ? "TabGroups_SavedTabGroups_EverythingButtonPressed_Vertical"
           : "TabGroups_SavedTabGroups_EverythingButtonPressed_Horizontal"));
-  browser_->GetProfile()->GetPrefs()->SetTime(
-      prefs::kVerticalTabsEverythingMenuLastPressed, base::Time::Now());
+  if (is_vertical) {
+    browser_->GetProfile()->GetPrefs()->SetTime(
+        prefs::kVerticalTabsEverythingMenuLastPressed, base::Time::Now());
+  }
   if (everything_menu_ && everything_menu_->IsShowing()) {
     return;
   }
@@ -207,9 +210,13 @@ void TabStripComboButton::ShowEverythingMenu() {
   // MenuController::RepostEventAndCancel).
   everything_menu_ = std::make_unique<tab_groups::STGEverythingMenu>(
       everything_menu_controller_, browser_,
-      tab_groups::STGEverythingMenu::MenuContext::kVerticalTabStrip);
+      is_vertical
+          ? tab_groups::STGEverythingMenu::MenuContext::kVerticalTabStrip
+          : tab_groups::STGEverythingMenu::MenuContext::kSavedTabGroupBar);
 
-  everything_menu_->RunMenu();
+  if (everything_menu_controller_) {
+    everything_menu_->RunMenu();
+  }
 }
 
 std::unique_ptr<TabStripFlatEdgeButton>
