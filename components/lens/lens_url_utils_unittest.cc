@@ -92,8 +92,13 @@ INSTANTIATE_TEST_SUITE_P(
         InvocationSourceParamTestCase{
             lens::LensOverlayInvocationSource::kAppMenu, "menu"},
         InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kAppMenuAskGoogle, "menuag"},
+        InvocationSourceParamTestCase{
             lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
             "ctxp"},
+        InvocationSourceParamTestCase{lens::LensOverlayInvocationSource::
+                                          kContentAreaContextMenuPageAskGoogle,
+                                      "ctxpag"},
         InvocationSourceParamTestCase{
             lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
             "ctxi"},

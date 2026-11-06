@@ -250,6 +250,8 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Omnibox Popup Button"/>
   <int value="25" label="Contextual Cue"/>
   <int value="26" label="Selection Suggestion"/>
+  <int value="27" label="App menu (Ask Google)"/>
+  <int value="28" label="Content area page context menu (Ask Google)"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

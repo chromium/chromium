@@ -3815,7 +3815,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 chrome::ExecAskGoogleAboutThisPage(
                     bwi,
                     lens::LensOverlayInvocationSource::
-                        kContentAreaContextMenuPage,
+                        kContentAreaContextMenuPageAskGoogle,
                     omnibox::ChromeAimEntryPoint::
                         DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
               },
@@ -4373,7 +4373,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   return;
                 }
                 chrome::ExecAskGoogleAboutThisPage(
-                    bwi, lens::LensOverlayInvocationSource::kAppMenu,
+                    bwi, lens::LensOverlayInvocationSource::kAppMenuAskGoogle,
                     omnibox::ChromeAimEntryPoint::
                         DESKTOP_CHROME_APP_MENU_ASK_GOOGLE);
               },

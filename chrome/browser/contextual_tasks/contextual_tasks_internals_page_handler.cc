@@ -277,8 +277,12 @@ std::string InvocationSourceToString(
   switch (*source) {
     case Source::kAppMenu:
       return "kAppMenu";
+    case Source::kAppMenuAskGoogle:
+      return "kAppMenuAskGoogle";
     case Source::kContentAreaContextMenuPage:
       return "kContentAreaContextMenuPage";
+    case Source::kContentAreaContextMenuPageAskGoogle:
+      return "kContentAreaContextMenuPageAskGoogle";
     case Source::kContentAreaContextMenuImage:
       return "kContentAreaContextMenuImage";
     case Source::kToolbar:

@@ -96,9 +96,10 @@ GetLensInvocationSourceForAimZeroState(
       return lens::LensOverlayInvocationSource::kOmniboxPageAction;
     case omnibox::ChromeAimEntryPoint::
         DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE:
-      return lens::LensOverlayInvocationSource::kContentAreaContextMenuPage;
+      return lens::LensOverlayInvocationSource::
+          kContentAreaContextMenuPageAskGoogle;
     case omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE:
-      return lens::LensOverlayInvocationSource::kAppMenu;
+      return lens::LensOverlayInvocationSource::kAppMenuAskGoogle;
     case omnibox::ChromeAimEntryPoint::
         DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP:
       return lens::LensOverlayInvocationSource::kHomeworkActionChip;

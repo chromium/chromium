@@ -4141,7 +4141,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE:
       chrome::ExecAskGoogleAboutThisPage(
           GetBrowser(),
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+          lens::LensOverlayInvocationSource::
+              kContentAreaContextMenuPageAskGoogle,
           omnibox::ChromeAimEntryPoint::
               DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
       break;
