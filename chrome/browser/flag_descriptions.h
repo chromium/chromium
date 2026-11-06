@@ -2824,12 +2824,7 @@ inline constexpr char kFedCmAutofillDescription[] =
 inline constexpr char kFedCmAmbientBubbleName[] = "FedCM Ambient Bubble";
 inline constexpr char kFedCmAmbientBubbleDescription[] =
     "Shows FedCM accounts for passive mode requests in an ambient bubble, "
-    "instead of the regular FedCM dialog. This is separate from the FedCM "
-    "ambient UI in the omnibox (#fedcm-ambient-ui).";
-
-inline constexpr char kFedCmAmbientUIName[] = "FedCm Ambient UI";
-inline constexpr char kFedCmAmbientUIDescription[] =
-    "Enables FedCM ambient UI in the omnibox.";
+    "instead of the regular FedCM dialog.";
 
 inline constexpr char kFedCmDelegationName[] = "FedCM with delegation support";
 inline constexpr char kFedCmDelegationDescription[] =
