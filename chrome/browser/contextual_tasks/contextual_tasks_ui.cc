@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -1089,11 +1090,17 @@ void ContextualTasksUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                           base::Unretained(this)));
+  SetComposeboxHandler(nullptr);
   owned_composebox_handler_ = std::move(handler);
-  SetComposeboxHandler(owned_composebox_handler_.get());
+  if (composebox_handler_for_testing_) {
+    CHECK_IS_TEST();
+    SetComposeboxHandler(composebox_handler_for_testing_.get());
+  } else {
+    SetComposeboxHandler(owned_composebox_handler_.get());
+  }
 
   // Sync the initial auto-suggestion state.
-  if (auto_suggestion_manager_->GetCurrentSuggestion()) {
+  if (composebox_handler_ && auto_suggestion_manager_->GetCurrentSuggestion()) {
     composebox_handler_->UpdateSuggestedTabContext(
         auto_suggestion_manager_->GetCurrentSuggestion());
   }
@@ -1198,8 +1205,12 @@ void ContextualTasksUI::SetComposeboxHandler(
 void ContextualTasksUI::SetComposeboxHandlerForTesting(  // IN-TEST
     std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
         handler) {
-  owned_composebox_handler_ = std::move(handler);
-  SetComposeboxHandler(owned_composebox_handler_.get());
+  CHECK_IS_TEST();
+  SetComposeboxHandler(nullptr);
+  composebox_handler_for_testing_ = std::move(handler);
+  SetComposeboxHandler(composebox_handler_for_testing_
+                           ? composebox_handler_for_testing_.get()
+                           : owned_composebox_handler_.get());
 }
 
 void ContextualTasksUI::MoveTaskUiToNewTab() {

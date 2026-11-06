@@ -376,6 +376,9 @@ class ContextualTasksUI
   std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
       owned_composebox_handler_;
 
+  std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
+      composebox_handler_for_testing_;
+
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};
 

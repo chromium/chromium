@@ -952,9 +952,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       }));
 }
 
-// TODO(crbug.com/577969962): Flaky / timing out across multiple platforms.
+// This tests the following CUJ:
+// 1. Navigate the active tab associated with a task to https://foo.com.
+// 2. Open the Contextual Tasks side panel and verify the active tab context
+//    suggestion is populated for https://foo.com.
+// 3. Switch to another tab associated with the same task that is ineligible
+//    for auto-suggestion (chrome://settings) and verify the active tab context
+//    suggestion is cleared.
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-                       DISABLED_UpdateActiveTabContextStatusOnTabSwitch) {
+                       UpdateActiveTabContextStatusOnTabSwitch) {
   SetUpTasks();
   ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
   GURL foo("https://foo.com");
@@ -962,6 +968,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), foo));
   coordinator->Show(false,
                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+  ASSERT_TRUE(content::WaitForLoadStop(coordinator->GetActiveWebContents()));
   ContextualTasksUI* ui = GetContextualTasksUI();
   mojo::PendingRemote<composebox::mojom::PageHandler> composebox_handler_remote;
   mojo::PendingReceiver<composebox::mojom::PageHandler>
