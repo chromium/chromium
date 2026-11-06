@@ -51,6 +51,7 @@ class QuotaOverrideHandle;
 //
 // Unless documented otherwise, result callbacks are posted to the calling
 // sequence's current default task runner, which must exist.
+// Dropped operations invoke their callbacks with the method's fallback result.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
     : public base::RefCountedThreadSafe<QuotaManagerProxy> {
  public:
@@ -250,11 +251,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   FRIEND_TEST_ALL_PREFIXES(QuotaManagerProxyTest,
                            ManagerDestructionInitiatedDuringPostTask);
 
-  void RunOrPostTaskWithQuotaManager(
-      base::OnceCallback<void(QuotaManagerImpl*)> task);
-
-  // Like RunOrPostTaskWithQuotaManager, but drops `task` if the manager is
-  // null.
+  // Runs `task` on the manager's sequence, or drops it if the manager is null.
   void MaybeRunTask(base::OnceCallback<void(QuotaManagerImpl&)> task);
 
   // Bound to QuotaManagerImpl's sequence.
