@@ -82,7 +82,6 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/views",

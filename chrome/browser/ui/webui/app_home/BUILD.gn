@@ -138,7 +138,6 @@ if (enable_extensions) {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",
       "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//components/webapps/browser",
       "//content/public/browser",
       "//content/test:test_support",

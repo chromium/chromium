@@ -44,10 +44,12 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/page_action:page_action_test_support",
     "//chrome/browser/ui/views/toolbar",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/interaction",
     "//components/zoom",
     "//content/test:test_support",
     "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
   ]
 }

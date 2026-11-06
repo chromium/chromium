@@ -58,6 +58,11 @@ source_set("test_support") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
+  public_deps = [
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test/interaction",
+  ]
+
   deps = [
     ":impl",
     "//chrome/browser:platform_util_internal",
@@ -65,7 +70,6 @@ source_set("test_support") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/toolbar",
     "//chrome/common:chrome_features",
-    "//chrome/test:test_support_ui",
     "//ui/base/interaction:test_support",
     "//ui/views",
   ]
@@ -89,7 +93,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//ui/views",
     "//ui/views:test_support",
@@ -109,7 +112,6 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/profiles",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//ui/views",
     "//ui/views:test_support",

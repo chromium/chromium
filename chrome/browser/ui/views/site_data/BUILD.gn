@@ -141,7 +141,6 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//components/content_settings/core/common",
     "//components/prefs",
     "//components/privacy_sandbox:features",

@@ -127,7 +127,7 @@ if (!is_android) {
 
     public_deps = [
       "//base",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:interactive_test_utils",
       "//chrome/test/interaction",
       "//ui/base:test_support",
       "//ui/base/interaction:test_support",
