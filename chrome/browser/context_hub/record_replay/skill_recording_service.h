@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_RECORD_REPLAY_SKILL_RECORDING_SERVICE_H_
 #define CHROME_BROWSER_CONTEXT_HUB_RECORD_REPLAY_SKILL_RECORDING_SERVICE_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 
 class BrowserTabStripTracker;
 class BrowserWindowInterface;
@@ -55,9 +59,15 @@ class SkillRecordingService : public KeyedService,
 
   std::optional<base::TimeTicks> start_time() const { return start_time_; }
 
-  // Called by `TabActiveObserver` when a mouse click occurs at (`x`, `y`) in
-  // widget coordinates. No-op if not currently recording.
-  void RecordClick(int x, int y);
+  // Captures a user action of the given `type` and requests a viewport
+  // screenshot.
+  void CaptureAction(browser::context_hub::mojom::SkillRecordingActionType type,
+                     std::string description);
+
+  // Returns a screenshot completion callback bound to `weak_ptr_factory_` for
+  // testing screenshot handling and callback invalidation across sessions.
+  page_content_annotations::FetchPageContextResultCallback
+  BindScreenshotCapturedCallbackForTesting(size_t action_index);
 
   // KeyedService:
   void Shutdown() override;
@@ -76,6 +86,13 @@ class SkillRecordingService : public KeyedService,
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
+  page_content_annotations::FetchPageContextResultCallback
+  BindScreenshotCapturedCallback(size_t action_index);
+
+  // Handles the screenshot capture result for the action at `action_index`.
+  void OnScreenshotCaptured(
+      size_t action_index,
+      page_content_annotations::FetchPageContextResultCallbackArg result);
   void ObserveActiveTabInBrowser(BrowserWindowInterface* browser);
   void ObserveWebContents(content::WebContents* web_contents);
 
@@ -87,6 +104,7 @@ class SkillRecordingService : public KeyedService,
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+  base::WeakPtrFactory<SkillRecordingService> weak_ptr_factory_{this};
 };
 
 }  // namespace context_hub

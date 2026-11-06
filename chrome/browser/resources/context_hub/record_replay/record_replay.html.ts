@@ -38,11 +38,16 @@ export function getHtml(this: RecordReplayElement) {
             <h3>Recorded Actions</h3>
             <ul>
               ${this.sessionData_.actions.map(item => html`
-                <li>
-                  <strong>Action:</strong> ${item.description} <br>
-                  <small>
+                <li class="action-item">
+                  <div><strong>Action:</strong> ${item.description}</div>
+                  <small class="action-timestamp">
                     Timestamp: ${this.formatTimestamp_(item.timestamp)}
                   </small>
+                  ${item.screenshotDataUrl ? html`
+                    <img class="action-screenshot"
+                        src="${item.screenshotDataUrl}"
+                        alt="${item.description}">
+                  ` : ''}
                 </li>
               `)}
             </ul>

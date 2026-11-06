@@ -7,7 +7,9 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -37,8 +39,11 @@ void TabActiveObserver::DidGetUserInteraction(
   if (mouse_event.button != blink::WebPointerProperties::Button::kLeft) {
     return;
   }
-  service_->RecordClick(base::ClampRound(mouse_event.PositionInWidget().x()),
-                        base::ClampRound(mouse_event.PositionInWidget().y()));
+  const int x = base::ClampRound(mouse_event.PositionInWidget().x());
+  const int y = base::ClampRound(mouse_event.PositionInWidget().y());
+  service_->CaptureAction(
+      browser::context_hub::mojom::SkillRecordingActionType::kLeftClick,
+      base::StringPrintf("Mouse Clicked at X:%d, Y:%d", x, y));
 }
 
 }  // namespace context_hub

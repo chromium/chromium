@@ -5,13 +5,16 @@
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
@@ -24,6 +27,8 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/page_content_annotations/content/page_context_fetcher_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/site_instance.h"
@@ -37,9 +42,32 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace context_hub {
 namespace {
+
+using browser::context_hub::mojom::SkillRecordingActionType;
+using browser::context_hub::mojom::SkillRecordingSessionDataPtr;
+
+page_content_annotations::FetchPageContextResultCallbackArg
+CreateSuccessfulScreenshotResult() {
+  auto fetch_result =
+      std::make_unique<page_content_annotations::FetchPageContextResult>();
+  fetch_result->screenshot_result =
+      page_content_annotations::ScreenshotResult(/*dimensions=*/{});
+  fetch_result->screenshot_result->screenshot_data = {1, 2, 3, 4};
+  fetch_result->screenshot_result->mime_type = "image/jpeg";
+  return base::ok(std::move(fetch_result));
+}
+
+page_content_annotations::FetchPageContextResultCallbackArg
+CreateFailedFetchResult() {
+  return base::unexpected(
+      page_content_annotations::FetchPageContextErrorDetails{
+          page_content_annotations::FetchPageContextError::kUnknown,
+          "Failed to fetch page context"});
+}
 
 class TestBrowserInstance {
  public:
@@ -134,7 +162,7 @@ class SkillRecordingServiceTest : public testing::Test {
 TEST_F(SkillRecordingServiceTest, InitialState) {
   EXPECT_FALSE(service_.is_recording());
   EXPECT_FALSE(service_.start_time().has_value());
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->actions.empty());
   EXPECT_FALSE(service_.is_recording());
@@ -145,39 +173,134 @@ TEST_F(SkillRecordingServiceTest, StartAndStopRecording) {
   EXPECT_TRUE(service_.is_recording());
   EXPECT_EQ(service_.start_time(), base::TimeTicks::Now());
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   EXPECT_FALSE(service_.is_recording());
   EXPECT_FALSE(service_.start_time().has_value());
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->actions.empty());
 }
 
-TEST_F(SkillRecordingServiceTest, RecordClickWhileRecording) {
+TEST_F(SkillRecordingServiceTest, OnScreenshotCapturedWithValidResult) {
   service_.StartRecording();
-  task_environment_.FastForwardBy(base::Milliseconds(100));
-  service_.RecordClick(10, 20);
-  task_environment_.FastForwardBy(base::Milliseconds(250));
-  service_.RecordClick(30, 40);
+  task_environment_.FastForwardBy(base::Milliseconds(150));
 
-  auto result = service_.StopRecording();
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Mouse Clicked at X:10, Y:20");
+  service_.BindScreenshotCapturedCallbackForTesting(0).Run(
+      CreateSuccessfulScreenshotResult());
+
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
-  ASSERT_EQ(result->actions.size(), 2u);
+  ASSERT_EQ(result->actions.size(), 1u);
+  EXPECT_EQ(result->actions[0]->type, SkillRecordingActionType::kLeftClick);
   EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:10, Y:20");
-  EXPECT_EQ(result->actions[0]->timestamp, base::Milliseconds(100));
-  EXPECT_EQ(result->actions[1]->description, "Mouse Clicked at X:30, Y:40");
-  EXPECT_EQ(result->actions[1]->timestamp, base::Milliseconds(350));
+  EXPECT_EQ(result->actions[0]->timestamp, base::Milliseconds(150));
+  EXPECT_EQ(result->actions[0]->screenshot_data_url,
+            GURL("data:image/jpeg;base64,AQIDBA=="));
 
   // Calling `StopRecording()` again should return empty.
-  auto second_result = service_.StopRecording();
+  SkillRecordingSessionDataPtr second_result = service_.StopRecording();
   ASSERT_TRUE(second_result);
   EXPECT_TRUE(second_result->actions.empty());
 }
 
-TEST_F(SkillRecordingServiceTest, IgnoresRecordClickWhenNotRecording) {
-  service_.RecordClick(10, 20);
+TEST_F(SkillRecordingServiceTest,
+       OnScreenshotCapturedPreservesActionsWhenScreenshotMissingOrPending) {
+  service_.StartRecording();
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  // Action 0 is left with no `OnScreenshotCaptured()` call (pending at stop).
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Mouse Clicked at X:10, Y:20");
+
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Mouse Clicked at X:30, Y:40");
+
+  // Missing `screenshot_result`, failed fetch, and out-of-bounds index.
+  service_.BindScreenshotCapturedCallbackForTesting(1).Run(base::ok(
+      std::make_unique<page_content_annotations::FetchPageContextResult>()));
+  service_.BindScreenshotCapturedCallbackForTesting(1).Run(
+      CreateFailedFetchResult());
+  service_.BindScreenshotCapturedCallbackForTesting(99).Run(
+      CreateSuccessfulScreenshotResult());
+
+  // Empty `screenshot_data` or empty `mime_type` must be ignored.
+  auto empty_data_result =
+      std::make_unique<page_content_annotations::FetchPageContextResult>();
+  empty_data_result->screenshot_result =
+      page_content_annotations::ScreenshotResult(/*dimensions=*/{});
+  empty_data_result->screenshot_result->mime_type = "image/jpeg";
+  service_.BindScreenshotCapturedCallbackForTesting(1).Run(
+      base::ok(std::move(empty_data_result)));
+
+  auto empty_mime_result =
+      std::make_unique<page_content_annotations::FetchPageContextResult>();
+  empty_mime_result->screenshot_result =
+      page_content_annotations::ScreenshotResult(/*dimensions=*/{});
+  empty_mime_result->screenshot_result->screenshot_data = {1, 2, 3, 4};
+  service_.BindScreenshotCapturedCallbackForTesting(1).Run(
+      base::ok(std::move(empty_mime_result)));
+
+  // An oversized screenshot whose Base64 data URL exceeds `url::kMaxURLChars`
+  // must also be rejected rather than silently truncated by Mojo serialization.
+  auto oversized_result =
+      std::make_unique<page_content_annotations::FetchPageContextResult>();
+  oversized_result->screenshot_result =
+      page_content_annotations::ScreenshotResult(/*dimensions=*/{});
+  oversized_result->screenshot_result->screenshot_data.assign(url::kMaxURLChars,
+                                                              1);
+  oversized_result->screenshot_result->mime_type = "image/jpeg";
+  service_.BindScreenshotCapturedCallbackForTesting(1).Run(
+      base::ok(std::move(oversized_result)));
+
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(result->actions.size(), 2u);
+  EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:10, Y:20");
+  EXPECT_EQ(result->actions[0]->timestamp, base::Milliseconds(100));
+  EXPECT_EQ(result->actions[0]->screenshot_data_url, std::nullopt);
+  EXPECT_EQ(result->actions[1]->description, "Mouse Clicked at X:30, Y:40");
+  EXPECT_EQ(result->actions[1]->timestamp, base::Milliseconds(350));
+  EXPECT_EQ(result->actions[1]->screenshot_data_url, std::nullopt);
+}
+
+TEST_F(SkillRecordingServiceTest,
+       StopRecordingInvalidatesPendingScreenshotCallbacks) {
+  service_.StartRecording();
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "First session action");
+  page_content_annotations::FetchPageContextResultCallback stale_callback =
+      service_.BindScreenshotCapturedCallbackForTesting(/*action_index=*/0);
+
+  SkillRecordingSessionDataPtr first_result = service_.StopRecording();
+  ASSERT_TRUE(first_result);
+  ASSERT_EQ(first_result->actions.size(), 1u);
+  EXPECT_EQ(first_result->actions[0]->screenshot_data_url, std::nullopt);
+
+  // Start a new recording session and capture a new action at index 0.
+  service_.StartRecording();
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Second session action");
+
+  // Running the stale callback from the first session must not attach its
+  // screenshot to action 0 of the second session.
+  std::move(stale_callback).Run(CreateSuccessfulScreenshotResult());
+
+  SkillRecordingSessionDataPtr second_result = service_.StopRecording();
+  ASSERT_TRUE(second_result);
+  ASSERT_EQ(second_result->actions.size(), 1u);
+  EXPECT_EQ(second_result->actions[0]->description, "Second session action");
+  EXPECT_EQ(second_result->actions[0]->screenshot_data_url, std::nullopt);
+}
+
+TEST_F(SkillRecordingServiceTest, IgnoresActionsWhenNotRecording) {
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Mouse Clicked at X:10, Y:20");
+  service_.BindScreenshotCapturedCallbackForTesting(0).Run(
+      CreateSuccessfulScreenshotResult());
 
   service_.StartRecording();
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->actions.empty());
 }
@@ -187,7 +310,8 @@ TEST_F(SkillRecordingServiceTest, IgnoresMultipleStartRecording) {
   service_.StartRecording();
   EXPECT_TRUE(service_.is_recording());
   EXPECT_EQ(service_.start_time(), initial_start_time);
-  service_.RecordClick(10, 20);
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Mouse Clicked at X:10, Y:20");
 
   task_environment_.FastForwardBy(base::Seconds(5));
 
@@ -197,9 +321,10 @@ TEST_F(SkillRecordingServiceTest, IgnoresMultipleStartRecording) {
   EXPECT_TRUE(service_.is_recording());
   // The start time should be unchanged.
   EXPECT_EQ(service_.start_time(), initial_start_time);
-  service_.RecordClick(30, 40);
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Mouse Clicked at X:30, Y:40");
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   EXPECT_FALSE(service_.is_recording());
   EXPECT_FALSE(service_.start_time().has_value());
   ASSERT_TRUE(result);
@@ -227,13 +352,20 @@ TEST_F(SkillRecordingServiceTest, RecordsLeftMouseClicksOnHttpOrHttpsTab) {
       AddTab(&browser, GURL("https://example.com/page"));
 
   service_.StartRecording();
+  EXPECT_EQ(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(tab),
+      nullptr);
   task_environment_.FastForwardBy(base::Milliseconds(150));
   SimulateMouseDown(tab, 42.0f, 84.0f,
                     blink::WebPointerProperties::Button::kLeft);
+  EXPECT_NE(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(tab),
+      nullptr);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   ASSERT_EQ(result->actions.size(), 1u);
+  EXPECT_EQ(result->actions[0]->type, SkillRecordingActionType::kLeftClick);
   EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:42, Y:84");
   EXPECT_EQ(result->actions[0]->timestamp, base::Milliseconds(150));
 }
@@ -252,8 +384,11 @@ TEST_F(SkillRecordingServiceTest, IgnoresNonLeftMouseButtonClicks) {
                     blink::WebPointerProperties::Button::kBack);
   SimulateMouseDown(tab, 70.0f, 80.0f,
                     blink::WebPointerProperties::Button::kForward);
+  EXPECT_EQ(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(tab),
+      nullptr);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->actions.empty());
 }
@@ -280,7 +415,7 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksOnContextHubAndNonHttpUrls) {
   browser.tab_strip_model()->ActivateTabAt(1);
   SimulateMouseDown(context_hub_tab, 100.0f, 200.0f);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   ASSERT_EQ(result->actions.size(), 1u);
   EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:55, Y:65");
@@ -296,7 +431,7 @@ TEST_F(SkillRecordingServiceTest,
   content::WebContents* tab2 =
       AddTab(&window2, GURL("https://example.com/window2"));
 
-  // Make window2 the most recently active window before starting recording.
+  // Make `window2` the most recently active window before starting recording.
   window2.Activate();
 
   service_.StartRecording();
@@ -312,7 +447,7 @@ TEST_F(SkillRecordingServiceTest,
   SimulateMouseDown(tab2, 55.0f, 66.0f);
   SimulateMouseDown(tab1, 77.0f, 88.0f);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   ASSERT_EQ(result->actions.size(), 2u);
   EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:33, Y:44");
@@ -336,7 +471,7 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksFromOtherProfiles) {
   SimulateMouseDown(other_tab, 10.0f, 20.0f);
   SimulateMouseDown(main_tab, 30.0f, 40.0f);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   ASSERT_EQ(result->actions.size(), 1u);
   EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:30, Y:40");
@@ -364,7 +499,7 @@ TEST_F(SkillRecordingServiceTest,
   SimulateMouseDown(old_contents.get(), 10.0f, 20.0f);
   SimulateMouseDown(raw_replacement, 50.0f, 60.0f);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   ASSERT_EQ(result->actions.size(), 1u);
   EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:50, Y:60");

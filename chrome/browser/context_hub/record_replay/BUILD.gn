@@ -22,12 +22,14 @@ source_set("record_replay") {
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/webui/context_hub:mojo_bindings",
     "//components/keyed_service/core",
+    "//components/page_content_annotations/content",
+    "//content/public/browser",
   ]
 
   deps = [
+    "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/ui:browser_manager_service",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//content/public/browser",
     "//third_party/blink/public/common:headers",
     "//url",
   ]
@@ -54,6 +56,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/page_content_annotations/content",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",

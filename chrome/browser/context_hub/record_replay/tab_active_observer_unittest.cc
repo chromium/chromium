@@ -29,6 +29,9 @@
 namespace context_hub {
 namespace {
 
+using browser::context_hub::mojom::SkillRecordingActionType;
+using browser::context_hub::mojom::SkillRecordingSessionDataPtr;
+
 class TabActiveObserverTest : public testing::Test {
  public:
   TabActiveObserverTest() = default;
@@ -84,11 +87,13 @@ TEST_F(TabActiveObserverTest, RecordsLeftMouseDownOnHttpAndHttpsUrls) {
   task_environment_.FastForwardBy(base::Milliseconds(200));
   SimulateMouseDown(35.0f, 45.0f);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   ASSERT_EQ(result->actions.size(), 2u);
+  EXPECT_EQ(result->actions[0]->type, SkillRecordingActionType::kLeftClick);
   EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:15, Y:25");
   EXPECT_EQ(result->actions[0]->timestamp, base::Milliseconds(100));
+  EXPECT_EQ(result->actions[1]->type, SkillRecordingActionType::kLeftClick);
   EXPECT_EQ(result->actions[1]->description, "Mouse Clicked at X:35, Y:45");
   EXPECT_EQ(result->actions[1]->timestamp, base::Milliseconds(300));
 }
@@ -98,7 +103,7 @@ TEST_F(TabActiveObserverTest, RoundsFractionalCoordinates) {
   SimulateMouseDown(10.4f, 20.6f);
   SimulateMouseDown(10.5f, 20.49f);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   ASSERT_EQ(result->actions.size(), 2u);
   EXPECT_EQ(result->actions[0]->description, "Mouse Clicked at X:10, Y:21");
@@ -123,7 +128,7 @@ TEST_F(TabActiveObserverTest, IgnoresNonMouseDownEvents) {
       base::TimeTicks::Now());
   observer_->DidGetUserInteraction(mouse_up_event);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->actions.empty());
 }
@@ -137,7 +142,7 @@ TEST_F(TabActiveObserverTest, IgnoresNonLeftMouseButtons) {
   SimulateMouseDown(70.0f, 80.0f,
                     blink::WebPointerProperties::Button::kForward);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->actions.empty());
 }
@@ -152,7 +157,7 @@ TEST_F(TabActiveObserverTest, IgnoresNonHttpOrHttpsSchemes) {
   NavigateTo(GURL("file:///tmp/test.html"));
   SimulateMouseDown(50.0f, 60.0f);
 
-  auto result = service_.StopRecording();
+  SkillRecordingSessionDataPtr result = service_.StopRecording();
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->actions.empty());
 }

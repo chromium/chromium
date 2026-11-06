@@ -504,6 +504,34 @@ interface Page {
   OnMemoryBankEntriesDeleted(array<int64> ids);
 };
 
+// Types of user actions that can be recorded during a skill recording session.
+enum SkillRecordingActionType {
+  // A left mouse button click on the active page.
+  kLeftClick,
+};
+
+// Represents a single user action recorded during a skill recording session.
+struct SkillRecordingAction {
+  // The category of user interaction that occurred.
+  SkillRecordingActionType type;
+  // A human-readable summary of the action (e.g., click coordinates).
+  string description;
+  // Time elapsed since the start of the recording session when the action
+  // occurred.
+  mojo_base.mojom.TimeDelta timestamp;
+  // Base64-encoded `data:` URL containing the viewport screenshot captured at
+  // the time of the action, or null if screenshot capture was unavailable or
+  // did not complete before the session ended (`url.mojom.Url` is typemapped to
+  // `string` in WebUI TypeScript via `url/mojom/BUILD.gn`).
+  url.mojom.Url? screenshot_data_url;
+};
+
+// Represents all in-memory data captured during a skill recording session.
+struct SkillRecordingSessionData {
+  // Recorded user actions in chronological order.
+  array<SkillRecordingAction> actions;
+};
+
 // Factory used by the WebUI page (caller) to create a PageHandler in the
 // browser process (callee) for the Context Hub page.
 interface PageHandlerFactory {
@@ -545,17 +573,6 @@ enum MemoryBanksShortcutStatus {
   kDisallowedModifiers,
   // The shortcut is already used by Chrome.
   kConflictsWithBrowserShortcut,
-};
-
-// Represents a single recorded action during a skill recording session.
-struct SkillRecordingAction {
-  string description;
-  mojo_base.mojom.TimeDelta timestamp;
-};
-
-// Data collected during a skill recording session.
-struct SkillRecordingSessionData {
-  array<SkillRecordingAction> actions;
 };
 
 // Provides access to context hub features.

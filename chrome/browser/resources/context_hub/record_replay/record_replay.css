@@ -12,3 +12,27 @@
   color: var(--cr-fallback-color-error);
   font-weight: bold;
 }
+
+.results {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-inline-end: 16px;
+}
+
+.action-item {
+  margin-bottom: 16px;
+}
+
+.action-timestamp {
+  color: var(--cr-secondary-text-color);
+}
+
+.action-screenshot {
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 4px;
+  box-shadow: var(--cr-elevation-1);
+  display: block;
+  margin-top: 8px;
+  max-height: 300px;
+  max-width: 400px;
+}
