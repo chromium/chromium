@@ -253,6 +253,11 @@ public class TabSwitcherGroupSuggestionService {
 
     public void destroy() {
         mCurrentTabModelSupplier.removeObserver(mOnTabModelChanged);
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        if (tabModel != null) {
+            tabModel.removeObserver(mTabModelObserver);
+            tabModel.removeTabGroupObserver(mTabGroupObserver);
+        }
         mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
     }
 
