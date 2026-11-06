@@ -4364,4 +4364,22 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(worker()->GetNumPendingCommits(), 0U);
 }
 
+// Verifies that pending attachment uploads are not started when an attachment
+// uploader is installed after the processor has encountered a model error.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldNotStartPendingAttachmentUploadsAfterModelError) {
+  InitializeToReadyState();
+  type_processor()->PutWithAttachment(
+      kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+
+  ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
+  type_processor()->ReportError(
+      {FROM_HERE, ModelError::Type::kGenericTestError});
+
+  FakeAttachmentUploader* uploader =
+      InstallFakeAttachmentUploader(type_processor());
+  EXPECT_FALSE(uploader->HasPendingUpload());
+}
+
 }  // namespace syncer

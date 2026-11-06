@@ -1940,7 +1940,7 @@ void ClientTagBasedDataTypeProcessor::
 
 void ClientTagBasedDataTypeProcessor::StartOrResumePendingAttachmentUploads() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!entity_tracker_ || !attachment_uploader_) {
+  if (model_error_.has_value() || !entity_tracker_ || !attachment_uploader_) {
     return;
   }
 
