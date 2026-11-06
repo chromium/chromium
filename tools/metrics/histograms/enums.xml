@@ -8588,6 +8588,7 @@ from previous Chrome versions.
   <int value="-1917031398" label="OmniboxNativeVoiceSuggestProvider:disabled"/>
   <int value="-1916060206" label="enable-display-zoom-setting"/>
   <int value="-1915854488" label="enable-offline-pages"/>
+  <int value="-1915736132" label="AndroidBookmarkBarUiController:disabled"/>
   <int value="-1914773324" label="TerminalSftp:disabled"/>
   <int value="-1914389617" label="EnableWifiQosEnterprise:enabled"/>
   <int value="-1913801713"
@@ -13487,6 +13488,7 @@ from previous Chrome versions.
       label="AutofillTouchToFillShowManualFillForVcnFix:disabled"/>
   <int value="-465429170" label="BackGestureRefactorActivityAndroid:enabled"/>
   <int value="-465381408" label="Sharesheet:disabled"/>
+  <int value="-465377478" label="AndroidBookmarkBarUiController:enabled"/>
   <int value="-465114665"
       label="PasswordSaveInContextErrorResolution:disabled"/>
   <int value="-464380210" label="ContextualTasksExpandButton:enabled"/>

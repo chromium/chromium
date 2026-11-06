@@ -313,6 +313,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_AUTO_PROJECTED = "AndroidAutoProjected";
     public static final String ANDROID_BEFORE_UNLOAD_SUPPORT = "AndroidBeforeUnloadSupport";
     public static final String ANDROID_BOOKMARK_BAR_DRAG_DROP = "AndroidBookmarkBarDragDrop";
+    public static final String ANDROID_BOOKMARK_BAR_UI_CONTROLLER =
+            "AndroidBookmarkBarUiController";
     public static final String ANDROID_BOTTOM_BAR = "AndroidBottomBar";
     public static final String ANDROID_BRICKS_NATIVE_PAGE = "AndroidBricksNativePage";
     public static final String ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS =
@@ -1795,6 +1797,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_AUTOFILL_PREF_OBSERVER, false);
     public static final MutableFlagWithSafeDefault sAndroidBeforeUnloadSupport =
             newMutableFlagWithSafeDefault(ANDROID_BEFORE_UNLOAD_SUPPORT, false);
+    public static final MutableFlagWithSafeDefault sAndroidBookmarkBarUiController =
+            newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR_UI_CONTROLLER, false);
     public static final MutableFlagWithSafeDefault sAndroidCloseAllTabsRetainsPinnedTabs =
             newMutableFlagWithSafeDefault(ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS, true);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuDisabledMenuItems =

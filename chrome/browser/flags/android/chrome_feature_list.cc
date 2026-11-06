@@ -271,6 +271,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillPrefObserver,
     &kAndroidBeforeUnloadSupport,
     &kAndroidBookmarkBarDragDrop,
+    &kAndroidBookmarkBarUiController,
     &kAndroidBottomBar,
     &kAndroidBricksNativePage,
     &kAndroidCloseAllTabsRetainsPinnedTabs,
@@ -722,6 +723,7 @@ BASE_FEATURE(kAndroidAutoProjected, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidAutofillPrefObserver, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBeforeUnloadSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBookmarkBarDragDrop, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidBookmarkBarUiController, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBottomBar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBricksNativePage, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, the "Close all tabs" action in the tab switcher (GTS/Hub) leaves

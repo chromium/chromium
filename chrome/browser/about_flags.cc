@@ -14481,6 +14481,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillAiSpiiVerificationDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiSpiiVerification)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-bookmark-bar-ui-controller",
+     flag_descriptions::kAndroidBookmarkBarUiControllerName,
+     flag_descriptions::kAndroidBookmarkBarUiControllerDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidBookmarkBarUiController)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

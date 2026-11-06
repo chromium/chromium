@@ -5508,6 +5508,12 @@ inline constexpr char kAndroidBookmarkBarDragDropName[] =
 inline constexpr char kAndroidBookmarkBarDragDropDescription[] =
     "Enables the Android Bookmark Bar Drag Drop feature.";
 
+inline constexpr char kAndroidBookmarkBarUiControllerName[] =
+    "Android Bookmark Bar UI Controller";
+inline constexpr char kAndroidBookmarkBarUiControllerDescription[] =
+    "Opens bookmarks clicked on the bookmark bar through the shared C++ "
+    "bookmark bar UI controller.";
+
 inline constexpr char kAndroidBricksNativePageName[] =
     "Android Bricks Native Page";
 inline constexpr char kAndroidBricksNativePageDescription[] =
