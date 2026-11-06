@@ -181,7 +181,7 @@ public class TabStripFacility<HostStationT extends CtaPageStation> extends Facil
         assert tabSearchButtonElement != null : "Tab search is off";
         return tabSearchButtonElement
                 .clickTo()
-                .withTimeout(CtaPageStation.TAB_SEARCH_OVERLAY_OPEN_TIMEOUT_MS)
+                .withTimeout(TabSearchOverlayFacility.OPEN_TIMEOUT_MS)
                 .enterFacility(new TabSearchOverlayFacility<>());
     }
 

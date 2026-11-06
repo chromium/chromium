@@ -43,7 +43,6 @@ import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility.TabGroupSuggestionFacility;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility.TabSuggestionFacility;
 import org.chromium.chrome.test.util.TabRestoreServiceUtils;
-import org.chromium.chrome.test.util.VerticalTabsTestUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -53,7 +52,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the Tab Search Overlay using Public Transit. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP, ChromeFeatureList.ANDROID_VERTICAL_TABS})
+@EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
 @Restriction({DeviceFormFactor.DESKTOP})
 @Batch(Batch.PER_CLASS)
 public class TabSearchOverlayTest {
@@ -91,26 +90,6 @@ public class TabSearchOverlayTest {
         watcher.assertExpected();
 
         tabSearchOverlay.dismissViaCloseButton();
-    }
-
-    @Test
-    @MediumTest
-    public void testEntryPoint_VerticalTabs() {
-        String url = mTestServer.getURL("/chrome/test/data/android/navigate/one.html");
-        mPage = mCtaTestRule.startOnWebPage(url);
-
-        try (var ignored =
-                VerticalTabsTestUtils.toggleTabStripForTesting(mCtaTestRule.getActivity())) {
-            HistogramWatcher watcher =
-                    HistogramWatcher.newSingleRecordWatcher(
-                            "Android.TabSearch.EntryPoint", TabSearchEntryPoint.VERTICAL_TABS);
-
-            TabSearchOverlayFacility<CtaPageStation> tabSearchOverlay =
-                    mPage.openTabSearchOverlay();
-            watcher.assertExpected();
-
-            tabSearchOverlay.dismissViaCloseButton();
-        }
     }
 
     @Test

@@ -56,6 +56,8 @@ import java.util.List;
  */
 public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
         extends Facility<HostStationT> {
+    // The first show inflates the whole overlay, which can take several seconds on loaded bots.
+    public static final long OPEN_TIMEOUT_MS = 7500L;
 
     public ViewElement<View> scrimElement;
     public ViewElement<View> panelElement;
