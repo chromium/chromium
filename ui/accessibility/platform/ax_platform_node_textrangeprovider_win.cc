@@ -733,7 +733,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     // If the iterator creates a null position, then it has likely overrun the
     // range, return failure. This is unexpected but may happen if the range
     // became inverted.
-    CHECK(!it->IsNullPosition(), base::NotFatalUntil::M163);
+    // TODO(crbug.com/582100694): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!it->IsNullPosition());
     if (it->IsNullPosition()) {
       return E_FAIL;
     }
