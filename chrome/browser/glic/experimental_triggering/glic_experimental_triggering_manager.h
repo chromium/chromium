@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -38,6 +39,15 @@ class GlicExperimentalTriggeringManager {
   void Bind(
       mojo::PendingRemote<glic::mojom::ExperimentalTriggeringClient> client);
 
+  // Returns true if the web client's ExperimentalTriggeringClient remote is
+  // currently bound and connected.
+  virtual bool IsClientBound() const;
+
+  // Subscribes `callback` to be notified whenever a new web client binds its
+  // ExperimentalTriggeringClient remote (e.g. after a guest navigation/reload).
+  base::CallbackListSubscription AddClientBoundCallback(
+      base::RepeatingClosure callback);
+
   virtual void CaptureAndUploadEncryptedScreenshot(
       const std::vector<uint8_t>& public_key,
       const std::vector<uint8_t>& auth_secret,
@@ -56,6 +66,9 @@ class GlicExperimentalTriggeringManager {
   virtual void SubmitConfirmationResponse(
       const std::vector<uint8_t>& response,
       base::OnceCallback<void(bool accepted)> callback);
+
+ protected:
+  void NotifyClientBound();
 
  private:
   void OnPageContextFetchedForEncryption(
@@ -78,6 +91,7 @@ class GlicExperimentalTriggeringManager {
   raw_ptr<glic::GlicInstance> instance_;
   raw_ptr<glic::GlicSharingManagerInternal> sharing_manager_;
   mojo::Remote<glic::mojom::ExperimentalTriggeringClient> client_;
+  base::RepeatingClosureList client_bound_callbacks_;
   base::WeakPtrFactory<GlicExperimentalTriggeringManager> weak_ptr_factory_{
       this};
 };

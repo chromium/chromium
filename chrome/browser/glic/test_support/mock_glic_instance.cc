@@ -6,7 +6,9 @@
 
 namespace glic {
 
-MockGlicInstance::MockGlicInstance() = default;
+MockGlicInstance::MockGlicInstance() {
+  ON_CALL(*this, id()).WillByDefault(testing::ReturnRef(id_));
+}
 MockGlicInstance::~MockGlicInstance() = default;
 
 }  // namespace glic

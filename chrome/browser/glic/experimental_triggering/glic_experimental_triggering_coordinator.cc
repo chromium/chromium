@@ -534,6 +534,7 @@ class ExperimentalTriggeringUpdatesHandler
         }
         if (!first_response_received_ && is_actuation_started_) {
           first_response_received_ = true;
+          CancelReconnectGrace();
           metric_reporter_.RecordMediumTimes(
               "ExperimentalTriggering.Latency.ToFirstResponse",
               base::TimeTicks::Now() - turn_start_time_);
@@ -669,23 +670,27 @@ class ExperimentalTriggeringUpdatesHandler
                        weak_ptr_factory_.GetWeakPtr()));
     manager->GetExperimentalTriggeringUpdates(
         std::move(remote),
-        base::BindOnce(
-            [](base::WeakPtr<ExperimentalTriggeringUpdatesHandler> handler,
-               bool success) {
-              if (!success && handler) {
-                DLOG(WARNING) << "Failed to register experimental triggering "
-                                 "updates handler.";
-                handler->HandleTerminalUpdate(
-                    TaskUpdate::State::kFailed,
-                    TaskUpdate::DataType::kErrorMessage,
-                    GlicExperimentalTriggeringExecutionOutcome::
-                        kUpdatesRegistrationFailed,
-                    "Failed to register experimental triggering updates "
-                    "handler.");
-                handler->CleanupAsync();
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::
+                           OnUpdatesRegistrationComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnUpdatesRegistrationComplete(bool success) {
+    if (success || terminal_update_sent_ || is_cleaning_up_) {
+      return;
+    }
+    auto* manager =
+        instance_ ? instance_->GetExperimentalTriggeringManager() : nullptr;
+    if ((!manager || !manager->IsClientBound()) && MaybeEnterReconnectGrace()) {
+      return;
+    }
+    DLOG(WARNING) << "Failed to register experimental triggering updates "
+                     "handler.";
+    HandleTerminalUpdate(
+        TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
+        GlicExperimentalTriggeringExecutionOutcome::kUpdatesRegistrationFailed,
+        "Failed to register experimental triggering updates handler.");
+    CleanupAsync();
   }
 
   void HandleTerminalUpdate(TaskUpdate::State state,
@@ -697,6 +702,7 @@ class ExperimentalTriggeringUpdatesHandler
     if (terminal_update_sent_) {
       return;
     }
+    CancelReconnectGrace();
     terminal_update_sent_ = true;
     RecordOutcome(outcome);
     if (outcome == GlicExperimentalTriggeringExecutionOutcome::kSuccess &&
@@ -722,14 +728,13 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   void OnClientConnected(base::WeakPtr<GlicInstance> instance) {
-    if (client_connected_) {
-      return;
-    }
-    client_connected_ = true;
-    if (is_actuation_started_) {
-      metric_reporter_.RecordMediumTimes(
-          "ExperimentalTriggering.Latency.ToClientConnected",
-          base::TimeTicks::Now() - task_start_time_);
+    if (!client_connected_) {
+      client_connected_ = true;
+      if (is_actuation_started_) {
+        metric_reporter_.RecordMediumTimes(
+            "ExperimentalTriggering.Latency.ToClientConnected",
+            base::TimeTicks::Now() - task_start_time_);
+      }
     }
     SubscribeForTriggeringUpdates(std::move(instance));
   }
@@ -739,12 +744,12 @@ class ExperimentalTriggeringUpdatesHandler
   void OnInvokeError(int invoke_id, GlicInvokeError error) {
     pending_invoke_ids_.erase(invoke_id);
     if (error == GlicInvokeError::kSuperseded) {
-      // Handlers are shared per context id, so a continuation request invokes
-      // on the same handler that owns the in-flight invocation it supersedes.
-      // If another invocation started by this handler is still in flight, it
-      // is the one that superseded this invocation and is now responsible for
-      // this handler, so it must not be torn down.
-      if (!pending_invoke_ids_.empty()) {
+      // Handlers are shared per context id, so a continuation or reconnect
+      // request invokes on the same handler that owns the in-flight invocation
+      // it supersedes. If this handler has already started a newer invocation
+      // (whether still pending or already succeeded), that newer invocation is
+      // responsible for this handler, so it must not be torn down.
+      if (!pending_invoke_ids_.empty() || invoke_id + 1 < next_invoke_id_) {
         return;
       }
       RemovePendingTask();
@@ -772,6 +777,153 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   void OnDisconnect() {
+    if (MaybeEnterReconnectGrace()) {
+      return;
+    }
+    FailClientDisconnected();
+  }
+
+  void CancelReconnectGrace() {
+    reconnect_grace_timer_.Stop();
+    client_bound_subscription_ = {};
+  }
+
+  bool CanEnterReconnectGrace() const {
+    return base::FeatureList::IsEnabled(
+               features::kGlicExperimentalTriggeringNavigationReconnectGrace) &&
+           is_actuation_started_ && !first_response_received_ &&
+           !terminal_update_sent_ && !is_cleaning_up_ &&
+           !reconnect_attempted_ && last_actuation_request_.has_value() &&
+           instance_ && instance_->GetExperimentalTriggeringManager();
+  }
+
+  bool MaybeEnterReconnectGrace() {
+    if (reconnect_grace_timer_.IsRunning()) {
+      return true;
+    }
+    if (!CanEnterReconnectGrace()) {
+      return false;
+    }
+    reconnect_attempted_ = true;
+    receiver_.reset();
+    auto* manager = instance_->GetExperimentalTriggeringManager();
+    client_bound_subscription_ =
+        manager->AddClientBoundCallback(base::BindRepeating(
+            &ExperimentalTriggeringUpdatesHandler::OnClientRebound,
+            weak_ptr_factory_.GetWeakPtr()));
+    reconnect_grace_timer_.Start(
+        FROM_HERE,
+        features::kGlicExperimentalTriggeringNavigationReconnectGracePeriod
+            .Get(),
+        base::BindOnce(
+            &ExperimentalTriggeringUpdatesHandler::OnReconnectGraceTimeout,
+            weak_ptr_factory_.GetWeakPtr()));
+    return true;
+  }
+
+  void StartInvocation(GlicKeyedService* glic_service,
+                       GlicInvokeOptions options,
+                       tabs::TabInterface* prepared_tab,
+                       bool is_continuation,
+                       bool observe_actor_task_creation) {
+    options.on_panel_opened =
+        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnPanelOpened,
+                       weak_ptr_factory_.GetWeakPtr());
+    options.on_client_connected =
+        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnClientConnected,
+                       weak_ptr_factory_.GetWeakPtr());
+    const int invoke_id = next_invoke_id_++;
+    pending_invoke_ids_.insert(invoke_id);
+    options.on_success =
+        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), invoke_id);
+    options.on_error =
+        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeError,
+                       weak_ptr_factory_.GetWeakPtr(), invoke_id);
+
+    GlicInvokeWithAutoSubmitOptions auto_submit_options;
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(b/568925496): Follow up to remove platform ifdefs across
+    // experimental triggering.
+    // The background check runs only once when Glic is invoked. Handling Chrome
+    // moving from foreground to background mid-task would require observing
+    // ApplicationStatusListener and dynamically updating offscreen rendering.
+    const bool is_chrome_in_background = coordinator_->IsChromeInBackground();
+    if ((prepared_tab || is_continuation) && is_chrome_in_background) {
+      auto_submit_options.show_panel = false;
+    }
+#endif
+
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
+    auto instance = glic_service->InvokeWithAutoSubmit(
+        passkey_, std::move(options), std::move(auto_submit_options));
+    if (weak_this) {
+      if (instance || !weak_this->instance_) {
+        weak_this->instance_ = std::move(instance);
+      }
+      if (observe_actor_task_creation) {
+        weak_this->ObserveActorTaskCreation();
+      }
+    }
+  }
+
+  void OnClientRebound() {
+    if (!reconnect_grace_timer_.IsRunning()) {
+      return;
+    }
+    CancelReconnectGrace();
+    if (!coordinator_ || !instance_ || terminal_update_sent_ ||
+        is_cleaning_up_ || !last_actuation_request_.has_value()) {
+      return;
+    }
+    GlicKeyedService* glic_service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(coordinator_->profile_,
+                                                     /*create=*/false);
+    if (!glic_service) {
+      FailClientDisconnected();
+      return;
+    }
+
+    const bool is_continuation =
+        std::holds_alternative<ContinueActuationRequest>(
+            last_actuation_request_->payload);
+    tabs::TabInterface* prepared_tab = nullptr;
+    BrowserWindowInterface* browser_window = nullptr;
+    if (last_prepared_tab_.has_value()) {
+      prepared_tab = last_prepared_tab_->get();
+      if (!prepared_tab) {
+        FailPreparedTabClosed();
+        return;
+      }
+    } else {
+      browser_window = coordinator_->GetBrowserWindow();
+      if (!browser_window && !CanContinueWithoutBrowserWindow(
+                                 *last_actuation_request_, *glic_service)) {
+        FailClientDisconnected();
+        return;
+      }
+    }
+
+    // Bind updates to the reloaded guest immediately so early updates are not
+    // missed while the superseded invocation re-delivers the prompt.
+    SubscribeForTriggeringUpdates(instance_);
+    if (terminal_update_sent_ || is_cleaning_up_) {
+      return;
+    }
+
+    GlicInvokeOptions options = CreateInvokeOptions(
+        *last_actuation_request_, browser_window, prepared_tab);
+    options.target.conversation = instance_->id();
+    options.supersede_if_in_progress = true;
+    StartInvocation(glic_service, std::move(options), prepared_tab,
+                    is_continuation,
+                    /*observe_actor_task_creation=*/false);
+  }
+
+  void OnReconnectGraceTimeout() { FailClientDisconnected(); }
+
+  void FailClientDisconnected() {
+    CancelReconnectGrace();
     RemovePendingTask();
     HandleTerminalUpdate(TaskUpdate::State::kFailed,
                          TaskUpdate::DataType::kErrorMessage,
@@ -781,11 +933,26 @@ class ExperimentalTriggeringUpdatesHandler
     CleanupAsync();
   }
 
+  // The prepared target tab closed while waiting for the reloaded guest to
+  // reconnect. This is a tab closure, not a client disconnect: report it the
+  // same way GlicInvokeHandler reports GlicInvokeError::kTabClosed.
+  void FailPreparedTabClosed() {
+    CancelReconnectGrace();
+    RemovePendingTask();
+    HandleTerminalUpdate(
+        TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
+        GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorTabClosed,
+        "Target tab closed before completion.",
+        {{"chrome_error_code", "GLIC_TAB_CLOSED"}});
+    CleanupAsync();
+  }
+
   void CleanupAsync() {
     if (is_cleaning_up_) {
       return;
     }
     is_cleaning_up_ = true;
+    CancelReconnectGrace();
     receiver_.reset();
     if (coordinator_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -906,25 +1073,19 @@ class ExperimentalTriggeringUpdatesHandler
     if (!is_continuation || task_start_time_.is_null()) {
       task_start_time_ = base::TimeTicks::Now();
     }
+    CancelReconnectGrace();
+    reconnect_attempted_ = false;
+    last_actuation_request_ = request;
+    if (prepared_tab) {
+      last_prepared_tab_ = prepared_tab->GetWeakPtr();
+    } else {
+      last_prepared_tab_.reset();
+    }
     turn_start_time_ = base::TimeTicks::Now();
     is_actuation_started_ = true;
     first_response_received_ = false;
     terminal_update_sent_ = false;
     outcome_recorded_ = false;
-    options.on_panel_opened =
-        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnPanelOpened,
-                       weak_ptr_factory_.GetWeakPtr());
-    options.on_client_connected =
-        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnClientConnected,
-                       weak_ptr_factory_.GetWeakPtr());
-    const int invoke_id = next_invoke_id_++;
-    pending_invoke_ids_.insert(invoke_id);
-    options.on_success =
-        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), invoke_id);
-    options.on_error =
-        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeError,
-                       weak_ptr_factory_.GetWeakPtr(), invoke_id);
 
     auto response = CreateResponseMessage(
         context_id_, TaskUpdate::State::kStarting, std::nullopt, "",
@@ -933,28 +1094,9 @@ class ExperimentalTriggeringUpdatesHandler
     // The invocation reports back through this handler, so keep it alive.
     std::ignore = cleanup_runner.Release();
 
-    GlicInvokeWithAutoSubmitOptions auto_submit_options;
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(b/568925496): Follow up to remove platform ifdefs across
-    // experimental triggering.
-    // The background check runs only once when Glic is invoked. Handling Chrome
-    // moving from foreground to background mid-task would require observing
-    // ApplicationStatusListener and dynamically updating offscreen rendering.
-    const bool is_chrome_in_background = coordinator_->IsChromeInBackground();
-    if ((prepared_tab || is_continuation) && is_chrome_in_background) {
-      auto_submit_options.show_panel = false;
-    }
-#endif
-
-    auto weak_this = weak_ptr_factory_.GetWeakPtr();
-    auto instance = glic_service->InvokeWithAutoSubmit(
-        passkey_, std::move(options), std::move(auto_submit_options));
-    if (weak_this) {
-      weak_this->instance_ = std::move(instance);
-      if (!is_continuation) {
-        weak_this->ObserveActorTaskCreation();
-      }
-    }
+    StartInvocation(glic_service, std::move(options), prepared_tab,
+                    is_continuation,
+                    /*observe_actor_task_creation=*/!is_continuation);
 
     result_logger.set_result(
         GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
@@ -1203,6 +1345,7 @@ class ExperimentalTriggeringUpdatesHandler
     if (!cleanup_runner) {
       cleanup_runner = CreateCleanupRunner();
     }
+    CancelReconnectGrace();
 
     std::optional<ExperimentalTriggeringResponse> response;
     if (actions_runner_) {
@@ -1613,6 +1756,11 @@ class ExperimentalTriggeringUpdatesHandler
   bool first_response_received_ = false;
   bool outcome_recorded_ = false;
   bool is_cleaning_up_ = false;
+  bool reconnect_attempted_ = false;
+  std::optional<ExperimentalTriggeringRequest> last_actuation_request_;
+  std::optional<base::WeakPtr<tabs::TabInterface>> last_prepared_tab_;
+  base::OneShotTimer reconnect_grace_timer_;
+  base::CallbackListSubscription client_bound_subscription_;
   // Whether a device opt-in dialog is open and its result not yet sent.
   bool awaiting_opt_in_ = false;
   // Ids of invocations started by this handler that have neither succeeded nor

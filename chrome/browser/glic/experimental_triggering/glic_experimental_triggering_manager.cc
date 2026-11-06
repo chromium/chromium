@@ -74,19 +74,36 @@ void GlicExperimentalTriggeringManager::Bind(
   client_.reset();
   if (client.is_valid()) {
     client_.Bind(std::move(client));
+    client_.reset_on_disconnect();
+    NotifyClientBound();
   }
+}
+
+bool GlicExperimentalTriggeringManager::IsClientBound() const {
+  return client_.is_bound() && client_.is_connected();
+}
+
+base::CallbackListSubscription
+GlicExperimentalTriggeringManager::AddClientBoundCallback(
+    base::RepeatingClosure callback) {
+  return client_bound_callbacks_.Add(std::move(callback));
+}
+
+void GlicExperimentalTriggeringManager::NotifyClientBound() {
+  client_bound_callbacks_.Notify();
 }
 
 void GlicExperimentalTriggeringManager::GetExperimentalTriggeringUpdates(
     mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
         handler,
     base::OnceCallback<void(bool)> success_status_callback) {
-  if (!client_.is_bound()) {
+  if (!IsClientBound()) {
     std::move(success_status_callback).Run(false);
     return;
   }
-  client_->GetExperimentalTriggeringUpdates(std::move(handler),
-                                            std::move(success_status_callback));
+  client_->GetExperimentalTriggeringUpdates(
+      std::move(handler), mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                              std::move(success_status_callback), false));
 }
 
 void GlicExperimentalTriggeringManager::SubmitConfirmationResponse(

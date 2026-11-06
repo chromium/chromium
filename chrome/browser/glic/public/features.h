@@ -275,6 +275,12 @@ BASE_DECLARE_FEATURE(kGlicWhatsNewLuminous);
 // message never arrived.
 BASE_DECLARE_FEATURE(kGlicForceFcmExperimentalTriggerFailure);
 
+// Allows experimental triggering actuation sessions to wait for a reloaded
+// guest web client to reconnect and re-deliver the prompt when the guest
+// disconnects before sending its first response (b/581951225).
+BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringNavigationReconnectGrace);
+extern const base::FeatureParam<base::TimeDelta>
+    kGlicExperimentalTriggeringNavigationReconnectGracePeriod;
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

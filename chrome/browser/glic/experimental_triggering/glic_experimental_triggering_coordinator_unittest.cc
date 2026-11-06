@@ -102,6 +102,12 @@ class TestExperimentalTriggeringManager
   }
 
   void ResetHandler() { handler_.reset(); }
+  bool IsClientBound() const override { return is_client_bound_; }
+  void set_is_client_bound(bool bound) { is_client_bound_ = bound; }
+  void SimulateClientRebound() {
+    is_client_bound_ = true;
+    NotifyClientBound();
+  }
   void set_registration_success(bool success) {
     registration_success_ = success;
   }
@@ -122,6 +128,7 @@ class TestExperimentalTriggeringManager
  private:
   mojo::Remote<mojom::ExperimentalTriggeringUpdatesHandler> handler_;
   bool registration_success_ = true;
+  bool is_client_bound_ = true;
 };
 
 class TestGlicExperimentalTriggeringCoordinator
@@ -3320,6 +3327,380 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
       1);
 }
 #endif
+
+class FakeExperimentalTriggeringClient
+    : public mojom::ExperimentalTriggeringClient {
+ public:
+  FakeExperimentalTriggeringClient() = default;
+  ~FakeExperimentalTriggeringClient() override = default;
+
+  mojo::PendingRemote<mojom::ExperimentalTriggeringClient> BindNewPipe() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void DisconnectWithoutReplying() {
+    receiver_.reset();
+    pending_updates_callback_.Reset();
+  }
+
+  void GetExperimentalTriggeringUpdates(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+      GetExperimentalTriggeringUpdatesCallback callback) override {
+    if (hold_updates_reply_) {
+      pending_handler_ = std::move(handler);
+      pending_updates_callback_ = std::move(callback);
+      return;
+    }
+    std::move(callback).Run(true);
+  }
+
+  void UploadEncryptedScreenshot(
+      mojom::ScreenshotPtr screenshot,
+      UploadEncryptedScreenshotCallback callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
+
+  void SubmitExperimentalTriggeringConfirmationResponse(
+      const std::vector<uint8_t>& response,
+      SubmitExperimentalTriggeringConfirmationResponseCallback callback)
+      override {
+    std::move(callback).Run(false);
+  }
+
+  void set_hold_updates_reply(bool hold) { hold_updates_reply_ = hold; }
+  bool has_held_updates_reply() const {
+    return !pending_updates_callback_.is_null();
+  }
+
+ private:
+  bool hold_updates_reply_ = false;
+  mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler>
+      pending_handler_;
+  GetExperimentalTriggeringUpdatesCallback pending_updates_callback_;
+  mojo::Receiver<mojom::ExperimentalTriggeringClient> receiver_{this};
+};
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       ManagerClientDisconnect_ResetsRemoteAndRunsPendingUpdatesCallbackFalse) {
+  GlicExperimentalTriggeringManager manager(nullptr, nullptr);
+  EXPECT_FALSE(manager.IsClientBound());
+
+  int bound_notifications = 0;
+  auto subscription = manager.AddClientBoundCallback(
+      base::BindLambdaForTesting([&]() { ++bound_notifications; }));
+
+  FakeExperimentalTriggeringClient fake_client;
+  fake_client.set_hold_updates_reply(true);
+  manager.Bind(fake_client.BindNewPipe());
+  EXPECT_TRUE(manager.IsClientBound());
+  EXPECT_EQ(bound_notifications, 1);
+
+  mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> remote;
+  std::ignore = remote.InitWithNewPipeAndPassReceiver();
+  base::test::TestFuture<bool> registration_future;
+  manager.GetExperimentalTriggeringUpdates(std::move(remote),
+                                           registration_future.GetCallback());
+
+  // Wait until the Mojo request arrives at fake_client, then drop the pipe
+  // without replying (simulating a mid-handshake <webview> reload).
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_client.has_held_updates_reply(); }));
+  fake_client.DisconnectWithoutReplying();
+
+  // The pending reply is failed and the remote reset within the same
+  // disconnect notification, so once the callback has run the remote is gone.
+  EXPECT_FALSE(registration_future.Get());
+  EXPECT_FALSE(manager.IsClientBound());
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       EarlyDisconnectBeforeFirstResponse_RecoversOnClientReconnect) {
+  base::HistogramTester histogram_tester;
+
+  auto* service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  base::OnceCallback<void(GlicInvokeError)> initial_on_error;
+  std::vector<std::string> reconnected_prompts;
+  std::optional<InstanceId> reconnected_target_instance;
+  bool reconnected_superseded = false;
+
+  EXPECT_CALL(*service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        EXPECT_FALSE(options.supersede_if_in_progress);
+        if (options.on_panel_opened) {
+          std::move(options.on_panel_opened).Run();
+        }
+        if (options.on_client_connected) {
+          std::move(options.on_client_connected)
+              .Run(mock_glic_instance_.GetWeakPtr());
+        }
+        initial_on_error = std::move(options.on_error);
+        return mock_glic_instance_.GetWeakPtr();
+      })
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        reconnected_superseded = options.supersede_if_in_progress;
+        reconnected_prompts = options.prompts;
+        if (const auto* id =
+                std::get_if<InstanceId>(&options.target.conversation)) {
+          reconnected_target_instance = *id;
+        }
+        if (initial_on_error) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(initial_on_error),
+                                        GlicInvokeError::kSuperseded));
+        }
+        if (options.on_panel_opened) {
+          std::move(options.on_panel_opened).Run();
+        }
+        if (options.on_client_connected) {
+          std::move(options.on_client_connected)
+              .Run(mock_glic_instance_.GetWeakPtr());
+        }
+        if (options.on_success) {
+          std::move(options.on_success).Run();
+        }
+        return mock_glic_instance_.GetWeakPtr();
+      });
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload =
+      TriggerActuationRequest{.initial_prompt = "book flight to nyc"};
+
+  auto start_response = coordinator_->OnRequest(
+      kTestContextId, request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), nullptr);
+  ASSERT_TRUE(start_response.has_value());
+  ASSERT_TRUE(start_response->task_update.has_value());
+  EXPECT_EQ(start_response->task_update->state, TaskUpdate::State::kStarting);
+
+  // Guest reloads 300ms after initial connection, before any response arrives.
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  test_triggering_manager_.set_is_client_bound(false);
+  test_triggering_manager_.ResetHandler();
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+
+  // Must remain in reconnect grace window without emitting a failure update.
+  EXPECT_FALSE(update_future.IsReady());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  // Reloaded guest binds 250ms later within the 10s grace window.
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  test_triggering_manager_.SimulateClientRebound();
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+
+  EXPECT_TRUE(reconnected_superseded);
+  EXPECT_EQ(reconnected_target_instance, mock_glic_instance_.id());
+  ASSERT_EQ(reconnected_prompts.size(), 1u);
+  EXPECT_EQ(reconnected_prompts[0], "book flight to nyc");
+
+  // Reloaded guest emits worklog and terminal completion.
+  auto worklog = mojom::ExperimentalTriggeringUpdate::New();
+  worklog->type = mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  worklog->data = "searching flights";
+  test_triggering_manager_.SendUpdate(
+      std::move(worklog), mojom::SubscriberObservationType::kUpdate);
+  test_triggering_manager_.FlushForTesting();
+
+  auto worklog_resp = update_future.Take();
+  ASSERT_TRUE(worklog_resp.task_update.has_value());
+  EXPECT_EQ(worklog_resp.task_update->state, TaskUpdate::State::kRunning);
+  EXPECT_EQ(worklog_resp.task_update->data, "searching flights");
+
+  auto complete = mojom::ExperimentalTriggeringUpdate::New();
+  complete->type = mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  complete->data = "done";
+  test_triggering_manager_.SendUpdate(
+      std::move(complete), mojom::SubscriberObservationType::kUpdate);
+  test_triggering_manager_.FlushForTesting();
+
+  auto complete_resp = update_future.Take();
+  ASSERT_TRUE(complete_resp.task_update.has_value());
+  EXPECT_EQ(complete_resp.task_update->state, TaskUpdate::State::kComplete);
+  EXPECT_EQ(complete_resp.task_update->data, "done");
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kSuccess, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       EarlyDisconnectBeforeFirstResponse_FailsAfterGracePeriodExpires) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = TriggerActuationRequest{.initial_prompt = "test"};
+
+  auto start_response = coordinator_->OnRequest(
+      kTestContextId, request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), nullptr);
+  ASSERT_TRUE(start_response.has_value());
+
+  test_triggering_manager_.set_is_client_bound(false);
+  test_triggering_manager_.ResetHandler();
+
+  // Before the 10s grace period expires, the session waits for reconnect.
+  task_environment_.FastForwardBy(base::Seconds(9));
+  EXPECT_FALSE(update_future.IsReady());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  // Once the 10s grace period expires without a reconnect, it fails cleanly.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  ASSERT_TRUE(update_future.IsReady());
+  auto failure = update_future.Take();
+  ASSERT_TRUE(failure.task_update.has_value());
+  EXPECT_EQ(failure.task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(failure.task_update->data, "Client disconnected unexpectedly.");
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::
+          kClientDisconnectedBeforeResponse,
+      1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       DisconnectAfterFirstResponse_FailsImmediatelyWithoutReconnectGrace) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = TriggerActuationRequest{.initial_prompt = "test"};
+
+  ASSERT_TRUE(
+      coordinator_
+          ->OnRequest(
+              kTestContextId, request,
+              ScopedIncomingMessageResultLogger(
+                  GlicMetricReporter(profile_),
+                  ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+              update_future.GetRepeatingCallback(), nullptr)
+          .has_value());
+
+  // First response arrives from the guest.
+  auto worklog = mojom::ExperimentalTriggeringUpdate::New();
+  worklog->type = mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  worklog->data = "step 1";
+  test_triggering_manager_.SendUpdate(
+      std::move(worklog), mojom::SubscriberObservationType::kUpdate);
+  test_triggering_manager_.FlushForTesting();
+  ASSERT_TRUE(update_future.IsReady());
+  EXPECT_EQ(update_future.Take().task_update->state,
+            TaskUpdate::State::kRunning);
+
+  // Subsequent disconnect mid-turn must fail immediately without waiting for
+  // the 10s grace timer (avoiding duplicate prompt submission).
+  test_triggering_manager_.ResetHandler();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return coordinator_->GetUpdatesHandlerMapSizeForTesting() == 0;
+  }));
+
+  ASSERT_TRUE(update_future.IsReady());
+  auto failure = update_future.Take();
+  ASSERT_TRUE(failure.task_update.has_value());
+  EXPECT_EQ(failure.task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(failure.task_update->data, "Client disconnected unexpectedly.");
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::
+          kClientDisconnectedBeforeResponse,
+      1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       EarlyDisconnectWithPreparedTab_ReportsTabClosedWhenPreparedTabCloses) {
+  struct ScopedPreparedTab {
+    tabs::MockTabInterface tab;
+    base::WeakPtrFactory<tabs::TabInterface> weak_factory{&tab};
+  };
+  auto prepared_tab = std::make_unique<ScopedPreparedTab>();
+  ON_CALL(prepared_tab->tab, GetWeakPtr())
+      .WillByDefault(testing::Return(prepared_tab->weak_factory.GetWeakPtr()));
+
+  auto* service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  // InvokeWithAutoSubmit must only be called once (initial invoke) and must not
+  // fall back to GetBrowserWindow() when the prepared tab closes before rebind.
+  EXPECT_CALL(*service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        if (options.on_panel_opened) {
+          std::move(options.on_panel_opened).Run();
+        }
+        if (options.on_client_connected) {
+          std::move(options.on_client_connected)
+              .Run(mock_glic_instance_.GetWeakPtr());
+        }
+        return mock_glic_instance_.GetWeakPtr();
+      });
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = TriggerActuationRequest{.initial_prompt = "test"};
+
+  ASSERT_TRUE(
+      coordinator_
+          ->OnRequest(
+              kTestContextId, request,
+              ScopedIncomingMessageResultLogger(
+                  GlicMetricReporter(profile_),
+                  ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+              update_future.GetRepeatingCallback(), &prepared_tab->tab)
+          .has_value());
+
+  // Enter reconnect grace, then close the prepared tab before client rebinds.
+  test_triggering_manager_.set_is_client_bound(false);
+  test_triggering_manager_.ResetHandler();
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  EXPECT_FALSE(update_future.IsReady());
+
+  prepared_tab.reset();
+  test_triggering_manager_.SimulateClientRebound();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return coordinator_->GetUpdatesHandlerMapSizeForTesting() == 0;
+  }));
+
+  ASSERT_TRUE(update_future.IsReady());
+  auto failure = update_future.Take();
+  ASSERT_TRUE(failure.task_update.has_value());
+  EXPECT_EQ(failure.task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(failure.task_update->data, "Target tab closed before completion.");
+  EXPECT_EQ(failure.task_update->metadata["chrome_error_code"],
+            "GLIC_TAB_CLOSED");
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorTabClosed, 1);
+}
 
 }  // namespace
 }  // namespace glic
