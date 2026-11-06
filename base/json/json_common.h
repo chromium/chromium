@@ -7,12 +7,14 @@
 
 #include <stddef.h>
 
-namespace base::internal {
+namespace base::json_internal {
 
 // Chosen to support 99.9% of documents found in the wild late 2016.
 // http://crbug.com/673263
+// LINT.IfChange
 inline constexpr size_t kAbsoluteMaxDepth = 200;
+// LINT.ThenChange(//third_party/rust/serde_json_lenient/v0_2/wrapper/visitor.rs)
 
-}  // namespace base::internal
+}  // namespace base::json_internal
 
 #endif  // BASE_JSON_JSON_COMMON_H_

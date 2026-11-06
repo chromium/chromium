@@ -106,21 +106,21 @@ class BASE_EXPORT JSONReader {
   static std::optional<Value> Read(
       std::string_view json,
       int options,
-      size_t max_depth = internal::kAbsoluteMaxDepth);
+      size_t max_depth = json_internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a DictValue.
   // If |json| is not a properly formed JSON dict string, returns std::nullopt.
   static std::optional<DictValue> ReadDict(
       std::string_view json,
       int options,
-      size_t max_depth = internal::kAbsoluteMaxDepth);
+      size_t max_depth = json_internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a ListValue.
   // If |json| is not a properly formed JSON list string, returns std::nullopt.
   static std::optional<ListValue> ReadList(
       std::string_view json,
       int options,
-      size_t max_depth = internal::kAbsoluteMaxDepth);
+      size_t max_depth = json_internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json| like Read(). On success returns a Value as the
   // expected value. Otherwise, it returns an Error instance, populated with a

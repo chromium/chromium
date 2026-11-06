@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -921,6 +922,10 @@ TEST(JSONReaderTest, ASCIIControlCodes) {
 }
 
 TEST(JSONReaderTest, MaxNesting) {
+  EXPECT_TRUE(JSONReader::Read("true", JSON_PARSE_RFC, 1));
+  EXPECT_FALSE(JSONReader::Read("{}", JSON_PARSE_RFC, 1));
+  EXPECT_FALSE(JSONReader::Read("[]", JSON_PARSE_RFC, 1));
+
   const std::string_view json(R"({"outer": { "inner": {"foo": true}}})");
   EXPECT_FALSE(JSONReader::Read(json, JSON_PARSE_RFC, 3));
   EXPECT_TRUE(JSONReader::Read(json, JSON_PARSE_RFC, 4));
@@ -935,6 +940,12 @@ TEST(JSONReaderTest, MaxNesting) {
   const std::string_view empty_list_json(R"({"outer": { "inner": []}})");
   EXPECT_FALSE(JSONReader::Read(empty_list_json, JSON_PARSE_RFC, 3));
   EXPECT_TRUE(JSONReader::Read(empty_list_json, JSON_PARSE_RFC, 4));
+}
+
+TEST(JSONReaderDeathTest, InvalidMaxDepth) {
+  EXPECT_CHECK_DEATH(JSONReader::Read("true", JSON_PARSE_RFC, 0));
+  EXPECT_CHECK_DEATH(JSONReader::Read("true", JSON_PARSE_RFC,
+                                      json_internal::kAbsoluteMaxDepth + 1));
 }
 
 TEST(JSONReaderTest, Decode4ByteUtf8Char) {

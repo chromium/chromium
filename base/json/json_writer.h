@@ -45,7 +45,7 @@ enum JsonOptions {
 //    * the JSON contains binary values.
 BASE_EXPORT std::optional<std::string> WriteJson(
     ValueView node,
-    size_t max_depth = internal::kAbsoluteMaxDepth);
+    size_t max_depth = json_internal::kAbsoluteMaxDepth);
 
 // Given a root node, generates and returns a JSON string.
 // The string is formatted according to `options` which is a bitmask of
@@ -58,7 +58,7 @@ BASE_EXPORT std::optional<std::string> WriteJson(
 BASE_EXPORT std::optional<std::string> WriteJsonWithOptions(
     ValueView node,
     uint32_t options,
-    size_t max_depth = internal::kAbsoluteMaxDepth);
+    size_t max_depth = json_internal::kAbsoluteMaxDepth);
 
 class BASE_EXPORT JSONWriter {
  public:
@@ -77,42 +77,41 @@ class BASE_EXPORT JSONWriter {
   // Deprecated: use the standalone method `WriteJson()` instead.
   static bool Write(ValueView node,
                     std::string* json,
-                    size_t max_depth = internal::kAbsoluteMaxDepth);
+                    size_t max_depth = json_internal::kAbsoluteMaxDepth);
 
   // Same as above but with |options| which is a bunch of JSONWriter::Options
   // bitwise ORed together. Return true on success and false on failure.
   //
   // Deprecated: use the standalone method `WriteJsonWithOptions()` instead.
-  static bool WriteWithOptions(ValueView node,
-                               int options,
-                               std::string* json,
-                               size_t max_depth = internal::kAbsoluteMaxDepth);
+  static bool WriteWithOptions(
+      ValueView node,
+      int options,
+      std::string* json,
+      size_t max_depth = json_internal::kAbsoluteMaxDepth);
 
  private:
-  JSONWriter(int options,
-             std::string* json,
-             size_t max_depth = internal::kAbsoluteMaxDepth);
+  JSONWriter(int options, std::string* json);
 
   // Called recursively to build the JSON string. When completed,
   // |json_string_| will contain the JSON.
   bool BuildJSONString(std::monostate node,
                        size_t indent_depth,
-                       size_t stack_depth);
-  bool BuildJSONString(bool node, size_t indent_depth, size_t stack_depth);
-  bool BuildJSONString(int node, size_t indent_depth, size_t stack_depth);
-  bool BuildJSONString(double node, size_t indent_depth, size_t stack_depth);
+                       size_t max_depth);
+  bool BuildJSONString(bool node, size_t indent_depth, size_t max_depth);
+  bool BuildJSONString(int node, size_t indent_depth, size_t max_depth);
+  bool BuildJSONString(double node, size_t indent_depth, size_t max_depth);
   bool BuildJSONString(std::string_view node,
                        size_t indent_depth,
-                       size_t stack_depth);
+                       size_t max_depth);
   bool BuildJSONString(const Value::BlobStorage& node,
                        size_t indent_depth,
-                       size_t stack_depth);
+                       size_t max_depth);
   bool BuildJSONString(const DictValue& node,
                        size_t indent_depth,
-                       size_t stack_depth);
+                       size_t max_depth);
   bool BuildJSONString(const ListValue& node,
                        size_t indent_depth,
-                       size_t stack_depth);
+                       size_t max_depth);
 
   // Adds space to json_string_ for the indent level.
   void IndentLine(size_t depth);
@@ -123,9 +122,6 @@ class BASE_EXPORT JSONWriter {
 
   // Where we write JSON data as we generate it.
   raw_ptr<std::string> json_string_;
-
-  // Maximum depth to write.
-  const size_t max_depth_;
 };
 
 }  // namespace base

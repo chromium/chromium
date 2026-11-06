@@ -8,9 +8,11 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/json/json_common.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -189,6 +191,16 @@ TEST(JsonWriterTest, TestMaxDepthWithValidNodes) {
                        JSONReader::ReadAndReturnValueWithError(
                            nested_json, JSON_ALLOW_TRAILING_COMMAS));
   EXPECT_TRUE(WriteJson(std::move(value)).has_value());
+
+  EXPECT_EQ(WriteJson(Value(true), /*max_depth=*/1), "true");
+  EXPECT_EQ(WriteJson(DictValue(), /*max_depth=*/1), std::nullopt);
+  EXPECT_EQ(WriteJson(ListValue(), /*max_depth=*/1), std::nullopt);
+}
+
+TEST(JsonWriterDeathTest, InvalidMaxDepth) {
+  EXPECT_CHECK_DEATH(WriteJson(Value(true), /*max_depth=*/0));
+  EXPECT_CHECK_DEATH(
+      WriteJson(Value(true), json_internal::kAbsoluteMaxDepth + 1));
 }
 
 // Test that the JSONWriter::Write method still works.

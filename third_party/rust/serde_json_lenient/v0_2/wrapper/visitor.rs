@@ -9,6 +9,10 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::pin::Pin;
 
+// LINT.IfChange
+const MAX_DEPTH: usize = 200;
+// LINT.ThenChange(//base/json/json_common.h)
+
 /// Watches to ensure recursion does not go too deep during deserialization.
 #[derive(Clone, Copy)]
 struct RecursionDepthCheck(usize);
@@ -79,6 +83,8 @@ pub struct ValueVisitor<'c, 'k> {
 
 impl<'c, 'k> ValueVisitor<'c, 'k> {
     pub fn new(target: DeserializationTarget<'c, 'k>, max_depth: usize) -> Self {
+        assert!(max_depth > 0);
+        assert!(max_depth <= MAX_DEPTH);
         Self {
             aggregate: target,
             // The `max_depth` includes the top level of the JSON input, which is where parsing
