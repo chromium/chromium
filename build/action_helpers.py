@@ -3,18 +3,18 @@
 # found in the LICENSE file.
 """Helper functions useful when writing scripts used by action() targets."""
 
+# Allows type annotations without importing typing, which is slow to import.
+from __future__ import annotations
+
+from collections.abc import Sequence
 import contextlib
 import filecmp
 import os
-import pathlib
 import posixpath
 import tempfile
 import time
 
 import gn_helpers
-
-from typing import Optional
-from typing import Sequence
 
 
 def _replace_file(source, destination):
@@ -97,7 +97,7 @@ def add_depfile_arg(parser):
 def write_depfile(
     depfile_path: str,
     first_gn_output: str,
-    inputs: Optional[Sequence[str]] = None,
+    inputs: Sequence[str] | None = None,
 ) -> None:
     """Writes a ninja depfile.
 
@@ -114,6 +114,10 @@ def write_depfile(
     def _process_path(path):
         assert not os.path.isabs(path), f'Found abs path in depfile: {path}'
         if os.path.sep != posixpath.sep:
+            # Imported lazily since it is slow to import and needed only on
+            # Windows.
+            import pathlib
+
             path = str(pathlib.Path(path).as_posix())
         assert '\\' not in path, f'Found \\ in depfile: {path}'
         return path.replace(' ', '\\ ')
@@ -129,9 +133,8 @@ def write_depfile(
         sb.append(': ')
     sb.append('\n')
 
-    path = pathlib.Path(depfile_path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with atomic_output(str(path), mode='w', encoding='utf-8') as w:
+    # atomic_output() creates the parent directory.
+    with atomic_output(depfile_path, mode='w', encoding='utf-8') as w:
         w.write(''.join(sb))
 
 
