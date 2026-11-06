@@ -269,11 +269,6 @@ class GlicButtonControllerTest : public testing::Test {
 TEST_F(GlicButtonControllerTest, GlicSettings) {
   PrefService* prefs = profile()->GetPrefs();
 
-  prefs->SetInteger(
-      optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(
-          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
-  prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
   EXPECT_TRUE(toolbar_controller_delegate()->show_state());
 
@@ -281,7 +276,6 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
       optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(
           optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
-  prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_FALSE(tab_strip_controller_delegate()->show_state());
   EXPECT_FALSE(toolbar_controller_delegate()->show_state());
 
@@ -289,9 +283,16 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
       optimization_guide::prefs::kGeminiSettings,
       std::to_underlying(
           optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+  EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
+  EXPECT_TRUE(toolbar_controller_delegate()->show_state());
+
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(tab_strip_controller_delegate()->show_state());
   EXPECT_FALSE(toolbar_controller_delegate()->show_state());
+
+  prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
+  EXPECT_TRUE(toolbar_controller_delegate()->show_state());
 
   prefs->SetInteger(
       optimization_guide::prefs::kGeminiSettings,
@@ -323,9 +324,10 @@ TEST_F(GlicButtonControllerTest, RecordStartupMetrics) {
   histograms().ExpectUniqueSample("Glic.ProfileEnablement.IsEnabled.Startup",
                                   false, 1);
 
-  // Updating the 'PinnedToTabstrip' pref triggers a second call to
+  // Updating the 'PinnedToTabstrip' pref triggers another call to
   // MaybeRecordStartupMetrics.
-  profile()->GetPrefs()->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
+  profile()->GetPrefs()->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
+  EXPECT_FALSE(tab_strip_controller_delegate()->show_state());
 
   // Startup metrics should not have been logged again.
   histograms().ExpectUniqueSample("Glic.ProfileEnablement.IsEnabled.Startup",
