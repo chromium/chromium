@@ -1734,21 +1734,21 @@ TEST_F(FormAutofillUtilsTest, GetOutermostAncestorFormElement) {
 // before Y, then X.id is lexicographically less than Y.id.
 TEST_F(FormAutofillUtilsTest, IsDomPredecessorTest) {
   LoadHTML(R"(
-      <body id=0>
-        <div id=00>
-          <input id=000>
-          <input id=001>
-          <div id=002>
-            <input id=0020>
+      <body id=a>
+        <div id=a0>
+          <input id=a00>
+          <input id=a01>
+          <div id=a02>
+            <input id=a020>
           </div>
-          <div id=003>
-            <input id=0030>
+          <div id=a03>
+            <input id=a030>
           </div>
-          <input id=004>
+          <input id=a04>
         </div>
-        <div id=01>
-          <iframe id=010></iframe>
-          <input id=011>
+        <div id=a1>
+          <iframe id=a10></iframe>
+          <input id=a11>
         </div>
       </body>)");
 
@@ -1758,25 +1758,25 @@ TEST_F(FormAutofillUtilsTest, IsDomPredecessorTest) {
   struct IsDomPredecessorTestParam {
     std::string lhs_id;
     std::string rhs_id;
-    std::vector<std::string> ancestor_hint_ids = {"",    "0",   "00",
-                                                  "002", "003", "01"};
+    std::vector<std::string> ancestor_hint_ids = {"",    "a",   "a0",
+                                                  "a02", "a03", "a1"};
   };
   std::vector<IsDomPredecessorTestParam> test_cases = {
-      IsDomPredecessorTestParam{"000", "000"},
-      IsDomPredecessorTestParam{"001", "001"},
-      IsDomPredecessorTestParam{"000", "001"},
-      IsDomPredecessorTestParam{"000", "001"},
-      IsDomPredecessorTestParam{"000", "0020"},
-      IsDomPredecessorTestParam{"000", "0020"},
-      IsDomPredecessorTestParam{"000", "004"},
-      IsDomPredecessorTestParam{"000", "004"},
-      IsDomPredecessorTestParam{"0020", "0030"},
-      IsDomPredecessorTestParam{"0020", "0030"},
-      IsDomPredecessorTestParam{"0030", "004"},
-      IsDomPredecessorTestParam{"000", "010"},
-      IsDomPredecessorTestParam{"0030", "010"},
-      IsDomPredecessorTestParam{"0030", "011"},
-      IsDomPredecessorTestParam{"010", "011"}};
+      IsDomPredecessorTestParam{"a00", "a00"},
+      IsDomPredecessorTestParam{"a01", "a01"},
+      IsDomPredecessorTestParam{"a00", "a01"},
+      IsDomPredecessorTestParam{"a00", "a01"},
+      IsDomPredecessorTestParam{"a00", "a020"},
+      IsDomPredecessorTestParam{"a00", "a020"},
+      IsDomPredecessorTestParam{"a00", "a04"},
+      IsDomPredecessorTestParam{"a00", "a04"},
+      IsDomPredecessorTestParam{"a020", "a030"},
+      IsDomPredecessorTestParam{"a020", "a030"},
+      IsDomPredecessorTestParam{"a030", "a04"},
+      IsDomPredecessorTestParam{"a00", "a10"},
+      IsDomPredecessorTestParam{"a030", "a10"},
+      IsDomPredecessorTestParam{"a030", "a11"},
+      IsDomPredecessorTestParam{"a10", "a11"}};
 
   for (const auto& test : test_cases) {
     for (const auto& ancestor_hint_id : test.ancestor_hint_ids) {
@@ -1965,10 +1965,10 @@ INSTANTIATE_TEST_SUITE_P(
       // <input><iframe><iframe><input>.
       auto MakeTestCase = [](std::bitset<5> bitset) {
         std::vector<FieldOrFrame> fields_and_frames{
-            {.is_frame = bitset.test(0), .id = "0"},
-            {.is_frame = bitset.test(1), .id = "1"},
-            {.is_frame = bitset.test(2), .id = "2"},
-            {.is_frame = bitset.test(3), .id = "3"},
+            {.is_frame = bitset.test(0), .id = "a0"},
+            {.is_frame = bitset.test(1), .id = "a1"},
+            {.is_frame = bitset.test(2), .id = "a2"},
+            {.is_frame = bitset.test(3), .id = "a3"},
         };
         bool is_synthetic_form = bitset.test(4);
         const char* form_id = is_synthetic_form ? nullptr : "MY_FORM_ID";

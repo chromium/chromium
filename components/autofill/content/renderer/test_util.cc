@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/test_util.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/types/strong_alias.h"
 #include "content/public/renderer/render_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,7 +81,8 @@ using AllowNull = base::StrongAlias<struct AllowNullTag, bool>;
 WebElement GetElementById(const WebDocument& doc,
                           std::string_view id,
                           AllowNull allow_null) {
-  WebElement e = doc.GetElementById(WebString::FromAscii(std::string(id)));
+  CHECK(!id.empty() && !base::IsAsciiDigit(id[0]));
+  WebElement e = doc.GetElementById(WebString::FromAscii(id));
   CHECK(allow_null || e);
   return e;
 }
@@ -88,6 +90,7 @@ WebElement GetElementById(const WebDocument& doc,
 WebElement GetElementById(const WebNode& node,
                           std::string_view id,
                           AllowNull allow_null) {
+  CHECK(!id.empty() && !base::IsAsciiDigit(id[0]));
   WebElement e =
       node.QuerySelector(WebString::FromAscii(base::StrCat({"#", id})));
   CHECK(allow_null || e);
