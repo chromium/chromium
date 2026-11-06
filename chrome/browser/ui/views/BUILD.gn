@@ -445,7 +445,6 @@ source_set("tab_dialogs_impl") {
   deps = [
     ":hung_renderer_view",
     "//chrome/browser/ui/views/passwords:password_bubble_view_base",
-    "//chrome/browser/ui/views/site_data",
     "//chrome/browser/ui/views/web_apps",
     "//ui/views",
   ]

@@ -47,9 +47,6 @@ class TabDialogs {
   // Returns the parent view to use when showing a tab modal dialog.
   virtual gfx::NativeView GetDialogParentView() const = 0;
 
-  // Shows the collected cookies dialog box.
-  virtual void ShowCollectedCookies() = 0;
-
   // Shows or hides the hung renderer dialog.
   virtual void ShowHungRendererDialog(
       content::RenderWidgetHost* render_widget_host,

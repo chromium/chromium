@@ -20,7 +20,6 @@ class TabDialogsViews : public TabDialogs {
 
   // TabDialogs:
   gfx::NativeView GetDialogParentView() const override;
-  void ShowCollectedCookies() override;
   void ShowHungRendererDialog(
       content::RenderWidgetHost* render_widget_host,
       base::RepeatingClosure hang_monitor_restarter) override;

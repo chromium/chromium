@@ -25,8 +25,7 @@ void RecordPageSpecificSiteDataDialogRemoveButtonClickedAction();
 // PageSpecificSiteDataDialog or CollectedCookiesView, depending on
 // `kPageSpecificSiteDataDialog` feature. The dialog is set as user data to the
 // WebContents. The dialog represents the state of the site data of the
-// WebContents. To display the dialog, invoke `ShowCollectedCookies()` on the
-// `TabDialogs`.
+// WebContents. To display the dialog, invoke `CreateAndShowForWebContents()`.
 class PageSpecificSiteDataDialogController
     : public content::WebContentsUserData<
           PageSpecificSiteDataDialogController> {

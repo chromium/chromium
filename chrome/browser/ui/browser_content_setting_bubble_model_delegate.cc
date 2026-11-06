@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "ui/base/page_transition_types.h"
@@ -45,7 +45,8 @@ BrowserContentSettingBubbleModelDelegate::
 
 void BrowserContentSettingBubbleModelDelegate::ShowCollectedCookiesDialog(
     content::WebContents* web_contents) {
-  TabDialogs::FromWebContents(web_contents)->ShowCollectedCookies();
+  PageSpecificSiteDataDialogController::CreateAndShowForWebContents(
+      web_contents);
 }
 
 void BrowserContentSettingBubbleModelDelegate::ShowMediaSettingsPage() {

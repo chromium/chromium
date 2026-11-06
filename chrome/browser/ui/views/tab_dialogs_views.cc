@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/hung_renderer_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
-#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
@@ -36,11 +35,6 @@ TabDialogsViews::~TabDialogsViews() = default;
 
 gfx::NativeView TabDialogsViews::GetDialogParentView() const {
   return web_contents_->GetNativeView();
-}
-
-void TabDialogsViews::ShowCollectedCookies() {
-  PageSpecificSiteDataDialogController::CreateAndShowForWebContents(
-      web_contents_);
 }
 
 void TabDialogsViews::ShowHungRendererDialog(
