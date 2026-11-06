@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,8 +19,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/common/logging_chrome.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/logging/log_file_util.h"
+#include "chromeos/ash/components/logging/session_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -179,8 +179,7 @@ void OnSystemLogsAdded(StoreLogsCallback callback,
     return;
   }
 
-  base::FilePath user_log_dir =
-      logging::GetSessionLogDir(*base::CommandLine::ForCurrentProcess());
+  base::FilePath user_log_dir = GetSessionLogDir();
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -208,7 +207,7 @@ void StartLogRetrieval(const base::FilePath& file_name_template,
                        bool should_compress,
                        StoreLogsCallback callback) {
   base::FilePath file_path =
-      logging::GenerateTimestampedName(file_name_template, base::Time::Now());
+      GenerateTimestampedName(file_name_template, base::Time::Now());
 
   int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE;
   std::unique_ptr<base::File> file(new base::File);

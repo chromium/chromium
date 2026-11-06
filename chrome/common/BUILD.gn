@@ -343,6 +343,7 @@ static_library("common_lib") {
     deps += [
       "//ash/constants",
       "//chrome/common/chromeos/extensions",
+      "//chromeos/ash/components/logging",
     ]
   }
 

@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/system_logs/debug_log_writer.h"
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/logging_chrome.h"
+#include "chromeos/ash/components/logging/log_file_util.h"
 #include "components/feedback/feedback_util.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "third_party/zlib/google/zip.h"
@@ -55,8 +55,8 @@ void FetchCompleted(
     base::OnceCallback<void(std::optional<base::FilePath>)> callback,
     std::unique_ptr<system_logs::SystemLogsResponse> sys_info) {
   base::FilePath system_logs_file_path =
-      logging::GenerateTimestampedName(
-          dest_dir.Append(FILE_PATH_LITERAL("system_logs")), base::Time::Now())
+      GenerateTimestampedName(dest_dir.Append(FILE_PATH_LITERAL("system_logs")),
+                              base::Time::Now())
           .AddExtension(FILE_PATH_LITERAL(".txt"));
 
   std::string system_logs = feedback_util::LogsToString(*sys_info.get());

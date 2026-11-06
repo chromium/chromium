@@ -91,6 +91,7 @@ specific_include_rules = {
   ],
   "logging_chrome\\.cc": [
     "+ash/constants/ash_switches.h",
+    "+chromeos/ash/components/logging",
   ],
   "chrome_switches\\.h": [
     "+ash/constants/chrome_switches.h",

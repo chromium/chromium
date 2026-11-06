@@ -16,9 +16,9 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/logging_chrome.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/logging/log_file_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "content/public/browser/web_contents.h"
@@ -49,7 +49,7 @@ std::string GetJsonPolicies(content::WebUI* web_ui) {
 bool WriteTimestampedFile(const base::FilePath& file_path,
                           const std::string& contents) {
   base::FilePath timestamped_file_path =
-      logging::GenerateTimestampedName(file_path, base::Time::Now());
+      GenerateTimestampedName(file_path, base::Time::Now());
   return base::WriteFile(timestamped_file_path, contents);
 }
 

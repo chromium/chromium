@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/os_feedback",
   "+chrome/browser/feedback/system_logs",
   "+chrome/browser/profiles",
-  "+chrome/common/logging_chrome.h",
   "+chrome/grit",
   "+chrome/test/base",
 ]

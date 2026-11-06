@@ -18,6 +18,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/logging_chrome.h"
+#include "chromeos/ash/components/logging/log_file_util.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -66,7 +67,7 @@ void LogFileSetUp(const base::CommandLine& command_line,
     DLOG(ERROR) << "Unable to initialize logging to " << log_path.value();
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&logging::RemoveSymlinkAndLog, log_path, target_path));
+        base::BindOnce(&RemoveSymlinkAndLog, log_path, target_path));
     return;
   }
 
@@ -126,7 +127,7 @@ void RedirectChromeLogging(const base::CommandLine& command_line) {
   // Rotate the old log files when redirecting.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&logging::SetUpLogFile, log_path, /*new_log=*/true),
+      base::BindOnce(&SetUpLogFile, log_path, /*new_log=*/true),
       base::BindOnce(&LogFileSetUp, command_line, log_path));
 }
 

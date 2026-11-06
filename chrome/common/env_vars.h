@@ -21,9 +21,6 @@ inline constexpr char kLogFileName[] = "CHROME_LOG_FILE";
 // As of now there is only one metro viewer instance per browser.
 inline constexpr char kMetroConnected[] = "CHROME_METRO_CONNECTED";
 
-// The name of the session log directory when logged in to ChromeOS.
-inline constexpr char kSessionLogDir[] = "CHROMEOS_SESSION_LOG_DIR";
-
 }  // namespace env_vars
 
 #endif  // CHROME_COMMON_ENV_VARS_H__
