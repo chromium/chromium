@@ -21,12 +21,12 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
-#include "chrome/common/chrome_constants.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -272,7 +272,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   params.Set("sourceUi", GetSourceUI());
 
-  params.Set("clientVersion", chrome::kChromeVersion);
+  params.Set("clientVersion", version_info::GetVersionNumber());
   params.Set("eduCoexistenceAccessToken", oauth_access_token_->token);
   params.Set("eduCoexistenceId", GetOrCreateEduCoexistenceUserId(pref_service));
   params.Set("platformVersion", base::SysInfo::OperatingSystemVersion());

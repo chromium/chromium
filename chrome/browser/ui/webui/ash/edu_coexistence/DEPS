@@ -18,7 +18,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/signin/ash",
-  "+chrome/common",
   "+chrome/test/base",
 ]
 

@@ -22,6 +22,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 // TODO(b/342514059): Depending on chrome/browser/ash/child_accounts is not
@@ -34,7 +35,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/channel/channel_info.h"
@@ -89,7 +89,7 @@ void PopulateLoadTimeData(
   // Add strings that can be pulled in.
   source->AddString("boardName", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("chromeOSVersion", base::SysInfo::OperatingSystemVersion());
-  source->AddString("chromeVersion", chrome::kChromeVersion);
+  source->AddString("chromeVersion", version_info::GetVersionNumber());
   source->AddInteger("channel", static_cast<int>(ash::GetChannel()));
   system::StatisticsProvider* provider =
       system::StatisticsProvider::GetInstance();

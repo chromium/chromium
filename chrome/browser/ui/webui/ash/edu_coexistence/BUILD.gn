@@ -16,6 +16,7 @@ static_library("edu_coexistence") {
 
   deps = [
     "//ash/constants",
+    "//base/version_info",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/login",
@@ -23,7 +24,6 @@ static_library("edu_coexistence") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/signin/ash:inline_login_dialog",
-    "//chrome/common:non_code_constants",
     "//chromeos/ash/components/channel",
     "//components/application_locale_storage",
     "//components/policy/core/common",
