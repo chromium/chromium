@@ -16,7 +16,6 @@
 #include "ash/utility/wm_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/webrtc/media_capture_dispatcher.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -107,14 +107,14 @@ class OobeWebDialogView : public views::WebDialogView {
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override {
     // This is required for accessing the camera for SAML logins.
-    MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-        web_contents, request, std::move(callback), nullptr /* extension */);
+    webrtc::MediaCaptureDispatcher::GetInstance()->ProcessMediaAccessRequest(
+        web_contents, request, std::move(callback));
   }
 
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override {
-    return MediaCaptureDevicesDispatcher::GetInstance()
+    return webrtc::MediaCaptureDispatcher::GetInstance()
         ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
   }
 
