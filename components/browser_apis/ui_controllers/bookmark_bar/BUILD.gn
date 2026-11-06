@@ -16,6 +16,9 @@ mojom("mojom") {
   ]
 
   webui_module_path = "/"
+
+  generate_java = true
+  generate_jni = true
 }
 
 # The controller interface and the adapters each embedder implements.
