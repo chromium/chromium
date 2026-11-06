@@ -57,8 +57,8 @@ public class GroupCardLabelAdder implements ListConsumer {
         List<ListItem> candidateCardItems = new ArrayList<>();
         ListItem previousItem = null;
         for (ListItem listItem : sortedList) {
-            if (listItem instanceof ListItem.OfflineItemListItem) {
-                ((ListItem.OfflineItemListItem) listItem).isGrouped = false;
+            if (listItem instanceof ListItem.OfflineItemListItem offlineItem) {
+                offlineItem.isGrouped = false;
             }
 
             boolean addToExistingGroup =

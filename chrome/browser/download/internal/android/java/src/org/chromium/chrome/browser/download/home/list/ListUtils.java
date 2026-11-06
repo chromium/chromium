@@ -98,8 +98,8 @@ public class ListUtils {
     public static List<OfflineItem> toOfflineItems(Collection<ListItem> items) {
         List<OfflineItem> offlineItems = new ArrayList<>();
         for (ListItem item : items) {
-            if (item instanceof ListItem.OfflineItemListItem) {
-                offlineItems.add(((ListItem.OfflineItemListItem) item).item);
+            if (item instanceof ListItem.OfflineItemListItem offlineItem) {
+                offlineItems.add(offlineItem.item);
             }
         }
         return offlineItems;
@@ -124,8 +124,8 @@ public class ListUtils {
             return ViewType.GROUP_CARD_FOOTER;
         }
 
-        if (item instanceof ListItem.CardDividerListItem) {
-            switch (((ListItem.CardDividerListItem) item).position) {
+        if (item instanceof ListItem.CardDividerListItem dividerItem) {
+            switch (dividerItem.position) {
                 case Position.TOP:
                     return ViewType.GROUP_CARD_DIVIDER_TOP;
                 case Position.MIDDLE:

@@ -373,19 +373,18 @@ class DateOrderedListView {
         // If the current item is not an OfflineItemListItem, it cannot have a download type, and
         // thus can't be the last of its download type.
         ListItem currentItem = mModel.get(position);
-        if (!(currentItem instanceof OfflineItemListItem)) return false;
+        if (!(currentItem instanceof OfflineItemListItem currentOfflineItem)) return false;
 
         // If the next item is not an OfflineItemListItem, it cannot have a download type. This
         // means the next item can't be the same type as the current item and the current item is
         // therefore the last of its download type.
         ListItem nextItem = position >= mModel.size() - 1 ? null : mModel.get(position + 1);
-        if (!(nextItem instanceof OfflineItemListItem)) return true;
+        if (!(nextItem instanceof OfflineItemListItem nextOfflineItem)) return true;
 
         // If both items are OfflineItemListItems, but are of different type, then the current item
         // is the last of its type.
         boolean nextItemIsDifferentType =
-                ((OfflineItemListItem) currentItem).item.filter
-                        != ((OfflineItemListItem) nextItem).item.filter;
+                currentOfflineItem.item.filter != nextOfflineItem.item.filter;
         if (nextItemIsDifferentType) return true;
 
         // If this point is reached, both items are OfflineListItems and the same type, meaning the
