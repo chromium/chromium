@@ -3,21 +3,18 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentBrowserProxyImpl, ContentController, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, setupBasicSpeech} from './common.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {setupAppTestEnvironment, setupBasicSpeech} from './common.js';
+import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('PlayOnOpen', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
-  let visualBrowserProxy: TestVisualBrowserProxy;
   let contentBrowserProxy: TestContentBrowserProxy;
 
   function setPlayableContent() {
@@ -35,19 +32,12 @@ suite('PlayOnOpen', () => {
   }
 
   setup(async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    visualBrowserProxy.readAnythingImprovedUiEnabled = true;
-    contentBrowserProxy = new TestContentBrowserProxy();
-    ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
-    ContentController.setInstance(new ContentController());
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
-    speechController = SpeechController.getInstance();
-
-    VoiceLanguageController.setInstance(new VoiceLanguageController());
-    app = await createApp();
+    const result =
+        await setupAppTestEnvironment({readAnythingImprovedUiEnabled: true});
+    app = result.app;
+    contentBrowserProxy = result.contentBrowserProxy;
+    speech = result.speech;
+    speechController = result.speechController;
     setupBasicSpeech(speech);
   });
 

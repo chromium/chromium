@@ -7,18 +7,17 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AudioBrowserProxyImpl, TextSegmenter} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {TextSegmenter} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {setupTestEnvironment} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 suite('TextSegmenter', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
 
   setup(() => {
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    TextSegmenter.setInstance(new TextSegmenter());
+    audioBrowserProxy = setupTestEnvironment().audioBrowserProxy;
   });
 
   test('getWordCount returns expected word count', () => {
