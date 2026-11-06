@@ -94,14 +94,7 @@ ExportedCanvasResource::ExportedCanvasResource(
     const gfx::HDRMetadata& hdr_metadata,
     viz::ReleaseCallback callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> provider)
-    : resource_(
-          base::MakeRefCounted<ExternalCanvasResource>(client_si,
-                                                       sync_token,
-                                                       resource_source,
-                                                       hdr_metadata,
-                                                       std::move(callback),
-                                                       provider)),
-      owning_thread_ref_(base::PlatformThread::CurrentRef()),
+    : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
       shared_image_(std::move(client_si)),
@@ -111,14 +104,23 @@ ExportedCanvasResource::ExportedCanvasResource(
       accelerated_raster_(true),
       context_provider_wrapper_(provider),
       use_legacy_external_canvas_resource_bitmap_path_(true) {
-  CHECK(resource_);
-  CHECK(!resource_->is_cross_thread());
+  auto resource = base::MakeRefCounted<ExternalCanvasResource>(
+      shared_image_, sync_token, resource_source, hdr_metadata,
+      std::move(callback), provider);
 
   wait_sync_token_ = base::BindRepeating(
       [](scoped_refptr<CanvasResource> resource, gpu::SyncToken sync_token) {
         resource->WaitSyncToken(sync_token);
       },
-      resource_);
+      resource);
+  release_callback_ = base::BindOnce(
+      [](scoped_refptr<ExternalCanvasResource> resource, bool is_lost) {
+        if (is_lost) {
+          resource->NotifyResourceLost();
+        }
+        CanvasResource::DropRefOnOwningThread(std::move(resource));
+      },
+      resource);
 }
 
 ExportedCanvasResource::ExportedCanvasResource(
@@ -129,8 +131,7 @@ ExportedCanvasResource::ExportedCanvasResource(
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> provider,
     bool accelerated_raster)
-    : resource_(std::move(resource)),
-      owning_thread_ref_(base::PlatformThread::CurrentRef()),
+    : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
       shared_image_(std::move(client_si)),
@@ -140,14 +141,19 @@ ExportedCanvasResource::ExportedCanvasResource(
       accelerated_raster_(accelerated_raster),
       context_provider_wrapper_(provider),
       use_legacy_external_canvas_resource_bitmap_path_(false) {
-  CHECK(resource_);
-  CHECK(!resource_->is_cross_thread());
-
   wait_sync_token_ = base::BindRepeating(
-      [](scoped_refptr<CanvasResource> resource, gpu::SyncToken sync_token) {
-        resource->WaitSyncToken(sync_token);
+      [](scoped_refptr<CanvasResourceSharedImage> resource,
+         gpu::SyncToken sync_token) { resource->WaitSyncToken(sync_token); },
+      resource);
+
+  release_callback_ = base::BindOnce(
+      [](scoped_refptr<CanvasResourceSharedImage> resource, bool is_lost) {
+        if (is_lost) {
+          resource->NotifyResourceLost();
+        }
+        CanvasResource::DropRefOnOwningThread(std::move(resource));
       },
-      resource_);
+      resource);
 }
 
 ExportedCanvasResource::~ExportedCanvasResource() {
@@ -158,10 +164,7 @@ ExportedCanvasResource::~ExportedCanvasResource() {
   // if the thread gets destroyed before, destructor will still run, but we
   // can't tell CanvasResource to recycle.
   if (!is_cross_thread()) {
-    if (is_lost_) {
-      resource_->NotifyResourceLost();
-    }
-    CanvasResource::DropRefOnOwningThread(std::move(resource_));
+    std::move(release_callback_).Run(is_lost_);
   }
 }
 
@@ -251,8 +254,6 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
     auto release_callback = base::BindOnce(
         [](scoped_refptr<ExportedCanvasResource>&& exported_resource,
            const gpu::SyncToken& sync_token, bool lost_resource) {
-          CHECK(exported_resource->resource_);
-
           exported_resource->wait_sync_token_.Run(sync_token);
           if (lost_resource) {
             exported_resource->is_lost_ = true;

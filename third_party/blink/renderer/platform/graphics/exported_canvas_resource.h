@@ -13,7 +13,6 @@
 
 namespace blink {
 
-class CanvasResource;
 class CanvasResourceSharedImage;
 class StaticBitmapImage;
 
@@ -65,8 +64,8 @@ class PLATFORM_EXPORT ExportedCanvasResource
   bool is_lost_ = false;
 
   base::RepeatingCallback<void(gpu::SyncToken)> wait_sync_token_;
+  base::OnceCallback<void(bool)> release_callback_;
 
-  scoped_refptr<CanvasResource> resource_;
   const base::PlatformThreadRef owning_thread_ref_;
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
