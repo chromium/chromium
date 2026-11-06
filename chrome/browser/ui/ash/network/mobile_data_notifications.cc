@@ -11,11 +11,10 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -23,7 +22,10 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -35,6 +37,18 @@ using session_manager::SessionManager;
 using user_manager::UserManager;
 
 namespace {
+
+// ShowOptionalMobileDataNotification() has checked that the session is not
+// blocked, so there is an active session whose profile has been created.
+// TODO(crbug.com/563546692): Take the AccountId from the callers instead, so
+// that the notification follows the network that triggered it.
+PrefService& GetActiveUserPrefs() {
+  const session_manager::Session& session =
+      CHECK_DEREF(SessionManager::Get()->GetActiveSession());
+  user_manager::User& user =
+      CHECK_DEREF(UserManager::Get()->FindUserAndModify(session.account_id()));
+  return CHECK_DEREF(user.GetProfilePrefs());
+}
 
 const char kMobileDataNotificationId[] =
     "chrome://settings/internet/mobile_data";
@@ -131,14 +145,14 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
   }
 
   // Check if we've shown this notification before.
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  if (!prefs->GetBoolean(ash::prefs::kShowMobileDataNotification)) {
+  PrefService& pref_service = GetActiveUserPrefs();
+  if (!pref_service.GetBoolean(ash::prefs::kShowMobileDataNotification)) {
     return;
   }
 
   // Prevent the notification from showing up in the future and stop any running
   // timers.
-  prefs->SetBoolean(ash::prefs::kShowMobileDataNotification, false);
+  pref_service.SetBoolean(ash::prefs::kShowMobileDataNotification, false);
   one_shot_notification_check_delay_.Stop();
 
   // Display a one-time notification on first use of Mobile Data connection.

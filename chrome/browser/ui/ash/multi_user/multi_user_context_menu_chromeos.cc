@@ -4,16 +4,16 @@
 
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 
+#include <functional>
+
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
@@ -57,20 +57,25 @@ void MultiUserContextMenuChromeos::ExecuteCommand(int command_id,
   ExecuteVisitDesktopCommand(command_id, window_);
 }
 
-void OnAcceptTeleportWarning(const AccountId& account_id,
-                             aura::Window* window_,
+// `acting_user` is the user answering the warning, and `target_account_id`
+// owns the desktop the window is going to visit.
+void OnAcceptTeleportWarning(user_manager::User& acting_user,
+                             const AccountId& target_account_id,
+                             aura::Window* window,
                              bool accepted,
                              bool no_show_again) {
   if (!accepted) {
     return;
   }
 
-  PrefService* pref = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  pref->SetBoolean(user_manager::prefs::kMultiProfileWarningShowDismissed,
-                   no_show_again);
+  // The prefs are attached once the user's profile has been created, which
+  // has happened by the time they can answer a dialog.
+  CHECK_DEREF(acting_user.GetProfilePrefs())
+      .SetBoolean(user_manager::prefs::kMultiProfileWarningShowDismissed,
+                  no_show_again);
 
-  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(window_,
-                                                                    account_id);
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
+      window, target_account_id);
 }
 
 }  // namespace
@@ -117,24 +122,28 @@ void ExecuteVisitDesktopCommand(int command_id, aura::Window* window) {
       const user_manager::UserList logged_in_users =
           user_manager::UserManager::Get()->GetLRULoggedInUsers();
       // When running the multi user mode on Chrome OS, windows can "visit"
-      // another user's desktop.
-      const AccountId account_id =
+      // another user's desktop. The list is in LRU order, so the first entry
+      // is the active user, who is the one acting here.
+      user_manager::User& acting_user = CHECK_DEREF(logged_in_users[0]);
+      const AccountId& target_account_id =
           logged_in_users[command_id - IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT + 1]
               ->GetAccountId();
       base::OnceCallback<void(bool, bool)> on_accept =
-          base::BindOnce(&OnAcceptTeleportWarning, account_id, window);
+          base::BindOnce(&OnAcceptTeleportWarning, std::ref(acting_user),
+                         target_account_id, window);
 
       // Don't show warning dialog if any logged in user in multi-profiles
       // session dismissed it.
-      for (user_manager::UserList::const_iterator it = logged_in_users.begin();
-           it != logged_in_users.end(); ++it) {
-        if (multi_user_util::GetProfileFromAccountId((*it)->GetAccountId())
-                ->GetPrefs()
-                ->GetBoolean(
-                    user_manager::prefs::kMultiProfileWarningShowDismissed)) {
-          bool active_user_show_option =
-              ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-                  user_manager::prefs::kMultiProfileWarningShowDismissed);
+      for (const user_manager::User* user : logged_in_users) {
+        // The prefs are attached once the user's profile has been created.
+        const PrefService* const pref_service = user->GetProfilePrefs();
+        if (pref_service &&
+            pref_service->GetBoolean(
+                user_manager::prefs::kMultiProfileWarningShowDismissed)) {
+          const bool active_user_show_option =
+              CHECK_DEREF(acting_user.GetProfilePrefs())
+                  .GetBoolean(
+                      user_manager::prefs::kMultiProfileWarningShowDismissed);
           std::move(on_accept).Run(true, active_user_show_option);
           return;
         }

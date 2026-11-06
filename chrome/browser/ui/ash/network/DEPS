@@ -37,6 +37,7 @@ specific_include_rules = {
     "+chrome/browser/ui/navigator/browser_navigator_params.h",
   ],
   ".*_unittest\\.cc": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
     "+chrome/browser/ash/login/users",
   ],
 }
