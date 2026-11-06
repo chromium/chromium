@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 use sfv::{BareItemFromInput, KeyRef};
+use std::collections::hash_map::{Entry, HashMap};
 use std::convert::Infallible;
 use std::pin::Pin;
 
@@ -22,11 +23,17 @@ mod ffi {
         fn list_append_item(ctx: Pin<&mut List>) -> Pin<&mut Item>;
         fn list_append_inner_list(ctx: Pin<&mut List>) -> Pin<&mut InnerList>;
 
-        fn dictionary_set_item<'a>(ctx: Pin<&'a mut Dictionary>, key: &str) -> Pin<&'a mut Item>;
-        fn dictionary_set_inner_list<'a>(
+        fn dictionary_append_item<'a>(ctx: Pin<&'a mut Dictionary>, key: &str)
+            -> Pin<&'a mut Item>;
+        fn dictionary_set_item(ctx: Pin<&mut Dictionary>, index: usize) -> Pin<&mut Item>;
+        fn dictionary_append_inner_list<'a>(
             ctx: Pin<&'a mut Dictionary>,
             key: &str,
         ) -> Pin<&'a mut InnerList>;
+        fn dictionary_set_inner_list(
+            ctx: Pin<&mut Dictionary>,
+            index: usize,
+        ) -> Pin<&mut InnerList>;
 
         fn set_bare_item_boolean(ctx: Pin<&mut BareItem>, val: bool);
         fn set_bare_item_integer(ctx: Pin<&mut BareItem>, val: i64);
@@ -36,14 +43,15 @@ mod ffi {
         fn set_bare_item_byte_sequence(ctx: Pin<&mut BareItem>, val: &[u8]);
 
         fn inner_list_append_item(ctx: Pin<&mut InnerList>) -> Pin<&mut Item>;
-        fn get_or_insert_inner_list_param<'a>(
+        fn inner_list_append_param<'a>(
             ctx: Pin<&'a mut InnerList>,
             key: &str,
         ) -> Pin<&'a mut BareItem>;
+        fn inner_list_get_param(ctx: Pin<&mut InnerList>, index: usize) -> Pin<&mut BareItem>;
 
         fn get_item_bare_item(ctx: Pin<&mut Item>) -> Pin<&mut BareItem>;
-        fn get_or_insert_item_param<'a>(ctx: Pin<&'a mut Item>, key: &str)
-            -> Pin<&'a mut BareItem>;
+        fn item_append_param<'a>(ctx: Pin<&'a mut Item>, key: &str) -> Pin<&'a mut BareItem>;
+        fn item_get_param(ctx: Pin<&mut Item>, index: usize) -> Pin<&mut BareItem>;
     }
 
     extern "Rust" {
@@ -68,6 +76,79 @@ fn set_bare_item(out: Pin<&mut ffi::BareItem>, bare_item: BareItemFromInput<'_>)
     }
 }
 
+const SMALL_INDEX_MAP_CAPACITY: usize = 16;
+
+#[allow(clippy::large_enum_variant)]
+enum KeyIndexMap<'de> {
+    Small { keys: [&'de str; SMALL_INDEX_MAP_CAPACITY], len: usize },
+    Large(HashMap<&'de str, usize>),
+}
+
+impl<'de> KeyIndexMap<'de> {
+    fn new() -> Self {
+        Self::Small { keys: [""; SMALL_INDEX_MAP_CAPACITY], len: 0 }
+    }
+
+    /// Looks up `key` in the map. Returns `Some(index)` if already present, or
+    /// inserts `key` at the next sequential index and returns `None`.
+    fn get_or_insert(&mut self, key: &'de str) -> Option<usize> {
+        match self {
+            Self::Small { keys, len } => {
+                if let Some(index) = keys[..*len].iter().position(|&k| k == key) {
+                    return Some(index);
+                }
+                if let Some(slot) = keys.get_mut(*len) {
+                    *slot = key;
+                    *len += 1;
+                    return None;
+                }
+                let mut map = HashMap::with_capacity(SMALL_INDEX_MAP_CAPACITY * 2);
+                map.extend(keys.iter().copied().zip(0..));
+                map.insert(key, SMALL_INDEX_MAP_CAPACITY);
+                *self = Self::Large(map);
+                None
+            }
+            Self::Large(map) => {
+                let next_index = map.len();
+                match map.entry(key) {
+                    Entry::Occupied(entry) => Some(*entry.get()),
+                    Entry::Vacant(entry) => {
+                        entry.insert(next_index);
+                        None
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct ItemParamVisitor<'a, 'de> {
+    item: Pin<&'a mut ffi::Item>,
+    indices: KeyIndexMap<'de>,
+}
+
+impl<'de> sfv::visitor::ParameterVisitor<'de> for ItemParamVisitor<'_, 'de> {
+    type Out = ();
+    type Error = Infallible;
+
+    fn parameter(
+        &mut self,
+        key: &'de KeyRef,
+        value: BareItemFromInput<'de>,
+    ) -> Result<(), Self::Error> {
+        let out = match self.indices.get_or_insert(key.as_str()) {
+            Some(index) => ffi::item_get_param(self.item.as_mut(), index),
+            None => ffi::item_append_param(self.item.as_mut(), key.as_str()),
+        };
+        set_bare_item(out, value);
+        Ok(())
+    }
+
+    fn finish(self) -> Result<Self::Out, Self::Error> {
+        Ok(())
+    }
+}
+
 impl<'de> sfv::visitor::ItemVisitor<'de> for Pin<&mut ffi::Item> {
     type Out = ();
     type Error = Infallible;
@@ -78,11 +159,16 @@ impl<'de> sfv::visitor::ItemVisitor<'de> for Pin<&mut ffi::Item> {
     ) -> Result<impl sfv::visitor::ParameterVisitor<'de, Out = Self::Out>, Self::Error> {
         let out = ffi::get_item_bare_item(self.as_mut());
         set_bare_item(out, bare_item);
-        Ok(self)
+        Ok(ItemParamVisitor { item: self, indices: KeyIndexMap::new() })
     }
 }
 
-impl<'de> sfv::visitor::ParameterVisitor<'de> for Pin<&mut ffi::Item> {
+struct InnerListParamVisitor<'a, 'de> {
+    inner_list: Pin<&'a mut ffi::InnerList>,
+    indices: KeyIndexMap<'de>,
+}
+
+impl<'de> sfv::visitor::ParameterVisitor<'de> for InnerListParamVisitor<'_, 'de> {
     type Out = ();
     type Error = Infallible;
 
@@ -91,7 +177,10 @@ impl<'de> sfv::visitor::ParameterVisitor<'de> for Pin<&mut ffi::Item> {
         key: &'de KeyRef,
         value: BareItemFromInput<'de>,
     ) -> Result<(), Self::Error> {
-        let out = ffi::get_or_insert_item_param(self.as_mut(), key.as_str());
+        let out = match self.indices.get_or_insert(key.as_str()) {
+            Some(index) => ffi::inner_list_get_param(self.inner_list.as_mut(), index),
+            None => ffi::inner_list_append_param(self.inner_list.as_mut(), key.as_str()),
+        };
         set_bare_item(out, value);
         Ok(())
     }
@@ -109,26 +198,7 @@ impl<'de> sfv::visitor::InnerListVisitor<'de> for Pin<&mut ffi::InnerList> {
     }
 
     fn finish(self) -> Result<impl sfv::visitor::ParameterVisitor<'de>, Self::Error> {
-        Ok(self)
-    }
-}
-
-impl<'de> sfv::visitor::ParameterVisitor<'de> for Pin<&mut ffi::InnerList> {
-    type Out = ();
-    type Error = Infallible;
-
-    fn parameter(
-        &mut self,
-        key: &'de KeyRef,
-        value: BareItemFromInput<'de>,
-    ) -> Result<(), Self::Error> {
-        let out = ffi::get_or_insert_inner_list_param(self.as_mut(), key.as_str());
-        set_bare_item(out, value);
-        Ok(())
-    }
-
-    fn finish(self) -> Result<Self::Out, Self::Error> {
-        Ok(())
+        Ok(InnerListParamVisitor { inner_list: self, indices: KeyIndexMap::new() })
     }
 }
 
@@ -157,24 +227,38 @@ impl<'de> sfv::visitor::ListVisitor<'de> for Pin<&mut ffi::List> {
     }
 }
 
-struct DictionaryVisitor<'a, 'de> {
+struct DictionaryEntryVisitor<'a, 'de> {
     dict: Pin<&'a mut ffi::Dictionary>,
+    indices: &'a mut KeyIndexMap<'de>,
     key: &'de str,
 }
 
-impl<'de> sfv::visitor::EntryVisitor<'de> for DictionaryVisitor<'_, '_> {
+impl<'de> sfv::visitor::EntryVisitor<'de> for DictionaryEntryVisitor<'_, 'de> {
     type Error = Infallible;
 
     fn item(self) -> Result<impl sfv::visitor::ItemVisitor<'de>, Self::Error> {
-        Ok(ffi::dictionary_set_item(self.dict, self.key))
+        let item = match self.indices.get_or_insert(self.key) {
+            Some(index) => ffi::dictionary_set_item(self.dict, index),
+            None => ffi::dictionary_append_item(self.dict, self.key),
+        };
+        Ok(item)
     }
 
     fn inner_list(self) -> Result<impl sfv::visitor::InnerListVisitor<'de>, Self::Error> {
-        Ok(ffi::dictionary_set_inner_list(self.dict, self.key))
+        let inner_list = match self.indices.get_or_insert(self.key) {
+            Some(index) => ffi::dictionary_set_inner_list(self.dict, index),
+            None => ffi::dictionary_append_inner_list(self.dict, self.key),
+        };
+        Ok(inner_list)
     }
 }
 
-impl<'de> sfv::visitor::DictionaryVisitor<'de> for Pin<&mut ffi::Dictionary> {
+struct DictVisitor<'a, 'de> {
+    dict: Pin<&'a mut ffi::Dictionary>,
+    indices: KeyIndexMap<'de>,
+}
+
+impl<'de> sfv::visitor::DictionaryVisitor<'de> for DictVisitor<'_, 'de> {
     type Out = ();
     type Error = Infallible;
 
@@ -182,7 +266,11 @@ impl<'de> sfv::visitor::DictionaryVisitor<'de> for Pin<&mut ffi::Dictionary> {
         &mut self,
         key: &'de KeyRef,
     ) -> Result<impl sfv::visitor::EntryVisitor<'de>, Self::Error> {
-        Ok(DictionaryVisitor { dict: self.as_mut(), key: key.as_str() })
+        Ok(DictionaryEntryVisitor {
+            dict: self.dict.as_mut(),
+            indices: &mut self.indices,
+            key: key.as_str(),
+        })
     }
 
     fn finish(self) -> Result<Self::Out, Self::Error> {
@@ -226,6 +314,9 @@ pub fn decode_dictionary(
     sfv::Parser::new(input)
         .with_version(sfv::Version::Rfc8941)
         .with_lenient_mode(!strict)
-        .parse_dictionary_with_visitor(dictionary)
+        .parse_dictionary_with_visitor(DictVisitor {
+            dict: dictionary,
+            indices: KeyIndexMap::new(),
+        })
         .is_ok()
 }

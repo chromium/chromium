@@ -6,12 +6,20 @@
 
 #include <optional>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace net::structured_headers {
+
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::Pair;
 
 class StructuredHeadersLenientTest : public testing::TestWithParam<bool> {
  public:
@@ -104,6 +112,49 @@ TEST_P(StructuredHeadersLenientTest, ByteSequencePartialPadding) {
   EXPECT_EQ(*value, "f");
 }
 
+TEST_P(StructuredHeadersLenientTest, DuplicateParameterKeysPreserveOrder) {
+  // Duplicate parameter keys must overwrite the existing value in-place
+  // while preserving the original insertion order of the keys.
+  std::optional<ParameterizedItem> item =
+      ParseItemStrict("token;a=1;b=2;a=3;c=4;b=5");
+  ASSERT_TRUE(item.has_value());
+  EXPECT_THAT(item->params, ElementsAre(Pair("a", Item(int64_t{3})),
+                                        Pair("b", Item(int64_t{5})),
+                                        Pair("c", Item(int64_t{4}))));
+
+  // Also test with >16 distinct keys so the small-buffer-to-HashMap transition
+  // preserves order and overwrites earlier and later keys in-place.
+  std::optional<ParameterizedItem> large_item = ParseItemStrict(
+      "token;k0=0;k1=1;k2=2;k3=3;k4=4;k5=5;k6=6;k7=7;k8=8;k9=9;"
+      "k10=10;k11=11;k12=12;k13=13;k14=14;k15=15;k16=16;k17=17;"
+      "k0=100;k17=117");
+  ASSERT_TRUE(large_item.has_value());
+  ASSERT_EQ(large_item->params.size(), 18u);
+  EXPECT_EQ(large_item->params[0], std::pair("k0", Item(int64_t{100})));
+  EXPECT_EQ(large_item->params[17], std::pair("k17", Item(int64_t{117})));
+
+  std::optional<List> list = ParseListStrict("(1 2);x=1;y=2;x=3");
+  ASSERT_TRUE(list.has_value());
+  ASSERT_EQ(list->size(), 1u);
+  const InnerList* inner_list = (*list)[0].GetIfInnerList();
+  ASSERT_TRUE(inner_list);
+  EXPECT_THAT(inner_list->params, ElementsAre(Pair("x", Item(int64_t{3})),
+                                              Pair("y", Item(int64_t{2}))));
+}
+
+TEST_P(StructuredHeadersLenientTest, DuplicateDictionaryKeysPreserveOrder) {
+  // Duplicate dictionary keys must overwrite the previous member (including
+  // changing between InnerList and Item and clearing prior parameters) while
+  // preserving the original insertion order of the keys.
+  std::optional<Dictionary> dict =
+      ParseDictionaryStrict("a=(1 2);p=1, b=2;q=3, a=3, b=(4)");
+  ASSERT_TRUE(dict.has_value());
+  EXPECT_THAT(
+      *dict, ElementsAre(Pair("a", ParameterizedMember(Item(int64_t{3}))),
+                         Pair("b", ParameterizedMember(std::vector{
+                                       ParameterizedItem(Item(int64_t{4}))}))));
+}
+
 void ParseItemParity(const std::string_view input, const bool strict) {
   std::optional<ParameterizedItem> cpp_result;
   {
@@ -136,6 +187,7 @@ FUZZ_TEST(StructuredHeadersTest, ParseItemParity)
                      R"(1.0)",                // Decimal
                      R"(token;abc=123;def)",  // Parameterized Token (implicit
                                               // boolean param)
+                     R"(token;a=1;b=2;a=3)",  // Duplicate parameter keys
                      R"("string")",           // String
                      R"(:aGVsbG8=:)",         // Byte Sequence
                      R"(:GVsbG8=:)",  // Byte Sequence with partial padding
@@ -170,15 +222,17 @@ void ParseListParity(const std::string_view input, const bool strict) {
 }
 
 FUZZ_TEST(StructuredHeadersTest, ParseListParity)
-    .WithDomains(fuzztest::Arbitrary<std::string_view>().WithSeeds({
-                     R"(foo)",            // Single item
-                     R"(())",             // Empty inner list
-                     R"((foo))",          // Inner list with one item
-                     R"((foo bar))",      // Inner list with multiple items
-                     R"(foo;a=1)",        // Single item with parameter
-                     R"((foo bar);a=1)",  // Inner list with parameter
-                 }),
-                 fuzztest::Arbitrary<bool>());
+    .WithDomains(
+        fuzztest::Arbitrary<std::string_view>().WithSeeds({
+            R"(foo)",                  // Single item
+            R"(())",                   // Empty inner list
+            R"((foo))",                // Inner list with one item
+            R"((foo bar))",            // Inner list with multiple items
+            R"(foo;a=1)",              // Single item with parameter
+            R"((foo bar);a=1)",        // Inner list with parameter
+            R"((foo bar);a=1;b=2;a)",  // Inner list with duplicate param
+        }),
+        fuzztest::Arbitrary<bool>());
 
 void ParseDictionaryParity(const std::string_view input, const bool strict) {
   std::optional<Dictionary> cpp_result;
@@ -216,8 +270,11 @@ FUZZ_TEST(StructuredHeadersTest, ParseDictionaryParity)
                      R"(a=(1 2))",                               //
                      R"(a=1, b=2)",                              //
                      R"(a=1;b=2, c=3;d=4)",                      //
-                     R"(a)",  // Implicit boolean value
+                     R"(a=(1 2);x=1, b=2, a=3)",  // Duplicate dictionary key
+                     R"(a)",                      // Implicit boolean value
                  }),
                  fuzztest::Arbitrary<bool>());
+
+}  // namespace
 
 }  // namespace net::structured_headers
