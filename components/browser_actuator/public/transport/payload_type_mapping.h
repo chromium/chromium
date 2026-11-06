@@ -28,7 +28,7 @@ namespace browser_actuator::transport {
 // LINT.IfChange(RoutablePayloadTypes)
 inline constexpr auto kRoutablePayloadTypes = std::to_array<PayloadType>(
     {PayloadType::kControl, PayloadType::kExperimentalTriggering,
-     PayloadType::kActuation});
+     PayloadType::kActuation, PayloadType::kTaskIngress});
 
 // Returns the wire enum used to tag a downstream payload of `payload_type`.
 inline ActuatorDownstreamPayloadType ToDownstreamProtoPayloadType(
@@ -40,6 +40,8 @@ inline ActuatorDownstreamPayloadType ToDownstreamProtoPayloadType(
       return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING;
     case PayloadType::kActuation:
       return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION;
+    case PayloadType::kTaskIngress:
+      return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS;
     case PayloadType::kUnspecified:
       NOTREACHED();
   }
@@ -62,6 +64,9 @@ inline std::string_view ExpectedTypeUrl(PayloadType payload_type) {
     case PayloadType::kActuation:
       return "type.googleapis.com/"
              "chrome.aix.autobrowse.proto.ServerToBrowserPayload";
+    case PayloadType::kTaskIngress:
+      return "type.googleapis.com/"
+             "browser_actuator.TaskIngressDownstreamPayload";
     case PayloadType::kUnspecified:
       NOTREACHED();
   }

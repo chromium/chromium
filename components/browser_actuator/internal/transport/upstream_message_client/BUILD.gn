@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/browser_actuator/internal/transport:features",
     "//components/browser_actuator/internal/transport/proto",
+    "//components/browser_actuator/internal/transport/proto:task_ingress_proto",
     "//components/browser_actuator/public/transport",
     "//components/signin/public/identity_manager:test_support",
     "//net",

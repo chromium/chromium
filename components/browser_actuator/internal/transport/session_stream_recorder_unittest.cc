@@ -968,7 +968,9 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   auto* p3 = downstream.add_typed_payloads();
   p3->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION);
   auto* p4 = downstream.add_typed_payloads();
-  p4->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  p4->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
+  auto* p5 = downstream.add_typed_payloads();
+  p5->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
   recorder->RecordDownstreamMessage(std::move(downstream),
                                     DownstreamDeliveryStatus::kSuccess);
 
@@ -981,7 +983,9 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   auto* up3 = upstream.add_typed_payloads();
   up3->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION);
   auto* up4 = upstream.add_typed_payloads();
-  up4->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  up4->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
+  auto* up5 = upstream.add_typed_payloads();
+  up5->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
   recorder->RecordUpstreamMessage(std::move(upstream), 200);
 
   std::vector<SessionSnapshot> sessions =
@@ -992,12 +996,14 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   EXPECT_TRUE(sessions[0].events[0].is_downstream);
   EXPECT_THAT(sessions[0].events[0].payload_types,
               ::testing::ElementsAre("Control", "ExperimentalTriggering",
-                                     "Actuation", "Unspecified"));
+                                     "Actuation", "TaskIngress",
+                                     "Unspecified"));
 
   EXPECT_FALSE(sessions[0].events[1].is_downstream);
-  EXPECT_THAT(sessions[0].events[1].payload_types,
-              ::testing::ElementsAre("Control", "ExperimentalTriggering",
-                                     "Actuation", "Unspecified"));
+  EXPECT_THAT(
+      sessions[0].events[1].payload_types,
+      ::testing::ElementsAre("Control", "ExperimentalTriggering", "Actuation",
+                             "TaskIngress", "Unspecified"));
 }
 
 TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {

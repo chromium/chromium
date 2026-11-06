@@ -17,9 +17,12 @@ enum class PayloadType {
   kControl = 1,
   kExperimentalTriggering = 2,
   kActuation = 3,
+  kTaskIngress = 4,
 };
 // LINT.ThenChange(
 //     //components/browser_actuator/internal/transport/metrics_utils.h:PayloadTypeToMetricSuffix,
+//     //components/browser_actuator/internal/transport/session_stream_recorder.cc:FromUpstreamProtoPayloadType,
+//     //components/browser_actuator/public/transport/payload_type_mapping.h:RoutablePayloadTypes,
 //     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml:BrowserActuatorTransportPayloadType)
 
 // Identifies the feature factory instance, to ensure we do not re-register
@@ -30,6 +33,7 @@ enum class FactoryId {
   kExperimentalTriggering = 2,
   kSessionStreamRecorder = 3,
   kActuation = 4,
+  kTaskIngress = 5,
 };
 
 enum class SendUpstreamMessageError {

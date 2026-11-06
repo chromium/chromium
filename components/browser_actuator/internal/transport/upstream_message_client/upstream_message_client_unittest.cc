@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/browser_actuator/internal/transport/features.h"
+#include "components/browser_actuator/internal/transport/proto/task_ingress.pb.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -139,6 +140,53 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
       "Browser.Actuator.Transport.Upstream.UploadLatency."
       "ExperimentalTriggering",
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendMessageTaskIngressSuccess) {
+  base::HistogramTester histogram_tester;
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
+
+  browser_actuator::TaskIngressUpstreamPayload payload;
+  payload.mutable_start_task()->set_use_case(
+      browser_actuator::TASK_USE_CASE_AUTO_PASSWORD_CHANGE);
+
+  base::test::TestFuture<bool, int> future;
+  client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
+                             /*responding_to_sequence_number=*/std::nullopt,
+                             PayloadType::kTaskIngress, payload,
+                             future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+
+  ASSERT_EQ(1u, requests_.size());
+  SendSessionMessageRequest request_proto;
+  ASSERT_TRUE(
+      request_proto.ParseFromString(network::GetUploadData(requests_[0])));
+
+  const ActuatorUpstreamMessage& upstream =
+      request_proto.actuator_upstream_message();
+  ASSERT_EQ(1, upstream.typed_payloads_size());
+  const ActuatorUpstreamTypedPayload& typed_payload =
+      upstream.typed_payloads(0);
+  EXPECT_EQ(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS,
+            typed_payload.payload_type());
+  EXPECT_EQ("type.googleapis.com/browser_actuator.TaskIngressUpstreamPayload",
+            typed_payload.proto_payload().type_url());
+  EXPECT_EQ(payload.SerializeAsString(), typed_payload.proto_payload().value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Transport.Upstream.PayloadSize.TaskIngress",
+      payload.ByteSizeLong(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Transport.Upstream.UploadLatency.TaskIngress", 1);
   histogram_tester.ExpectUniqueSample(
       "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
 }

@@ -36,6 +36,10 @@ chromium-metrics-reviews@google.com.
     <owner>qinmin@chromium.org</owner>
     <owner>src/chrome/browser/glic/OWNERS</owner>
   </variant>
+  <variant name="TaskIngress" summary="Task ingress messages">
+    <owner>wenyufu@chromium.org</owner>
+    <owner>src/components/browser_actuator/OWNERS</owner>
+  </variant>
 </variants>
 
 <!-- LINT.ThenChange(//components/browser_actuator/public/transport/common.h:PayloadType, //components/browser_actuator/internal/transport/metrics_utils.h:PayloadTypeToMetricSuffix) -->

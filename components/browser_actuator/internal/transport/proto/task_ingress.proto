@@ -1,0 +1,93 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package browser_actuator;
+
+import "google/protobuf/any.proto";
+
+// These mirror the internal task ingress message protos. Do not modify
+// without updating the corresponding protos.
+
+// Identifies the agentic task use case being initiated via Task Ingress.
+// Next ID: 2
+enum TaskUseCase {
+  // Default value. Should not be used.
+  TASK_USE_CASE_UNSPECIFIED = 0;
+  // Automated Password Change (APC) task initiated from Chrome.
+  TASK_USE_CASE_AUTO_PASSWORD_CHANGE = 1;
+}
+
+// Upstream payload packed inside ActuatorUpstreamTypedPayload.proto_payload
+// when payload_type is ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS.
+// Next ID: 2
+message TaskIngressUpstreamPayload {
+  oneof command {
+    // Starts a new agentic task for this session.
+    StartTaskCommand start_task = 1;
+  }
+}
+
+// Command sent from the Chrome client to initiate a new agentic task.
+// Next ID: 3
+message StartTaskCommand {
+  // The feature use case for the task.
+  TaskUseCase use_case = 1;
+
+  // Feature-specific startup configuration and parameters (for example, the
+  // target credential domain for Automated Password Change).
+  google.protobuf.Any feature_payload = 2;
+}
+
+// Downstream payload packed inside ActuatorDownstreamTypedPayload.proto_payload
+// when payload_type is ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS.
+// Next ID: 4
+message TaskIngressDownstreamPayload {
+  oneof event {
+    // Emitted when the server has initialized the backend session.
+    TaskStartedEvent task_started = 1;
+    // Emitted as the agent progresses through task execution steps.
+    WorklogUpdate worklog_update = 2;
+    // Emitted when the task reaches a terminal state.
+    TaskCompletedEvent task_completed = 3;
+  }
+}
+
+// Notification that the server has started the agentic task.
+// Next ID: 1
+message TaskStartedEvent {}
+
+// Incremental progress update streamed from the agent during task execution.
+// Next ID: 2
+message WorklogUpdate {
+  // Human-readable description or summary of the current agent step.
+  string step_description = 1;
+}
+
+// Terminal outcome status of an agentic task.
+// Next ID: 4
+enum TaskCompletionStatus {
+  // Default value.
+  TASK_COMPLETION_STATUS_UNSPECIFIED = 0;
+  // The task completed its goal.
+  TASK_COMPLETION_STATUS_SUCCEEDED = 1;
+  // The task encountered an unrecoverable error.
+  TASK_COMPLETION_STATUS_FAILED = 2;
+  // The task was cancelled before completion.
+  TASK_COMPLETION_STATUS_CANCELLED = 3;
+}
+
+// Terminal event emitted when the agentic task finishes, fails, or is
+// cancelled.
+// Next ID: 3
+message TaskCompletedEvent {
+  // Final status of the task.
+  TaskCompletionStatus status = 1;
+
+  // Optional diagnostic message when the task fails or is cancelled.
+  string error_message = 2;
+}

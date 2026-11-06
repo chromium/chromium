@@ -72,6 +72,8 @@ constexpr std::optional<PayloadType> FromUpstreamProtoPayloadType(
       return PayloadType::kExperimentalTriggering;
     case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION:
       return PayloadType::kActuation;
+    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS:
+      return PayloadType::kTaskIngress;
     case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
     default:
       return std::nullopt;
