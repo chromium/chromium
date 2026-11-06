@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/strings/string_util.h"
@@ -43,10 +45,14 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
@@ -65,12 +71,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/test/run_until.h"
 #include "ui/base/interaction/element_test_util.h"
-#include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
-#endif
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
@@ -551,7 +552,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
   EXPECT_EQ(2, tsm->count());
 }
 
-
 class TabGroupEditorBubbleViewDialogBrowserTestWithFocusingEnabled
     : public TabGroupEditorBubbleViewDialogBrowserTest {
  public:
@@ -725,92 +725,67 @@ IN_PROC_BROWSER_TEST_F(
       1);
 }
 
-#if BUILDFLAG(IS_OZONE)
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       ArrowPositionNearBottom) {
-  if (ui::OzonePlatform::GetInstance()
-          ->GetPlatformProperties()
-          .supports_global_screen_coordinates) {
-    GTEST_SKIP() << "Only test when global screen coordinates aren't supported";
-  }
-  browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1000, 1000));
+                       AdjustIfOffscreen) {
+  browser()->GetWindow()->SetBounds(
+      display::Screen::Get()
+          ->GetDisplayNearestWindow(browser()->GetWindow()->GetNativeWindow())
+          .work_area());
 
   group_ = browser()->GetTabStripModel()->AddToNewGroup({0});
   ASSERT_TRUE(group_.has_value());
 
-  // Try showing the bubble near the top left of the window. The arrow should be
-  // on the top left.
-  gfx::Rect top_left_anchor_rect(100, 100, 50, 50);
-  std::unique_ptr<views::Widget> top_left_widget =
-      TabGroupEditorBubbleView::Show(
-          browser(), group_.value(),
-          BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
-          top_left_anchor_rect, false);
-  views::test::WidgetVisibleWaiter(top_left_widget.get()).Wait();
+  const gfx::Rect window_bounds =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetWidget()
+          ->GetWindowBoundsInScreen();
 
-  TabGroupEditorBubbleView* top_left_bubble_view =
+  // Show the bubble near the top-left of the window. The frame arrow should
+  // stay on the top-left without horizontal offset.
+  std::unique_ptr<views::Widget> widget = TabGroupEditorBubbleView::Show(
+      browser(), group_.value(),
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
+      gfx::Rect(window_bounds.x() + 50, window_bounds.y() + 50, 50, 30), false);
+  views::test::WidgetVisibleWaiter(widget.get()).Wait();
+
+  TabGroupEditorBubbleView* bubble_view =
       static_cast<TabGroupEditorBubbleView*>(
-          top_left_widget->widget_delegate()->AsBubbleDialogDelegate());
+          widget->widget_delegate()->AsBubbleDialogDelegate());
+  views::BubbleFrameView* frame_view = bubble_view->GetBubbleFrameView();
 
-  EXPECT_EQ(top_left_bubble_view->arrow(),
-            views::BubbleBorder::Arrow::TOP_LEFT);
-  top_left_widget->CloseNow();
+  EXPECT_EQ(frame_view->GetArrow(), views::BubbleBorder::Arrow::TOP_LEFT);
+  EXPECT_EQ(frame_view->bubble_border()->arrow_offset(), 0);
+  EXPECT_TRUE(window_bounds.Contains(bubble_view->GetBubbleBounds()));
 
-  // Try showing the bubble near the bottom left of the window. The arrow should
-  // be on the bottom left.
-  gfx::Rect bottom_left_anchor_rect(100, 900, 50, 50);
-  std::unique_ptr<views::Widget> bottom_left_widget =
-      TabGroupEditorBubbleView::Show(
-          browser(), group_.value(),
-          BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
-          bottom_left_anchor_rect, false);
-  views::test::WidgetVisibleWaiter(bottom_left_widget.get()).Wait();
+  // Move the anchor near the bottom-left of the window. The frame arrow should
+  // flip vertically to the bottom-left.
+  bubble_view->SetAnchorRect(
+      gfx::Rect(window_bounds.x() + 50, window_bounds.bottom() - 50, 50, 30));
+  EXPECT_EQ(frame_view->GetArrow(), views::BubbleBorder::Arrow::BOTTOM_LEFT);
+  EXPECT_EQ(frame_view->bubble_border()->arrow_offset(), 0);
+  EXPECT_TRUE(window_bounds.Contains(bubble_view->GetBubbleBounds()));
 
-  TabGroupEditorBubbleView* bottom_left_bubble_view =
-      static_cast<TabGroupEditorBubbleView*>(
-          bottom_left_widget->widget_delegate()->AsBubbleDialogDelegate());
+  // Move the anchor near the top-right of the window. Because
+  // `TabGroupEditorBubbleView` uses `PreferredArrowAdjustment::kOffset`, the
+  // frame arrow remains `TOP_LEFT` and offsets horizontally to stay inside the
+  // browser window.
+  bubble_view->SetAnchorRect(
+      gfx::Rect(window_bounds.right() - 80, window_bounds.y() + 50, 50, 30));
+  EXPECT_EQ(frame_view->GetArrow(), views::BubbleBorder::Arrow::TOP_LEFT);
+  EXPECT_NE(frame_view->bubble_border()->arrow_offset(), 0);
+  EXPECT_TRUE(window_bounds.Contains(bubble_view->GetBubbleBounds()));
 
-  EXPECT_EQ(bottom_left_bubble_view->arrow(),
-            views::BubbleBorder::Arrow::BOTTOM_LEFT);
-  bottom_left_widget->CloseNow();
+  // Move the anchor near the bottom-right of the window. The frame arrow flips
+  // vertically to `BOTTOM_LEFT` and offsets horizontally to stay inside the
+  // browser window.
+  bubble_view->SetAnchorRect(gfx::Rect(window_bounds.right() - 80,
+                                       window_bounds.bottom() - 50, 50, 30));
+  EXPECT_EQ(frame_view->GetArrow(), views::BubbleBorder::Arrow::BOTTOM_LEFT);
+  EXPECT_NE(frame_view->bubble_border()->arrow_offset(), 0);
+  EXPECT_TRUE(window_bounds.Contains(bubble_view->GetBubbleBounds()));
 
-  // Try showing the bubble near the top right of the window. The arrow should
-  // be on the top right.
-  gfx::Rect top_right_anchor_rect(900, 100, 50, 50);
-  std::unique_ptr<views::Widget> top_right_widget =
-      TabGroupEditorBubbleView::Show(
-          browser(), group_.value(),
-          BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
-          top_right_anchor_rect, false);
-  views::test::WidgetVisibleWaiter(top_right_widget.get()).Wait();
-
-  TabGroupEditorBubbleView* top_right_bubble_view =
-      static_cast<TabGroupEditorBubbleView*>(
-          top_right_widget->widget_delegate()->AsBubbleDialogDelegate());
-
-  EXPECT_EQ(top_right_bubble_view->arrow(),
-            views::BubbleBorder::Arrow::TOP_RIGHT);
-  top_right_widget->CloseNow();
-
-  // Try showing the bubble near the bottom right of the window. The arrow
-  // should be on the bottom right.
-  gfx::Rect bottom_right_anchor_rect(900, 900, 50, 50);
-  std::unique_ptr<views::Widget> bottom_right_widget =
-      TabGroupEditorBubbleView::Show(
-          browser(), group_.value(),
-          BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view(),
-          bottom_right_anchor_rect, false);
-  views::test::WidgetVisibleWaiter(bottom_right_widget.get()).Wait();
-
-  TabGroupEditorBubbleView* bottom_right_bubble_view =
-      static_cast<TabGroupEditorBubbleView*>(
-          bottom_right_widget->widget_delegate()->AsBubbleDialogDelegate());
-
-  EXPECT_EQ(bottom_right_bubble_view->arrow(),
-            views::BubbleBorder::Arrow::BOTTOM_RIGHT);
-  bottom_right_widget->CloseNow();
+  widget->CloseNow();
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        EphemeralGroup_ShowsOnlyNameColorAndButtons) {

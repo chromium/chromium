@@ -1061,17 +1061,6 @@ gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
   bool adjust_to_fix_available_bounds =
       adjust_if_offscreen_ && !anchor_minimized && has_anchor;
 
-  // Some platforms, such as ozone/wayland, do not support global screen
-  // coordinates manipulation by client applications, which makes bubble
-  // offscreen adjustments buggy, so bypass it if that's the case.
-#if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_global_screen_coordinates) {
-    adjust_to_fix_available_bounds = false;
-  }
-#endif
-
   return GetBubbleFrameView()->GetUpdatedWindowBounds(
       anchor_rect, arrow(), GetWidget()->client_view()->GetPreferredSize({}),
       adjust_to_fix_available_bounds);

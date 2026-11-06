@@ -21,6 +21,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -30,11 +31,14 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -2238,6 +2242,82 @@ TEST_F(BubbleDialogDelegateViewTest, AdjustIfOffscreenClampsToWorkArea) {
       work_area.Contains(unadjusted_widget->GetWindowBoundsInScreen()));
 
   unadjusted_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogDelegateViewTest, AdjustIfOffscreenFitsAnchorWindowBounds) {
+  gfx::Rect work_area = display::Screen::Get()->GetPrimaryDisplay().work_area();
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    work_area.set_origin(gfx::Point(0, 0));
+  }
+#endif
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->SetBounds(work_area);
+  const gfx::Rect anchor_window_bounds =
+      anchor_widget->GetWindowBoundsInScreen();
+  const gfx::Rect contents_bounds =
+      anchor_widget->GetContentsView()->GetLocalBounds();
+
+  View* anchor_view =
+      anchor_widget->GetContentsView()->AddChildView(std::make_unique<View>());
+  anchor_view->SetBoundsRect({20, 20, 30, 30});
+
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_view);
+  bubble_delegate->set_should_show_window_title(false);
+  bubble_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  bubble_delegate->set_adjust_if_offscreen(true);
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  BubbleFrameView* frame_view = bubble_delegate->GetBubbleFrameView();
+  EXPECT_EQ(BubbleBorder::TOP_LEFT, frame_view->GetArrow());
+  EXPECT_TRUE(
+      anchor_window_bounds.Contains(bubble_delegate->GetBubbleBounds()));
+
+  // Moving the anchor near the bottom-left of the anchor window should flip the
+  // arrow vertically so the bubble stays inside the anchor window.
+  anchor_view->SetBoundsRect({20, contents_bounds.bottom() - 50, 30, 30});
+  EXPECT_EQ(BubbleBorder::BOTTOM_LEFT, frame_view->GetArrow());
+  EXPECT_TRUE(
+      anchor_window_bounds.Contains(bubble_delegate->GetBubbleBounds()));
+
+  // Moving the anchor near the top-right should mirror the arrow horizontally.
+  anchor_view->SetBoundsRect({contents_bounds.right() - 50, 20, 30, 30});
+  EXPECT_EQ(BubbleBorder::TOP_RIGHT, frame_view->GetArrow());
+  EXPECT_TRUE(
+      anchor_window_bounds.Contains(bubble_delegate->GetBubbleBounds()));
+
+  // Moving the anchor near the bottom-right should mirror both axes.
+  anchor_view->SetBoundsRect(
+      {contents_bounds.right() - 50, contents_bounds.bottom() - 50, 30, 30});
+  EXPECT_EQ(BubbleBorder::BOTTOM_RIGHT, frame_view->GetArrow());
+  EXPECT_TRUE(
+      anchor_window_bounds.Contains(bubble_delegate->GetBubbleBounds()));
+
+  // With `PreferredArrowAdjustment::kOffset`, horizontal overflow offsets the
+  // arrow instead of mirroring horizontally, while vertical overflow still
+  // flips the arrow vertically.
+  frame_view->SetPreferredArrowAdjustment(
+      BubbleFrameView::PreferredArrowAdjustment::kOffset);
+  anchor_view->SetBoundsRect({contents_bounds.right() - 50, 20, 30, 30});
+  EXPECT_EQ(BubbleBorder::TOP_LEFT, frame_view->GetArrow());
+  EXPECT_NE(0, frame_view->bubble_border()->arrow_offset());
+  EXPECT_TRUE(
+      anchor_window_bounds.Contains(bubble_delegate->GetBubbleBounds()));
+
+  anchor_view->SetBoundsRect(
+      {contents_bounds.right() - 50, contents_bounds.bottom() - 50, 30, 30});
+  EXPECT_EQ(BubbleBorder::BOTTOM_LEFT, frame_view->GetArrow());
+  EXPECT_NE(0, frame_view->bubble_border()->arrow_offset());
+  EXPECT_TRUE(
+      anchor_window_bounds.Contains(bubble_delegate->GetBubbleBounds()));
+
+  bubble_widget->CloseNow();
 }
 
 TEST_F(BubbleDialogDelegateViewTest, AcceptDragDrop) {
