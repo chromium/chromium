@@ -19,6 +19,7 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
@@ -436,6 +437,9 @@ TEST_F(ContentPasswordManagerDriverTest, SetFrameAndFormMetaDataOfForm) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
 
   autofill::FormData form;
+  autofill::FormFieldData field;
+  field.set_name(u"field_name");
+  form.set_fields({field});
   autofill::FormData form2 = GetFormWithFrameAndFormMetaData(main_rfh(), form);
 
   EXPECT_EQ(
@@ -448,6 +452,11 @@ TEST_F(ContentPasswordManagerDriverTest, SetFrameAndFormMetaDataOfForm) {
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(form2.main_frame_origin(),
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
+  ASSERT_EQ(form2.fields().size(), 1u);
+  EXPECT_EQ(form2.fields()[0].host_form_signature(),
+            autofill::CalculateFormSignature(form2));
+  EXPECT_EQ(form2.fields()[0].host_form_structural_signature(),
+            autofill::CalculateStructuralFormSignature(form2));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

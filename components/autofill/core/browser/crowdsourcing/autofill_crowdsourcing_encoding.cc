@@ -569,38 +569,53 @@ void EncodeFormFieldsForUpload(
   }
 }
 
-void EncodeFormForQuery(const FormData& form,
-                        AutofillPageQueryRequest& query,
-                        std::vector<FormSignature>& queried_form_signatures,
-                        std::set<FormSignature>& processed_forms) {
-  DCHECK(!IsMalformed(form));
-  // Adds a request to `query` that contains all (`form`, `field`) for every
-  // `field` from `fields_` that meets `necessary_condition`. Repeated calls for
-  // the same `form` have no effect (early return if `processed_forms` contains
-  // `form`).
-  auto AddFormIf =
-      [&](const std::vector<FormFieldData>& fields,
-          FormSignature form_signature, auto necessary_condition) mutable {
-        if (!processed_forms.insert(form_signature).second) {
+void EncodeFormForQuery(
+    const FormData& flattened_form,
+    AutofillPageQueryRequest& query,
+    std::vector<FormSignature>& queried_form_signatures,
+    std::set<std::pair<FormSignature, FormSignature>>& processed_forms) {
+  DCHECK(!IsMalformed(flattened_form));
+
+  const bool experimental_signatures = base::FeatureList::IsEnabled(
+      features::kAutofillServerExperimentalSignatures);
+  const FormSignature flattened_form_signature =
+      CalculateFormSignature(flattened_form);
+  const FormSignature flattened_form_structural_signature =
+      CalculateStructuralFormSignature(flattened_form);
+
+  // Adds a form to `query` with all fields from `flattened_form` that satisfy
+  // `necessary_condition`. Repeated calls for the same
+  // (`form_signature`, `structural_signature`) pair have no effect.
+  auto add_form_if =
+      [&](FormSignature form_signature, FormSignature structural_signature,
+          base::optional_ref<const FormData> full_form,
+          auto necessary_condition) {
+        if (!processed_forms.insert({form_signature, structural_signature})
+                 .second) {
           return;
         }
 
         AutofillPageQueryRequest::Form* query_form = query.add_forms();
         query_form->set_signature(form_signature.value());
-        query_form->set_alternative_signature(
-            CalculateAlternativeFormSignature(form).value());
+        if (full_form) {
+          query_form->set_alternative_signature(
+              CalculateAlternativeFormSignature(*full_form).value());
+        }
 
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillServerExperimentalSignatures)) {
-          query_form->set_structural_signature(
-              CalculateStructuralFormSignature(form).value());
-          PopulateThreeBitHashedFormMetadata(
-              form, query_form->mutable_three_bit_hashed_form_metadata());
+        if (experimental_signatures) {
+          query_form->set_structural_signature(structural_signature.value());
+          // Low-precision form metadata hashes are not available for iframes,
+          // so they are not populated for subqueries.
+          if (full_form) {
+            PopulateThreeBitHashedFormMetadata(
+                *full_form,
+                query_form->mutable_three_bit_hashed_form_metadata());
+          }
         }
 
         queried_form_signatures.push_back(form_signature);
 
-        for (const auto& field : fields) {
+        for (const FormFieldData& field : flattened_form.fields()) {
           if (!necessary_condition(field)) {
             continue;
           }
@@ -610,23 +625,36 @@ void EncodeFormForQuery(const FormData& form,
           added_field->set_signature(
               CalculateFieldSignatureForField(field).value());
 
-          if (base::FeatureList::IsEnabled(
-                  features::kAutofillServerExperimentalSignatures)) {
+          if (experimental_signatures) {
             PopulateThreeBitHashedFieldMetadata(
                 field, added_field->mutable_three_bit_hashed_field_metadata());
           }
         }
       };
 
-  AddFormIf(form.fields(), CalculateFormSignature(form),
-            [](auto& f) { return true; });
+  add_form_if(flattened_form_signature, flattened_form_structural_signature,
+              flattened_form, [](const FormFieldData&) { return true; });
 
-  for (const FormFieldData& field : form.fields()) {
-    if (field.host_form_signature()) {
-      AddFormIf(form.fields(), field.host_form_signature(),
-                [&](const FormFieldData& f) {
-                  return f.host_form_signature() == field.host_form_signature();
-                });
+  const bool query_per_iframe_signatures = base::FeatureList::IsEnabled(
+      features::kAutofillQueryPerIframeStructuralSignatures);
+  for (const FormFieldData& field : flattened_form.fields()) {
+    if (!field.host_form_signature()) {
+      continue;
+    }
+    if (query_per_iframe_signatures) {
+      add_form_if(
+          field.host_form_signature(), field.host_form_structural_signature(),
+          std::nullopt, [&](const FormFieldData& f) {
+            return f.host_form_signature() == field.host_form_signature() &&
+                   f.host_form_structural_signature() ==
+                       field.host_form_structural_signature();
+          });
+    } else {
+      add_form_if(
+          field.host_form_signature(), flattened_form_structural_signature,
+          flattened_form, [&](const FormFieldData& f) {
+            return f.host_form_signature() == field.host_form_signature();
+          });
     }
   }
 }
@@ -1090,9 +1118,12 @@ EncodeAutofillPageQueryRequest(const std::vector<FormData>& forms) {
   // (large) numbers in the form signature calculation while these are
   // considered for field signatures; (2) for dynamic forms we will hold on to
   // the original form signature.
-  std::set<FormSignature> processed_forms;
+  // Pairs of (form_signature, structural_form_signature) for already encoded
+  // forms.
+  std::set<std::pair<FormSignature, FormSignature>> processed_forms;
   for (const FormData& form : forms) {
-    if (processed_forms.contains(CalculateFormSignature(form))) {
+    if (processed_forms.contains({CalculateFormSignature(form),
+                                  CalculateStructuralFormSignature(form)})) {
       continue;
     }
     UMA_HISTOGRAM_COUNTS_1000("Autofill.FieldCount", form.fields().size());

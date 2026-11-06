@@ -1051,6 +1051,11 @@ BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
 // TODO(crbug.com/524084900): Remove when launched.
 BASE_FEATURE(kAutofillPopupUseDeleteSoon, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether iframe subqueries use their host form's structural
+// signature and omit main-form-only metadata.
+BASE_FEATURE(kAutofillQueryPerIframeStructuralSignatures,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, records Autocomplete table-level diagnostics and saturation
 // metrics on profile startup.
 // TODO(crbug.com/562921257): Remove this feature flag and the associated

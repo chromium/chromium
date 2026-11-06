@@ -2152,6 +2152,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillQueryPerIframeStructuralSignatures};
   FormSignature form_signature(16692857476255362434UL);
 
   FormData form;
@@ -2170,25 +2172,31 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   field.set_name(u"billing_address");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
+  field.set_host_form_structural_signature(FormSignature(123450UL));
   test_api(form).Append(field);
 
   field.set_label(u"Card Number");
   field.set_name(u"card_number");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(67890UL));
+  field.set_host_form_structural_signature(FormSignature(678900UL));
   test_api(form).Append(field);
 
   field.set_label(u"Expiration Date");
   field.set_name(u"expiration_month");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
+  field.set_host_form_structural_signature(FormSignature(123450UL));
   test_api(form).Append(field);
 
   field.set_label(u"Expiration Year");
   field.set_name(u"expiration_year");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
+  field.set_host_form_structural_signature(FormSignature(123450UL));
   test_api(form).Append(field);
+  test_api(form).field(0).set_host_form_structural_signature(
+      CalculateStructuralFormSignature(form));
 
   std::vector<FormData> forms = {form};
 
@@ -2215,20 +2223,14 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
 
     query_form = query.add_forms();
     query_form->set_signature(12345UL);
-    query_form->set_alternative_signature(
-        CalculateAlternativeFormSignature(form).value());
-    query_form->set_structural_signature(
-        CalculateStructuralFormSignature(form).value());
+    query_form->set_structural_signature(123450UL);
     query_form->add_fields()->set_signature(1917667676U);
     query_form->add_fields()->set_signature(747221617U);
     query_form->add_fields()->set_signature(4108155786U);
 
     query_form = query.add_forms();
     query_form->set_signature(67890UL);
-    query_form->set_alternative_signature(
-        CalculateAlternativeFormSignature(form).value());
-    query_form->set_structural_signature(
-        CalculateStructuralFormSignature(form).value());
+    query_form->set_structural_signature(678900UL);
     query_form->add_fields()->set_signature(2226358947U);
   }
 
@@ -2236,6 +2238,9 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
       EncodeAutofillPageQueryRequest(forms);
   EXPECT_EQ(encoded_signatures, expected_signatures);
   EXPECT_THAT(encoded_query, EqualsIgnoringMetadataValues(query));
+  EXPECT_TRUE(encoded_query.forms(0).has_three_bit_hashed_form_metadata());
+  EXPECT_FALSE(encoded_query.forms(1).has_three_bit_hashed_form_metadata());
+  EXPECT_FALSE(encoded_query.forms(2).has_three_bit_hashed_form_metadata());
 
   // Add the same form, only one will be encoded, so
   // EncodeAutofillPageQueryRequest() should return the same data.
@@ -2260,6 +2265,12 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
     field.set_renderer_id(test::MakeFieldRendererId());
     field.set_host_form_signature(form_signature3);
     test_api(form).Append(field);
+  }
+  for (auto& f : test_api(form).fields()) {
+    if (f.host_form_signature() == form_signature3) {
+      f.set_host_form_structural_signature(
+          CalculateStructuralFormSignature(form));
+    }
   }
 
   forms.push_back(form);
@@ -2325,6 +2336,71 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   auto [encoded_query6, encoded_signatures6] =
       EncodeAutofillPageQueryRequest(bad_forms);
   EXPECT_TRUE(encoded_signatures6.empty());
+}
+
+// Tests that iframe subforms with colliding `host_form_signature` and distinct
+// `host_form_structural_signature` values are encoded as separate subqueries.
+TEST_F(AutofillCrowdsourcingEncoding,
+       EncodeAutofillPageQueryRequest_CollidingHostFormSignature) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillQueryPerIframeStructuralSignatures};
+
+  FormData form = test::GetFormData({
+      .fields = {{.label = u"Name on Card", .name = u"name_on_card"},
+                 {.label = u"Card Number", .name = u"card_number"},
+                 {.label = u"CVC", .name = u"cvc"}},
+      .url = "http://www.foo.com/",
+  });
+  const FormSignature kFlattenedFormSignature = CalculateFormSignature(form);
+  constexpr FormSignature kCollidingHostFormSignature(12345UL);
+  constexpr FormSignature kFirstStructuralSignature(11111UL);
+  constexpr FormSignature kSecondStructuralSignature(22222UL);
+
+  test_api(form).field(0).set_host_form_signature(kFlattenedFormSignature);
+  test_api(form).field(0).set_host_form_structural_signature(
+      CalculateStructuralFormSignature(form));
+
+  test_api(form).field(1).set_host_form_signature(kCollidingHostFormSignature);
+  test_api(form).field(1).set_host_form_structural_signature(
+      kFirstStructuralSignature);
+
+  test_api(form).field(2).set_host_form_signature(kCollidingHostFormSignature);
+  test_api(form).field(2).set_host_form_structural_signature(
+      kSecondStructuralSignature);
+
+  AutofillPageQueryRequest query;
+  query.set_client_version(GetProductNameAndVersionForUserAgent());
+  {
+    AutofillPageQueryRequest::Form* query_form = query.add_forms();
+    query_form->set_signature(kFlattenedFormSignature.value());
+    query_form->set_alternative_signature(
+        CalculateAlternativeFormSignature(form).value());
+    query_form->set_structural_signature(
+        CalculateStructuralFormSignature(form).value());
+    for (const FormFieldData& field : form.fields()) {
+      query_form->add_fields()->set_signature(
+          CalculateFieldSignatureForField(field).value());
+    }
+
+    query_form = query.add_forms();
+    query_form->set_signature(kCollidingHostFormSignature.value());
+    query_form->set_structural_signature(kFirstStructuralSignature.value());
+    query_form->add_fields()->set_signature(
+        CalculateFieldSignatureForField(form.fields()[1]).value());
+
+    query_form = query.add_forms();
+    query_form->set_signature(kCollidingHostFormSignature.value());
+    query_form->set_structural_signature(kSecondStructuralSignature.value());
+    query_form->add_fields()->set_signature(
+        CalculateFieldSignatureForField(form.fields()[2]).value());
+  }
+
+  auto [encoded_query, encoded_signatures] =
+      EncodeAutofillPageQueryRequest({form});
+  EXPECT_THAT(encoded_signatures,
+              ElementsAre(kFlattenedFormSignature, kCollidingHostFormSignature,
+                          kCollidingHostFormSignature));
+  EXPECT_THAT(encoded_query, EqualsIgnoringMetadataValues(query));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,

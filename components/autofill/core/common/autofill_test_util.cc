@@ -151,6 +151,7 @@ FormData WithoutUnserializedData(FormData form) {
 FormFieldData WithoutUnserializedData(FormFieldData field) {
   field.set_host_frame({});
   field.set_host_form_signature({});
+  field.set_host_form_structural_signature({});
   field.set_origin(
       url::Origin::CreateFromNormalizedTuple("http", "placeholder", 80));
   return field;

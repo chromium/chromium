@@ -37,12 +37,17 @@ void SetFrameAndFormMetaData(content::RenderFrameHost* rfh,
   form.set_full_url(autofill::StripAuth(url));
   form.set_main_frame_origin(rfh->GetMainFrame()->GetLastCommittedOrigin());
 
+  const autofill::FormSignature form_signature =
+      autofill::CalculateFormSignature(form);
+  const autofill::FormSignature structural_form_signature =
+      autofill::CalculateStructuralFormSignature(form);
   std::vector<autofill::FormFieldData> fields = form.ExtractFields();
   for (auto& field : fields) {
     field.set_host_frame(form.host_frame());
     field.set_origin(rfh->GetLastCommittedOrigin());
     field.set_host_form_id(form.renderer_id());
-    field.set_host_form_signature(CalculateFormSignature(form));
+    field.set_host_form_signature(form_signature);
+    field.set_host_form_structural_signature(structural_form_signature);
   }
   form.set_fields(std::move(fields));
 }

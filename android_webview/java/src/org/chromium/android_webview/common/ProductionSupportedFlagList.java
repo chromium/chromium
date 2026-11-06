@@ -325,6 +325,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_QUERY_PER_IFRAME_STRUCTURAL_SIGNATURES,
+                "Controls whether iframe subqueries use their host form's structural signature and"
+                        + " omit main-form-only metadata."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_IN_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for India."),
         Flag.baseFeature(
