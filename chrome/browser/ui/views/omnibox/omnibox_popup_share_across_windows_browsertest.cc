@@ -471,23 +471,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
 }
 
 // Restoring several windows prewarms one popup, not one per window.
-// TODO(crbug.com/582472583): Failing on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SeveralWindowsPrewarmOnePopup \
-  DISABLED_SeveralWindowsPrewarmOnePopup
-#else
-#define MAYBE_SeveralWindowsPrewarmOnePopup SeveralWindowsPrewarmOnePopup
-#endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
-                       MAYBE_SeveralWindowsPrewarmOnePopup) {
-  ASSERT_TRUE(GetPopupContents(browser()));
+                       SeveralWindowsPrewarmOnePopup) {
+  content::WebContents* contents = GetPopupContents(browser());
+  ASSERT_TRUE(contents);
   BrowserWindowInterface* second_browser =
       CreateBrowser(browser()->GetProfile());
   BrowserWindowInterface* third_browser =
       CreateBrowser(browser()->GetProfile());
 
-  EXPECT_FALSE(GetPresenter(second_browser)->GetWebUIContent());
-  EXPECT_FALSE(GetPresenter(third_browser)->GetWebUIContent());
+  // A window that becomes active may take the first window's popup, but no
+  // window creates its own.
+  for (BrowserWindowInterface* window :
+       {browser(), second_browser, third_browser}) {
+    content::WebContents* window_contents = GetPopupContents(window);
+    EXPECT_TRUE(!window_contents || window_contents == contents);
+  }
 }
 
 // Tests sharing when windows prewarm their popup after their first frame.
@@ -508,27 +507,22 @@ class OmniboxPopupShareAcrossWindowsDeferredBrowserTest
 
 // A window skips prewarming after its first frame when another window of the
 // profile already has a popup.
-// TODO(crbug.com/582472583): Failing on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SkipsPrewarmAfterFirstFrame DISABLED_SkipsPrewarmAfterFirstFrame
-#else
-#define MAYBE_SkipsPrewarmAfterFirstFrame SkipsPrewarmAfterFirstFrame
-#endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsDeferredBrowserTest,
-                       MAYBE_SkipsPrewarmAfterFirstFrame) {
+                       SkipsPrewarmAfterFirstFrame) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetPopupContents(browser()) != nullptr; }));
+  content::WebContents* contents = GetPopupContents(browser());
   BrowserWindowInterface* other_browser =
       CreateBrowser(browser()->GetProfile());
 
   GetPresenter(other_browser)->OnBrowserWindowPresented();
   // Runs after the creation task that the call above posts.
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  FlushPostedTasks();
 
-  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+  // The new window may have taken the first window's popup when it became
+  // active, but it doesn't create its own.
+  content::WebContents* other_contents = GetPopupContents(other_browser);
+  EXPECT_TRUE(!other_contents || other_contents == contents);
 }
 
 // Tests that windows do not share popups with the feature disabled.
