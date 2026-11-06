@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_launch.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "components/metrics/histogram_child_process.h"
@@ -151,6 +152,32 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // is initiated or when the bootstrap connects.
   base::WeakPtr<AppShimHost> GetLaunchWeakPtr();
 
+  // LINT.IfChange(AppShimLaunchResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class LaunchResult {
+    kSuccess = 0,
+    kFailedProcessCreation = 1,
+    kFailedTerminatedBeforeConnection = 2,
+    kSuccessAfterRecreate = 3,
+    kMaxValue = kSuccessAfterRecreate,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:AppShimLaunchResult)
+
+  // LINT.IfChange(AppShimLifecycleState)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class LifecycleState {
+    kLaunchInitiated = 0,
+    kPidReceived = 1,
+    kBootstrapConnected = 2,
+    kDisconnectedBeforeHandshake = 3,
+    kTerminatedAfterConnect = 4,
+    kLaunchFailed = 5,
+    kMaxValue = kLaunchFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:AppShimLifecycleState)
+
  protected:
   void ChannelError(uint32_t custom_reason, const std::string& description);
 
@@ -228,19 +255,8 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   std::unique_ptr<content::ScopedAccessibilityMode> process_accessibility_mode_;
 
  private:
-  // LINT.IfChange(AppShimLaunchResult)
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class LaunchResult {
-    kSuccess = 0,
-    kFailedProcessCreation = 1,
-    kFailedTerminatedBeforeConnection = 2,
-    kSuccessAfterRecreate = 3,
-    kMaxValue = kSuccessAfterRecreate,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:AppShimLaunchResult)
-
   void MaybeRecordLaunchResult(LaunchResult result);
+  void RecordLifecycleState(LifecycleState state);
 
   // If a launch was initiated by Chrome, this stores the launch mode.
   // This is used to log the Apps.AppShim.LaunchResult.{LaunchMode} metric
@@ -248,6 +264,18 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // (OnShimProcessTerminated). If this is nullopt, no launch is pending
   // or the launch was initiated externally (in which case we don't log).
   std::optional<web_app::ShimLaunchMode> pending_chrome_initiated_launch_mode_;
+
+  // The launch mode that this host was initiated with. Stays populated even
+  // after the launch completes, to log AppShimLifecycleState upon termination.
+  std::optional<web_app::ShimLaunchMode> initial_launch_mode_;
+
+  // The time at which the current Chrome-initiated launch was initiated.
+  // Used to record TimeToConnect / TimeToFailure metrics.
+  base::TimeTicks launch_initiated_time_;
+
+  // Tracks if the shim process was successfully created during the current
+  // launch attempt.
+  bool has_received_pid_ = false;
 
   // True if we have attempted to recreate the shim during this launch process.
   // Used to distinguish between success on first try vs success after recreate

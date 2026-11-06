@@ -349,6 +349,19 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Dismissed by Nudge"/>
 </enum>
 
+<!-- LINT.IfChange(AppShimLifecycleState) -->
+
+<enum name="AppShimLifecycleState">
+  <int value="0" label="Launch Initiated"/>
+  <int value="1" label="PID Received"/>
+  <int value="2" label="Bootstrap Connected"/>
+  <int value="3" label="Disconnected Before Handshake"/>
+  <int value="4" label="Terminated After Connect"/>
+  <int value="5" label="Launch Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/apps/app_shim/app_shim_host_mac.h:AppShimLifecycleState) -->
+
 <!-- LINT.IfChange(AppShimNotificationProviderOutcome) -->
 
 <enum name="AppShimNotificationProviderOutcome">

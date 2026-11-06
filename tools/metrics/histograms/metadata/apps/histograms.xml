@@ -1919,6 +1919,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Apps.AppShim.Lifecycle.{LaunchMode}"
+    enum="AppShimLifecycleState" expires_after="2027-05-02">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the lifecycle progression of an App Shim launch initiated by Chrome.
+    Recorded when the launch starts, gets a PID, connects, disconnects before
+    handshake, terminates after connecting, or fails to launch entirely. If the
+    first launch attempt fails, Chrome recreates the shim and retries; each
+    attempt records its own pre-connect lifecycle states (up to twice per
+    LaunchShim call).
+  </summary>
+  <token key="LaunchMode">
+    <variant name="Background"
+        summary="Background launch (e.g. notifications)"/>
+    <variant name="Normal" summary="Normal foreground launch"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppShim.MacSecurityFrameworkOSStatus.{Operation}"
     enum="MacSecurityFrameworkOSStatus" expires_after="2027-01-01">
   <owner>mek@chromium.org</owner>
@@ -1946,6 +1965,42 @@ chromium-metrics-reviews@google.com.
     back to a dummy provider when no profile is available or Chrome is shutting
     down).
   </summary>
+</histogram>
+
+<histogram name="Apps.AppShim.TimeToConnect.{LaunchMode}" units="ms"
+    expires_after="2027-05-02">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the time from when Chrome initiates an App Shim launch attempt until
+    the App Shim successfully connects via mojo (kBootstrapConnected). If the
+    first launch attempt fails and Chrome recreates the shim and retries, this
+    records the duration of the successful attempt only. This does not include
+    time taken to process the launch request if the shim was already running.
+  </summary>
+  <token key="LaunchMode">
+    <variant name="Background"
+        summary="Background launch (e.g. notifications)"/>
+    <variant name="Normal" summary="Normal foreground launch"/>
+  </token>
+</histogram>
+
+<histogram name="Apps.AppShim.TimeToFailure.{LaunchMode}" units="ms"
+    expires_after="2027-05-02">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the time from when Chrome initiates an App Shim launch attempt until
+    the App Shim fails to connect (either kDisconnectedBeforeHandshake or
+    kLaunchFailed). If the first launch attempt fails and Chrome recreates the
+    shim and retries, this is recorded for each failed attempt (up to twice per
+    LaunchShim call).
+  </summary>
+  <token key="LaunchMode">
+    <variant name="Background"
+        summary="Background launch (e.g. notifications)"/>
+    <variant name="Normal" summary="Normal foreground launch"/>
+  </token>
 </histogram>
 
 <histogram name="Apps.AppShim.WillTerminate" enum="Boolean"
