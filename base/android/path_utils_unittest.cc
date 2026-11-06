@@ -4,26 +4,17 @@
 
 #include "base/android/path_utils.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace android {
 
 typedef testing::Test PathUtilsTest;
-
-namespace {
-void ExpectEither(const std::string& expected1,
-                  const std::string& expected2,
-                  const std::string& actual) {
-  EXPECT_TRUE(expected1 == actual || expected2 == actual)
-      << "Value of: " << actual << std::endl
-      << "Expected either: " << expected1 << std::endl
-      << "or: " << expected2;
-}
-}  // namespace
 
 TEST_F(PathUtilsTest, TestGetDataDirectory) {
   // The string comes from the Java side and depends on the APK
@@ -32,9 +23,14 @@ TEST_F(PathUtilsTest, TestGetDataDirectory) {
   FilePath path;
   GetDataDirectory(&path);
 
-  ExpectEither("/data/data/org.chromium.native_test/app_chrome",
-               "/data/user/0/org.chromium.native_test/app_chrome",
-               path.value());
+  // Looks for paths like
+  // - /data/data/org.chromium.native_test/app_chrome
+  // - /data/user/<user_id>/org.chromium.native_test/app_chrome
+  EXPECT_THAT(
+      path.value(),
+      ::testing::MatchesRegex(
+          R"(/data/(data|user/\d+)/org\.chromium\.native_test/app_chrome)"));
+  EXPECT_TRUE(PathExists(path));
 }
 
 TEST_F(PathUtilsTest, TestGetCacheDirectory) {
@@ -43,8 +39,14 @@ TEST_F(PathUtilsTest, TestGetCacheDirectory) {
   // org.chromium.native_test
   FilePath path;
   GetCacheDirectory(&path);
-  ExpectEither("/data/data/org.chromium.native_test/cache",
-               "/data/user/0/org.chromium.native_test/cache", path.value());
+
+  // Looks for paths like
+  // - /data/data/org.chromium.native_test/cache
+  // - /data/user/<user_id>/org.chromium.native_test/cache
+  EXPECT_THAT(path.value(),
+              ::testing::MatchesRegex(
+                  R"(/data/(data|user/\d+)/org\.chromium\.native_test/cache)"));
+  EXPECT_TRUE(PathExists(path));
 }
 
 TEST_F(PathUtilsTest, TestGetNativeLibraryDirectory) {
