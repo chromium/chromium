@@ -292,8 +292,9 @@ void TipsAgentAndroid::OnGetClientOverview(
   // If there is a scheduled notification, reschedule it.
   if (!overview.scheduled_notifications.empty()) {
     // There will only ever be 1 notification scheduled at a time for tips.
-    CHECK_EQ(overview.scheduled_notifications.size(), 1u,
-             base::NotFatalUntil::M161);
+    // TODO(crbug.com/580550840): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(overview.scheduled_notifications.size(), 1u);
     const auto& entry = overview.scheduled_notifications[0];
     notifications::NotificationData data = entry->notification_data;
 
