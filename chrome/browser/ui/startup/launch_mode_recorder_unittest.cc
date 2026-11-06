@@ -81,6 +81,43 @@ TEST_F(LaunchModeRecorderTest, SimpleMetric) {
                                       1);
 }
 
+// Omnibox Everywhere launches are not browser launches and are recorded in
+// their own bucket, even when launched from a shortcut or with an AppId.
+TEST_F(LaunchModeRecorderTest, OmniboxEverywhere) {
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  cmd_line.AppendSwitch(switches::kOmniboxEverywhere);
+  ComputeLaunchModeAndVerify(cmd_line, LaunchMode::kOmniboxEverywhere);
+
+#if BUILDFLAG(IS_WIN)
+  // Taskbar pin launch, rendezvoused with an AppId and shortcut location.
+  base::CommandLine taskbar_cmd_line(base::CommandLine::NO_PROGRAM);
+  taskbar_cmd_line.AppendSwitch(switches::kOmniboxEverywhere);
+  taskbar_cmd_line.AppendSwitchNative(switches::kSourceAppId, L"ChromeAppId");
+  taskbar_cmd_line.AppendSwitchASCII(switches::kSourceShortcutLocation,
+                                     switches::kSourceShortcutLocationTaskbar);
+  ComputeLaunchModeAndVerify(taskbar_cmd_line, LaunchMode::kOmniboxEverywhere);
+
+  // Start Menu shortcut launch.
+  base::FilePath start_menu_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_START_MENU, &start_menu_path));
+  base::CommandLine start_menu_cmd_line(base::CommandLine::NO_PROGRAM);
+  start_menu_cmd_line.AppendSwitch(switches::kOmniboxEverywhere);
+  start_menu_cmd_line.AppendSwitchPath(switches::kSourceShortcut,
+                                       start_menu_path);
+  ComputeLaunchModeAndVerify(start_menu_cmd_line,
+                             LaunchMode::kOmniboxEverywhere);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+TEST_F(LaunchModeRecorderTest, OmniboxEverywhereRecorded) {
+  base::HistogramTester histogram_tester;
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  cmd_line.AppendSwitch(switches::kOmniboxEverywhere);
+  ComputeAndRecordLaunchMode(cmd_line);
+  histogram_tester.ExpectUniqueSample(kLaunchModeMetric,
+                                      LaunchMode::kOmniboxEverywhere, 1);
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(LaunchModeRecorderTest, WinNotification) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);

@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/gurl.h"
 
@@ -33,7 +34,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/win/startup_information.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/taskbar_util.h"
 #include "components/url_formatter/url_fixer.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -338,6 +338,12 @@ void ComputeAndRecordLaunchMode(const base::CommandLine& command_line) {
 void ComputeLaunchMode(
     const base::CommandLine& command_line,
     base::OnceCallback<void(std::optional<LaunchMode>)> result_callback) {
+  // Omnibox Everywhere launches (e.g. from its taskbar pin or Start Menu
+  // shortcut) are not browser launches, so record them in their own bucket.
+  if (command_line.HasSwitch(switches::kOmniboxEverywhere)) {
+    std::move(result_callback).Run(LaunchMode::kOmniboxEverywhere);
+    return;
+  }
   if (auto mode = GetLaunchModeFast(command_line); mode.has_value()) {
     std::move(result_callback).Run(mode);
     return;
