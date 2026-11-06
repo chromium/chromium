@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionProperties.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionViewBinder.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionWindowTracker.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcVoicePlateView.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcWaveformView.java",
   ]
   deps = [
@@ -34,6 +35,8 @@ android_library("java") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
@@ -63,7 +66,9 @@ android_library("entry_point_java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/ttc_session_pill_background.xml",
+    "java/res/drawable/ttc_voice_plate_pause_background.xml",
     "java/res/layout/ttc_session_pill.xml",
+    "java/res/layout/ttc_voice_plate.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [
@@ -71,6 +76,7 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
   ]
 }
 
@@ -78,6 +84,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionMediatorTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionWindowTrackerTest.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcVoicePlateViewTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcWaveformViewTest.java",
   ]
   deps = [
@@ -95,9 +102,12 @@ robolectric_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

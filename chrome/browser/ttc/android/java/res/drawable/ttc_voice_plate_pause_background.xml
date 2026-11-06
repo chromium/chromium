@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <!-- Inset to draw within the button's larger touch target. -->
+    <item
+        android:top="@dimen/ttc_voice_plate_button_inset"
+        android:bottom="@dimen/ttc_voice_plate_button_inset">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/ttc_voice_plate_pause_corner_radius" />
+            <solid android:color="?attr/colorPrimaryContainer" />
+        </shape>
+    </item>
+</ripple>

@@ -14,4 +14,15 @@ found in the LICENSE file.
     <dimen name="ttc_session_pill_text_margin_start">8dp</dimen>
     <dimen name="ttc_session_pill_margin_horizontal">16dp</dimen>
     <dimen name="ttc_session_pill_margin_bottom">16dp</dimen>
+
+    <!-- Large-screen voice plate, a floating pill. -->
+    <dimen name="ttc_voice_plate_padding_start">16dp</dimen>
+    <dimen name="ttc_voice_plate_padding_end">8dp</dimen>
+    <!-- The pause button is drawn 40dp tall within its 48dp touch target. -->
+    <dimen name="ttc_voice_plate_button_inset">4dp</dimen>
+    <dimen name="ttc_voice_plate_pause_padding_vertical">12dp</dimen>
+    <dimen name="ttc_voice_plate_button_spacing">8dp</dimen>
+    <dimen name="ttc_voice_plate_pause_width">56dp</dimen>
+    <dimen name="ttc_voice_plate_pause_padding_horizontal">16dp</dimen>
+    <dimen name="ttc_voice_plate_pause_corner_radius">20dp</dimen>
 </resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The large-screen TTC voice plate: a floating pill with the session's
+     waveform and a button to pause (mute) the microphone. See
+     TtcVoicePlateView. -->
+<org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ttc_voice_plate_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top|center_horizontal"
+    android:visibility="gone">
+
+    <org.chromium.components.browser_ui.widget.floating_pill.FloatingPillView
+        android:id="@+id/ttc_voice_plate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/ttc_voice_plate_padding_start"
+        android:paddingEnd="@dimen/ttc_voice_plate_padding_end">
+
+        <org.chromium.chrome.browser.ttc.TtcWaveformView
+            android:id="@+id/ttc_voice_plate_waveform"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- The filled, pill-shaped pause button of the mocks. Its icon,
+             description and tooltip are set by TtcVoicePlateView. -->
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/ttc_voice_plate_pause_button"
+            android:layout_width="@dimen/ttc_voice_plate_pause_width"
+            android:layout_height="@dimen/floating_pill_button_size"
+            android:layout_marginStart="@dimen/ttc_voice_plate_button_spacing"
+            android:paddingStart="@dimen/ttc_voice_plate_pause_padding_horizontal"
+            android:paddingTop="@dimen/ttc_voice_plate_pause_padding_vertical"
+            android:paddingEnd="@dimen/ttc_voice_plate_pause_padding_horizontal"
+            android:paddingBottom="@dimen/ttc_voice_plate_pause_padding_vertical"
+            android:background="@drawable/ttc_voice_plate_pause_background"
+            android:pointerIcon="hand"
+            android:scaleType="fitCenter"
+            app:tint="@macro/default_icon_color_on_accent1_container" />
+
+    </org.chromium.components.browser_ui.widget.floating_pill.FloatingPillView>
+
+</org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer>

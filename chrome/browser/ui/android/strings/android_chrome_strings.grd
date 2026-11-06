@@ -8162,6 +8162,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TTC_SESSION_END_DESCRIPTION" desc="Accessibility description of the TTC session pill. Tapping it ends the session." translateable="false">
         End TTC session
       </message>
+      <message name="IDS_TTC_VOICE_PLATE_PAUSE" desc="Accessibility label and tooltip of the button that pauses (mutes) the microphone, on the floating bar shown below the toolbar on large screens while the user talks to Chrome by voice." translateable="false">
+        Pause microphone
+      </message>
+      <message name="IDS_TTC_VOICE_PLATE_RESUME" desc="Accessibility label and tooltip of the button that resumes (unmutes) the microphone, on the floating bar shown below the toolbar on large screens while the user talks to Chrome by voice." translateable="false">
+        Resume microphone
+      </message>
+      <message name="IDS_TTC_VOICE_PLATE_TITLE" desc="Placeholder accessibility pane title and label of the floating bar shown below the toolbar on large screens while the user talks to Chrome by voice." translateable="false">
+        TTC
+      </message>
       <message name="IDS_TTC_FRE_DIALOG_TITLE" desc="Placeholder title of the TTC first run dialog that asks for the user's consent." translateable="false">
         Placeholder
       </message>
