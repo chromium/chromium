@@ -1354,6 +1354,11 @@ void ClientSideDetectionHostBase::
           ? "ClientSideDetectionServerModelMultimodal.Enabled"
           : "ClientSideDetectionServerModelMultimodal.Control");
 
+  verdict->mutable_population()->add_finch_active_groups(
+      base::FeatureList::IsEnabled(kClientSideDetectionIframeInnerText)
+          ? "ClientSideDetectionIframeInnerText.Enabled"
+          : "ClientSideDetectionIframeInnerText.Control");
+
   if (verdict->client_side_detection_type() ==
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
     if (base::FeatureList::IsEnabled(

@@ -158,6 +158,16 @@ const base::FeatureParam<bool> kCsdEnforceIos{&kClientSideDetectionEnabledIos,
 BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionIframeInnerText,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kClientSideDetectionMaxIframesToExtract{
+    &kClientSideDetectionIframeInnerText, "MaxIframesToExtract",
+    /*default_value=*/10};
+constexpr base::FeatureParam<base::TimeDelta>
+    kClientSideDetectionIframeInnerTextTimeout{
+        &kClientSideDetectionIframeInnerText, "Timeout",
+        /*default_value=*/base::Milliseconds(100)};
+
 BASE_FEATURE(kClientSideDetectionImageEmbeddingMatch,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -620,6 +630,7 @@ base::ListValue GetFeatureStatusList() {
       &kClientSideDetectionCopyFromSurface,
       &kClientSideDetectionEnabledIos,
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
+      &kClientSideDetectionIframeInnerText,
       &kClientSideDetectionImageEmbeddingMatch,
       &kClientSideDetectionKeyboardLockUniformPageDelay,
       &kClientSideDetectionKillswitch,

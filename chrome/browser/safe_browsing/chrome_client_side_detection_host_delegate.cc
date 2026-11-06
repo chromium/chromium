@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
+#include "base/barrier_closure.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -25,9 +27,12 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/weak_document_ptr.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
@@ -38,6 +43,74 @@ namespace safe_browsing {
 namespace {
 // The number of user gestures we trace back for CSD attribution.
 const int kCSDAttributionUserGestureLimitForExtendedReporting = 5;
+
+// Returns true if `rfh` is a cross-origin or out-of-process subframe relative
+// to `parent`. Same-origin in-process `<iframe>`s are omitted here because
+// Blink's `content_extraction::GetInnerText()` already extracts them inline.
+bool ShouldExtractSubframeSeparately(content::RenderFrameHost* rfh,
+                                     content::RenderFrameHost* parent) {
+  // Blink's `InnerTextBuilder` only inlines `HTMLIFrameElement` (`kIframe`),
+  // not `<frame>`, `<object>`, or `<embed>`.
+  return rfh->GetFrameOwnerElementType() !=
+             blink::FrameOwnerElementType::kIframe ||
+         rfh->GetRenderWidgetHost() != parent->GetRenderWidgetHost() ||
+         !rfh->GetLastCommittedOrigin().IsSameOriginWith(
+             parent->GetLastCommittedOrigin());
+}
+
+void OnAllFramesInnerTextDone(
+    content::WeakDocumentPtr main_document,
+    scoped_refptr<base::RefCountedData<std::vector<std::string>>> frame_texts,
+    scoped_refptr<base::RefCountedData<HostInnerTextCallback>> callback_holder,
+    base::TimeTicks start_time,
+    bool has_loading_subframe,
+    bool timed_out) {
+  if (!callback_holder->data) {
+    return;
+  }
+  HostInnerTextCallback callback = std::move(callback_holder->data);
+  if (!main_document.AsRenderFrameHostIfValid()) {
+    std::move(callback).Run("");
+    return;
+  }
+
+  base::UmaHistogramTimes(
+      "SBClientPhishing.IntelligentScanGetInnerTextDuration",
+      base::TimeTicks::Now() - start_time);
+
+  const std::vector<std::string>& texts = frame_texts->data;
+  base::UmaHistogramCounts100("SBClientPhishing.IntelligentScanIframeCount",
+                              texts.size() - 1);
+
+  if (has_loading_subframe || timed_out) {
+    const bool is_main_frame_empty =
+        base::TrimWhitespaceASCII(texts[0], base::TRIM_ALL).empty();
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IntelligentScanEmptyMainFrameWithLoadingIframes",
+        is_main_frame_empty);
+  }
+
+  size_t iframe_inner_text_bytes = 0;
+  std::vector<std::string_view> non_empty_parts;
+  non_empty_parts.reserve(texts.size());
+  for (size_t i = 0; i < texts.size(); ++i) {
+    if (!base::TrimWhitespaceASCII(texts[i], base::TRIM_ALL).empty()) {
+      if (i > 0) {
+        iframe_inner_text_bytes += texts[i].size();
+      }
+      non_empty_parts.push_back(texts[i]);
+    }
+  }
+
+  if (texts.size() > 1) {
+    base::UmaHistogramCounts100000(
+        "SBClientPhishing.IntelligentScanIframeInnerTextSize",
+        iframe_inner_text_bytes);
+  }
+
+  std::move(callback).Run(base::JoinString(non_empty_parts, "\n"));
+}
+
 }  // namespace
 
 // static
@@ -144,10 +217,99 @@ ChromeClientSideDetectionHostDelegate::GetUserPopulation() {
 
 void ChromeClientSideDetectionHostDelegate::GetInnerText(
     HostInnerTextCallback callback) {
-  content_extraction::GetInnerText(
-      *web_contents_->GetPrimaryMainFrame(), std::nullopt,
-      base::BindOnce(&ChromeClientSideDetectionHostDelegate::OnInnerTextResult,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  content::RenderFrameHost* primary_main_frame =
+      web_contents_->GetPrimaryMainFrame();
+  if (!base::FeatureList::IsEnabled(kClientSideDetectionIframeInnerText)) {
+    content_extraction::GetInnerText(
+        *primary_main_frame, std::nullopt,
+        base::BindOnce(
+            &ChromeClientSideDetectionHostDelegate::OnInnerTextResult,
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  const size_t max_iframes =
+      std::max(0, kClientSideDetectionMaxIframesToExtract.Get());
+  std::vector<content::RenderFrameHost*> frames_to_query;
+  bool has_loading_subframe = false;
+  primary_main_frame->ForEachRenderFrameHostWithAction(
+      [primary_main_frame, max_iframes, &frames_to_query,
+       &has_loading_subframe](content::RenderFrameHost* rfh) {
+        if (rfh == primary_main_frame) {
+          // CHECK we don't break an invariant: Downstream code assumes the
+          // first item in frames_to_query is always the primary_main_frame.
+          CHECK(frames_to_query.empty());
+          frames_to_query.push_back(rfh);
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        }
+        content::RenderFrameHost* parent = rfh->GetParent();
+        // Skip fenced frame trees and inner frame trees (`!parent`), inactive
+        // or non-live frames, and ad-tagged subframes (consistent with Blink's
+        // `ShouldContentExtractionIncludeIFrame()`).
+        if (!parent || rfh->IsAdFrame() ||
+            rfh->GetLifecycleState() !=
+                content::RenderFrameHost::LifecycleState::kActive ||
+            !rfh->IsRenderFrameLive()) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+        // Skip non-web subframes such as `chrome-extension://` iframes.
+        const GURL precursor = rfh->GetLastCommittedOrigin()
+                                   .GetTupleOrPrecursorTupleIfOpaque()
+                                   .GetURL();
+        if (!precursor.SchemeIsHTTPOrHTTPS()) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+        if (!rfh->IsDOMContentLoaded() ||
+            rfh->GetLastCommittedURL().is_empty()) {
+          has_loading_subframe = true;
+        }
+        if (ShouldExtractSubframeSeparately(rfh, parent) &&
+            frames_to_query.size() - 1 < max_iframes) {
+          frames_to_query.push_back(rfh);
+        }
+        // Always continue into child frames so cross-origin grandchildren
+        // nested inside a same-origin iframe are still visited and extracted.
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  auto frame_texts =
+      base::MakeRefCounted<base::RefCountedData<std::vector<std::string>>>(
+          std::in_place, frames_to_query.size());
+  auto callback_holder =
+      base::MakeRefCounted<base::RefCountedData<HostInnerTextCallback>>(
+          std::move(callback));
+  auto complete_once = base::BindRepeating(
+      &OnAllFramesInnerTextDone, primary_main_frame->GetWeakDocumentPtr(),
+      frame_texts, callback_holder, base::TimeTicks::Now(),
+      has_loading_subframe);
+
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(frames_to_query.size(),
+                           base::BindOnce(complete_once, /*timed_out=*/false));
+  for (size_t i = 0; i < frames_to_query.size(); ++i) {
+    content_extraction::GetInnerText(
+        *frames_to_query[i], std::nullopt,
+        base::BindOnce(
+            [](scoped_refptr<base::RefCountedData<std::vector<std::string>>>
+                   texts,
+               base::OnceClosure timeout_closure, size_t index,
+               base::OnceClosure done,
+               std::unique_ptr<content_extraction::InnerTextResult> result) {
+              if (result) {
+                texts->data[index] = std::move(result->inner_text);
+              }
+              std::move(done).Run();
+              // Start the subframe timeout once the main frame (index 0) has
+              // responded. It is a no-op if all frames have already responded.
+              if (index == 0) {
+                base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+                    FROM_HERE, std::move(timeout_closure),
+                    kClientSideDetectionIframeInnerTextTimeout.Get());
+              }
+            },
+            frame_texts, base::BindOnce(complete_once, /*timed_out=*/true), i,
+            barrier));
+  }
 }
 
 void ChromeClientSideDetectionHostDelegate::MaybeStartGeminiAntiscamProtection(

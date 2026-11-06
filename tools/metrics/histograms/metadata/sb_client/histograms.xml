@@ -893,6 +893,35 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
+    name="SBClientPhishing.IntelligentScanEmptyMainFrameWithLoadingIframes"
+    enum="Boolean" expires_after="2027-11-04">
+  <owner>bcl@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the main frame had empty inner text when at least one non-ad
+    HTTP(S) subframe had not yet finished loading its DOM (or timed out
+    responding to innerText extraction) during an intelligent scan. Logged once
+    per completed inner text extraction on Desktop and Android when iframe inner
+    text extraction is enabled, the primary document is still valid, and at
+    least one eligible subframe was still loading or timed out.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.IntelligentScanGetInnerTextDuration"
+    units="ms" expires_after="2027-11-04">
+  <owner>bcl@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the wall-clock duration required to extract inner text from the main
+    frame and eligible subframes. Logged once per completed inner text
+    extraction on Desktop and Android when iframe inner text extraction is
+    enabled and the primary document is still valid.
+  </summary>
+</histogram>
+
+<histogram
     name="SBClientPhishing.IntelligentScanHasSuccessfulResponse{IntelligentScanRequestType}"
     enum="BooleanSuccess" expires_after="2027-04-11">
   <owner>nwokedi@chromium.org</owner>
@@ -904,6 +933,34 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
   <token key="IntelligentScanRequestType"
       variants="ClientSideDetectionIntelligentScanRequestType"/>
+</histogram>
+
+<histogram name="SBClientPhishing.IntelligentScanIframeCount" units="iframes"
+    expires_after="2027-11-04">
+  <owner>bcl@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of live non-ad HTTP(S) cross-origin or out-of-process
+    iframes queried for inner text extraction on the page during an intelligent
+    scan (0 if the page had none, capped at MaxIframesToExtract). Logged once
+    per completed inner text extraction on Desktop and Android when iframe inner
+    text extraction is enabled and the primary document is still valid.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.IntelligentScanIframeInnerTextSize"
+    units="bytes" expires_after="2027-11-04">
+  <owner>bcl@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the total size (in bytes) of inner text extracted from non-empty
+    cross-origin or out-of-process iframes during an intelligent scan. Logged
+    once per completed inner text extraction on Desktop and Android when iframe
+    inner text extraction is enabled, at least one cross-origin or
+    out-of-process iframe was queried, and the primary document is still valid.
+  </summary>
 </histogram>
 
 <histogram
