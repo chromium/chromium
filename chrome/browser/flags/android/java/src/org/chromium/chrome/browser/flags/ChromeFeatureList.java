@@ -2036,7 +2036,7 @@ public abstract class ChromeFeatureList {
                             Map.entry(
                                     FRE_STRING_CHANGES,
                                     Map.ofEntries(
-                                            Map.entry(FRE_STRING_CHANGES_PERSONALIZED, "false"),
+                                            Map.entry(FRE_STRING_CHANGES_PERSONALIZED, "true"),
                                             Map.entry(FRE_STRING_CHANGES_SAFETY, "false"),
                                             Map.entry(FRE_STRING_CHANGES_SEAMLESSNESS, "false"))),
                             Map.entry(

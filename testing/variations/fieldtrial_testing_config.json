@@ -8069,6 +8069,24 @@
             ]
         }
     ],
+    "FREStringChanges": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Personalized_20261105",
+                    "params": {
+                        "personalized": "true"
+                    },
+                    "enable_features": [
+                        "FREStringChanges"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairPWACompanion": [
         {
             "platforms": [
