@@ -76,6 +76,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     assertTrue(element.state.open);
@@ -97,6 +98,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     await chip.updateComplete;
@@ -120,6 +122,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     await chip.updateComplete;
@@ -146,6 +149,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     await chip.updateComplete;
@@ -162,6 +166,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     await chip.updateComplete;
@@ -206,6 +211,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: 'Summarize this page',
+      isSplit: false,
     };
     await element.updateComplete;
     await chip.updateComplete;
@@ -228,6 +234,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: 'Summarize this page',
+      isSplit: false,
     };
     await element.updateComplete;
     await chip.updateComplete;
@@ -241,6 +248,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     await chip.updateComplete;
@@ -322,6 +330,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     assertTrue(element.state.shouldShow);
@@ -334,6 +343,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     assertFalse(element.state.shouldShow);
@@ -386,6 +396,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     await element.$.button.updateComplete;
@@ -411,6 +422,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: 'Summarize this page',
+      isSplit: false,
     };
     await element.updateComplete;
     await element.$.button.updateComplete;
@@ -434,6 +446,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     await element.$.button.updateComplete;
@@ -524,6 +537,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     assertEquals(1, requestLayoutCount);
@@ -536,6 +550,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
     };
     await element.updateComplete;
     assertEquals(1, requestLayoutCount);
@@ -548,6 +563,7 @@ suite('GlicButtonTest', function() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: 'Summarize',
+      isSplit: false,
     };
     await element.updateComplete;
     assertEquals(2, requestLayoutCount);

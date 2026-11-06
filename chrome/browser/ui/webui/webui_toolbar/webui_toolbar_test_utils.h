@@ -193,6 +193,7 @@ class MockToolbarUIServiceDelegate
   MOCK_METHOD(void, OnPerformanceInterventionButtonClicked, (), (override));
   MOCK_METHOD(void, OnMediaButtonClicked, (), (override));
   MOCK_METHOD(void, OnGlicButtonClicked, (), (override));
+  MOCK_METHOD(void, OnGlicActorTaskIconClicked, (), (override));
 };
 
 class MockBrowserControlsServiceDelegate

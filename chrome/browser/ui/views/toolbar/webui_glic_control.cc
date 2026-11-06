@@ -106,18 +106,20 @@ void WebUIGlicControl::HandleContextMenu(const gfx::Rect& screen_rect,
 }
 
 void WebUIGlicControl::SetIsShowingNudge(bool is_showing) {
-  if (is_showing_nudge_ == is_showing) {
+  const bool had_visible_nudge = GetIsShowingNudge();
+  if (!is_showing) {
+    nudge_label_.clear();
+  } else if (is_split_) {
     return;
   }
   is_showing_nudge_ = is_showing;
-  if (!is_showing) {
-    nudge_label_.clear();
+  if (had_visible_nudge != GetIsShowingNudge()) {
+    UpdateState();
   }
-  UpdateState();
 }
 
 bool WebUIGlicControl::GetIsShowingNudge() const {
-  return is_showing_nudge_;
+  return is_showing_nudge_ && !nudge_label_.empty();
 }
 
 void WebUIGlicControl::SetNudgeLabel(std::string label) {
@@ -136,14 +138,15 @@ void WebUIGlicControl::SetVisible(bool visible) {
   }
   should_show_ = visible;
   if (!IsVisible()) {
-    SetIsShowingNudge(false);
+    is_showing_nudge_ = false;
+    nudge_label_.clear();
   }
   UpdateState();
   delegate_->OnPreferredSizeChanged();
 }
 
 bool WebUIGlicControl::IsVisible() const {
-  return should_show_ && is_pinned_;
+  return should_show_ && (is_pinned_ || is_split_);
 }
 
 void WebUIGlicControl::SetGlicPanelIsOpen(bool open) {
@@ -152,6 +155,22 @@ void WebUIGlicControl::SetGlicPanelIsOpen(bool open) {
   }
   is_panel_open_ = open;
   UpdateState();
+}
+
+void WebUIGlicControl::SetIsSplit(bool is_split) {
+  if (is_split_ == is_split) {
+    return;
+  }
+  const bool was_visible = IsVisible();
+  is_split_ = is_split;
+  if (is_split_ || !IsVisible()) {
+    is_showing_nudge_ = false;
+    nudge_label_.clear();
+  }
+  UpdateState();
+  if (was_visible != IsVisible()) {
+    delegate_->OnPreferredSizeChanged();
+  }
 }
 
 void WebUIGlicControl::UpdateStyle(bool should_match_toolbar) {
@@ -205,17 +224,21 @@ void WebUIGlicControl::OnPrefChanged() {
   if (is_pinned_ == is_pinned) {
     return;
   }
+  const bool was_visible = IsVisible();
   is_pinned_ = is_pinned;
-  if (!is_pinned_) {
-    SetIsShowingNudge(false);
-    if (menu_runner_) {
-      menu_runner_.reset();
-      menu_model_adapter_.reset();
-      menu_model_.reset();
-    }
+  if (!is_pinned_ && menu_runner_) {
+    menu_runner_.reset();
+    menu_model_adapter_.reset();
+    menu_model_.reset();
+  }
+  if (!IsVisible()) {
+    is_showing_nudge_ = false;
+    nudge_label_.clear();
   }
   UpdateState();
-  delegate_->OnPreferredSizeChanged();
+  if (was_visible != IsVisible()) {
+    delegate_->OnPreferredSizeChanged();
+  }
 }
 
 void WebUIGlicControl::UpdateState() {
@@ -228,8 +251,9 @@ void WebUIGlicControl::UpdateState() {
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
   state->should_match_toolbar_style = should_match_toolbar_style_;
   state->use_custom_theme_fallback = use_custom_theme_fallback_;
-  if (is_showing_nudge_ && !nudge_label_.empty()) {
+  if (GetIsShowingNudge()) {
     state->nudge_label = nudge_label_;
   }
+  state->is_split = is_split_;
   delegate_->OnGlicButtonStateChanged(std::move(state));
 }

@@ -404,6 +404,13 @@ TEST_F(ToolbarUIServiceTest, TestOnGlicButtonClicked) {
   service().OnGlicButtonClicked();
 }
 
+// Tests that calling OnGlicActorTaskIconClicked() calls the delegate.
+TEST_F(ToolbarUIServiceTest, TestOnGlicActorTaskIconClicked) {
+  EXPECT_CALL(delegate(), OnGlicActorTaskIconClicked());
+
+  service().OnGlicActorTaskIconClicked();
+}
+
 // Tests that GlicButtonState updates in ToolbarState are received.
 TEST_F(ToolbarUIServiceTest, TestGlicButtonStateUpdate) {
   toolbar_state()->glic_button_state->open = true;
@@ -412,6 +419,23 @@ TEST_F(ToolbarUIServiceTest, TestGlicButtonStateUpdate) {
 
   ASSERT_TRUE(observer()->state->glic_button_state->open);
   ASSERT_TRUE(observer()->state->glic_button_state->should_show);
+}
+
+// Tests that GlicActorTaskIconState updates in ToolbarState are received.
+TEST_F(ToolbarUIServiceTest, TestGlicActorTaskIconStateUpdate) {
+  toolbar_state()->glic_button_state->is_split = true;
+  toolbar_state()->glic_actor_task_icon_state->should_show = true;
+  toolbar_state()->glic_actor_task_icon_state->is_pressed = true;
+  toolbar_state()->glic_actor_task_icon_state->nudge_label = "Nudge";
+  toolbar_state()->glic_actor_task_icon_state->tooltip = "Nudge";
+  PushToolbarStateUpdate();
+
+  ASSERT_TRUE(observer()->state->glic_button_state->is_split);
+  ASSERT_TRUE(observer()->state->glic_actor_task_icon_state->should_show);
+  ASSERT_TRUE(observer()->state->glic_actor_task_icon_state->is_pressed);
+  ASSERT_EQ("Nudge",
+            observer()->state->glic_actor_task_icon_state->nudge_label);
+  ASSERT_EQ("Nudge", observer()->state->glic_actor_task_icon_state->tooltip);
 }
 
 }  // namespace

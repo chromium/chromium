@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/common/content_features.h"
@@ -59,6 +62,12 @@ TEST_F(WebUIToolbarUIConfigTest, IsWebUIEnabled) {
         {features::kWebUIReloadButton, features::kWebUISplitTabsButton});
     EXPECT_FALSE(config.IsWebUIEnabled(&profile));
   }
+}
+
+TEST(WebUIToolbarUITest, KnownElementIdentifiersIncludeGlicSplitElements) {
+  const auto known_ids = WebUIToolbarUI::GetKnownElementIdentifiers();
+  EXPECT_TRUE(std::ranges::contains(known_ids, kGlicButtonElementId));
+  EXPECT_TRUE(std::ranges::contains(known_ids, kGlicActorTaskIconElementId));
 }
 
 }  // namespace

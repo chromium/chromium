@@ -241,6 +241,13 @@ export class ToolbarAppElement extends AppElementBase {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null,
+      isSplit: false,
+    },
+    glicActorTaskIconState: {
+      shouldShow: false,
+      nudgeLabel: null,
+      tooltip: '',
+      isPressed: false,
     },
     layoutConstantsVersion:
         this.initialState_.getInteger(ToolbarStateKey.LAYOUT_CONSTANTS_VERSION),

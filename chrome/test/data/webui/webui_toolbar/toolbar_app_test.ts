@@ -125,6 +125,13 @@ function createMockToolbarState() {
       shouldMatchToolbarStyle: false,
       useCustomThemeFallback: false,
       nudgeLabel: null as string | null,
+      isSplit: false,
+    },
+    glicActorTaskIconState: {
+      shouldShow: false,
+      nudgeLabel: null as string | null,
+      tooltip: '',
+      isPressed: false,
     },
     overflowButtonControlState: {
       isContextMenuVisible: false,

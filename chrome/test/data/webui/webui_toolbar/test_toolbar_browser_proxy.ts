@@ -35,6 +35,7 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'onAppMenuFocusChanged',
       'onContentSettingImageAnimationEnded',
       'onContentSettingImagePointerDown',
+      'onGlicActorTaskIconClicked',
       'onGlicButtonClicked',
       'onHomeButtonDropFile',
       'onHomeButtonDropText',
@@ -232,6 +233,10 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
 
   onGlicButtonClicked() {
     this.methodCalled('onGlicButtonClicked');
+  }
+
+  onGlicActorTaskIconClicked() {
+    this.methodCalled('onGlicActorTaskIconClicked');
   }
 
   onLocationBarFocusWithinChanged(focusInside: boolean) {

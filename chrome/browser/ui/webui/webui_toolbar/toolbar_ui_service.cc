@@ -443,4 +443,10 @@ void ToolbarUIService::OnGlicButtonClicked() {
     delegate_->OnGlicButtonClicked();
   }
 }
+
+void ToolbarUIService::OnGlicActorTaskIconClicked() {
+  if (delegate_) {
+    delegate_->OnGlicActorTaskIconClicked();
+  }
+}
 }  // namespace toolbar_ui_api

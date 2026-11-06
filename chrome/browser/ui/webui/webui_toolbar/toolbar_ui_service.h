@@ -116,6 +116,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void OnPerformanceInterventionButtonClicked() = 0;
     virtual void OnMediaButtonClicked() = 0;
     virtual void OnGlicButtonClicked() = 0;
+    virtual void OnGlicActorTaskIconClicked() = 0;
   };
 
   ToolbarUIService(
@@ -224,6 +225,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   // Handles click events from the WebUI Glic button by forwarding them to the
   // delegate.
   void OnGlicButtonClicked() override;
+  // Handles click events from the WebUI Glic actor task icon by forwarding
+  // them to the delegate.
+  void OnGlicActorTaskIconClicked() override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

@@ -367,6 +367,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       avatar_control_(this),
       media_control_(this),
       glic_control_(this),
+      glic_actor_task_icon_control_(this),
       location_bar_(std::move(location_bar)),
       extensions_container_(this),
       back_control_(this, BackForwardButton::Direction::kBack),
@@ -426,6 +427,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::MediaControlState::New();
   last_queued_state_.glic_button_state =
       toolbar_ui_api::mojom::GlicButtonState::New();
+  last_queued_state_.glic_actor_task_icon_state =
+      toolbar_ui_api::mojom::GlicActorTaskIconState::New();
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -580,6 +583,10 @@ void WebUIToolbarWebView::AddedToWidget() {
     }
     if (features::IsWebUIGlicButtonEnabled()) {
       glic_control_.Init();
+      if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+          features::kGlicActorUiTaskIcon.Get()) {
+        glic_actor_task_icon_control_.Init();
+      }
     }
     if (features::IsWebUIExtensionsContainerEnabled()) {
       extensions_container_.Init(web_contents());
@@ -1034,6 +1041,10 @@ void WebUIToolbarWebView::OnMediaButtonClicked() {
 
 void WebUIToolbarWebView::OnGlicButtonClicked() {
   glic_control_.OnClicked();
+}
+
+void WebUIToolbarWebView::OnGlicActorTaskIconClicked() {
+  glic_actor_task_icon_control_.OnClicked();
 }
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
@@ -1819,6 +1830,15 @@ void WebUIToolbarWebView::OnGlicButtonStateChanged(
     PostPushToolbarState();
   }
 }
+
+void WebUIToolbarWebView::OnGlicActorTaskIconStateChanged(
+    toolbar_ui_api::mojom::GlicActorTaskIconStatePtr state) {
+  if (!mojo::Equals(state, last_queued_state_.glic_actor_task_icon_state)) {
+    last_queued_state_.glic_actor_task_icon_state = std::move(state);
+    PostPushToolbarState();
+  }
+}
+
 void WebUIToolbarWebView::OnFocusRequested(
     toolbar_ui_api::mojom::FocusRequestTarget target) {
   // Record the request before focusing the WebView: if `RequestFocus()` grants
@@ -2029,8 +2049,9 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
   button_count += features::IsWebUIPerformanceInterventionButtonEnabled() &&
                   performance_intervention_control_.IsButtonShowing();
   button_count += features::IsWebUIAppMenuButtonEnabled();
-  button_count +=
-      features::IsWebUIGlicButtonEnabled() && glic_control_.IsVisible();
+  if (features::IsWebUIGlicButtonEnabled() && glic_control_.IsVisible()) {
+    button_count += 1 + glic_actor_task_icon_control_.ShouldShow();
+  }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   button_count +=
       features::IsWebUIMediaButtonEnabled() && media_control_.IsVisible();

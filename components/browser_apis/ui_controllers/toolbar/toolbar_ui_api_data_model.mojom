@@ -323,6 +323,26 @@ struct GlicButtonState {
   // available. This string is for display only and must not be
   // programmatically parsed.
   string? nudge_label;
+  // Whether the Glic button is joined with the actor task icon as a split
+  // button (collapsed to icon-only with a flattened trailing edge).
+  bool is_split = false;
+};
+
+// State of the Glic actor task icon (the autobrowse task indicator) in the
+// toolbar. It is only shown next to the Glic button, forming a split button.
+struct GlicActorTaskIconState {
+  // Whether the icon should be shown (i.e. an actor task is active).
+  bool should_show = false;
+  // Nudge text to display next to the icon when a nudge is active, if
+  // available. This string is for display only and must not be
+  // programmatically parsed.
+  string? nudge_label;
+  // Tooltip and accessible name for the icon. This string is for display only
+  // and must not be programmatically parsed.
+  string tooltip;
+  // Whether the icon is in its pressed state (i.e. while the actor task list
+  // bubble is showing).
+  bool is_pressed = false;
 };
 
 // The type of icon state for the app menu. These values drive the visual
@@ -976,6 +996,9 @@ struct ToolbarState {
 
   // State of the Glic button in the toolbar.
   GlicButtonState glic_button_state;
+
+  // State of the Glic actor task icon in the toolbar.
+  GlicActorTaskIconState glic_actor_task_icon_state;
 
   // True while toolbar button icons should use the inactive color because the
   // browser window is inactive. Only ever true on platforms where

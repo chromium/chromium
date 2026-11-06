@@ -669,6 +669,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
             kPinnedToolbarActionTtcElementId,
             kToolbarAvatarButtonElementId,
             kGlicButtonElementId,
+            kGlicActorTaskIconElementId,
             kToolbarPerformanceInterventionButtonElementId,
             PermissionChipView::kPermissionRequestChipElementId,
             PermissionChipView::kIndicatorChipElementId,

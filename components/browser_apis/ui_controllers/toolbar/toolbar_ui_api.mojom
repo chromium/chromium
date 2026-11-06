@@ -262,4 +262,7 @@ interface ToolbarUIService {
 
   // Called when the Glic button is clicked to toggle or open the Glic panel.
   OnGlicButtonClicked();
+
+  // Called when the Glic actor task icon is clicked.
+  OnGlicActorTaskIconClicked();
 };
