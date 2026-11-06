@@ -126,11 +126,6 @@ export interface Attachment {
   readable: boolean;
 }
 
-export enum DisplayAnnotationsAction {
-  DISPLAY_ANNOTATIONS = 'display-annotations',
-  HIDE_ANNOTATIONS = 'hide-annotations',
-}
-
 export interface DocumentMetadata {
   author: string;
   canSerializeDocument: boolean;

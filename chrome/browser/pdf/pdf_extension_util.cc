@@ -69,7 +69,6 @@ base::DictValue GetCommonStrings() {
   static constexpr webui::LocalizedString kPdfResources[] = {
       {"errorDialogTitle", IDS_PDF_ERROR_DIALOG_TITLE},
       {"pageLoadFailed", IDS_PDF_PAGE_LOAD_FAILED},
-      {"pageLoading", IDS_PDF_PAGE_LOADING},
       {"pageReload", IDS_PDF_PAGE_RELOAD_BUTTON},
       {"tooltipFitToPage", IDS_PDF_TOOLTIP_FIT_PAGE},
       {"tooltipFitToWidth", IDS_PDF_TOOLTIP_FIT_WIDTH},

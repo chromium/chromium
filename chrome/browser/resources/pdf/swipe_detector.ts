@@ -16,11 +16,6 @@ const SWIPE_X_DIST_MIN: number = 150;
 /* The maximum travel distance on the y axis for a swipe. */
 const SWIPE_Y_DIST_MAX: number = 100;
 
-export interface SwipeEvent {
-  type: string;
-  detail: SwipeDirection;
-}
-
 /** Enumeration of swipe directions. */
 export enum SwipeDirection {
   RIGHT_TO_LEFT = 0,

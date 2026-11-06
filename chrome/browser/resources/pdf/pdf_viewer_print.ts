@@ -54,10 +54,6 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
   private pluginController_: PluginController = PluginController.getInstance();
   private toolbarManager_: ToolbarManager|null = null;
 
-  override isNewUiEnabled() {
-    return false;
-  }
-
   getBackgroundColor() {
     return PRINT_PREVIEW_BACKGROUND_COLOR;
   }

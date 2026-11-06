@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 import './viewer_zoom_button.js';
 
-import {isRTL} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {FittingType} from '../constants.js';
@@ -142,33 +141,6 @@ export class ViewerZoomToolbarElement extends CrLitElement {
 
   hide() {
     this.visible_ = false;
-  }
-
-  /**
-   * Offsets the toolbar position so that it doesn't move if scrollbars appear.
-   */
-  shiftForScrollbars(
-      hasScrollbars: {horizontal: boolean, vertical: boolean},
-      scrollbarWidth: number) {
-    const verticalScrollbarWidth = hasScrollbars.vertical ? scrollbarWidth : 0;
-    const horizontalScrollbarWidth =
-        hasScrollbars.horizontal ? scrollbarWidth : 0;
-
-    // Shift the zoom toolbar to the left by half a scrollbar width. This
-    // gives a compromise: if there is no scrollbar visible then the toolbar
-    // will be half a scrollbar width further left than the spec but if there
-    // is a scrollbar visible it will be half a scrollbar width further right
-    // than the spec. In RTL layout normally, the zoom toolbar is on the left
-    // left side, but the scrollbar is still on the right, so this is not
-    // necessary.
-    if (!isRTL()) {
-      this.style.right = -verticalScrollbarWidth + (scrollbarWidth / 2) + 'px';
-    }
-    // Having a horizontal scrollbar is much rarer so we don't offset the
-    // toolbar from the bottom any more than what the spec says. This means
-    // that when there is a scrollbar visible, it will be a full scrollbar
-    // width closer to the bottom of the screen than usual, but this is ok.
-    this.style.bottom = -horizontalScrollbarWidth + 'px';
   }
 }
 

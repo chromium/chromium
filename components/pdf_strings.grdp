@@ -26,9 +26,6 @@
       Toggle sidebar
     </message>
 
-    <message name="IDS_PDF_PAGE_LOADING" desc="A message displayed on the PDF page while page is loading.">
-      Loading...
-    </message>
     <message name="IDS_PDF_ERROR_DIALOG_TITLE" desc="Title of the dialog which shows a message indicating that there was an error while loading the PDF document.">
       Error
     </message>

@@ -49,11 +49,6 @@ export interface DestinationMessageData {
   zoom: number;
 }
 
-export interface RequiredSaveResult {
-  fileName: string;
-  dataToSave: ArrayBuffer;
-}
-
 /**
  * Determines if the event has the platform-equivalent of the Windows ctrl key
  * modifier.
