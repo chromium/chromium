@@ -4,6 +4,10 @@
 
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 
+#import <WebKit/WebKit.h>
+
+#import <cmath>
+
 #import "base/functional/bind.h"
 #import "base/json/string_escape.h"
 #import "base/logging.h"
@@ -27,8 +31,86 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using web::NavigationManager;
 using web::ValueResultFromWKResult;
 
+// Declared in WebKit's WKWebViewPrivate.h.
+@interface WKWebView (WebViewInteractionTestUtil)
+- (void)_doAfterNextPresentationUpdate:(void (^)(void))updateBlock;
+@end
+
 namespace web {
 namespace test {
+
+namespace {
+
+// Maximum difference, in CSS pixels, between the page's and the native scroll
+// view's scroll positions for them to be considered in sync.
+constexpr CGFloat kScrollPositionSyncTolerance = 1.0;
+
+// Maximum difference between the page's and the native scroll view's zoom
+// scales for them to be considered in sync.
+constexpr CGFloat kZoomScaleSyncTolerance = 0.01;
+
+// Maximum time to wait for a single web view presentation update.
+constexpr base::TimeDelta kPresentationUpdateTimeout = base::Seconds(1);
+
+// Waits until the web view has presented its next layer tree update from the
+// page. WebKit ignores taps that start before the web view has received a
+// layer tree update made after the current page load was committed. Returns
+// false if no presentation update can be waited for.
+bool WaitForNextPresentationUpdate(web::WebState* web_state) {
+  if (!web_state->IsWebUsageEnabled()) {
+    return false;
+  }
+  WKWebView* web_view =
+      [WebStateImpl::FromWebState(web_state)->GetWebController()
+          ensureWebViewCreated];
+  if (![web_view
+          respondsToSelector:@selector(_doAfterNextPresentationUpdate:)]) {
+    DLOG(WARNING) << "WKWebView presentation update SPI is unavailable.";
+    return false;
+  }
+  __block bool presented = false;
+  [web_view _doAfterNextPresentationUpdate:^{
+    presented = true;
+  }];
+  if (!WaitUntilConditionOrTimeout(kPresentationUpdateTimeout, ^{
+        return presented;
+      })) {
+    DLOG(WARNING) << "Timed out waiting for a web view presentation update.";
+    return false;
+  }
+  return true;
+}
+
+// Returns whether the native scroll view's zoom scale and visible origin match
+// the page's visual viewport, as reported in `rect`.
+bool IsScrollViewInSyncWithPage(web::WebState* web_state,
+                                const base::DictValue& rect) {
+  std::optional<double> page_left = rect.FindDouble("pageLeft");
+  std::optional<double> page_top = rect.FindDouble("pageTop");
+  std::optional<double> page_scale = rect.FindDouble("pageScale");
+  if (!page_left || !page_top || !page_scale) {
+    return true;
+  }
+  CRWWebViewScrollViewProxy* scroll_view_proxy =
+      web_state->GetWebViewProxy().scrollViewProxy;
+  CGFloat scale = scroll_view_proxy.zoomScale;
+  if (scale <= 0) {
+    return true;
+  }
+  if (std::abs(scale - page_scale.value()) > kZoomScaleSyncTolerance) {
+    return false;
+  }
+  UIEdgeInsets inset = scroll_view_proxy.adjustedContentInset;
+  CGPoint offset = scroll_view_proxy.contentOffset;
+  CGFloat native_left = (offset.x + inset.left) / scale;
+  CGFloat native_top = (offset.y + inset.top) / scale;
+  return std::abs(native_left - page_left.value()) <=
+             kScrollPositionSyncTolerance &&
+         std::abs(native_top - page_top.value()) <=
+             kScrollPositionSyncTolerance;
+}
+
+}  // namespace
 
 enum ElementAction {
   ELEMENT_ACTION_CLICK,
@@ -149,14 +231,6 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
 
 CGRect GetBoundingRectOfElement(web::WebState* web_state,
                                 ElementSelector* selector) {
-#if !TARGET_OS_SIMULATOR
-  // TODO(crbug.com/40652803): Replace delay with improved JavaScript.
-  // As of iOS 13.1, devices need additional time to stabalize the page before
-  // getting the element location. Without this wait, the element's bounding
-  // rect will be incorrect.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
-#endif
-
   std::string selector_script =
       base::SysNSStringToUTF8(selector.selectorScript);
   std::string selector_description =
@@ -209,27 +283,41 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
       "      'top': rect.top + offsetTop,"
       "      'width': rect.right - rect.left,"
       "      'height': rect.bottom - rect.top,"
+      "      'pageLeft': window.visualViewport && "
+      "window.visualViewport.pageLeft,"
+      "      'pageTop': window.visualViewport && window.visualViewport.pageTop,"
+      "      'pageScale': window.visualViewport && window.visualViewport.scale,"
       "    };"
       "})();";
 
+  // What is displayed lags behind the page's state (e.g. its scroll position
+  // after `scrollIntoView()` or its zoom scale after loading), so the rect only
+  // matches where the element is shown once they match.
   __block std::unique_ptr<base::DictValue> rect;
 
-  bool found = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+  __block bool wait_for_presentation_updates = true;
+  bool in_sync = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    if (wait_for_presentation_updates) {
+      wait_for_presentation_updates = WaitForNextPresentationUpdate(web_state);
+    }
     std::unique_ptr<base::Value> value =
         ExecuteJavaScript(web_state, kGetBoundsScript);
-    if (base::DictValue* dictionary = value->GetIfDict()) {
+    if (base::DictValue* dictionary = value ? value->GetIfDict() : nullptr) {
       if (const std::string* error = dictionary->FindString("error")) {
         DLOG(ERROR) << "Error getting rect: " << error << ", retrying..";
       } else {
         rect = std::make_unique<base::DictValue>(dictionary->Clone());
-        return true;
+        return IsScrollViewInSyncWithPage(web_state, *rect);
       }
     }
     return false;
   });
 
-  if (!found) {
+  if (!rect) {
     return CGRectNull;
+  }
+  if (!in_sync) {
+    DLOG(WARNING) << "Displayed content not in sync with the page.";
   }
 
   std::optional<double> left = rect->FindDouble("left");
