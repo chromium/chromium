@@ -196,12 +196,7 @@ const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
       &document, scaling_factor, unscaled_font_description.IsAbsoluteSize(),
       unscaled_font_description.SpecifiedSize(), kDoNotApplyMinimumForFontSize);
   if (scaled_font_size == unscaled_font_description.ComputedSize()) {
-    // This is a hack. TextDecorationInfo's constructor wants to compare
-    // Font objects _by pointer_ to verify that it's a true override;
-    // otherwise, it sets the underline the wrong place. So we need to
-    // give it a pointer that is distinct from style.GetFont(), even though
-    // it contains the same information.
-    return MakeGarbageCollected<Font>(*style.GetFont());
+    return style.GetFont();
   }
 
   FontDescription font_description = unscaled_font_description;
