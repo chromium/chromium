@@ -2159,6 +2159,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="DTSE"/>
   <int value="19" label="AC4"/>
   <int value="20" label="IAMF"/>
+  <int value="21" label="AV2"/>
 </enum>
 
 <!-- LINT.ThenChange(//media/filters/stream_parser_factory.cc:MSECodec) -->

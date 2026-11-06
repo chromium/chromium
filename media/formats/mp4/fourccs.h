@@ -26,6 +26,13 @@ enum FourCC {
 #endif
   FOURCC_AV01 = 0x61763031,  // "av01"
   FOURCC_AV1C = 0x61763143,  // "av1C"
+  FOURCC_AV02 = 0x61763032,  // "av02"
+  // av2-isobmff distinguishes out-of-band vs in-band sample entries and
+  // configuration boxes solely by the case of the trailing character.
+  FOURCC_AV2C = 0x61763243,  // "av2C" (OutOfBandAV2CodecConfigurationBox)
+  FOURCC_av2c = 0x61763263,  // "av2c" (InBandAV2CodecConfigurationBox)
+  FOURCC_AV2E = 0x61763245,  // "av2E" (OutOfBandAV2SampleEntry)
+  FOURCC_av2e = 0x61763265,  // "av2e" (InBandAV2SampleEntry)
   FOURCC_AVC1 = 0x61766331,
   FOURCC_AVC3 = 0x61766333,
   FOURCC_AVCC = 0x61766343,

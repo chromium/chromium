@@ -76,7 +76,8 @@ struct CodecInfo {
     HISTOGRAM_DTSE = 18,
     HISTOGRAM_AC4 = 19,
     HISTOGRAM_IAMF = 20,
-    HISTOGRAM_MAX = HISTOGRAM_IAMF  // Must be equal to largest logged entry.
+    HISTOGRAM_AV2 = 21,
+    HISTOGRAM_MAX = HISTOGRAM_AV2  // Must be equal to largest logged entry.
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MSECodec)
 
