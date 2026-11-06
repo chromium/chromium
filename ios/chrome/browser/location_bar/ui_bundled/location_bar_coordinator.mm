@@ -1178,7 +1178,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                      entrypoint:ComposeboxEntrypoint::kNTPFakebox];
+                      entrypoint:ComposeboxEntrypoint::kNTPPlusButton];
   [_composeboxMenuCoordinator start];
 }
 
