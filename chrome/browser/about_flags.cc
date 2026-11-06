@@ -4063,13 +4063,18 @@ const FeatureEntry::FeatureParam kAndroidBottomBarEducationArm1Params[] = {
     {"show_glic_setting_toggle", "true"},
     {"show_settings_toggle", "true"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarEducationArm2Params[] = {
-    {"default_user_enabled", "true"},     {"education_enabled", "true"},
-    {"education_gemini_focused", "true"}, {"keep_app_menu_in_toolbar", "true"},
-    {"show_glic_setting_toggle", "true"}, {"show_settings_toggle", "true"}};
+    {"default_user_enabled", "true"},
+    {"education_enabled", "true"},
+    {"education_gemini_focused", "true"},
+    {"keep_app_menu_in_toolbar", "true"},
+    {"remove_top_padding_for_bottom_omnibox", "false"},
+    {"show_glic_setting_toggle", "true"},
+    {"show_settings_toggle", "true"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarEducationArm3Params[] = {
     {"default_user_enabled", "true"},     {"education_enabled", "true"},
     {"education_gemini_focused", "true"}, {"keep_app_menu_in_toolbar", "false"},
-    {"show_glic_setting_toggle", "true"}, {"show_settings_toggle", "true"}};
+    {"show_domain_only", "true"},         {"show_glic_setting_toggle", "true"},
+    {"show_settings_toggle", "true"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarEducationArm4Params[] = {
     {"default_user_enabled", "false"},
     {"education_enabled", "true"},
@@ -4096,7 +4101,7 @@ const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
      kAndroidBottomBarEducationArm1Params, nullptr},
     {"- Education Arm 2 (Opt-out, 4 buttons, Gemini)",
      kAndroidBottomBarEducationArm2Params, nullptr},
-    {"- Education Arm 3 (Opt-out, 5 buttons, Gemini)",
+    {"- Education Arm 3 (Opt-out, 5 buttons, Gemini + Origin)",
      kAndroidBottomBarEducationArm3Params, nullptr},
     {"- Education Arm 4 (Opt-in, 5 buttons, Ergonomics)",
      kAndroidBottomBarEducationArm4Params, nullptr},
