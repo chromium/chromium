@@ -42,14 +42,11 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/public/test/browser_task_environment.h"
-#include "fido_authentication_message_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace ash::quick_start {
-
-using message_helper::BuildEncodedResponseData;
 
 namespace {
 
@@ -70,7 +67,6 @@ const char kChallengeBase64[] = "aQ==";
 constexpr base::TimeDelta kShortInterval = base::Milliseconds(20);
 
 const char kNotifySourceOfUpdateMessageKey[] = "forced_update_required";
-constexpr uint8_t kSuccess = 0x00;
 constexpr char kAuthToken[] = "auth_token";
 
 const char kBootstrapStateKey[] = "bootstrapState";
@@ -606,11 +602,6 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
   std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
   std::string email = "testcase@google.com";
-  std::vector<uint8_t> user_id(email.begin(), email.end());
-  // kSuccess
-  uint8_t status = kSuccess;
-  std::vector<uint8_t> data = BuildEncodedResponseData(
-      credential_id, auth_data, signature, user_id, status);
 
   fake_quick_start_decoder_->SetAssertionResponse(
       mojom::FidoAssertionResponse::New(
@@ -619,7 +610,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
           std::string(credential_id.begin(), credential_id.end()),
           /*auth_data=*/auth_data,
           /*signature=*/signature));
-  fake_nearby_connection_->AppendReadableData(data);
+  fake_nearby_connection_->AppendReadableData(test_bytes_);
   EXPECT_FALSE(fake_nearby_connection_->IsClosed());
   TestMessageMetrics(
       /*should_succeed=*/true,
@@ -661,7 +652,6 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion_UnexpectedMessage) {
   std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
   std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
   std::string email = "testcase@google.com";
-  std::vector<uint8_t> user_id(email.begin(), email.end());
   fake_quick_start_decoder_->SetAssertionResponse(
       mojom::FidoAssertionResponse::New(
           /*email=*/email,

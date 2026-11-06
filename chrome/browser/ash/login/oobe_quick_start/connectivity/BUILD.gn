@@ -59,15 +59,12 @@ static_library("test_support") {
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/nearby/common/connections_manager:test_support",
     "//chromeos/ash/components/quick_start:test_support",
-    "//components/cbor",
   ]
   sources = [
     "fake_connection.cc",
     "fake_connection.h",
     "fake_target_device_connection_broker.cc",
     "fake_target_device_connection_broker.h",
-    "fido_authentication_message_helper.cc",
-    "fido_authentication_message_helper.h",
   ]
 }
 
