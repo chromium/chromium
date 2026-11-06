@@ -17555,6 +17555,9 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   dip_reporter_ = navigation_request->TakeDipReporter();
 
   if (dip_reporter_) {
+    // Set dip reporter to the document reporting source; until commit it
+    // holds the frame token, not where Reporting-Endpoints are registered.
+    dip_reporter_->set_reporting_source(GetReportingSource());
     mojo::PendingRemote<blink::mojom::ReportingObserver> remote;
     mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver =
         remote.InitWithNewPipeAndPassReceiver();

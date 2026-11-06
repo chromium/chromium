@@ -39,6 +39,11 @@ DocumentIsolationPolicyReporter::DocumentIsolationPolicyReporter(
 
 DocumentIsolationPolicyReporter::~DocumentIsolationPolicyReporter() = default;
 
+void DocumentIsolationPolicyReporter::set_reporting_source(
+    const base::UnguessableToken& reporting_source) {
+  reporting_source_ = reporting_source;
+}
+
 void DocumentIsolationPolicyReporter::QueueCorpViolationReport(
     const GURL& blocked_url,
     network::mojom::RequestDestination destination,

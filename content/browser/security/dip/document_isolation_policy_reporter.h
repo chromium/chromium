@@ -47,6 +47,8 @@ class CONTENT_EXPORT DocumentIsolationPolicyReporter final
   DocumentIsolationPolicyReporter& operator=(
       const DocumentIsolationPolicyReporter&) = delete;
 
+  void set_reporting_source(const base::UnguessableToken& reporting_source);
+
   // network::mojom::DocumentIsolationPolicyReporter implementation.
   void QueueCorpViolationReport(const GURL& blocked_url,
                                 network::mojom::RequestDestination destination,

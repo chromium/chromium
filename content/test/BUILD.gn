@@ -1716,6 +1716,7 @@ test("content_browsertests") {
     "../browser/security/coop/cross_origin_opener_policy_browsertest.cc",
     "../browser/security/cpsp/child_process_security_policy_browsertest.cc",
     "../browser/security/dip/document_isolation_policy_browsertest.cc",
+    "../browser/security/dip/document_isolation_policy_reporting_browsertest.cc",
     "../browser/security/local_network_access/local_network_access_browsertest.cc",
     "../browser/security_exploit_browsertest.cc",
     "../browser/serial/serial_browsertest.cc",

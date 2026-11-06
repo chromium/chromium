@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "content/public/test/test_storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +21,6 @@
 namespace content {
 namespace {
 
-using network::DocumentIsolationPolicy;
 using network::mojom::RequestDestination;
 
 class TestNetworkContext : public network::TestNetworkContext {
@@ -31,17 +29,20 @@ class TestNetworkContext : public network::TestNetworkContext {
     Report(const std::string& type,
            const std::string& group,
            const GURL& url,
+           const std::optional<base::UnguessableToken>& reporting_source,
            const net::NetworkAnonymizationKey& network_anonymization_key,
            base::DictValue body)
         : type(type),
           group(group),
           url(url),
+          reporting_source(reporting_source),
           network_anonymization_key(network_anonymization_key),
           body(std::move(body)) {}
 
     std::string type;
     std::string group;
     GURL url;
+    std::optional<base::UnguessableToken> reporting_source;
     net::NetworkAnonymizationKey network_anonymization_key;
     base::DictValue body;
   };
@@ -53,8 +54,8 @@ class TestNetworkContext : public network::TestNetworkContext {
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       base::DictValue body) override {
-    reports_.emplace_back(type, group, url, network_anonymization_key,
-                          std::move(body));
+    reports_.emplace_back(type, group, url, reporting_source,
+                          network_anonymization_key, std::move(body));
   }
 
   const std::vector<Report>& reports() const { return reports_; }
@@ -177,12 +178,14 @@ TEST_F(DocumentIsolationPolicyReporterTest, BasicCorp) {
   EXPECT_EQ(r1.type, "dip");
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
+  EXPECT_EQ(r1.reporting_source, kReportingSource);
   EXPECT_EQ(r1.network_anonymization_key, kNetworkIsolationKey);
   EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x",
                                        RequestDestination::kScript, "enforce"));
   EXPECT_EQ(r2.type, "dip");
   EXPECT_EQ(r2.group, "e2");
   EXPECT_EQ(r2.url, kContextUrl);
+  EXPECT_EQ(r2.reporting_source, kReportingSource);
   EXPECT_EQ(r2.network_anonymization_key, kNetworkIsolationKey);
   EXPECT_EQ(r2.body,
             CreateBodyForCorp("http://www2.example.com:41/y",
