@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/allocator/buildflags.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,13 +64,115 @@ std::optional<uint64_t> GetBytesEntry(const MemoryAllocatorDump& dump,
   return GetScalarEntry(dump, name, MemoryAllocatorDump::kUnitsBytes);
 }
 
+#if BUILDFLAG(IS_WIN) || defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO)
 // The name AddSuballocation() gives the child it creates under `parent_name`.
 std::string SuballocationDumpName(std::string_view parent_name,
                                   const MemoryAllocatorDump& owner) {
   return std::string(parent_name) + "/__" + owner.guid().ToString();
 }
+#endif
+
+// The kSuballocationTarget expected in this build.
+const char* PrimaryBackendObjectsDumpName() {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return MallocDumpProvider::kPartitionsAllocatedObjects;
+#elif defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO)
+  return MallocDumpProvider::kSysMallocAllocatedObjects;
+#else
+  return MallocDumpProvider::kAllocatedObjects;
+#endif
+}
 
 }  // namespace
+
+TEST(MallocDumpProviderTest, SuballocationTargetIsTheSystemAllocatorPool) {
+  EXPECT_STREQ(MallocDumpProvider::kSuballocationTarget,
+               PrimaryBackendObjectsDumpName());
+#if defined(MALLOC_MEMORY_TRACING_SUPPORTED)
+  EXPECT_STREQ(MemoryDumpManager::GetInstance()->system_allocator_pool_name(),
+               MallocDumpProvider::kSuballocationTarget);
+#else
+  // MallocDumpProvider is not registered, so there is no pool to suballocate
+  // from.
+  EXPECT_EQ(MemoryDumpManager::GetInstance()->system_allocator_pool_name(),
+            nullptr);
+#endif
+}
+
+// The target must exist at every level of detail suballocations are made at.
+TEST(MallocDumpProviderTest, SuballocationTargetIsReported) {
+  for (MemoryDumpLevelOfDetail level_of_detail :
+       {MemoryDumpLevelOfDetail::kBackground, MemoryDumpLevelOfDetail::kLight,
+        MemoryDumpLevelOfDetail::kDetailed}) {
+    std::unique_ptr<MallocDumpProvider> mdp =
+        MallocDumpProvider::CreateForTesting();
+    const MemoryDumpArgs dump_args = {level_of_detail};
+    ProcessMemoryDump pmd(dump_args);
+    ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+    EXPECT_TRUE(
+        FindAllocatorDump(pmd, MallocDumpProvider::kSuballocationTarget))
+        << MallocDumpProvider::kSuballocationTarget << " was not reported at "
+        << static_cast<int>(level_of_detail);
+  }
+}
+
+// Any other child of the target would be summed with the stubs.
+TEST(MallocDumpProviderTest, SuballocationTargetHasNoChildrenOfItsOwn) {
+  for (MemoryDumpLevelOfDetail level_of_detail :
+       {MemoryDumpLevelOfDetail::kBackground, MemoryDumpLevelOfDetail::kLight,
+        MemoryDumpLevelOfDetail::kDetailed}) {
+    std::unique_ptr<MallocDumpProvider> mdp =
+        MallocDumpProvider::CreateForTesting();
+    const MemoryDumpArgs dump_args = {level_of_detail};
+    ProcessMemoryDump pmd(dump_args);
+    ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+    const std::string target_prefix =
+        std::string(MallocDumpProvider::kSuballocationTarget) + "/";
+    for (const auto& [name, dump] : pmd.allocator_dumps()) {
+      EXPECT_FALSE(name.starts_with(target_prefix))
+          << name << " was reported at " << static_cast<int>(level_of_detail);
+    }
+  }
+}
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO)
+// The backend's objects dump already keeps the stubs out of the malloc total;
+// an edge from the pool as well would subtract the objects twice.
+TEST(MallocDumpProviderTest, AllocatedObjectsPoolOwnsNothing) {
+  std::unique_ptr<MallocDumpProvider> mdp =
+      MallocDumpProvider::CreateForTesting();
+  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
+  ProcessMemoryDump pmd(dump_args);
+  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+  const MemoryAllocatorDump* allocated_objects_dump =
+      FindAllocatorDump(pmd, MallocDumpProvider::kAllocatedObjects);
+  ASSERT_TRUE(allocated_objects_dump);
+
+  const auto& edges = pmd.allocator_dumps_edges();
+  EXPECT_TRUE(edges.find(allocated_objects_dump->guid()) == edges.cend());
+}
+#endif
+
+// No stubs to neutralize there, and each backend's objects dump owns it
+// already.
+TEST(MallocDumpProviderTest, AllocatedObjectsPoolOwnsNothingInBackgroundDumps) {
+  std::unique_ptr<MallocDumpProvider> mdp =
+      MallocDumpProvider::CreateForTesting();
+  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kBackground};
+  ProcessMemoryDump pmd(dump_args);
+  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+  const MemoryAllocatorDump* allocated_objects_dump =
+      FindAllocatorDump(pmd, MallocDumpProvider::kAllocatedObjects);
+  ASSERT_TRUE(allocated_objects_dump);
+
+  const auto& edges = pmd.allocator_dumps_edges();
+  EXPECT_TRUE(edges.find(allocated_objects_dump->guid()) == edges.cend());
+}
 
 #endif  // BUILDFLAG(IS_WIN) || PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) ||
         // defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO)
@@ -147,15 +250,9 @@ TEST(MallocDumpProviderTest, WinHeapInfo_LargeAllocBecomesOrphanBusy) {
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-namespace {
-
-constexpr std::string_view kAllocatedObjectsPrefix =
-    "malloc/allocated_objects/";
-
-}  // namespace
-
 // malloc/partitions reports the resident footprint of PartitionAlloc. The
-// objects allocated out of it are reported by its per-bucket children.
+// objects allocated out of it are reported by
+// malloc/allocated_objects/partitions.
 TEST(MallocDumpProviderTest, PartitionsDumpReportsFootprint) {
   std::unique_ptr<MallocDumpProvider> mdp =
       MallocDumpProvider::CreateForTesting();
@@ -216,112 +313,51 @@ TEST(MallocDumpProviderTest, PartitionsDumpReportsFootprint) {
             *committed_size == 0 ? 0 : 100 * *wasted / *committed_size);
 }
 
-// The objects are attributed by the per-bucket suballocations, so the system
-// allocator pool itself no longer owns malloc/partitions. It must own nothing:
-// an allocator dump can only own a single target, which is what kept the other
-// backends from being attributed this way.
-TEST(MallocDumpProviderTest, SystemAllocatorPoolOwnsNothing) {
+// The PartitionAlloc objects dump carries the total the partitions dump
+// reports.
+TEST(MallocDumpProviderTest, PartitionsObjectsCarryTheReportedTotal) {
   std::unique_ptr<MallocDumpProvider> mdp =
       MallocDumpProvider::CreateForTesting();
   const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
   ProcessMemoryDump pmd(dump_args);
   ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
 
-  const MemoryAllocatorDump* allocated_objects_dump =
-      FindAllocatorDump(pmd, MallocDumpProvider::kAllocatedObjects);
   const MemoryAllocatorDump* partitions_objects_dump =
       FindAllocatorDump(pmd, MallocDumpProvider::kPartitionsAllocatedObjects);
-  ASSERT_TRUE(allocated_objects_dump);
-  ASSERT_TRUE(partitions_objects_dump);
-
-  const auto& edges = pmd.allocator_dumps_edges();
-  EXPECT_TRUE(edges.find(allocated_objects_dump->guid()) == edges.cend());
-
   const MemoryAllocatorDump* partitions_dump =
       FindAllocatorDump(pmd, MallocDumpProvider::kPartitions);
+  ASSERT_TRUE(partitions_objects_dump);
   ASSERT_TRUE(partitions_dump);
+
   EXPECT_EQ(
       GetBytesEntry(*partitions_objects_dump, MemoryAllocatorDump::kNameSize),
       GetBytesEntry(*partitions_dump, "allocated_objects_size"));
 }
 
-// Each bucket's live objects are suballocated from the bucket they live in.
-TEST(MallocDumpProviderTest, PartitionBucketsSuballocateTheirObjects) {
-  std::unique_ptr<MallocDumpProvider> mdp =
-      MallocDumpProvider::CreateForTesting();
-  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
-  ProcessMemoryDump pmd(dump_args);
-  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+// Otherwise the objects would be counted twice under malloc.
+TEST(MallocDumpProviderTest, PartitionsObjectsOwnPartitions) {
+  for (MemoryDumpLevelOfDetail level_of_detail :
+       {MemoryDumpLevelOfDetail::kBackground, MemoryDumpLevelOfDetail::kLight,
+        MemoryDumpLevelOfDetail::kDetailed}) {
+    std::unique_ptr<MallocDumpProvider> mdp =
+        MallocDumpProvider::CreateForTesting();
+    const MemoryDumpArgs dump_args = {level_of_detail};
+    ProcessMemoryDump pmd(dump_args);
+    ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
 
-  const MemoryAllocatorDump* bucket_objects_dump = nullptr;
-  for (const auto& [name, dump] : pmd.allocator_dumps()) {
-    if (name.starts_with(kAllocatedObjectsPrefix) &&
-        name.find("/buckets/") != std::string::npos) {
-      bucket_objects_dump = dump.get();
-      break;
-    }
+    const MemoryAllocatorDump* partitions_dump =
+        FindAllocatorDump(pmd, MallocDumpProvider::kPartitions);
+    const MemoryAllocatorDump* partitions_objects_dump =
+        FindAllocatorDump(pmd, MallocDumpProvider::kPartitionsAllocatedObjects);
+    ASSERT_TRUE(partitions_dump);
+    ASSERT_TRUE(partitions_objects_dump);
+
+    const auto& edges = pmd.allocator_dumps_edges();
+    auto edge = edges.find(partitions_objects_dump->guid());
+    ASSERT_TRUE(edge != edges.cend());
+    EXPECT_EQ(edge->second.target.ToUint64(),
+              partitions_dump->guid().ToUint64());
   }
-  ASSERT_TRUE(bucket_objects_dump)
-      << "no per-bucket allocated_objects dump was reported";
-
-  // The dump name is the bucket's own name re-rooted under allocated_objects,
-  // so the bucket it belongs to is recovered by dropping that prefix.
-  const std::string bucket_name =
-      "malloc/" + bucket_objects_dump->absolute_name().substr(
-                      kAllocatedObjectsPrefix.size());
-  const MemoryAllocatorDump* suballocation_dump = FindAllocatorDump(
-      pmd, SuballocationDumpName(bucket_name, *bucket_objects_dump));
-  ASSERT_TRUE(suballocation_dump)
-      << "no suballocation of " << bucket_name << " was reported";
-
-  const auto& edges = pmd.allocator_dumps_edges();
-  auto edge = edges.find(bucket_objects_dump->guid());
-  ASSERT_TRUE(edge != edges.cend());
-  EXPECT_EQ(edge->second.target.ToUint64(),
-            suballocation_dump->guid().ToUint64());
-}
-
-// In background mode no bucket is dumped, so the per-bucket suballocations
-// which normally attribute the objects do not exist. Without an edge of its
-// own, malloc/allocated_objects/partitions and malloc/partitions would both be
-// counted in full under malloc, inflating the malloc-wide total by the size of
-// the live objects.
-TEST(MallocDumpProviderTest, PartitionsObjectsOwnPartitionsInBackgroundDumps) {
-  std::unique_ptr<MallocDumpProvider> mdp =
-      MallocDumpProvider::CreateForTesting();
-  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kBackground};
-  ProcessMemoryDump pmd(dump_args);
-  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
-
-  const MemoryAllocatorDump* partitions_dump =
-      FindAllocatorDump(pmd, MallocDumpProvider::kPartitions);
-  const MemoryAllocatorDump* partitions_objects_dump =
-      FindAllocatorDump(pmd, MallocDumpProvider::kPartitionsAllocatedObjects);
-  ASSERT_TRUE(partitions_dump);
-  ASSERT_TRUE(partitions_objects_dump);
-
-  const auto& edges = pmd.allocator_dumps_edges();
-  auto edge = edges.find(partitions_objects_dump->guid());
-  ASSERT_TRUE(edge != edges.cend());
-  EXPECT_EQ(edge->second.target.ToUint64(), partitions_dump->guid().ToUint64());
-}
-
-// At the levels of detail which dump the buckets, the per-bucket
-// suballocations attribute the objects, so the edge above would subtract them
-// a second time.
-TEST(MallocDumpProviderTest, PartitionsObjectsOwnNothingInDetailedDumps) {
-  std::unique_ptr<MallocDumpProvider> mdp =
-      MallocDumpProvider::CreateForTesting();
-  const MemoryDumpArgs dump_args = {MemoryDumpLevelOfDetail::kDetailed};
-  ProcessMemoryDump pmd(dump_args);
-  ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
-
-  const MemoryAllocatorDump* partitions_objects_dump =
-      FindAllocatorDump(pmd, MallocDumpProvider::kPartitionsAllocatedObjects);
-  ASSERT_TRUE(partitions_objects_dump);
-
-  const auto& edges = pmd.allocator_dumps_edges();
-  EXPECT_TRUE(edges.find(partitions_objects_dump->guid()) == edges.cend());
 }
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -334,10 +370,20 @@ constexpr char kWinHeapWasteDumpName[] =
     "malloc/win_heap/metadata_fragmentation_caches";
 constexpr char kMallocWasteDumpName[] = "malloc/metadata_fragmentation_caches";
 
+// The dump reporting the objects allocated out of the WinHeap: its own with
+// PartitionAlloc-as-malloc, otherwise the pool, which only holds those.
+const char* WinHeapObjectsDumpName() {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return MallocDumpProvider::kWinHeapAllocatedObjects;
+#else
+  return MallocDumpProvider::kAllocatedObjects;
+#endif
+}
+
 }  // namespace
 
 // malloc/win_heap reports the resident footprint of the heap. The objects
-// allocated out of it are reported by malloc/allocated_objects/win_heap.
+// allocated out of it are reported by WinHeapObjectsDumpName().
 TEST(MallocDumpProviderTest, WinHeapDumpReportsFootprint) {
   std::unique_ptr<MallocDumpProvider> mdp =
       MallocDumpProvider::CreateForTesting();
@@ -348,7 +394,7 @@ TEST(MallocDumpProviderTest, WinHeapDumpReportsFootprint) {
   const MemoryAllocatorDump* win_heap_dump =
       FindAllocatorDump(pmd, MallocDumpProvider::kWinHeap);
   const MemoryAllocatorDump* win_heap_objects_dump =
-      FindAllocatorDump(pmd, MallocDumpProvider::kWinHeapAllocatedObjects);
+      FindAllocatorDump(pmd, WinHeapObjectsDumpName());
   ASSERT_TRUE(win_heap_dump);
   ASSERT_TRUE(win_heap_objects_dump);
 
@@ -424,8 +470,11 @@ TEST(MallocDumpProviderTest, WinHeapAllocatedObjectsAreSuballocatedFromHeap) {
   ProcessMemoryDump pmd(dump_args);
   ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
 
+  const MemoryAllocatorDump* win_heap_dump =
+      FindAllocatorDump(pmd, MallocDumpProvider::kWinHeap);
   const MemoryAllocatorDump* win_heap_objects_dump =
-      FindAllocatorDump(pmd, MallocDumpProvider::kWinHeapAllocatedObjects);
+      FindAllocatorDump(pmd, WinHeapObjectsDumpName());
+  ASSERT_TRUE(win_heap_dump);
   ASSERT_TRUE(win_heap_objects_dump);
   EXPECT_TRUE(
       GetBytesEntry(*win_heap_objects_dump, MemoryAllocatorDump::kNameSize)
@@ -452,6 +501,12 @@ TEST(MallocDumpProviderTest, WinHeapAllocatedObjectsAreSuballocatedFromHeap) {
   ASSERT_TRUE(edge != edges.cend());
   EXPECT_EQ(edge->second.target.ToUint64(),
             suballocation_dump->guid().ToUint64());
+
+  // An owner of the heap dump itself would find the objects already owned
+  // through the suballocation, and would take its share out of the waste.
+  for (const auto& [source, owning_edge] : edges) {
+    EXPECT_NE(owning_edge.target.ToUint64(), win_heap_dump->guid().ToUint64());
+  }
 }
 
 // Walking the heap is too expensive for the lighter levels of detail, so no

@@ -146,9 +146,8 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
     }
     *wasted_size = wasted;
 
-    // `size` is the resident footprint of the heap. The objects allocated out
-    // of it are reported by `win_heap_objects_dump`, which is where they are
-    // accounted for, so they are not reported here a second time.
+    // `size` is the resident footprint of the heap. Its objects are reported
+    // by `win_heap_objects_dump`, or by the pool where there is none.
     if (win_heap_dump) {
       win_heap_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                                MemoryAllocatorDump::kUnitsBytes,
@@ -194,16 +193,20 @@ void ReportWinHeap(ProcessMemoryDump* pmd,
   MemoryAllocatorDump* win_heap_objects_dump = nullptr;
   if (level_of_detail == MemoryDumpLevelOfDetail::kDetailed) {
     win_heap_dump = pmd->CreateAllocatorDump(MallocDumpProvider::kWinHeap);
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     // The objects allocated out of the WinHeap are accounted for under the
     // system allocator pool, and reported as suballocated from the WinHeap
     // dump. That keeps malloc/win_heap's effective size down to the part of the
     // heap which is not already accounted for by malloc/allocated_objects. An
     // ownership edge out of malloc/allocated_objects would not scale to several
     // backends, as an allocator dump can only own a single target.
+    // Without PartitionAlloc-as-malloc, the pool is the WinHeap objects dump
+    // instead, see AttributeAllocatedObjectsPool().
     win_heap_objects_dump =
         pmd->CreateAllocatorDump(MallocDumpProvider::kWinHeapAllocatedObjects);
     pmd->AddSuballocation(win_heap_objects_dump->guid(),
                           MallocDumpProvider::kWinHeap);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   }
 
   size_t wasted = 0;
@@ -213,8 +216,8 @@ void ReportWinHeap(ProcessMemoryDump* pmd,
 
   // The wasted bytes are reported as a child of the WinHeap dump, so that
   // malloc/win_heap accounts for the whole committed heap: its allocated
-  // objects, suballocated above, plus what the heap holds but has not handed
-  // out.
+  // objects, suballocated from it, plus what the heap holds but has not
+  // handed out.
   if (win_heap_dump && wasted > 0) {
     MemoryAllocatorDump* win_heap_waste_dump = pmd->CreateAllocatorDump(
         win_heap_dump->absolute_name() + "/metadata_fragmentation_caches");
@@ -455,6 +458,21 @@ void ReportPartitionAllocSchedulerLoopQuarantineStats(
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
+// Where other providers suballocate from the pool itself, the pool is the
+// WinHeap objects dump, so suballocate it from the heap like the other objects
+// dumps are from their backend.
+void AttributeAllocatedObjectsPool(
+    ProcessMemoryDump* pmd,
+    MemoryAllocatorDump* allocated_objects_dump) {
+#if BUILDFLAG(IS_WIN) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Only reported at kDetailed level of detail.
+  if (pmd->GetAllocatorDump(MallocDumpProvider::kWinHeap)) {
+    pmd->AddSuballocation(allocated_objects_dump->guid(),
+                          MallocDumpProvider::kWinHeap);
+  }
+#endif  // BUILDFLAG(IS_WIN) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void ReportExtremeLightweightDetectorQuarantineStats(
     MemoryAllocatorDump* dump,
@@ -486,6 +504,18 @@ WinHeapInfo WinHeapInfo::FromHandleForTesting(void* heap) {
 
 // static
 const char MallocDumpProvider::kAllocatedObjects[] = "malloc/allocated_objects";
+const char MallocDumpProvider::kSuballocationTarget[] =
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    "malloc/allocated_objects/partitions";
+#elif !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
+    // mallinfo(3) is the only backend, see ReportMallinfoStats().
+    "malloc/allocated_objects/sys_malloc";
+#else
+    // The pool, the only objects dump reported at every level of detail: the
+    // WinHeap one is kDetailed-only, Apple reports no backend dump, and
+    // Fuchsia reports nothing.
+    "malloc/allocated_objects";
+#endif
 const char MallocDumpProvider::kSysMalloc[] = "malloc/sys_malloc";
 const char MallocDumpProvider::kSysMallocAllocatedObjects[] =
     "malloc/allocated_objects/sys_malloc";
@@ -679,26 +709,15 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-  // The objects allocated out of each partition are reported by the per-bucket
-  // dumps below, which are suballocated from their partition. This dump is
-  // their parent, and only carries the total.
+  // Other providers suballocate from this dump, so it must have no other
+  // children. Owning malloc/partitions keeps both out of the malloc total.
   MemoryAllocatorDump* pa_allocated_objects_dump =
       pmd->CreateAllocatorDump(kPartitionsAllocatedObjects);
   pa_allocated_objects_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                                        MemoryAllocatorDump::kUnitsBytes,
                                        pa_only_allocated_objects_size);
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
-    // The per-bucket dumps which suballocate the objects are only reported at
-    // the levels of detail which dump the buckets, and AddSuballocation()
-    // creates no dumps at all in background mode. Without an edge of its own
-    // the objects would be counted once here and once under malloc/partitions,
-    // inflating the malloc-wide total, so own the partitions dump directly
-    // instead. Each backend's objects dump owns its own backend, so this still
-    // scales to several backends, unlike a single edge out of
-    // malloc/allocated_objects.
-    pmd->AddOwnershipEdge(pa_allocated_objects_dump->guid(),
-                          partitions_dump->guid());
-  }
+  pmd->AddOwnershipEdge(pa_allocated_objects_dump->guid(),
+                        partitions_dump->guid());
 
   auto& extreme_lud_get_stats_callback = GetExtremeLUDGetStatsCallback();
   if (!extreme_lud_get_stats_callback.is_null()) {
@@ -716,6 +735,9 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
         elud_dump_for_large_objects, elud_stats_for_large_objects);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  // Must come after every backend dump, which it picks its target from.
+  AttributeAllocatedObjectsPool(pmd, inner_dump);
 
   ReportPerMinuteStats(
       syscall_count, cumulative_brp_quarantined_size,
@@ -839,17 +861,6 @@ std::string GetPartitionDumpName(const char* root_name,
                             partition_name);
 }
 
-// Re-roots `dump_name` under the allocated_objects dump of the same root, so
-// that "malloc/partitions/allocator" becomes
-// "malloc/allocated_objects/partitions/allocator".
-std::string GetAllocatedObjectsDumpName(const char* root_name,
-                                        const std::string& dump_name) {
-  const std::string root_prefix = base::StringPrintf("%s/", root_name);
-  CHECK(dump_name.starts_with(root_prefix));
-  return base::StringPrintf("%s/allocated_objects/%s", root_name,
-                            dump_name.substr(root_prefix.size()).c_str());
-}
-
 MemoryDumpPartitionStatsDumper::MemoryDumpPartitionStatsDumper(
     const char* root_name,
     ProcessMemoryDump* memory_dump,
@@ -876,22 +887,6 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
   MemoryAllocatorDump* allocator_dump =
       memory_dump_->CreateAllocatorDump(dump_name);
-
-  // Parent of the per-bucket allocated_objects dumps, which are the ones
-  // suballocated from their bucket.
-  if (detailed_ && memory_stats->total_active_bytes > 0) {
-    MemoryAllocatorDump* allocated_objects_dump =
-        memory_dump_->CreateAllocatorDump(
-            GetAllocatedObjectsDumpName(root_name_, dump_name));
-    allocated_objects_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                                      MemoryAllocatorDump::kUnitsBytes,
-                                      memory_stats->total_active_bytes);
-    if (memory_stats->total_active_count > 0) {
-      allocated_objects_dump->AddScalar(MemoryAllocatorDump::kNameObjectCount,
-                                        MemoryAllocatorDump::kUnitsObjects,
-                                        memory_stats->total_active_count);
-    }
-  }
 
   auto total_committed_bytes = memory_stats->total_committed_bytes;
   auto total_active_bytes = memory_stats->total_active_bytes;
@@ -1005,25 +1000,6 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
 
   MemoryAllocatorDump* allocator_dump =
       memory_dump_->CreateAllocatorDump(dump_name);
-
-  // The objects live in this bucket, so they are suballocated from it and
-  // accounted for under allocated_objects rather than a second time here.
-  if (memory_stats->active_bytes > 0) {
-    MemoryAllocatorDump* allocated_objects_dump =
-        memory_dump_->CreateAllocatorDump(
-            GetAllocatedObjectsDumpName(root_name_, dump_name));
-    allocated_objects_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                                      MemoryAllocatorDump::kUnitsBytes,
-                                      memory_stats->active_bytes);
-    memory_dump_->AddSuballocation(allocated_objects_dump->guid(), dump_name);
-  }
-  if (memory_stats->resident_bytes > memory_stats->active_bytes) {
-    MemoryAllocatorDump* waste_dump = memory_dump_->CreateAllocatorDump(
-        dump_name + "/metadata_fragmentation_caches");
-    waste_dump->AddScalar(
-        MemoryAllocatorDump::kNameSize, MemoryAllocatorDump::kUnitsBytes,
-        memory_stats->resident_bytes - memory_stats->active_bytes);
-  }
 
   allocator_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                             MemoryAllocatorDump::kUnitsBytes,

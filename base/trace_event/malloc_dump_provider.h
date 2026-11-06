@@ -35,9 +35,14 @@ class MemoryAllocatorDump;
 // Dump provider which collects process-wide memory stats.
 class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
  public:
-  // Name of the allocated_objects dump. Use this to declare suballocator dumps
-  // from other dump providers.
+  // Name of the dump of the objects allocated out of every backend.
   static const char kAllocatedObjects[];
+
+  // Name of the dump other providers suballocate from, through
+  // MemoryDumpManager::system_allocator_pool_name(): the objects dump of the
+  // backend serving malloc(), or kAllocatedObjects where that dump is not
+  // reported at every level of detail.
+  static const char kSuballocationTarget[];
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // Names of the PartitionAlloc dumps.
@@ -50,7 +55,8 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   static const char kSysMallocAllocatedObjects[];
 
 #if BUILDFLAG(IS_WIN)
-  // Names of the WinHeap dumps. Only reported at kDetailed level of detail.
+  // Names of the WinHeap dumps. Only reported at kDetailed level of detail;
+  // kWinHeapAllocatedObjects only with PartitionAlloc-as-malloc.
   static const char kWinHeap[];
   static const char kWinHeapAllocatedObjects[];
 #endif

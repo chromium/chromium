@@ -84,7 +84,7 @@ const uint64_t MemoryDumpManager::kInvalidTracingProcessId = 0;
 // static
 const char* const MemoryDumpManager::kSystemAllocatorPoolName =
 #if defined(MALLOC_MEMORY_TRACING_SUPPORTED)
-    MallocDumpProvider::kAllocatedObjects;
+    MallocDumpProvider::kSuballocationTarget;
 #else
     nullptr;
 #endif
