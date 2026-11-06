@@ -1569,6 +1569,9 @@ IN_PROC_BROWSER_TEST_F(HighDsfMultiSourcePageContextFetcherBrowserTest,
   GURL url = embedded_https_test_server().GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "red");
+  content::WaitForCopyableViewInWebContents(web_contents());
+
   content::RenderWidgetHostView* view =
       web_contents()->GetRenderWidgetHostView();
   ASSERT_TRUE(view);
