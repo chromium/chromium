@@ -10,9 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "components/input/timeout_monitor.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/ipc_utils.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -29,6 +31,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/fake_local_frame.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -36,6 +39,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -2293,5 +2297,61 @@ TEST_F(RenderFrameHostImplTest, UpdateUserGestureCarryoverInfoWithActivation) {
   contents()->SetDelegate(nullptr);
 }
 #endif
+
+namespace {
+
+// Returns an off-the-record BrowserContext as the user BrowserContext of all
+// WebContents.
+class OffTheRecordUserContentBrowserClient : public ContentBrowserClient {
+ public:
+  OffTheRecordUserContentBrowserClient() {
+    browser_context_.set_is_off_the_record(true);
+  }
+
+  // ContentBrowserClient:
+  BrowserContext* GetUserBrowserContext(WebContents& web_contents) override {
+    return &browser_context_;
+  }
+
+ private:
+  TestBrowserContext browser_context_;
+};
+
+// Reports an encrypted playback in `rfh`, and waits until it is recorded
+// whether it was in an off-the-record context.
+void ReportEncryptedPlayback(RenderFrameHostImpl* rfh,
+                             const base::HistogramTester& histograms) {
+  mojo::Remote<media::mojom::MediaMetricsProvider> provider;
+  rfh->BindMediaMetricsProviderReceiver(provider.BindNewPipeAndPassReceiver());
+  provider->Initialize(/*is_mse=*/false, media::mojom::MediaURLScheme::kHttp,
+                       media::mojom::MediaStreamType::kNone);
+  provider->SetIsEME();
+  provider->SetHasPlayed();
+  provider.reset();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !histograms.GetAllSamples("Media.EME.IsIncognito").empty();
+  }));
+}
+
+}  // namespace
+
+// Tests that media metrics use the off-the-record state of the user
+// BrowserContext, instead of that of the frame.
+TEST_F(RenderFrameHostImplTest, MediaMetricsUseUserBrowserContext) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  {
+    base::HistogramTester histograms;
+    ReportEncryptedPlayback(main_test_rfh(), histograms);
+    histograms.ExpectUniqueSample("Media.EME.IsIncognito", false, 1);
+  }
+
+  OffTheRecordUserContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+  {
+    base::HistogramTester histograms;
+    ReportEncryptedPlayback(main_test_rfh(), histograms);
+    histograms.ExpectUniqueSample("Media.EME.IsIncognito", true, 1);
+  }
+}
 
 }  // namespace content

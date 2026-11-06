@@ -226,6 +226,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/surface_embed_connector.h"
 #include "content/public/browser/tracing_support.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
@@ -15376,8 +15377,10 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
       },
       weak_ptr_factory_.GetWeakPtr());
 
+  // Use the off-the-record state of the user that this frame is shown for,
+  // which can differ from that of its BrowserContext.
   media::MediaMetricsProvider::Create(
-      GetProcess()->GetBrowserContext()->IsOffTheRecord()
+      GetUserBrowserContext(*this)->IsOffTheRecord()
           ? media::MediaMetricsProvider::BrowsingMode::kIncognito
           : media::MediaMetricsProvider::BrowsingMode::kNormal,
       IsOutermostMainFrame()
