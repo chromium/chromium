@@ -141,6 +141,13 @@ public class GlicEnabling {
         return GlicEnablingJni.get().isProfileManaged(profile);
     }
 
+    /** Returns true if the primary account for the profile is an enterprise account. */
+    public static boolean isEnterpriseAccount(@Nullable Profile profile) {
+        if (profile == null) return false;
+        if (sIsEnabledForTesting != null) return false;
+        return GlicEnablingJni.get().isEnterpriseAccount(profile);
+    }
+
     /**
      * Returns true if explicit experimental opt-in is required for the given profile.
      *
@@ -174,6 +181,8 @@ public class GlicEnabling {
         boolean isDisabledByPolicy(@JniType("Profile*") Profile profile);
 
         boolean isProfileManaged(@JniType("Profile*") Profile profile);
+
+        boolean isEnterpriseAccount(@JniType("Profile*") Profile profile);
 
         boolean experimentalOptInIsNeeded(@JniType("Profile*") Profile profile);
 

@@ -43,12 +43,18 @@ class GlicSidePanelCoordinatorAndroid
   bool SupportsPeek() const override;
   base::CallbackListSubscription AddStateCallback(
       base::RepeatingCallback<void(State state)> callback) override;
+  void SetNativeFreAcceptedCallback(base::RepeatingClosure callback) override;
   int GetPreferredWidth() override;
   bool IsGlicSidePanelActive() override;
+
+  // Called from Java when the user accepts the native FRE.
+  void OnNativeFreAccepted(JNIEnv* env);
+
   void SuppressBottomSheetForTesting(bool suppress);
   bool GetRestoreExpandedOnRecreationForTesting() const;
   bool HasBridgesForTesting() const;
   bool HasJavaWebContentsForTesting() const;
+  bool IsShowingNativeFreForTesting() const;
 
   // context_sharing::TabBottomSheetBridge::Observer:
   void OnClosed() override;
@@ -56,6 +62,13 @@ class GlicSidePanelCoordinatorAndroid
   void OnOpened(bool is_expanded) override;
 
  private:
+  bool ShouldShowNativeFre() const;
+
+  // Pushes the native FRE state of this tab to Java.
+  void UpdateJavaNativeFre();
+  // Clears the native FRE state and hides it in Java.
+  void ResetNativeFre();
+
   void SetState(State state);
   void SaveStateBeforeDeactivation();
   void OnTabDidActivate(tabs::TabInterface* tab);
@@ -68,6 +81,10 @@ class GlicSidePanelCoordinatorAndroid
   void EnsureBridgesCreated();
   base::android::ScopedJavaLocalRef<jobject> CreateBottomSheetContentProvider();
 
+  base::RepeatingClosure on_native_fre_accepted_;
+  // Set by Show() with show_native_fre; kept across tab switches and re-shows;
+  // cleared on close or accept.
+  bool showing_native_fre_ = false;
   State state_ = State::kClosed;
   // True if the bottom sheet was expanded when the tab began deactivating or
   // detaching. Used to upgrade the initial state back to expanded when
@@ -83,6 +100,7 @@ class GlicSidePanelCoordinatorAndroid
   base::CallbackListSubscription will_deactivate_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
   base::CallbackListSubscription manager_initialized_subscription_;
+  base::android::ScopedJavaGlobalRef<jobject> component_provider_;
   std::unique_ptr<context_sharing::CoBrowseViewsBridge> views_bridge_;
   std::unique_ptr<context_sharing::TabBottomSheetBridge>
       tab_bottom_sheet_bridge_;

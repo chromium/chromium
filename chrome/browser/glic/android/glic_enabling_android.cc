@@ -75,6 +75,10 @@ bool JNI_GlicEnabling_IsProfileManaged(JNIEnv* env, Profile* profile) {
   return management_service && management_service->IsManaged();
 }
 
+bool JNI_GlicEnabling_IsEnterpriseAccount(JNIEnv* env, Profile* profile) {
+  return GlicEnabling::IsEnterpriseAccount(profile);
+}
+
 void JNI_GlicEnabling_SetBypassEnablementChecksForTesting(JNIEnv* env,
                                                           bool bypass) {
   auto& stack = GetScopedBypassStack();

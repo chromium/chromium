@@ -295,6 +295,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/toolbar_button/GlicSplitButtonDelegateBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/toolbar_button/GlicTaskMenuCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/toolbar_button/GlicToolbarButtonControllerTest.java",
+    "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetComponentProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetContentUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetFreCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicExperimentalOptInUiCoordinatorUnitTest.java",

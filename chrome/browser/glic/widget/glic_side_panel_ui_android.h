@@ -232,6 +232,8 @@ class GlicSidePanelUi
   // catch up on deactivations suppressed during a permission prompt.
   void SyncEmbedderWindowActivation();
 
+  void OnNativeFreAccepted();
+
   base::CallbackListSubscription panel_visibility_subscription_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_observation_{this};

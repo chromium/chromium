@@ -104,6 +104,8 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
   ConfigureGlicDragAndDropForWebContents(web_contents);
 
   glic_side_panel_coordinator->SetWebContents(web_contents);
+  glic_side_panel_coordinator->SetNativeFreAcceptedCallback(base::BindRepeating(
+      &GlicSidePanelUi::OnNativeFreAccepted, weak_ptr_factory_.GetWeakPtr()));
 
   host_observation_.Observe(&delegate_->host());
   panel_state_.kind = mojom::PanelStateKind::kAttached;
@@ -525,6 +527,10 @@ void GlicSidePanelUi::SyncEmbedderWindowActivation() {
   if (browser_window && !browser_window->GetWindow()->IsActive()) {
     delegate_->OnEmbedderWindowActivationChanged(false);
   }
+}
+
+void GlicSidePanelUi::OnNativeFreAccepted() {
+  delegate_->AcceptNativeFre();
 }
 
 bool GlicSidePanelUi::CheckMediaAccessPermission(

@@ -97,7 +97,7 @@ public class GlicBottomSheetContentUnitTest {
                         /* peekViewContainerId= */ 12345,
                         /* onBackPressed= */ () -> {},
                         mProfile);
-        mProvider = new GlicBottomSheetComponentProvider(mProfile);
+        mProvider = new GlicBottomSheetComponentProvider(mProfile, null);
     }
 
     @Test

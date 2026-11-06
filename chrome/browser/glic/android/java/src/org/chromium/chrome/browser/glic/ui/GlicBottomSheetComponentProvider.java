@@ -10,9 +10,15 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -41,22 +47,40 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 @JNINamespace("glic")
 @NullMarked
 public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvider {
-    private final Profile mProfile;
+    @JniType("::glic::GlicSidePanelCoordinatorAndroid")
+    interface NativeGlicSidePanelCoordinatorAndroid extends JniTypeToken {}
 
+    private final Profile mProfile;
+    private @Nullable JniRawPtr<NativeGlicSidePanelCoordinatorAndroid> mNativeCoordinator;
+    @VisibleForTesting boolean mShowNativeFre;
     private @Nullable ActorControlStateTracker mActorControlStateTracker;
 
     /** JNI static factory method to create the provider. */
     @CalledByNative
-    private static GlicBottomSheetComponentProvider createProvider(Profile profile) {
-        return new GlicBottomSheetComponentProvider(profile);
+    private static GlicBottomSheetComponentProvider createProvider(
+            Profile profile, JniRawPtr<NativeGlicSidePanelCoordinatorAndroid> nativeCoordinator) {
+        return new GlicBottomSheetComponentProvider(profile, nativeCoordinator);
     }
 
-    GlicBottomSheetComponentProvider(Profile profile) {
+    GlicBottomSheetComponentProvider(
+            Profile profile,
+            @Nullable JniRawPtr<NativeGlicSidePanelCoordinatorAndroid> nativeCoordinator) {
         mProfile = profile;
+        mNativeCoordinator = nativeCoordinator;
+    }
+
+    @CalledByNative
+    void configureNativeFre(boolean showNativeFre) {
+        mShowNativeFre = showNativeFre;
     }
 
     @Override
     public void destroy() {
+        if (mNativeCoordinator != null) {
+            mNativeCoordinator.release();
+            mNativeCoordinator = null;
+        }
+        configureNativeFre(false);
         if (mActorControlStateTracker != null) {
             mActorControlStateTracker.destroy();
             mActorControlStateTracker = null;
@@ -117,5 +141,18 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
             mActorControlStateTracker = new ActorControlStateTracker(profileSupplier, tabSupplier);
         }
         return mActorControlStateTracker;
+    }
+
+    @VisibleForTesting
+    void notifyNativeFreAccepted() {
+        mShowNativeFre = false;
+        if (mNativeCoordinator != null) {
+            GlicBottomSheetComponentProviderJni.get().onNativeFreAccepted(mNativeCoordinator);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onNativeFreAccepted(JniPtr<NativeGlicSidePanelCoordinatorAndroid> self);
     }
 }
