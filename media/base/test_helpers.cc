@@ -506,6 +506,8 @@ static VideoCodecProfile MinProfile(VideoCodec codec) {
       return DOLBYVISION_PROFILE0;
     case VideoCodec::kAV1:
       return AV1PROFILE_MIN;
+    case VideoCodec::kAV2:
+      return AV2PROFILE_MIN;
   }
 }
 

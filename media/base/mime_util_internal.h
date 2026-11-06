@@ -49,6 +49,7 @@ class MEDIA_EXPORT MimeUtil {
     THEORA,
     DOLBY_VISION,
     AV1,
+    AV2,
     MPEG_H_AUDIO,
     DTS,
     DTSXP2,

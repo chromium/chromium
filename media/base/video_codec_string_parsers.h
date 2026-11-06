@@ -33,6 +33,9 @@ MEDIA_EXPORT std::optional<VideoType> ParseLegacyVp9CodecID(
 MEDIA_EXPORT std::optional<VideoType> ParseAv1CodecId(
     std::string_view codec_id);
 
+MEDIA_EXPORT std::optional<VideoType> ParseAv2CodecId(
+    std::string_view codec_id);
+
 // Handle parsing AVC/H.264 codec ids as outlined in RFC 6381 and ISO-14496-10.
 MEDIA_EXPORT std::optional<VideoType> ParseAVCCodecId(
     std::string_view codec_id);

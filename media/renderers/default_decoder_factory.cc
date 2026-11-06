@@ -26,6 +26,10 @@
 #include "media/filters/dav1d_video_decoder.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+#include "media/filters/dav2d_video_decoder.h"
+#endif
+
 #include "media/filters/opus_audio_decoder.h"
 
 #if BUILDFLAG(ENABLE_FFMPEG)
@@ -152,6 +156,13 @@ void DefaultDecoderFactory::CreateVideoDecoders(
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
   video_decoders->push_back(
       std::make_unique<OffloadingDav1dVideoDecoder>(media_log->Clone()));
+#endif
+
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+  if (base::FeatureList::IsEnabled(kDav2dVideoDecoder)) {
+    video_decoders->push_back(
+        std::make_unique<OffloadingDav2dVideoDecoder>(media_log->Clone()));
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)

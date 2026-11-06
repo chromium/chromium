@@ -28684,6 +28684,7 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="kCodecHEVC"/>
   <int value="9" label="kCodecDolbyVision"/>
   <int value="10" label="kCodecAV1"/>
+  <int value="11" label="kCodecAV2"/>
 </enum>
 
 <!-- LINT.ThenChange(//media/base/video_codecs.h:VideoCodec) -->
@@ -28730,6 +28731,13 @@ Called by update_net_error_codes.py.-->
   <int value="36" label="HEVC HighThroughputScreenExtended"/>
   <int value="37" label="DolbyVision profile10"/>
   <int value="38" label="DolbyVision profile20"/>
+  <int value="39" label="AV2 Main_420_10_IP0"/>
+  <int value="40" label="AV2 Main_420_10_IP1"/>
+  <int value="41" label="AV2 Main_420_10_IP2"/>
+  <int value="42" label="AV2 Main_422_10_IP1"/>
+  <int value="43" label="AV2 Main_444_10_IP1"/>
+  <int value="44" label="AV2 Main_444C_12_IP2"/>
+  <int value="45" label="AV2 Configurable"/>
 </enum>
 
 <!-- LINT.ThenChange(//gpu/config/gpu_info.h:VideoCodecProfile, //media/base/video_codecs.h:VideoCodecProfile) -->
@@ -28751,6 +28759,7 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="V4l2 Video Decoder"/>
   <int value="18" label="OOP Video Decoder"/>
   <int value="19" label="VideoToolbox Video Decoder"/>
+  <int value="20" label="Dav2d Video Decoder"/>
 </enum>
 
 <enum name="VideoEncoderUseCase">

@@ -40,6 +40,7 @@ std::optional<std::string> GetMimeTypeForVideoCodec(media::VideoCodec codec) {
     case media::VideoCodec::kMPEG4:
     case media::VideoCodec::kTheora:
     case media::VideoCodec::kDolbyVision:
+    case media::VideoCodec::kAV2:
       return std::nullopt;
 
     case media::VideoCodec::kUnknown:

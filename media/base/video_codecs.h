@@ -32,12 +32,13 @@ enum class VideoCodec {
   kHEVC = 8,
   kDolbyVision = 9,
   kAV1 = 10,
+  kAV2 = 11,
   // DO NOT ADD RANDOM VIDEO CODECS!
   //
   // The only acceptable time to add a new codec is if there is production code
   // that uses said codec in the same CL.
 
-  kMaxValue = kAV1,  // Must equal the last "real" codec above.
+  kMaxValue = kAV2,  // Must equal the last "real" codec above.
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:VideoCodec)
 
@@ -108,7 +109,16 @@ enum VideoCodecProfile {
   HEVCPROFILE_EXT_MAX = HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED,
   DOLBYVISION_PROFILE10 = 37,
   DOLBYVISION_PROFILE20 = 38,
-  VIDEO_CODEC_PROFILE_MAX = DOLBYVISION_PROFILE20,
+  AV2PROFILE_MIN = 39,
+  AV2PROFILE_MAIN_420_10_IP0 = AV2PROFILE_MIN,
+  AV2PROFILE_MAIN_420_10_IP1 = 40,
+  AV2PROFILE_MAIN_420_10_IP2 = 41,
+  AV2PROFILE_MAIN_422_10_IP1 = 42,
+  AV2PROFILE_MAIN_444_10_IP1 = 43,
+  AV2PROFILE_MAIN_444C_12_IP2 = 44,
+  AV2PROFILE_CONFIGURABLE = 45,
+  AV2PROFILE_MAX = AV2PROFILE_CONFIGURABLE,
+  VIDEO_CODEC_PROFILE_MAX = AV2PROFILE_MAX,
 };
 // clang-format off
 // LINT.ThenChange(//gpu/config/gpu_info.h:VideoCodecProfile, //tools/metrics/histograms/enums.xml:VideoCodecProfile)

@@ -530,6 +530,10 @@ TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
             EXPECT_EQ(BUILDFLAG(ENABLE_AV1_DECODER), result);
             break;
 
+          case MimeUtil::AV2:
+            EXPECT_EQ(BUILDFLAG(ENABLE_DAV2D_DECODER), result);
+            break;
+
           case MimeUtil::DTS:
           case MimeUtil::DTSXP2:
           case MimeUtil::DTSE:
@@ -599,6 +603,10 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
 
           case MimeUtil::AV1:
             EXPECT_EQ(BUILDFLAG(ENABLE_AV1_DECODER), result);
+            break;
+
+          case MimeUtil::AV2:
+            EXPECT_EQ(BUILDFLAG(ENABLE_DAV2D_DECODER), result);
             break;
 
           case MimeUtil::DTS:

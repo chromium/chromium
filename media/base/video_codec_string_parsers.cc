@@ -475,6 +475,22 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   return result;
 }
 
+std::optional<VideoType> ParseAv2CodecId(std::string_view codec_id) {
+  if (!base::StartsWith(codec_id, "av02", base::CompareCase::SENSITIVE) &&
+      !base::StartsWith(codec_id, "av2", base::CompareCase::SENSITIVE)) {
+    return std::nullopt;
+  }
+  // TODO(crbug.com/576753051) Implement full codec string parsing
+  VideoType result = {
+      .codec = VideoCodec::kAV2,
+      .profile = AV2PROFILE_MAIN_420_10_IP0,
+      .level = kNoVideoCodecLevel,
+      .color_space = VideoColorSpace::REC709(),
+      .subsampling = VideoChromaSampling::k420,
+  };
+  return result;
+}
+
 std::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
   // Make sure we have avc1.xxxxxx or avc3.xxxxxx , where xxxxxx are hex digits
   if (!codec_id.starts_with("avc1.") && !codec_id.starts_with("avc3.")) {
@@ -933,6 +949,10 @@ std::optional<VideoType> ParseCodec(std::string_view codec_id) {
   }
 
   if (auto result = ParseAv1CodecId(codec_id)) {
+    return result;
+  }
+
+  if (auto result = ParseAv2CodecId(codec_id)) {
     return result;
   }
 

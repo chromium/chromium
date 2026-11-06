@@ -192,6 +192,7 @@ bool IsVideoCodecProprietary(VideoCodec codec) {
     case VideoCodec::kVP8:
     case VideoCodec::kVP9:
     case VideoCodec::kAV1:
+    case VideoCodec::kAV2:
       return false;
   }
 }
@@ -288,6 +289,32 @@ bool IsDecoderAV1Supported(const VideoType& type) {
   return base::android::android_info::sdk_int() >=
              base::android::android_info::SDK_VERSION_Q &&
          IsColorSpaceSupported(type.color_space);
+#else
+  return false;
+#endif
+}
+
+bool IsDecoderAV2Supported(const VideoType& type) {
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+  if (!base::FeatureList::IsEnabled(kDav2dVideoDecoder) ||
+      !IsColorSpaceSupported(type.color_space)) {
+    return false;
+  }
+
+  switch (type.profile) {
+    case AV2PROFILE_MAIN_420_10_IP0:
+    case AV2PROFILE_MAIN_420_10_IP1:
+    case AV2PROFILE_MAIN_420_10_IP2:
+      return true;
+    case AV2PROFILE_MAIN_422_10_IP1:
+    case AV2PROFILE_MAIN_444_10_IP1:
+    case AV2PROFILE_MAIN_444C_12_IP2:
+    case AV2PROFILE_CONFIGURABLE:
+      // dav2d currently only supports profiles 0-2 (Main_420_10_IP0..IP2).
+      return false;
+    default:
+      return false;
+  }
 #else
   return false;
 #endif
@@ -455,6 +482,8 @@ bool IsDefaultDecoderSupportedVideoType(const VideoType& type) {
                        ->IsProfileSupported(type.profile);
     case VideoCodec::kAV1:
       return IsDecoderAV1Supported(type);
+    case VideoCodec::kAV2:
+      return IsDecoderAV2Supported(type);
     case VideoCodec::kVP9:
       return IsDecoderVp9ProfileSupported(type);
     case VideoCodec::kHEVC:
@@ -548,6 +577,7 @@ bool IsEncoderBuiltInVideoType(const VideoType& type) {
     case VideoCodec::kVC1:
     case VideoCodec::kMPEG2:
     case VideoCodec::kMPEG4:
+    case VideoCodec::kAV2:
       return false;
   }
 }
@@ -574,6 +604,7 @@ bool IsEncoderOptionalVideoType(const media::VideoType& type) {
     case media::VideoCodec::kVC1:
     case media::VideoCodec::kMPEG2:
     case media::VideoCodec::kMPEG4:
+    case media::VideoCodec::kAV2:
       return false;
   }
 }
@@ -594,6 +625,11 @@ bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
   if (codec == VideoCodec::kAV1)
     return true;
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+  if (codec == VideoCodec::kAV2) {
+    return base::FeatureList::IsEnabled(kDav2dVideoDecoder);
+  }
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
   return false;
 }
 

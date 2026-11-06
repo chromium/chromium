@@ -76,6 +76,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
     case VideoCodec::kHEVC:
     case VideoCodec::kVP9:
     case VideoCodec::kAV1:
+    case VideoCodec::kAV2:
     case VideoCodec::kDolbyVision:
     case VideoCodec::kTheora:
     case VideoCodec::kMPEG4:

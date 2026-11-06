@@ -52,6 +52,7 @@ VideoType VideoType::FromDecoderConfig(const VideoDecoderConfig& config) {
       level = 1;
       break;
     case VideoCodec::kAV1:
+    case VideoCodec::kAV2:
       // Strangely, AV1 starts at 2.0.
       level = 20;
       break;

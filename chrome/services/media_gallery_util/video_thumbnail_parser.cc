@@ -8,11 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/media_gallery_util/ipc_data_source.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/video_codecs.h"
@@ -30,6 +32,10 @@
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 #include "media/filters/dav1d_video_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+#include "media/filters/dav2d_video_decoder.h"
 #endif
 
 namespace {
@@ -96,6 +102,18 @@ void OnEncodedVideoFrameExtracted(
 #else
         // IsDecoderBuiltInVideoCodec(AV1) should never return true if
         // ENABLE_FFMPEG_VIDEO_DECODERS is false.
+        NOTREACHED();
+#endif
+      case media::VideoCodec::kAV2:
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+        if (base::FeatureList::IsEnabled(media::kDav2dVideoDecoder)) {
+          software_decoder = std::make_unique<media::Dav2dVideoDecoder>(
+              std::make_unique<media::NullMediaLog>());
+          break;
+        }
+        std::move(video_frame_callback).Run(nullptr);
+        return;
+#else
         NOTREACHED();
 #endif
 

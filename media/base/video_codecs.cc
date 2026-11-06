@@ -37,6 +37,8 @@ std::string GetCodecName(VideoCodec codec) {
       return "vp9";
     case VideoCodec::kAV1:
       return "av1";
+    case VideoCodec::kAV2:
+      return "av2";
   }
   NOTREACHED();
 }
@@ -66,6 +68,8 @@ std::string GetCodecNameForUMA(VideoCodec codec) {
       return "VP9";
     case VideoCodec::kAV1:
       return "AV1";
+    case VideoCodec::kAV2:
+      return "AV2";
   }
   NOTREACHED();
 }
@@ -150,6 +154,20 @@ std::string GetProfileName(VideoCodecProfile profile) {
       return "av1 profile high";
     case AV1PROFILE_PROFILE_PRO:
       return "av1 profile pro";
+    case AV2PROFILE_MAIN_420_10_IP0:
+      return "av2 main 420 10 ip0";
+    case AV2PROFILE_MAIN_420_10_IP1:
+      return "av2 main 420 10 ip1";
+    case AV2PROFILE_MAIN_420_10_IP2:
+      return "av2 main 420 10 ip2";
+    case AV2PROFILE_MAIN_422_10_IP1:
+      return "av2 main 422 10 ip1";
+    case AV2PROFILE_MAIN_444_10_IP1:
+      return "av2 main 444 10 ip1";
+    case AV2PROFILE_MAIN_444C_12_IP2:
+      return "av2 main 444c 12 ip2";
+    case AV2PROFILE_CONFIGURABLE:
+      return "av2 configurable";
   }
   NOTREACHED();
 }
@@ -247,6 +265,14 @@ VideoCodec VideoCodecProfileToVideoCodec(VideoCodecProfile profile) {
     case AV1PROFILE_PROFILE_HIGH:
     case AV1PROFILE_PROFILE_PRO:
       return VideoCodec::kAV1;
+    case AV2PROFILE_MAIN_420_10_IP0:
+    case AV2PROFILE_MAIN_420_10_IP1:
+    case AV2PROFILE_MAIN_420_10_IP2:
+    case AV2PROFILE_MAIN_422_10_IP1:
+    case AV2PROFILE_MAIN_444_10_IP1:
+    case AV2PROFILE_MAIN_444C_12_IP2:
+    case AV2PROFILE_CONFIGURABLE:
+      return VideoCodec::kAV2;
   }
 }
 

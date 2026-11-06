@@ -525,6 +525,20 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
       return "av1 profile high";
     case gpu::AV1PROFILE_PROFILE_PRO:
       return "av1 profile pro";
+    case gpu::AV2PROFILE_MAIN_420_10_IP0:
+      return "av2 main 420 10 ip0";
+    case gpu::AV2PROFILE_MAIN_420_10_IP1:
+      return "av2 main 420 10 ip1";
+    case gpu::AV2PROFILE_MAIN_420_10_IP2:
+      return "av2 main 420 10 ip2";
+    case gpu::AV2PROFILE_MAIN_422_10_IP1:
+      return "av2 main 422 10 ip1";
+    case gpu::AV2PROFILE_MAIN_444_10_IP1:
+      return "av2 main 444 10 ip1";
+    case gpu::AV2PROFILE_MAIN_444C_12_IP2:
+      return "av2 main 444c 12 ip2";
+    case gpu::AV2PROFILE_CONFIGURABLE:
+      return "av2 configurable";
   }
   NOTREACHED();
 }

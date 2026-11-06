@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -203,6 +204,51 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Profiles) {
 #endif
 }
 #endif  // defined(ENABLE_LIBVPX)
+
+TEST(SupportedTypesTest, IsDecoderSupportedVideoType_AV2Profiles) {
+  const VideoColorSpace kColorSpace = VideoColorSpace::REC709();
+  const int kUnspecifiedLevel = 0;
+
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kDav2dVideoDecoder);
+    EXPECT_FALSE(IsDecoderSupportedVideoType({VideoCodec::kAV2,
+                                              AV2PROFILE_MAIN_420_10_IP0,
+                                              kUnspecifiedLevel, kColorSpace}));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kDav2dVideoDecoder);
+    EXPECT_TRUE(IsDecoderSupportedVideoType({VideoCodec::kAV2,
+                                             AV2PROFILE_MAIN_420_10_IP0,
+                                             kUnspecifiedLevel, kColorSpace}));
+    EXPECT_TRUE(IsDecoderSupportedVideoType({VideoCodec::kAV2,
+                                             AV2PROFILE_MAIN_420_10_IP1,
+                                             kUnspecifiedLevel, kColorSpace}));
+    EXPECT_TRUE(IsDecoderSupportedVideoType({VideoCodec::kAV2,
+                                             AV2PROFILE_MAIN_420_10_IP2,
+                                             kUnspecifiedLevel, kColorSpace}));
+    EXPECT_FALSE(IsDecoderSupportedVideoType({VideoCodec::kAV2,
+                                              AV2PROFILE_MAIN_422_10_IP1,
+                                              kUnspecifiedLevel, kColorSpace}));
+    EXPECT_FALSE(IsDecoderSupportedVideoType({VideoCodec::kAV2,
+                                              AV2PROFILE_MAIN_444_10_IP1,
+                                              kUnspecifiedLevel, kColorSpace}));
+    EXPECT_FALSE(IsDecoderSupportedVideoType({VideoCodec::kAV2,
+                                              AV2PROFILE_MAIN_444C_12_IP2,
+                                              kUnspecifiedLevel, kColorSpace}));
+    EXPECT_FALSE(
+        IsDecoderSupportedVideoType({VideoCodec::kAV2, AV2PROFILE_CONFIGURABLE,
+                                     kUnspecifiedLevel, kColorSpace}));
+  }
+#else
+  EXPECT_FALSE(
+      IsDecoderSupportedVideoType({VideoCodec::kAV2, AV2PROFILE_MAIN_420_10_IP0,
+                                   kUnspecifiedLevel, kColorSpace}));
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
+}
 
 TEST(SupportedTypesTest,
      IsDecoderSupportedAudioTypeWithSpatialRenderingBasics) {

@@ -180,6 +180,20 @@ EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::ToMojom(
       return gpu::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_HIGH;
     case gpu::VideoCodecProfile::AV1PROFILE_PROFILE_PRO:
       return gpu::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_PRO;
+    case gpu::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP0:
+      return gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP0;
+    case gpu::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP1:
+      return gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP1;
+    case gpu::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP2:
+      return gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP2;
+    case gpu::VideoCodecProfile::AV2PROFILE_MAIN_422_10_IP1:
+      return gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_422_10_IP1;
+    case gpu::VideoCodecProfile::AV2PROFILE_MAIN_444_10_IP1:
+      return gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_444_10_IP1;
+    case gpu::VideoCodecProfile::AV2PROFILE_MAIN_444C_12_IP2:
+      return gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_444C_12_IP2;
+    case gpu::VideoCodecProfile::AV2PROFILE_CONFIGURABLE:
+      return gpu::mojom::VideoCodecProfile::AV2PROFILE_CONFIGURABLE;
   }
   NOTREACHED() << "Invalid VideoCodecProfile:" << video_codec_profile;
 }
@@ -269,6 +283,20 @@ EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::FromMojom(
       return gpu::VideoCodecProfile::AV1PROFILE_PROFILE_HIGH;
     case gpu::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_PRO:
       return gpu::VideoCodecProfile::AV1PROFILE_PROFILE_PRO;
+    case gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP0:
+      return gpu::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP0;
+    case gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP1:
+      return gpu::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP1;
+    case gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP2:
+      return gpu::VideoCodecProfile::AV2PROFILE_MAIN_420_10_IP2;
+    case gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_422_10_IP1:
+      return gpu::VideoCodecProfile::AV2PROFILE_MAIN_422_10_IP1;
+    case gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_444_10_IP1:
+      return gpu::VideoCodecProfile::AV2PROFILE_MAIN_444_10_IP1;
+    case gpu::mojom::VideoCodecProfile::AV2PROFILE_MAIN_444C_12_IP2:
+      return gpu::VideoCodecProfile::AV2PROFILE_MAIN_444C_12_IP2;
+    case gpu::mojom::VideoCodecProfile::AV2PROFILE_CONFIGURABLE:
+      return gpu::VideoCodecProfile::AV2PROFILE_CONFIGURABLE;
   }
   NOTREACHED() << "Invalid VideoCodecProfile: " << input;
 }

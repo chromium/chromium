@@ -193,6 +193,8 @@ VideoCodec MimeUtilToVideoCodec(MimeUtil::Codec codec) {
   switch (codec) {
     case MimeUtil::AV1:
       return VideoCodec::kAV1;
+    case MimeUtil::AV2:
+      return VideoCodec::kAV2;
     case MimeUtil::H264:
       return VideoCodec::kH264;
     case MimeUtil::HEVC:
@@ -301,6 +303,9 @@ void MimeUtil::AddSupportedMediaFormats() {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   webm_video_codecs.emplace(AV1);
 #endif
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+  webm_video_codecs.emplace(AV2);
+#endif
 
   CodecSet webm_codecs(webm_audio_codecs);
   webm_codecs.insert(webm_video_codecs.begin(), webm_video_codecs.end());
@@ -360,6 +365,10 @@ void MimeUtil::AddSupportedMediaFormats() {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   mp4_video_codecs.emplace(AV1);
   mkv_video_codecs.emplace(AV1);
+#endif
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+  mp4_video_codecs.emplace(AV2);
+  mkv_video_codecs.emplace(AV2);
 #endif
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -592,6 +601,9 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
     // ----------------------------------------------------------------------
     case AV1:
       return BUILDFLAG(ENABLE_AV1_DECODER);
+
+    case AV2:
+      return BUILDFLAG(ENABLE_DAV2D_DECODER);
 
     case MPEG2_AAC:
       // MPEG2_AAC cannot be used in HLS (mpegurl suffix), but this is enforced
@@ -833,6 +845,13 @@ bool MimeUtil::ParseCodecHelper(std::string_view mime_type_lower_case,
     return true;
   }
 
+  if (auto result = ParseAv2CodecId(codec_id)) {
+    out_result->codec = MimeUtil::AV2;
+    out_result->video = result;
+    DCHECK(out_result->video->color_space.IsSpecified());
+    return true;
+  }
+
   if (auto result = ParseAVCCodecId(codec_id)) {
     out_result->codec = MimeUtil::H264;
     out_result->video = result;
@@ -910,7 +929,7 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
       video_codec != VideoCodec::kTheora && video_codec != VideoCodec::kVP8 &&
       // TODO(dalecurtis): AV1 has levels, but they aren't supported yet;
       // http://crbug.com/784993
-      video_codec != VideoCodec::kAV1) {
+      video_codec != VideoCodec::kAV1 && video_codec != VideoCodec::kAV2) {
     DCHECK_NE(video_profile, VIDEO_CODEC_PROFILE_UNKNOWN);
 
     // Zero isn't a valid HEVC level, but it appears in the wild and is
