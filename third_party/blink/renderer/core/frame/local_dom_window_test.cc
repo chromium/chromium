@@ -48,8 +48,11 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -57,6 +60,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -427,6 +431,27 @@ TEST_F(LocalDOMWindowTest, AlwaysOnTopPopup) {
 
   GetFrame().GetPage()->SetAlwaysOnTopPopup(false);
   EXPECT_FALSE(window->alwaysOnTopPopup());
+}
+
+TEST_F(LocalDOMWindowTest, AlwaysOnTopUseCounters) {
+  ScopedWindowOpenAlwaysOnTopForTest always_on_top_enabled{true};
+  GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kWindowAlwaysOnTopPopup));
+  ClassicScript::CreateUnspecifiedScript("window.alwaysOnTopPopup")
+      ->RunScript(GetFrame().DomWindow());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWindowAlwaysOnTopPopup));
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kWindowOpenAlwaysOnTop));
+  ClassicScript::CreateUnspecifiedScript(
+      "window.open('about:blank', '_blank', 'popup,alwaysOnTop=false')")
+      ->RunScript(GetFrame().DomWindow());
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kWindowOpenAlwaysOnTop));
+
+  ClassicScript::CreateUnspecifiedScript(
+      "window.open('about:blank', '_blank', 'popup,alwaysOnTop=true')")
+      ->RunScript(GetFrame().DomWindow());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWindowOpenAlwaysOnTop));
 }
 
 TEST_F(LocalDOMWindowTest, OutgoingReferrerUrlCaching) {

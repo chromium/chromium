@@ -389,6 +389,10 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   // geometry to the screen (via ChromeClientImpl::AdjustWindowRectForDisplay)
   // because the browser may honor cross-screen bounds.
   WebWindowFeatures features(request.GetWindowFeatures());
+  if (features.always_on_top) {
+    UseCounter::Count(opener_window,
+                      mojom::blink::WebFeature::kWindowOpenAlwaysOnTop);
+  }
   const auto& picture_in_picture_window_options =
       request.GetPictureInPictureWindowOptions();
   if (picture_in_picture_window_options.has_value()) {

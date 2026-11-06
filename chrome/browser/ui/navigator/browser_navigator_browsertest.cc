@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -86,6 +87,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -3122,6 +3124,34 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
     ASSERT_TRUE(new_contents);
     EXPECT_EQ(true, content::EvalJs(new_contents, "window.alwaysOnTopPopup"));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
+                       AlwaysOnTopUseCounters) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(false, content::EvalJs(active_contents, "window.alwaysOnTopPopup"));
+
+  ui_test_utils::BrowserCreatedObserver observer;
+  EXPECT_TRUE(content::ExecJs(
+      active_contents,
+      "window.open('about:blank', 'popup1', 'alwaysontop=true')"));
+  ASSERT_TRUE(observer.Wait());
+
+  // Navigate away to flush UseCounters from the opener page.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kWindowAlwaysOnTopPopup, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kWindowOpenAlwaysOnTop, 1);
 }
 
 }  // namespace
