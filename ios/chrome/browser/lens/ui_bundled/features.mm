@@ -24,3 +24,6 @@ BASE_FEATURE(kLensStreamServiceWebChannelTransportEnabled,
 
 BASE_FEATURE(kLensFollowupsFullHeightEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensHideLoadingWebResultsPanel,
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -31,4 +31,8 @@ BASE_DECLARE_FEATURE(kLensStreamServiceWebChannelTransportEnabled);
 // Whether to enable followups full height in the Lens overlay.
 BASE_DECLARE_FEATURE(kLensFollowupsFullHeightEnabled);
 
+// Hides the native loading web results panel shown between the Lens View
+// Finder and the Lens Web results page.
+BASE_DECLARE_FEATURE(kLensHideLoadingWebResultsPanel);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

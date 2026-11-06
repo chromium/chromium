@@ -3132,6 +3132,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kRemoteActorCredentialSharing)},
+    {"lens-hide-loading-web-results-panel",
+     flag_descriptions::kLensHideLoadingWebResultsPanelName,
+     flag_descriptions::kLensHideLoadingWebResultsPanelDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensHideLoadingWebResultsPanel)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

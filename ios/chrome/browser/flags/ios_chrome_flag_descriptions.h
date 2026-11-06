@@ -1322,6 +1322,12 @@ inline constexpr char kLensFollowupsFullHeightEnabledName[] =
 inline constexpr char kLensFollowupsFullHeightEnabledDescription[] =
     "Enables followups full height in the Lens overlay.";
 
+inline constexpr char kLensHideLoadingWebResultsPanelName[] =
+    "Hide Lens loading web results panel";
+inline constexpr char kLensHideLoadingWebResultsPanelDescription[] =
+    "When enabled, hides the native loading web results panel shown between "
+    "the Lens View Finder and the Lens Web results page.";
+
 inline constexpr char kLensInitialLvfZoomLevel90PercentName[] =
     "Initial Lens camera zoom 90 percent";
 inline constexpr char kLensInitialLvfZoomLevel90PercentDescription[] =
