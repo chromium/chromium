@@ -290,8 +290,9 @@ void TabUsageScenarioTracker::OnVideoStartedPlaying(
 void TabUsageScenarioTracker::OnVideoStoppedPlaying(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(contents_playing_video_.contains(web_contents),
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/580446810): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(contents_playing_video_.contains(web_contents));
   contents_playing_video_.erase(web_contents);
   if (visible_tabs_.contains(web_contents)) {
     usage_scenario_data_store_->OnVideoStopsInVisibleTab();
