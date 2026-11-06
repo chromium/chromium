@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -64,12 +65,16 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
@@ -82,6 +87,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 @interface GeminiContainerMediator (Testing) <ActorTaskLifecycleObserver,
@@ -97,6 +103,10 @@ namespace {
 
 // Task ID used for actuation lifecycle tests.
 constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
+
+// Session and conversation IDs used in processing status tests.
+NSString* const kTestSessionID = @"session_id";
+NSString* const kTestConversationID = @"conversation_id";
 
 }  // namespace
 
@@ -353,6 +363,8 @@ class GeminiContainerMediatorTest : public PlatformTest {
                              forProtocol:@protocol(GeminiCommands)];
     mock_container_handler_ =
         OCMProtocolMock(@protocol(AssistantContainerCommands));
+    mock_fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
+    mock_snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
 
     startup_state_ = [[GeminiStartupState alloc]
         initWithEntryPoint:gemini::EntryPoint::OverflowMenu];
@@ -368,7 +380,9 @@ class GeminiContainerMediatorTest : public PlatformTest {
             sharedTabsManager:&shared_tabs_manager_
         sessionMetricsManager:session_metrics_manager_];
     mediator_.containerHandler = mock_container_handler_;
+    mediator_.fullscreenHandler = mock_fullscreen_handler_;
     mediator_.geminiHandler = mock_gemini_handler_;
+    mediator_.snackbarHandler = mock_snackbar_handler_;
   }
 
   void TearDown() override {
@@ -412,6 +426,8 @@ class GeminiContainerMediatorTest : public PlatformTest {
   id mock_settings_handler_;
   id mock_gemini_handler_;
   id mock_container_handler_;
+  id mock_fullscreen_handler_;
+  id mock_snackbar_handler_;
 };
 
 // Tests that createGeminiConfigurationForActiveWebState returns nil when no
@@ -2188,6 +2204,110 @@ TEST_F(GeminiContainerMediatorTest, TestPrefChangesIgnoredAfterDisconnect) {
 
   EXPECT_EQ(call_count,
             shared_tabs_manager_.save_active_page_context_call_count_);
+}
+
+// Tests that `kInactivityTimeout` dormant reason exits fullscreen, switches the
+// provider to floaty mode, shows a snackbar, and updates container UI when the
+// mode switch completes.
+TEST_F(GeminiContainerMediatorTest,
+       TestLiveDormantHandling_InactivityTimeout_ShowsSnackbar) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration, kPageActionMenu,
+       kGeminiLive, kGeminiLiveDormantReasons},
+      {});
+
+  AppendActiveWebState();
+  ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kLive,
+                              /*animated=*/false);
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+
+  [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
+  OCMExpect([mock_fullscreen_handler_
+      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
+                                    kUserInitiatedFinishedByCode
+                       animated:YES]);
+  NSString* expected_title =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONTINUE_SESSION_SNACKBAR);
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(SnackbarMessage* msg) {
+        return [msg.title isEqualToString:expected_title];
+      }]]);
+
+  [mediator_ didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                         dormantReason:ios::provider::GeminiDormantReason::
+                                           kInactivityTimeout
+                                 error:nil
+                             errorCode:ios::provider::GeminiErrorCode::kNone
+                             sessionID:kTestSessionID
+                        conversationID:kTestConversationID];
+
+  EXPECT_EQ(ios::provider::GeminiViewMode::kFloaty,
+            ios::provider::GetCurrentMode());
+  EXPECT_OCMOCK_VERIFY(mock_fullscreen_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  // Simulate the SDK notifying the delegate after `SwitchToMode` completes.
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
+  OCMExpect([mock_container_handler_ setAssistantContainerGrabberHidden:NO
+                                                               animated:YES]);
+
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
+
+  EXPECT_THAT(delegate_.last_mode_changed_,
+              testing::Optional(ios::provider::GeminiViewMode::kFloaty));
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+}
+
+// Tests that `kUserStop` dormant reason exits fullscreen and switches the
+// provider to floaty mode without showing a snackbar.
+TEST_F(GeminiContainerMediatorTest,
+       TestLiveDormantHandling_UserStop_DoesNotShowSnackbar) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration, kPageActionMenu,
+       kGeminiLive, kGeminiLiveDormantReasons},
+      {});
+
+  AppendActiveWebState();
+  ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kLive,
+                              /*animated=*/false);
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+
+  [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
+  OCMExpect([mock_fullscreen_handler_
+      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
+                                    kUserInitiatedFinishedByCode
+                       animated:YES]);
+  [[mock_snackbar_handler_ reject] showSnackbarMessage:[OCMArg any]];
+
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                  dormantReason:ios::provider::GeminiDormantReason::kUserStop
+                          error:nil
+                      errorCode:ios::provider::GeminiErrorCode::kNone
+                      sessionID:kTestSessionID
+                 conversationID:kTestConversationID];
+
+  EXPECT_EQ(ios::provider::GeminiViewMode::kFloaty,
+            ios::provider::GetCurrentMode());
+  EXPECT_OCMOCK_VERIFY(mock_fullscreen_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  // Simulate the SDK notifying the delegate after `SwitchToMode` completes.
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
+  OCMExpect([mock_container_handler_ setAssistantContainerGrabberHidden:NO
+                                                               animated:YES]);
+
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
+
+  EXPECT_THAT(delegate_.last_mode_changed_,
+              testing::Optional(ios::provider::GeminiViewMode::kFloaty));
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
 }
 
 }  // namespace

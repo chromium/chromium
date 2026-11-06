@@ -6,6 +6,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import <optional>
+
 #import "base/barrier_closure.h"
 #import "base/check.h"
 #import "base/containers/map_util.h"
@@ -1092,46 +1094,22 @@ void GeminiBrowserAgent::UpdateForTraitCollection(
 
 void GeminiBrowserAgent::HandleDormantStatus(
     ios::provider::GeminiDormantReason dormant_reason) {
-  if (IsGeminiLiveDormantReasonsEnabled()) {
-    switch (dormant_reason) {
-      case ios::provider::GeminiDormantReason::kLowVolumeInBackground:
-      case ios::provider::GeminiDormantReason::kLowVolumeInForeground:
-      case ios::provider::GeminiDormantReason::kInterruptedByExternalAudio:
-      case ios::provider::GeminiDormantReason::kUserStop:
-      case ios::provider::GeminiDormantReason::kUserPause:
-        SwitchToChatModeOrDismiss(/*animated=*/true,
-                                  ios::provider::GeminiViewState::kExpanded);
-        break;
-      case ios::provider::GeminiDormantReason::kInactivityTimeout:
-        SwitchToChatModeOrDismiss(/*animated=*/true,
-                                  ios::provider::GeminiViewState::kCollapsed);
-        is_showing_live_session_dormant_snackbar_ = true;
-        ShowLiveSessionDormantSnackbar(
-            IDS_IOS_GEMINI_LIVE_CONTINUE_SESSION_SNACKBAR);
-        break;
-      case ios::provider::GeminiDormantReason::kLongInteractionTimeout:
-      case ios::provider::GeminiDormantReason::kServerPause:
-        SwitchToChatModeOrDismiss(/*animated=*/true,
-                                  ios::provider::GeminiViewState::kCollapsed);
-        is_showing_live_session_dormant_snackbar_ = true;
-        ShowLiveSessionDormantSnackbar(
-            IDS_IOS_GEMINI_LIVE_SERVER_PAUSE_SNACKBAR);
-        break;
-      default:
-        SwitchToChatModeOrDismiss(/*animated=*/true,
-                                  ios::provider::GeminiViewState::kCollapsed);
-        is_showing_live_session_dormant_snackbar_ = true;
-        ShowLiveSessionDormantSnackbar(
-            IDS_IOS_GEMINI_LIVE_GENERAL_DORMANT_SNACKBAR);
-        break;
-    }
-  } else {
+  std::optional<int> message_id =
+      gemini::GetLiveDormantSnackbarMessageId(dormant_reason);
+  if (!message_id.has_value()) {
+    // Mode switches to chat default to `kExpanded` when no dormant snackbar
+    // needs to be shown.
     SwitchToChatModeOrDismiss(/*animated=*/true,
-                              ios::provider::GeminiViewState::kCollapsed);
-    is_showing_live_session_dormant_snackbar_ = true;
-    ShowLiveSessionDormantSnackbar(
-        IDS_IOS_GEMINI_LIVE_GENERAL_DORMANT_SNACKBAR);
+                              ios::provider::GeminiViewState::kExpanded);
+    return;
   }
+
+  // Collapse the floaty when showing a dormant snackbar so the snackbar appears
+  // above the minimized pill without overlapping the expanded chat UI.
+  SwitchToChatModeOrDismiss(/*animated=*/true,
+                            ios::provider::GeminiViewState::kCollapsed);
+  is_showing_live_session_dormant_snackbar_ = true;
+  ShowLiveSessionDormantSnackbar(*message_id);
 }
 
 void GeminiBrowserAgent::LogLiveStatusTransition(
@@ -1250,7 +1228,9 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
     }
     case ios::provider::GeminiClientMode::kDormant:
       RecordGeminiLiveDormantReason(dormant_reason);
-      HandleDormantStatus(dormant_reason);
+      if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+        HandleDormantStatus(dormant_reason);
+      }
       LogLiveSessionMetrics();
       break;
     default:

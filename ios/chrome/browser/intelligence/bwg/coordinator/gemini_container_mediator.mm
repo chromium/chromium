@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -59,7 +60,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -391,6 +395,8 @@ class GeminiContainerMediatorTabHelperObserver
   _geminiHandler = nil;
   _sharedTabsManager = nullptr;
   _sessionMetricsManager = nil;
+  self.fullscreenHandler = nil;
+  self.snackbarHandler = nil;
   _consumer = nil;
   _webStateList = nullptr;
   _prefObserverBridge.reset();
@@ -594,6 +600,15 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   [_stateManager transitionToProcessingStatus:processingStatus error:error];
+
+  if (IsIOSGeminiBottomSheetMigrationEnabled() &&
+      [_stateManager isInGeminiLiveMode] &&
+      processingStatus == GeminiClientMode::kDormant) {
+    // Always switch to chat mode when receiving dormant status while in Live
+    // mode, even if `dormantReason` is `kUnknown`.
+    [self handleLiveDormantReason:dormantReason];
+  }
+
   [self updatePageContextForLiveProcessingStatus:processingStatus];
 }
 
@@ -1196,6 +1211,23 @@ class GeminiContainerMediatorTabHelperObserver
 }
 
 #pragma mark - Gemini Live
+
+// Handles a dormant status event for an active Live session.
+- (void)handleLiveDormantReason:(GeminiDormantReason)dormantReason {
+  [self.fullscreenHandler
+      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
+                                    kUserInitiatedFinishedByCode
+                       animated:YES];
+  ios::provider::SwitchToMode(GeminiViewMode::kFloaty, /*animated=*/true);
+
+  std::optional<int> messageID =
+      gemini::GetLiveDormantSnackbarMessageId(dormantReason);
+  if (messageID.has_value() && self.snackbarHandler) {
+    SnackbarMessage* message = [[SnackbarMessage alloc]
+        initWithTitle:l10n_util::GetNSString(*messageID)];
+    [self.snackbarHandler showSnackbarMessage:message];
+  }
+}
 
 // Updates page context for Gemini Live based on `processingStatus` changes.
 - (void)updatePageContextForLiveProcessingStatus:

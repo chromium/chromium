@@ -38,8 +38,11 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 @interface GeminiContainerCoordinator () <GeminiContainerMediatorDelegate,
@@ -237,6 +240,12 @@
   _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                          AssistantContainerCommands);
   _mediator.containerHandler = _containerHandler;
+
+  if (IsFullscreenRefactoringEnabled()) {
+    _mediator.fullscreenHandler =
+        HandlerForProtocol(dispatcher, FullscreenCommands);
+  }
+  _mediator.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
 }
 
 // Dismisses Gemini from all other windows and executes `completion`.

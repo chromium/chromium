@@ -32,9 +32,11 @@ class GeminiSharedTabsManager;
 @class GeminiStartupState;
 @protocol AssistantContainerCommands;
 @protocol BWGGatewayProtocol;
+@protocol FullscreenCommands;
 @protocol GeminiCommands;
 @protocol GeminiContainerMediatorDelegate;
 @protocol GeminiZeroStateConsumer;
+@protocol SnackbarCommands;
 
 // Mediator for the Gemini container.
 @interface GeminiContainerMediator : NSObject <AssistantContainerDelegate,
@@ -54,6 +56,13 @@ class GeminiSharedTabsManager;
 
 // Handler for Gemini commands (e.g. dismissing Gemini flow).
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
+
+// Handler for fullscreen commands (e.g. exiting fullscreen on mode
+// transitions).
+@property(nonatomic, weak) id<FullscreenCommands> fullscreenHandler;
+
+// Handler for displaying snackbars.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
 // Consumer interface for handling UI updates from the coordinator.
 @property(nonatomic, weak) id<GeminiContainerConsumer> consumer;

@@ -48,6 +48,7 @@ source_set("live_utils") {
     "gemini_live_utils.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

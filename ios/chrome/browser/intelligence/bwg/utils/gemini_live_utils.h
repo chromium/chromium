@@ -5,13 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_GEMINI_LIVE_UTILS_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_GEMINI_LIVE_UTILS_H_
 
+#include <optional>
+
 class ProfileIOS;
 
 namespace ios::provider {
 enum class GeminiClientMode;
+enum class GeminiDormantReason;
 }  // namespace ios::provider
 
 namespace gemini {
+
+// Returns the localized string resource ID for the snackbar message
+// associated with `dormant_reason`, or `std::nullopt` if no snackbar is
+// needed.
+std::optional<int> GetLiveDormantSnackbarMessageId(
+    ios::provider::GeminiDormantReason dormant_reason);
 
 // Updates the Gemini Live indicator in the location bar for all regular
 // browsers of `profile` to reflect `in_live_mode`. No-op if Gemini Live is
