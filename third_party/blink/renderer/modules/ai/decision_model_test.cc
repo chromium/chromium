@@ -437,8 +437,18 @@ TEST_F(DecisionModelTest, BackendOptionPassedToMojo) {
   q->setPrompt("Is it urgent?");
   q->setType(V8DecisionModelQuestionType::Enum::kBoolean);
 
-  for (auto backend : {V8DecisionModelBackend::Enum::kEmbeddingGemmaV1,
-                       V8DecisionModelBackend::Enum::kLanguageModel}) {
+  for (const auto& [backend, expected] :
+       std::initializer_list<std::pair<V8DecisionModelBackend::Enum,
+                                       mojom::blink::AIDecisionModelBackend>>{
+           {V8DecisionModelBackend::Enum::kEmbeddingGemmaV1,
+            mojom::blink::AIDecisionModelBackend::kEmbeddingGemmaV1},
+           {V8DecisionModelBackend::Enum::kLanguageModel,
+            mojom::blink::AIDecisionModelBackend::kLanguageModel},
+           {V8DecisionModelBackend::Enum::kLayaEnWint8,
+            mojom::blink::AIDecisionModelBackend::kLayaEnWint8},
+           {V8DecisionModelBackend::Enum::kLayaMlWint8,
+            mojom::blink::AIDecisionModelBackend::kLayaMlWint8},
+       }) {
     DummyExceptionStateForTesting exception_state;
     auto* options = DecisionModelCreateOptions::Create();
     options->setQuestions({q});
@@ -450,10 +460,7 @@ TEST_F(DecisionModelTest, BackendOptionPassedToMojo) {
     EXPECT_TRUE(tester.IsFulfilled());
     ASSERT_TRUE(mock_ai_manager.last_create_options_);
     ASSERT_TRUE(mock_ai_manager.last_create_options_->backend.has_value());
-    EXPECT_EQ(mock_ai_manager.last_create_options_->backend.value(),
-              backend == V8DecisionModelBackend::Enum::kEmbeddingGemmaV1
-                  ? mojom::blink::AIDecisionModelBackend::kEmbeddingGemmaV1
-                  : mojom::blink::AIDecisionModelBackend::kLanguageModel);
+    EXPECT_EQ(mock_ai_manager.last_create_options_->backend.value(), expected);
   }
 
   scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(

@@ -27,6 +27,10 @@ std::string ConvertBaseModelToUmaModelName(OnDeviceBaseModel base_model) {
       return "SpeechRecognitionSmallExpert";
     case OnDeviceBaseModel::kSummarizerSmallExpert:
       return "SummarizerSmallExpert";
+    case OnDeviceBaseModel::kLayaEnWint8:
+      return "LayaEnWint8";
+    case OnDeviceBaseModel::kLayaMlWint8:
+      return "LayaMlWint8";
     case OnDeviceBaseModel::kUnknown:
     case OnDeviceBaseModel::kXxs:
     case OnDeviceBaseModel::kXs:
@@ -53,6 +57,10 @@ OnDeviceBaseModel ConvertComponentKeyToEnum(const std::string& key) {
     return OnDeviceBaseModel::kSpeechRecognitionSmallExpert;
   } else if (key == "summarizer_small_expert_model_component") {
     return OnDeviceBaseModel::kSummarizerSmallExpert;
+  } else if (key == "laya_en_wint8_component") {
+    return OnDeviceBaseModel::kLayaEnWint8;
+  } else if (key == "laya_ml_wint8_component") {
+    return OnDeviceBaseModel::kLayaMlWint8;
   } else {
     return OnDeviceBaseModel::kUnknown;
   }

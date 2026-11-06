@@ -29,7 +29,9 @@ enum class OnDeviceBaseModel {
   kProofreaderSmallExpert = 10,
   kSpeechRecognitionSmallExpert = 11,
   kSummarizerSmallExpert = 12,
-  kMaxValue = kSummarizerSmallExpert,
+  kLayaEnWint8 = 13,
+  kLayaMlWint8 = 14,
+  kMaxValue = kLayaMlWint8,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceBaseModelEnum)
 

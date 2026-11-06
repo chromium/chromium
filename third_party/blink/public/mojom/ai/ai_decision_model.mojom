@@ -54,6 +54,8 @@ struct AIDecisionModelQuestion {
 enum AIDecisionModelBackend {
   kEmbeddingGemmaV1,
   kLanguageModel,
+  kLayaEnWint8,
+  kLayaMlWint8,
 };
 
 // Options for creating an AIDecisionModel session.

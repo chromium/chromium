@@ -194,6 +194,10 @@ mojom::blink::AIDecisionModelBackend ToMojoDecisionModelBackend(
       return mojom::blink::AIDecisionModelBackend::kEmbeddingGemmaV1;
     case V8DecisionModelBackend::Enum::kLanguageModel:
       return mojom::blink::AIDecisionModelBackend::kLanguageModel;
+    case V8DecisionModelBackend::Enum::kLayaEnWint8:
+      return mojom::blink::AIDecisionModelBackend::kLayaEnWint8;
+    case V8DecisionModelBackend::Enum::kLayaMlWint8:
+      return mojom::blink::AIDecisionModelBackend::kLayaMlWint8;
   }
   NOTREACHED();
 }

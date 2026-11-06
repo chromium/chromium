@@ -41,6 +41,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Classifier" summary="Classifier base model"/>
   <variant name="Gemma4" summary="Gemma4 base model"/>
   <variant name="LanguageDetection" summary="Language Detection base model"/>
+  <variant name="LayaEnWint8" summary="Laya EN Wint8 base model"/>
+  <variant name="LayaMlWint8" summary="Laya ML Wint8 base model"/>
   <variant name="ProofreaderSmallExpert"
       summary="Proofreader Small Expert base model"/>
   <variant name="SpeechRecognitionSmallExpert"

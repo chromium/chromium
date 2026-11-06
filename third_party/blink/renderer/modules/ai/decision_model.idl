@@ -33,7 +33,9 @@ dictionary DecisionModelQuestion {
 // TODO(crbug.com/565849508): Remove after DevTrial backend evaluation.
 enum DecisionModelBackend {
   "embedding-gemma-v1",
-  "language-model"
+  "language-model",
+  "laya-en-wint8",
+  "laya-ml-wint8"
 };
 
 // Core schema options shared by DecisionModel.availability() and

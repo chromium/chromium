@@ -231,11 +231,33 @@ class AIManager : public base::SupportsUserData::Data,
           client,
       DecisionModelSchemaCompiler::CompiledSchema schema,
       base::WeakPtr<optimization_guide::ModelClient> model_client);
-
+  // Creates an `AIEmbeddingGemmaV1DecisionModel` on the semantic embedder
+  // service, once its model is ready.
+  void CreateEmbeddingGemmaV1DecisionModel(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client,
+      DecisionModelSchemaCompiler::CompiledSchema schema,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor);
   void OnDecisionModelEmbedderReady(
       mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
           client,
       DecisionModelSchemaCompiler::CompiledSchema schema);
+
+  // Requests Laya model assets for `backend` and creates the decision model
+  // once its assets are ready.
+  void CreateLayaDecisionModel(
+      DecisionModelBackend backend,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client,
+      blink::mojom::AIDecisionModelCreateOptionsPtr options,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor);
+  // Creates the Laya model on `model_client`, or replies with an error if the
+  // model isn't available.
+  void OnDecisionModelLayaReady(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+          client,
+      blink::mojom::AIDecisionModelCreateOptionsPtr options,
+      base::WeakPtr<optimization_guide::ModelClient> model_client);
 #endif
 
   // Creates an `AILanguageModel`, as a new session. Clones are created

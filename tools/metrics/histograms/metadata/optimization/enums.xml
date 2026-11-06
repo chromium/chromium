@@ -139,6 +139,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="ProofreaderSmallExpert"/>
   <int value="11" label="SpeechRecognitionSmallExpert"/>
   <int value="12" label="SummarizerSmallExpert"/>
+  <int value="13" label="LayaEnWint8"/>
+  <int value="14" label="LayaMlWint8"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/on_device_model_names.h:OnDeviceBaseModelEnum) -->

@@ -233,6 +233,10 @@ class AIManagerTest : public AITestUtils::AITestBase {
         .AddUnsafeSolution("prompt_api", "base", CreateSolution())
         .AddUnsafeSolution("writing_assistance_api", "base", CreateSolution())
         .AddUnsafeSolution("summarizer_api", "base", CreateSolution())
+        .AddBaseModel("laya_en_wint8")
+        .AddBaseModel("laya_ml_wint8")
+        .AddUnsafeSolution("laya_en_wint8", "laya_en_wint8")
+        .AddUnsafeSolution("laya_ml_wint8", "laya_ml_wint8")
         .SetFeatureConfig("prompt_api",
                           optimization_guide::AnyWrapProto(prompt_api_cfg))
         .SetFeatureConfig("writing_assistance_api",
@@ -599,18 +603,32 @@ MakeBooleanDecisionModelOptions() {
 // Enables the specified Decisions API backend and any required dependencies.
 void EnableDecisionModel(base::test::ScopedFeatureList& feature_list,
                          AIManager::DecisionModelBackend backend) {
-  if (backend == AIManager::DecisionModelBackend::kEmbeddingGemmaV1) {
-    feature_list.InitWithFeaturesAndParameters(
-        {{blink::features::kAIDecisionModelAPI,
-          {{"backend", "embedding_gemma_v1"}}}},
-        {});
-    return;
+  switch (backend) {
+    case AIManager::DecisionModelBackend::kEmbeddingGemmaV1:
+      feature_list.InitWithFeaturesAndParameters(
+          {{blink::features::kAIDecisionModelAPI,
+            {{"backend", "embedding_gemma_v1"}}}},
+          {});
+      return;
+    case AIManager::DecisionModelBackend::kLanguageModel:
+      feature_list.InitWithFeaturesAndParameters(
+          {{blink::features::kAIDecisionModelAPI,
+            {{"backend", "language_model"}}},
+           {on_device_model::features::kOnDeviceModelForceCpuBackend, {}},
+           {optimization_guide::kOptimizationGuideManifestBroker, {}}},
+          {});
+      return;
+    case AIManager::DecisionModelBackend::kLayaEnWint8:
+      feature_list.InitAndEnableFeatureWithParameters(
+          blink::features::kAIDecisionModelAPI,
+          {{"backend", "laya_en_wint8"}});
+      return;
+    case AIManager::DecisionModelBackend::kLayaMlWint8:
+      feature_list.InitAndEnableFeatureWithParameters(
+          blink::features::kAIDecisionModelAPI,
+          {{"backend", "laya_ml_wint8"}});
+      return;
   }
-  feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kAIDecisionModelAPI, {{"backend", "language_model"}}},
-       {on_device_model::features::kOnDeviceModelForceCpuBackend, {}},
-       {optimization_guide::kOptimizationGuideManifestBroker, {}}},
-      {});
 }
 
 TEST_F(AIManagerTest, CanCreateDecisionModel) {
@@ -631,6 +649,8 @@ TEST_F(AIManagerTest, CanCreateDecisionModel) {
 
   for (AIManager::DecisionModelBackend backend :
        {AIManager::DecisionModelBackend::kEmbeddingGemmaV1,
+        AIManager::DecisionModelBackend::kLayaEnWint8,
+        AIManager::DecisionModelBackend::kLayaMlWint8,
         AIManager::DecisionModelBackend::kLanguageModel}) {
     SCOPED_TRACE(static_cast<int>(backend));
     base::test::ScopedFeatureList feature_list;
@@ -745,6 +765,41 @@ TEST_F(AIManagerTest, CanCreateDecisionModelWithEmbeddingGemmaV1Backend) {
   }
   service_launcher->RecordSuccessfulUse();
   service_launcher->controller()->MaybeUpdateModelInfo(std::nullopt);
+}
+
+TEST_F(AIManagerTest, CanCreateDecisionModelWithLayaBackend) {
+  for (const char* variant : {"laya_en_wint8", "laya_ml_wint8"}) {
+    base::test::ScopedFeatureList variant_feature_list;
+    variant_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kAIDecisionModelAPI, {{"backend", variant}});
+
+    std::string component_key = std::string(variant) + "_key";
+    EXPECT_FALSE(fake_broker_->component_state().IsRegistered(component_key));
+
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
+        before_future;
+    ai_manager_->CanCreateDecisionModel(MakeBooleanDecisionModelOptions(),
+                                        before_future.GetCallback());
+    EXPECT_EQ(before_future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client;
+    std::ignore = client.InitWithNewPipeAndPassReceiver();
+    ai_manager_->CreateDecisionModel(std::move(client),
+                                     MakeBooleanDecisionModelOptions(),
+                                     mojo::NullRemote());
+
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
+          after_future;
+      ai_manager_->CanCreateDecisionModel(MakeBooleanDecisionModelOptions(),
+                                          after_future.GetCallback());
+      return after_future.Get() ==
+             blink::mojom::ModelAvailabilityCheckResult::kAvailable;
+    }));
+    EXPECT_TRUE(fake_broker_->component_state().IsRegistered(component_key));
+  }
 }
 
 TEST_F(AIManagerTest, CanCreateDecisionModelWithLanguageModelBackend) {

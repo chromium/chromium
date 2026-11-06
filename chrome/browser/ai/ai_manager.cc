@@ -409,6 +409,21 @@ void CreateSessionWithConfig(
       ::optimization_guide::SessionConfigParams{}, std::move(wrapper));
 }
 
+void RequestAssetsAndWaitForClient(
+    optimization_guide::ModelBrokerClient* broker_client,
+    const std::string& use_case,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor,
+    base::OnceCallback<void(base::WeakPtr<optimization_guide::ModelClient>)>
+        callback) {
+  if (monitor) {
+    broker_client->AddModelDownloadProgressObserver(use_case,
+                                                    std::move(monitor));
+  }
+
+  broker_client->RequestAssetsFor(use_case);
+  broker_client->GetSubscriber(use_case).WaitForClient(std::move(callback));
+}
+
 // Request assets and wait for the model broker client to become
 // available by reading the use case from the use case config provided by the
 // model broker.
@@ -427,13 +442,8 @@ void RequestAssetsAndWaitForClientWithConfig(
     return;
   }
 
-  if (monitor) {
-    broker_client->AddModelDownloadProgressObserver(*use_case,
-                                                    std::move(monitor));
-  }
-
-  broker_client->RequestAssetsFor(*use_case);
-  broker_client->GetSubscriber(*use_case).WaitForClient(std::move(callback));
+  RequestAssetsAndWaitForClient(broker_client, *use_case, std::move(monitor),
+                                std::move(callback));
 }
 
 template <typename OptionsPtr>
@@ -727,6 +737,19 @@ std::string_view AILanguageModelSamplingModeToString(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+std::string GetLayaUseCase(AIManager::DecisionModelBackend backend) {
+  using Backend = AIManager::DecisionModelBackend;
+  switch (backend) {
+    case Backend::kLayaEnWint8:
+      return "laya_en_wint8";
+    case Backend::kLayaMlWint8:
+      return "laya_ml_wint8";
+    case Backend::kEmbeddingGemmaV1:
+    case Backend::kLanguageModel:
+      NOTREACHED();
+  }
+}
+
 // Only the manifest broker resolves the Prompt API's model from its feature
 // config. Also requires the CPU backend as a temporary workaround for GPU
 // backend scoring issues: on GPU, scoring options back to back on session
@@ -751,6 +774,8 @@ std::vector<AIManager::DecisionModelBackend> GetEnabledDecisionModelBackends() {
   static constexpr std::pair<std::string_view, Backend> kBackends[] = {
       {"embedding_gemma_v1", Backend::kEmbeddingGemmaV1},
       {"language_model", Backend::kLanguageModel},
+      {"laya_en_wint8", Backend::kLayaEnWint8},
+      {"laya_ml_wint8", Backend::kLayaMlWint8},
   };
   const base::FeatureParam<std::string> kBackend{
       &blink::features::kAIDecisionModelAPI, "backend", "*"};
@@ -927,19 +952,14 @@ void AIManager::CreateLanguageModel(
                                       weak_factory_.GetWeakPtr(),
                                       std::move(client), std::move(options))));
   } else {
-    if (monitor) {
-      model_broker_client_->AddModelDownloadProgressObserver(
-          optimization_guide::ToUseCaseName(
-              optimization_guide::mojom::OnDeviceFeature::kPromptApi),
-          std::move(monitor));
-    }
-    model_broker_client_->RequestAssetsFor(
-        optimization_guide::mojom::OnDeviceFeature::kPromptApi);
-    model_broker_client_
-        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
-        .WaitForClient(base::BindOnce(&AIManager::CreateLanguageModelInternal,
-                                      weak_factory_.GetWeakPtr(),
-                                      std::move(client), std::move(options)));
+    RequestAssetsAndWaitForClient(
+        model_broker_client_.get(),
+        optimization_guide::ToUseCaseName(
+            optimization_guide::mojom::OnDeviceFeature::kPromptApi),
+        std::move(monitor),
+        base::BindOnce(&AIManager::CreateLanguageModelInternal,
+                       weak_factory_.GetWeakPtr(), std::move(client),
+                       std::move(options)));
   }
 }
 
@@ -2091,32 +2111,38 @@ void AIManager::CanCreateDecisionModel(
     std::move(callback).Run(schema.error());
     return;
   }
-
-  if (options->backend == DecisionModelBackend::kLanguageModel) {
-    // Same foundation model and use case as the Prompt API, resolved from its
-    // feature config, which is also what picks the model version (e.g. Gemma
-    // 4).
-    CanCreateSessionWithConfig<
-        optimization_guide::proto::PromptApiFeatureConfig>(
-        optimization_guide::mojom::OnDeviceFeature::kPromptApi,
-        on_device_model::Capabilities(), std::move(callback));
-    return;
+  switch (*options->backend) {
+    case DecisionModelBackend::kLanguageModel:
+      // Same foundation model and use case as the Prompt API, resolved from its
+      // feature config, which is also what picks the model version (e.g. Gemma
+      // 4).
+      CanCreateSessionWithConfig<
+          optimization_guide::proto::PromptApiFeatureConfig>(
+          optimization_guide::mojom::OnDeviceFeature::kPromptApi,
+          on_device_model::Capabilities(), std::move(callback));
+      return;
+    case DecisionModelBackend::kEmbeddingGemmaV1: {
+      auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+      if (!service_launcher->AllowedToLaunch()) {
+        std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                    kUnavailableTooManyRecentCrashes);
+        return;
+      }
+      if (!service_launcher->controller()->IsModelAvailable()) {
+        std::move(callback).Run(
+            blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+        return;
+      }
+      std::move(callback).Run(
+          blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+      return;
+    }
+    case DecisionModelBackend::kLayaEnWint8:
+    case DecisionModelBackend::kLayaMlWint8:
+      CanCreateSession(GetLayaUseCase(*options->backend),
+                       on_device_model::Capabilities(), std::move(callback));
+      return;
   }
-
-  CHECK_EQ(*options->backend, DecisionModelBackend::kEmbeddingGemmaV1);
-  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
-  if (!service_launcher->AllowedToLaunch()) {
-    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableTooManyRecentCrashes);
-    return;
-  }
-  if (!service_launcher->controller()->IsModelAvailable()) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
-    return;
-  }
-  std::move(callback).Run(
-      blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 #else
   std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                               kUnavailableFeatureNotEnabled);
@@ -2143,30 +2169,22 @@ void AIManager::CreateDecisionModel(
   if (!schema.has_value()) {
     return;
   }
-
-  if (options->backend == DecisionModelBackend::kLanguageModel) {
-    CreateLanguageModelDecisionModel(
-        std::move(client), std::move(schema).value(), std::move(monitor));
-    return;
+  const DecisionModelBackend backend = *options->backend;
+  switch (backend) {
+    case DecisionModelBackend::kLanguageModel:
+      CreateLanguageModelDecisionModel(
+          std::move(client), std::move(schema).value(), std::move(monitor));
+      return;
+    case DecisionModelBackend::kEmbeddingGemmaV1:
+      CreateEmbeddingGemmaV1DecisionModel(
+          std::move(client), std::move(schema).value(), std::move(monitor));
+      return;
+    case DecisionModelBackend::kLayaEnWint8:
+    case DecisionModelBackend::kLayaMlWint8:
+      CreateLayaDecisionModel(backend, std::move(client), std::move(options),
+                              std::move(monitor));
+      return;
   }
-
-  CHECK_EQ(*options->backend, DecisionModelBackend::kEmbeddingGemmaV1);
-  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
-  if (!service_launcher->AllowedToLaunch()) {
-    on_device_ai::SendClientRemoteError(
-        mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
-            std::move(client)),
-        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
-    return;
-  }
-
-  if (monitor) {
-    service_launcher->AddDownloadObserver(std::move(monitor));
-  }
-
-  service_launcher->WaitForModelAvailable(base::BindOnce(
-      &AIManager::OnDecisionModelEmbedderReady, weak_factory_.GetWeakPtr(),
-      std::move(client), std::move(schema).value()));
 #else
   on_device_ai::SendClientRemoteError(
       mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
@@ -2247,6 +2265,29 @@ void AIManager::OnDecisionModelLanguageModelReady(
   MaybeTryEagerInit();
 }
 
+void AIManager::CreateEmbeddingGemmaV1DecisionModel(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client,
+    DecisionModelSchemaCompiler::CompiledSchema schema,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  if (!service_launcher->AllowedToLaunch()) {
+    on_device_ai::SendClientRemoteError(
+        mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
+            std::move(client)),
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  if (monitor) {
+    service_launcher->AddDownloadObserver(std::move(monitor));
+  }
+
+  service_launcher->WaitForModelAvailable(base::BindOnce(
+      &AIManager::OnDecisionModelEmbedderReady, weak_factory_.GetWeakPtr(),
+      std::move(client), std::move(schema)));
+}
+
 void AIManager::OnDecisionModelEmbedderReady(
     mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
         client,
@@ -2266,6 +2307,41 @@ void AIManager::OnDecisionModelEmbedderReady(
       std::make_unique<AIEmbeddingGemmaV1DecisionModel>(
           context_bound_object_set_, std::move(schema),
           *service_launcher->controller()->GetEmbedder(), std::move(client)));
+}
+
+void AIManager::CreateLayaDecisionModel(
+    DecisionModelBackend backend,
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client,
+    blink::mojom::AIDecisionModelCreateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
+  if (!model_broker_client_) {
+    on_device_ai::SendClientRemoteError(
+        mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient>(
+            std::move(client)),
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  RequestAssetsAndWaitForClient(
+      model_broker_client_.get(), GetLayaUseCase(backend), std::move(monitor),
+      base::BindOnce(&AIManager::OnDecisionModelLayaReady,
+                     weak_factory_.GetWeakPtr(), std::move(client),
+                     std::move(options)));
+}
+
+void AIManager::OnDecisionModelLayaReady(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client,
+    blink::mojom::AIDecisionModelCreateOptionsPtr options,
+    base::WeakPtr<optimization_guide::ModelClient> model_client) {
+  // TODO(crbug.com/565849508): Implement the Laya DecisionModel backend using
+  // `model_client`.
+  mojo::Remote<blink::mojom::AIManagerCreateDecisionModelClient> client_remote(
+      std::move(client));
+  on_device_ai::SendClientRemoteError(
+      client_remote,
+      blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
