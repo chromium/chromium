@@ -17,7 +17,6 @@
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 
 namespace content {
@@ -78,22 +77,8 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Returns true if the request was handled by the virtual wallet.
   bool HandleVirtualWalletAction();
 
-  // Called when the create request JSON has been parsed.
-  void OnCreateRequestJsonParsed(
-      std::string protocol,
-      base::Value request_to_send,
-      data_decoder::DataDecoder::ValueOrError parsed_result);
-
-  // Called after fetching the user's identity. Shows an interstitial if needed.
-  void ShowInterstitialIfNeeded(
-      bool is_only_requesting_age,
-      base::expected<std::string,
-                     DigitalIdentityProvider::RequestStatusForMetrics>
-          response);
-
   // Called when the user has fulfilled the interstitial requirement. Will be
-  // called immediately after OnGetRequestJsonParsed() if no interstitial is
-  // needed.
+  // called immediately in Get() if no interstitial is needed.
   void OnInterstitialDone(base::Value request_to_send,
                           DigitalIdentityProvider::RequestStatusForMetrics
                               status_after_interstitial);
