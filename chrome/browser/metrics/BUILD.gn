@@ -797,9 +797,15 @@ source_set("platform_browser_tests") {
 
   if (is_android) {
     deps += [
+      "//chrome/browser",
       "//chrome/browser/optimization_guide",
+      "//chrome/browser/tab_list",
       "//chrome/browser/ui/android/tab_model:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/test/base:android_ui_test_utils",
+      "//components/tabs:public",
+      "//ui/base",
     ]
   }
 

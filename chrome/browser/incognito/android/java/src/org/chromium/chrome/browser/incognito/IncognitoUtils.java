@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Build;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -107,6 +108,7 @@ public class IncognitoUtils {
     /**
      * @return Whether incognito tabs should open in a separate window.
      */
+    @CalledByNative
     public static boolean shouldOpenIncognitoAsWindow() {
         if (!ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
             return false;

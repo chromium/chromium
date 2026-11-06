@@ -1479,6 +1479,7 @@ source_set("core") {
       "composeplate/android/composeplate_utils.cc",
       "icon_loader_android.cc",
       "incognito/android/incognito_utils_android.cc",
+      "incognito/android/incognito_utils_android.h",
       "memory_details_android.cc",
       "platform_util_android.cc",
       "shell_integration_android.cc",
