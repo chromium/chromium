@@ -166,8 +166,7 @@ std::string SignedInStateToString(SignedInState state);
 
 // Checks whether syncing the specified `types` is allowed by policy. May need
 // to called again after a sign in to see if policies are set for the account
-// rather than the device. This method does not take into account the feature
-// flag `ReplaceSyncPromosWithSignInPromos`.
+// rather than the device.
 bool IsSyncingUserSelectableTypesAllowedByPolicy(
     const syncer::SyncService* sync_service,
     const syncer::UserSelectableTypeSet& types);
@@ -176,8 +175,6 @@ bool IsSyncingUserSelectableTypesAllowedByPolicy(
 // True if the user has explicitly disabled syncing history, tabs or saved tab
 // groups through the settings. The primary account must be set (this crashes
 // otherwise).
-// This method does not take into account the feature flag
-// `ReplaceSyncPromosWithSignInPromos`.
 bool HasExplicitlyDisabledHistorySync(
     const syncer::SyncService* sync_service,
     const signin::IdentityManager* identity_manager);
@@ -185,8 +182,6 @@ bool HasExplicitlyDisabledHistorySync(
 // Returns the value `ShouldShowHistorySyncOptinResult::kShow`
 // if the necessary conditions to show the History Sync Optin screen
 // are met. Otherwise it returns a skip reason.
-// This method does not take into account the feature flag
-// `ReplaceSyncPromosWithSignInPromos`.
 // TODO(crbug.com/457397173): Consider using also on mobile and moving the
 // method as necessary.
 ShouldShowHistorySyncOptinResult ShouldShowHistorySyncOptinScreen(

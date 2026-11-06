@@ -18645,23 +18645,6 @@
             ]
         }
     ],
-    "UnoPhase2Desktop": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReplaceSyncPromosWithSignInPromos"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnthrottleAsyncTouchMovesV2": [
         {
             "platforms": [

@@ -3435,18 +3435,6 @@ const flags_ui::FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-const char kReplaceSyncPromosWithSignInPromosDesktopFeatures[] =
-    "ReplaceSyncPromosWithSignInPromos";
-
-const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosDesktopChoices[] =
-    {{"Default", "", ""},
-     {"Disabled", switches::kDisableFeatures,
-      kReplaceSyncPromosWithSignInPromosDesktopFeatures},
-     {"Enabled", switches::kEnableFeatures,
-      kReplaceSyncPromosWithSignInPromosDesktopFeatures}};
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
 const FeatureEntry::FeatureParam kGroupSuggestionEnableRecentlyOpenedOnly[] = {
     {"group_suggestion_enable_recently_opened", "true"},
     {"group_suggestion_enable_switch_between", "false"},
@@ -10487,12 +10475,6 @@ const FeatureEntry kFeatureEntries[] = {
          net::features::kDeviceBoundSessionsIncludeAudienceClaim)},
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    {"replace-sync-promos-with-sign-in-promos-desktop",
-     flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
-     flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
-     kOsDesktop,
-     MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosDesktopChoices)},
-
     {"uno-phase-2-follow-up", flag_descriptions::kUnoPhase2FollowUpName,
      flag_descriptions::kUnoPhase2FollowUpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(syncer::kUnoPhase2FollowUp)},
