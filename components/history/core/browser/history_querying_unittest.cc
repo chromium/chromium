@@ -166,7 +166,7 @@ class HistoryQueryTest : public testing::Test {
       QueryHistory(query_text, options, &results);
       ASSERT_NE(options.end_time, results.back().visit_time());
       options.end_time = results.back().visit_time();
-    } while (!results.reached_beginning());
+    } while (results.has_more_results());
   }
 
  protected:
@@ -282,66 +282,119 @@ TEST_F(HistoryQueryTest, BasicCount) {
   EXPECT_TRUE(NthResultIs(results, 1, 2));
 }
 
-TEST_F(HistoryQueryTest, ReachedBeginning) {
+TEST_F(HistoryQueryTest, HasMoreResults) {
   ASSERT_TRUE(history_.get());
 
   QueryOptions options;
   QueryResults results;
 
   QueryHistory(std::string(), options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
   QueryHistory("some", options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
 
+  // `has_more_results` refers to the queried range, so a `begin_time` later
+  // than the oldest visit doesn't imply more results as long as everything in
+  // range is returned.
   options.begin_time = test_entries[1].time;
   QueryHistory(std::string(), options, &results);
-  EXPECT_FALSE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
   QueryHistory("some", options, &results);
-  EXPECT_FALSE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
 
   // Try `begin_time` just later than the oldest visit.
   options.begin_time = test_entries[0].time + base::Microseconds(1);
   QueryHistory(std::string(), options, &results);
-  EXPECT_FALSE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
   QueryHistory("some", options, &results);
-  EXPECT_FALSE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
 
   // Try `begin_time` equal to the oldest visit.
   options.begin_time = test_entries[0].time;
   QueryHistory(std::string(), options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
   QueryHistory("some", options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
 
   // Try `begin_time` just earlier than the oldest visit.
   options.begin_time = test_entries[0].time - base::Microseconds(1);
   QueryHistory(std::string(), options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
   QueryHistory("some", options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
 
   // Test with `max_count` specified.
   options.max_count = 1;
   QueryHistory(std::string(), options, &results);
-  EXPECT_FALSE(results.reached_beginning());
+  EXPECT_TRUE(results.has_more_results());
   QueryHistory("some", options, &results);
-  EXPECT_FALSE(results.reached_beginning());
+  EXPECT_TRUE(results.has_more_results());
 
   // Test with `max_count` greater than the number of results,
   // and exactly equal to the number of results.
   options.max_count = 100;
   QueryHistory(std::string(), options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
   options.max_count = results.size();
   QueryHistory(std::string(), options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
 
   options.max_count = 100;
   QueryHistory("some", options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
   options.max_count = results.size();
   QueryHistory("some", options, &results);
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
+}
+
+TEST_F(HistoryQueryTest, HasMoreResultsInBoundedRange) {
+  ASSERT_TRUE(history_.get());
+
+  // Page through [entries[1].time, entries[4].time) one result at a time, the
+  // way BrowsingHistoryService continues a query: by moving `end_time` to the
+  // oldest visit returned so far. The range contains entries 2, 3 and 1, in
+  // that order (index 4 is excluded by the exclusive `end_time`); older
+  // history exists before `begin_time`.
+  QueryOptions options;
+  options.begin_time = test_entries[1].time;
+  options.end_time = test_entries[4].time;
+  options.max_count = 1;
+  QueryResults results;
+
+  QueryHistory(std::string(), options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 2));
+  EXPECT_TRUE(results.has_more_results());
+
+  options.end_time = results[0].visit_time();
+  QueryHistory(std::string(), options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 3));
+  EXPECT_TRUE(results.has_more_results());
+
+  // The last result in range: nothing else is in range, so there are no more
+  // results even though entry 0 exists before `begin_time`.
+  options.end_time = results[0].visit_time();
+  QueryHistory(std::string(), options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 1));
+  EXPECT_FALSE(results.has_more_results());
+
+  // Continuing past the range yields nothing and still no more results.
+  options.end_time = results[0].visit_time();
+  QueryHistory(std::string(), options, &results);
+  EXPECT_EQ(0U, results.size());
+  EXPECT_FALSE(results.has_more_results());
+
+  // Same for text queries.
+  options.end_time = test_entries[4].time;
+  QueryHistory("some", options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_TRUE(results.has_more_results());
+  options.max_count = 100;
+  QueryHistory("some", options, &results);
+  EXPECT_EQ(3U, results.size());
+  EXPECT_FALSE(results.has_more_results());
 }
 
 // This does most of the same tests above, but performs a text searches for a

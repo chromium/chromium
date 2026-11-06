@@ -98,7 +98,7 @@ const size_t* QueryResults::MatchesForURL(const GURL& url,
 }
 
 void QueryResults::Swap(QueryResults* other) {
-  std::swap(reached_beginning_, other->reached_beginning_);
+  std::swap(has_more_results_, other->has_more_results_);
   results_.swap(other->results_);
   url_to_results_.swap(other->url_to_results_);
 }

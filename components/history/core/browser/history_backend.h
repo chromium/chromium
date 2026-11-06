@@ -1161,6 +1161,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   RedirectCache recent_redirects_;
 
   // Timestamp of the first entry in our database.
+  // TODO(crbug.com/580789349): Remove. Nothing reads this anymore since
+  // QueryResults::has_more_results() replaced reached_beginning(); all
+  // remaining references only maintain the value.
   base::Time first_recorded_time_;
 
   // When set, this is the task that should be invoked on destruction.

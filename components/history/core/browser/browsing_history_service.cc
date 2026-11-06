@@ -883,9 +883,9 @@ void BrowsingHistoryService::QueryComplete(
   }
 
   state->local_status =
-      results.reached_beginning() ? REACHED_BEGINNING : MORE_RESULTS;
+      results.has_more_results() ? MORE_RESULTS : REACHED_BEGINNING;
 
-  if (results.reached_beginning()) {
+  if (!results.has_more_results()) {
     // Exhausted the local results; continue querying to get remote results.
     // Start querying at the point where local history ends.
     base::Time expiry_treshold =

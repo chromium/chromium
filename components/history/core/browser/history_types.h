@@ -280,8 +280,8 @@ class QueryResults {
   QueryResults(QueryResults&& other) noexcept;
   QueryResults& operator=(QueryResults&& other) noexcept;
 
-  void set_reached_beginning(bool reached) { reached_beginning_ = reached; }
-  bool reached_beginning() { return reached_beginning_; }
+  void set_has_more_results(bool has_more) { has_more_results_ = has_more; }
+  bool has_more_results() const { return has_more_results_; }
 
   size_t size() const { return results_.size(); }
   bool empty() const { return results_.empty(); }
@@ -339,8 +339,12 @@ class QueryResults {
   // (this is inclusive). This is used when inserting or deleting.
   void AdjustResultMap(size_t begin, size_t end, ptrdiff_t delta);
 
-  // Whether the query reaches the beginning of the database.
-  bool reached_beginning_ = false;
+  // Whether more results exist within the queried time range
+  // [QueryOptions::begin_time, QueryOptions::end_time) beyond the ones
+  // returned, i.e. the results were truncated by QueryOptions::max_count. A
+  // paged query should continue (with a smaller `end_time`) while this is
+  // true.
+  bool has_more_results_ = false;
 
   // The ordered list of results. The pointers inside this are owned by this
   // QueryResults object.

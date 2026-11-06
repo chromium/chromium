@@ -2606,11 +2606,11 @@ TEST_F(HistoryBackendTest,
   }
 }
 
-// Tests that a text search doesn't report reaching the beginning of history
-// when the per-URL visit query is truncated by `max_count`, even though the
-// merged results don't exceed `max_count`.
+// Tests that a text search reports more results when the per-URL visit query
+// is truncated by `max_count`, even though the merged results don't exceed
+// `max_count`.
 TEST_F(HistoryBackendTest,
-       QueryHistoryTextNotReachedBeginningWhenPerUrlVisitsTruncated) {
+       QueryHistoryTextHasMoreResultsWhenPerUrlVisitsTruncated) {
   ASSERT_TRUE(backend_.get());
 
   const GURL url("http://www.example.com/page");
@@ -2634,13 +2634,13 @@ TEST_F(HistoryBackendTest,
   options.max_count = base::checked_cast<int>(kNumVisits - 1);
   QueryResults results = backend_->QueryHistory(u"example", options);
   EXPECT_EQ(kNumVisits - 1, results.size());
-  EXPECT_FALSE(results.reached_beginning());
+  EXPECT_TRUE(results.has_more_results());
 
-  // All visits fit within `max_count`, so the beginning is reached.
+  // All visits fit within `max_count`, so there are no more results.
   options.max_count = base::checked_cast<int>(kNumVisits);
   results = backend_->QueryHistory(u"example", options);
   EXPECT_EQ(kNumVisits, results.size());
-  EXPECT_TRUE(results.reached_beginning());
+  EXPECT_FALSE(results.has_more_results());
 }
 
 TEST_F(HistoryBackendTest, SetHasUrlKeyedImage) {

@@ -563,25 +563,22 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRanges) {
   QueryOptions options;
   options.begin_time = OffsetToTime(2);
   options.end_time = OffsetToTime(4);
-  // Having a `reached_beginning` value of false here seems
-  // counterintuitive. Seems to be for paging by `begin_time` instead of
-  // `count`. If the local history implementation changes, feel free to update
-  // this value, all this test cares about is that BrowsingHistoryService passes
-  // the values through correctly.
+  // All visits in [begin_time, end_time) fit in one page, so the beginning of
+  // the queried range is reached even though an older visit exists before
+  // `begin_time`.
   EXPECT_THAT(QueryHistory(options),
               MatchesQueryResult(baseline_time_,
-                                 /*reached_beginning*/ false,
+                                 /*reached_beginning*/ true,
                                  std::vector<TestResult>{
                                      {kUrl3, 3, kLocal},
                                      {kUrl2, 2, kLocal},
                                  }));
 }
 
-// Tests that an empty page from a query with `begin_time` doesn't make the next
-// page start over from the newest visit and return duplicates.
+// Tests that continuing a query with `begin_time` past the end of its range
+// doesn't start over from the newest visit and return duplicates.
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRangeEmptyPage) {
-  // The visit at hour 0 is before `begin_time`, so the local backend never
-  // reports `reached_beginning` for this query.
+  // The visit at hour 0 is before `begin_time` and must never be returned.
   AddHistory({{kUrl1, 0, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   QueryOptions options;
   options.begin_time = OffsetToTime(1);
@@ -593,17 +590,16 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRangeEmptyPage) {
                                       group_visits);
 
     EXPECT_THAT(QueryHistory(options),
-                MatchesQueryResult(baseline_time_, /*reached_beginning*/ false,
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
                                    std::vector<TestResult>{
                                        {kUrl3, 3, kLocal},
                                        {kUrl2, 2, kLocal},
                                    }));
     EXPECT_THAT(ContinueQuery(),
-                MatchesQueryResult(baseline_time_, /*reached_beginning*/ false,
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
                                    std::vector<TestResult>{}));
-    // Without keeping the end time, this page would start over from `kUrl3`.
     EXPECT_THAT(ContinueQuery(),
-                MatchesQueryResult(baseline_time_, /*reached_beginning*/ false,
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
                                    std::vector<TestResult>{}));
   }
 }
