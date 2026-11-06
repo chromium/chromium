@@ -7,12 +7,14 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/fake_cert_manager.h"
@@ -146,7 +148,15 @@ class ArcNetHostImplTest : public testing::Test {
                     /*global_network_config=*/base::DictValue());
     auto cert_manager = std::make_unique<FakeCertManager>();
     service_->SetCertManager(std::move(cert_manager));
-    task_environment_.RunUntilIdle();
+    // The user profile is loaded asynchronously before its policies can be
+    // applied. Wait for both before the tests create networks in that profile.
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      auto* network_handler = ash::NetworkHandler::Get();
+      return network_handler->network_profile_handler()->GetProfileForUserhash(
+                 userhash) &&
+             !network_handler->managed_network_configuration_handler()
+                  ->IsAnyPolicyApplicationRunning();
+    }));
   }
 
   void TearDown() override {
