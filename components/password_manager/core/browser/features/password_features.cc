@@ -172,7 +172,12 @@ BASE_FEATURE(kPasswordManualFallbackSkipOpaqueOrigins,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordSaveInContextErrorResolution,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 #if BUILDFLAG(IS_ANDROID)
 const base::FeatureParam<int>
     kPasswordSaveInContextErrorResolutionMinGmsVersion = {
