@@ -378,6 +378,7 @@ public class OnStartupSettingsFragmentTest {
                     PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
                     assertNotNull(dialogModel);
                     assertEquals(ModalDialogType.TAB, modalDialogManager.getCurrentType());
+                    assertFalse(dialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
                     assertTrue(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
 
                     EditText urlEditText =
@@ -571,11 +572,12 @@ public class OnStartupSettingsFragmentTest {
         setRestoreOnStartupPref(SessionStartupPref.URLS);
         RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
 
-        // Act.
+        // Open the URL dialog via "Add a new page".
         ThreadUtils.runOnUiThreadBlocking(
                 () -> pref.getAddNewPageButtonForTesting().performClick());
 
-        // Verify opening the URL dialog in SettingsActivity uses ModalDialogType.APP.
+        // Verify opening the URL dialog in SettingsActivity uses ModalDialogType.APP and disables
+        // cancel-on-touch-outside.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ModalDialogManager modalDialogManager =
@@ -583,6 +585,7 @@ public class OnStartupSettingsFragmentTest {
                     PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
                     assertNotNull(dialogModel);
                     assertEquals(ModalDialogType.APP, modalDialogManager.getCurrentType());
+                    assertFalse(dialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
                     modalDialogManager.dismissDialog(
                             dialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
                     assertNull(modalDialogManager.getCurrentDialogForTest());
