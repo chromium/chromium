@@ -20,12 +20,12 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -172,7 +172,8 @@ class CompoundImageBackingTest : public testing::Test {
       : memory_tracker_(base::MakeRefCounted<MemoryTracker>()),
         memory_type_tracker_(memory_tracker_),
         copy_manager_(base::MakeRefCounted<SharedImageCopyManager>()) {
-    copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
+    copy_manager_->AddStrategy(
+        std::make_unique<CPUReadbackUploadCopyStrategy>());
   }
 
   bool HasGpuBacking(CompoundImageBacking* backing) NO_THREAD_SAFETY_ANALYSIS {

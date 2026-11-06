@@ -33,7 +33,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/config/gpu_finch_features.h"
 
@@ -241,7 +240,6 @@ SharedImageFactory::SharedImageFactory(
 
   factory_ref_ = base::MakeRefCounted<SharedImageFactoryRef>(this);
   copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
-  copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
 #if BUILDFLAG(USE_DAWN)
   copy_manager_->AddStrategy(std::make_unique<DawnCopyStrategy>());
 #endif

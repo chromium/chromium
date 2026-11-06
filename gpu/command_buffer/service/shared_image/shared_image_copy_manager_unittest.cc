@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/service/shared_image/dawn_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
-#include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
@@ -68,19 +67,27 @@ TEST_F(SharedImageCopyManagerTest, CopyUsingCpuFallbackStrategy) {
   EXPECT_TRUE(dst_backing->GetUploadFromMemoryCalledAndReset());
 }
 
-TEST_F(SharedImageCopyManagerTest, CopyUsingSharedMemoryStrategy) {
-  copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
+TEST_F(SharedImageCopyManagerTest, CopySharedMemoryDirectViaCpuStrategy) {
+  auto strategy = std::make_unique<CPUReadbackUploadCopyStrategy>();
+  CPUReadbackUploadCopyStrategy* strategy_ptr = strategy.get();
+  copy_manager_->AddStrategy(std::move(strategy));
 
   constexpr viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   constexpr gfx::Size size(100, 100);
   constexpr auto usage =
       SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
 
-  // Create a shared memory backing.
+  // Create two shared memory backings.
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
       Mailbox::Generate(),
       {format, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
        kPremul_SkAlphaType, usage, "TestLabel"},
+      kNullSurfaceHandle,
+      /*is_thread_safe=*/false, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+  auto other_shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
+      Mailbox::Generate(),
+      {format, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, usage, "OtherShmLabel"},
       kNullSurfaceHandle,
       /*is_thread_safe=*/false, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
 
@@ -92,15 +99,23 @@ TEST_F(SharedImageCopyManagerTest, CopyUsingSharedMemoryStrategy) {
                       "TestLabel"),
       1024);
 
-  // Test copy from Shared Memory to Test backing.
+  // Copy from SharedMemory to Test backing uploads directly in 1 hop.
   EXPECT_TRUE(copy_manager_->CopyImage(shm_backing.get(), test_backing.get()));
   EXPECT_TRUE(test_backing->GetUploadFromMemoryCalledAndReset());
   EXPECT_FALSE(test_backing->GetReadbackToMemoryCalledAndReset());
 
-  // Test copy from Test to Shared Memory backing.
+  // Copy from Test to SharedMemory backing reads back directly in 1 hop.
   EXPECT_TRUE(copy_manager_->CopyImage(test_backing.get(), shm_backing.get()));
   EXPECT_TRUE(test_backing->GetReadbackToMemoryCalledAndReset());
   EXPECT_FALSE(test_backing->GetUploadFromMemoryCalledAndReset());
+
+  // SharedMemory-to-SharedMemory is unsupported and fails cleanly without
+  // invoking SharedImageBacking::ReadbackToMemory().
+  EXPECT_FALSE(
+      strategy_ptr->CanCopy(shm_backing.get(), other_shm_backing.get()));
+  EXPECT_FALSE(strategy_ptr->Copy(shm_backing.get(), other_shm_backing.get()));
+  EXPECT_FALSE(
+      copy_manager_->CopyImage(shm_backing.get(), other_shm_backing.get()));
 }
 
 TEST(SharedImageCopyManagerUnitTest, GetEffectiveCopyFormat) {
@@ -149,6 +164,20 @@ TEST(SharedImageCopyManagerUnitTest,
   EXPECT_TRUE(strategy.Copy(ext_src.get(), rgba_dst.get()));
   EXPECT_TRUE(ext_src->GetReadbackToMemoryCalledAndReset());
   EXPECT_TRUE(rgba_dst->GetUploadFromMemoryCalledAndReset());
+
+  auto shm_rgba = SharedMemoryImageBackingFactory().CreateSharedImage(
+      Mailbox::Generate(),
+      {viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(64, 64),
+       gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType,
+       SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+       "shm_rgba"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false,
+      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+  EXPECT_TRUE(strategy.CanCopy(ext_src.get(), shm_rgba.get()));
+  EXPECT_FALSE(strategy.CanCopy(shm_rgba.get(), ext_src.get()));
+  EXPECT_TRUE(strategy.Copy(ext_src.get(), shm_rgba.get()));
+  EXPECT_TRUE(ext_src->GetReadbackToMemoryCalledAndReset());
 }
 #endif  // BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
 

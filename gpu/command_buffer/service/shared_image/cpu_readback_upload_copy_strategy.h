@@ -10,8 +10,12 @@
 
 namespace gpu {
 
-// A copy strategy that uses CPU readback from the source and upload to the
-// destination. This is a universal but potentially slow fallback.
+// A CPU-based copy strategy that handles:
+// 1. Direct 1-hop copies between a SharedMemoryImageBacking and a non-shared-
+//    memory backing using `SharedMemoryImageBacking::pixmaps()` without
+//    allocating intermediate staging buffers.
+// 2. Universal 2-hop fallback copies between two non-shared-memory backings
+//    via CPU readback into temporary SkBitmaps followed by CPU upload.
 class GPU_GLES2_EXPORT CPUReadbackUploadCopyStrategy
     : public SharedImageCopyStrategy {
  public:

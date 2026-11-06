@@ -36,12 +36,12 @@
 #include "gpu/command_buffer/service/graphite_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -211,7 +211,8 @@ class D3DImageBackingFactoryTest
     context_state_->InitializeGL(GpuPreferences(), workarounds,
                                  GpuFeatureInfo());
     copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
-    copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
+    copy_manager_->AddStrategy(
+        std::make_unique<CPUReadbackUploadCopyStrategy>());
   }
 
   void TearDown() override {
