@@ -4,11 +4,17 @@
 
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 
+#import <memory>
+
+#import "base/functional/bind.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/bubble/public/in_product_help_type.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -20,6 +26,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -55,6 +62,13 @@ class TabBasedIPHBrowserAgentTest : public PlatformTest {
   TabBasedIPHBrowserAgentTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  testing::NiceMock<feature_engagement::test::MockTracker>>();
+            }));
+    builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         base::BindRepeating(
             [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
@@ -62,6 +76,9 @@ class TabBasedIPHBrowserAgentTest : public PlatformTest {
                   send_tab_to_self::StubSendTabToSelfSyncService>();
             }));
     profile_ = std::move(builder).Build();
+    ON_CALL(*mock_tracker(), WouldTriggerHelpUI(testing::Ref(
+                                 feature_engagement::kIPHSendTabToSelfOmnibox)))
+        .WillByDefault(testing::Return(true));
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     help_handler_ = [[FakeHelpCommandsHandler alloc] init];
@@ -72,6 +89,11 @@ class TabBasedIPHBrowserAgentTest : public PlatformTest {
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
     TabBasedIPHBrowserAgent::CreateForBrowser(browser_.get());
+  }
+
+  feature_engagement::test::MockTracker* mock_tracker() {
+    return static_cast<feature_engagement::test::MockTracker*>(
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
   }
 
   BrowserViewVisibilityNotifierBrowserAgent* visibility_notifier() {
@@ -284,10 +306,50 @@ TEST_F(TabBasedIPHBrowserAgentTest,
   EXPECT_TRUE(help_handler_.presentSendTabToSelfOmniboxCalled);
 }
 
-// Tests that the Send Tab to Self omnibox IPH is not presented again after a
-// later user navigation or tab switch.
+// Tests that the Send Tab to Self omnibox IPH is not presented when the feature
+// engagement tracker would not trigger it, and is presented on a later trigger
+// once the tracker allows it.
 TEST_F(TabBasedIPHBrowserAgentTest,
-       SendTabToSelfOmniboxIPHNotPresentedAgainAfterAttempt) {
+       SendTabToSelfOmniboxIPHNotPresentedWhenTrackerWouldNotTrigger) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetCurrentURL(GURL("https://www.example.com"));
+  web::FakeWebState* raw_web_state = web_state.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  MakeBrowserViewVisible();
+
+  EXPECT_CALL(*mock_tracker(),
+              WouldTriggerHelpUI(
+                  testing::Ref(feature_engagement::kIPHSendTabToSelfOmnibox)))
+      .WillOnce(testing::Return(false))
+      .WillOnce(testing::Return(true));
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL("https://www.example.org/next"));
+  context.SetHasUserGesture(true);
+  context.SetHasCommitted(true);
+  raw_web_state->OnNavigationStarted(&context);
+  raw_web_state->SetCurrentURL(context.GetUrl());
+  raw_web_state->OnNavigationFinished(&context);
+  EXPECT_FALSE(help_handler_.presentSendTabToSelfOmniboxCalled);
+
+  // The blocked attempt is cleared, so re-showing the same tab does not retry.
+  raw_web_state->WasShown();
+  EXPECT_FALSE(help_handler_.presentSendTabToSelfOmniboxCalled);
+
+  context.SetUrl(GURL("https://www.example.org/second"));
+  raw_web_state->OnNavigationStarted(&context);
+  raw_web_state->SetCurrentURL(context.GetUrl());
+  raw_web_state->OnNavigationFinished(&context);
+  EXPECT_TRUE(help_handler_.presentSendTabToSelfOmniboxCalled);
+}
+
+// Tests that the Send Tab to Self omnibox IPH is retried on a later user
+// navigation or tab switch while the tracker allows it, and stops once the
+// tracker blocks it.
+TEST_F(TabBasedIPHBrowserAgentTest,
+       SendTabToSelfOmniboxIPHRetriedOnLaterTriggers) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetCurrentURL(GURL("https://www.example.com"));
@@ -316,14 +378,25 @@ TEST_F(TabBasedIPHBrowserAgentTest,
   raw_web_state->OnNavigationStarted(&context);
   raw_web_state->SetCurrentURL(context.GetUrl());
   raw_web_state->OnNavigationFinished(&context);
+  EXPECT_TRUE(help_handler_.presentSendTabToSelfOmniboxCalled);
+
+  help_handler_.presentSendTabToSelfOmniboxCalled = NO;
   web_state_list->ActivateWebStateAt(1);
   raw_other_web_state->WasShown();
+  EXPECT_TRUE(help_handler_.presentSendTabToSelfOmniboxCalled);
 
+  help_handler_.presentSendTabToSelfOmniboxCalled = NO;
+  EXPECT_CALL(*mock_tracker(),
+              WouldTriggerHelpUI(
+                  testing::Ref(feature_engagement::kIPHSendTabToSelfOmnibox)))
+      .WillOnce(testing::Return(false));
+  web_state_list->ActivateWebStateAt(0);
+  raw_web_state->WasShown();
   EXPECT_FALSE(help_handler_.presentSendTabToSelfOmniboxCalled);
 }
 
-// Tests that an ineligible trigger does not use up the Send Tab to Self omnibox
-// IPH attempt.
+// Tests that the Send Tab to Self omnibox IPH is not presented on an ineligible
+// navigation and is presented on a later eligible navigation.
 TEST_F(TabBasedIPHBrowserAgentTest,
        SendTabToSelfOmniboxIPHPresentedAfterIneligibleTrigger) {
   auto* sync_service =
@@ -357,8 +430,8 @@ TEST_F(TabBasedIPHBrowserAgentTest,
   EXPECT_TRUE(help_handler_.presentSendTabToSelfOmniboxCalled);
 }
 
-// Tests that switching to an ineligible tab does not stop observing future tab
-// switches.
+// Tests that the Send Tab to Self omnibox IPH is not presented when switching
+// to an ineligible tab and is presented when switching to an eligible tab.
 TEST_F(TabBasedIPHBrowserAgentTest,
        SendTabToSelfOmniboxIPHPresentedAfterIneligibleTabSwitch) {
   auto* sync_service =

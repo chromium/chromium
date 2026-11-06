@@ -44,11 +44,14 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/send_tab_to_self",
     "//components/send_tab_to_self:test_support",
     "//ios/chrome/browser/browser_view/model",
     "//ios/chrome/browser/browser_view/public",
     "//ios/chrome/browser/bubble/public",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
@@ -57,6 +60,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/web/public/test",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

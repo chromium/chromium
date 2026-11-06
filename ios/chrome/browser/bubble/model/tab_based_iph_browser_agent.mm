@@ -9,6 +9,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
@@ -272,7 +273,7 @@ void TabBasedIPHBrowserAgent::DidFinishNavigation(
   }
   // Trigger on user-driven cross-document navigations to a new URL, excluding
   // reloads, session restore loads, and ungestured renderer redirects.
-  if (!send_tab_to_self_iph_attempted_ && navigation_context->HasCommitted() &&
+  if (navigation_context->HasCommitted() &&
       !navigation_context->IsSameDocument() &&
       navigation_context->GetUrl() != url_before_navigation_ &&
       navigation_context->HasUserGesture()) {
@@ -387,11 +388,11 @@ void TabBasedIPHBrowserAgent::AttemptSendTabToSelfIPH() {
   }
 
   should_attempt_send_tab_to_self_iph_ = false;
-  if (send_tab_to_self::IsOmniboxIPHEligible(current_web_state,
+  // Check `WouldTriggerHelpUI()` first to skip eligibility and layout work.
+  if (engagement_tracker_->WouldTriggerHelpUI(
+          feature_engagement::kIPHSendTabToSelfOmnibox) &&
+      send_tab_to_self::IsOmniboxIPHEligible(current_web_state,
                                              browser_->GetProfile())) {
-    // Only consume the one-time attempt once an eligible page is reached.
-    send_tab_to_self_iph_attempted_ = true;
-    web_state_list_observation_.Reset();
     [HelpHandler()
         presentInProductHelpWithType:InProductHelpType::kSendTabToSelfOmnibox];
   }

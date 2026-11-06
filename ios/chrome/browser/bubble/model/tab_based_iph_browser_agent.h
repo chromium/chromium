@@ -213,8 +213,6 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   // Whether a user navigation or tab switch requested a Send Tab to Self
   // omnibox IPH attempt.
   bool should_attempt_send_tab_to_self_iph_ = false;
-  // Whether the Send Tab to Self omnibox IPH has been attempted.
-  bool send_tab_to_self_iph_attempted_ = false;
   // Last committed URL when the active `WebState`'s current navigation started.
   GURL url_before_navigation_;
 };

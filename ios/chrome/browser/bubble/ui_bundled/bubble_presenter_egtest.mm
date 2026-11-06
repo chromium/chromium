@@ -685,7 +685,8 @@ void ReloadFromOmnibox() {
 }
 
 // Test that the Send Tab to Self omnibox IPH is not displayed on the restored
-// startup tab, but is displayed after navigating to another page.
+// startup tab, is displayed after navigating to another page, and is not
+// displayed again on a subsequent navigation.
 - (void)testSendTabToSelfOmniboxIPH {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
@@ -717,6 +718,11 @@ void ReloadFromOmnibox() {
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/chromium_logo_page.html")];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iphText];
+
+  [[EarlGrey selectElementWithMatcher:iphText] performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:iphText];
+  [ChromeEarlGrey loadURL:destinationUrl];
+  [[EarlGrey selectElementWithMatcher:iphText] assertWithMatcher:grey_nil()];
 }
 
 // Tests that the Send Tab to Self omnibox IPH is displayed when switching to an
