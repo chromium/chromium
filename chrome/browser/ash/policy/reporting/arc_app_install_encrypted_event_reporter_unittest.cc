@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_util.h"
 #include "chrome/test/base/testing_browser_process.h"

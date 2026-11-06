@@ -8,20 +8,23 @@
 
 #include <algorithm>
 #include <iterator>
+#include <utility>
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
-#include "chrome/browser/ash/policy/reporting/install_event_logger_base.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -38,6 +41,47 @@ namespace em = ::enterprise_management;
 
 constexpr int kNonComplianceReasonAppNotInstalled = 5;
 
+void EnsureTimestampSet(em::AppInstallReportLogEvent* event) {
+  if (!event->has_timestamp()) {
+    event->set_timestamp(
+        (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds());
+  }
+}
+
+std::unique_ptr<em::AppInstallReportLogEvent> CreateEvent(
+    em::AppInstallReportLogEvent::EventType type) {
+  std::unique_ptr<em::AppInstallReportLogEvent> event =
+      std::make_unique<em::AppInstallReportLogEvent>();
+  EnsureTimestampSet(event.get());
+  event->set_event_type(type);
+  return event;
+}
+
+// Return all elements that are members of |first| but not |second|.
+std::set<std::string> GetDifference(const std::set<std::string>& first,
+                                    const std::set<std::string>& second) {
+  std::set<std::string> difference;
+  std::set_difference(first.begin(), first.end(), second.begin(), second.end(),
+                      std::inserter(difference, difference.end()));
+  return difference;
+}
+
+std::unique_ptr<em::AppInstallReportLogEvent> AddDiskSpaceInfoToEvent(
+    std::unique_ptr<em::AppInstallReportLogEvent> event,
+    const base::FilePath& stateful_path) {
+  const std::optional<int64_t> stateful_total =
+      base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
+  if (stateful_total.has_value()) {
+    event->set_stateful_total(*stateful_total);
+  }
+  const std::optional<int64_t> stateful_free =
+      base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
+  if (stateful_free.has_value()) {
+    event->set_stateful_free(*stateful_free);
+  }
+  return event;
+}
+
 std::set<std::string> GetRequestedPackagesFromPolicy(const PolicyMap& policy) {
   const base::Value* const arc_enabled =
       policy.GetValue(key::kArcEnabled, base::Value::Type::BOOLEAN);
@@ -53,14 +97,28 @@ std::set<std::string> GetRequestedPackagesFromPolicy(const PolicyMap& policy) {
       arc_policy->GetString());
 }
 
+// Returns `stateful_path_for_testing` if set, and the stateful partition path
+// otherwise.
+base::FilePath GetStatefulPath(
+    std::optional<base::FilePath> stateful_path_for_testing) {
+  if (stateful_path_for_testing.has_value()) {
+    CHECK_IS_TEST();
+    return std::move(*stateful_path_for_testing);
+  }
+  return ash::disks::GetStatefulPartitionPath();
+}
+
 }  // namespace
 
-ArcAppInstallEventLogger::ArcAppInstallEventLogger(PrefService* local_state,
-                                                   Delegate* delegate,
-                                                   Profile* profile)
-    : InstallEventLoggerBase(profile),
-      local_state_(CHECK_DEREF(local_state)),
-      delegate_(delegate) {
+ArcAppInstallEventLogger::ArcAppInstallEventLogger(
+    PrefService* local_state,
+    Delegate* delegate,
+    Profile* profile,
+    std::optional<base::FilePath> stateful_path_for_testing)
+    : local_state_(CHECK_DEREF(local_state)),
+      delegate_(delegate),
+      profile_(profile),
+      stateful_path_(GetStatefulPath(std::move(stateful_path_for_testing))) {
   if (!arc::IsArcAllowedForProfile(profile_)) {
     AddForSetOfApps(GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending),
                     CreateEvent(em::AppInstallReportLogEvent::CANCELED));
@@ -116,7 +174,12 @@ void ArcAppInstallEventLogger::Add(
     const std::string& package,
     bool gather_disk_space_info,
     std::unique_ptr<em::AppInstallReportLogEvent> event) {
-  AddEvent(package, gather_disk_space_info, event);
+  EnsureTimestampSet(event.get());
+  if (gather_disk_space_info) {
+    AddForSetOfAppsWithDiskSpaceInfo({package}, std::move(event));
+  } else {
+    AddForSetOfApps({package}, std::move(event));
+  }
 }
 
 void ArcAppInstallEventLogger::UpdatePolicySuccessRate(
@@ -262,6 +325,17 @@ void ArcAppInstallEventLogger::EvaluatePolicy(const PolicyMap& policy,
   } else {
     StopCollector();
   }
+}
+
+void ArcAppInstallEventLogger::AddForSetOfAppsWithDiskSpaceInfo(
+    const std::set<std::string>& packages,
+    std::unique_ptr<em::AppInstallReportLogEvent> event) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&AddDiskSpaceInfoToEvent, std::move(event),
+                     stateful_path_),
+      base::BindOnce(&ArcAppInstallEventLogger::AddForSetOfApps,
+                     weak_factory_.GetWeakPtr(), packages));
 }
 
 void ArcAppInstallEventLogger::AddForSetOfApps(

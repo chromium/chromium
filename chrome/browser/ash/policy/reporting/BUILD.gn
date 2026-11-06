@@ -24,7 +24,6 @@ static_library("reporting") {
     "arc_app_install_policy_data_helper.h",
     "install_event_log_util.cc",
     "install_event_log_util.h",
-    "install_event_logger_base.h",
     "remoting_host_event_reporter_delegate_impl.cc",
     "remoting_host_event_reporter_delegate_impl.h",
     "user_event_reporter_helper.cc",

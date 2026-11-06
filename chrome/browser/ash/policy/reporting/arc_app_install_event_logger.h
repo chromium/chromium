@@ -6,16 +6,17 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_ARC_APP_INSTALL_EVENT_LOGGER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_collector.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_policy_data_helper.h"
-#include "chrome/browser/ash/policy/reporting/install_event_logger_base.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -48,11 +49,7 @@ struct PolicyNamespace;
 // detailed logs of the push-install process whenever there is at least one
 // pending push-install request.
 class ArcAppInstallEventLogger
-    : public InstallEventLoggerBase<
-          enterprise_management::AppInstallReportLogEvent,
-          enterprise_management::AppInstallReportLogEvent::EventType,
-          std::string>,
-      public ArcAppInstallEventLogCollector::Delegate,
+    : public ArcAppInstallEventLogCollector::Delegate,
       public PolicyService::Observer,
       public arc::ArcPolicyBridge::Observer {
  public:
@@ -75,9 +72,13 @@ class ArcAppInstallEventLogger
 
   // `local_state` must be non-null and must outlive `this`.
   // `delegate` must outlive `this`.
-  ArcAppInstallEventLogger(PrefService* local_state,
-                           Delegate* delegate,
-                           Profile* profile);
+  // If `stateful_path_for_testing` is set, it is used instead of the stateful
+  // partition path when gathering disk space info.
+  ArcAppInstallEventLogger(
+      PrefService* local_state,
+      Delegate* delegate,
+      Profile* profile,
+      std::optional<base::FilePath> stateful_path_for_testing = std::nullopt);
   ~ArcAppInstallEventLogger() override;
 
   ArcAppInstallEventLogger& operator=(const ArcAppInstallEventLogger&) = delete;
@@ -134,11 +135,14 @@ class ArcAppInstallEventLogger
   // and updates the |log_collector_|.
   void EvaluatePolicy(const PolicyMap& policy, bool initial);
 
-  // Override for InstallEventLoggerBase::AddForSetOfApps.
+  void AddForSetOfAppsWithDiskSpaceInfo(
+      const std::set<std::string>& packages,
+      std::unique_ptr<enterprise_management::AppInstallReportLogEvent> event);
+
+  // Adds |event| to the log for all apps in |packages|.
   void AddForSetOfApps(
       const std::set<std::string>& packages,
-      std::unique_ptr<enterprise_management::AppInstallReportLogEvent> event)
-      override;
+      std::unique_ptr<enterprise_management::AppInstallReportLogEvent> event);
 
   void OnGetAndroidId(
       const std::set<std::string>& packages,
@@ -150,6 +154,12 @@ class ArcAppInstallEventLogger
 
   // The delegate that events are forwarded to for inclusion in the log.
   const raw_ptr<Delegate> delegate_;
+
+  // The profile whose install requests to log.
+  const raw_ptr<Profile> profile_;
+
+  // Path for stateful partition.
+  const base::FilePath stateful_path_;
 
   // Whether |this| has set itself up as observer of other classes and needs to
   // remove itself as observer in the destructor.

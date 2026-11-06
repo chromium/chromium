@@ -197,7 +197,7 @@ class AppInstallEventLoggerTest : public testing::Test {
         [&]() {
           logger_ = std::make_unique<ArcAppInstallEventLogger>(
               TestingBrowserProcess::GetGlobal()->local_state(), &delegate_,
-              &profile_);
+              &profile_, base::FilePath(kStatefulPath));
         },
         {});
     event_.set_event_type(em::AppInstallReportLogEvent::SUCCESS);
@@ -363,7 +363,6 @@ TEST_F(AppInstallEventLoggerTest, DoesNotAddsAndroidId) {
 // added with valid disk space info.
 TEST_F(AppInstallEventLoggerTest, AddSetsDiskSpaceInfo) {
   CreateLogger();
-  logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
 
   event_.set_timestamp(kTimestamp);
   std::unique_ptr<em::AppInstallReportLogEvent> event =
@@ -396,7 +395,6 @@ TEST_F(AppInstallEventLoggerTest, AddSetsDiskSpaceInfo) {
 // before posting the background task.
 TEST_F(AppInstallEventLoggerTest, AddSetsTimestampAndDiskSpaceInfo) {
   CreateLogger();
-  logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
 
   std::unique_ptr<em::AppInstallReportLogEvent> event =
       std::make_unique<em::AppInstallReportLogEvent>();
@@ -430,7 +428,6 @@ TEST_F(AppInstallEventLoggerTest, AddSetsTimestampAndDiskSpaceInfo) {
 
 TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   CreateLogger();
-  logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
 
   PolicyMap new_policy_map;
 
@@ -497,7 +494,6 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
 
 TEST_F(AppInstallEventLoggerTest, PolicySuccessRate_AddPolicyData) {
   CreateLogger();
-  logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
   PolicyMap policy = CreatePolicyWithForceInstalls({kPackageName});
 
   logger_->OnPolicyUpdated(PolicyNamespace(), /* previous */ PolicyMap(),
@@ -506,7 +502,6 @@ TEST_F(AppInstallEventLoggerTest, PolicySuccessRate_AddPolicyData) {
 
 TEST_F(AppInstallEventLoggerTest, PolicySuccessRate_UpdatePolicySuccessRate) {
   CreateLogger();
-  logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
   logger_->UpdatePolicySuccessRate(kPackageName, true);
 }
 
