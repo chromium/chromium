@@ -3329,6 +3329,13 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_AIM_OPEN_IN_NEW_TAB)
+    public void onSuggestionClicked_aimOnWebPage_desktopPlatform_loadsInCurrentTab() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        assertFalse(clickAimSuggestionAndGetParams(PAGE_URL, /* modifiers= */ 0).openInNewTab);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_AIM_OPEN_IN_NEW_TAB)
     public void onSuggestionClicked_conventionalOnWebPage_loadsInCurrentTab() {
         setUpLocationBarDataProvider(PAGE_URL, PAGE_TITLE, PageClassification.OTHER);
         mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));

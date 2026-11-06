@@ -1913,7 +1913,9 @@ class AutocompleteMediator
     }
 
     private boolean shouldOpenAimRequestInNewTab() {
-        if (!OmniboxFeatures.isAimOpenInNewTabEnabled() || !isInInputSession()) {
+        if (!OmniboxFeatures.isAimOpenInNewTabEnabled()
+                || OmniboxCapabilities.isDesktopPlatform()
+                || !isInInputSession()) {
             return false;
         }
         boolean isAimRequest = ToolModeUtils.isAimRequest(mAutocompleteInput.getRequestType());
