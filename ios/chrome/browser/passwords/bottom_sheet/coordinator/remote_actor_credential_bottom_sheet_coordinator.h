@@ -7,13 +7,18 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+namespace password_manager {
+enum class RemoteActorCredentialSharingResult;
+}  // namespace password_manager
+
 namespace remote_actor::proto {
 class RemoteActorPasswordUploadRequest;
 }  // namespace remote_actor::proto
 
-// Completion block called with `success` set to `YES` if a credential was
-// successfully shared, or `NO` otherwise.
-typedef void (^RemoteActorCredentialBottomSheetCompletion)(BOOL success);
+// Completion block called with the result of the remote actor credential
+// sharing flow.
+typedef void (^RemoteActorCredentialBottomSheetCompletion)(
+    password_manager::RemoteActorCredentialSharingResult result);
 
 // Coordinator that orchestrates retrieving credentials for a remote actor (e.g.
 // Gemini) via `RemoteActorCredentialSharingController`, presenting the bottom
@@ -24,8 +29,7 @@ typedef void (^RemoteActorCredentialBottomSheetCompletion)(BOOL success);
 // Initializes the coordinator presenting on top of `viewController` within
 // `browser`, to share a credential for the remote actor `request`.
 // `completion` is called once with the result of the flow, after which the
-// owner is responsible for stopping the coordinator. `completion` is called
-// with `NO` if the coordinator is stopped before the flow finished.
+// owner is responsible for stopping the coordinator.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser

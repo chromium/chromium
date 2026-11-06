@@ -16,6 +16,7 @@ class FaviconLoader;
 namespace password_manager {
 class PasswordManagerClient;
 class PasswordStoreInterface;
+enum class RemoteActorCredentialSharingResult;
 class RemoteActorCredentialSharingService;
 }  // namespace password_manager
 
@@ -35,15 +36,10 @@ class SyncService;
 // communicate the progress of the sharing flow back to the coordinator.
 @protocol RemoteActorCredentialBottomSheetMediatorDelegate <NSObject>
 
-// Called when credentials were retrieved and the bottom sheet should be
-// presented.
-- (void)mediatorDidRequestPresentation:
-    (RemoteActorCredentialBottomSheetMediator*)mediator;
-
-// Called when the sharing flow finished, with `success` set to `YES` if a
-// credential was successfully shared.
+// Called when the sharing flow finished with `result`.
 - (void)mediator:(RemoteActorCredentialBottomSheetMediator*)mediator
-    didFinishWithSuccess:(BOOL)success;
+    didFinishWithResult:
+        (password_manager::RemoteActorCredentialSharingResult)result;
 
 @end
 
@@ -91,8 +87,7 @@ class SyncService;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts the sharing flow by retrieving the credentials for the domain. The
-// delegate is notified when the bottom sheet should be presented and when the
-// flow finished.
+// delegate is notified when the flow finished.
 - (void)start;
 
 // Disconnects the mediator and cleans up dependencies. Must be called before

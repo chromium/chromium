@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_view_controller.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_mutator.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -87,15 +91,40 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
       [[ButtonStackConfiguration alloc] init];
   configuration.primaryButtonStyle = ChromeButtonStyleTertiary;
   configuration.secondaryButtonStyle = ChromeButtonStyleTertiary;
+  configuration.primaryActionString =
+      l10n_util::GetNSString(IDS_REMOTE_ACTOR_SHARING_DIALOG_ALLOW_BUTTON);
+  configuration.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
   return configuration;
 }
 
 }  // namespace
 
+@interface RemoteActorCredentialBottomSheetViewController () <
+    ConfirmationAlertActionHandler>
+@end
+
 @implementation RemoteActorCredentialBottomSheetViewController
 
 - (instancetype)init {
-  return [super initWithConfiguration:SetUpButtonConfiguration()];
+  self = [super initWithConfiguration:SetUpButtonConfiguration()];
+  if (self) {
+    self.actionHandler = self;
+  }
+  return self;
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  [self.mutator didSelectCredentialAtIndex:[self selectedRow]];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [self.mutator didCancel];
+}
+
+- (void)confirmationAlertDismissed {
+  [self.mutator didCancel];
 }
 
 #pragma mark - UIViewController

@@ -120,13 +120,15 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
   base::test::TestFuture<CredentialOrError> selection_future_;
 };
 
-// Tests that starting the mediator when required dependencies are unavailable
-// notifies the delegate that the flow finished unsuccessfully.
+// Tests that starting the mediator without a `PasswordManagerClient` notifies
+// the delegate that the flow finished with `kOtherError`.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
-       TestStartWithMissingDependenciesFails) {
+       TestStartWithoutPasswordManagerClientFails) {
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-  OCMExpect([delegate_ mediator:mediator_ didFinishWithSuccess:NO])
+  OCMExpect(
+      [delegate_ mediator:mediator_
+          didFinishWithResult:RemoteActorCredentialSharingResult::kOtherError])
       .andDo(^(NSInvocation*) {
         quit_closure.Run();
       });
@@ -136,10 +138,9 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 }
 
 // Tests that the mediator exposes every provided credential as a suggestion
-// along with the domain, requests presentation, and notifies the consumer.
+// along with the domain, and notifies the consumer.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestParsesCredentialsAndNotifiesConsumer) {
-  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
   credentials.push_back(CreateTestForm(kUsername1, kPassword1));
   credentials.push_back(CreateTestForm(kUsername2, kPassword2));
@@ -170,7 +171,6 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestConsumerSetBeforeCredentialsIsNotifiedOnArrival) {
   mediator_.consumer = consumer_;
 
-  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
   OCMExpect([consumer_ setSuggestions:[OCMArg any] andDomain:[OCMArg any]]);
   OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
 
@@ -186,7 +186,6 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 // Tests that an opaque origin falls back to the default globe favicon.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestOpaqueOriginUsesFallbackFavicon) {
-  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
   credentials.push_back(CreateTestForm(kUsername1, kPassword1));
 
@@ -205,7 +204,6 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 // controller.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestDidSelectCredentialAtIndexReturnsCredential) {
-  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
   credentials.push_back(CreateTestForm(kUsername1, kPassword1));
   credentials.push_back(CreateTestForm(kUsername2, kPassword2));
@@ -222,7 +220,6 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 // Tests that canceling returns `kUserCancelledDialog` to the controller.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestDidCancelReportsCancellation) {
-  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
   credentials.push_back(CreateTestForm(kUsername1, kPassword1));
   ShowCredentialSelection(std::move(credentials));
@@ -236,10 +233,12 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 }
 
 // Tests that canceling when no selection callback is pending notifies the
-// delegate that the flow finished unsuccessfully.
+// delegate that the flow finished with `kUserCancelledDialog`.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestDidCancelWithoutPendingCallbackNotifiesDelegate) {
-  OCMExpect([delegate_ mediator:mediator_ didFinishWithSuccess:NO]);
+  OCMExpect([delegate_ mediator:mediator_
+            didFinishWithResult:RemoteActorCredentialSharingResult::
+                                    kUserCancelledDialog]);
 
   [mediator_ didCancel];
 }
@@ -248,7 +247,6 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 // with `kUserCancelledDialog`.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestDisconnectReportsCancellation) {
-  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
   credentials.push_back(CreateTestForm(kUsername1, kPassword1));
   ShowCredentialSelection(std::move(credentials));

@@ -7,10 +7,15 @@
 
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller.h"
 
+@protocol RemoteActorCredentialBottomSheetMutator;
+
 // View controller for the remote actor credential bottom sheet triggered by a
 // remote actor credential sharing request (e.g. Gemini).
 @interface RemoteActorCredentialBottomSheetViewController
     : TableViewBottomSheetViewController
+
+// Mutator handling the user actions on the bottom sheet.
+@property(nonatomic, weak) id<RemoteActorCredentialBottomSheetMutator> mutator;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
