@@ -64,6 +64,10 @@ public class TabStateExtractor {
      *     out-of-memory).
      */
     public static @Nullable WebContentsState getWebContentsState(Tab tab) {
+        if (sTabStatesForTesting != null && sTabStatesForTesting.containsKey(tab.getId())) {
+            TabState tabState = sTabStatesForTesting.get(tab.getId());
+            return tabState != null ? tabState.contentsState : null;
+        }
         LoadUrlParams pendingLoadParams = tab.getPendingLoadParams();
 
         // Case 1: The tab is still frozen we can just use the existing state.

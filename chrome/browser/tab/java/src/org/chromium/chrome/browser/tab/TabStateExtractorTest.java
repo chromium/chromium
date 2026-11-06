@@ -207,4 +207,22 @@ public class TabStateExtractorTest {
         assertNotNull(state);
         assertEquals(extraData, state.extraData);
     }
+
+    @Test
+    public void testGetWebContentsState_tabStateForTesting() {
+        TabState tabState = new TabState();
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(10);
+        WebContentsState webContentsState =
+                new WebContentsState(byteBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        tabState.contentsState = webContentsState;
+        doReturn(123).when(mTabMock).getId();
+        TabStateExtractor.setTabStateForTesting(123, tabState);
+
+        try {
+            WebContentsState result = TabStateExtractor.getWebContentsState(mTabMock);
+            assertEquals(webContentsState, result);
+        } finally {
+            TabStateExtractor.resetTabStatesForTesting();
+        }
+    }
 }

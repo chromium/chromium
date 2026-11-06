@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
+import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.tabs.TabStripCollection;
 
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,6 +121,18 @@ public class TabStoragePackager {
     public static void fetchTabStorageMetadata(
             @Nullable @JniType("const TabAndroid*") Tab tab, long metadataPtr) {
         if (tab == null) return;
+        ByteBuffer buffer = null;
+        int version = WebContentsState.INVALID_BUFFER_VERSION;
+        boolean hasPendingLoadParams = tab.getPendingLoadParams() != null;
+        if (hasPendingLoadParams) {
+            WebContentsState state = TabStateExtractor.getWebContentsState(tab);
+            if (state != null
+                    && state.version() != WebContentsState.INVALID_BUFFER_VERSION
+                    && state.buffer().remaining() > 0) {
+                buffer = state.buffer();
+                version = state.version();
+            }
+        }
         TabStoragePackagerJni.get()
                 .onTabStorageMetadataFetched(
                         metadataPtr,
@@ -125,7 +140,10 @@ public class TabStoragePackager {
                         tab.getThemeColor(),
                         tab.getLastNavigationCommittedTimestampMillis(),
                         tab.getTabHasSensitiveContent(),
-                        TabAssociatedApp.getAppId(tab));
+                        TabAssociatedApp.getAppId(tab),
+                        hasPendingLoadParams,
+                        buffer,
+                        version);
     }
 
     private @Nullable TabModelInfo getTabModelInfo(
@@ -274,7 +292,10 @@ public class TabStoragePackager {
                 int themeColor,
                 long lastNavigationCommittedTimestampMillis,
                 boolean tabHasSensitiveContent,
-                @Nullable @JniType("std::optional<std::string>") String openerAppId);
+                @Nullable @JniType("std::optional<std::string>") String openerAppId,
+                boolean hasPendingLoadParams,
+                @Nullable ByteBuffer webContentsStateBuffer,
+                int savedStateVersion);
 
         long consolidateTabStripCollectionData(
                 @JniType("std::string") String windowTag,
