@@ -953,6 +953,21 @@ TEST_F(GeminiSessionHandlerTest,
   [mock_delegate verify];
 }
 
+// Tests that input plate attachment events notify `geminiViewStateDelegate`.
+TEST_F(GeminiSessionHandlerTest,
+       TestInputPlateAttachmentEventsNotifyViewStateDelegate) {
+  id mock_delegate = OCMProtocolMock(@protocol(GeminiViewStateDelegate));
+  session_handler_.geminiViewStateDelegate = mock_delegate;
+
+  OCMExpect([mock_delegate inputPlateDidChangePageContextAttachment:YES]);
+  [session_handler_ inputPlateDidChangePageContextAttachment:YES];
+
+  OCMExpect([mock_delegate inputPlateDidChangeNanoBananaAttachment:YES]);
+  [session_handler_ inputPlateDidChangeNanoBananaAttachment:YES];
+
+  [mock_delegate verify];
+}
+
 // Tests that `didSendQueryWithInputType:` queries `attachedTabsCount` and
 // `isMultiTabUsed` from `geminiViewStateDelegate` when multi-tab context is
 // enabled.

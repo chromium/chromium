@@ -479,6 +479,16 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
                                    error:error];
 }
 
+- (void)inputPlateDidChangePageContextAttachment:(BOOL)isAttached {
+  [self.geminiViewStateDelegate
+      inputPlateDidChangePageContextAttachment:isAttached];
+}
+
+- (void)inputPlateDidChangeNanoBananaAttachment:(BOOL)isSelected {
+  [self.geminiViewStateDelegate
+      inputPlateDidChangeNanoBananaAttachment:isSelected];
+}
+
 - (void)handleChatMessageRequest:(GeminiChatMessageRequest*)request
                       completion:(void (^)(GeminiChatMessageResponse* response))
                                      completion {
