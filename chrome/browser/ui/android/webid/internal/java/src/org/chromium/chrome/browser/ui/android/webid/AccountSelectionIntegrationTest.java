@@ -64,7 +64,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 
 import java.util.Arrays;
@@ -215,6 +217,13 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                                             BottomSheetContent.ContentPriority.HIGH,
                                             /* hasCustomLifecycle= */ false,
                                             highPriorityBottomSheetContentView);
+                            content.setSheetType(
+                                    new BottomSheetType.Builder()
+                                            .setUserInitiated(mRpMode != RpMode.PASSIVE)
+                                            .setModal(mRpMode != RpMode.PASSIVE)
+                                            .setUserCritical(
+                                                    UserCriticalFeature.FEDERATED_ACCOUNT_SELECTION)
+                                            .build());
                             mBottomSheetController.requestShowContent(content, false);
                             return content;
                         });
