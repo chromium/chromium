@@ -71,7 +71,8 @@ bool GraphiteFlush(GraphiteSharedContext* context,
   if (recording) {
     return context->insertRecording({recording.get()});
   }
-  return true;
+  // Snap will only return null if there is an error.
+  return false;
 }
 
 bool GraphiteFlushAndSubmit(GraphiteSharedContext* context,
