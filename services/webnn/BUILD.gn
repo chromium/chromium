@@ -222,6 +222,8 @@ component("webnn_service") {
       "ort/dispatch_context_impl_ort.h",
       "ort/environment.cc",
       "ort/environment.h",
+      "ort/epcontext_model_validator.cc",
+      "ort/epcontext_model_validator.h",
       "ort/external_weights_manager.cc",
       "ort/external_weights_manager.h",
       "ort/graph_builder_ort.cc",
@@ -298,6 +300,18 @@ source_set("webnn_test_support") {
   }
 }
 
+# Byte builders shared by the EPContext model validator unit test and fuzzer.
+if (is_win) {
+  source_set("epcontext_model_validator_test_support") {
+    testonly = true
+    sources = [
+      "ort/epcontext_model_validator_test_support.cc",
+      "ort/epcontext_model_validator_test_support.h",
+    ]
+    deps = [ "//base" ]
+  }
+}
+
 source_set("tests") {
   testonly = true
 
@@ -319,6 +333,7 @@ source_set("tests") {
   if (is_win) {
     sources += [
       "host/execution_provider_initializer_unittest.cc",
+      "ort/epcontext_model_validator_test.cc",
       "ort/graph_builder_ort_test.cc",
       "ort/model_editor_test.cc",
       "ort/ort_session_options_test.cc",
@@ -344,6 +359,7 @@ source_set("tests") {
 
   if (is_win) {
     deps += [
+      ":epcontext_model_validator_test_support",
       ":webnn_switches",
       "//services/webnn/host",
       "//services/webnn/public/cpp:win",
@@ -597,4 +613,18 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_textproto_fuzzer") {
     "//services/webnn/public/mojom:mojom_mojolpm",
     "//third_party/libprotobuf-mutator",
   ]
+}
+
+# The ORT EPContext model validator is only compiled on Windows.
+if (is_win) {
+  test("webnn_ort_epcontext_model_validator_fuzzer") {
+    sources = [ "ort/epcontext_model_validator_fuzzer.cc" ]
+    fuzztests = [ "EpcontextModelValidatorFuzzTest.ValidateNeverCrashes" ]
+    deps = [
+      ":epcontext_model_validator_test_support",
+      ":webnn_service",
+      "//base",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
 }

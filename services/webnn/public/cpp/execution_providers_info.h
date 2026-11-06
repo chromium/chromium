@@ -5,8 +5,11 @@
 #ifndef SERVICES_WEBNN_PUBLIC_CPP_EXECUTION_PROVIDERS_INFO_H_
 #define SERVICES_WEBNN_PUBLIC_CPP_EXECUTION_PROVIDERS_INFO_H_
 
+#include <windows.h>
+
 #include <appmodel.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
@@ -116,6 +119,24 @@ struct EpWorkarounds {
   }
 };
 
+// The shape of the model produced by compiling a graph for an execution
+// provider.
+enum class CompiledModelFormat {
+  // Not declared. A static_assert below requires every enabled EP to declare
+  // one of the others, so that enabling an EP cannot silently skip validation
+  // of its compiled model.
+  kNone,
+  // The compiled result is wrapped in a single EPContext node (the ORT
+  // EPContext contract). The GPU process validates the structure of the
+  // compiled model from the (sandboxed, possibly compromised) Compiler process
+  // before handing it to ORT: it must be just a wrapper carrying exactly one
+  // EPContext node and nothing else.
+  kEpContext,
+  // The compiled result is an ordinary ONNX model, which has no such invariant
+  // to check and is loaded as produced.
+  kFullGraph,
+};
+
 // A key-value pair for session configuration needed by some execution
 // providers.
 struct SessionConfigEntry {
@@ -124,6 +145,9 @@ struct SessionConfigEntry {
 };
 
 struct EpInfo {
+  // TODO(crbug.com/575023849): Replace PACKAGE_VERSION with a Chromium struct
+  // of four numbers, converted to PACKAGE_VERSION only where it is passed to
+  // Windows, so that this header no longer needs <appmodel.h> and <windows.h>.
   PACKAGE_VERSION min_package_version;
   // Represents the vendor id of the hardware device used by the execution
   // provider.
@@ -157,6 +181,9 @@ struct EpInfo {
   // Key whose value is the PCI device id from
   // `OrtApi::HardwareDevice_DeviceId()`, written as a hexadecimal string.
   base::cstring_view hardware_device_id_env_config_key;
+  // The format of the model produced by compiling a graph for this EP. This is
+  // an EP-level trait: it is uniform across the EP's devices.
+  CompiledModelFormat compiled_model_format = CompiledModelFormat::kNone;
   // The information of offline compilation support.
   base::raw_span<const OfflineCompilationSupport> offline_compilation_support;
 };
@@ -261,6 +288,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
             // Dump models via its own session config entry.
             .model_dump_config_key =
                 "ep.openvinoexecutionprovider.dump_subgraphs",
+            .compiled_model_format = CompiledModelFormat::kEpContext,
             .offline_compilation_support =
                 internal::kOpenVINOOfflineCompilation,
         },
@@ -330,10 +358,28 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
                     {.key = "ep.webgpuexecutionprovider.enableRobustness",
                      .value = "1"},
                 },
+            .compiled_model_format = CompiledModelFormat::kFullGraph,
             .offline_compilation_support = internal::kWebGpuOfflineCompilation,
         },
     },
 });
+
+static_assert(
+    std::ranges::none_of(kKnownEPs,
+                         [](const auto& entry) {
+                           return entry.second.enabled &&
+                                  entry.second.compiled_model_format ==
+                                      CompiledModelFormat::kNone;
+                         }),
+    "Every enabled EP must declare its compiled model format.");
+
+// Returns the format of the model produced by compiling a graph for `ep_name`,
+// or `CompiledModelFormat::kNone` for an unknown EP.
+inline CompiledModelFormat EpCompiledModelFormat(std::string_view ep_name) {
+  auto it = kKnownEPs.find(ep_name);
+  return it != kKnownEPs.end() ? it->second.compiled_model_format
+                               : CompiledModelFormat::kNone;
+}
 
 }  // namespace webnn
 

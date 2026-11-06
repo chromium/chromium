@@ -9,10 +9,10 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/ort/graph_builder_ort.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
@@ -68,7 +68,7 @@ class GraphImplOrt final : public WebNNGraphImpl {
   CreateSessionFromCompiledGraph(WebNNContextImpl& context,
                                  scoped_refptr<SessionOptions> session_options,
                                  scoped_refptr<Environment> env,
-                                 mojo_base::BigBuffer compiled_model_data,
+                                 base::span<const uint8_t> model_bytes,
                                  base::flat_map<std::string, std::string>
                                      operand_input_name_to_onnx_input_name,
                                  base::flat_map<std::string, std::string>

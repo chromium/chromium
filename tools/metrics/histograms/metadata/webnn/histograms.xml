@@ -139,6 +139,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebNN.ORT.EpContextModelResult"
+    enum="WebNNOrtEpContextModelResult" expires_after="2027-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    Records the result of validating a compiled model received from the Compiler
+    process for an execution provider that compiles into an EPContext model
+    (defense-in-depth at the Compiler-to-GPU trust boundary). Emitted once per
+    validated model, whether it is accepted or rejected. A model is accepted
+    only if it carries exactly one EPContext node and nothing else.
+  </summary>
+</histogram>
+
 <histogram name="WebNN.ORT.FirstSelectedDevice" enum="WebNNOrtDeviceUma"
     expires_after="2027-06-27">
   <owner>reillyg@chromium.org</owner>

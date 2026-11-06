@@ -4,9 +4,12 @@
 
 #include "services/webnn/ort/dispatch_context_impl_ort.h"
 
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "services/webnn/error.h"
 #include "services/webnn/gpu_task_scheduler.h"
+#include "services/webnn/ort/epcontext_model_validator.h"
 #include "services/webnn/ort/graph_impl_ort.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_session_options.h"
@@ -176,9 +179,18 @@ void DispatchContextImplOrt::LoadCompiledGraph(
     LoadCompiledGraphCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // The Compiler is sandboxed and may be compromised, so terminate it if it
+  // sends a model that fails validation.
+  if (!PrepareCompiledModel(compiled_graph->compiled_model_data,
+                            target_device().ep_name,
+                            model_loader_receiver_.GetBadMessageCallback())) {
+    compiler_host_remote_->Terminate();
+    return;
+  }
+
   auto result = GraphImplOrt::CreateSessionFromCompiledGraph(
       *this, session_options(), env(),
-      std::move(compiled_graph->compiled_model_data),
+      base::span<const uint8_t>(compiled_graph->compiled_model_data),
       std::move(compiled_graph->input_binding_names),
       std::move(compiled_graph->output_binding_names));
   if (!result.has_value()) {

@@ -32,3 +32,41 @@ process.
 | Code Integrity Guard | Startup CIG via `ChromeContentBrowserClient::PreSpawnChild()`, plus the delayed `MITIGATION_FORCE_MS_SIGNED_BINS` | Delayed `MITIGATION_FORCE_MS_SIGNED_BINS` only |
 | Default DACL | `SetLockdownDefaultDacl()` | `SetLockdownDefaultDacl()` + `AddRestrictingRandomSid()` |
 | Job memory limit | 1 TB | 1 TB |
+
+## Compiled model validation at the Compiler-to-GPU boundary
+
+The Compiler process is treated as untrusted: it may be compromised by
+the graph it compiles. The compiled model it sends to the GPU process
+over `WebNNModelLoader` (`public/mojom/webnn_model_loader.mojom`) is
+therefore validated before it is loaded.
+
+For execution providers that compile a graph into a single EPContext
+node, the compiled ONNX model is expected to be just a wrapper around
+the EP's precompiled blob, and the validator
+(`ort/epcontext_model_validator.h`) only confirms that shape:
+
+- It must contain exactly one graph.
+- The graph must contain exactly one node.
+- That single node must be an EPContext (`com.microsoft`) node.
+
+This is intentional. A model of this shape passing straight through the
+validator is the expected outcome, not a gap. The check exists only to
+stop a compromised Compiler from smuggling extra ONNX nodes past the
+boundary for ORT to run in the GPU process. The EPContext node's opaque
+blob is deliberately not parsed here; it is in a vendor-specific format,
+and validating it is the responsibility of the execution provider and
+its backend.
+
+Validation is per execution provider, selected by `compiled_model_format`
+in `public/cpp/execution_providers_info.h`. Only execution providers
+declaring `kEpContext` are validated. An execution provider declaring
+`kFullGraph` compiles into an ordinary ONNX model, which has no such
+invariant to check, and is loaded as produced; its safety rests on
+ORT's own parsing. Every enabled execution provider must declare its
+format, which a `static_assert` enforces, so enabling one cannot leave
+it loaded unvalidated by omission. When enabling an execution provider,
+declare `kEpContext` if it compiles into an EPContext node.
+
+The model bytes may arrive in shared memory the Compiler can still
+write, so they are moved into private memory before validation; the
+bytes validated are the bytes ORT loads.

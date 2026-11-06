@@ -175,6 +175,19 @@ MLGraphOperatorUma in //third_party/blink/renderer/modules/ml/webnn/ml_graph_bui
 
 <!-- LINT.ThenChange(//services/webnn/ort/context_impl_ort.cc:WebNNOrtDeviceUma) -->
 
+<!-- LINT.IfChange(WebNNOrtEpContextModelResult) -->
+
+<enum name="WebNNOrtEpContextModelResult">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Malformed"/>
+  <int value="2" label="No graph"/>
+  <int value="3" label="Duplicate graph"/>
+  <int value="4" label="Non-EPContext node"/>
+  <int value="5" label="Wrong node count"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/webnn/ort/epcontext_model_validator.h:WebNNOrtEpContextModelResult) -->
+
 <!-- LINT.IfChange(WebNNOrtEPUma) -->
 
 <enum name="WebNNOrtEPUma">
