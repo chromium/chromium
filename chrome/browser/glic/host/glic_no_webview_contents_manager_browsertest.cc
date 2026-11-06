@@ -33,7 +33,6 @@
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/metrics/structured/buildflags/buildflags.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
@@ -1516,9 +1515,6 @@ class GlicNoWebviewGeicSsrOverlayBrowserTest
     GlicNoWebviewSsrOverlayBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(geic::kGeicGuestURLSwitch,
                                     GetGuestURL().spec());
-    // Lets the GEiC guest URL point at the test server rather than an
-    // allowlisted Gemini Enterprise host.
-    command_line->AppendSwitch(::switches::kGlicDev);
   }
 
  private:

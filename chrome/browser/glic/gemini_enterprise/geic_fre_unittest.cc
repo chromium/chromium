@@ -349,8 +349,8 @@ TEST_F(GeicFreTest, DifferentConfigIdsAndOriginsGetSeparateKeys) {
             "https://business.gemini.google/side-panel?configId=other");
   EXPECT_EQ(
       GetFreKeyForGuestUrl(
-          "https://staging.business.gemini.google/side-panel?configId=abc"),
-      "https://staging.business.gemini.google/side-panel?configId=abc");
+          "https://vertexaisearch.cloud.google.com/side-panel?configId=abc"),
+      "https://vertexaisearch.cloud.google.com/side-panel?configId=abc");
   EXPECT_EQ(GetFreKeyForGuestUrl(
                 "https://business.gemini.google:8443/side-panel?configId=abc"),
             "https://business.gemini.google:8443/side-panel?configId=abc");

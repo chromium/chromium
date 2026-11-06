@@ -164,8 +164,8 @@ TEST_F(GeminiEnterpriseUrlPolicyHandlerTest, LookalikeHosts) {
        {"https://business.gemini.google.example.com/",
         "https://examplecloud.google.com/", "https://cloud.google.com.evil/",
         "https://console.cloud.google.com/", "https://storage.cloud.google/",
-        "https://foo.corp.google.com/",
-        "https://ucs-app-autopush.corp.google.com/"}) {
+        "https://foo.corp.google.com/", "https://sub.business.gemini.google/",
+        "https://sub.gemini.google.com/"}) {
     SCOPED_TRACE(url);
     PolicyErrorMap errors;
     SetPolicy(base::Value(url));

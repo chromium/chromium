@@ -23,7 +23,6 @@
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -41,23 +40,23 @@ namespace geic {
 
 namespace {
 
-// Although `GeminiEnterpriseUrlPolicyHandler` validates the policy URL's
-// syntax, scheme and host when applying the enterprise policy, we validate the
-// URL here as well so that all guest URL sources (`--geic-guest-url` switch,
-// policy pref, and `features::kGeicGuestURL` Finch param) and direct pref
-// writes in tests are checked before the origin is granted Glic Mojo API
-// access. Note that `IsAllowedGeminiEnterpriseHost` checks production hosts
-// and the `features::kGeicGuestURL` Finch host, while `--glic-dev` is accepted
-// in `IsValidGuestUrl`.
-bool IsValidGuestUrl(const GURL& url) {
-  if (!url.is_valid()) {
-    return false;
-  }
-  if (url.SchemeIsHTTPOrHTTPS() &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev)) {
-    return true;
-  }
-  return url.SchemeIs(url::kHttpsScheme) && IsAllowedGeminiEnterpriseHost(url);
+// Guest URLs must use HTTPS and must not contain embedded credentials.
+bool IsSecureGuestUrl(const GURL& url) {
+  return url.is_valid() && url.SchemeIs(url::kHttpsScheme) &&
+         !url.has_username() && !url.has_password();
+}
+
+// Policy guest URLs must use a production Gemini Enterprise host.
+bool IsValidPolicyGuestUrl(const GURL& url) {
+  return IsSecureGuestUrl(url) && IsAllowedGeminiEnterpriseHost(url);
+}
+
+// Finch guest URLs may also use a pre-production or internal corp Gemini
+// Enterprise host.
+bool IsValidFinchGuestUrl(const GURL& url) {
+  return IsSecureGuestUrl(url) &&
+         (IsAllowedGeminiEnterpriseHost(url) ||
+          IsAllowedGeminiEnterprisePreProductionHost(url));
 }
 
 // Rewrites standalone Gemini Enterprise web app URLs (`/home/cid/<configId>` or
@@ -161,17 +160,38 @@ enum class GuestUrlError {
   kInvalid,
 };
 
-// Classifies a guest URL source. Returns the validated URL, ready to be
-// canonicalized, or why it can't be used.
-base::expected<GURL, GuestUrlError> ToGuestUrl(const std::string& spec) {
+// Classifies a guest URL source. Returns the URL if `is_valid` accepts it,
+// ready to be canonicalized, or why it can't be used.
+base::expected<GURL, GuestUrlError> ToGuestUrl(const std::string& spec,
+                                               bool (*is_valid)(const GURL&)) {
   if (spec.empty()) {
     return base::unexpected(GuestUrlError::kUnset);
   }
   GURL url(spec);
-  if (!IsValidGuestUrl(url)) {
+  if (!is_valid(url)) {
     return base::unexpected(GuestUrlError::kInvalid);
   }
   return url;
+}
+
+// Command-line override (--geic-guest-url), which can also be set from
+// chrome://flags. Accepts the same URLs as Finch, plus HTTP or HTTPS localhost
+// URLs for local development and browser tests.
+base::expected<GURL, GuestUrlError> GetSwitchGuestUrl() {
+  std::string spec =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kGeicGuestURLSwitch);
+  if (spec.empty()) {
+    return base::unexpected(GuestUrlError::kUnset);
+  }
+  GURL url(spec);
+  if (!url.is_valid() || url.has_username() || url.has_password()) {
+    return base::unexpected(GuestUrlError::kInvalid);
+  }
+  return (net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
+                 IsValidFinchGuestUrl(url)
+             ? base::expected<GURL, GuestUrlError>(url)
+             : base::unexpected(GuestUrlError::kInvalid);
 }
 
 base::expected<GURL, GuestUrlError> GetPolicyGuestUrl(
@@ -179,7 +199,8 @@ base::expected<GURL, GuestUrlError> GetPolicyGuestUrl(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return profile && profile->GetPrefs()
              ? ToGuestUrl(profile->GetPrefs()->GetString(
-                   glic::prefs::kGlicGeminiEnterpriseUrl))
+                              glic::prefs::kGlicGeminiEnterpriseUrl),
+                          &IsValidPolicyGuestUrl)
              : base::unexpected(GuestUrlError::kUnset);
 }
 
@@ -193,7 +214,7 @@ base::expected<GURL, GuestUrlError> GetFinchGuestUrl(
       return base::unexpected(GuestUrlError::kUnset);
     }
   }
-  return ToGuestUrl(features::kGeicGuestURL.Get());
+  return ToGuestUrl(features::kGeicGuestURL.Get(), &IsValidFinchGuestUrl);
 }
 
 std::optional<ResolvedGuestUrl> ResolveGuestUrlWithSource(
@@ -203,14 +224,12 @@ std::optional<ResolvedGuestUrl> ResolveGuestUrlWithSource(
   }
 
   // `--geic-guest-url` is evaluated before the enterprise policy to simplify
-  // development and local testing; `IsValidGuestUrl()` still restricts the URL
-  // to valid Gemini Enterprise origins and GEiC requires signing in to GE.
+  // development and local testing. Policy only accepts production Gemini
+  // Enterprise hosts, Finch also accepts pre-production and internal corp
+  // hosts, and the switch also accepts localhost.
   const std::pair<GuestUrlSource, base::expected<GURL, GuestUrlError>>
       candidates[] = {
-          {GuestUrlSource::kSwitch,
-           ToGuestUrl(
-               base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                   kGeicGuestURLSwitch))},
+          {GuestUrlSource::kSwitch, GetSwitchGuestUrl()},
           {GuestUrlSource::kPolicy, GetPolicyGuestUrl(browser_context)},
           {GuestUrlSource::kFinch, GetFinchGuestUrl(browser_context)},
       };

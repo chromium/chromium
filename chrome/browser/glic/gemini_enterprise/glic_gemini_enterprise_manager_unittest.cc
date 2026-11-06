@@ -204,10 +204,7 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
 TEST_F(GlicGeminiEnterpriseManagerUnitTest, AllowsConfiguredGuestOrigin) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      geic::kGeicGuestURLSwitch,
-      "https://localhost.corp.google.com:10443/side-panel");
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      ::switches::kGlicDev);
+      geic::kGeicGuestURLSwitch, "https://localhost:10443/side-panel");
   TestingProfile custom_profile;
   GlicGeminiEnterpriseManager manager(&custom_profile);
   mojo::Remote<mojom::GeminiEnterpriseHandler> remote;
@@ -220,9 +217,8 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest, AllowsConfiguredGuestOrigin) {
   };
 
   // Valid guest origin passes URL validation:
-  EXPECT_EQ(
-      open_tab(GURL("https://localhost.corp.google.com:10443/auth/signin")),
-      mojom::OpenAuthTabResult::kErrorFailure);
+  EXPECT_EQ(open_tab(GURL("https://localhost:10443/auth/signin")),
+            mojom::OpenAuthTabResult::kErrorFailure);
   // Non-guest origin is rejected:
   EXPECT_EQ(
       open_tab(GURL("https://otherhost.corp.google.com:10443/auth/signin")),
@@ -364,10 +360,7 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
        ConnectorAuthAllowsConfiguredGuestOrigin) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      geic::kGeicGuestURLSwitch,
-      "https://localhost.corp.google.com:10443/side-panel");
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      ::switches::kGlicDev);
+      geic::kGeicGuestURLSwitch, "https://localhost:10443/side-panel");
   TestingProfile custom_profile;
   GlicGeminiEnterpriseManager manager(&custom_profile);
   mojo::Remote<mojom::GeminiEnterpriseHandler> remote;
@@ -380,9 +373,8 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
     return future.Take()->result;
   };
 
-  EXPECT_EQ(
-      open_tab(GURL("https://localhost.corp.google.com:10443/oauth-redirect")),
-      mojom::OpenAuthTabResult::kErrorFailure);
+  EXPECT_EQ(open_tab(GURL("https://localhost:10443/oauth-redirect")),
+            mojom::OpenAuthTabResult::kErrorFailure);
   EXPECT_EQ(
       open_tab(GURL("https://otherhost.corp.google.com:10443/oauth-redirect")),
       mojom::OpenAuthTabResult::kErrorDisallowedUrl);

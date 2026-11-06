@@ -60,11 +60,17 @@ bool CanSwitchBetweenGeminiProvidersInSettings(
 //    controlled by a `google_groups`-filtered Finch study, the Finch URL
 //    parameter only applies to profiles in those groups).
 //
+// All sources must be valid HTTPS URLs without embedded credentials, and are
+// restricted to Gemini Enterprise hosts in tiers:
+// - Policy: production hosts only (`IsAllowedGeminiEnterpriseHost()`).
+// - Finch: policy hosts plus pre-production and internal corp hosts
+//   (`IsAllowedGeminiEnterprisePreProductionHost()`).
+// - `--geic-guest-url`: Finch hosts plus HTTP or HTTPS localhost URLs.
+// `--glic-dev` does not relax these checks.
+//
 // `--geic-guest-url` intentionally takes precedence over the enterprise policy
-// to simplify development and local testing on managed profiles. This poses no
-// risk of abuse because `IsValidGuestUrl()` only accepts valid Gemini
-// Enterprise origins (unless `--glic-dev` is also set), and accessing GEiC
-// still requires the user to sign in to Gemini Enterprise.
+// to simplify development and local testing on managed profiles. Accessing
+// GEiC still requires the user to sign in to Gemini Enterprise.
 GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
 
 // Returns true if `browser_context` should latch to

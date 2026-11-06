@@ -264,13 +264,7 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam().geic) {
-      // The Finch guest URL host is allowed as a GE host, so the mock client
-      // on the embedded test server can be configured as the GE guest with
-      // `--geic-guest-url` (see `MaybeAppendGeicSwitches()`). This avoids
-      // `--glic-dev`, which would also relax the guest origin checks.
-      enabled_features.push_back(
-          {features::kGeic,
-           {{features::kGeicGuestURL.name, "https://127.0.0.1/"}}});
+      enabled_features.push_back({features::kGeic, {}});
     }
     if (GetParam().no_webview) {
       enabled_features.push_back({features::kGlicNoWebview, {}});

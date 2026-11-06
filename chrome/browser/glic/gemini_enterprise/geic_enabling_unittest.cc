@@ -93,6 +93,12 @@ class GeicEnablingTest : public testing::Test {
     return ResolveGeicGuestUrl(profile());
   }
 
+  // Sets the command-line switch URL and resolves the guest URL.
+  GURL ResolveSwitchUrl(const std::string& url) {
+    SetSwitchUrl(url);
+    return ResolveGeicGuestUrl(profile());
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedCommandLine scoped_command_line_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
@@ -192,12 +198,99 @@ TEST_F(GeicEnablingTest, AcceptsAllowedHosts) {
       ResolvePolicyUrl("https://vertexaisearch.cloud.google/").is_empty());
   EXPECT_FALSE(
       ResolvePolicyUrl("https://vertexaisearch.cloud.google.com/").is_empty());
+  EXPECT_FALSE(
+      ResolvePolicyUrl("https://vertexaisearch.gemini-us.google/").is_empty());
+}
+
+TEST_F(GeicEnablingTest, PolicyRejectsPreProductionHosts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+
+  EXPECT_TRUE(
+      ResolvePolicyUrl("https://ucs-app-autopush.corp.google.com/side-panel")
+          .is_empty());
+  EXPECT_TRUE(
+      ResolvePolicyUrl("https://business-staging.gemini.google/side-panel")
+          .is_empty());
+}
+
+TEST_F(GeicEnablingTest, FinchAcceptsPreProductionHosts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGeic,
+      {{"geic-guest-url",
+        "https://ucs-app-autopush.corp.google.com/side-panel"}});
+
+  EXPECT_EQ(ResolveGeicGuestUrl(profile()),
+            GURL("https://ucs-app-autopush.corp.google.com/side-panel"));
+}
+
+TEST_F(GeicEnablingTest, FinchRejectsDisallowedPreProductionUrls) {
+  const char* const kDisallowed[] = {
+      // Not matching a product-prefixed pattern.
+      "https://foo.corp.google.com/side-panel",
+      "https://a.business-staging.gemini.google/side-panel",
+      // Not HTTPS.
+      "http://business-staging.gemini.google/side-panel",
+      // Embedded credentials.
+      "https://user:pass@business-staging.gemini.google/side-panel",
+  };
+  for (const char* url : kDisallowed) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(features::kGeic,
+                                                    {{"geic-guest-url", url}});
+    EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty()) << url;
+  }
+}
+
+TEST_F(GeicEnablingTest, SwitchAcceptsPreProductionHosts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+
+  EXPECT_EQ(
+      ResolveSwitchUrl("https://business-staging.gemini.google/side-panel"),
+      GURL("https://business-staging.gemini.google/side-panel"));
+}
+
+TEST_F(GeicEnablingTest, RejectsEmbeddedCredentials) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+
+  EXPECT_TRUE(
+      ResolvePolicyUrl("https://user:pass@business.gemini.google/side-panel")
+          .is_empty());
+  EXPECT_TRUE(ResolvePolicyUrl("https://user@business.gemini.google/side-panel")
+                  .is_empty());
+  EXPECT_TRUE(
+      ResolvePolicyUrl("https://:pass@business.gemini.google/side-panel")
+          .is_empty());
+
+  EXPECT_TRUE(
+      ResolveSwitchUrl("https://user:pass@business.gemini.google/side-panel")
+          .is_empty());
+  EXPECT_TRUE(ResolveSwitchUrl("https://user@business.gemini.google/side-panel")
+                  .is_empty());
+  EXPECT_TRUE(
+      ResolveSwitchUrl("https://:pass@business.gemini.google/side-panel")
+          .is_empty());
+
+  // Clear the higher-priority sources so that Finch is actually consulted.
+  scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+      kGeicGuestURLSwitch);
+  SetPolicyUrl("");
+  base::test::ScopedFeatureList feature_list2;
+  feature_list2.InitAndEnableFeatureWithParameters(
+      features::kGeic,
+      {{"geic-guest-url",
+        "https://user:pass@business.gemini.google/side-panel"}});
+  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
 }
 
 TEST_F(GeicEnablingTest, RejectsDisallowedHosts) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
 
+  EXPECT_TRUE(ResolvePolicyUrl("https://gemini.google.com/").is_empty());
   EXPECT_TRUE(ResolvePolicyUrl("").is_empty());
   EXPECT_TRUE(ResolvePolicyUrl("not a url").is_empty());
   EXPECT_TRUE(ResolvePolicyUrl("https://evil.com/").is_empty());
@@ -214,52 +307,77 @@ TEST_F(GeicEnablingTest, RejectsDisallowedHosts) {
   EXPECT_TRUE(ResolvePolicyUrl("https://storage.cloud.google/").is_empty());
   EXPECT_TRUE(ResolvePolicyUrl("https://foo.corp.google.com/").is_empty());
   EXPECT_TRUE(
-      ResolvePolicyUrl("https://ucs-app-autopush.corp.google.com/side-panel")
-          .is_empty());
+      ResolvePolicyUrl("https://sub.business.gemini.google/").is_empty());
+  EXPECT_TRUE(ResolvePolicyUrl("https://sub.gemini.google.com/").is_empty());
+  EXPECT_TRUE(ResolvePolicyUrl("https://gemini.google/").is_empty());
 }
 
-TEST_F(GeicEnablingTest, AcceptsLocalhostOverHttpOnly) {
+TEST_F(GeicEnablingTest, SwitchAcceptsAllowlistedHostsAndLocalhost) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
 
-  // Localhost is rejected without --glic-dev.
-  EXPECT_TRUE(ResolvePolicyUrl("http://localhost:8080/side-panel").is_empty());
+  EXPECT_FALSE(
+      ResolveSwitchUrl("https://business.gemini.google/side-panel").is_empty());
+  EXPECT_FALSE(ResolveSwitchUrl("http://localhost:8080/side-panel").is_empty());
+  EXPECT_FALSE(ResolveSwitchUrl("http://127.0.0.1:8080/side-panel").is_empty());
+  EXPECT_FALSE(ResolveSwitchUrl("http://[::1]:8080/side-panel").is_empty());
+  EXPECT_FALSE(
+      ResolveSwitchUrl("https://localhost:8443/side-panel").is_empty());
 
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
+  EXPECT_TRUE(
+      ResolveSwitchUrl("http://business.gemini.google/side-panel").is_empty());
+  EXPECT_TRUE(
+      ResolveSwitchUrl("https://localhost.corp.google.com:10443/side-panel")
+          .is_empty());
+  EXPECT_TRUE(
+      ResolveSwitchUrl("http://custom-dev-host.internal:8080/side-panel")
+          .is_empty());
+  EXPECT_TRUE(ResolveSwitchUrl("ftp://localhost/side-panel").is_empty());
+  EXPECT_TRUE(ResolveSwitchUrl("http://user:pass@localhost:8080/side-panel")
+                  .is_empty());
 
-  EXPECT_FALSE(ResolvePolicyUrl("http://localhost:8080/side-panel").is_empty());
-  EXPECT_FALSE(ResolvePolicyUrl("https://localhost/").is_empty());
-  EXPECT_FALSE(ResolvePolicyUrl("http://127.0.0.1:8080/").is_empty());
-
-  EXPECT_TRUE(ResolvePolicyUrl("ws://localhost/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("chrome://localhost/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("ftp://localhost/").is_empty());
+  // `--glic-dev` does not relax switch URL validation.
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kGlicDev);
+  EXPECT_TRUE(
+      ResolveSwitchUrl("http://custom-dev-host.internal:8080/side-panel")
+          .is_empty());
 }
 
-TEST_F(GeicEnablingTest, AcceptsFinchGuestUrl) {
+TEST_F(GeicEnablingTest, PolicyAndFinchRejectNonAllowlistedHosts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+
+  // `--glic-dev` must not relax policy or Finch URL validation.
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kGlicDev);
+
+  EXPECT_TRUE(ResolvePolicyUrl("http://localhost:8080/side-panel").is_empty());
+  EXPECT_TRUE(ResolvePolicyUrl("https://localhost:8443/side-panel").is_empty());
+  EXPECT_TRUE(
+      ResolvePolicyUrl("https://localhost.corp.google.com:10443/side-panel")
+          .is_empty());
+
+  SetPolicyUrl("");
+  base::test::ScopedFeatureList feature_list2;
+  feature_list2.InitAndEnableFeatureWithParameters(
+      features::kGeic,
+      {{"geic-guest-url",
+        "https://localhost.corp.google.com:10443/side-panel"}});
+  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+}
+
+TEST_F(GeicEnablingTest, RejectsDisallowedFinchGuestUrlHost) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGeic,
         {{"enabled", "true"},
          {"geic-guest-url",
-          "https://ucs-app-autopush.corp.google.com/side-panel"}}}},
+          "https://custom-host.corp.google.com/side-panel"}}}},
       {});
-  EXPECT_EQ(ResolveGeicGuestUrl(profile()),
-            GURL("https://ucs-app-autopush.corp.google.com/side-panel"));
-  EXPECT_FALSE(
-      ResolvePolicyUrl("https://ucs-app-autopush.corp.google.com/side-panel")
-          .is_empty());
-}
-
-TEST_F(GeicEnablingTest, AcceptsGlicDevSwitch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
-
-  EXPECT_FALSE(
-      ResolvePolicyUrl("https://localhost.corp.google.com:10443/side-panel")
-          .is_empty());
+  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_TRUE(ResolvePolicyUrl("https://custom-host.corp.google.com/side-panel")
+                  .is_empty());
 }
 
 TEST_F(GeicEnablingTest, CanonicalizesHomeCidPath) {
@@ -356,7 +474,7 @@ TEST_F(GeicEnablingTest, DisallowedCandidateDoesNotFallThrough) {
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGeic,
         {{"enabled", "true"},
-         {"geic-guest-url", "http://evil.com/side-panel"}}}},
+         {"geic-guest-url", "https://evil.com/side-panel"}}}},
       {});
 
   EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());

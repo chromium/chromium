@@ -44,7 +44,6 @@ source_set("url_allowlist") {
 
   deps = [
     "//base",
-    "//chrome/browser/glic/public:features",
     "//url",
   ]
 }

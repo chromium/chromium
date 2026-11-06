@@ -21,7 +21,6 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -40,7 +39,6 @@ class GlicGeicApiBrowserTest : public GlicApiBrowserTest {
     GlicApiBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(geic::kGeicGuestURLSwitch,
                                     GetGuestURL().spec());
-    command_line->AppendSwitch(::switches::kGlicDev);
   }
 
  private:
