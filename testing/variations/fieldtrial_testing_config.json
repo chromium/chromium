@@ -4638,8 +4638,7 @@
                     "enable_features": [
                         "GestureUserEducationBackSwipe",
                         "IPH_GestureUserEducation",
-                        "IPH_ThreeDotMenuBackButton",
-                        "ThreeDotMenuBackButton"
+                        "IPH_ThreeDotMenuBackButton"
                     ]
                 }
             ]
