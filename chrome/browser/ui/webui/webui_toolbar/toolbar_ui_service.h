@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/icon_table_fetcher.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher.h"
+#include "components/browser_apis/ui_controllers/toolbar/extensions_bar_data_model.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -102,9 +103,11 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void SetAvatarButtonFocused(bool focused) = 0;
     virtual void SetAvatarButtonIPHPromoShowing(bool showing) = 0;
     virtual void OnAppMenuFocusChanged(bool focused) = 0;
-    virtual void ExecuteExtensionAction(const std::string& extension_id) = 0;
-    virtual void ShowExtensionContextMenu(const std::string& extension_id,
-                                          ui::mojom::MenuSourceType source) = 0;
+    virtual void ExecuteExtensionAction(
+        extensions_bar::mojom::ExtensionActionIdPtr id) = 0;
+    virtual void ShowExtensionContextMenu(
+        extensions_bar::mojom::ExtensionActionIdPtr id,
+        ui::mojom::MenuSourceType source) = 0;
     virtual base::expected<
         toolbar_ui_api::mojom::AdjustOmniboxTextForCopyResultPtr,
         mojo_base::mojom::ErrorPtr>
@@ -208,8 +211,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       bool showing,
       SetAvatarButtonIphPromoShowingCallback callback) override;
   void OnAppMenuFocusChanged(bool focused) override;
-  void ExecuteExtensionAction(const std::string& extension_id) override;
-  void ShowExtensionContextMenu(const std::string& extension_id,
+  void ExecuteExtensionAction(
+      extensions_bar::mojom::ExtensionActionIdPtr id) override;
+  void ShowExtensionContextMenu(extensions_bar::mojom::ExtensionActionIdPtr id,
                                 ui::mojom::MenuSourceType source) override;
   void AdjustOmniboxTextForCopy(
       const std::u16string& text,

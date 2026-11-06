@@ -175,10 +175,14 @@ class MockToolbarUIServiceDelegate
   MOCK_METHOD(void, SetAvatarButtonFocused, (bool), (override));
   MOCK_METHOD(void, SetAvatarButtonIPHPromoShowing, (bool), (override));
   MOCK_METHOD(void, OnAppMenuFocusChanged, (bool), (override));
-  MOCK_METHOD(void, ExecuteExtensionAction, (const std::string&), (override));
+  MOCK_METHOD(void,
+              ExecuteExtensionAction,
+              (extensions_bar::mojom::ExtensionActionIdPtr),
+              (override));
   MOCK_METHOD(void,
               ShowExtensionContextMenu,
-              (const std::string&, ui::mojom::MenuSourceType),
+              (extensions_bar::mojom::ExtensionActionIdPtr,
+               ui::mojom::MenuSourceType),
               (override));
   MOCK_METHOD(
       (base::expected<toolbar_ui_api::mojom::AdjustOmniboxTextForCopyResultPtr,

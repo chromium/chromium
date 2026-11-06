@@ -18,6 +18,13 @@ toolbar-chip-button:focus-within {
   z-index: 1;
 }
 
+/* When joined with an adjacent button as a split button (e.g. the extensions
+ * menu button and the request access button), give it a painted background to
+ * match Views ToolbarChipButton. */
+toolbar-chip-button[flat-edge] {
+  --toolbar-chip-bg-color: var(--color-toolbar-background-subtle-emphasis);
+}
+
 :host {
   min-width: 0;
   interpolate-size: allow-keywords;

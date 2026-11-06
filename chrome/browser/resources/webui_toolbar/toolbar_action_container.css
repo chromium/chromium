@@ -33,8 +33,8 @@
    * 1. --toolbar-divider-width: Width of the vertical toolbar divider line.
    * 2. 2 * (--toolbar-divider-spacing - --toolbar-icon-default-margin): Total
    *    spacing surrounding the divider on both left and right sides.
-   * 3. + 1px: Inward shift to align the outline arc apex with the extensions menu
-   *    button's hover circle. */
+   * 3. + 1px: Inward shift to align the outline arc apex with the
+   *    extensions menu button's hover circle. */
   --extensions-container-divider-offset: calc(
       var(--toolbar-divider-width) +
       2 * (var(--toolbar-divider-spacing) - var(--toolbar-icon-default-margin)) +
@@ -59,31 +59,35 @@
 
 /* Mirrors views::ToolbarIconContainerView::GetHighlighted(), which highlights
  * the container while it is hovered *except* over the main item (the extensions
- * menu button), so that only the menu button's own hover circle is shown there.
- * Matching on the pinned actions themselves - rather than on the host with
- * exceptions carved out - keeps the menu button, the divider, and all of the
- * spacing around them outside the hover region by construction. The extensions
- * menu button is the action with an empty id, so :not([data-key='']) selects
- * exactly the pinned actions. It should also show up in the case where the
- * regular buttons have keyboard focus. */
+ * menu button) and the request access button, so that only their own hover
+ * shape is shown there. Matching on the extension actions themselves - rather
+ * than on the host with exceptions carved out - keeps the menu button, the
+ * request access button, the divider, and all of the spacing around them
+ * outside the hover region by construction. Buttons for extensions, whether
+ * pinned or temporarily popped out, have the extension-action attribute (see
+ * ExtensionsElement.isExtensionAction()); the menu button and request access
+ * button do not. It should also show up in the case where the extension
+ * buttons have keyboard focus. */
 :host(webui-toolbar-extensions):has(
-    webui-toolbar-extension:not([data-key='']):hover,
-    webui-toolbar-extension:not([data-key='']):focus-within)::after {
+    webui-toolbar-extension[extension-action]:hover,
+    webui-toolbar-extension[extension-action]:focus-within)::after {
   border-color: var(--color-toolbar-icon-container-border,
                     var(--color-toolbar-button-border));
 }
 
-/* A pinned action's margin is not part of its box and so does not respond to
- * :hover, which would leave the gaps between pinned actions - and the gap
- * before the menu button - outside the hover region. Extend each pinned
- * action's hit area across the gap that follows it. The strip starts at the
- * action's trailing edge so that it never overlays the action itself. */
-:host(webui-toolbar-extensions) webui-toolbar-extension:not([data-key='']) {
+/* An extension action's margin is not part of its box and so does not respond
+ * to :hover, which would leave the gaps between extension actions - and the gap
+ * before the menu button or request access button - outside the hover region.
+ * Extend each extension action's hit area across the gap that follows it. The
+ * strip starts at the action's trailing edge so that it never overlays the
+ * action itself. */
+:host(webui-toolbar-extensions)
+    webui-toolbar-extension[extension-action] {
   position: relative;
 }
 
 :host(webui-toolbar-extensions)
-                webui-toolbar-extension:not([data-key=''])::before {
+    webui-toolbar-extension[extension-action]::before {
   content: '';
   inset-block: 0;
   inset-inline-start: 100%;

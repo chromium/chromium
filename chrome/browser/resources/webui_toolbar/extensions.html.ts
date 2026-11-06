@@ -14,8 +14,9 @@ ${repeat(
       class="${keyedState.animateIn ? 'animate-in' : ''}
              ${keyedState.exiting ? 'exiting' : ''}
              ${keyedState.dragPlaceholder ? 'drag-placeholder' : ''}"
-      data-key="${keyedState.key}" @dragover="${this.onActionDragover}"
-      @drop="${this.onActionDrop}">
+      data-key="${keyedState.key}"
+      ?extension-action="${this.isExtensionAction(keyedState.state)}"
+      @dragover="${this.onActionDragover}" @drop="${this.onActionDrop}">
   </webui-toolbar-extension>
 `)}
 ${this.keyedStates.length > 0 ? html`

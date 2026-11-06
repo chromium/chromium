@@ -8,6 +8,8 @@ import '/shared/icon_from_table.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {getExtensionActionKey, isExtensionAction, isExtensionsMenuButton, isRequestAccessButton} from '/shared/extension_action_id.js';
+import {FlatEdge} from '/shared/extensions_bar_data_model.mojom-webui.js';
 import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
 import {getContextMenuSourceType, setHasHelpBubble} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
@@ -20,7 +22,7 @@ import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 const initialState: ExtensionActionInfo = {
-  id: '',
+  id: {extensionsMenuButton: {}},
   accessibleName: '',
   tooltip: '',
   isVisible: false,
@@ -28,6 +30,8 @@ const initialState: ExtensionActionInfo = {
   icon: {handleId: 0n},
   isPinnedByDefaultIphAnchor: false,
   highlighted: false,
+  text: '',
+  flatEdge: FlatEdge.kNone,
 };
 
 // Help bubble anchor for the "extension pinned by default" IPH. Registered in
@@ -132,12 +136,17 @@ export class ExtensionElement extends ExtensionElementBase {
   }
 
   override getElementId(state: ExtensionActionInfo): string {
-    return state.id === '' ? 'kExtensionsMenuButtonElementId' :
-                             'kToolbarActionViewElementId';
+    if (isExtensionsMenuButton(state.id)) {
+      return 'kExtensionsMenuButtonElementId';
+    }
+    if (isRequestAccessButton(state.id)) {
+      return 'kExtensionsRequestAccessButtonElementId';
+    }
+    return 'kToolbarActionViewElementId';
   }
 
   override getSecondaryElementId(): string {
-    return 'ext:' + this.state.id;
+    return 'ext:' + getExtensionActionKey(this.state.id);
   }
 
   protected onClick_(e: PointerEvent) {
@@ -150,6 +159,9 @@ export class ExtensionElement extends ExtensionElementBase {
 
   protected onContextmenu_(e: Event) {
     e.preventDefault();
+    if (!isExtensionAction(this.state.id)) {
+      return;
+    }
     this.browserProxy_.toolbarUIHandler.showExtensionContextMenu(
         this.state.id, getContextMenuSourceType(e));
   }
@@ -159,16 +171,30 @@ export class ExtensionElement extends ExtensionElementBase {
   }
 
   override getItemId() {
-    return this.state.id;
+    return getExtensionActionKey(this.state.id);
   }
 
   override isDraggable() {
-    return this.state.id !== '';
+    return isExtensionAction(this.state.id);
+  }
+
+  protected getFlatEdge_(): 'start'|'end'|null {
+    switch (this.state.flatEdge) {
+      case FlatEdge.kStart:
+        return 'start';
+      case FlatEdge.kEnd:
+        return 'end';
+      default:
+        return null;
+    }
   }
 
   override moveItemBy(delta: number) {
+    if (!isExtensionAction(this.state.id)) {
+      return;
+    }
     this.browserProxy_.toolbarUIHandler.moveExtensionActionBy(
-        this.state.id, delta);
+        this.state.id.extensionId!, delta);
   }
 }
 

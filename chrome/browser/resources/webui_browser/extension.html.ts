@@ -10,6 +10,11 @@ export function getHtml(this: ExtensionElement) {
   return html`
 <cr-button type="button" @pointerdown="${this.highlightTracker_.onPointerdown}"
     @click="${this.onClick}" @contextmenu="${this.onContextmenu_}">
-  <icon-from-table .iconHandle="${this.iconHandle}"></icon-from-table>
+  ${this.iconHandle.handleId !== 0n ? html`
+    <icon-from-table .iconHandle="${this.iconHandle}"></icon-from-table>
+  ` : ''}
+  ${this.text ? html`
+    <span id="text">${this.text}</span>
+  ` : ''}
 </cr-button>`;
 }

@@ -397,17 +397,18 @@ void ToolbarUIService::OnAppMenuFocusChanged(bool focused) {
   }
 }
 
-void ToolbarUIService::ExecuteExtensionAction(const std::string& extension_id) {
+void ToolbarUIService::ExecuteExtensionAction(
+    extensions_bar::mojom::ExtensionActionIdPtr id) {
   if (delegate_) {
-    delegate_->ExecuteExtensionAction(extension_id);
+    delegate_->ExecuteExtensionAction(std::move(id));
   }
 }
 
 void ToolbarUIService::ShowExtensionContextMenu(
-    const std::string& extension_id,
+    extensions_bar::mojom::ExtensionActionIdPtr id,
     ui::mojom::MenuSourceType source) {
   if (delegate_) {
-    delegate_->ShowExtensionContextMenu(extension_id, source);
+    delegate_->ShowExtensionContextMenu(std::move(id), source);
   }
 }
 

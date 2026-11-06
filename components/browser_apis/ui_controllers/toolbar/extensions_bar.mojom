@@ -23,12 +23,12 @@ interface PageHandlerFactory {
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Runs the action with given ID.
-  ExecuteUserAction(string id);
+  ExecuteUserAction(ExtensionActionId id);
 
   // Show the context menu for the toolbar button corresponding to the
   // given action ID. `source` denotes the type of input that produced the
   // request.
-  ShowContextMenu(ui.mojom.MenuSourceType source, string id);
+  ShowContextMenu(ui.mojom.MenuSourceType source, ExtensionActionId id);
 
   // Asks the browser to flip show/hide status of extensions menu.
   ToggleExtensionsMenuFromWebUI();

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget_observer.h"
+#include "url/origin.h"
 
 class BrowserWindowInterface;
 class ExtensionsMenuCoordinator;
@@ -34,6 +36,14 @@ class WebUIToolbarWebViewInteractiveUiTest;
 namespace webui_toolbar {
 class IconTable;
 }
+
+// Key used to identify the request access button within the extensions
+// container and its observers (see
+// WebUIToolbarExtensionsContainer::GetActionKey()). Also used in the secondary
+// identifier of the button's TrackedElement, so must match
+// REQUEST_ACCESS_BUTTON_KEY in extension_action_id.ts.
+inline constexpr char kExtensionsRequestAccessButtonActionId[] =
+    "ExtensionsRequestAccessButton";
 
 class WebUIToolbarExtensionsContainer
     : public ExtensionsContainer,
@@ -115,12 +125,25 @@ class WebUIToolbarExtensionsContainer
   void OnPinnedActionsChanged() override;
   void OnActiveWebContentsChanged(bool is_same_document,
                                   content::WebContents* web_contents) override;
+  void OnRequestAccessButtonParamsChanged(
+      content::WebContents* web_contents) override;
+  void OnToolbarControlStateUpdated() override;
 
   void Bind(mojo::PendingRemote<extensions_bar::mojom::Page> page,
             mojo::PendingReceiver<extensions_bar::mojom::PageHandler> receiver);
 
   void NotifyOfAllActions();
   void NotifyOfOneAction(const ToolbarActionsModel::ActionId& action_id);
+
+  // Returns a string uniquely identifying the button with `id`, for use as a
+  // key in bookkeeping: the extension ID for extension actions, an empty string
+  // for the extensions menu button, or kExtensionsRequestAccessButtonActionId
+  // for the request access button. This loses information (e.g. the request
+  // access button's sequence number), and an untrusted `id` could have an
+  // extension ID that collides with another key, so don't use it to decide how
+  // to handle requests from WebUI.
+  static std::string GetActionKey(
+      const extensions_bar::mojom::ExtensionActionId& id);
 
   // Returns the ElementIdentifier for the extension button with
   // `extension_id`, or kExtensionsMenuButtonElementId if `extension_id` is
@@ -143,9 +166,10 @@ class WebUIToolbarExtensionsContainer
                                           std::string_view extension_id) const;
 
   // extensions_bar::mojom::PageHandler:
-  void ExecuteUserAction(const std::string& id) override;
+  void ExecuteUserAction(
+      extensions_bar::mojom::ExtensionActionIdPtr id) override;
   void ShowContextMenu(ui::mojom::MenuSourceType source,
-                       const std::string& id) override;
+                       extensions_bar::mojom::ExtensionActionIdPtr id) override;
   void ToggleExtensionsMenuFromWebUI() override;
 
   // views::WidgetObserver:
@@ -179,6 +203,7 @@ class WebUIToolbarExtensionsContainer
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
                            ShowWidgetForExtension);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest, RequestAccessButton);
   class ActionInfo;
   class ContextMenu;
 
@@ -205,6 +230,11 @@ class WebUIToolbarExtensionsContainer
 
   void CreateActions();
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
+
+  // Shows the context menu for the extension action with `action_id`, if it
+  // has one.
+  void ShowContextMenuForAction(ui::mojom::MenuSourceType source,
+                                const std::string& action_id);
 
   void OnContextMenuShownFromToolbar(const std::string& action_id);
   void OnContextMenuClosedFromToolbar();
@@ -275,6 +305,54 @@ class WebUIToolbarExtensionsContainer
 
   // The extension currently designated as the pinned-by-default IPH anchor.
   std::optional<std::string> pinned_by_default_iph_extension_id_;
+
+  // Updates the request access button state, label, and visibility based on
+  // `web_contents`.
+  void UpdateRequestAccessButton(content::WebContents& web_contents);
+
+  // Called when the request access button is pressed. Grants one-time site
+  // access to `request_access_extension_ids_` and shows a confirmation message.
+  // Does nothing if `sequence_number` isn't the current
+  // `request_access_sequence_number_`, i.e., the button was pressed while it
+  // was showing outdated state.
+  void OnRequestAccessButtonPressed(uint32_t sequence_number);
+
+  // Returns whether the request access button is showing a confirmation
+  // message.
+  bool IsRequestAccessButtonShowingConfirmation() const;
+
+  // Hides the request access button confirmation message and clears the
+  // confirmation origin and collapse timer.
+  void ResetRequestAccessButtonConfirmation();
+
+  // State of the request access button sent to WebUI.
+  extensions_bar::mojom::ExtensionActionInfoPtr request_access_button_;
+
+  // IDs of extensions included in the request access button.
+  std::vector<extensions::ExtensionId> request_access_extension_ids_;
+
+  // The origin for which the button is displaying access requests.
+  url::Origin request_access_origin_;
+
+  // Incremented whenever `request_access_extension_ids_` or
+  // `request_access_origin_` changes. Sent to WebUI as part of the button's ID
+  // and sent back when the button is pressed, so that presses based on stale
+  // state are ignored.
+  uint32_t request_access_sequence_number_ = 0;
+
+  // The origin for which the button is displaying a confirmation message, if
+  // any.
+  std::optional<url::Origin> confirmation_origin_;
+
+  // The active tab's WebContents, as of the last OnActiveWebContentsChanged().
+  // Used to distinguish tab switches from navigations.
+  base::WeakPtr<content::WebContents> active_web_contents_;
+
+  // A timer used to collapse the confirmation message after a delay.
+  base::OneShotTimer request_access_collapse_timer_;
+
+  // Flag to not show confirmation message in tests.
+  bool remove_confirmation_for_testing_ = false;
 
   base::WeakPtrFactory<WebUIToolbarExtensionsContainer> weak_ptr_factory_{this};
 };

@@ -9,7 +9,7 @@
 
 
 :host {
-  width: 32px;
+  min-width: 32px;
   height: 32px;
   display: none;
 }
@@ -33,4 +33,9 @@ icon-from-table {
   margin: 6px;
   --icon-size: 20px;
   border-radius: 4px; /* matches the rounding effect of cr-icon-button */
+}
+
+#text {
+  font-size: 13px;
+  color: var(--color-toolbar-button-text, currentColor);
 }

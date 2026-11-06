@@ -5,15 +5,35 @@
 module extensions_bar.mojom;
 
 import "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom";
+import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+
+// Edge of the button that should be flattened to join an adjacent button.
+enum FlatEdge {
+  kNone,
+  kStart,
+  kEnd,
+};
+
+// Identifies a toolbar button for dealing with extensions.
+union ExtensionActionId {
+  // The extension's identifier string. Must not be empty.
+  string extension_id;
+
+  // Identifies the extensions menu button (puzzle piece).
+  mojo_base.mojom.Empty extensions_menu_button;
+
+  // Identifies the request access button. The value is a sequence number that
+  // changes whenever the set of extensions or origin the button would grant
+  // access to changes. It's sent back to the browser when the button is
+  // pressed, so that presses based on stale button state can be ignored.
+  uint32 request_access_button;
+};
 
 // Data of a toolbar button for dealing with extensions.
 struct ExtensionActionInfo {
-  // This is the action id used to identify the action in the
-  // ExtensionsContainer and related APIs --- and is the extenion's identifier
-  // string. Empty string indicates extensions button (puzzle piece) rather
-  // than a specific extension.
-  string id;
+  // Identifies the button, e.g. the extension whose action it represents.
+  ExtensionActionId id;
   mojo_base.mojom.String16 accessible_name;
   mojo_base.mojom.String16 tooltip;
 
@@ -39,4 +59,10 @@ struct ExtensionActionInfo {
 
   // Should this button appear highlighted?
   bool highlighted;
+
+  // Text to put in the button (e.g. for the request access button).
+  mojo_base.mojom.String16 text;
+
+  // Indicates if the button should have a flat edge on one or the other side.
+  FlatEdge flat_edge = FlatEdge.kNone;
 };

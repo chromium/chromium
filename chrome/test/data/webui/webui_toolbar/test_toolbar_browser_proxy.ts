@@ -8,6 +8,7 @@ import type {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_so
 import type {PointF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import type {ExtensionActionId} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {InitialStateReader, INVALID_FOCUS_REQUEST_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {AdjustOmniboxTextForCopyResult, BrowserProxy, ContentSettingImageType, ContextMenuType, FocusRequestHandle, FocusRequestListener, InitialState, LhsChipIdentifier, OmniboxAction, PageActionId, PageActionTrigger, PinnedToolbarAction, ShowSplitTabsContextMenuHandle, ShowSplitTabsContextMenuListener, ToolbarFlatStateSchema, ToolbarStateListener, ToolbarStateListenerHandle, ToolbarUIServiceInterface} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
@@ -213,12 +214,12 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled('onAppMenuFocusChanged', focused);
   }
 
-  executeExtensionAction(extensionId: string) {
-    this.methodCalled('executeExtensionAction', [extensionId]);
+  executeExtensionAction(id: ExtensionActionId) {
+    this.methodCalled('executeExtensionAction', [id]);
   }
 
-  showExtensionContextMenu(extensionId: string, source: MenuSourceType) {
-    this.methodCalled('showExtensionContextMenu', [extensionId, source]);
+  showExtensionContextMenu(id: ExtensionActionId, source: MenuSourceType) {
+    this.methodCalled('showExtensionContextMenu', [id, source]);
   }
 
   onPerformanceInterventionButtonClicked() {

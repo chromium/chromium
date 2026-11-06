@@ -972,15 +972,15 @@ void WebUIToolbarWebView::OnAppMenuFocusChanged(bool focused) {
 }
 
 void WebUIToolbarWebView::ExecuteExtensionAction(
-    const std::string& extension_id) {
-  extensions_container_.ExecuteUserAction(extension_id);
+    extensions_bar::mojom::ExtensionActionIdPtr id) {
+  extensions_container_.ExecuteUserAction(std::move(id));
 }
 
 void WebUIToolbarWebView::ShowExtensionContextMenu(
-    const std::string& extension_id,
+    extensions_bar::mojom::ExtensionActionIdPtr id,
     ui::mojom::MenuSourceType source) {
   EnsureWidgetActive();
-  extensions_container_.ShowContextMenu(source, extension_id);
+  extensions_container_.ShowContextMenu(source, std::move(id));
 }
 
 base::expected<toolbar_ui_api::mojom::AdjustOmniboxTextForCopyResultPtr,

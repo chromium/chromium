@@ -23,7 +23,8 @@ import './pinned_toolbar_actions.js';
 
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {AnimationTracker} from '/shared/animation_tracker.js';
-export type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
+export {FlatEdge} from '/shared/extensions_bar_data_model.mojom-webui.js';
+export type {ExtensionActionId, ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
 export type {IconFromTableElement} from '/shared/icon_from_table.js';
 export {PermissionChipElement} from '/shared/permission_chip.js';
 export type {PermissionDashboardElement} from '/shared/permission_dashboard.js';

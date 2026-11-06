@@ -6,6 +6,7 @@ import './extension.js';
 import './toolbar_divider.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {getExtensionActionKey, isExtensionAction} from '/shared/extension_action_id.js';
 import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -54,7 +55,7 @@ export class ExtensionsElement extends ExtensionsElementBase {
 
   // ToolbarActionContainerMixin override
   override getKey(state: ExtensionActionInfo): string {
-    return state.id;
+    return getExtensionActionKey(state.id);
   }
 
   // OverflowableToolbarActionContainerMixin override. Relies on the template
@@ -87,7 +88,13 @@ export class ExtensionsElement extends ExtensionsElementBase {
   }
 
   override isDraggable(state: ExtensionActionInfo, _index: number): boolean {
-    return state.id !== '';
+    return this.isExtensionAction(state);
+  }
+
+  // Returns whether `state` is for an actual extension, as opposed to the
+  // extensions menu button or the request access button.
+  isExtensionAction(state: ExtensionActionInfo): boolean {
+    return isExtensionAction(state.id);
   }
 }
 

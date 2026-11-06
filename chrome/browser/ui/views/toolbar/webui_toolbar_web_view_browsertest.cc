@@ -43,6 +43,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -167,9 +168,12 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
@@ -4251,7 +4255,8 @@ constexpr char kGetExtensionsButtonTooltipScript[] = R"(
   if (!divider) return null;
   const extensionElements = extensionsContainer.shadowRoot
       .querySelectorAll('webui-toolbar-extension');
-  const button = Array.from(extensionElements).find(el => el.state.id === '');
+  const button = Array.from(extensionElements).find(
+      el => !!el.state.id.extensionsMenuButton);
   if (!button) return null;
   return button.state.tooltip;
 })();
@@ -4448,6 +4453,91 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
     EXPECT_TRUE(
         base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, RequestAccessButton) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/title1.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<const extensions::Extension> extension = LoadAndPinExtension(
+      temp_dir, /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(extension);
+
+  extensions::PermissionsManagerWaiter permissions_waiter(
+      extensions::PermissionsManager::Get(browser()->GetProfile()));
+  extensions::ScriptingPermissionsModifier(browser()->GetProfile(), extension)
+      .SetWithholdHostPermissions(true);
+  permissions_waiter.WaitForExtensionPermissionsUpdate();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+
+  // Request access button should not be visible yet.
+  EXPECT_FALSE(
+      container->GetExtensionAnchor(kExtensionsRequestAccessButtonActionId));
+
+  // Add host access request for the extension on the active tab.
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(active_contents);
+  extensions::PermissionsManager::Get(browser()->GetProfile())
+      ->AddHostAccessRequest(active_contents, tab_id, *extension);
+
+  // Verify request access button becomes visible and anchorable.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return container->GetExtensionAnchor(
+               kExtensionsRequestAccessButtonActionId) != nullptr;
+  }));
+
+  ui::TrackedElement* req_anchor =
+      container->GetExtensionAnchor(kExtensionsRequestAccessButtonActionId);
+  ASSERT_NE(req_anchor, nullptr);
+  EXPECT_EQ(req_anchor->identifier(), kExtensionsRequestAccessButtonElementId);
+
+  ASSERT_TRUE(container->request_access_button_);
+  EXPECT_EQ(container->request_access_button_->flat_edge,
+            extensions_bar::mojom::FlatEdge::kEnd);
+  EXPECT_EQ(
+      container->request_access_button_->text,
+      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
+
+  // Pressing the button with a stale sequence number, as would happen if the
+  // button's state changed while the press was in flight, does nothing.
+  container->ExecuteUserAction(
+      extensions_bar::mojom::ExtensionActionId::NewRequestAccessButton(
+          container->request_access_sequence_number_ - 1));
+  EXPECT_FALSE(container->IsRequestAccessButtonShowingConfirmation());
+
+  // Click on request access button in WebUI.
+  LeftClickExtensionButton(web_contents,
+                           kExtensionsRequestAccessButtonActionId);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return container->IsRequestAccessButtonShowingConfirmation(); }));
+  EXPECT_EQ(container->request_access_button_->text,
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
+
+  // Collapse confirmation.
+  container->CollapseConfirmation();
+  EXPECT_FALSE(container->IsRequestAccessButtonShowingConfirmation());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ShowWidgetForExtension) {

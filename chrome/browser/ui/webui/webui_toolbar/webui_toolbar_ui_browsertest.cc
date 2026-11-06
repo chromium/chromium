@@ -236,11 +236,11 @@ class MockToolbarUIDelegate
   MOCK_METHOD(void, OnAppMenuFocusChanged, (bool), (override));
   MOCK_METHOD(void,
               ExecuteExtensionAction,
-              (const std::string& extension_id),
+              (extensions_bar::mojom::ExtensionActionIdPtr id),
               (override));
   MOCK_METHOD(void,
               ShowExtensionContextMenu,
-              (const std::string& extension_id,
+              (extensions_bar::mojom::ExtensionActionIdPtr id,
                ui::mojom::MenuSourceType source),
               (override));
   MOCK_METHOD(

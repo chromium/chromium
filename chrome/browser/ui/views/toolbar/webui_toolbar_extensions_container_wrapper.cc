@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -82,7 +83,16 @@ bool WebUIToolbarExtensionsContainerWrapper::UpdateExtensionsButtonState() {
     }
   }
 
-  if (new_state != extensions_button_state_) {
+  bool has_flat_edge = false;
+  auto it = cached_actions_.find(kExtensionsRequestAccessButtonActionId);
+  if (it != cached_actions_.end() && it->second->is_visible) {
+    has_flat_edge = true;
+  }
+
+  const bool edge_changed = (has_flat_edge != extensions_button_has_flat_edge_);
+  extensions_button_has_flat_edge_ = has_flat_edge;
+
+  if (new_state != extensions_button_state_ || edge_changed) {
     extensions_button_state_ = new_state;
     return true;
   }
@@ -94,7 +104,9 @@ WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
   extensions_bar::mojom::ExtensionActionInfoPtr button =
       extensions_bar::mojom::ExtensionActionInfo::New();
 
-  button->id = kExtensionsButtonId;
+  button->id =
+      extensions_bar::mojom::ExtensionActionId::NewExtensionsMenuButton(
+          std::monostate());
   button->is_visible = true;
   // The extensions button is never hidden due to overflow.
   button->force_visible = true;
@@ -111,6 +123,9 @@ WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
           extensions_button_state_);
   button->tooltip = ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(
       extensions_button_state_);
+  button->flat_edge = extensions_button_has_flat_edge_
+                          ? extensions_bar::mojom::FlatEdge::kStart
+                          : extensions_bar::mojom::FlatEdge::kNone;
 
   return button;
 }
@@ -139,7 +154,8 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionsAddedOrUpdated(
   std::vector<std::string> new_ids;
   for (const auto& action : actions) {
     if (action->is_visible) {
-      new_ids.push_back(action->id);
+      new_ids.push_back(
+          WebUIToolbarExtensionsContainer::GetActionKey(*action->id));
     }
   }
   if (new_ids != last_sent_extension_ids_) {
@@ -147,9 +163,11 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionsAddedOrUpdated(
   }
 
   for (auto& action : actions) {
-    auto it = cached_actions_.find(action->id);
+    std::string key =
+        WebUIToolbarExtensionsContainer::GetActionKey(*action->id);
+    auto it = cached_actions_.find(key);
     if (it == cached_actions_.end() || !mojo::Equals(it->second, action)) {
-      cached_actions_[action->id] = std::move(action);
+      cached_actions_[std::move(key)] = std::move(action);
       changed = true;
     }
   }
@@ -277,21 +295,17 @@ void WebUIToolbarExtensionsContainerWrapper::SendExtensionsState() {
 }
 
 void WebUIToolbarExtensionsContainerWrapper::ExecuteUserAction(
-    const std::string& extension_id) {
+    extensions_bar::mojom::ExtensionActionIdPtr id) {
   if (extensions_container_) {
-    if (extension_id == kExtensionsButtonId) {
-      extensions_container_->ToggleExtensionsMenu();
-    } else {
-      extensions_container_->ExecuteUserAction(extension_id);
-    }
+    extensions_container_->ExecuteUserAction(std::move(id));
   }
 }
 
 void WebUIToolbarExtensionsContainerWrapper::ShowContextMenu(
     ui::mojom::MenuSourceType source,
-    const std::string& extension_id) {
-  if (extensions_container_ && extension_id != kExtensionsButtonId) {
-    extensions_container_->ShowContextMenu(source, extension_id);
+    extensions_bar::mojom::ExtensionActionIdPtr id) {
+  if (extensions_container_) {
+    extensions_container_->ShowContextMenu(source, std::move(id));
   }
 }
 

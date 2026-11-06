@@ -11,8 +11,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {getExtensionActionKey} from '/shared/extension_action_id.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '/shared/extensions_bar.mojom-webui.js';
-import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
+import type {ExtensionActionId, ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
 import type {IconUpdate} from '/shared/icon_handle.mojom-webui.js';
 import {IconTable} from '/shared/icon_table.js';
 import {HighlightTracker} from '/shared/toolbar_button.js';
@@ -93,21 +94,26 @@ export class ExtensionsBarElement extends CrLitElement {
       icons: IconUpdate[], updates: ExtensionActionInfo[]) {
     this.iconTable_.applyUpdates(icons);
     for (const update of updates) {
-      if (!this.buttons.has(update.id)) {
+      const key = getExtensionActionKey(update.id);
+      if (!this.buttons.has(key)) {
         const extensionButton =
             document.createElement('webui-browser-extension');
-        extensionButton.init(update.id, this);
-        this.buttons.set(update.id, extensionButton);
+        extensionButton.init(key, this);
+        this.buttons.set(key, extensionButton);
         this.shadowRoot.insertBefore(
             extensionButton, this.extensionsMenuButton);
       }
 
-      const extensionButton = this.buttons.get(update.id);
+      const extensionButton = this.buttons.get(key);
       assert(extensionButton);
+      // The ID may change even if the key doesn't, e.g. the request access
+      // button's sequence number.
+      extensionButton.actionId = update.id;
       extensionButton.iconHandle = update.icon;
       extensionButton.setAttribute('aria-label', update.accessibleName);
       extensionButton.setAttribute('title', update.tooltip);
       extensionButton.visible = update.isVisible;
+      extensionButton.text = update.text;
 
       extensionButton.requestUpdate();
     }
@@ -133,11 +139,11 @@ export class ExtensionsBarElement extends CrLitElement {
     this.visible = (this.buttons.size !== 0);
   }
 
-  onClick(id: string) {
+  onClick(id: ExtensionActionId) {
     this.handler.executeUserAction(id);
   }
 
-  onContextMenu(source: MenuSourceType, id: string) {
+  onContextMenu(source: MenuSourceType, id: ExtensionActionId) {
     this.handler.showContextMenu(source, id);
   }
 

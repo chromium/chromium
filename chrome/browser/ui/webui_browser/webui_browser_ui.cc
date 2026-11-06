@@ -298,10 +298,10 @@ std::vector<ui::ElementIdentifier> WebUIBrowserUI::GetKnownElementIdentifiers()
   static constexpr auto kKnownElementIdentifiers =
       std::to_array<ui::ElementIdentifier>(
           {kContentsContainerViewElementId, kExtensionsMenuButtonElementId,
-           kToolbarActionViewElementId, kLocationBarElementId,
-           kLocationIconElementId, kToolbarAppMenuButtonElementId,
-           kToolbarAvatarButtonElementId, kToolbarBackButtonElementId,
-           kToolbarForwardButtonElementId});
+           kToolbarActionViewElementId, kExtensionsRequestAccessButtonElementId,
+           kLocationBarElementId, kLocationIconElementId,
+           kToolbarAppMenuButtonElementId, kToolbarAvatarButtonElementId,
+           kToolbarBackButtonElementId, kToolbarForwardButtonElementId});
   return base::ToVector(kKnownElementIdentifiers);
 }
 

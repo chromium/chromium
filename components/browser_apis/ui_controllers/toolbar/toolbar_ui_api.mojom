@@ -4,6 +4,7 @@
 
 module toolbar_ui_api.mojom;
 
+import "components/browser_apis/ui_controllers/toolbar/extensions_bar_data_model.mojom";
 import "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom";
 import "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
@@ -239,11 +240,14 @@ interface ToolbarUIService {
   // Called when the app menu button focus state changes.
   OnAppMenuFocusChanged(bool focused);
 
-  // Executes the user action for the extension with the given ID.
-  ExecuteExtensionAction(string extension_id);
+  // Executes the user action for the extensions toolbar button with the given
+  // ID.
+  ExecuteExtensionAction(extensions_bar.mojom.ExtensionActionId id);
 
-  // Displays the context menu for the extension with the given ID.
-  ShowExtensionContextMenu(string extension_id, ui.mojom.MenuSourceType source);
+  // Displays the context menu for the extensions toolbar button with the given
+  // ID.
+  ShowExtensionContextMenu(extensions_bar.mojom.ExtensionActionId id,
+                           ui.mojom.MenuSourceType source);
 
   // Adjusts the copied or dragged text and returns the adjusted text,
   // the adjusted URL, and whether a URL should be written to the payload.

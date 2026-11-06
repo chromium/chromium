@@ -663,6 +663,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
             kExtensionsMenuButtonElementId,
             kToolbarActionViewElementId,
             kExtensionsPinnedByDefaultElementId,
+            kExtensionsRequestAccessButtonElementId,
             kToolbarMediaButtonElementId,
         });
         base::span<const ui::ElementIdentifier>

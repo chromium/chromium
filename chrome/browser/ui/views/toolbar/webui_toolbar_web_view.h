@@ -299,8 +299,9 @@ class WebUIToolbarWebView
   void SetAvatarButtonFocused(bool focused) override;
   void SetAvatarButtonIPHPromoShowing(bool showing) override;
   void OnAppMenuFocusChanged(bool focused) override;
-  void ExecuteExtensionAction(const std::string& extension_id) override;
-  void ShowExtensionContextMenu(const std::string& extension_id,
+  void ExecuteExtensionAction(
+      extensions_bar::mojom::ExtensionActionIdPtr id) override;
+  void ShowExtensionContextMenu(extensions_bar::mojom::ExtensionActionIdPtr id,
                                 ui::mojom::MenuSourceType source) override;
   base::expected<toolbar_ui_api::mojom::AdjustOmniboxTextForCopyResultPtr,
                  mojo_base::mojom::ErrorPtr>

@@ -13,13 +13,19 @@ export function getHtml(this: ExtensionElement) {
     ?is-menu-open="${this.state.highlighted || this.trackedHighlighted}"
     .tooltip="${this.state.tooltip}"
     .ariaLabel="${this.state.accessibleName || this.state.tooltip}"
-    .ariaHasPopup="${'menu'}" draggable="${this.isDraggable()}"
+    .ariaHasPopup="${'menu'}" .flatEdge="${this.getFlatEdge_()}"
+    ?has-label="${!!this.state.text}" draggable="${this.isDraggable()}"
     @dragstart="${this.onDragstart}" @dragend="${this.onDragend}"
     @keydown="${this.onKeydown}"
     @pointerdown="${this.highlightTracker.onPointerdown}"
     @click="${this.onClick_}" @contextmenu="${this.onContextmenu_}">
-  <icon-from-table slot="prefix-icon" .iconHandle="${this.state.icon}">
-  </icon-from-table>
+  ${this.state.icon && this.state.icon.handleId !== 0n ? html`
+    <icon-from-table slot="prefix-icon" .iconHandle="${this.state.icon}">
+    </icon-from-table>
+  ` : ''}
+  ${this.state.text ? html`
+    <span id="text">${this.state.text}</span>
+  ` : ''}
 </toolbar-chip-button>
 <!--_html_template_end_-->`;
 }

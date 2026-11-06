@@ -10,6 +10,7 @@ import {assert} from '//resources/js/assert.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import type {ExtensionActionId} from '/shared/extensions_bar_data_model.mojom-webui.js';
 import type {IconHandle} from '/shared/icon_handle.mojom-webui.js';
 import {HighlightTracker} from '/shared/toolbar_button.js';
 
@@ -34,21 +35,27 @@ export class ExtensionElement extends CrLitElement {
     return {
       iconHandle: {type: Object},
       visible: {type: Boolean, reflect: true},
+      text: {type: String},
     };
   }
 
   accessor iconHandle: IconHandle = {handleId: 0n};
   accessor visible: boolean = false;
+  accessor text: string = '';
+
+  // ID of the action, sent to the browser on interaction.
+  actionId: ExtensionActionId = {extensionsMenuButton: {}};
 
   private bar?: ExtensionsBarElement;
-  private extensionId: string = '';
+  // Key identifying the action (see getExtensionActionKey()).
+  private actionKey: string = '';
   protected highlightTracker_: HighlightTracker = new HighlightTracker();
 
   override connectedCallback() {
     super.connectedCallback();
     TrackedElementManager.getInstance().startTracking(
         this, 'kToolbarActionViewElementId', {
-          secondaryId: 'ext:' + this.extensionId,
+          secondaryId: 'ext:' + this.actionKey,
           onHighlightChanged: this.highlightTracker_.onHighlightChanged,
         });
   }
@@ -58,8 +65,8 @@ export class ExtensionElement extends CrLitElement {
     TrackedElementManager.getInstance().stopTracking(this);
   }
 
-  init(extensionId: string, bar: ExtensionsBarElement) {
-    this.extensionId = extensionId;
+  init(actionKey: string, bar: ExtensionsBarElement) {
+    this.actionKey = actionKey;
     this.bar = bar;
   }
 
@@ -68,7 +75,7 @@ export class ExtensionElement extends CrLitElement {
       return;
     }
     assert(this.bar);
-    this.bar.onClick(this.extensionId);
+    this.bar.onClick(this.actionId);
   }
 
   protected onContextmenu_(event: PointerEvent) {
@@ -88,7 +95,7 @@ export class ExtensionElement extends CrLitElement {
         break;
     }
     assert(this.bar);
-    this.bar.onContextMenu(sourceType, this.extensionId);
+    this.bar.onContextMenu(sourceType, this.actionId);
   }
 }
 
