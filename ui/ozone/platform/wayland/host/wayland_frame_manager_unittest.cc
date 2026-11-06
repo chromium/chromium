@@ -66,7 +66,9 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
                                     /*supports_single_pixel_buffer=*/true);
   }
 
-  void RecordFrame() {
+  // Records a frame. If `requires_acks` is true, the frame waits for
+  // submission and presentation acks like the frames from the GPU process.
+  void RecordFrame(bool requires_acks = false) {
     buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), kLength, kBufferSize,
                                               buffer_id_);
     base::RunLoop().RunUntilIdle();
@@ -76,7 +78,10 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     config.bounds_rect = {0, 0, kWidth, kHeight};
     auto* surface = window_->root_surface();
     std::unique_ptr<WaylandFrame> frame =
-        std::make_unique<WaylandFrame>(surface, std::move(config));
+        requires_acks
+            ? std::make_unique<WaylandFrame>(buffer_id_, gfx::FrameData(),
+                                             surface, std::move(config))
+            : std::make_unique<WaylandFrame>(surface, std::move(config));
     frame_manager_->RecordFrame(std::move(frame));
     ++buffer_id_;
   }
@@ -139,6 +144,19 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     PostToServerAndWait([id = window_->root_surface()->get_surface_id()](
                             wl::TestWaylandServerThread* server) {
       auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+      mock_surface->SendFrameCallback();
+    });
+  }
+
+  // Sends the frame callback for the last frame and releases the buffer that
+  // was attached before the last one.
+  void SendFrameCallbackAndReleasePrevBuffer() {
+    PostToServerAndWait([id = window_->root_surface()->get_surface_id()](
+                            wl::TestWaylandServerThread* server) {
+      auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+      if (auto* buffer = mock_surface->prev_attached_buffer()) {
+        mock_surface->ReleaseBuffer(buffer);
+      }
       mock_surface->SendFrameCallback();
     });
   }
@@ -373,6 +391,49 @@ TEST_F(WaylandFrameManagerTest, UnblockFrames_OnTransitionToSwapWithoutCommit) {
   EXPECT_FALSE(LastSubmittedFrameHasFrameCallback());
   EXPECT_FALSE(LastSubmittedFrameHasSubmittedBuffers());
   EXPECT_TRUE(LastSubmittedFrameAcked());
+}
+
+// Tests that the submitted frames queue is trimmed when the compositor stops
+// sending presentation feedback, even if a frame in the queue was already
+// marked as failed (here by Hide()) while its presentation feedback request
+// was still outstanding.
+TEST_F(WaylandFrameManagerTest, TooManySubmittedFramesAfterHide) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    ASSERT_TRUE(server->EnsureAndGetWpPresentation());
+  });
+  InitBufferManager();
+  ASSERT_TRUE(connection_->presentation());
+
+  // The compositor never sends presentation feedback, so the first frame
+  // blocks the queue.
+  RecordFrame(/*requires_acks=*/true);
+  SendFrameCallbackAndReleasePrevBuffer();
+  RecordFrame(/*requires_acks=*/true);
+  EXPECT_EQ(2u, NumSubmittedFrames());
+  EXPECT_EQ(0u, NumPendingFrames());
+
+  // Hiding marks the last frame as failed while its presentation feedback
+  // request is still outstanding.
+  frame_manager_->Hide();
+
+  // Submit enough frames to hit the limit of submitted frames.
+  for (int i = 0; i < 20; ++i) {
+    SendFrameCallbackAndReleasePrevBuffer();
+    RecordFrame(/*requires_acks=*/true);
+    EXPECT_EQ(0u, NumPendingFrames());
+  }
+
+  // The frames without feedback are marked as failed and processed, so the
+  // queue no longer grows.
+  EXPECT_LT(NumSubmittedFrames(), 20u);
+
+  // Destroy the feedback resources that the server never answered.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* presentation = server->EnsureAndGetWpPresentation();
+    while (presentation->num_of_presentation_callbacks() > 0) {
+      presentation->DropPresentationCallback();
+    }
+  });
 }
 
 }  // namespace ui

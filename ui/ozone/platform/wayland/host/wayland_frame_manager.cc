@@ -717,8 +717,13 @@ void WaylandFrameManager::VerifyNumberOfSubmittedFrames() {
          it < (submitted_frames_.end() - kMaxFramesInFlight); it++) {
       if (!(*it)->submission_acked || !(*it)->pending_feedback)
         break;
-      CHECK(!(*it)->feedback.has_value(), base::NotFatalUntil::M163);
-      (*it)->feedback = gfx::PresentationFeedback::Failure();
+      // The frame may already have a result while its feedback request is
+      // still outstanding, e.g. if Hide() or a failed surface configure marked
+      // it as failed, or if the feedback for a later frame arrived first. Keep
+      // that result and only drop the request.
+      if (!(*it)->feedback.has_value()) {
+        (*it)->feedback = gfx::PresentationFeedback::Failure();
+      }
       (*it)->pending_feedback.reset();
     }
   }
