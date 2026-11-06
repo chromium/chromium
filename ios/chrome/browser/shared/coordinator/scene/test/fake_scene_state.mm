@@ -6,12 +6,9 @@
 
 #import <utility>
 
-#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -55,38 +52,20 @@
 }
 
 - (void)setCurrentBrowser:(Browser*)browser {
-  if (!browser) {
-    _browserProviderInterface.currentBrowserProvider = nil;
-    return;
-  }
-  if (browser == _browserProviderInterface.mainBrowser) {
-    _browserProviderInterface.currentBrowserProvider =
-        _browserProviderInterface.mainBrowserProvider;
-    return;
-  }
-  CHECK_EQ(browser, _browserProviderInterface.incognitoBrowser);
-  _browserProviderInterface.currentBrowserProvider =
-      _browserProviderInterface.incognitoBrowserProvider;
-}
-
-- (void)setCurrentBrowserProvider:(id<BrowserProvider>)browserProvider {
-  CHECK(browserProvider == nil ||
-        browserProvider == _browserProviderInterface.mainBrowserProvider ||
-        browserProvider == _browserProviderInterface.incognitoBrowserProvider);
-
-  _browserProviderInterface.currentBrowserProvider =
-      base::apple::ObjCCastStrict<StubBrowserProvider>(browserProvider);
+  _browserProviderInterface.currentBrowser = browser;
 }
 
 - (void)destroyAndRecreateOffTheRecordProfile {
   // Remember whether the current interface was incognito in order to
   // restore it after the destruction/creation.
   const BOOL currentInterfaceWasIncognito =
-      _browserProviderInterface.currentBrowserProvider ==
-      _browserProviderInterface.incognitoBrowserProvider;
+      _browserProviderInterface.currentBrowser ==
+      _browserProviderInterface.incognitoBrowser;
 
-  [_browserProviderInterface.incognitoBrowserProvider shutdown];
-  _browserProviderInterface.incognitoBrowserProvider = nil;
+  if (currentInterfaceWasIncognito) {
+    _browserProviderInterface.currentBrowser = nullptr;
+  }
+  _browserProviderInterface.incognitoBrowser = nullptr;
 
   ProfileIOS* profile = _browser->GetProfile();
 
@@ -100,12 +79,10 @@
   _incognito_browser =
       std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
 
-  StubBrowserProvider* incognitoBrowserProvider =
-      [[StubBrowserProvider alloc] initWithBrowser:_incognito_browser.get()];
-  _browserProviderInterface.incognitoBrowserProvider = incognitoBrowserProvider;
+  _browserProviderInterface.incognitoBrowser = _incognito_browser.get();
 
   if (currentInterfaceWasIncognito) {
-    _browserProviderInterface.currentBrowserProvider = incognitoBrowserProvider;
+    _browserProviderInterface.currentBrowser = _incognito_browser.get();
   }
 }
 

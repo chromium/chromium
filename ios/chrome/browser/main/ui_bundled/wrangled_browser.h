@@ -8,17 +8,16 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 
+class Browser;
 @class BrowserCoordinator;
 @class BrowserLayoutViewController;
 @class BrowserViewController;
 class ProfileIOS;
 
-// Implementation of BrowserProvider -- for the most part a wrapper around
-// BrowserCoordinator. This is a Wrangler (a class in need of further
-// refactoring) and should *not* be used outside of SceneController.
-@interface WrangledBrowser : NSObject <BrowserProvider>
+// Wrapper around BrowserCoordinator. This is a Wrangler (a class in need of
+// further refactoring) and should *not* be used outside of SceneController.
+@interface WrangledBrowser : NSObject
 
 - (instancetype)initWithCoordinator:(BrowserCoordinator*)coordinator;
 

@@ -9,7 +9,6 @@
 #import "url/gurl.h"
 
 class Browser;
-@protocol BrowserProvider;
 class ProfileIOS;
 
 // Test double for SceneState that create a regular and an incognito Browsers
@@ -24,9 +23,6 @@ class ProfileIOS;
 // Updates the current Browser. Must be nullptr, -mainBrowser, or
 // -incognitoBrowser from -browserProviderInterface.
 - (void)setCurrentBrowser:(Browser*)browser;
-
-// Deprecated: Use `-setCurrentBrowser:` instead.
-- (void)setCurrentBrowserProvider:(id<BrowserProvider>)browserProvider;
 
 // Destroys and recreates the off-the-record Profile and Browser.
 - (void)destroyAndRecreateOffTheRecordProfile;

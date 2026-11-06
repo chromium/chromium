@@ -13,8 +13,6 @@ source_set("test") {
     "fake_connection_information.mm",
     "fake_scene_state.h",
     "fake_scene_state.mm",
-    "stub_browser_provider.h",
-    "stub_browser_provider.mm",
     "stub_browser_provider_interface.h",
     "stub_browser_provider_interface.mm",
   ]

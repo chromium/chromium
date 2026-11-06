@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 class Browser;
-@protocol BrowserProvider;
 
 // A BrowserProviderInterface is an abstraction that exposes the available
 // Browsers for the Chrome UI.
@@ -22,13 +21,6 @@ class Browser;
 @property(nonatomic, readonly) Browser* incognitoBrowser;
 // YES iff `incognitoBrowser` is already created.
 @property(nonatomic, assign, readonly) BOOL hasIncognitoBrowser;
-
-// Deprecated: Use `currentBrowser`, `mainBrowser`, `incognitoBrowser`, and
-// `hasIncognitoBrowser` instead.
-@property(nonatomic, weak, readonly) id<BrowserProvider> currentBrowserProvider;
-@property(nonatomic, readonly) id<BrowserProvider> mainBrowserProvider;
-@property(nonatomic, readonly) id<BrowserProvider> incognitoBrowserProvider;
-@property(nonatomic, assign, readonly) BOOL hasIncognitoBrowserProvider;
 
 @end
 

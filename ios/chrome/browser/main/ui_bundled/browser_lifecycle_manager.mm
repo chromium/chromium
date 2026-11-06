@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -156,33 +155,11 @@
   return _currentInterface.browser;
 }
 
-- (BOOL)hasIncognitoBrowser {
-  return _mainInterface && _incognitoInterface;
-}
-
-- (id<BrowserProvider>)mainBrowserProvider {
-  return _mainInterface;
-}
-
-- (id<BrowserProvider>)incognitoBrowserProvider {
-  if (!self.hasIncognitoBrowserProvider) {
-    // Ensure that the method return nil if self.hasIncognitoBrowserProvider
-    // returns NO.
-    return nil;
-  }
-
-  return _incognitoInterface;
-}
-
-- (id<BrowserProvider>)currentBrowserProvider {
-  return _currentInterface;
-}
-
 // This method should almost never return NO since the incognitoInterface
 // is not lazily created, but it is possible for it to return YES after
 // -shutdown or as a transient state while the OTR Profile is
 // being detroyed and recreated (see SceneController).
-- (BOOL)hasIncognitoBrowserProvider {
+- (BOOL)hasIncognitoBrowser {
   return _mainInterface && _incognitoInterface;
 }
 

@@ -62,22 +62,6 @@
   return NO;
 }
 
-- (id<BrowserProvider>)mainBrowserProvider {
-  return nil;
-}
-
-- (id<BrowserProvider>)currentBrowserProvider {
-  return nil;
-}
-
-- (id<BrowserProvider>)incognitoBrowserProvider {
-  return nil;
-}
-
-- (BOOL)hasIncognitoBrowserProvider {
-  return NO;
-}
-
 @end
 
 class ScreenshotDelegateTest : public PlatformTest {
