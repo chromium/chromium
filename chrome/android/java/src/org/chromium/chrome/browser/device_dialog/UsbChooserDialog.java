@@ -11,7 +11,10 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.Initializer;
@@ -35,18 +38,23 @@ import org.chromium.ui.util.ColorUtils;
  */
 @NullMarked
 public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback {
+    @JniType("::UsbChooserDialogAndroid")
+    interface NativeUsbChooserDialogAndroid extends JniTypeToken {}
+
     /** The dialog to show to let the user pick a device. */
     ItemChooserDialog mItemChooserDialog;
 
     /** A pointer back to the native part of the implementation for this dialog. */
-    long mNativeUsbChooserDialogPtr;
+    @VisibleForTesting
+    @Nullable JniRawPtr<NativeUsbChooserDialogAndroid> mNativeUsbChooserDialogPtr;
 
     /** The current profile when the dialog is created. */
     private final Profile mProfile;
 
     /** Creates the UsbChooserDialog. */
     @VisibleForTesting
-    UsbChooserDialog(long nativeUsbChooserDialogPtr, Profile profile) {
+    UsbChooserDialog(
+            JniRawPtr<NativeUsbChooserDialogAndroid> nativeUsbChooserDialogPtr, Profile profile) {
         mNativeUsbChooserDialogPtr = nativeUsbChooserDialogPtr;
         mProfile = profile;
     }
@@ -100,10 +108,14 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
                                 new ChromeClickableSpan(
                                         activity,
                                         (view) -> {
-                                            if (mNativeUsbChooserDialogPtr == 0) return;
+                                            if (mNativeUsbChooserDialogPtr == null) return;
 
                                             Natives jni = UsbChooserDialogJni.get();
                                             jni.loadUsbHelpPage(mNativeUsbChooserDialogPtr);
+                                            if (mNativeUsbChooserDialogPtr != null) {
+                                                mNativeUsbChooserDialogPtr.release();
+                                                mNativeUsbChooserDialogPtr = null;
+                                            }
 
                                             // Get rid of the highlight background on selection.
                                             view.invalidate();
@@ -124,12 +136,16 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @Override
     public void onItemSelected(String id) {
-        if (mNativeUsbChooserDialogPtr != 0) {
+        if (mNativeUsbChooserDialogPtr != null) {
             Natives jni = UsbChooserDialogJni.get();
             if (id.isEmpty()) {
                 jni.onDialogCancelled(mNativeUsbChooserDialogPtr);
             } else {
                 jni.onItemSelected(mNativeUsbChooserDialogPtr, id);
+            }
+            if (mNativeUsbChooserDialogPtr != null) {
+                mNativeUsbChooserDialogPtr.release();
+                mNativeUsbChooserDialogPtr = null;
             }
         }
     }
@@ -141,9 +157,12 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
             @JniType("std::u16string") String origin,
             int securityLevel,
             Profile profile,
-            long nativeUsbChooserDialogPtr) {
+            JniRawPtr<NativeUsbChooserDialogAndroid> nativeUsbChooserDialogPtr) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) return null;
+        if (activity == null) {
+            nativeUsbChooserDialogPtr.release();
+            return null;
+        }
 
         // Avoid showing the chooser when ModalDialogManager indicates that
         // tab-modal or app-modal dialogs are suspended.
@@ -154,6 +173,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
                 && (modalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB)
                         || modalDialogManager.isSuspended(
                                 ModalDialogManager.ModalDialogType.APP))) {
+            nativeUsbChooserDialogPtr.release();
             return null;
         }
 
@@ -181,17 +201,21 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @CalledByNative
     private void closeDialog() {
-        mNativeUsbChooserDialogPtr = 0;
+        if (mNativeUsbChooserDialogPtr != null) {
+            mNativeUsbChooserDialogPtr.release();
+            mNativeUsbChooserDialogPtr = null;
+        }
         mItemChooserDialog.dismiss();
     }
 
     @NativeMethods
     interface Natives {
         void onItemSelected(
-                long nativeUsbChooserDialogAndroid, @JniType("std::string") String deviceId);
+                JniPtr<NativeUsbChooserDialogAndroid> self,
+                @JniType("std::string") String deviceId);
 
-        void onDialogCancelled(long nativeUsbChooserDialogAndroid);
+        void onDialogCancelled(JniPtr<NativeUsbChooserDialogAndroid> self);
 
-        void loadUsbHelpPage(long nativeUsbChooserDialogAndroid);
+        void loadUsbHelpPage(JniPtr<NativeUsbChooserDialogAndroid> self);
     }
 }

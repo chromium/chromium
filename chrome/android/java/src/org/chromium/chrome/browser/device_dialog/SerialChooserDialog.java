@@ -21,7 +21,10 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -52,6 +55,8 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class SerialChooserDialog
         implements ItemChooserDialog.ItemSelectedCallback, PermissionCallback {
+    @JniType("::SerialChooserDialogAndroid")
+    interface NativeSerialChooserDialogAndroid extends JniTypeToken {}
 
     /** The window that owns this dialog. */
     private final WindowAndroid mWindowAndroid;
@@ -66,7 +71,8 @@ public class SerialChooserDialog
     @VisibleForTesting ItemChooserDialog mItemChooserDialog;
 
     /** A pointer back to the native part of the implementation for this dialog. */
-    private long mNativeSerialChooserDialogPtr;
+    @VisibleForTesting
+    @Nullable JniRawPtr<NativeSerialChooserDialogAndroid> mNativeSerialChooserDialogPtr;
 
     /** The current profile when the dialog is created. */
     private final Profile mProfile;
@@ -90,8 +96,10 @@ public class SerialChooserDialog
 
                     mItemChooserDialog.clear();
 
-                    Natives jni = SerialChooserDialogJni.get();
-                    jni.listDevices(mNativeSerialChooserDialogPtr);
+                    if (mNativeSerialChooserDialogPtr != null) {
+                        Natives jni = SerialChooserDialogJni.get();
+                        jni.listDevices(mNativeSerialChooserDialogPtr);
+                    }
                 }
             };
 
@@ -117,7 +125,9 @@ public class SerialChooserDialog
     /** Creates the SerialChooserDialog. */
     @VisibleForTesting
     SerialChooserDialog(
-            WindowAndroid windowAndroid, long nativeSerialChooserDialogPtr, Profile profile) {
+            WindowAndroid windowAndroid,
+            JniRawPtr<NativeSerialChooserDialogAndroid> nativeSerialChooserDialogPtr,
+            Profile profile) {
         mWindowAndroid = windowAndroid;
         mContext = assertNonNull(mWindowAndroid.getContext().get());
         mNativeSerialChooserDialogPtr = nativeSerialChooserDialogPtr;
@@ -173,10 +183,14 @@ public class SerialChooserDialog
                                 new ChromeClickableSpan(
                                         activity,
                                         (view) -> {
-                                            if (mNativeSerialChooserDialogPtr == 0) return;
+                                            if (mNativeSerialChooserDialogPtr == null) return;
 
                                             Natives jni = SerialChooserDialogJni.get();
                                             jni.openSerialHelpPage(mNativeSerialChooserDialogPtr);
+                                            if (mNativeSerialChooserDialogPtr != null) {
+                                                mNativeSerialChooserDialogPtr.release();
+                                                mNativeSerialChooserDialogPtr = null;
+                                            }
 
                                             // Get rid of the highlight background on selection.
                                             view.invalidate();
@@ -206,19 +220,23 @@ public class SerialChooserDialog
             mContext.unregisterReceiver(mLocationModeBroadcastReceiver);
             mIsLocationModeChangedReceiverRegistered = false;
         }
-        if (mNativeSerialChooserDialogPtr != 0) {
+        if (mNativeSerialChooserDialogPtr != null) {
             Natives jni = SerialChooserDialogJni.get();
             if (id.isEmpty()) {
                 jni.onDialogCancelled(mNativeSerialChooserDialogPtr);
             } else {
                 jni.onItemSelected(mNativeSerialChooserDialogPtr, id);
             }
+            if (mNativeSerialChooserDialogPtr != null) {
+                mNativeSerialChooserDialogPtr.release();
+                mNativeSerialChooserDialogPtr = null;
+            }
         }
     }
 
     @Override
     public void onRequestPermissionsResult(String[] permissions, int[] results) {
-        if (mNativeSerialChooserDialogPtr == 0) return;
+        if (mNativeSerialChooserDialogPtr == null) return;
 
         mItemChooserDialog.setIgnorePendingWindowFocusChangeForClose(false);
 
@@ -305,7 +323,7 @@ public class SerialChooserDialog
     }
 
     private void onLinkClick(View view, @LinkType int linkType) {
-        if (mNativeSerialChooserDialogPtr == 0) return;
+        if (mNativeSerialChooserDialogPtr == null) return;
 
         Natives jni = SerialChooserDialogJni.get();
 
@@ -325,10 +343,18 @@ public class SerialChooserDialog
                 }
             case LinkType.ADAPTER_OFF_HELP:
                 jni.openAdapterOffHelpPage(mNativeSerialChooserDialogPtr);
+                if (mNativeSerialChooserDialogPtr != null) {
+                    mNativeSerialChooserDialogPtr.release();
+                    mNativeSerialChooserDialogPtr = null;
+                }
                 break;
             case LinkType.NEED_PERMISSION_HELP:
             case LinkType.NEED_LOCATION_PERMISSION_HELP:
                 jni.openBluetoothPermissionHelpPage(mNativeSerialChooserDialogPtr);
+                if (mNativeSerialChooserDialogPtr != null) {
+                    mNativeSerialChooserDialogPtr.release();
+                    mNativeSerialChooserDialogPtr = null;
+                }
                 break;
             case LinkType.REQUEST_PERMISSIONS:
                 mItemChooserDialog.setIgnorePendingWindowFocusChangeForClose(true);
@@ -353,9 +379,12 @@ public class SerialChooserDialog
             @JniType("std::u16string") String origin,
             int securityLevel,
             Profile profile,
-            long nativeSerialChooserDialogPtr) {
+            JniRawPtr<NativeSerialChooserDialogAndroid> nativeSerialChooserDialogPtr) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) return null;
+        if (activity == null) {
+            nativeSerialChooserDialogPtr.release();
+            return null;
+        }
 
         // Avoid showing the chooser when ModalDialogManager indicates that
         // tab-modal or app-modal dialogs are suspended.
@@ -366,6 +395,7 @@ public class SerialChooserDialog
                 && (modalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB)
                         || modalDialogManager.isSuspended(
                                 ModalDialogManager.ModalDialogType.APP))) {
+            nativeSerialChooserDialogPtr.release();
             return null;
         }
 
@@ -395,7 +425,10 @@ public class SerialChooserDialog
     @VisibleForTesting
     @CalledByNative
     void closeDialog() {
-        mNativeSerialChooserDialogPtr = 0;
+        if (mNativeSerialChooserDialogPtr != null) {
+            mNativeSerialChooserDialogPtr.release();
+            mNativeSerialChooserDialogPtr = null;
+        }
         // dismiss() will trigger the onDismissListener in ItemChooserDialog,
         // which calls back to onItemSelected("").
         mItemChooserDialog.dismiss();
@@ -440,17 +473,18 @@ public class SerialChooserDialog
 
     @NativeMethods
     interface Natives {
-        void listDevices(long nativeSerialChooserDialogAndroid);
+        void listDevices(JniPtr<NativeSerialChooserDialogAndroid> self);
 
         void onItemSelected(
-                long nativeSerialChooserDialogAndroid, @JniType("std::string") String deviceId);
+                JniPtr<NativeSerialChooserDialogAndroid> self,
+                @JniType("std::string") String deviceId);
 
-        void onDialogCancelled(long nativeSerialChooserDialogAndroid);
+        void onDialogCancelled(JniPtr<NativeSerialChooserDialogAndroid> self);
 
-        void openSerialHelpPage(long nativeSerialChooserDialogAndroid);
+        void openSerialHelpPage(JniPtr<NativeSerialChooserDialogAndroid> self);
 
-        void openAdapterOffHelpPage(long nativeSerialChooserDialogAndroid);
+        void openAdapterOffHelpPage(JniPtr<NativeSerialChooserDialogAndroid> self);
 
-        void openBluetoothPermissionHelpPage(long nativeSerialChooserDialogAndroid);
+        void openBluetoothPermissionHelpPage(JniPtr<NativeSerialChooserDialogAndroid> self);
     }
 }

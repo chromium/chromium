@@ -15,6 +15,8 @@ import android.widget.ListView;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,15 +59,17 @@ public class UsbChooserDialogTest {
 
     private class TestUsbChooserDialogJni implements UsbChooserDialog.Natives {
         @Override
-        public void onItemSelected(long nativeUsbChooserDialogAndroid, String deviceId) {
+        public void onItemSelected(
+                JniPtr<UsbChooserDialog.NativeUsbChooserDialogAndroid> self, String deviceId) {
             mSelectedDeviceId = deviceId;
         }
 
         @Override
-        public void onDialogCancelled(long nativeUsbChooserDialogAndroid) {}
+        public void onDialogCancelled(
+                JniPtr<UsbChooserDialog.NativeUsbChooserDialogAndroid> self) {}
 
         @Override
-        public void loadUsbHelpPage(long nativeUsbChooserDialogAndroid) {}
+        public void loadUsbHelpPage(JniPtr<UsbChooserDialog.NativeUsbChooserDialogAndroid> self) {}
     }
 
     @Before
@@ -78,8 +82,14 @@ public class UsbChooserDialogTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    if (mChooserDialog != null && mChooserDialog.mItemChooserDialog != null) {
-                        mChooserDialog.mItemChooserDialog.dismiss();
+                    if (mChooserDialog != null) {
+                        if (mChooserDialog.mNativeUsbChooserDialogPtr != null) {
+                            mChooserDialog.mNativeUsbChooserDialogPtr.release();
+                            mChooserDialog.mNativeUsbChooserDialogPtr = null;
+                        }
+                        if (mChooserDialog.mItemChooserDialog != null) {
+                            mChooserDialog.mItemChooserDialog.dismiss();
+                        }
                     }
                 });
     }
@@ -89,7 +99,7 @@ public class UsbChooserDialogTest {
                 () -> {
                     UsbChooserDialog dialog =
                             new UsbChooserDialog(
-                                    /* nativeUsbChooserDialogPtr= */ 42,
+                                    JniRawPtr.createForTesting(42L),
                                     ProfileManager.getLastUsedRegularProfile());
                     dialog.show(
                             mActivityTestRule.getActivity(),
@@ -216,7 +226,7 @@ public class UsbChooserDialogTest {
                                     "https://origin.example.com/",
                                     ConnectionSecurityLevel.SECURE,
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    /* nativeUsbChooserDialogPtr= */ 42);
+                                    JniRawPtr.createForTesting(42L));
                         });
         Assert.assertNull(dialog);
     }

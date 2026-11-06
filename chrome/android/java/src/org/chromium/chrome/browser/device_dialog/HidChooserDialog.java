@@ -14,7 +14,10 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
@@ -48,6 +51,9 @@ import org.chromium.ui.util.ColorUtils;
  */
 @NullMarked
 public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback {
+    @JniType("::HidChooserDialogAndroid")
+    interface NativeHidChooserDialogAndroid extends JniTypeToken {}
+
     private static final String TAG = "HidChooserDialog";
 
     // Intent action for Android Special App Access to HID devices.
@@ -60,14 +66,15 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
     private @Nullable ItemChooserDialog mItemChooserDialog;
 
     /** A pointer back to the native part of the implementation for this dialog. */
-    private long mNativeHidChooserDialogPtr;
+    private @Nullable JniRawPtr<NativeHidChooserDialogAndroid> mNativeHidChooserDialogPtr;
 
     /** The current profile when the dialog is created. */
     private final Profile mProfile;
 
     /** Creates the HidChooserDialog. */
     @VisibleForTesting
-    HidChooserDialog(long nativeHidChooserDialogPtr, Profile profile) {
+    HidChooserDialog(
+            JniRawPtr<NativeHidChooserDialogAndroid> nativeHidChooserDialogPtr, Profile profile) {
         mNativeHidChooserDialogPtr = nativeHidChooserDialogPtr;
         mProfile = profile;
     }
@@ -123,10 +130,14 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
                                 new ChromeClickableSpan(
                                         activity,
                                         (view) -> {
-                                            if (mNativeHidChooserDialogPtr == 0) return;
+                                            if (mNativeHidChooserDialogPtr == null) return;
 
                                             Natives jni = HidChooserDialogJni.get();
                                             jni.loadHidHelpPage(mNativeHidChooserDialogPtr);
+                                            if (mNativeHidChooserDialogPtr != null) {
+                                                mNativeHidChooserDialogPtr.release();
+                                                mNativeHidChooserDialogPtr = null;
+                                            }
 
                                             // Get rid of the highlight background on selection.
                                             view.invalidate();
@@ -149,14 +160,16 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @Override
     public void onItemSelected(String id) {
-        if (mNativeHidChooserDialogPtr != 0) {
-            long nativePtr = mNativeHidChooserDialogPtr;
-            mNativeHidChooserDialogPtr = 0;
+        if (mNativeHidChooserDialogPtr != null) {
             Natives jni = HidChooserDialogJni.get();
             if (id.isEmpty()) {
-                jni.onDialogCancelled(nativePtr);
+                jni.onDialogCancelled(mNativeHidChooserDialogPtr);
             } else {
-                jni.onItemSelected(nativePtr, id);
+                jni.onItemSelected(mNativeHidChooserDialogPtr, id);
+            }
+            if (mNativeHidChooserDialogPtr != null) {
+                mNativeHidChooserDialogPtr.release();
+                mNativeHidChooserDialogPtr = null;
             }
         }
     }
@@ -168,9 +181,12 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
             @JniType("std::u16string") String origin,
             int securityLevel,
             Profile profile,
-            long nativeHidChooserDialogPtr) {
+            JniRawPtr<NativeHidChooserDialogAndroid> nativeHidChooserDialogPtr) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) return null;
+        if (activity == null) {
+            nativeHidChooserDialogPtr.release();
+            return null;
+        }
 
         // Avoid showing the chooser when ModalDialogManager indicates that
         // tab-modal or app-modal dialogs are suspended.
@@ -179,16 +195,19 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
                 && (modalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB)
                         || modalDialogManager.isSuspended(
                                 ModalDialogManager.ModalDialogType.APP))) {
+            nativeHidChooserDialogPtr.release();
             return null;
         }
 
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         HidManager hidManager = delegate != null ? delegate.getHidManager() : null;
         if (hidManager == null) {
+            nativeHidChooserDialogPtr.release();
             return null;
         }
         if (!hidManager.canEnumerateDevices()) {
             showSystemPermissionExplanationDialog(windowAndroid);
+            nativeHidChooserDialogPtr.release();
             return null;
         }
 
@@ -313,7 +332,10 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @CalledByNative
     private void closeDialog() {
-        mNativeHidChooserDialogPtr = 0;
+        if (mNativeHidChooserDialogPtr != null) {
+            mNativeHidChooserDialogPtr.release();
+            mNativeHidChooserDialogPtr = null;
+        }
         if (mItemChooserDialog != null) {
             mItemChooserDialog.dismiss();
         }
@@ -322,10 +344,11 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
     @NativeMethods
     interface Natives {
         void onItemSelected(
-                long nativeHidChooserDialogAndroid, @JniType("std::string") String deviceId);
+                JniPtr<NativeHidChooserDialogAndroid> self,
+                @JniType("std::string") String deviceId);
 
-        void onDialogCancelled(long nativeHidChooserDialogAndroid);
+        void onDialogCancelled(JniPtr<NativeHidChooserDialogAndroid> self);
 
-        void loadHidHelpPage(long nativeHidChooserDialogAndroid);
+        void loadHidHelpPage(JniPtr<NativeHidChooserDialogAndroid> self);
     }
 }

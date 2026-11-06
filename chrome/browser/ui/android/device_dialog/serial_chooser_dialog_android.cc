@@ -25,6 +25,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 
@@ -45,7 +46,7 @@ CreateJavaSerialChooserDialog(
   base::android::ScopedJavaLocalRef<jobject> j_dialog =
       Java_SerialChooserDialog_create(env, window_android, origin,
                                       security_level, profile,
-                                      reinterpret_cast<intptr_t>(dialog));
+                                      jni_zero::MakeRaw(dialog));
   if (j_dialog.is_null()) {
     return nullptr;
   }

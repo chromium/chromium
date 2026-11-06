@@ -23,6 +23,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 
@@ -97,7 +98,7 @@ UsbChooserDialogAndroid::CreateInternal(
       std::move(create_java_dialog_callback)
           .Run(env, window_android, origin_string,
                chrome_security_state::GetSecurityLevel(web_contents),
-               j_profile_android, reinterpret_cast<intptr_t>(dialog.get())));
+               j_profile_android, jni_zero::MakeRaw(dialog.get())));
   if (dialog->java_dialog_.is_null()) {
     return nullptr;
   }

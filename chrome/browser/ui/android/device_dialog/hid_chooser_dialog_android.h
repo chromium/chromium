@@ -33,7 +33,7 @@ class HidChooserDialogAndroid : public permissions::ChooserController::View {
           const std::u16string&,
           JniIntWrapper,
           const base::android::JavaRef<jobject>&,
-          int64_t)>;
+          jni_zero::JniRawPtr<HidChooserDialogAndroid>)>;
 
   // Creates and shows the dialog. Returns a OnceClosure that can be called to
   // cancel and close the dialog, or an empty closure if the dialog could not

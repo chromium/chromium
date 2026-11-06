@@ -20,6 +20,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 
@@ -89,10 +90,10 @@ base::OnceClosure HidChooserDialogAndroid::CreateInternal(
   auto dialog =
       std::make_unique<HidChooserDialogAndroid>(std::move(controller));
 
-  dialog->java_dialog_.Reset(
-      std::move(create_java_dialog_callback)
-          .Run(env, window_android, origin_string, security_level,
-               j_profile_android, reinterpret_cast<intptr_t>(dialog.get())));
+  dialog->java_dialog_.Reset(std::move(create_java_dialog_callback)
+                                 .Run(env, window_android, origin_string,
+                                      security_level, j_profile_android,
+                                      jni_zero::MakeRaw(dialog.get())));
   if (dialog->java_dialog_.is_null()) {
     return base::OnceClosure();
   }

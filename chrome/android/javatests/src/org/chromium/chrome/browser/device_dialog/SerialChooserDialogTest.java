@@ -20,6 +20,8 @@ import android.widget.ListView;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,26 +75,32 @@ public class SerialChooserDialogTest {
 
     private class TestSerialChooserDialogJni implements SerialChooserDialog.Natives {
         @Override
-        public void listDevices(long nativeSerialChooserDialogAndroid) {
+        public void listDevices(JniPtr<SerialChooserDialog.NativeSerialChooserDialogAndroid> self) {
             mListDevicesCount++;
         }
 
         @Override
-        public void onItemSelected(long nativeSerialChooserDialogAndroid, String deviceId) {
+        public void onItemSelected(
+                JniPtr<SerialChooserDialog.NativeSerialChooserDialogAndroid> self,
+                String deviceId) {
             mSelectedDeviceId = deviceId;
         }
 
         @Override
-        public void onDialogCancelled(long nativeSerialChooserDialogAndroid) {}
+        public void onDialogCancelled(
+                JniPtr<SerialChooserDialog.NativeSerialChooserDialogAndroid> self) {}
 
         @Override
-        public void openSerialHelpPage(long nativeSerialChooserDialogAndroid) {}
+        public void openSerialHelpPage(
+                JniPtr<SerialChooserDialog.NativeSerialChooserDialogAndroid> self) {}
 
         @Override
-        public void openAdapterOffHelpPage(long nativeSerialChooserDialogAndroid) {}
+        public void openAdapterOffHelpPage(
+                JniPtr<SerialChooserDialog.NativeSerialChooserDialogAndroid> self) {}
 
         @Override
-        public void openBluetoothPermissionHelpPage(long nativeSerialChooserDialogAndroid) {}
+        public void openBluetoothPermissionHelpPage(
+                JniPtr<SerialChooserDialog.NativeSerialChooserDialogAndroid> self) {}
     }
 
     @Before
@@ -108,8 +116,14 @@ public class SerialChooserDialogTest {
         LocationUtils.setFactory(null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    if (mChooserDialog != null && mChooserDialog.mItemChooserDialog != null) {
-                        mChooserDialog.mItemChooserDialog.dismiss();
+                    if (mChooserDialog != null) {
+                        if (mChooserDialog.mNativeSerialChooserDialogPtr != null) {
+                            mChooserDialog.mNativeSerialChooserDialogPtr.release();
+                            mChooserDialog.mNativeSerialChooserDialogPtr = null;
+                        }
+                        if (mChooserDialog.mItemChooserDialog != null) {
+                            mChooserDialog.mItemChooserDialog.dismiss();
+                        }
                     }
                 });
     }
@@ -121,7 +135,7 @@ public class SerialChooserDialogTest {
                     SerialChooserDialog dialog =
                             new SerialChooserDialog(
                                     mWindowAndroid,
-                                    /* nativeSerialChooserDialogPtr= */ 42,
+                                    JniRawPtr.createForTesting(42L),
                                     ProfileManager.getLastUsedRegularProfile());
                     dialog.show(
                             mActivityTestRule.getActivity(),
@@ -459,7 +473,7 @@ public class SerialChooserDialogTest {
                                     "https://origin.example.com/",
                                     ConnectionSecurityLevel.SECURE,
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    /* nativeSerialChooserDialogPtr= */ 42);
+                                    JniRawPtr.createForTesting(42L));
                         });
         Assert.assertNull(dialog);
     }
