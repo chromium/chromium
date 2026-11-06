@@ -1279,8 +1279,6 @@ void ShoppingService::HandleDidNavigatePrimaryMainFrameForPriceInsightsInfo(
     return;
   }
 
-  auto url = web->GetLastCommittedURL().spec();
-
   opt_guide_->CanApplyOptimization(
       web->GetLastCommittedURL(),
       optimization_guide::proto::OptimizationType::PRICE_INSIGHTS,

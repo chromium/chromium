@@ -424,7 +424,6 @@ TEST_F(UniqueProtoDatabaseTest, TestDBLoadInRangeSuccess) {
 
   auto save_entries =
       std::make_unique<ProtoDatabase<TestProto>::KeyEntryVector>();
-  std::map<std::string, TestProto> load_keys_entries;
   std::unique_ptr<KeyVector> remove_keys(new KeyVector());
 
   for (const auto& pair : model)
@@ -465,7 +464,6 @@ TEST_F(UniqueProtoDatabaseTest, TestDBLoadInRangeSuccessSameKey) {
 
   auto save_entries =
       std::make_unique<ProtoDatabase<TestProto>::KeyEntryVector>();
-  std::map<std::string, TestProto> load_keys_entries;
   std::unique_ptr<KeyVector> remove_keys(new KeyVector());
 
   for (const auto& pair : model) {
@@ -1107,7 +1105,6 @@ TEST_F(UniqueProtoDatabaseLevelDBTest, TestDBDeleteWithFilter) {
 
   KeyValueVector save_entries;
   std::vector<std::string> load_entries;
-  KeyVector remove_keys;
 
   for (const auto& pair : model) {
     save_entries.push_back(

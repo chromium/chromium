@@ -188,7 +188,6 @@ TEST(FilenameGenerationTest, TestBasicTruncation) {
   int max_length = base::GetMaximumPathComponentLength(temp_dir.GetPath());
   ASSERT_NE(-1, max_length);
 
-  base::FilePath::StringType extension(FILE_PATH_LITERAL(".txt"));
   base::FilePath path(GetLongNamePathInDirectory(
       max_length, FILE_PATH_LITERAL(".txt"), temp_dir.GetPath()));
   base::FilePath truncated_path = path;

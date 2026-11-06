@@ -1666,8 +1666,6 @@ const FakeDriveService::EntryInfo* FakeDriveService::AddNewEntry(
     new_file->set_shared_with_me_date(base::Time::Now());
   }
 
-  std::string escaped_resource_id = base::EscapePath(resource_id);
-
   // Set mime type.
   new_file->set_mime_type(content_type);
 

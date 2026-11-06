@@ -690,7 +690,6 @@ TEST_F(CookieHelperTest, CannedGetCookieCount) {
   // The request URL used for all cookies that are added to the |helper|.
   GURL request1_url("http://static.google.com/foo/res1.html");
   GURL request2_url("http://static.google.com/bar/res2.html");
-  std::string cookie_domain(".www.google.com");
 
   auto helper = base::MakeRefCounted<CannedCookieHelper>(storage_partition(),
                                                          base::NullCallback());

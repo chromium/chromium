@@ -447,7 +447,6 @@ TEST_P(CBORReaderTest, TestReadArray) {
   ASSERT_EQ(cbor_array.type(), Value::Type::ARRAY);
   ASSERT_THAT(cbor_array.GetArray(), testing::SizeIs(25));
 
-  std::vector<Value> array;
   for (int i = 0; i < 25; i++) {
     SCOPED_TRACE(testing::Message() << "testing array element at index " << i);
 

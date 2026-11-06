@@ -808,7 +808,6 @@ TEST_F(DomainReliabilityContextTest, ZeroSampleRate) {
   config->failure_sample_rate = 0.0;
   InitContext(std::move(config));
 
-  BeaconVector beacons;
   for (int i = 0; i < 100; i++) {
     context_->OnBeacon(MakeBeacon(&time_));
     EXPECT_TRUE(CheckNoBeacons());

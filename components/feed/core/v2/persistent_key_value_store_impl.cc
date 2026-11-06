@@ -73,7 +73,6 @@ class EvictTask {
       return;
     }
     const size_t first_index = state->next_key_index;
-    std::string last_key;
     state->next_key_index = std::min(
         state->next_key_index + kMaxEntriesInMemory, state->all_keys.size());
 

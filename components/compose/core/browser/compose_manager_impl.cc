@@ -168,7 +168,6 @@ Suggestion ComposeManagerImpl::GetSuggestion(
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source) const {
-  std::u16string suggestion_text;
   std::u16string label_text;
   Suggestion suggestion(
       trigger_source == AutofillSuggestionTriggerSource::kComposeDialogLostFocus

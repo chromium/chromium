@@ -312,8 +312,6 @@ BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
   // Split between account and local nodes if there are account nodes.
   BookmarkNodesSplitByAccountAndLocal result;
   if (account_nodes_exist) {
-    std::vector<const BookmarkNode*> account_nodes;
-    std::vector<const BookmarkNode*> local_nodes;
     for (const BookmarkNode* mru_node : mru_nodes) {
       (model->IsLocalOnlyNode(*mru_node) ? result.local_nodes
                                          : result.account_nodes)

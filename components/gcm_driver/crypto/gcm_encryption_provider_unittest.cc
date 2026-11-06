@@ -341,7 +341,6 @@ TEST_F(GCMEncryptionProviderTest, VerifiesKeyRemovalGCMRegistration) {
   // Non-InstanceID callers pass an empty string for authorized_entity.
   std::string authorized_entity_gcm;
   std::string authorized_entity_1 = kExampleAuthorizedEntity + std::string("1");
-  std::string authorized_entity_2 = kExampleAuthorizedEntity + std::string("2");
 
   // Should create encryption info.
   std::string public_key, auth_secret;

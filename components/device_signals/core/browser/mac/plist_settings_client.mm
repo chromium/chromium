@@ -194,8 +194,6 @@ PlistSettingsClient::~PlistSettingsClient() = default;
 void PlistSettingsClient::GetSettings(
     const std::vector<GetSettingsOptions>& options,
     GetSettingsSignalsCallback callback) {
-  std::vector<SettingsItem> items;
-
   // Used to ensure that this function is being called on the main thread.
   SEQUENCE_CHECKER(sequence_checker_);
 

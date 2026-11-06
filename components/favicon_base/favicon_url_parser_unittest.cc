@@ -109,7 +109,6 @@ TEST_F(FaviconUrlParserTest, LegacyParsingSizeParam) {
 
 // Test parsing path with 'iconurl' parameter.
 TEST_F(FaviconUrlParserTest, LegacyParsingIconUrlParam) {
-  const std::string url("https://www.google.ca/imghp?hl=en&tab=wi");
   chrome::ParsedFaviconPath parsed;
 
   const std::string path10 = "iconurl/http://www.google.com/favicon.ico";
@@ -124,7 +123,6 @@ TEST_F(FaviconUrlParserTest, LegacyParsingIconUrlParam) {
 // Test parsing paths with both a 'size' parameter and a 'url modifier'
 // parameter.
 TEST_F(FaviconUrlParserTest, LegacyParsingSizeParamAndUrlModifier) {
-  const std::string url("https://www.google.ca/imghp?hl=en&tab=wi");
   chrome::ParsedFaviconPath parsed;
 
   const std::string path14 =

@@ -228,7 +228,6 @@ TEST_P(DataSharingServiceImplTest, ShouldReadNewGroup) {
 }
 
 TEST_P(DataSharingServiceImplTest, ReadNewGroupFailure) {
-  const std::string display_name = "display_name";
   const GroupToken group_token =
       GroupToken(GroupId("missing_id"), "access_token");
   DataSharingService::GroupDataOrFailureOutcome outcome;

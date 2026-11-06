@@ -554,13 +554,11 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, EngagementScoreCache) {
       testing::CreateDefaultAnnotatedVisit(3, GURL("https://github2.com/"));
   visits.push_back(visit5);
 
-  std::vector<history::Cluster> result_clusters_1 =
-      ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
+  ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_EQ(2u, GetSiteEngagementGetScoreInvocationCount());
 
   // No new queries should be issued when cache store is enabled.
-  std::vector<history::Cluster> result_clusters_2 =
-      ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
+  ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_EQ(2u, GetSiteEngagementGetScoreInvocationCount());
 }
 

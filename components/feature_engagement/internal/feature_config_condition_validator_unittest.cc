@@ -506,8 +506,6 @@ TEST_F(FeatureConfigConditionValidatorTest, PriorityNotification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar}, {});
-  std::vector<std::string> all_feature_names = {
-      kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name};
 
   FeatureConfig foo_config = GetAcceptingFeatureConfig();
   FeatureConfig bar_config = GetAcceptingFeatureConfig();

@@ -91,7 +91,6 @@ TEST_F(LensBitmapProcessingTest, DownscaleImage_TooLarge) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   SkBitmap downscaled_bitmap = DownscaleImage(bitmap, 50, 50, ref_counted_logs);
-  std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   EXPECT_EQ(50, downscaled_bitmap.width());
   EXPECT_EQ(50, downscaled_bitmap.height());
@@ -115,7 +114,6 @@ TEST_F(LensBitmapProcessingTest, DownscaleImage_TooWide) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   SkBitmap downscaled_bitmap = DownscaleImage(bitmap, 50, 50, ref_counted_logs);
-  std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   EXPECT_EQ(50, downscaled_bitmap.width());
   EXPECT_EQ(25, downscaled_bitmap.height());
@@ -139,7 +137,6 @@ TEST_F(LensBitmapProcessingTest, DownscaleImage_TooTall) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   SkBitmap downscaled_bitmap = DownscaleImage(bitmap, 50, 50, ref_counted_logs);
-  std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   EXPECT_EQ(25, downscaled_bitmap.width());
   EXPECT_EQ(50, downscaled_bitmap.height());

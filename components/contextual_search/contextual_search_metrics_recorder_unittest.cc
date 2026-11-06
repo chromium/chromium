@@ -652,7 +652,6 @@ TEST_F(ContextualSearchMetricsRecorderTest, AggregatedFileValidationError) {
       lens::MimeType::kImage, ContextUploadStatus::kProcessing, std::nullopt);
   metrics().OnContextUploadStatusChanged(
       lens::MimeType::kImage, ContextUploadStatus::kValidationFailed, error);
-  std::string error_string = metrics().FileErrorToString(error);
   DestructMetricsRecorder();
 
   histogram_tester().ExpectUniqueSample(kContextualSearchFileUploadAttemptAll,

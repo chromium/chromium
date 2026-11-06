@@ -1204,7 +1204,6 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlIconType) {
   std::vector<SkBitmap> bitmaps = {
       gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)};
 
-  std::vector<favicon_base::FaviconRawBitmapData> favicon_bitmap_data;
   SetFavicons({page_url}, IconType::kFavicon, icon_url1, bitmaps);
   SetFavicons({page_url}, IconType::kTouchIcon, icon_url2, bitmaps);
 
@@ -1236,7 +1235,6 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToHost) {
   const GURL icon_url2("http://maps.google.com.au/icon.png");
   const GURL icon_url3("https://www.google.com/icon.png");
 
-  std::vector<favicon_base::FaviconRawBitmapData> favicon_bitmap_data;
   SetFavicons({page_url_http_same_prefix}, IconType::kFavicon, icon_url1,
               {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)});
   SetFavicons({page_url_http_same_suffix}, IconType::kFavicon, icon_url2,
@@ -1395,7 +1393,6 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlMultipleIconTypes) {
   const GURL icon_url1("http://www.google.com/icon1.png");
   const GURL icon_url2("http://www.google.com/icon2.png");
 
-  std::vector<favicon_base::FaviconRawBitmapData> favicon_bitmap_data;
   SetFavicons({page_url}, IconType::kFavicon, icon_url1,
               {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)});
   SetFavicons({page_url}, IconType::kTouchIcon, icon_url2,
