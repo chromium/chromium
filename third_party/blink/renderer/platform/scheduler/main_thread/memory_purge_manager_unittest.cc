@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,6 +47,7 @@ class MemoryPurgeManagerTest : public testing::Test,
 
   unsigned MemoryPressureCount() const { return memory_pressure_count_; }
 
+  base::MemoryPressureSource memory_pressure_source_;
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::TaskEnvironment task_environment_;

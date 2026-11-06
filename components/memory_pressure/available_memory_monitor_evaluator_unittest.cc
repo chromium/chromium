@@ -10,6 +10,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
@@ -56,6 +57,7 @@ class AvailableMemoryMonitorEvaluatorTest : public testing::Test {
   ~AvailableMemoryMonitorEvaluatorTest() override = default;
 
  protected:
+  base::MemoryPressureSource memory_pressure_source_;
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{

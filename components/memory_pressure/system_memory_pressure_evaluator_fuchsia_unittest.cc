@@ -11,6 +11,7 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
@@ -71,6 +72,7 @@ class SystemMemoryPressureEvaluatorFuchsiaTest
     ADD_FAILURE() << "Unexpected call to method: " << name;
   }
 
+  base::MemoryPressureSource memory_pressure_source_;
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;

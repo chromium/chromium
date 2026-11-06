@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
@@ -451,6 +452,7 @@ class PartitionAllocMemoryPressureTest : public testing::Test {
 };
 
 TEST_F(PartitionAllocMemoryPressureTest, MonitorEndToEnd) {
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
   RegisteredMockMemoryPressureListener listener;
 
@@ -491,6 +493,7 @@ TEST_F(PartitionAllocMemoryPressureTest, MonitorEndToEnd) {
 }
 
 TEST_F(PartitionAllocMemoryPressureTest, MonitorStartupAlreadyCritical) {
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
   RegisteredMockMemoryPressureListener listener;
 

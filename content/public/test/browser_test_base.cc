@@ -113,6 +113,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"  // nogncheck
 #include "content/app/content_main_runner_impl.h"
 #include "content/app/mojo/mojo_init.h"
@@ -632,6 +633,7 @@ void BrowserTestBase::SetUp() {
   // things up manually. A meager re-implementation of ContentMainRunnerImpl
   // follows.
 
+  base::MemoryPressureSource memory_pressure_source;
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
   BrowserMemoryCoordinatorImpl memory_coordinator;
 

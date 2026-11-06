@@ -9,6 +9,7 @@
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -24,6 +25,7 @@ namespace base {
 using testing::_;
 
 TEST(MemoryPressureListenerTest, NotifyMemoryPressure) {
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
   RegisteredMockMemoryPressureListener listener;
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_NONE);
@@ -40,6 +42,7 @@ TEST(MemoryPressureListenerTest, NotifyMemoryPressure) {
 }
 
 TEST(MemoryPressureListenerTest, MemoryPressureSuppressionToken) {
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
   RegisteredMockMemoryPressureListener listener;
 
@@ -87,6 +90,7 @@ TEST(MemoryPressureListenerTest, MemoryPressureSuppressionToken) {
 }
 
 TEST(MemoryPressureListenerTest, SubscribeDuringPressure) {
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
   MockMemoryPressureListener listener;
 
@@ -104,7 +108,28 @@ TEST(MemoryPressureListenerTest, SubscribeDuringPressure) {
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
+TEST(MemoryPressureListenerTest, SubscribeWhileSuppressed) {
+  MemoryPressureSource source;
+  MemoryPressureListenerRegistry registry;
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  std::optional<MemoryPressureSuppressionToken> token(std::in_place);
+  MemoryPressureListenerRegistry::SimulatePressureNotification(
+      MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // A new listener is initialized with the simulated level, not the real one.
+  RegisteredMockMemoryPressureListener listener;
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Lifting the suppression notifies the real level.
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL));
+  token.reset();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
 TEST(MemoryPressureListenerTest, MemoryLimit) {
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
   RegisteredMockMemoryPressureListener listener;
 
@@ -125,6 +150,7 @@ TEST(MemoryPressureListenerTest, MemoryLimit) {
 }
 
 TEST(MemoryPressureListenerTest, RepeatedNotifications) {
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
   MockMemoryPressureListener listener;
   MemoryPressureListenerRegistration registration(
@@ -148,6 +174,7 @@ TEST(MemoryPressureListenerTest, RepeatedNotifications) {
 }
 
 TEST(MemoryPressureListenerTest, IgnoreRepeatedNotifications) {
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
   MockMemoryPressureListener listener;
   MemoryPressureListenerRegistration registration(
@@ -173,6 +200,7 @@ TEST(MemoryPressureListenerTest, IgnoreRepeatedNotifications) {
 
 TEST(MemoryPressureListenerTest, SuppressionTokenFromNonMainThread) {
   test::TaskEnvironment task_env;
+  MemoryPressureSource source;
   MemoryPressureListenerRegistry registry;
 
   const PlatformThreadRef main_thread_ref = PlatformThread::CurrentRef();

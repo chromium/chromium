@@ -105,6 +105,7 @@
 
 #if !BUILDFLAG(USE_BLINK)
 #import "base/memory/memory_pressure_listener_registry.h"
+#import "base/memory_coordinator/memory_pressure_source.h"
 #endif
 
 ApplicationContextImpl::ApplicationContextImpl(
@@ -116,6 +117,7 @@ ApplicationContextImpl::ApplicationContextImpl(
       local_state_task_runner_(local_state_task_runner)
 #if !BUILDFLAG(USE_BLINK)
       ,
+      memory_pressure_source_(std::make_unique<base::MemoryPressureSource>()),
       memory_pressure_listener_registry_(
           std::make_unique<base::MemoryPressureListenerRegistry>())
 #endif

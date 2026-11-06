@@ -7,6 +7,7 @@
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -336,6 +337,7 @@ class BackForwardCacheMemoryPressureTest
   }
 
  private:
+  base::MemoryPressureSource memory_pressure_source_;
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -427,6 +429,7 @@ class BackForwardCacheMemoryPressureStatefulTest
   }
 
  private:
+  base::MemoryPressureSource memory_pressure_source_;
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -545,6 +548,7 @@ class BackForwardCacheVisibilityPressureTest
   }
 
  private:
+  base::MemoryPressureSource memory_pressure_source_;
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

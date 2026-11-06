@@ -13,6 +13,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
@@ -75,6 +76,7 @@ class MemoryPressureListenerPolicyTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::MemoryPressureSource memory_pressure_source_;
   base::MemoryPressureListenerRegistry registry_;
   MemoryCoordinatorPolicyManager policy_manager_;
 };

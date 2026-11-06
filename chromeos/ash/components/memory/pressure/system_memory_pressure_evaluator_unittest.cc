@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/test/task_environment.h"
@@ -54,6 +55,7 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
 };
 
 TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
+  base::MemoryPressureSource memory_pressure_source;
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::UI);

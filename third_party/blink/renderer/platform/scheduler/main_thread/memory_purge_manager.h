@@ -7,8 +7,8 @@
 
 #include <optional>
 
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

@@ -129,6 +129,8 @@ static_library("test_support") {
     "../memory/mock_memory_pressure_listener.h",
     "../memory_coordinator/mock_memory_consumer.cc",
     "../memory_coordinator/mock_memory_consumer.h",
+    "../memory_coordinator/scoped_memory_pressure_level_override.cc",
+    "../memory_coordinator/scoped_memory_pressure_level_override.h",
     "../memory_coordinator/test_memory_consumer_registry.cc",
     "../memory_coordinator/test_memory_consumer_registry.h",
     "../task/sequence_manager/test/fake_task.cc",

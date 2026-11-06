@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/memory.h"
 #include "mojo/public/cpp/bindings/remote.h"
