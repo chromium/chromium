@@ -239,6 +239,11 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // position if required.
   PromotionHintAggregator::NotifyPromotionHintCB CreatePromotionHintCB();
 
+  // Returns whether codecs should use block model (LinearBlock). The result
+  // doesn't change while a codec exists, since `media_crypto_` is set before
+  // the first codec is created and only cleared during teardown.
+  bool ShouldUseBlockModel() const;
+
   // Returns true if the MediaCodec must be reallocated due to an increase in
   // resolution.
   bool CodecNeedsReallocation(const gfx::Size& new_size);
@@ -367,8 +372,10 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // Name of the MediaCodec that was created.
   std::string codec_name_;
 
-  // Enables Block Model (LinearBlock).
+  // Whether block model (LinearBlock) is enabled for codecs without and with a
+  // MediaCrypto. Use ShouldUseBlockModel() instead of reading these directly.
   const bool use_block_model_;
+  const bool use_block_model_for_encrypted_;
 
   HdrMetadataReorderingMap hdr_metadata_reordering_map_;
 

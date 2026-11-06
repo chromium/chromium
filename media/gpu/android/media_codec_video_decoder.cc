@@ -274,7 +274,10 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
       use_block_model_(
           device_info_->SdkVersionFull() >=
               base::android::android_info::SDK_VERSION_FULL_CINNAMON_BUN_2 &&
-          base::FeatureList::IsEnabled(kMediaCodecBlockModel)) {
+          base::FeatureList::IsEnabled(kMediaCodecBlockModel)),
+      use_block_model_for_encrypted_(
+          use_block_model_ &&
+          base::FeatureList::IsEnabled(kMediaCodecBlockModelEncrypted)) {
   DVLOG(2) << __func__;
   surface_chooser_helper_.chooser()->SetClientCallbacks(
       base::BindRepeating(&MediaCodecVideoDecoder::OnSurfaceChosen,
@@ -723,7 +726,7 @@ void MediaCodecVideoDecoder::CreateCodec() {
         MediaFormatColorSpace(decoder_config_.color_space_info());
     config->hdr_metadata = decoder_config_.hdr_metadata();
   }
-  config->use_block_model = use_block_model_;
+  config->use_block_model = ShouldUseBlockModel();
   config->profile = decoder_config_.profile();
 
   bool found_codec = false;
@@ -822,7 +825,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   MEDIA_LOG(INFO, media_log_)
       << "Created MediaCodec " << codec_name_
       << ", is_software_codec=" << codec->IsSoftwareCodec()
-      << ", use_block_model_=" << use_block_model_ << ", low_delay_="
+      << ", use_block_model_=" << ShouldUseBlockModel() << ", low_delay_="
       << (base::FeatureList::IsEnabled(kMediaCodecLowDelayMode) && low_delay_);
 
   // Since we can't get the coded size w/o rendering the frame, we try to guess
@@ -970,7 +973,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
   // buffer.
   auto pending_buffer = pending_decodes_.front().buffer;
 
-  if (!use_block_model_ && !pending_buffer->end_of_stream() &&
+  if (!ShouldUseBlockModel() && !pending_buffer->end_of_stream() &&
       pending_buffer->size() > max_input_size_) {
     video_input_exceeds_max_capacity_ = true;
     if (pending_buffer->is_key_frame()) {
@@ -1530,6 +1533,13 @@ void MediaCodecVideoDecoder::NotifyPromotionHint(
                                                               IsUsingOverlay());
 }
 
+bool MediaCodecVideoDecoder::ShouldUseBlockModel() const {
+  // Key this on MediaCrypto, not the config: the codec gets the MediaCrypto
+  // even for a clear config and is kept if the stream turns encrypted.
+  return media_crypto_.is_null() ? use_block_model_
+                                 : use_block_model_for_encrypted_;
+}
+
 bool MediaCodecVideoDecoder::CodecNeedsReallocation(const gfx::Size& new_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1553,7 +1563,7 @@ bool MediaCodecVideoDecoder::CodecNeedsReallocation(const gfx::Size& new_size) {
   // the codec's existing returned `max_input_size_` is sufficient for the new
   // frames.
 
-  bool hit_threshold = !use_block_model_ &&
+  bool hit_threshold = !ShouldUseBlockModel() &&
                        new_size.width() > last_width_ * kReallocateThreshold;
 
   if (!hit_threshold) {

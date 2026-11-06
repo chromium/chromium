@@ -1334,8 +1334,13 @@ BASE_FEATURE(kFullscreenVideoPictureInPicture,
 
 // Enables block model on supported devices.
 // Block model is only supported on Android 17 26Q4+ where the feature is
-// properly supported by the framework.
+// properly supported by the framework. Decoders that use a MediaCrypto also
+// need kMediaCodecBlockModelEncrypted.
 BASE_FEATURE(kMediaCodecBlockModel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables block model for decoders that use a MediaCrypto (encrypted
+// playback). Has no effect unless kMediaCodecBlockModel is enabled.
+BASE_FEATURE(kMediaCodecBlockModelEncrypted, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables output-side block model (OutputFrame) on supported devices.
 BASE_FEATURE(kMediaCodecBlockModelOutput, base::FEATURE_DISABLED_BY_DEFAULT);
