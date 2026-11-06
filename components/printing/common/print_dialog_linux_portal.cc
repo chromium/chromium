@@ -785,7 +785,7 @@ void PrintDialogLinuxPortal::OnWindowHandleExported(bool has_selection,
     page_setup_dict = ConvertPageSetupToDictionary(*settings_);
   }
 
-  std::string title = l10n_util::GetStringUTF8(IDS_PRINT);
+  std::string title = l10n_util::GetStringUTF8(IDS_PRINT_DIALOG_TITLE);
 
   // PreparePrint(parent_window, title, settings, page_setup, options)
   request_ = std::make_unique<dbus_xdg::Request>(

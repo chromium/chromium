@@ -125,6 +125,12 @@ TEST_F(PrintDialogLinuxPortalTest, ShowDialog_PortalAvailable) {
       .WillOnce([&prepare_print_callback](
                     dbus::MethodCall* method_call, int timeout_ms,
                     dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        dbus::MessageReader reader(method_call);
+        std::string parent_handle;
+        EXPECT_TRUE(reader.PopString(&parent_handle));
+        std::string title;
+        EXPECT_TRUE(reader.PopString(&title));
+        EXPECT_EQ(title, "Print");
         prepare_print_callback = std::move(callback);
       });
 
@@ -187,6 +193,12 @@ TEST_F(PrintDialogLinuxPortalTest, ShowDialog_PortalCancelled) {
       .WillOnce([&prepare_print_callback](
                     dbus::MethodCall* method_call, int timeout_ms,
                     dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        dbus::MessageReader reader(method_call);
+        std::string parent_handle;
+        EXPECT_TRUE(reader.PopString(&parent_handle));
+        std::string title;
+        EXPECT_TRUE(reader.PopString(&title));
+        EXPECT_EQ(title, "Print");
         prepare_print_callback = std::move(callback);
       });
 

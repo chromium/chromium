@@ -12,6 +12,12 @@
     Print Compositor Service
   </message>
 
+  <if expr="is_linux">
+    <message name="IDS_PRINT_DIALOG_TITLE" desc="The title of the system print dialog.">
+      Print
+    </message>
+  </if>
+
   <if expr="is_chromeos">
     <message name="IDS_PRINT_CHAMBER_HUMIDITY" desc="PWG5100.21 (8.1.1) chamber-humidity">
       Chamber humidity
