@@ -262,6 +262,7 @@ void FullscreenController::EnterFullscreenModeForTab(
                                   requesting_frame, fullscreen_tab_params);
     }
 #endif
+    exclusive_access_manager()->UpdateBubble(base::NullCallback());
   } else {
     ExclusiveAccessContext* exclusive_access_context =
         exclusive_access_manager()->context();
