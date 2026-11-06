@@ -8561,6 +8561,24 @@
             ]
         }
     ],
+    "GlicActionFirstFre": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicActionFirstFRE"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicActorObservationDelayExcludeAdFrameLoading": [
         {
             "platforms": [

@@ -84,11 +84,14 @@ class GlicMetricsBrowserTestWithMessageFirstFre
       : GlicMetricsBrowserTest({features::kGlicMessageFirstFre}, {}) {}
 };
 
+// Also disables kGlicActionFirstFRE, which, like kGlicMessageFirstFre, opens
+// the panel in the pre-consent zero state instead of the normal toggle flow.
 class GlicMetricsBrowserTestWithMessageFirstFreDisabled
     : public GlicMetricsBrowserTest {
  public:
   GlicMetricsBrowserTestWithMessageFirstFreDisabled()
-      : GlicMetricsBrowserTest({}, {features::kGlicMessageFirstFre}) {}
+      : GlicMetricsBrowserTest({}, {features::kGlicMessageFirstFre,
+                                    features::kGlicActionFirstFRE}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
