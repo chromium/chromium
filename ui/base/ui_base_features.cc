@@ -537,6 +537,9 @@ BASE_FEATURE(kRemoveEnsureRFHVisibilityConsistent,
 BASE_FEATURE(kColorIdCssStyleSheetOptimization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOmitNativeFrameOnShadowlessMenus,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGlassFrameEnabled() {
 #if BUILDFLAG(IS_MAC)
   return base::mac::MacOSMajorVersion() >= 26 &&

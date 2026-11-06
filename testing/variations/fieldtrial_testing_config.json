@@ -5525,7 +5525,8 @@
                         "BackForwardCacheForComponentExtensionFrames",
                         "ContextualTasksRearchitecture",
                         "ContextualTasksSidePanelRearchitecture",
-                        "LensComposeboxIdentityDelegation"
+                        "LensComposeboxIdentityDelegation",
+                        "OmitNativeFrameOnShadowlessMenus"
                     ]
                 }
             ]

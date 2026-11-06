@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -25,6 +26,7 @@
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/env.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_surface.h"
 #include "ui/compositor/layer_textured.h"
@@ -338,7 +340,10 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
       std::make_unique<aura::Window>(this, aura::client::WINDOW_TYPE_MENU);
   window_->Init(ui::LayerType::LAYER_SURFACE);
   window_->SetTransparent(true);
-  wm::SetShadowElevation(window_.get(), wm::kShadowElevationNone);
+  if (base::FeatureList::IsEnabled(
+          features::kOmitNativeFrameOnShadowlessMenus)) {
+    wm::SetShadowElevation(window_.get(), wm::kShadowElevationNone);
+  }
   // TODO(crbug.com/508672616): Note that we may need to change this to a non-
   // transparent background later, if security issues arise. For example, this
   // allows content to put up a fully transparent (invisible) overlay over site
