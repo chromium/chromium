@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -310,7 +311,11 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
     // TODO(accessibility): Implement action request tracking.
   };
   std::vector<Event> pending_events_;
+  std::vector<Event> processing_events_;
+
   absl::flat_hash_set<ui::AXNodeID> pending_data_updates_;
+  absl::flat_hash_set<ui::AXNodeID> processing_data_updates_;
+  absl::flat_hash_set<ui::AXNodeID> processing_serialized_ids_;
 
   // Always invoked when SendPendingUpdate() exits. Receives a non-empty
   // optional only if a non-empty updates/events payload was produced and

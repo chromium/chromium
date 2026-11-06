@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/crash/core/common/crash_key.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
@@ -90,6 +91,10 @@ void ViewsAXManager::Enable() {
 void ViewsAXManager::Disable() {
   is_enabled_ = false;
 
+  pending_events_ = {};
+  processing_events_ = {};
+  pending_data_updates_ = {};
+  processing_data_updates_ = {};
   tree_source_.reset();
   tree_serializer_.reset();
   alert_window_.reset();
@@ -309,13 +314,37 @@ void ViewsAXManager::SendPendingUpdate() {
     return;
   }
 
-  std::vector<ui::AXTreeUpdate> tree_updates;
-  std::vector<ui::AXEvent> events;
+  std::vector<Event> pending_events_copy;
+  absl::flat_hash_set<ui::AXNodeID> pending_data_changes_copy;
+  std::swap(pending_events_copy, processing_events_);
+  std::swap(pending_data_changes_copy, processing_data_updates_);
+  pending_events_copy.clear();
+  pending_data_changes_copy.erase(pending_data_changes_copy.begin(),
+                                  pending_data_changes_copy.end());
+  std::swap(pending_events_copy, pending_events_);
+  std::swap(pending_data_changes_copy, pending_data_updates_);
 
-  auto pending_events_copy = std::move(pending_events_);
-  auto pending_data_changes_copy = std::move(pending_data_updates_);
-  pending_events_.clear();
-  pending_data_updates_.clear();
+  absl::Cleanup recycle_buffers = [&] {
+    pending_events_copy.clear();
+    pending_data_changes_copy.erase(pending_data_changes_copy.begin(),
+                                    pending_data_changes_copy.end());
+    if (!is_enabled_) {
+      return;
+    }
+    if (pending_events_copy.capacity() > processing_events_.capacity()) {
+      std::swap(processing_events_, pending_events_copy);
+    }
+    if (pending_data_changes_copy.capacity() >
+        processing_data_updates_.capacity()) {
+      std::swap(processing_data_updates_, pending_data_changes_copy);
+    }
+  };
+
+  std::vector<ui::AXTreeUpdate> tree_updates;
+  tree_updates.reserve(pending_events_copy.size() +
+                       pending_data_changes_copy.size() + 1);
+  std::vector<ui::AXEvent> events;
+  events.reserve(pending_events_copy.size());
 
   for (auto& event_copy : pending_events_copy) {
     const int id = event_copy.id;

@@ -786,8 +786,11 @@ void WidgetAXManager::Disable() {
   DetachFromParentTree();
   tree_weak_factory_.InvalidateWeakPtrs();
   processing_update_posted_ = false;
-  pending_events_.clear();
-  pending_data_updates_.clear();
+  pending_events_ = {};
+  processing_events_ = {};
+  pending_data_updates_ = {};
+  processing_data_updates_ = {};
+  processing_serialized_ids_ = {};
   focus_manager_observation_.Reset();
   focused_node_id_ = ui::kInvalidAXNodeID;
 
@@ -911,15 +914,48 @@ void WidgetAXManager::SendPendingUpdate() {
     return;
   }
 
-  std::vector<ui::AXTreeUpdate> tree_updates;
-  std::vector<ui::AXEvent> events;
-
-  auto pending_events_copy = std::move(pending_events_);
-  auto pending_data_changes_copy = std::move(pending_data_updates_);
-  pending_events_.clear();
-  pending_data_updates_.clear();
-
+  std::vector<Event> pending_events_copy;
+  absl::flat_hash_set<ui::AXNodeID> pending_data_changes_copy;
   absl::flat_hash_set<ui::AXNodeID> already_serialized_ids;
+  std::swap(pending_events_copy, processing_events_);
+  std::swap(pending_data_changes_copy, processing_data_updates_);
+  std::swap(already_serialized_ids, processing_serialized_ids_);
+  pending_events_copy.clear();
+  pending_data_changes_copy.erase(pending_data_changes_copy.begin(),
+                                  pending_data_changes_copy.end());
+  already_serialized_ids.erase(already_serialized_ids.begin(),
+                               already_serialized_ids.end());
+  std::swap(pending_events_copy, pending_events_);
+  std::swap(pending_data_changes_copy, pending_data_updates_);
+
+  base::WeakPtr<WidgetAXManager> weak_this = weak_factory_.GetWeakPtr();
+  absl::Cleanup recycle_buffers = [&, weak_this] {
+    pending_events_copy.clear();
+    pending_data_changes_copy.erase(pending_data_changes_copy.begin(),
+                                    pending_data_changes_copy.end());
+    already_serialized_ids.erase(already_serialized_ids.begin(),
+                                 already_serialized_ids.end());
+    if (!weak_this || !is_enabled()) {
+      return;
+    }
+    if (pending_events_copy.capacity() > processing_events_.capacity()) {
+      std::swap(processing_events_, pending_events_copy);
+    }
+    if (pending_data_changes_copy.capacity() >
+        processing_data_updates_.capacity()) {
+      std::swap(processing_data_updates_, pending_data_changes_copy);
+    }
+    if (already_serialized_ids.capacity() >
+        processing_serialized_ids_.capacity()) {
+      std::swap(processing_serialized_ids_, already_serialized_ids);
+    }
+  };
+
+  std::vector<ui::AXTreeUpdate> tree_updates;
+  tree_updates.reserve(pending_events_copy.size() +
+                       pending_data_changes_copy.size() + 1);
+  std::vector<ui::AXEvent> events;
+  events.reserve(pending_events_copy.size());
 
   // Serialize all changes first. This is necessary to ensure the nodes are
   // added in the cache (through the SerializeChanges call below).

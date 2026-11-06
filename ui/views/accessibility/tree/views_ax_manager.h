@@ -154,8 +154,10 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
     bool from_user;
   };
   std::vector<Event> pending_events_;
+  std::vector<Event> processing_events_;
 
   absl::flat_hash_set<ui::AXNodeID> pending_data_updates_;
+  absl::flat_hash_set<ui::AXNodeID> processing_data_updates_;
 };
 }  // namespace views
 
