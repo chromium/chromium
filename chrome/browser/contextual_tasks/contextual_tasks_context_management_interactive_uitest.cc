@@ -1600,6 +1600,7 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
             // the real service race it.
             omnibox::kAimServerEligibilityEnabled,
             omnibox::kAimFuseboxEligibilityCheckEnabled,
+            omnibox::kComposeboxPersistentAimButtonOmnibox,
         });
   }
 
@@ -2185,6 +2186,7 @@ class ContextualTasksNtpRealboxContextManagementInteractiveUiTest
     // real service race it.
     disabled_features.push_back(omnibox::kAimServerEligibilityEnabled);
     disabled_features.push_back(omnibox::kAimFuseboxEligibilityCheckEnabled);
+    disabled_features.push_back(omnibox::kComposeboxPersistentAimButtonRealbox);
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);

@@ -61,6 +61,8 @@ suite('OmniboxComposeboxTest', () => {
       contextButtonShapeIsOblong: true,
       webuiOmniboxSimplificationEnabled: true,
       voiceSearchCoherenceComposeboxesEnabled: false,
+      composeboxPersistentAimButton: false,
+      composeboxPersistentAimButtonWithX: false,
     });
 
     testProxy = new TestSearchboxBrowserProxy();

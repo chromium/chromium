@@ -5248,6 +5248,27 @@
             ]
         }
     ],
+    "ComposeboxPersistentAimButton": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "RealboxOmniboxStatefulAimButtonWithXClickOut_20261106",
+                    "enable_features": [
+                        "ComposeboxPersistentAimButtonOmnibox",
+                        "ComposeboxPersistentAimButtonRealbox",
+                        "ComposeboxPersistentAimButtonWithX",
+                        "ComposeboxRealboxOutsideClick"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeboxUnselectMatchOnTabExit": [
         {
             "platforms": [

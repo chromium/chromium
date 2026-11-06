@@ -319,7 +319,8 @@ class NtpRealboxUiTestBase
 
  protected:
   static std::vector<base::test::FeatureRef> GetDisabledFeatures() {
-    return {contextual_tasks::kContextualTasks};
+    return {contextual_tasks::kContextualTasks,
+            omnibox::kComposeboxPersistentAimButtonRealbox};
   }
 
   static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(

@@ -602,7 +602,8 @@ class OmniboxAimWebUiInteractiveTest
                                   base::FieldTrialParams());
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features, {omnibox::kAimServerEligibilityEnabled,
-                           omnibox::kAimFuseboxEligibilityCheckEnabled});
+                           omnibox::kAimFuseboxEligibilityCheckEnabled,
+                           omnibox::kComposeboxPersistentAimButtonOmnibox});
   }
 
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
@@ -877,7 +878,8 @@ class OmniboxAimSearchFulfillmentTest
     feature_list_.InitWithFeaturesAndParameters(
         GetEnabledFeatures(/*force_enable_aim=*/true),
         {omnibox::kAimServerEligibilityEnabled,
-         omnibox::kAimFuseboxEligibilityCheckEnabled});
+         omnibox::kAimFuseboxEligibilityCheckEnabled,
+         omnibox::kComposeboxPersistentAimButtonOmnibox});
   }
 
  private:
@@ -940,7 +942,8 @@ class OmniboxAimUploadInteractiveTest
                                   base::FieldTrialParams());
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features, {omnibox::kAimServerEligibilityEnabled,
-                           omnibox::kAimFuseboxEligibilityCheckEnabled});
+                           omnibox::kAimFuseboxEligibilityCheckEnabled,
+                           omnibox::kComposeboxPersistentAimButtonOmnibox});
   }
 
   void SetUpOnMainThread() override {

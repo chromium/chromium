@@ -48,6 +48,11 @@ suite('NewTabPageAppTest', () => {
 
   suiteSetup(() => {
     Object.assign(window, {webkitSpeechRecognition: MockSpeechRecognition});
+    loadTimeData.overrideValues({
+      composeboxPersistentAimButton: false,
+      composeboxPersistentAimButtonWithX: false,
+      composeboxRealboxOutsideClick: false,
+    });
   });
   let app: AppElement;
   let customizeButtons: CustomizeButtonsElement;
