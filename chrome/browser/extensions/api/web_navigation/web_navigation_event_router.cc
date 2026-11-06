@@ -66,16 +66,17 @@ class WebNavigationEventRouter::TabHelper : public TabModelListObserver,
   TabHelper& operator=(const TabHelper&) = delete;
   ~TabHelper() override {
     tab_model_observations_.RemoveAllObservations();
-    TabModelList::RemoveObserver(this);
+    TabModelList::RemoveGlobalObserver(this);
   }
 
   void Init() {
     // Equivalent to observing for new windows (a TabModel is like a window).
-    TabModelList::AddObserver(this);
+    TabModelList::AddGlobalObserver(this);
     // Add models for existing windows.
-    for (TabModel* model : TabModelList::models()) {
+    TabModelList::ForEachAll([this](TabModel* model) {
       OnTabModelAdded(model);
-    }
+      return true;
+    });
   }
 
   // TabModelListObserver:

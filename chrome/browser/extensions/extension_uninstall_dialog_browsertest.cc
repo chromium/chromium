@@ -211,8 +211,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogBrowserTest,
 // active standard TabModel in TabModelList.
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogBrowserTest,
                        UninstallURLSkipsNonStandardTabModels) {
-  ASSERT_EQ(1u, TabModelList::models().size());
-  TabModel* standard_tab_model = TabModelList::models()[0];
+  auto get_models = [this]() {
+    TabModelList::TabModelVector models;
+    TabModelList::ForEach(profile(), [&models](TabModel* model) {
+      models.push_back(model);
+      return true;
+    });
+    return models;
+  };
+  TabModelList::TabModelVector initial_models = get_models();
+  ASSERT_EQ(1u, initial_models.size());
+  TabModel* standard_tab_model = initial_models[0];
 
   TestTabModel headless_tab_model(profile(),
                                   chrome::android::ActivityType::kTabbed,
@@ -227,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogBrowserTest,
   TabModelList::AddTabModel(standard_tab_model);
   ASSERT_EQ(
       (TabModelList::TabModelVector{&headless_tab_model, standard_tab_model}),
-      TabModelList::models());
+      get_models());
 
   scoped_refptr<const Extension> extension = LoadExtensionWithUninstallUrl();
   ASSERT_TRUE(extension);

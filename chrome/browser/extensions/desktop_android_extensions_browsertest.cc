@@ -65,7 +65,12 @@ class DesktopAndroidExtensionsBrowserTest : public AndroidBrowserTest {
 // injection. This doesn't exercise any extensions logic, but ensures Chrome
 // successfully starts and can navigate the web.
 IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest, SanityCheck) {
-  ASSERT_EQ(TabModelList::models().size(), 1u);
+  size_t model_count = 0;
+  TabModelList::ForEachAll([&model_count](TabModel* model) {
+    ++model_count;
+    return true;
+  });
+  ASSERT_EQ(model_count, 1u);
 
   EXPECT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),

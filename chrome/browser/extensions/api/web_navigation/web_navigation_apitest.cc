@@ -117,10 +117,11 @@ class DelayLoadStartAndExecuteJavascript : public content::WebContentsObserver {
    public:
     explicit TabHelper(DelayLoadStartAndExecuteJavascript* owner)
         : owner_(owner) {
-      TabModelList::AddObserver(this);
-      for (TabModel* model : TabModelList::models()) {
+      TabModelList::AddGlobalObserver(this);
+      TabModelList::ForEachAll([this](TabModel* model) {
         OnTabModelAdded(model);
-      }
+        return true;
+      });
     }
 
     ~TabHelper() override { StopObserving(); }
@@ -149,7 +150,7 @@ class DelayLoadStartAndExecuteJavascript : public content::WebContentsObserver {
    private:
     void StopObserving() {
       tab_model_observations_.RemoveAllObservations();
-      TabModelList::RemoveObserver(this);
+      TabModelList::RemoveGlobalObserver(this);
     }
 
     raw_ptr<DelayLoadStartAndExecuteJavascript> owner_;

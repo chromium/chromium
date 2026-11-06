@@ -19,14 +19,15 @@ TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
     TabsEventRouter& router,
     Profile& profile)
     : router_(router), profile_(profile) {
-  TabModelList::AddObserver(this);
-  for (TabModel* const model : TabModelList::models()) {
+  TabModelList::AddGlobalObserver(this);
+  TabModelList::ForEachAll([this](TabModel* model) {
     OnTabModelAdded(model);
-  }
+    return true;
+  });
 }
 
 TabsEventRouterPlatformDelegate::~TabsEventRouterPlatformDelegate() {
-  TabModelList::RemoveObserver(this);
+  TabModelList::RemoveGlobalObserver(this);
 }
 
 void TabsEventRouterPlatformDelegate::OnTabModelAdded(TabModel* tab_model) {
