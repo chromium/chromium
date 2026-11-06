@@ -111,7 +111,6 @@
 #include "chrome/browser/ash/dbus/vm/vm_permission_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_sk_forwarding_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_wl_service_provider.h"
-#include "chrome/browser/ash/diagnostics/diagnostics_browser_delegate_impl.h"
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/events/shortcut_mapping_pref_service.h"
 #include "chrome/browser/ash/extensions/default_app_order.h"
@@ -1618,11 +1617,9 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   dark_resume_controller_ = std::make_unique<system::DarkResumeController>(
       std::move(wake_lock_provider));
 
-  // DiagnosticsBrowserDelegate has to be initialized after ProfilerHelper and
-  // UserManager. Initializing in PostProfileInit to ensure Profile data is
-  // available and shell has been initialized.
-  diagnostics::DiagnosticsLogController::Initialize(
-      std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
+  // The log controller reads the active user's directory off the UserManager,
+  // so it has to be initialized after it, and after the shell.
+  diagnostics::DiagnosticsLogController::Initialize();
 
   if (features::IsVideoConferenceEnabled()) {
     auto* vc_manager = ash::VideoConferenceManagerAsh::Get();

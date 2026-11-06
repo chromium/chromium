@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/system/diagnostics/fake_diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
@@ -589,8 +588,7 @@ class SystemDataProviderTest : public AshTestBase {
 
     cros_healthd::FakeCrosHealthd::Initialize();
     system_data_provider_ = std::make_unique<SystemDataProvider>();
-    DiagnosticsLogController::Initialize(
-        std::make_unique<FakeDiagnosticsBrowserDelegate>());
+    DiagnosticsLogController::Initialize();
   }
 
   void TearDown() override {

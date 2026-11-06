@@ -6,43 +6,14 @@ assert(is_chromeos)
 
 static_library("diagnostics") {
   sources = [
-    "diagnostics_browser_delegate_impl.cc",
-    "diagnostics_browser_delegate_impl.h",
     "system_routine_controller_delegate_impl.cc",
     "system_routine_controller_delegate_impl.h",
   ]
 
   deps = [
-    "//ash",
     "//ash/webui/diagnostics_ui/backend",
     "//base",
     "//chrome/browser/ash/net/network_health",
     "//chromeos/services/network_health/public/mojom",
-    "//components/session_manager/core",
-    "//components/user_manager",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "diagnostics_browser_delegate_impl_unittest.cc" ]
-
-  deps = [
-    ":diagnostics",
-    "//base",
-    "//chrome/browser",
-    "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/profiles",
-    "//chrome/browser/profiles",
-    "//chrome/test:test_support",
-    "//chrome/test/base:testing_browser_process",
-    "//chromeos/ash/components/login/login_state",
-    "//components/account_id",
-    "//components/session_manager/test:test_support",
-    "//components/user_manager",
-    "//content/test:test_support",
-    "//google_apis",
-    "//testing/gtest",
   ]
 }

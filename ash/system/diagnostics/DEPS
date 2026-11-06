@@ -1,0 +1,10 @@
+specific_include_rules = {
+  "diagnostics_log_controller\\.cc": [
+    # Reads the active user's directory via user_manager::User::GetPath();
+    # SessionManager names the active session's user and UserManager::FindUser()
+    # resolves the User for its AccountId.
+    "+components/session_manager/core/session.h",
+    "+components/session_manager/core/session_manager.h",
+    "+components/user_manager/user_manager.h",
+  ],
+}

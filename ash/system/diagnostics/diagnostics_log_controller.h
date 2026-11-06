@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -61,7 +60,7 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
 
   // Check if DiagnosticsLogController is ready for use.
   static bool IsInitialized();
-  static void Initialize(std::unique_ptr<DiagnosticsBrowserDelegate> delegate);
+  static void Initialize();
 
   // GenerateSessionStringOnBlockingPool needs to be run on blocking thread.
   // Generates a string of the combined Diagnostics logs.
@@ -111,7 +110,7 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
   void RemoveDirectory(const base::FilePath& path);
 
   LoginStatus previous_status_;
-  std::unique_ptr<DiagnosticsBrowserDelegate> delegate_;
+  bool is_initialized_ = false;
   base::FilePath log_base_path_;
   std::unique_ptr<KeyboardInputLog> keyboard_input_log_;
   std::unique_ptr<NetworkingLog> networking_log_;

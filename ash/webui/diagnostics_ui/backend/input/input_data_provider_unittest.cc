@@ -14,7 +14,6 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/system/diagnostics/fake_diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/test/ash_test_base.h"
@@ -673,8 +672,7 @@ class InputDataProviderTest : public AshTestBase {
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     provider_ = std::make_unique<TestInputDataProvider>(
         widget_.get(), watchers_, &event_rewriter_delegate_);
-    DiagnosticsLogController::Initialize(
-        std::make_unique<FakeDiagnosticsBrowserDelegate>());
+    DiagnosticsLogController::Initialize();
 
     // Apply these early, in SetUp; delaying until
     // FakeInputDeviceInfoHelper::GetDeviceInfo() is not appropriate, as

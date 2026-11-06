@@ -11,7 +11,6 @@
 #include "ash/login_status.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
@@ -22,7 +21,11 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace diagnostics {
@@ -119,15 +122,14 @@ DiagnosticsLogController* DiagnosticsLogController::Get() {
 
 // static
 bool DiagnosticsLogController::IsInitialized() {
-  return g_instance && g_instance->delegate_;
+  return g_instance && g_instance->is_initialized_;
 }
 
 // static
-void DiagnosticsLogController::Initialize(
-    std::unique_ptr<DiagnosticsBrowserDelegate> delegate) {
+void DiagnosticsLogController::Initialize() {
   DCHECK(g_instance);
   DCHECK_CALLED_ON_VALID_SEQUENCE(g_instance->sequence_checker_);
-  g_instance->delegate_ = std::move(delegate);
+  g_instance->is_initialized_ = true;
   g_instance->previous_status_ =
       ash::Shell::Get()->session_controller()->login_status();
   g_instance->ResetAndInitializeLogWriters();
@@ -250,19 +252,29 @@ TelemetryLog& DiagnosticsLogController::GetTelemetryLog() {
 }
 
 void DiagnosticsLogController::ResetLogBasePath() {
+  const SessionControllerImpl* const session_controller =
+      ash::Shell::Get()->session_controller();
   const session_manager::SessionState state =
-      ash::Shell::Get()->session_controller()->GetSessionState();
+      session_controller->GetSessionState();
   // g_instance->previous_status_ is updated OnLoginStatusChanged after
   // ResetLogBasePath. To ensure we have the current status we need to query the
   // session_controller for it.
-  const LoginStatus status =
-      ash::Shell::Get()->session_controller()->login_status();
+  const LoginStatus status = session_controller->login_status();
 
   // Check if there is an active user and profile is ready based on session and
   // login state.
   if (ShouldUseActiveUserProfileDir(state, status)) {
+    // SessionController and SessionManager are updated independently, so the
+    // state above does not guarantee the session is there yet.
+    const session_manager::Session* const session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    const user_manager::User* const user =
+        session
+            ? user_manager::UserManager::Get()->FindUser(session->account_id())
+            : nullptr;
+    // The path is unset until the user's cryptohome is mounted.
     const std::optional<base::FilePath> user_dir =
-        g_instance->delegate_->GetActiveUserProfileDir();
+        user ? user->GetPath() : std::nullopt;
 
     // Update |log_base_path_| when a path is available. Otherwise fallback to
     // |kDiaganosticsTmpDir|.

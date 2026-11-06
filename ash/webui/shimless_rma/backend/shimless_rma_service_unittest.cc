@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shimless_rma/backend/fake_shimless_rma_delegate.h"
@@ -105,18 +104,6 @@ class FakeRmadClientForTest : public FakeRmadClient {
   bool metric_os_update = false;
 };
 
-// A fake DiagnosticsBrowserDelegate.
-class FakeDiagnosticsBrowserDelegate
-    : public diagnostics::DiagnosticsBrowserDelegate {
- public:
-  FakeDiagnosticsBrowserDelegate() = default;
-  ~FakeDiagnosticsBrowserDelegate() override = default;
-
-  std::optional<base::FilePath> GetActiveUserProfileDir() override {
-    return std::nullopt;
-  }
-};
-
 }  // namespace
 
 // Test class using NoSessionAshTestBase to ensure shell is available for
@@ -140,8 +127,7 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
         std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
     NoSessionAshTestBase::SetUp();
 
-    diagnostics::DiagnosticsLogController::Initialize(
-        std::make_unique<FakeDiagnosticsBrowserDelegate>());
+    diagnostics::DiagnosticsLogController::Initialize();
 
     SetupFakeNetwork();
 

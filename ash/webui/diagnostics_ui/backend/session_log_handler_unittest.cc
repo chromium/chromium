@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
-#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
@@ -71,18 +70,6 @@ std::vector<std::string> GetCombinedLogContents(
   return GetLogLines(contents);
 }
 
-// A fake DiagnosticsBrowserDelegate.
-class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
- public:
-  FakeDiagnosticsBrowserDelegate() = default;
-  ~FakeDiagnosticsBrowserDelegate() override = default;
-
-  std::optional<base::FilePath> GetActiveUserProfileDir() override {
-    base::ScopedTempDir tmp_dir;
-    EXPECT_TRUE(tmp_dir.CreateUniqueTempDir());
-    return tmp_dir.GetPath();
-  }
-};
 
 // A fake ui::SelectFileDialog.
 class TestSelectFileDialog : public ui::SelectFileDialog {
@@ -161,8 +148,7 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     NoSessionAshTestBase::SetUp();
-    DiagnosticsLogController::Initialize(
-        std::make_unique<FakeDiagnosticsBrowserDelegate>());
+    DiagnosticsLogController::Initialize();
     DiagnosticsLogController::Get()->SetRoutineLogForTesting(
         std::make_unique<RoutineLog>(temp_dir_.GetPath()));
     DiagnosticsLogController::Get()->SetNetworkingLogForTesting(

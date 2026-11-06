@@ -5,27 +5,38 @@
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
-#include "ash/system/diagnostics/fake_diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-shared.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_path_override.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -36,8 +47,9 @@ namespace {
 const char kTestSessionLogFileName[] = "test_session_log.txt";
 const char kDiangosticsDirName[] = "diagnostics";
 const char kTmpDiagnosticsDir[] = "/tmp/diagnostics";
-const char kTestUserEmail[] = "test-user@gmail.com";
-const char kFakeUserDir[] = "fake-user";
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test-user@gmail.com",
+                                            GaiaId::Literal("12345"));
 
 // Log headers content.
 const char kRoutineLogSubsectionHeader[] = "--- Test Routines ---";
@@ -57,6 +69,19 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
       delete;
   ~DiagnosticsLogControllerTest() override = default;
 
+  void SetUp() override {
+    // Ash start-up already reads DIR_USER_DATA, so redirect it first. The
+    // override is dropped again after Ash is gone, in the same order.
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    user_data_dir_override_.emplace(DIR_USER_DATA, user_data_dir_.GetPath());
+    NoSessionAshTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    NoSessionAshTestBase::TearDown();
+    user_data_dir_override_.reset();
+  }
+
  protected:
   base::FilePath GetSessionLogPath() {
     EXPECT_TRUE(save_dir_.CreateUniqueTempDir());
@@ -71,15 +96,26 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
     return DiagnosticsLogController::Get()->log_base_path_;
   }
 
-  void SetBrowserDelegate(
-      std::unique_ptr<DiagnosticsBrowserDelegate> delegate) {
-    DiagnosticsLogController::Get()->delegate_ = std::move(delegate);
+  // Registers `kTestAccountId` with the UserManager, which is where the
+  // controller reads the user's directory from, and signs them in with the
+  // session controller, which is where it reads the session state from.
+  // TODO(crbug.com/546860700): drop the direct
+  // UserSessionTestEnvironment::LogIn() call once SimulateUserLogin() signs
+  // the user in with the UserManager too.
+  void LogInTestUser() {
+    auto& user_session = ash_test_helper()->user_session_test_environment();
+    ASSERT_TRUE(user_session.AddRegularUser(kTestAccountId));
+    user_session.LogIn(kTestAccountId);
+    SimulateUserLogin(kTestAccountId);
   }
 
-  void InitializeWithFakeDelegate() {
-    std::unique_ptr<DiagnosticsBrowserDelegate> delegate =
-        std::make_unique<FakeDiagnosticsBrowserDelegate>();
-    DiagnosticsLogController::Initialize(std::move(delegate));
+  // The directory the signed-in test user's files live in, which is what the
+  // controller hangs the log directory off.
+  base::FilePath GetUserDir() {
+    return CHECK_DEREF(
+               user_manager::UserManager::Get()->FindUser(kTestAccountId))
+        .GetPath()
+        .value();
   }
 
   void SimulateLockScreen() {
@@ -112,6 +148,8 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
 
  private:
   base::ScopedTempDir save_dir_;
+  base::ScopedTempDir user_data_dir_;
+  std::optional<base::ScopedPathOverride> user_data_dir_override_;
 };
 
 TEST_F(DiagnosticsLogControllerTest,
@@ -120,26 +158,17 @@ TEST_F(DiagnosticsLogControllerTest,
   EXPECT_NE(nullptr, DiagnosticsLogController::Get());
 }
 
-TEST_F(DiagnosticsLogControllerTest, IsInitializedAfterDelegateProvided) {
+TEST_F(DiagnosticsLogControllerTest, IsInitializedAfterInitializeCalled) {
   EXPECT_NE(nullptr, DiagnosticsLogController::Get());
   EXPECT_FALSE(DiagnosticsLogController::IsInitialized());
 
-  InitializeWithFakeDelegate();
+  DiagnosticsLogController::Initialize();
   EXPECT_TRUE(DiagnosticsLogController::IsInitialized());
 }
 
 TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
-  base::ScopedTempDir scoped_diagnostics_log_dir;
-
-  EXPECT_TRUE(scoped_diagnostics_log_dir.CreateUniqueTempDir());
-  const base::FilePath expected_path_regular_user =
-      base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
-  const base::FilePath expected_diagnostics_log_path =
-      expected_path_regular_user.Append(kDiangosticsDirName);
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
-  DiagnosticsLogController::Initialize(
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(
-          expected_path_regular_user));
+  LogInTestUser();
+  DiagnosticsLogController::Initialize();
 
   // Create keyboard input log.
   KeyboardInputLog& keyboard_input_log =
@@ -177,17 +206,8 @@ TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
 
 TEST_F(DiagnosticsLogControllerTest,
        GenerateWithRoutinesSessionLogOnBlockingPoolFile) {
-  base::ScopedTempDir scoped_diagnostics_log_dir;
-
-  EXPECT_TRUE(scoped_diagnostics_log_dir.CreateUniqueTempDir());
-  const base::FilePath expected_path_regular_user =
-      base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
-  const base::FilePath expected_diagnostics_log_path =
-      expected_path_regular_user.Append(kDiangosticsDirName);
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
-  DiagnosticsLogController::Initialize(
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(
-          expected_path_regular_user));
+  LogInTestUser();
+  DiagnosticsLogController::Initialize();
   RoutineLog& routine_log = DiagnosticsLogController::Get()->GetRoutineLog();
   routine_log.LogRoutineCancelled(mojom::RoutineType::kArcHttp);
   routine_log.LogRoutineCancelled(mojom::RoutineType::kBatteryCharge);
@@ -238,10 +258,10 @@ TEST_F(DiagnosticsLogControllerTest,
        ResetAndInitializeShouldNotLookupProfilePath) {
   const base::FilePath expected_path_not_regular_user =
       base::FilePath(kTmpDiagnosticsDir);
-  // Simulate called before delegate configured.
+  // Simulate called before Initialize().
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
-  InitializeWithFakeDelegate();
+  DiagnosticsLogController::Initialize();
 
   // Simulate sign-in user.
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
@@ -258,38 +278,23 @@ TEST_F(DiagnosticsLogControllerTest,
 
   ClearLogin();
   SimulateKioskMode(user_manager::UserType::kKioskWebApp);
-  DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
-  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
-}
-
-TEST_F(DiagnosticsLogControllerTest,
-       ResetAndInitializeShouldLookupProfileUserEmptyPath) {
-  const base::FilePath expected_path_not_regular_user =
-      base::FilePath(kTmpDiagnosticsDir);
-  // Simulate DiagnosticsBrowserDelegate returning no path.
-  std::unique_ptr<DiagnosticsBrowserDelegate> delegate_with_empty_file_path =
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(std::nullopt);
-  SetBrowserDelegate(std::move(delegate_with_empty_file_path));
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 }
 
 TEST_F(DiagnosticsLogControllerTest,
        ResetAndInitializeForShouldLookupProfileUserNonEmptyPath) {
-  InitializeWithFakeDelegate();
-  const base::FilePath expected_path_regular_user =
-      base::FilePath(kDefaultUserDir).Append(kDiangosticsDirName);
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
+  DiagnosticsLogController::Initialize();
+  LogInTestUser();
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
-  EXPECT_EQ(expected_path_regular_user, log_base_path());
+  EXPECT_EQ(GetUserDir().Append(kDiangosticsDirName), log_base_path());
 }
 
 TEST_F(DiagnosticsLogControllerTest,
        LogBaseCorrectlyUpdatedOnActiveUserSessionChanged) {
   const base::FilePath expected_path_not_regular_user =
       base::FilePath(kTmpDiagnosticsDir);
-  InitializeWithFakeDelegate();
+  DiagnosticsLogController::Initialize();
 
   // Simulate sign-in user.
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
@@ -306,9 +311,9 @@ TEST_F(DiagnosticsLogControllerTest,
   EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 
   ClearLogin();
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
+  LogInTestUser();
   const base::FilePath expected_path_regular_user =
-      base::FilePath(kDefaultUserDir).Append(kDiangosticsDirName);
+      GetUserDir().Append(kDiangosticsDirName);
   EXPECT_EQ(expected_path_regular_user, log_base_path());
 
   SimulateLockScreen();
@@ -322,39 +327,32 @@ TEST_F(DiagnosticsLogControllerTest,
 }
 
 TEST_F(DiagnosticsLogControllerTest, LogsDeletedOnUserSignin) {
-  base::ScopedTempDir scoped_dir;
-  EXPECT_TRUE(scoped_dir.CreateUniqueTempDir());
-  const base::FilePath expected_path_regular_user =
-      base::FilePath(scoped_dir.GetPath().Append(kFakeUserDir));
-  const base::FilePath expected_diagnostics_log_path =
-      expected_path_regular_user.Append(kDiangosticsDirName);
-  DiagnosticsLogController::Initialize(
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(
-          expected_path_regular_user));
+  DiagnosticsLogController::Initialize();
 
   // Create directory after initialize to simulate user sign in when a user ran
   // diagnostics previously.
+  // The user's directory only gets a name when they sign in, and the point
+  // here is that the stale directory is already there when they do, so spell
+  // out what User::GetPath() is about to report.
+  const base::FilePath expected_diagnostics_log_path =
+      base::PathService::CheckedGet(DIR_USER_DATA)
+          .Append(user_manager::User::GetDirName(
+              user_manager::TestHelper::GetFakeUsernameHash(kTestAccountId)))
+          .Append(kDiangosticsDirName);
   EXPECT_TRUE(base::CreateDirectory(expected_diagnostics_log_path));
   EXPECT_TRUE(base::PathExists(expected_diagnostics_log_path));
 
   // Sign in and verify the log directory is deleted.
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
+  LogInTestUser();
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(base::PathExists(expected_diagnostics_log_path));
 }
 
 TEST_F(DiagnosticsLogControllerTest, SetLogWritersUsingLogBasePath) {
-  base::ScopedTempDir scoped_dir;
-
-  EXPECT_TRUE(scoped_dir.CreateUniqueTempDir());
-  const base::FilePath expected_path_regular_user =
-      base::FilePath(scoped_dir.GetPath().Append(kFakeUserDir));
+  LogInTestUser();
   const base::FilePath expected_diagnostics_log_path =
-      expected_path_regular_user.Append(kDiangosticsDirName);
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
-  DiagnosticsLogController::Initialize(
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(
-          expected_path_regular_user));
+      GetUserDir().Append(kDiangosticsDirName);
+  DiagnosticsLogController::Initialize();
 
   // After initialize log writers exist.
   EXPECT_EQ(expected_diagnostics_log_path, log_base_path());
@@ -387,18 +385,12 @@ TEST_F(DiagnosticsLogControllerTest, SetLogWritersUsingLogBasePath) {
 }
 
 TEST_F(DiagnosticsLogControllerTest, ClearLogDirectoryOnInitialize) {
-  base::ScopedTempDir scoped_dir;
-  EXPECT_TRUE(scoped_dir.CreateUniqueTempDir());
-  const base::FilePath expected_path_regular_user =
-      base::FilePath(scoped_dir.GetPath().Append(kFakeUserDir));
+  LogInTestUser();
   const base::FilePath expected_diagnostics_log_path =
-      expected_path_regular_user.Append(kDiangosticsDirName);
+      GetUserDir().Append(kDiangosticsDirName);
   EXPECT_TRUE(base::CreateDirectory(expected_diagnostics_log_path));
   EXPECT_TRUE(base::PathExists(expected_diagnostics_log_path));
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
-  DiagnosticsLogController::Initialize(
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(
-          expected_path_regular_user));
+  DiagnosticsLogController::Initialize();
 
   // Wait for delete to complete.
   task_environment()->RunUntilIdle();
@@ -416,15 +408,8 @@ TEST_F(DiagnosticsLogControllerTest, ClearLogDirectoryOnInitialize) {
 
 TEST_F(DiagnosticsLogControllerTest,
        GenerateSessionLogConcurrentWithResetLogWriters) {
-  base::ScopedTempDir scoped_diagnostics_log_dir;
-  EXPECT_TRUE(scoped_diagnostics_log_dir.CreateUniqueTempDir());
-  const base::FilePath expected_path_regular_user =
-      base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
-
-  SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
-  DiagnosticsLogController::Initialize(
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(
-          expected_path_regular_user));
+  LogInTestUser();
+  DiagnosticsLogController::Initialize();
 
   const base::FilePath save_file_path = GetSessionLogPath();
 

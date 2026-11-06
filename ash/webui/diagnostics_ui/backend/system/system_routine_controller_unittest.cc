@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/system/diagnostics/fake_diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/system/fake_system_routine_controller_delegate.h"
@@ -232,8 +231,7 @@ class SystemRoutineControllerTest : public AshTestBase {
     fake_delegate_ = delegate.get();
     system_routine_controller_ =
         std::make_unique<SystemRoutineController>(std::move(delegate));
-    DiagnosticsLogController::Initialize(
-        std::make_unique<FakeDiagnosticsBrowserDelegate>());
+    DiagnosticsLogController::Initialize();
 
     wake_lock_provider_ = std::make_unique<device::TestWakeLockProvider>();
 
