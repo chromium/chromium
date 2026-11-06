@@ -106,6 +106,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // stored focus view while the popup is active) and the popup widget's own
   // activation (Escape handling, macOS key window restoration). The browser or
   // popup widget deactivating schedules `BlurIfBrowserOrPopupInactive()`.
+  // Either activating while `refocus_on_activation_` is set schedules
+  // `RefocusAfterActivation()`.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   // Keeps the popup over the location bar when the browser widget moves or
   // resizes. The popup is its own top-level window, which doesn't always move
@@ -153,6 +155,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // window, such as a bubble, took activation, and sets what the browser window
   // restores focus to when it's reactivated.
   void BlurForWindowDeactivation();
+  // Hands focus to the popup if the omnibox is still focused with the popup
+  // open. Runs after the browser window or popup is activated while
+  // `refocus_on_activation_` is set.
+  void RefocusAfterActivation();
 
   // Returns whether the popup shows only its input row, with nothing painted
   // below the location bar.
@@ -208,6 +214,13 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   // Pending asynchronous focus and activation task.
   base::CancelableOnceClosure pending_focus_task_;
+
+  // Set when `RequestFocus()` couldn't activate the popup because another
+  // window held activation, leaving the omnibox focused with the popup open
+  // but inactive. Cleared once the browser window or popup is activated again,
+  // which refocuses the popup, or when the omnibox is blurred or the popup is
+  // hidden.
+  bool refocus_on_activation_ = false;
 
   // Whether the "first shown" metrics have been logged at least once.
   bool logged_first_shown_metric_ = false;
