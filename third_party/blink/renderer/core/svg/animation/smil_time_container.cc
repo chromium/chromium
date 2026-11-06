@@ -531,11 +531,14 @@ bool SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
     TimingUpdate& update) {
   DCHECK(GetDocument().IsActive());
   DCHECK(!wakeup_timer_.IsActive());
-  AnimationTargetsMutationsForbidden scope(this);
   // If the priority queue is empty, there are no timed elements to process and
   // no animations to apply, so we are done.
   if (priority_queue_.IsEmpty())
     return false;
+  // Entering this scope can resolve pending <use> shadow trees while node
+  // insertion is still propagating, so a <use> that is instanced could
+  // observe a target that is not yet marked as being connected.
+  AnimationTargetsMutationsForbidden scope(this);
   UpdateTimedElements(update);
   bool disable_throttling = ApplyTimedEffects(update.TargetTime());
   DCHECK(!wakeup_timer_.IsActive());

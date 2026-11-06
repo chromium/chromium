@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
 #include "third_party/blink/renderer/core/svg/svg_set_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -299,6 +301,39 @@ TEST_F(SMILTimeContainerTest, TimeContainerForwardsTimingStateWhenRepopulated) {
   // No 'repeatEvent's should've been dispatched for the re-inserted timed
   // element.
   EXPECT_EQ(repeat_event_listener->GetCount(), 0u);
+}
+
+TEST_F(SMILTimeContainerTest, StartSkipsPendingUseShadowTreeUpdate) {
+  Load(R"HTML(
+    <svg id="s1">
+      <rect id="t" width="10" height="10"/>
+      <use id="u" href="#t"/>
+    </svg>
+  )HTML");
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* use = To<SVGUseElement>(GetElementById("u"));
+  ASSERT_TRUE(use);
+  ShadowRoot* shadow_root = use->UserAgentShadowRoot();
+  ASSERT_TRUE(shadow_root);
+  Node* instance = shadow_root->firstChild();
+  ASSERT_TRUE(instance);
+
+  // Re-queue the <use> for a shadow-tree rebuild without detaching the
+  // current shadow tree, by re-setting the target reference.
+  use->setAttribute(svg_names::kHrefAttr, AtomicString("#t"));
+  ASSERT_EQ(instance->parentNode(), shadow_root);
+
+  // Inserting a new <svg> root reaches SMILTimeContainer::Start() ->
+  // UpdateAnimationsAndScheduleFrameIfNeeded(). With no timed elements the
+  // mutations-forbidden scope -- which would flush the document-wide pending
+  // <use> queue and tear down the existing shadow tree -- must not be
+  // entered.
+  auto* s2 = GetDocument().CreateRawElement(svg_names::kSVGTag);
+  GetDocument().body()->AppendChild(s2);
+
+  EXPECT_EQ(instance->parentNode(), shadow_root);
 }
 
 class ContentLoadedEventListener final : public NativeEventListener {
