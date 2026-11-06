@@ -4,6 +4,7 @@
 
 #include "content/browser/loader/download_utils_impl.h"
 
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -53,7 +54,8 @@ bool MustDownload(BrowserContext* browser_context,
             browser_context, url, mime_type)) {
       return true;
     }
-    if (mime_type == "multipart/related" || mime_type == "message/rfc822") {
+    if (base::EqualsCaseInsensitiveASCII(mime_type, "multipart/related") ||
+        base::EqualsCaseInsensitiveASCII(mime_type, "message/rfc822")) {
       // Always allow rendering mhtml for content:// (on Android) and file:///.
       if (ShouldAlwaysRenderMhtmlAsHtml(url)) {
         return false;
