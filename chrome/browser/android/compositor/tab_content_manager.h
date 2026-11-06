@@ -53,8 +53,6 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
 
   virtual ~TabContentManager();
 
-  void Destroy();
-
   void SetUIResourceProvider(
       base::WeakPtr<ui::UIResourceProvider> ui_resource_provider);
 

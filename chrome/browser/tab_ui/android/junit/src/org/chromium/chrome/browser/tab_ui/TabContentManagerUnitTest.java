@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,6 +19,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,7 +62,7 @@ public class TabContentManagerUnitTest {
     public void setUp() {
         TabContentManagerJni.setInstanceForTesting(mTabContentManagerJni);
         when(mTabContentManagerJni.init(any(), anyInt(), anyInt(), anyInt(), anyBoolean()))
-                .thenReturn(NATIVE_PTR);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_PTR));
 
         mContext = ContextUtils.getApplicationContext();
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(0f);
@@ -85,6 +85,7 @@ public class TabContentManagerUnitTest {
 
     @After
     public void tearDown() {
+        mTabContentManager.destroy();
         VerticalTabUtils.resetSharedPrefsForTesting();
     }
 
@@ -116,7 +117,7 @@ public class TabContentManagerUnitTest {
         List<Integer> priority = List.of(1, 2);
         mTabContentManager.updateVisibleIds(priority, /* primaryTabId= */ 1);
 
-        verify(mTabContentManagerJni).updateVisibleIds(eq(NATIVE_PTR), eq(new int[] {1, 2}), eq(1));
+        verify(mTabContentManagerJni).updateVisibleIds(any(), eq(new int[] {1, 2}), eq(1));
     }
 
     @Test
@@ -124,7 +125,7 @@ public class TabContentManagerUnitTest {
         List<Integer> priority = List.of(1, 2);
         mTabContentManager.updateVisibleIds(priority, /* primaryTabId= */ 1);
 
-        verify(mTabContentManagerJni, never()).updateVisibleIds(anyLong(), any(), anyInt());
+        verify(mTabContentManagerJni, never()).updateVisibleIds(any(), any(), anyInt());
     }
 
     @Test
@@ -135,7 +136,7 @@ public class TabContentManagerUnitTest {
         mTabContentManager.updateVisibleIds(priority, /* primaryTabId= */ 1);
 
         // Truncated to mFullResThumbnailsMaxSize (which is 2).
-        verify(mTabContentManagerJni).updateVisibleIds(eq(NATIVE_PTR), eq(new int[] {1, 2}), eq(1));
+        verify(mTabContentManagerJni).updateVisibleIds(any(), eq(new int[] {1, 2}), eq(1));
     }
 
     @Test
@@ -145,6 +146,6 @@ public class TabContentManagerUnitTest {
         List<Integer> priority = List.of();
         mTabContentManager.updateVisibleIds(priority, /* primaryTabId= */ 2);
 
-        verify(mTabContentManagerJni).updateVisibleIds(eq(NATIVE_PTR), eq(new int[] {}), eq(2));
+        verify(mTabContentManagerJni).updateVisibleIds(any(), eq(new int[] {}), eq(2));
     }
 }

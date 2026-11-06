@@ -99,6 +99,7 @@ public class TabItemPickerCoordinator {
     private @Nullable IncognitoTabModelObserver mIncognitoTabModelObserver;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
+    private @Nullable TabContentManager mTabContentManager;
 
     public TabItemPickerCoordinator(
             OneshotSupplier<Profile> profileSupplier,
@@ -721,10 +722,6 @@ public class TabItemPickerCoordinator {
             }
             mLoadingTabsToStartTimes.clear();
             mOffscreenRenderer.destroy();
-
-            if (mTabContentManager != null) {
-                mTabContentManager.destroy();
-            }
             mIsDestroyed = true;
         }
 
@@ -806,6 +803,9 @@ public class TabItemPickerCoordinator {
     /** Creates a TabContentManager instance required by the TabListEditorCoordinator. */
     private TabContentManager createTabContentManager(
             TabModelSelector selector, BrowserControlsStateProvider browserControlsStateProvider) {
+        if (mTabContentManager != null) {
+            mTabContentManager.destroy();
+        }
         TabContentManager tabContentManager =
                 new TabContentManager(
                         mActivity,
@@ -814,6 +814,7 @@ public class TabItemPickerCoordinator {
                         selector::getTabById,
                         TabWindowManagerSingleton.getInstance());
         tabContentManager.initWithNative();
+        mTabContentManager = tabContentManager;
         return tabContentManager;
     }
 
@@ -828,6 +829,10 @@ public class TabItemPickerCoordinator {
                     .getHandleBackPressChangedSupplier()
                     .removeObserver(mBackPressEnabledObserver);
             mTabListEditorCoordinator.destroy();
+        }
+        if (mTabContentManager != null) {
+            mTabContentManager.destroy();
+            mTabContentManager = null;
         }
         if (mTabModelSelector != null && mTabModelSelectorObserver != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);

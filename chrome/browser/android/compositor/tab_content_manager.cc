@@ -41,6 +41,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -207,8 +208,7 @@ TabContentManager* TabContentManager::FromJavaObject(
   if (jobj.is_null()) {
     return nullptr;
   }
-  return reinterpret_cast<TabContentManager*>(
-      Java_TabContentManager_getNativePtr(AttachCurrentThread(), jobj));
+  return Java_TabContentManager_getNativePtr(AttachCurrentThread(), jobj);
 }
 
 TabContentManager::TabContentManager(JNIEnv* env,
@@ -225,11 +225,8 @@ TabContentManager::TabContentManager(JNIEnv* env,
   thumbnail_cache_.AddThumbnailCacheObserver(this);
 }
 
-TabContentManager::~TabContentManager() = default;
-
-void TabContentManager::Destroy() {
+TabContentManager::~TabContentManager() {
   thumbnail_cache_.RemoveThumbnailCacheObserver(this);
-  delete this;
 }
 
 void TabContentManager::SetUIResourceProvider(
@@ -387,8 +384,8 @@ void TabContentManager::RemoveTabThumbnail(int32_t tab_id) {
 }
 
 void TabContentManager::RemoveAllTabThumbnailsExceptForIds(
-    std::vector<int> tab_ids) {
-  thumbnail_cache_.RemoveAllTabThumbnailsExceptForIds(tab_ids);
+    std::vector<int32_t> tab_ids) {
+  thumbnail_cache_.RemoveAllTabThumbnailsExceptForIds(std::move(tab_ids));
 }
 
 void TabContentManager::WaitForJpegTabThumbnail(
@@ -486,19 +483,19 @@ bool TabContentManager::IsTabCaptureInFlightForTesting(int32_t tab_id) {
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-static int64_t JNI_TabContentManager_Init(JNIEnv* env,
-                                          const JavaRef<jobject>& obj,
-                                          int32_t default_cache_size,
-                                          int32_t compression_queue_max_size,
-                                          int32_t write_queue_max_size,
-                                          bool save_jpeg_thumbnails) {
+static jni_zero::JniUniquePtr<TabContentManager> JNI_TabContentManager_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    int32_t default_cache_size,
+    int32_t compression_queue_max_size,
+    int32_t write_queue_max_size,
+    bool save_jpeg_thumbnails) {
   // Ensure this and its thumbnail cache are created on the UI thread.
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
-  TabContentManager* manager = new TabContentManager(
+  return jni_zero::MakeUnique<TabContentManager>(
       env, obj, default_cache_size, compression_queue_max_size,
       write_queue_max_size, save_jpeg_thumbnails);
-  return reinterpret_cast<intptr_t>(manager);
 }
 
 }  // namespace android
