@@ -452,6 +452,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder_delegate.h:CancelImageEmbeddingReason) -->
 
+<!-- LINT.IfChange(SBClientPhishingDelayedForceRequestPingEvent) -->
+
+<enum name="SBClientPhishingDelayedForceRequestPingEvent">
+  <int value="0" label="Scheduled"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Sent"/>
+  <int value="4" label="Skipped (URL changed since the first ping)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/client_side_detection_enums.h:DelayedForceRequestPingEvent) -->
+
+<!-- LINT.IfChange(SBClientPhishingForceRequestPingOrder) -->
+
+<enum name="SBClientPhishingForceRequestPingOrder">
+  <int value="0" label="First ping (immediate)"/>
+  <int value="1" label="Second ping (delayed)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/client_side_detection_enums.h:ForceRequestPingOrder) -->
+
 <enum name="SBClientPhishingScorerCreationStatus">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="MODEL_OPEN_FAIL"/>

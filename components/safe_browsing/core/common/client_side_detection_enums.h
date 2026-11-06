@@ -43,6 +43,33 @@ enum class ClientSideAllowlistMatchResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:ClientSideAllowlistMatchResult)
 
+// Tracks whether a FORCE_REQUEST ping sent by ClientSideDetectionHostBase is
+// the immediate first ping or the delayed second ping. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+// LINT.IfChange(ForceRequestPingOrder)
+enum class ForceRequestPingOrder {
+  kFirstPing = 0,
+  kSecondPing = 1,
+  kMaxValue = kSecondPing,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientPhishingForceRequestPingOrder)
+
+// Tracks the lifecycle of the delayed second FORCE_REQUEST ping when
+// kClientSideDetectionSecondForceRequestWithDelay is enabled. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+// LINT.IfChange(DelayedForceRequestPingEvent)
+enum class DelayedForceRequestPingEvent {
+  kScheduled = 0,
+  kStarted = 1,
+  kCancelled = 2,
+  kSent = 3,
+  kSkippedUrlChanged = 4,
+  kMaxValue = kSkippedUrlChanged,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientPhishingDelayedForceRequestPingEvent)
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_CLIENT_SIDE_DETECTION_ENUMS_H_

@@ -473,9 +473,12 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     raw_ptr<ClientSideDetectionHostTestBase> harness_;
   };
 
-  explicit ClientSideDetectionHostTestBase(bool is_incognito)
+  template <typename... TaskEnvironmentTraits>
+  explicit ClientSideDetectionHostTestBase(bool is_incognito,
+                                           TaskEnvironmentTraits&&... traits)
       : ChromeRenderViewHostTestHarness(
-            content::BrowserTaskEnvironment::REAL_IO_THREAD),
+            content::BrowserTaskEnvironment::REAL_IO_THREAD,
+            std::forward<TaskEnvironmentTraits>(traits)...),
         is_incognito_(is_incognito) {}
 
   void InitTestApi(content::RenderFrameHost* rfh) {
@@ -630,15 +633,22 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
             pre_classification_run_loop_->QuitClosure()));
   }
 
+  // Flushes any pending mojo calls on `csd_host_->phishing_detector_` if
+  // bound, ensuring that IPC messages to `fake_phishing_detector_` are
+  // dispatched.
+  void FlushPhishingDetectorForTesting() {
+    if (csd_host_->phishing_detector_) {
+      csd_host_->phishing_detector_.FlushForTesting();
+    }
+  }
+
   // Wait for the preclassification check histogram to be logged, then
   // flush the generated IPC (if it exists).
   void WaitAndCheckPreClassificationChecks() {
     if (!pre_classification_run_loop_->AnyQuitCalled()) {
       pre_classification_run_loop_->Run();
     }
-    if (csd_host_->phishing_detector_) {
-      csd_host_->phishing_detector_.FlushForTesting();
-    }
+    FlushPhishingDetectorForTesting();
   }
 
   void NotifyClientSideDetectionObservers() {
@@ -776,8 +786,11 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
 class ClientSideDetectionHostTest : public ClientSideDetectionHostTestBase {
  public:
-  ClientSideDetectionHostTest()
-      : ClientSideDetectionHostTestBase(false /*is_incognito*/) {}
+  template <typename... TaskEnvironmentTraits>
+  explicit ClientSideDetectionHostTest(TaskEnvironmentTraits&&... traits)
+      : ClientSideDetectionHostTestBase(
+            false /*is_incognito*/,
+            std::forward<TaskEnvironmentTraits>(traits)...) {}
 };
 
 class ClientSideDetectionHostIncognitoTest
@@ -4082,7 +4095,9 @@ TEST_F(ClientSideDetectionHostNotificationTest,
 class ClientSideDetectionRTLookupResponseForceRequestTest
     : public ClientSideDetectionHostTest {
  public:
-  ClientSideDetectionRTLookupResponseForceRequestTest() = default;
+  ClientSideDetectionRTLookupResponseForceRequestTest()
+      : ClientSideDetectionHostTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     ClientSideDetectionHostTest::SetUp();
@@ -4346,6 +4361,162 @@ TEST_F(
       ClientSideDetectionHost::AsyncCheckTriggerForceRequestResult::
           kSkippedTriggerModelsPingSentAsForceRequest,
       1);
+}
+
+TEST_F(
+    ClientSideDetectionRTLookupResponseForceRequestTest,
+    AsyncCheckTrackerSendsDelayedSecondForceRequestPingWhenSecondRequestDelayEnabled) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionSecondForceRequestWithDelay,
+      {{"RequestDelayMs", "2000"}});
+  NavigateAndCommit(example_url_);
+
+  SetRTResponseInCacheManager(/*is_enforced=*/true);
+
+  std::vector<ClientPhishingRequest> sent_requests;
+  base::RunLoop first_ping_run_loop;
+  base::RunLoop second_ping_run_loop;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest> request,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback
+                  callback,
+              const std::string&) {
+            sent_requests.push_back(*request);
+            std::move(callback).Run(
+                example_url_, /*is_phishing=*/false, net::HTTP_OK,
+                IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+            first_ping_run_loop.Quit();
+          })
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest> request,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback
+                  callback,
+              const std::string&) {
+            sent_requests.push_back(*request);
+            std::move(callback).Run(
+                example_url_, /*is_phishing=*/false, net::HTTP_OK,
+                IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+            second_ping_run_loop.Quit();
+          });
+
+  CompleteAsyncCheck();
+  first_ping_run_loop.Run();
+
+  // First ping is sent immediately and its safe verdict schedules the delayed
+  // second ping.
+  ASSERT_EQ(sent_requests.size(), 1u);
+  EXPECT_EQ(sent_requests[0].client_side_detection_type(),
+            ClientSideDetectionType::FORCE_REQUEST);
+  EXPECT_THAT(
+      sent_requests[0].population().finch_active_groups(),
+      testing::AllOf(
+          testing::Contains(
+              "ClientSideDetectionSecondForceRequestWithDelay.Enabled.2000"),
+          testing::Contains("ClientSideDetectionSecondForceRequestWithDelay."
+                            "Enabled.2000.FirstPing")));
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ForceRequest.PingOrder",
+      ForceRequestPingOrder::kFirstPing, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent",
+      DelayedForceRequestPingEvent::kScheduled, 1);
+
+  // Before the 2000 ms delay elapses, no second ping is sent.
+  task_environment()->FastForwardBy(base::Milliseconds(1999));
+  EXPECT_EQ(sent_requests.size(), 1u);
+
+  // At 2000 ms, the second preclassification & classification run and send the
+  // second ping.
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+  second_ping_run_loop.Run();
+
+  ASSERT_EQ(sent_requests.size(), 2u);
+  EXPECT_EQ(sent_requests[1].client_side_detection_type(),
+            ClientSideDetectionType::FORCE_REQUEST);
+  EXPECT_THAT(
+      sent_requests[1].population().finch_active_groups(),
+      testing::AllOf(
+          testing::Contains(
+              "ClientSideDetectionSecondForceRequestWithDelay.Enabled.2000"),
+          testing::Contains("ClientSideDetectionSecondForceRequestWithDelay."
+                            "Enabled.2000.SecondPing")));
+  histogram_tester_.ExpectBucketCount("SBClientPhishing.ForceRequest.PingOrder",
+                                      ForceRequestPingOrder::kFirstPing, 1);
+  histogram_tester_.ExpectBucketCount("SBClientPhishing.ForceRequest.PingOrder",
+                                      ForceRequestPingOrder::kSecondPing, 1);
+  histogram_tester_.ExpectTotalCount("SBClientPhishing.ForceRequest.PingOrder",
+                                     2);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent",
+      DelayedForceRequestPingEvent::kScheduled, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent",
+      DelayedForceRequestPingEvent::kStarted, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent",
+      DelayedForceRequestPingEvent::kSent, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent", 3);
+
+  // Advancing another 2000 ms does not send a third ping.
+  task_environment()->FastForwardBy(base::Milliseconds(2000));
+  FlushPhishingDetectorForTesting();
+  EXPECT_EQ(sent_requests.size(), 2u);
+}
+
+TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
+       NavigationBeforeDelayElapsesCancelsSecondForceRequestPing) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionSecondForceRequestWithDelay,
+      {{"RequestDelayMs", "2000"}});
+  NavigateAndCommit(example_url_);
+
+  SetRTResponseInCacheManager(/*is_enforced=*/true);
+
+  base::RunLoop first_ping_run_loop;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .Times(1)
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest>,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback
+                  callback,
+              const std::string&) {
+            std::move(callback).Run(
+                example_url_, /*is_phishing=*/false, net::HTTP_OK,
+                IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+            first_ping_run_loop.Quit();
+          });
+
+  CompleteAsyncCheck();
+  first_ping_run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ForceRequest.PingOrder",
+      ForceRequestPingOrder::kFirstPing, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent",
+      DelayedForceRequestPingEvent::kScheduled, 1);
+
+  // Navigate to another URL at 500 ms before the 2000 ms delay elapses.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  GURL next_url("http://nextsafeurl.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(next_url, false);
+  NavigateAndCommit(next_url);
+
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent",
+      DelayedForceRequestPingEvent::kCancelled, 1);
+
+  // Advancing past 2000 ms must not send a second FORCE_REQUEST ping.
+  task_environment()->FastForwardBy(base::Milliseconds(2000));
+  FlushPhishingDetectorForTesting();
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ForceRequest.PingOrder",
+      ForceRequestPingOrder::kFirstPing, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent", 2);
 }
 
 class ClientSideDetectionHostNewObserversForceRequestTest
@@ -4723,6 +4894,32 @@ class ClientSideDetectionHostScamDetectionTest
                       ? "ClientSideDetectionScamDetectionRequestWithUrl.Enabled"
                       : "ClientSideDetectionScamDetectionRequestWithUrl."
                         "Control"));
+          if (request->client_side_detection_type() ==
+              ClientSideDetectionType::FORCE_REQUEST) {
+            EXPECT_THAT(
+                request->population().finch_active_groups(),
+                testing::Contains(
+                    base::FeatureList::IsEnabled(
+                        kClientSideDetectionSecondForceRequestWithDelay)
+                        ? "ClientSideDetectionSecondForceRequestWithDelay"
+                          ".Enabled." +
+                              base::NumberToString(
+                                  kCsdForceRequestDelayMs.Get())
+                        : "ClientSideDetectionSecondForceRequestWithDelay"
+                          ".Control"));
+          } else {
+            EXPECT_THAT(
+                request->population().finch_active_groups(),
+                testing::Not(testing::Contains(
+                    base::FeatureList::IsEnabled(
+                        kClientSideDetectionSecondForceRequestWithDelay)
+                        ? "ClientSideDetectionSecondForceRequestWithDelay"
+                          ".Enabled." +
+                              base::NumberToString(
+                                  kCsdForceRequestDelayMs.Get())
+                        : "ClientSideDetectionSecondForceRequestWithDelay"
+                          ".Control")));
+          }
           EXPECT_THAT(
               request->population().finch_active_groups(),
               testing::Contains(

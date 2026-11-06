@@ -262,10 +262,39 @@ ClientSideDetectionHostBase::~ClientSideDetectionHostBase() = default;
 void ClientSideDetectionHostBase::CancelPendingRequests() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_tracker_.TryCancelAll();
+  if (second_force_request_timer_.IsRunning()) {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.ForceRequest.DelayedPingEvent",
+        DelayedForceRequestPingEvent::kCancelled);
+  }
+  second_force_request_timer_.Stop();
+  has_triggered_second_force_request_ = false;
+  second_force_request_url_ = GURL();
   base_weak_factory_.InvalidateWeakPtrs();
   if (intelligent_scan_id_.has_value()) {
     intelligent_scan_delegate_->CancelIntelligentScan(*intelligent_scan_id_);
   }
+}
+
+void ClientSideDetectionHostBase::TriggerSecondForceRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  has_triggered_second_force_request_ = true;
+  // Skip if a same-document navigation changed the URL; the renderer ignores
+  // requests that don't match the initial load URL (ignoring ref).
+  // TODO(crbug.com/579072786): Remove this check once the renderer checks
+  // only the host/origin instead of the full URL path on same-document
+  // navigations.
+  if (GetCurrentUrl().GetWithoutRef() !=
+      second_force_request_url_.GetWithoutRef()) {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.ForceRequest.DelayedPingEvent",
+        DelayedForceRequestPingEvent::kSkippedUrlChanged);
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent",
+      DelayedForceRequestPingEvent::kStarted);
+  MaybeStartPreClassification(ClientSideDetectionType::FORCE_REQUEST);
 }
 
 void ClientSideDetectionHostBase::LogClientSideDetectionEvent(
@@ -959,6 +988,25 @@ void ClientSideDetectionHostBase::
           ? "ClientSideDetectionScamDetectionRequestWithUrl.Enabled"
           : "ClientSideDetectionScamDetectionRequestWithUrl.Control");
 
+  if (verdict->client_side_detection_type() ==
+      ClientSideDetectionType::FORCE_REQUEST) {
+    if (base::FeatureList::IsEnabled(
+            kClientSideDetectionSecondForceRequestWithDelay)) {
+      const std::string enabled_group_with_delay = base::StrCat(
+          {"ClientSideDetectionSecondForceRequestWithDelay.Enabled.",
+           base::NumberToString(kCsdForceRequestDelayMs.Get())});
+      verdict->mutable_population()->add_finch_active_groups(
+          enabled_group_with_delay);
+      verdict->mutable_population()->add_finch_active_groups(
+          base::StrCat({enabled_group_with_delay,
+                        has_triggered_second_force_request_ ? ".SecondPing"
+                                                            : ".FirstPing"}));
+    } else {
+      verdict->mutable_population()->add_finch_active_groups(
+          "ClientSideDetectionSecondForceRequestWithDelay.Control");
+    }
+  }
+
   verdict->mutable_population()->add_finch_active_groups(
       base::FeatureList::IsEnabled(kClientSideDetectionServerModelMultimodal)
           ? "ClientSideDetectionServerModelMultimodal.Enabled"
@@ -1045,6 +1093,19 @@ void ClientSideDetectionHostBase::SendRequest(
   if (verdict->client_side_detection_type() ==
       ClientSideDetectionType::USER_REPORT) {
     MaybeRunUserReportCallback();
+  }
+
+  if (verdict->client_side_detection_type() ==
+      ClientSideDetectionType::FORCE_REQUEST) {
+    base::UmaHistogramEnumeration("SBClientPhishing.ForceRequest.PingOrder",
+                                  has_triggered_second_force_request_
+                                      ? ForceRequestPingOrder::kSecondPing
+                                      : ForceRequestPingOrder::kFirstPing);
+    if (has_triggered_second_force_request_) {
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.ForceRequest.DelayedPingEvent",
+          DelayedForceRequestPingEvent::kSent);
+    }
   }
 
   auto callback = base::BindOnce(
@@ -1517,6 +1578,25 @@ void ClientSideDetectionHostBase::MaybeShowPhishingWarning(
     ShowBlockingPage(phishing_url, request_type, intelligent_scan_verdict,
                      is_phishing, should_show_scam_warning);
     CancelPendingRequests();
+    return;
+  }
+
+  if (!is_from_cache && !is_phishing &&
+      intelligent_scan_verdict ==
+          IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE &&
+      request_type == ClientSideDetectionType::FORCE_REQUEST &&
+      base::FeatureList::IsEnabled(
+          kClientSideDetectionSecondForceRequestWithDelay) &&
+      !has_triggered_second_force_request_ &&
+      !second_force_request_timer_.IsRunning()) {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.ForceRequest.DelayedPingEvent",
+        DelayedForceRequestPingEvent::kScheduled);
+    second_force_request_url_ = phishing_url;
+    second_force_request_timer_.Start(
+        FROM_HERE, base::Milliseconds(kCsdForceRequestDelayMs.Get()),
+        base::BindOnce(&ClientSideDetectionHostBase::TriggerSecondForceRequest,
+                       base_weak_factory_.GetWeakPtr()));
   }
 }
 

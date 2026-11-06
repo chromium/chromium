@@ -754,6 +754,29 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.ForceRequest.DelayedPingEvent"
+    enum="SBClientPhishingDelayedForceRequestPingEvent"
+    expires_after="2027-04-06">
+  <owner>tiffanysong@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records lifecycle events (scheduled, started, cancelled, sent) for the
+    delayed second FORCE_REQUEST ping when
+    ClientSideDetectionSecondForceRequestWithDelay is enabled.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ForceRequest.PingOrder"
+    enum="SBClientPhishingForceRequestPingOrder" expires_after="2027-04-06">
+  <owner>tiffanysong@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a FORCE_REQUEST ClientPhishingRequest ping sent by
+    ClientSideDetectionHostBase is the immediate first ping or the delayed
+    second ping.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.HasVisualFeaturesImage2" enum="BooleanExists"
     expires_after="2027-01-13">
   <owner>xinghuilu@chromium.org</owner>

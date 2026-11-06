@@ -167,6 +167,11 @@ BASE_DECLARE_FEATURE(kClientSideDetectionScamDetectionRequestWithUrl);
 // Controls whether the scam score is included in IntelligentScanInfo.
 BASE_DECLARE_FEATURE(kClientSideDetectionScamScore);
 
+// Sends a second delayed FORCE_REQUEST ping if the first FORCE_REQUEST
+// verdict is safe.
+BASE_DECLARE_FEATURE(kClientSideDetectionSecondForceRequestWithDelay);
+extern const base::FeatureParam<int> kCsdForceRequestDelayMs;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Inquire the server-side model instead of the on-device model for scam
 // detection on Desktop.
