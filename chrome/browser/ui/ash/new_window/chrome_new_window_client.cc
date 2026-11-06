@@ -344,21 +344,27 @@ void ChromeNewWindowClient::OpenFileManager() {
 }
 
 void ChromeNewWindowClient::OpenDownloadsFolder() {
-  Profile* const profile = ProfileManager::GetActiveUserProfile();
-  base::FilePath target_directory =
-      file_manager::util::GetDownloadsFolderForProfile(profile);
+  // TODO(crbug.com/563546692): Take the AccountId from the caller, so that the
+  // folder belongs to the user who asked for it.
+  const session_manager::Session& session =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
+  const user_manager::User& user = CHECK_DEREF(
+      user_manager::UserManager::Get()->FindUser(session.account_id()));
+  const base::FilePath target_directory =
+      file_manager::util::GetDownloadsFolder(user);
+
+  Profile* const profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
   if (OpenFilesSwa(profile, target_directory)) {
     return;
   }
 
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  auto downloads_path =
-      file_manager::util::GetDownloadsFolderForProfile(profile);
   CHECK(proxy, base::NotFatalUntil::M162);
 
   auto launch_files_app = [proxy,
-                           downloads_path](const apps::AppUpdate& update) {
+                           target_directory](const apps::AppUpdate& update) {
     if (update.Readiness() != apps::Readiness::kReady) {
       LOG(WARNING)
           << "Couldn't launch Files app because it isn't ready, readiness: "
@@ -367,7 +373,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
     }
 
     std::vector<base::FilePath> launch_files;
-    launch_files.push_back(downloads_path);
+    launch_files.push_back(target_directory);
     proxy->LaunchAppWithFiles(
         update.AppId(),
         apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewForegroundTab,

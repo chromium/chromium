@@ -11,6 +11,10 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace policy::local_user_files {
 
@@ -31,10 +35,20 @@ base::FilePath GetDriveFsMountPointPath() {
   return integration_service->GetMountPointPath();
 }
 
+// TODO(crbug.com/579585875): Take the User from ResolvePath()'s callers
+// instead of assuming the primary one.
 base::FilePath GetUserDefaultDownloadsFolder() {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  return profile ? file_manager::util::GetDownloadsFolderForProfile(profile)
-                 : base::FilePath();
+  const session_manager::Session* const session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  const user_manager::User* const user =
+      session
+          ? user_manager::UserManager::Get()->FindUser(session->account_id())
+          : nullptr;
+  // The home directory is not mounted until the user signs in.
+  if (!user || user->username_hash().empty()) {
+    return base::FilePath();
+  }
+  return file_manager::util::GetDownloadsFolder(*user);
 }
 
 }  // namespace

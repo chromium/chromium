@@ -45,6 +45,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension_builder.h"
@@ -83,6 +84,7 @@ class DemoSessionTest : public testing::Test {
     InitializeComponentManager();
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
+    session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
@@ -105,6 +107,10 @@ class DemoSessionTest : public testing::Test {
     component_manager_ash_ = nullptr;
     browser_process_platform_part_test_api_.ShutdownComponentManager();
     profile_manager_->DeleteAllTestingProfiles();
+
+    // The SessionManager has to outlive the things observing it above, but be
+    // destroyed before the UserManager it observes in turn.
+    session_manager_.reset();
   }
 
  protected:
@@ -143,7 +149,10 @@ class DemoSessionTest : public testing::Test {
         account_id.GetUserEmail(), std::move(prefs), u"Test profile",
         /*avatar_id=*/1, TestingProfile::TestingFactories());
 
-    fake_user_manager_->LoginUser(account_id);
+    session_manager_->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false, /*has_active_session=*/false);
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
     return profile;
   }
 
@@ -222,6 +231,8 @@ TEST_F(DemoSessionTest, CannotLockScreen) {
 TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
   DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
+  // InstallDemoResources() reads the active user's Downloads folder.
+  LoginDemoUser();
 
   std::unique_ptr<base::MockOneShotTimer> timer =
       std::make_unique<base::MockOneShotTimer>();
@@ -272,6 +283,8 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
 TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
   DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
+  // InstallDemoResources() reads the active user's Downloads folder.
+  LoginDemoUser();
 
   std::unique_ptr<base::MockOneShotTimer> timer =
       std::make_unique<base::MockOneShotTimer>();

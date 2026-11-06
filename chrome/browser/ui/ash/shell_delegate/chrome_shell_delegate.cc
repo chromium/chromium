@@ -80,6 +80,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/views/server_holder.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -427,15 +428,15 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
     return base::FilePath();
   }
 
-  content::BrowserContext* browser_context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          primary_session->account_id());
-  if (browser_context) {
-    return file_manager::util::GetDownloadsFolderForProfile(
-        Profile::FromBrowserContext(browser_context));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id()));
+  // The home directory is not mounted until the user signs in.
+  if (user.username_hash().empty()) {
+    return base::FilePath();
   }
 
-  return base::FilePath();
+  return file_manager::util::GetDownloadsFolder(user);
 }
 
 void ChromeShellDelegate::OpenFeedbackDialog(
