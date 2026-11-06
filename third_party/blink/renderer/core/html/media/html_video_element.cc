@@ -616,6 +616,7 @@ void HTMLVideoElement::OnVisibilityRatioReport(double ratio) {
 }
 
 void HTMLVideoElement::ResetCache(TimerBase*) {
+  cache_deleting_timer_.Stop();
   snapshot_pool_.reset();
   cached_draw_info_.reset();
 }
@@ -1266,6 +1267,7 @@ void HTMLVideoElement::OnWebMediaPlayerCreated() {
 }
 
 void HTMLVideoElement::OnWebMediaPlayerCleared() {
+  ResetCache();
   has_received_first_frame_ = false;
   if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this)) {
     vfc_requester->OnWebMediaPlayerCleared();
