@@ -62,10 +62,14 @@
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "base/check_deref.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/signin/first_run_desktop_refresh_field_trial.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_POSIX)
+#include "base/check_deref.h"
+#include "chrome/browser/metrics/client_id_backup_correctness_fix_field_trial.h"
+#endif  // BUILDFLAG(IS_POSIX)
 
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
     : local_state_(local_state) {
@@ -106,6 +110,11 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
         CHECK_DEREF(feature_list), entropy_providers.default_entropy());
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_POSIX)
+  metrics::CreateClientIdBackupCorrectnessFixFieldTrial(
+      CHECK_DEREF(feature_list), entropy_providers.default_entropy());
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {

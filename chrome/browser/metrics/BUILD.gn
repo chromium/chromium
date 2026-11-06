@@ -231,6 +231,10 @@ source_set("metrics") {
     public += [ "chrome_metrics_service_crash_reporter.h" ]
   }
 
+  if (is_posix) {
+    public += [ "client_id_backup_correctness_fix_field_trial.h" ]
+  }
+
   if (enable_extensions_core) {
     public += [ "extensions_metrics_provider.h" ]
   }
@@ -522,6 +526,10 @@ source_set("impl") {
     sources += [ "chrome_metrics_service_crash_reporter.cc" ]
   }
 
+  if (is_posix) {
+    sources += [ "client_id_backup_correctness_fix_field_trial.cc" ]
+  }
+
   if (enable_extensions_core) {
     sources += [ "extensions_metrics_provider.cc" ]
     deps += [ "//chrome/browser/extensions" ]
@@ -720,6 +728,11 @@ source_set("unit_tests") {
     ]
   } else {
     sources += [ "family_link_user_metrics_provider_unittest.cc" ]
+  }
+
+  if (is_posix) {
+    sources += [ "client_id_backup_correctness_fix_field_trial_unittest.cc" ]
+    deps += [ "//components/variations:test_support" ]
   }
 
   if (enable_extensions_core) {
