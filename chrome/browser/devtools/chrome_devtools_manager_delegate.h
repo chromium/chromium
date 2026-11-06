@@ -105,6 +105,9 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate,
       TargetType target_type,
       bool new_window) override;
   bool HasBundledFrontendResources() override;
+  void GetBrowserWindowCaptureDevice(
+      content::WebContents* web_contents,
+      BrowserWindowCaptureDeviceCallback callback) override;
   void AcceptDebugging(AcceptCallback) override;
   void SetActiveWebSocketConnections(size_t count) override;
 
