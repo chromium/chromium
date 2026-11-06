@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
 #include "chrome/common/chrome_features.h"
 
@@ -33,6 +34,8 @@ InitialWebUIProfileServiceFactory::InitialWebUIProfileServiceFactory()
               .WithGuest(ProfileSelection::kNone)
               .Build()) {
   DependsOn(ThemeServiceFactory::GetInstance());
+  // For the refill, which watches the profile's browser windows.
+  DependsOn(BrowserManagerServiceFactory::GetInstance());
 }
 
 InitialWebUIProfileServiceFactory::~InitialWebUIProfileServiceFactory() =

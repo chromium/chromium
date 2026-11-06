@@ -36,6 +36,7 @@ source_set("top_chrome") {
       "top_chrome_webui_user_profile.h",
       "webui_contents_preload_manager.h",
       "webui_contents_preload_state.h",
+      "webui_contents_prerenderer.h",
       "webui_contents_warmup_level.h",
       "webui_contents_warmup_level_recorder.h",
       "webui_contents_wrapper.h",
@@ -81,6 +82,7 @@ source_set("impl") {
       "top_chrome_webui_user_profile.cc",
       "webui_contents_preload_manager.cc",
       "webui_contents_preload_state.cc",
+      "webui_contents_prerenderer.cc",
       "webui_contents_warmup_level.cc",
       "webui_contents_warmup_level_recorder.cc",
       "webui_contents_wrapper.cc",
@@ -162,6 +164,7 @@ if (!is_android) {
       "top_chrome_webui_config_unittest.cc",
       "top_chrome_webui_user_profile_unittest.cc",
       "webui_contents_preload_manager_unittest.cc",
+      "webui_contents_prerenderer_unittest.cc",
       "webui_contents_wrapper_unittest.cc",
     ]
     deps = [

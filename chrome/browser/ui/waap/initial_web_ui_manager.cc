@@ -44,6 +44,14 @@ InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
       return;
     }
 
+    if (InitialWebUIProfileService::IsPrerenderingEnabled()) {
+      // With prerendering, a window that gets no spare builds its toolbar
+      // inline, as with prewarm off. Starting the build here instead, at
+      // browser construction, gains little, and it puts startup windows on the
+      // adoption path that refill otherwise uses only for spares.
+      return;
+    }
+
     const bool pre_navigate =
         features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get();
     toolbar_web_contents_ =

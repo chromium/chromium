@@ -614,6 +614,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/default_browser/win/settings_row_locator_win.h:UiaElementLocationOutcome) -->
 
+<!-- LINT.IfChange(WebUIContentsPrerenderTakeResult) -->
+
+<enum name="WebUIContentsPrerenderTakeResult">
+  <int value="0" label="Adopted"/>
+  <int value="1" label="No spare"/>
+  <int value="2" label="Dropped: stale"/>
+  <int value="3" label="Dropped: renderer gone"/>
+  <int value="4" label="Dropped: already painted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/top_chrome/webui_contents_prerenderer.h:WebUIContentsPrerenderTakeResult) -->
+
 <enum name="WebUIPreloadReason">
   <int value="0" label="BrowserWarmup"/>
   <int value="1" label="WebUIDestroyed"/>

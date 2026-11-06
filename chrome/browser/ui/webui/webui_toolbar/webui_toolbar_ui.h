@@ -44,6 +44,7 @@ class HelpBubbleHandler;
 }  // namespace user_education
 
 class OmniboxController;
+class Profile;
 class WebuiOmniboxHandler;
 
 // The webui controller for the webui toolbar. This class has a two part
@@ -95,6 +96,17 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   }
 
   static constexpr std::string_view GetWebUIName() { return "WebUIToolbar"; }
+
+  struct ProfileButtonEligibility {
+    bool is_profile_eligible_for_glic = false;
+    bool can_show_avatar_for_profile = false;
+    bool operator==(const ProfileButtonEligibility&) const = default;
+  };
+
+  // Computes the per-frame Glic and avatar button eligibility for `profile`.
+  // It can change while the browser runs, and a prewarmed toolbar reads it
+  // when it navigates, which can be long before a window adopts it.
+  static ProfileButtonEligibility GetProfileButtonEligibility(Profile* profile);
 
   void BindInterface(
       mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>

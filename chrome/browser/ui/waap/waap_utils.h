@@ -17,6 +17,10 @@ class SecurityPrincipal;
 class WebContents;
 }  // namespace content
 
+namespace ui {
+struct ColorProviderKey;
+}
+
 namespace waap {
 
 // Represents the source of a new browser window creation. Used to slice the
@@ -102,6 +106,10 @@ class PrewarmHelper {
   // user profile.
   static void ConfigureWebUIContents(content::WebContents* web_contents,
                                      Profile* profile);
+
+  // Returns the color provider key that `ConfigureWebUIContents()` gives the
+  // WebContents, which the WebUI keeps until it is attached to a window.
+  static ui::ColorProviderKey GetColorProviderKey(Profile* profile);
 
   // Prewarms the WebUI toolbar WebContents for a window of `profile`.
   // Creates the WebContents and configures it for `profile` using

@@ -336,6 +336,18 @@ WEB_UI_CONTROLLER_TYPE_IMPL(WebUIToolbarUI)
 
 WebUIToolbarUI::~WebUIToolbarUI() = default;
 
+// static
+WebUIToolbarUI::ProfileButtonEligibility
+WebUIToolbarUI::GetProfileButtonEligibility(Profile* profile) {
+  CHECK(profile);
+  return {
+      .is_profile_eligible_for_glic =
+          glic::GlicEnabling::IsProfileEligible(profile),
+      .can_show_avatar_for_profile =
+          AvatarToolbarButtonInterface::CanShowForProfile(profile),
+  };
+}
+
 WebUIToolbarConfig::WebUIToolbarConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
                                   chrome::kChromeUIWebUIToolbarHost) {}
@@ -526,10 +538,11 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(content::RenderFrameHost* rfh) {
   // instead of in the WebUIDataSource, which is shared by the toolbars in the
   // same BrowserContext. With features::kTopChromeWebUISharedRenderer, those
   // toolbars can be for windows of different profiles.
+  const ProfileButtonEligibility eligibility =
+      GetProfileButtonEligibility(user_profile);
   values.Set(kIsProfileEligibleForGlic,
-             glic::GlicEnabling::IsProfileEligible(user_profile));
-  values.Set(kCanShowAvatarForProfile,
-             AvatarToolbarButtonInterface::CanShowForProfile(user_profile));
+             eligibility.is_profile_eligible_for_glic);
+  values.Set(kCanShowAvatarForProfile, eligibility.can_show_avatar_for_profile);
 
   std::string json_string;
   base::JSONWriter::Write(values, &json_string);

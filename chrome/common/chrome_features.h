@@ -1335,6 +1335,22 @@ BASE_DECLARE_FEATURE(kWebUIReloadButton);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kTopChromeWebUISharedRenderer);
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kTopChromeWebUIPrerendering);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kTopChromeWebUIPrerenderingDelay;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kTopChromeWebUIPrerenderingPaintDeadline;
+// The memory pressure levels that can skip the refill.
+enum class TopChromeWebUIPrerenderingMemoryPressureLevel {
+  kModerate,
+  kCritical,
+};
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<TopChromeWebUIPrerenderingMemoryPressureLevel>
+    kTopChromeWebUIPrerenderingMemoryPressure;
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kWebUIReloadButtonMaxCrashRecoveryTimes;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>

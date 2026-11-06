@@ -29,6 +29,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/color/color_provider_utils.h"
@@ -131,14 +132,17 @@ void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
 
   // Set up the color provider source so that early navigation can resolve
   // theme color properties.
-  auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
-  ui::ColorProviderKey key = theme_service->GetColorProviderKey(
-      ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(nullptr),
-      profile);
-  auto source = std::make_unique<PrewarmColorProviderSource>(key);
+  auto source = std::make_unique<PrewarmColorProviderSource>(
+      GetColorProviderKey(profile));
   web_contents->SetColorProviderSource(source.get());
   web_contents->SetUserData(PrewarmColorProviderSource::kUserDataKey,
                             std::move(source));
+}
+
+ui::ColorProviderKey PrewarmHelper::GetColorProviderKey(Profile* profile) {
+  return ThemeServiceFactory::GetForProfile(profile)->GetColorProviderKey(
+      ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(nullptr),
+      profile);
 }
 
 std::unique_ptr<content::WebContents> PrewarmHelper::PrewarmWebUIContents(
