@@ -72,6 +72,9 @@ source_set("browser_tests") {
       "//chrome/test:test_support_ui_android",
     ]
   } else {
-    deps += [ "//chrome/test:test_support_ui" ]
+    deps += [
+      "//base/test:test_support",
+      "//content/test:test_support",
+    ]
   }
 }

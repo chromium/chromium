@@ -89,7 +89,8 @@ if (!is_android) {
     deps = [
       ":ntp",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:ui_test_utils",
       "//content/test:test_support",
       "//testing/gtest",
     ]

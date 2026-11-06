@@ -103,7 +103,6 @@ source_set("browser_tests") {
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",
-      "//chrome/test:test_support_ui",
       "//components/segmentation_platform/public",
       "//components/segmentation_platform/public:test_support",
       "//components/ukm:test_support",

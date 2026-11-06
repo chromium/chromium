@@ -112,7 +112,7 @@ source_set("xr_browser_tests_common") {
     ]
   } else {
     deps += [ "//chrome/browser/ui:browser_tabstrip" ]
-    public_deps += [ "//chrome/test:test_support_ui" ]
+    public_deps += [ "//chrome/test/base:platform_browser_test" ]
   }
 
   data = [

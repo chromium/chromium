@@ -27,7 +27,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/window_metadata",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:in_process_browser_test",
     "//content/test:test_support",
     "//ui/base:test_support",
     "//ui/base/interaction:test_support",

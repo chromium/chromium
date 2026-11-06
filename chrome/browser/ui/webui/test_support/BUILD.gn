@@ -14,7 +14,7 @@ if (!is_android) {
     public_deps = [
       "//base",
       "//base/test:test_support",
-      "//chrome/test:test_support_ui",
+      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/test/interaction",
       "//ui/base",
       "//ui/base/interaction:test_support",
