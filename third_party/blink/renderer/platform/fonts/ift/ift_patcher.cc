@@ -63,6 +63,10 @@ IftPatcher::IftPatcher(IftPatcher&&) = default;
 
 IftPatcher& IftPatcher::operator=(IftPatcher&&) = default;
 
+std::unique_ptr<IftPatcher> IftPatcher::Clone() const {
+  return base::WrapUnique(new IftPatcher(ift_patcher_rs::IftPatcher(patcher_)));
+}
+
 std::unique_ptr<IftPatcher> IftPatcher::Create(
     base::span<const uint8_t> font_data) {
   if (!RuntimeEnabledFeatures::IncrementalFontTransferEnabled()) {

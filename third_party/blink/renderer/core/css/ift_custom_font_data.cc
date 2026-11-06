@@ -72,7 +72,7 @@ class IftFont::PatchLoader final : public GarbageCollected<PatchLoader>,
 
 IftFont* IftFont::MaybeCreate(RemoteFontFaceSource* font_face_source,
                               FontResource& font_resource) {
-  std::unique_ptr<IftPatcher> patcher = font_resource.TakeIftPatcher();
+  std::unique_ptr<IftPatcher> patcher = font_resource.CloneIftPatcher();
   if (!patcher) {
     return nullptr;
   }

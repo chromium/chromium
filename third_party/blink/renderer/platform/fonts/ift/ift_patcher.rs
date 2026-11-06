@@ -75,7 +75,7 @@ impl IftSubsetDefinition {
     }
 }
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct IftPatcher {
     font_data: Vec<u8>,
     /// The patch map of the font data as of the last `mark_rendered()` call, or

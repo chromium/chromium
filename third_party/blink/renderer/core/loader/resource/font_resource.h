@@ -80,7 +80,10 @@ class CORE_EXPORT FontResource final : public Resource {
   // Decodes the font on the first call, then releases the encoded data and
   // reports the decoded size to MemoryCache. Returns null on decode failure.
   const FontCustomPlatformData* GetCustomFontData();
-  std::unique_ptr<IftPatcher> TakeIftPatcher();
+  // Returns a copy of the IFT patcher for this font, or nullptr if the font is
+  // not an IFT font. Each caller receives its own independent copy.
+  // TODO(wmedrano): Share a single IftPatcher instead of cloning.
+  std::unique_ptr<IftPatcher> CloneIftPatcher() const;
 
   // Returns true if the loading priority of the remote font resource can be
   // lowered. The loading priority of the font can be lowered only if the

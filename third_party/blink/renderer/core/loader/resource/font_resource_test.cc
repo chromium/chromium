@@ -580,8 +580,8 @@ TEST_F(FontResourceTest, DecodeIftFontCreatesIftPatcher) {
   ASSERT_TRUE(resource->IsLoaded());
 
   EXPECT_TRUE(resource->GetCustomFontData());
-  EXPECT_NE(resource->TakeIftPatcher(), nullptr);
-  EXPECT_EQ(resource->TakeIftPatcher(), nullptr);
+  EXPECT_NE(resource->CloneIftPatcher(), nullptr);
+  EXPECT_NE(resource->CloneIftPatcher(), nullptr);
   EXPECT_TRUE(resource->OtsParsingMessage().empty());
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
 }
@@ -700,8 +700,8 @@ TEST_F(FontResourceBackgroundProcessorTest, IftFontHasIftPatcher) {
       CreateTestFontDataPipe(test::PlatformTestDataPath("roboto-ift.woff2")));
   const FontCustomPlatformData* font_data = resource->GetCustomFontData();
   EXPECT_TRUE(font_data);
-  EXPECT_NE(resource->TakeIftPatcher(), nullptr);
-  EXPECT_EQ(resource->TakeIftPatcher(), nullptr);
+  EXPECT_NE(resource->CloneIftPatcher(), nullptr);
+  EXPECT_NE(resource->CloneIftPatcher(), nullptr);
   EXPECT_TRUE(resource->OtsParsingMessage().empty());
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
 }

@@ -355,8 +355,8 @@ const FontCustomPlatformData* FontResource::GetCustomFontData() {
   return font_data_;
 }
 
-std::unique_ptr<IftPatcher> FontResource::TakeIftPatcher() {
-  return std::move(ift_patcher_);
+std::unique_ptr<IftPatcher> FontResource::CloneIftPatcher() const {
+  return ift_patcher_ ? ift_patcher_->Clone() : nullptr;
 }
 
 void FontResource::WillReloadAfterDiskCacheMiss() {

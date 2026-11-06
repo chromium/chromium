@@ -94,6 +94,11 @@ class PLATFORM_EXPORT IftPatcher {
   IftPatcher(const IftPatcher&) = delete;
   IftPatcher& operator=(const IftPatcher&) = delete;
 
+  // Returns a deep copy of this patcher, including its font data, supplied
+  // patch data and requested patch URLs. The copy and the original evolve
+  // independently afterwards.
+  std::unique_ptr<IftPatcher> Clone() const;
+
   // Returns a view over the current in-memory font data bytes.
   //
   // After patches are successfully applied via `ApplyPatches()`, the returned
