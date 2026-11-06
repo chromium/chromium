@@ -4031,7 +4031,7 @@ deps = {
 
   'src/third_party/widevine/cdm/chromeos': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/chromeos.git' + '@' +
-        'c0c105991677d8ef446cf23989939f2dedece36a',
+        'afb3b48af1ebd760589c5f68154c1924e8206054',
       'condition': '(checkout_chromeos or checkout_linux) and checkout_src_internal',
   },
 
