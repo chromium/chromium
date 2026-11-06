@@ -15,12 +15,16 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/sync/base/data_type.h"
@@ -181,10 +185,6 @@ class FakeTabContextSyncClient : public TabContextSyncClient {
 class TabContextSyncServiceImplTest : public ::testing::Test {
  protected:
   TabContextSyncServiceImplTest() {
-    auto client = std::make_unique<FakeTabContextSyncClient>();
-    fake_client_ = client.get();
-    auto fetcher = std::make_unique<FakeEphemeralKeyFetcher>();
-    fake_fetcher_ = fetcher.get();
     store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
     sync_pb::DataTypeState data_type_state;
     data_type_state.set_initial_sync_state(
@@ -195,6 +195,27 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
             syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER));
     syncer::DataTypeStoreTestUtil::WriteDataTypeStateAndWait(*store_,
                                                              data_type_state);
+    ResetServiceAndStartSync();
+  }
+
+  void TearDown() override {
+    // Null out raw pointers before `service_` is destroyed and frees the
+    // owned instances, preventing PartitionAlloc dangling pointer warnings.
+    fake_client_ = nullptr;
+    fake_fetcher_ = nullptr;
+  }
+
+  void ResetServiceAndStartSync() {
+    fake_client_ = nullptr;
+    fake_fetcher_ = nullptr;
+    container_worker_.reset();
+    item_worker_.reset();
+    container_future_.Clear();
+
+    auto client = std::make_unique<FakeTabContextSyncClient>();
+    fake_client_ = client.get();
+    auto fetcher = std::make_unique<FakeEphemeralKeyFetcher>();
+    fake_fetcher_ = fetcher.get();
     service_ = std::make_unique<TabContextSyncServiceImpl>(
         std::move(client),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
@@ -213,13 +234,6 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
         request, item_future.GetCallback());
     item_worker_ = syncer::MockDataTypeWorker::CreateWorkerAndConnectSync(
         item_future.Take());
-  }
-
-  void TearDown() override {
-    // Null out raw pointers before `service_` is destroyed and frees the
-    // owned instances, preventing PartitionAlloc dangling pointer warnings.
-    fake_client_ = nullptr;
-    fake_fetcher_ = nullptr;
   }
 
   syncer::MockDataTypeWorker* container_worker() {
@@ -575,6 +589,108 @@ TEST_F(
   fake_client_->set_passphrase_type(std::nullopt);
   EXPECT_EQ(service_->CreateContainerPossiblyUnencryptedEphemeral(),
             std::nullopt);
+}
+
+TEST_F(TabContextSyncServiceImplTest,
+       ShouldCreateContainerAndUploadTestItemFromCommandLineSwitch) {
+  const std::string kTestPayload = "Command line test upload payload.";
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kSyncTabContextTestUploadSwitch, kTestPayload);
+
+  ResetServiceAndStartSync();
+
+  const std::vector<const syncer::CommitRequestData*> container_commit_batch =
+      container_worker()->WaitForPendingCommits();
+  ASSERT_EQ(container_commit_batch.size(), 1u);
+  ASSERT_THAT(container_commit_batch[0]->entity, NotNull());
+  const sync_pb::EncryptedTabContextContainerSpecifics& container_specifics =
+      container_commit_batch[0]
+          ->entity->specifics.encrypted_tab_context_container();
+  const ContainerId container_id(
+      base::Uuid::ParseLowercase(container_specifics.uuid()));
+  ASSERT_TRUE(container_id.value().is_valid());
+
+  const std::vector<const syncer::CommitRequestData*> item_commit_batch =
+      item_worker_->WaitForPendingCommits();
+  ASSERT_EQ(item_commit_batch.size(), 1u);
+  ASSERT_THAT(item_commit_batch[0]->entity, NotNull());
+  const sync_pb::EncryptedTabContextItemSpecifics& item_specifics =
+      item_commit_batch[0]->entity->specifics.encrypted_tab_context_item();
+  EXPECT_EQ(item_specifics.container_id(), container_specifics.uuid());
+  EXPECT_EQ(item_specifics.item_id(), "test_entry");
+
+  const std::optional<std::string> token_string =
+      GetContainerAccessToken(container_id);
+  ASSERT_TRUE(token_string.has_value());
+  const std::optional<std::vector<uint8_t>> decrypted_bytes =
+      fake_fetcher_->DecryptWithAccessToken(*token_string,
+                                            item_specifics.encrypted_content());
+  ASSERT_TRUE(decrypted_bytes.has_value());
+
+  sync_pb::TabContextItemContent item_content;
+  ASSERT_TRUE(item_content.ParseFromArray(decrypted_bytes->data(),
+                                          decrypted_bytes->size()));
+  std::string uncompressed_page_context;
+  ASSERT_TRUE(compression::GzipUncompress(item_content.gzip_compressed_data(),
+                                          &uncompressed_page_context));
+  EXPECT_EQ(uncompressed_page_context, kTestPayload);
+
+  container_worker()->AckOnePendingCommit();
+  item_worker_->AckOnePendingCommit();
+}
+
+TEST_F(TabContextSyncServiceImplTest,
+       ShouldCreateContainerAndUploadTestItemFromFileViaCommandLineSwitch) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath payload_file =
+      temp_dir.GetPath().AppendASCII("test.txt");
+  const std::string kFilePayload = "File-based test upload payload.";
+  ASSERT_TRUE(base::WriteFile(payload_file, kFilePayload));
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      kSyncTabContextTestUploadSwitch, "file:" + payload_file.AsUTF8Unsafe());
+
+  ResetServiceAndStartSync();
+
+  const std::vector<const syncer::CommitRequestData*> container_commit_batch =
+      container_worker()->WaitForPendingCommits();
+  ASSERT_EQ(container_commit_batch.size(), 1u);
+  const sync_pb::EncryptedTabContextContainerSpecifics& container_specifics =
+      container_commit_batch[0]
+          ->entity->specifics.encrypted_tab_context_container();
+  const ContainerId container_id(
+      base::Uuid::ParseLowercase(container_specifics.uuid()));
+  ASSERT_TRUE(container_id.value().is_valid());
+
+  const std::vector<const syncer::CommitRequestData*> item_commit_batch =
+      item_worker_->WaitForPendingCommits();
+  ASSERT_EQ(item_commit_batch.size(), 1u);
+  const sync_pb::EncryptedTabContextItemSpecifics& item_specifics =
+      item_commit_batch[0]->entity->specifics.encrypted_tab_context_item();
+  EXPECT_EQ(item_specifics.container_id(), container_specifics.uuid());
+  EXPECT_EQ(item_specifics.item_id(), "test_entry");
+
+  const std::optional<std::string> token_string =
+      GetContainerAccessToken(container_id);
+  ASSERT_TRUE(token_string.has_value());
+  const std::optional<std::vector<uint8_t>> decrypted_bytes =
+      fake_fetcher_->DecryptWithAccessToken(*token_string,
+                                            item_specifics.encrypted_content());
+  ASSERT_TRUE(decrypted_bytes.has_value());
+
+  sync_pb::TabContextItemContent item_content;
+  ASSERT_TRUE(item_content.ParseFromArray(decrypted_bytes->data(),
+                                          decrypted_bytes->size()));
+  std::string uncompressed_page_context;
+  ASSERT_TRUE(compression::GzipUncompress(item_content.gzip_compressed_data(),
+                                          &uncompressed_page_context));
+  EXPECT_EQ(uncompressed_page_context, kFilePayload);
+
+  container_worker()->AckOnePendingCommit();
+  item_worker_->AckOnePendingCommit();
 }
 
 }  // namespace

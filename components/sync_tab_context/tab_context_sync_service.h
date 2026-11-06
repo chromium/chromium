@@ -20,6 +20,12 @@ class DataTypeControllerDelegate;
 
 namespace sync_tab_context {
 
+// Command-line switch that, if set, triggers creating a container and uploading
+// a test item with the passed string value (or the contents of the referenced
+// file if the value starts with "file:").
+inline constexpr char kSyncTabContextTestUploadSwitch[] =
+    "sync-tab-context-test-upload";
+
 // Service that allows sync-ing page context to the server in encrypted form.
 // The design is based on two primitives:
 // 1. Containers: a set of entries that are logically grouped and share

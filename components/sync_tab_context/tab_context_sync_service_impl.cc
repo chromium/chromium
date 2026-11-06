@@ -7,17 +7,24 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
@@ -34,6 +41,33 @@
 namespace sync_tab_context {
 
 namespace {
+
+constexpr std::string_view kTestUploadFilePrefix = "file:";
+constexpr char kTestUploadEntryId[] = "test_entry";
+constexpr base::TimeDelta kTestUploadRetryDelay = base::Seconds(1);
+
+// Executed on a background thread pool sequence to avoid blocking the UI
+// thread when reading a file specified via `--sync-tab-context-test-upload`.
+std::optional<std::string> ResolveTestUploadPayloadOnBackgroundThread() {
+  const std::string switch_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(
+          kSyncTabContextTestUploadSwitch);
+  const std::optional<std::string_view> file_path_str =
+      base::RemovePrefix(switch_value, kTestUploadFilePrefix);
+  if (!file_path_str.has_value()) {
+    return switch_value;
+  }
+
+  const base::FilePath file_path =
+      base::FilePath::FromUTF8Unsafe(*file_path_str);
+  std::string contents;
+  if (!base::ReadFileToString(file_path, &contents)) {
+    LOG(ERROR) << "Failed to read file for --"
+               << kSyncTabContextTestUploadSwitch << ": " << file_path;
+    return std::nullopt;
+  }
+  return contents;
+}
 
 // Executed on a background thread pool sequence to avoid blocking the UI
 // thread during compression.
@@ -93,10 +127,18 @@ TabContextSyncServiceImpl::TabContextSyncServiceImpl(
               dump_stack))),
       ephemeral_key_fetcher_(std::move(ephemeral_key_fetcher)),
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   CHECK(client_);
   CHECK(ephemeral_key_fetcher_);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSyncTabContextTestUploadSwitch)) {
+    backend_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&ResolveTestUploadPayloadOnBackgroundThread),
+        base::BindOnce(&TabContextSyncServiceImpl::TryTestUpload,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 TabContextSyncServiceImpl::~TabContextSyncServiceImpl() = default;
@@ -301,6 +343,40 @@ TabContextSyncServiceImpl::GetSyncControllerDelegateForItem() {
 
 bool TabContextSyncServiceImpl::IsActiveForTesting() const {
   return container_bridge_ && container_bridge_->IsTrackingMetadata();
+}
+
+void TabContextSyncServiceImpl::TryTestUpload(
+    std::optional<std::string> payload) {
+  if (!payload.has_value()) {
+    return;
+  }
+
+  if (!client_->GetPassphraseType().has_value() ||
+      !container_bridge_->IsTrackingMetadata() ||
+      !item_bridge_->change_processor()->IsTrackingMetadata()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TabContextSyncServiceImpl::TryTestUpload,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(payload)),
+        kTestUploadRetryDelay);
+    return;
+  }
+
+  const std::optional<ContainerId> container_id =
+      CreateContainerPossiblyUnencryptedEphemeral();
+  if (!container_id.has_value()) {
+    LOG(ERROR) << "Failed to create container for --"
+               << kSyncTabContextTestUploadSwitch;
+    return;
+  }
+
+  UploadPageContext(*container_id, kTestUploadEntryId, std::move(*payload),
+                    base::BindOnce([](UploadOutcome outcome) {
+                      if (outcome != UploadOutcome::kSucceeded) {
+                        LOG(ERROR) << "Failed to upload item for --"
+                                   << kSyncTabContextTestUploadSwitch;
+                      }
+                    }));
 }
 
 }  // namespace sync_tab_context

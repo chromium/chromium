@@ -94,6 +94,11 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
       base::OnceCallback<void(std::optional<std::string>)> cb,
       std::optional<EphemeralKeyFetcher::Result> result);
 
+  // Attempts to create a container and upload `payload` for testing when
+  // `--sync-tab-context-test-upload` is specified, retrying periodically if
+  // the service is not ready yet.
+  void TryTestUpload(std::optional<std::string> payload);
+
   const std::unique_ptr<TabContextSyncClient> client_;
   const std::unique_ptr<TabContextContainerSyncBridge> container_bridge_;
   const std::unique_ptr<TabContextItemSyncBridge> item_bridge_;
