@@ -161,7 +161,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                 NetworkCapabilities capabilities =
                         connectivityManager.getNetworkCapabilities(network);
                 if (capabilities == null) continue;
-                Log.i(TAG, "Reported by system: " + capabilities);
+                Log.i(TAG, "Reported by system: %s", capabilities);
                 if (capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
                         && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                         && capabilities.hasCapability(
@@ -249,7 +249,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         // underlying network monitor, i.e., changing from not validated to validated.
         boolean hasConnectionTypeChange = mConnectionType != connectionType;
         mConnectionType = connectionType;
-        Log.i(TAG, "onConnectionTypeChanged " + mConnectionType);
+        Log.i(TAG, "onConnectionTypeChanged %d", mConnectionType);
 
         // If not connected at all, no further check is needed.
         if (mConnectionType == ConnectionType.CONNECTION_NONE) {
@@ -322,10 +322,10 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                     (result) -> {
                         Log.i(
                                 TAG,
-                                "sendHttpProbe returned with result="
-                                        + result
-                                        + " and mConnectivityCheckingStage="
-                                        + mConnectivityCheckingStage);
+                                "sendHttpProbe returned with result=%s"
+                                        + " and mConnectivityCheckingStage=%d",
+                                result,
+                                mConnectivityCheckingStage);
 
                         // If we just lose the connection, bail out.
                         if (mConnectionType == ConnectionType.CONNECTION_NONE) return;
@@ -344,10 +344,10 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         // If the connection is validated, we're done.
         Log.i(
                 TAG,
-                "processConnectivityCheckResult mConnectionState="
-                        + mConnectionState
-                        + " mConnectivityCheckingStage="
-                        + mConnectivityCheckingStage);
+                "processConnectivityCheckResult mConnectionState=%d"
+                        + " mConnectivityCheckingStage=%d",
+                mConnectionState,
+                mConnectivityCheckingStage);
         if (mConnectionState == ConnectionState.VALIDATED) {
             stopConnectivityCheck();
             return;
@@ -386,7 +386,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
             protected Integer doInBackground() {
                 HttpURLConnection urlConnection = null;
                 try {
-                    Log.i(TAG, "Sending HTTP Probe now to url:" + urlString);
+                    Log.i(TAG, "Sending HTTP Probe now to url:%s", urlString);
                     URL url = new URL(urlString);
                     urlConnection =
                             (HttpURLConnection)
@@ -407,14 +407,11 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
 
                     Log.i(
                             TAG,
-                            "Probe "
-                                    + urlString
-                                    + " time="
-                                    + (responseTimestamp - requestTimestamp)
-                                    + "ms ret="
-                                    + responseCode
-                                    + " headers="
-                                    + urlConnection.getHeaderFields());
+                            "Probe %s time=%dms ret=%d headers=%s",
+                            urlString,
+                            responseTimestamp - requestTimestamp,
+                            responseCode,
+                            urlConnection.getHeaderFields());
 
                     if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
                         return ProbeResult.VALIDATED_WITH_NO_CONTENT;
@@ -435,7 +432,8 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                         }
                     }
                 } catch (IOException e) {
-                    Log.i(TAG, "Probe " + urlString + " failed w/ exception " + e);
+                    // Pass e.toString() rather than e to avoid logging a stack trace.
+                    Log.i(TAG, "Probe %s failed w/ exception %s", urlString, e.toString());
                     // Most likely the exception is thrown due to host name not resolved or socket
                     // timeout.
                     return ProbeResult.NO_INTERNET;
@@ -469,13 +467,13 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         if (mConnectivityCheckDelayMs >= CONNECTIVITY_CHECK_MAX_DELAY_MS) {
             // Prevent overflow of the delay value.
             mConnectivityCheckDelayMs = CONNECTIVITY_CHECK_MAX_DELAY_MS;
-            Log.i(TAG, "No more retry after exceeding " + CONNECTIVITY_CHECK_MAX_DELAY_MS + "ms");
+            Log.i(TAG, "No more retry after exceeding %dms", CONNECTIVITY_CHECK_MAX_DELAY_MS);
             if (mConnectionState == ConnectionState.NONE) {
                 setConnectionState(ConnectionState.NO_INTERNET);
             }
             return;
         }
-        Log.i(TAG, "Retry after " + mConnectivityCheckDelayMs + "ms");
+        Log.i(TAG, "Retry after %dms", mConnectivityCheckDelayMs);
 
         mRunnable = this::performConnectivityCheck;
         mHandler.postDelayed(mRunnable, mConnectivityCheckDelayMs);
@@ -483,7 +481,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
 
     private void updateConnectionStatePerProbeResult(@ProbeResult int result) {
         @ConnectionState int newConnectionState = mConnectionState;
-        Log.i(TAG, "updateConnectionStatePerProbeResult result=" + result);
+        Log.i(TAG, "updateConnectionStatePerProbeResult result=%d", result);
         switch (result) {
             case ProbeResult.VALIDATED_WITH_NO_CONTENT:
             case ProbeResult.VALIDATED_WITH_OK_BUT_ZERO_CONTENT_LENGTH:
@@ -506,7 +504,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void setConnectionState(@ConnectionState int connectionState) {
-        Log.i(TAG, "setConnectionState connectionState=" + connectionState);
+        Log.i(TAG, "setConnectionState connectionState=%d", connectionState);
         if (mConnectionState == connectionState) return;
         mConnectionState = connectionState;
         if (mObserver != null) mObserver.onConnectionStateChanged(mConnectionState);

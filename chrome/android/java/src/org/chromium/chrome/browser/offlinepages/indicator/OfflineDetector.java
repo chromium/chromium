@@ -232,8 +232,7 @@ class OfflineDetector
     private void logToAdbConsoleNow(String prefix) {
         Log.i(
                 TAG,
-                prefix
-                        + " mConnectivityDetectorInitialized: %b,"
+                "%s mConnectivityDetectorInitialized: %b,"
                         + " mTimeWhenLastForegrounded: %d,"
                         + " getElapsedTime: %d,"
                         + " mTimeWhenLastOfflineNotificationReceived: %d,"
@@ -243,6 +242,7 @@ class OfflineDetector
                         + " mIsOfflineLastReportedByConnectivityDetector: %b,"
                         + " mInAirplaneMode: %b"
                         + " mIsEffectivelyOffline: %b",
+                prefix,
                 mConnectivityDetectorInitialized,
                 mTimeWhenLastForegrounded,
                 getElapsedTime(),
