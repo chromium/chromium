@@ -906,7 +906,6 @@ std::string AXTreeFormatterWin::ProcessTreeForOutput(
     switch (value->type()) {
       case base::Value::Type::LIST: {
         for (const auto& entry : value->GetList()) {
-          std::string string_value;
           if (entry.is_string())
             WriteAttribute(false, entry.GetString(), &line);
         }

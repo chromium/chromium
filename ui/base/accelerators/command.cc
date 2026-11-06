@@ -98,7 +98,6 @@ std::string Command::CommandPlatform() {
 
 // static
 ui::Accelerator Command::StringToAccelerator(std::string_view accelerator) {
-  std::u16string error;
   ui::Accelerator parsed =
       ParseImpl(accelerator, CommandPlatform(), false, base::DoNothing(),
                 /*allow_ctrl_alt=*/true);

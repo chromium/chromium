@@ -24,11 +24,9 @@ BOOL CALLBACK EnumMonitorForProfilePathCallback(HMONITOR monitor,
                                                 HDC input_hdc,
                                                 LPRECT rect,
                                                 LPARAM data) {
-  std::wstring device_name;
   MONITORINFOEX monitor_info{};
   monitor_info.cbSize = sizeof(monitor_info);
   ::GetMonitorInfo(monitor, &monitor_info);
-  device_name = std::wstring(monitor_info.szDevice);
 
   std::wstring profile_path;
   HDC hdc = ::CreateDC(monitor_info.szDevice, NULL, NULL, NULL);

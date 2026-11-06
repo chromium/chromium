@@ -865,8 +865,6 @@ TEST_P(TableViewTest, AccessibleTableColumnCount) {
             static_cast<size_t>(data.GetIntAttribute(
                 ax::mojom::IntAttribute::kTableColumnCount)));
 
-  std::vector<ui::TableColumn> new_columns(3);
-
   data = ui::AXNodeData();
   view_accessibility.GetAccessibleNodeData(&data);
   EXPECT_EQ(helper_->visible_col_count(),

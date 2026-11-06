@@ -71,7 +71,6 @@ std::unique_ptr<LabelButton> TestBarView::RemoveChildButton() {
 
 void TestBarView::Init() {
   SetLayoutManager(std::make_unique<FillLayout>());
-  std::u16string label;
   child_button_ = AddChildView(std::make_unique<LabelButton>());
   second_child_button_ = AddChildView(std::make_unique<LabelButton>());
   third_child_button_ = AddChildView(std::make_unique<LabelButton>());

@@ -110,8 +110,6 @@ TEST(CustomDataHelperTest, BadReadTypes) {
 }
 
 TEST(CustomDataHelperTest, BadPickle) {
-  std::unordered_map<std::u16string, std::u16string> result_map;
-
   {
     base::Pickle malformed;
     malformed.WriteUInt32(1000);

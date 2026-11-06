@@ -3690,9 +3690,6 @@ class DCompPresenterLetterboxingTest
   }
 
   virtual void SetupScopedFeatureList() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
     // TODO(crbug.com/428158600): For now set up
     // kDesktopPlaneRemovalForMFFullScreenLetterbox flag by
     // following kDirectCompositionLetterboxVideoOptimization flag.

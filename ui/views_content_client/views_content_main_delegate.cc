@@ -46,11 +46,6 @@ ViewsContentMainDelegate::~ViewsContentMainDelegate() {
 }
 
 std::optional<int> ViewsContentMainDelegate::BasicStartupComplete() {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
-
   logging::LoggingSettings settings;
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;

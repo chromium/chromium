@@ -213,7 +213,6 @@ void VirtualDisplayUtilWin::ResetDisplays() {
 
 void VirtualDisplayUtilWin::OnDisplayAdded(
     const display::Display& new_display) {
-  std::vector<MonitorConfig> requested = current_config_.requested_configs();
   HMONITOR monitor = ::MonitorFromPoint(
       win::GetScreenWin()
           ->DIPToScreenPoint(new_display.work_area().CenterPoint())

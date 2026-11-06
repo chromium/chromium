@@ -172,8 +172,6 @@ std::optional<ui::HeatmapPalmDetector::CropHeatmap> GetCropHeatmap(
   if (info.HasKeyEvent(BTN_TOOL_PEN)) {
     return std::nullopt;
   }
-  std::vector<SupportedHidrawDevice> supported_hidraw_devices =
-      GetSupportedHidrawDevices();
   for (const SupportedHidrawDevice& device : GetSupportedHidrawDevices()) {
     if (info.name() == device.name && info.vendor_id() == device.vendor_id &&
         info.product_id() == device.product_id) {
@@ -249,8 +247,6 @@ HeatmapPalmDetector::ModelId TouchEventConverterEvdev::GetHidrawModelId(
   if (info.HasKeyEvent(BTN_TOOL_PEN)) {
     return HeatmapPalmDetector::ModelId::kNotSupported;
   }
-  std::vector<SupportedHidrawDevice> supported_hidraw_devices =
-      GetSupportedHidrawDevices();
   for (const SupportedHidrawDevice& device : GetSupportedHidrawDevices()) {
     if (info.name() == device.name && info.vendor_id() == device.vendor_id &&
         info.product_id() == device.product_id) {

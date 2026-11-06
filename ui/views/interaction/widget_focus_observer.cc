@@ -43,7 +43,6 @@ WidgetFocusSupplierFrame::~WidgetFocusSupplierFrame() {
 }
 
 Widget* WidgetFocusSupplierFrame::GetActiveWidget() {
-  Widget::Widgets all_widgets;
   for (const auto& supplier : supplier_list_) {
     for (auto& widget : supplier.GetAllWidgets()) {
       if (widget->IsActive()) {

@@ -808,8 +808,7 @@ TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {
   // Use a format string that contains Strong RTL Chars.
   const std::u16string kFormatString(u"كلمة مرور $1");
   std::vector<size_t> offsets;
-  std::u16string formatted_string =
-      l10n_util::FormatString(kFormatString, {u"Replacement"}, &offsets);
+  l10n_util::FormatString(kFormatString, {u"Replacement"}, &offsets);
   ASSERT_FALSE(offsets.empty());
   // On Linux, an extra base::i18n::kRightToLeftMark character is appended for
   // the text rendering engine to render the string correctly. This should be

@@ -221,8 +221,6 @@ TEST_F(BorderTest, SolidBorder) {
   border->Paint(*view_, canvas_.get());
 
   std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
-  std::vector<MockCanvas::DrawRectCall> draw_rect_calls =
-      mock->draw_rect_calls();
 
   gfx::Rect bounds = view_->GetLocalBounds();
   bounds.Inset(border->GetInsets());
@@ -278,8 +276,6 @@ TEST_F(BorderTest, SolidSidedBorder) {
   border->Paint(*view_, canvas_.get());
 
   std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
-  std::vector<MockCanvas::DrawRectCall> draw_rect_calls =
-      mock->draw_rect_calls();
 
   gfx::Rect bounds = view_->GetLocalBounds();
   bounds.Inset(border->GetInsets());
@@ -299,8 +295,6 @@ TEST_F(ScaledBorderTest, SolidSidedBorder) {
   border->Paint(*view_, canvas_.get());
 
   std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
-  std::vector<MockCanvas::DrawRectCall> draw_rect_calls =
-      mock->draw_rect_calls();
 
   gfx::Rect bounds = view_->GetLocalBounds();
   bounds.Inset(border->GetInsets());
@@ -360,8 +354,6 @@ TEST_F(BorderTest, ExtraInsetsBorder) {
   extra_insets_border->Paint(*view_, canvas_.get());
 
   std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
-  std::vector<MockCanvas::DrawRectCall> draw_rect_calls =
-      mock->draw_rect_calls();
 
   gfx::Rect bounds = view_->GetLocalBounds();
   // We only use the wrapped border's insets for painting the border. The extra

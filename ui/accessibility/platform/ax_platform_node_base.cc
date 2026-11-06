@@ -1636,7 +1636,6 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
   // the character index of each embedded object character to the id of the
   // child object it points to.
   AXLegacyHypertext::OffsetToIndex::container_type indices;
-  std::u16string hypertext;
   for (AXPlatformNodeChildIterator child_iter = AXPlatformNodeChildrenBegin(),
                                    child_end = AXPlatformNodeChildrenEnd();
        child_iter != child_end; ++child_iter) {
@@ -2700,8 +2699,6 @@ void AXPlatformNodeBase::SanitizeTextAttributeValue(const std::string& input,
 bool AXPlatformNodeBase::IsDescribedByTooltip() const {
   base::span<const int32_t> description_ids =
       GetIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds);
-
-  std::string description_from;
 
   for (int id : description_ids) {
     AXPlatformNodeBase* description_object =

@@ -423,7 +423,6 @@ bool WaylandBufferManagerHost::ValidateDataFromGpu(const gfx::Size& size,
   if (!ValidateBufferIdFromGpu(buffer_id))
     return false;
 
-  std::string reason;
   if (size.IsEmpty())
     error_message_ = "Buffer size is invalid";
 

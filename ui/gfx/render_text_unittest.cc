@@ -3463,7 +3463,6 @@ TEST_F(RenderTextTest, MoveCursor_UpDown_Cache) {
   render_text->SetMultiline(true);
   EXPECT_EQ(3U, render_text->GetNumLines());
 
-  std::vector<size_t> expected_lines;
   std::vector<Range> expected_range;
 
   // SELECTION_NONE.
@@ -6467,7 +6466,6 @@ TEST_F(RenderTextTest, Multiline_SurrogatePairsOrCombiningChars) {
   // Below is a Devanagari two-character combining sequence U+0921 U+093F. The
   // sequence forms a single display character and should not be separated.
   const char16_t kCombiningChars[] = {0x921, 0x93F, 0};
-  const std::u16string text_combining(kCombiningChars);
   const int kCombiningCharsWidth =
       GetStringWidth(kCombiningChars, render_text->font_list());
 

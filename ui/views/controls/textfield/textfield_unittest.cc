@@ -3510,7 +3510,6 @@ TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
 TEST_F(TextfieldTest, MAYBE_OverflowTest) {
   InitTextfield();
 
-  std::u16string str;
   for (size_t i = 0; i < 500; ++i) {
     SendKeyEvent('a');
   }
@@ -3541,7 +3540,6 @@ TEST_F(TextfieldTest, MAYBE_OverflowInRTLTest) {
 
   InitTextfield();
 
-  std::u16string str;
   for (size_t i = 0; i < 500; ++i) {
     SendKeyEvent('a');
   }
