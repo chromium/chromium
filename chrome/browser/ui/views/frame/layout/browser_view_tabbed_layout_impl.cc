@@ -1781,15 +1781,24 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
             views()
                 .organizer_tray->background()
                 ->AsA<CustomCornersBackground>()) {
-      const bool blur = features::IsGlassFrameEnabled();
 
       const CustomCorners::ColorChoice base_color =
           anim.blend_with_vertical_tabs
               ? CustomCorners::ColorChoice(CustomCorners::FrameTheme())
               : organizer_panel::kOrganizerPanelBackgroundColor;
-      background->SetPrimaryColor(CustomCorners::ColorChoiceWithAlpha(
-          base_color,
-          anim.panel_opacity * (blur ? flyover_panel_opacity : 1.0)));
+
+      // Background blur is used in glass mode with normal tray, but when
+      // blending with the vertical tab strip it should mimic expand-on-hover
+      // behavior.
+      const bool use_background_blur =
+          in_glass_mode() && (!anim.blend_with_vertical_tabs ||
+                              features::kGlassExpandOnHoverEnabled.Get());
+      const double background_opacity =
+          anim.panel_opacity *
+          (use_background_blur ? flyover_panel_opacity : 1.0);
+      background->SetUseBackgroundBlur(use_background_blur);
+      background->SetPrimaryColor(
+          CustomCorners::ColorChoiceWithAlpha(base_color, background_opacity));
 
       CustomCornersBackground::Corners corners;
       corners[CornerOrientation::kTopLeading] =
@@ -1836,7 +1845,6 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
         }
       }
       background->SetCorners(corners);
-      background->SetUseBackgroundBlur(blur);
     }
 
     views().organizer_tray->layer()->SetOpacity(anim.panel_opacity);
