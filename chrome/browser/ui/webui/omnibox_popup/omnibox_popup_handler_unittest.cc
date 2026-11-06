@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -22,6 +23,9 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
@@ -180,13 +184,29 @@ TEST_F(OmniboxPopupHandlerTest, GetDefaultSearchProviderIcon) {
   EXPECT_EQ(GetDefaultSearchProviderIcon(nullptr, /*is_dark_mode=*/true),
             search_loupe);
 
+  // `TemplateURLServiceFactory` returns null in unit tests unless a testing
+  // factory is set, so build a real service with Google as the DSE.
+  TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(),
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
   auto* turl_service = TemplateURLServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(turl_service);
+  turl_service->Load();
+  TemplateURLData data;
+  data.SetShortName(u"Google");
+  data.SetKeyword(u"google.com");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  turl_service->SetUserSelectedDefaultSearchProvider(
+      turl_service->Add(std::make_unique<TemplateURL>(data)));
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_EQ(GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/false),
             "//resources/cr_components/searchbox/icons/google_g_gradient.svg");
   EXPECT_EQ(GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/true),
             "//resources/cr_components/searchbox/icons/google_g_cr23.svg");
 #else
+  // Non-branded builds don't use the Google G icons, and this DSE has no
+  // favicon, so the search loupe is used.
   EXPECT_EQ(GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/false),
             search_loupe);
   EXPECT_EQ(GetDefaultSearchProviderIcon(turl_service, /*is_dark_mode=*/true),
