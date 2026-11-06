@@ -180,7 +180,14 @@ IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, DisplayCaptureErrorRemovesUI) {
 
 // Checks that the UI gets a unique label, the captured window, and the
 // callbacks that DLP needs.
-IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, DisplayCaptureStartsUI) {
+// TODO(crbug.com/582000251): Crashes on Windows teardown when IO thread stops
+// before VideoCaptureThread finishes.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DisplayCaptureStartsUI DISABLED_DisplayCaptureStartsUI
+#else
+#define MAYBE_DisplayCaptureStartsUI DisplayCaptureStartsUI
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, MAYBE_DisplayCaptureStartsUI) {
   FakeMediaStreamUIState state;
   recorder()->StartDisplayCapture(WindowId(), shell()->web_contents(),
                                   std::make_unique<FakeMediaStreamUI>(&state),
