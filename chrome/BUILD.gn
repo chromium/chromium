@@ -23,6 +23,7 @@ import("//components/optimization_guide/features.gni")
 import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//services/shape_detection/features.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -1891,6 +1892,9 @@ if (is_linux || is_chromeos) {
       }
       if (build_with_internal_optimization_guide) {
         deps += [ ":optimization_guide_symbols" ]
+        if (enable_ml_internal) {
+          deps += [ ":lite_rt_web_gpu_accelerator_symbols" ]
+        }
       }
       if (build_with_internal_shape_detection) {
         deps += [ ":shape_detection_symbols" ]
@@ -2003,6 +2007,19 @@ if (is_linux || is_chromeos) {
         }
 
         deps = [ "//components/optimization_guide/internal:optimization_guide_internal" ]
+      }
+      if (enable_ml_internal) {
+        extract_symbols("lite_rt_web_gpu_accelerator_symbols") {
+          binary = "$root_out_dir/libLiteRtWebGpuAccelerator.so"
+          if (current_cpu == "x86") {
+            symbol_file =
+                "$root_out_dir/lite_rt_web_gpu_accelerator.breakpad.ia32"
+          } else {
+            symbol_file = "$root_out_dir/lite_rt_web_gpu_accelerator.breakpad.$current_cpu"
+          }
+
+          deps = [ "//components/optimization_guide/internal/third_party/odml:ml_drift_webgpu_accelerator_so" ]
+        }
       }
     }
     if (build_with_internal_shape_detection) {
