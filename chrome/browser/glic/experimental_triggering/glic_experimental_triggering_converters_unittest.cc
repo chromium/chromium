@@ -752,4 +752,23 @@ TEST(GlicExperimentalTriggeringConvertersTest,
             1);
 }
 
+TEST(GlicExperimentalTriggeringTypesTest, TaskUpdateIsTerminal) {
+  auto is_terminal = [](TaskUpdate::State state) {
+    TaskUpdate update;
+    update.state = state;
+    return update.IsTerminal();
+  };
+
+  EXPECT_TRUE(is_terminal(TaskUpdate::State::kComplete));
+  EXPECT_TRUE(is_terminal(TaskUpdate::State::kStopped));
+  EXPECT_TRUE(is_terminal(TaskUpdate::State::kFailed));
+
+  EXPECT_FALSE(is_terminal(TaskUpdate::State::kUnknown));
+  EXPECT_FALSE(is_terminal(TaskUpdate::State::kStarting));
+  EXPECT_FALSE(is_terminal(TaskUpdate::State::kRunning));
+  EXPECT_FALSE(is_terminal(TaskUpdate::State::kPaused));
+  EXPECT_FALSE(is_terminal(TaskUpdate::State::kYield));
+  EXPECT_FALSE(is_terminal(TaskUpdate::State::kResumed));
+}
+
 }  // namespace glic

@@ -29,19 +29,7 @@ namespace {
 
 bool IsTerminalResponse(const ExperimentalTriggeringResponse& response) {
   if (response.task_update.has_value()) {
-    switch (response.task_update->state) {
-      case TaskUpdate::State::kComplete:
-      case TaskUpdate::State::kStopped:
-      case TaskUpdate::State::kFailed:
-        return true;
-      case TaskUpdate::State::kUnknown:
-      case TaskUpdate::State::kStarting:
-      case TaskUpdate::State::kRunning:
-      case TaskUpdate::State::kPaused:
-      case TaskUpdate::State::kYield:
-      case TaskUpdate::State::kResumed:
-        return false;
-    }
+    return response.task_update->IsTerminal();
   }
   if (response.execute_actions_response.has_value()) {
     return true;

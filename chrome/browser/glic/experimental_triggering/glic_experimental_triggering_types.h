@@ -86,6 +86,27 @@ struct TaskUpdate {
   std::optional<DataType> data_type;
   std::string data;
   std::map<std::string, std::string> metadata;
+
+  // Returns true if `state` ends the task: COMPLETE, STOPPED or FAILED. The
+  // server stops waiting for a task once it gets one of these.
+  static bool IsTerminalState(State state) {
+    switch (state) {
+      case State::kComplete:
+      case State::kStopped:
+      case State::kFailed:
+        return true;
+      case State::kUnknown:
+      case State::kStarting:
+      case State::kRunning:
+      case State::kPaused:
+      case State::kYield:
+      case State::kResumed:
+        return false;
+    }
+  }
+
+  // Returns true if this update ends the task. See IsTerminalState().
+  bool IsTerminal() const { return IsTerminalState(state); }
 };
 
 // Payload for triggering a new actuation session.

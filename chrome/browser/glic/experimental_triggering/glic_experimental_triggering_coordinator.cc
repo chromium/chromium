@@ -298,22 +298,6 @@ GlicExperimentalTriggeringExecutionOutcome GlicInvokeErrorToOutcome(
   }
 }
 
-bool IsTerminalTaskUpdateState(TaskUpdate::State state) {
-  switch (state) {
-    case TaskUpdate::State::kComplete:
-    case TaskUpdate::State::kStopped:
-    case TaskUpdate::State::kFailed:
-      return true;
-    case TaskUpdate::State::kUnknown:
-    case TaskUpdate::State::kStarting:
-    case TaskUpdate::State::kRunning:
-    case TaskUpdate::State::kPaused:
-    case TaskUpdate::State::kYield:
-    case TaskUpdate::State::kResumed:
-      return false;
-  }
-}
-
 }  // namespace
 
 // Handles every request for one context id, and owns the session that those
@@ -512,7 +496,7 @@ class ExperimentalTriggeringUpdatesHandler
     // terminal `TaskUpdate` is already being returned synchronously.
     if (cleanup_runner && response.has_value() &&
         response->task_update.has_value() &&
-        IsTerminalTaskUpdateState(response->task_update->state)) {
+        response->task_update->IsTerminal()) {
       terminal_update_sent_ = true;
     }
     return response;
@@ -709,6 +693,7 @@ class ExperimentalTriggeringUpdatesHandler
                             GlicExperimentalTriggeringExecutionOutcome outcome,
                             std::optional<std::string> data = std::nullopt,
                             std::map<std::string, std::string> metadata = {}) {
+    DCHECK(TaskUpdate::IsTerminalState(state));
     if (terminal_update_sent_) {
       return;
     }
