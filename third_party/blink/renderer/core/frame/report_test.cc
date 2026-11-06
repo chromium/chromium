@@ -78,7 +78,6 @@ TEST(ReportMatchIdTest, DifferentInputsGenerateDifferentMatchId) {
 }
 
 TEST(ReportMatchIdTest, MatchIdGeneratedShouldNotBeZero) {
-  std::vector<unsigned> match_ids;
   for (const auto& input : kReportInputs) {
     EXPECT_NE(Report(ReportType::kDocumentPolicyViolation, input.url,
                      MakeGarbageCollected<DocumentPolicyViolationReportBody>(

@@ -44,7 +44,6 @@ class VisualCaretMovementTest : public EditingTestBase {
     Vector<std::string> positions;
     positions.push_back(
         GetSelectionTextFromBody(modifier.Selection().AsSelection()));
-    std::string prev;
     for (int i = 0; i < max_moves; ++i) {
       std::string pos = MoveRight(modifier);
       if (pos == positions.back()) {
@@ -509,7 +508,7 @@ TEST_F(VisualCaretMovementTest, UnicodeSpecialChars_ArabicWithTashkeel) {
 
   // Moving left in RTL paragraph goes visually left = logical forward.
   // Ba+fatha should be treated as one unit.
-  std::string after_left = MoveLeft(modifier);
+  MoveLeft(modifier);
   // After one left press, we should have moved past one grapheme cluster.
   std::string after_left2 = MoveLeft(modifier);
   // And another press for ta.
@@ -631,8 +630,6 @@ TEST_F(VisualCaretMovementTest, EdgeCases_EmptyLine) {
   SelectionModifier modifier(GetFrame(), selection);
 
   // Should not crash, and should not move (or move to next line if exists).
-  std::string before =
-      GetSelectionTextFromBody(modifier.Selection().AsSelection());
   MoveRight(modifier);
   // Just verify no crash. The position may or may not change depending
   // on whether there's a next line.

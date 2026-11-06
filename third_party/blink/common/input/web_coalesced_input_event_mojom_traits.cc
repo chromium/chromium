@@ -314,7 +314,6 @@ bool StructTraits<blink::mojom::EventDataView,
 
     blink::WebTouchEvent* touch_event =
         static_cast<blink::WebTouchEvent*>(input_event.get());
-    std::vector<blink::mojom::TouchPointPtr> touches;
     unsigned i;
     for (i = 0; i < touch_data->touches.size() &&
                 i < blink::WebTouchEvent::kTouchesLengthCap;

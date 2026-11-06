@@ -70,7 +70,6 @@ TEST(LocationReportBodyMatchIdTest, DifferentInputsGenerateDifferentMatchId) {
 }
 
 TEST(LocationReportBodyMatchIdTest, MatchIdGeneratedShouldNotBeZero) {
-  std::vector<unsigned> match_ids;
   for (const auto& input : kLocationReportBodyInputs) {
     EXPECT_NE(TestLocationReportBody(input.url, input.line_number,
                                      input.column_number)

@@ -85,8 +85,6 @@ void WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete(
     webrtc::RTCError error) {
   CHECK(signaling_task_runner_->BelongsToCurrentThread());
   std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
-      receiver_only_transceivers;
-  std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
       transceivers;
   // Only surface transceiver states if the peer connection is not closed. If
   // the peer connection is closed, the peer connection handler may have been

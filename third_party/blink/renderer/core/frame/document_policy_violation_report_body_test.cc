@@ -71,7 +71,6 @@ TEST(DocumentPolicyViolationReportBodyMatchIdTest,
 
 TEST(DocumentPolicyViolationReportBodyMatchIdTest,
      MatchIdGeneratedShouldNotBeZero) {
-  std::vector<unsigned> match_ids;
   for (const auto& input : kDocumentPolicyViolationReportBodyInputs) {
     EXPECT_NE(
         DocumentPolicyViolationReportBody(input.feature_id, input.message,

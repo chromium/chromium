@@ -51,7 +51,6 @@ INSTANTIATE_TEST_SUITE_P(
 // attributes.
 TEST_P(TrustTokenAttributeParsingSuccess, Roundtrip) {
   network::mojom::TrustTokenParams network_expectation;
-  std::string input;
 
   network::TrustTokenParametersAndSerialization
       expected_params_and_serialization =

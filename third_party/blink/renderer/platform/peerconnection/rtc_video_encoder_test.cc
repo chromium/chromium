@@ -928,7 +928,6 @@ class RTCVideoEncoderInitTest
       public ::testing::TestWithParam<webrtc::VideoCodecType> {
  public:
   RTCVideoEncoderInitTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
   }
   ~RTCVideoEncoderInitTest() override = default;
   void SetUp() override { RTCVideoEncoderTest::SetUp(); }
@@ -3616,7 +3615,6 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeFlushFailure) {
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
 
-    std::vector<webrtc::VideoFrameType> frame_types;
     base::WaitableEvent error_waiter(
         base::WaitableEvent::ResetPolicy::MANUAL,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -3650,7 +3648,6 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeFailure) {
   codec.width *= 2;
   codec.height *= 2;
 
-    std::vector<webrtc::VideoFrameType> frame_types;
     base::WaitableEvent error_waiter(
         base::WaitableEvent::ResetPolicy::MANUAL,
         base::WaitableEvent::InitialState::NOT_SIGNALED);

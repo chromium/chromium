@@ -353,7 +353,6 @@ class URLLoaderTest : public testing::Test {
     redirect_info.new_url = GURL(kTestURL);
     redirect_info.new_site_for_cookies =
         net::SiteForCookies::FromUrl(GURL(kTestURL));
-    std::vector<std::string> removed_headers;
     bool callback_called = false;
     resource_request_client()->OnReceivedRedirect(
         redirect_info, network::mojom::URLResponseHead::New(),

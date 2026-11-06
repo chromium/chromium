@@ -1718,9 +1718,6 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitRecordsHistograms) {
 
 // crbug.com/990000.
 TEST_P(AnimationAnimationTestCompositing, ReplaceCompositedAnimation) {
-  const std::string histogram_name =
-      "Blink.Animation.CompositedAnimationFailureReason";
-
   // Start with a composited animation.
   ResetWithCompositedAnimation();
   ASSERT_TRUE(animation->HasActiveAnimationsOnCompositor());

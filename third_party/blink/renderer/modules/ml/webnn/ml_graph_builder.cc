@@ -2229,7 +2229,6 @@ MLOperand* MLGraphBuilder::elu(MLOperand* input,
                                ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
-  const std::string label = options->label().Utf8();
 
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-elu, the output tensor of
