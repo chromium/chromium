@@ -18,6 +18,10 @@
 class ApplicationLocaleStorage;
 class PrefService;
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace content {
 class WebUI;
 }  // namespace content
@@ -74,7 +78,8 @@ AccountId GetAccountId(Profile* profile);
 bool CanSeeWallpaperOrPersonalizationApp(Profile* profile);
 
 // Verifies if the language settings in `application_locale` are supported.
-bool IsSystemInSupportedLanguage(std::string_view application_locale);
+bool IsSystemInSupportedLanguage(
+    const base::i18n::LanguageTag& application_locale);
 
 // Controls whether the profile can see and open SeaPen UI. Managed users have
 // age restrictions that underage users (<18) are not allowed to view and access

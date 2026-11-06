@@ -73,7 +73,8 @@ void PopulateLoadTimeData(
       boca_util::IsConsumer(user) ||
           pref_service.GetBoolean(
               prefs::kClassManagementToolsViewScreenEligibilitySetting));
-  source->AddString("appLocale", application_locale_storage.Get());
+  source->AddString("appLocale",
+                    application_locale_storage.GetTag().tag_string());
   source->AddBoolean(
       "classroomEnabled",
       pref_service.GetBoolean(

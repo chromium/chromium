@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/recorder_app/chrome_recorder_app_ui_delegate.h"
 
+#include <optional>
+#include <string>
+
 #include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -42,9 +47,14 @@ ChromeRecorderAppUIDelegate::ChromeRecorderAppUIDelegate(
 
 std::u16string ChromeRecorderAppUIDelegate::GetLanguageDisplayName(
     speech::LanguageCode language_code) {
+  const std::optional<base::i18n::LanguageTag> language_tag =
+      base::i18n::GetLanguageTagFromString(
+          speech::GetLanguageName(language_code));
+  if (!language_tag) {
+    return std::u16string();
+  }
   return l10n_util::GetDisplayNameForLocale(
-      speech::GetLanguageName(language_code),
-      application_locale_storage_->Get(), /*is_for_ui=*/true);
+      *language_tag, application_locale_storage_->GetTag(), /*is_for_ui=*/true);
 }
 
 std::string ChromeRecorderAppUIDelegate::GetDefaultTranscriptionLanguage() {
@@ -52,7 +62,7 @@ std::string ChromeRecorderAppUIDelegate::GetDefaultTranscriptionLanguage() {
       CHECK_DEREF(user_manager_->FindUser(account_id_));
   const PrefService& prefs = CHECK_DEREF(user.GetProfilePrefs());
   return std::string(speech::GetDefaultLiveCaptionLanguage(
-      application_locale_storage_->Get(), prefs));
+      application_locale_storage_->GetTag().tag_string(), prefs));
 }
 
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(

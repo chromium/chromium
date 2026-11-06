@@ -388,9 +388,10 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
   // Set application locale.
   application_locale_storage()->Set("en-GB");
 
-  ASSERT_TRUE(IsSystemInSupportedLanguage(application_locale_storage()->Get()));
+  ASSERT_TRUE(
+      IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
   ASSERT_TRUE(IsEligibleForSeaPenTextInput(
-      regular_profile, application_locale_storage()->Get()));
+      regular_profile, application_locale_storage()->GetTag().tag_string()));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -407,9 +408,9 @@ TEST_F(PersonalizationAppUtilsTest,
   application_locale_storage()->Set("de");
 
   ASSERT_FALSE(
-      IsSystemInSupportedLanguage(application_locale_storage()->Get()));
+      IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
   ASSERT_FALSE(IsEligibleForSeaPenTextInput(
-      regular_profile, application_locale_storage()->Get()));
+      regular_profile, application_locale_storage()->GetTag().tag_string()));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -425,9 +426,10 @@ TEST_F(PersonalizationAppUtilsTest,
   // Set application locale.
   application_locale_storage()->Set("de");
 
-  ASSERT_TRUE(IsSystemInSupportedLanguage(application_locale_storage()->Get()));
+  ASSERT_TRUE(
+      IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
   ASSERT_TRUE(IsEligibleForSeaPenTextInput(
-      regular_profile, application_locale_storage()->Get()));
+      regular_profile, application_locale_storage()->GetTag().tag_string()));
 }
 
 TEST_F(
@@ -445,9 +447,9 @@ TEST_F(
   application_locale_storage()->Set("no");
 
   ASSERT_FALSE(
-      IsSystemInSupportedLanguage(application_locale_storage()->Get()));
+      IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
   ASSERT_FALSE(IsEligibleForSeaPenTextInput(
-      regular_profile, application_locale_storage()->Get()));
+      regular_profile, application_locale_storage()->GetTag().tag_string()));
 }
 
 }  // namespace
