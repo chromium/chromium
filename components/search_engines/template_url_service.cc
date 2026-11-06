@@ -2074,9 +2074,6 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       continue;
     }
 
-    const std::string error_msg =
-        "ProcessSyncChanges failed on ChangeType " +
-        syncer::SyncChange::ChangeTypeToString(iter->change_type());
     if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
       if (!existing_turl || !existing_turl->GetAccountData()) {
         // Can't DELETE a non-existent engine at the account level.

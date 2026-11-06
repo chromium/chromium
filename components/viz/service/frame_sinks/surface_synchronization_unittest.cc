@@ -796,7 +796,6 @@ TEST_F(SurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   EXPECT_FALSE(parent_surface()->HasPendingFrame());
   EXPECT_THAT(parent_surface()->activation_dependencies(), IsEmpty());
 
-    std::vector<ReturnedResource> returned_resources;
     ResourceId id = resource.ToReturnedResource().id;
     EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_))
         .WillOnce([=](std::vector<ReturnedResource> got) {

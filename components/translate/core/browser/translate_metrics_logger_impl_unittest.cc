@@ -1397,8 +1397,6 @@ TEST_F(TranslateMetricsLoggerImplTest, LogSourceLanguage) {
 
 TEST_F(TranslateMetricsLoggerImplTest, LogTargetLanguage) {
   // Set constants for the test.
-  std::vector<std::string> target_languages = {"de", "en", "en", "de", "fr",
-                                               "fr", "es", "it", "it", "es"};
 
   const struct {
     std::string target_language;

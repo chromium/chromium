@@ -206,7 +206,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
       dict.FindList(DefaultSearchManager::kInputEncodings);
   if (encodings) {
     for (const auto& it : *encodings) {
-      std::string encoding;
       if (it.is_string()) {
         result->input_encodings.push_back(it.GetString());
       }

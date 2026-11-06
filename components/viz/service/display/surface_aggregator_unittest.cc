@@ -1432,7 +1432,6 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       Quad::SolidColorQuad(SkColors::kYellow, second_parent.bounds()),
       Quad::SolidColorQuad(SkColors::kBlue, gfx::Rect(10, 10)),
       Quad::SolidColorQuad(SkColors::kBlack, gfx::Rect(5, 5))};
-  std::vector<Quad> expected_copy_quads = {};
   std::vector<Pass> expected_passes = {Pass(expected_quads, kSurfaceSize)};
   AggregateAndVerify(expected_passes,
                      {root_surface_id_, first_parent.surface_id(),

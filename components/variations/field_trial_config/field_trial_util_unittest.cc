@@ -94,7 +94,6 @@ TEST_F(FieldTrialUtilTest, AssociateParamsFromString) {
 }
 
 TEST_F(FieldTrialUtilTest, AssociateParamsFromStringWithSameTrial) {
-  const std::string kTrialName = "AssociateVariationParams";
   const std::string kVariationsString =
       "AssociateVariationParams.A:a/10/b/test,AssociateVariationParams.A:a/x";
   ASSERT_FALSE(AssociateParamsFromString(kVariationsString));

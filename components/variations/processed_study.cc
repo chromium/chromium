@@ -313,7 +313,6 @@ ProcessedStudy::~ProcessedStudy() = default;
 bool ProcessedStudy::Init(const Study* study) {
   base::FieldTrial::Probability total_probability = 0;
   bool all_assignments_to_one_group = false;
-  std::vector<std::string> associated_features;
   if (!ValidateStudyAndComputeTotalProbability(*study, &total_probability,
                                                &all_assignments_to_one_group)) {
     return false;

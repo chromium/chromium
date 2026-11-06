@@ -377,7 +377,6 @@ TEST_F(WebCryptoAesCbcTest, JwkImportFailures) {
 // TODO(eroman): Do this same test for AES-GCM, AES-KW, AES-CTR ?
 TEST_F(WebCryptoAesCbcTest, GenerateKeyIsRandom) {
   // Check key generation for each allowed key length.
-  std::vector<blink::WebCryptoAlgorithm> algorithm;
   for (uint16_t key_length : {128, 256}) {
     blink::WebCryptoKey key;
 

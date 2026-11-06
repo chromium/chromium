@@ -256,8 +256,8 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldRegisterDevice) {
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldNotRegisterIfAlreadyRegistered) {
-  std::vector<uint8_t> private_device_key = StoreKeysAndMimicDeviceRegistration(
-      account_info(), {kVaultKey}, kLastKeyVersion);
+  StoreKeysAndMimicDeviceRegistration(account_info(), {kVaultKey},
+                                      kLastKeyVersion);
   EXPECT_TRUE(storage()->IsRecoveryFactorRegistered(
       account_info().gaia, SecurityDomainId::kChromeSync,
       LocalRecoveryFactorType::kPhysicalDevice));
@@ -272,8 +272,8 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldNotRegisterIfAlreadyRegistered) {
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,
        ShouldNotRegisterAfterResetIfAlreadyRegistered) {
-  std::vector<uint8_t> private_device_key = StoreKeysAndMimicDeviceRegistration(
-      account_info(), {kVaultKey}, kLastKeyVersion);
+  StoreKeysAndMimicDeviceRegistration(account_info(), {kVaultKey},
+                                      kLastKeyVersion);
   ASSERT_TRUE(storage()->IsRecoveryFactorRegistered(
       account_info().gaia, SecurityDomainId::kChromeSync,
       LocalRecoveryFactorType::kPhysicalDevice));

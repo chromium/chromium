@@ -1223,7 +1223,6 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   const CollaborationId kCollaborationId("collaboration");
   SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
   base::Uuid guid = created_group.saved_guid();
-  std::string client_tag = CreateClientTagForSharedGroup(created_group);
 
   InitializeBridgeAndModel();
   model().AddedLocally(created_group);
@@ -1240,7 +1239,6 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   const CollaborationId kCollaborationId("collaboration");
   SavedTabGroup created_group = CreateGroupWithLocalIds(kCollaborationId);
   base::Uuid guid = created_group.saved_guid();
-  std::string client_tag = CreateClientTagForSharedGroup(created_group);
 
   InitializeBridgeAndModel();
   model().AddedLocally(created_group);

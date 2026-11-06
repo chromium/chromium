@@ -474,7 +474,6 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest, LoadSeed_ValidSeed) {
   // Store good seed data to test if loading from prefs works.
   const std::string seed_data = SerializeSeed(CreateTestSeed());
   const std::string base64_seed = GzipAndBase64Encode(seed_data);
-  const std::string compressed_seed = Gzip(seed_data);
   const std::string base64_seed_signature = "a test signature, ignored.";
 
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
@@ -488,8 +487,6 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest, LoadSeed_ValidSeed) {
           .client_fetch_time = base::Time::Now(),
           .session_country_code = "us",
       });
-  const std::string expected_seed =
-      GetParam() == kSeedFilesGroup ? compressed_seed : base64_seed;
 
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
@@ -2623,7 +2620,6 @@ TEST_P(StoreInvalidSafeSeedTest, StoreSafeSeed) {
   // Set a safe seed in the seed file and local state prefs.
   const std::string expected_seed = "a seed";
   InvalidSafeSeedTestParams params = GetParam().invalid_params;
-  const std::string seed_to_store = params.seed;
   prefs_.SetString(prefs::kVariationsSafeCompressedSeed, expected_seed);
   ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, expected_seed));
 
@@ -2829,8 +2825,6 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
   const std::string new_seed_data = SerializeSeed(new_seed);
   ASSERT_NE(old_seed_data, new_seed_data);
 
-  const std::string base64_old_seed = GzipAndBase64Encode(old_seed_data);
-  const std::string compressed_old_seed = Gzip(old_seed_data);
   const base::Time fetch_time = WrapTime(12345);
   auto client_state = CreateDummyClientFilterableState();
 
@@ -2963,8 +2957,6 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
 
   // Verify that safe-seed-related prefs were successfully stored.
-  const std::string safe_seed =
-      prefs_.GetString(prefs::kVariationsSafeCompressedSeed);
   std::string decoded_compressed_seed;
   ASSERT_TRUE(
       base::Base64Decode(prefs_.GetString(prefs::kVariationsSafeCompressedSeed),
@@ -3006,7 +2998,6 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
   ASSERT_NE(old_seed_data, new_seed_data);
 
   const std::string base64_old_seed = GzipAndBase64Encode(old_seed_data);
-  const std::string compressed_old_seed = Gzip(old_seed_data);
   const base::Time fetch_time = WrapTime(12345);
   auto client_state = CreateDummyClientFilterableState();
 
@@ -3102,7 +3093,6 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
   const VariationsSeed seed = CreateTestSeed();
   const std::string serialized_seed = SerializeSeed(seed);
-  const std::string compressed_seed = Gzip(serialized_seed);
   const std::string base64_seed = SerializeSeedBase64(seed);
   auto client_state = CreateDummyClientFilterableState();
   const base::Time last_fetch_time = WrapTime(99999);
@@ -3119,9 +3109,6 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
           .client_fetch_time = last_fetch_time,
           .session_country_code = "us",
       });
-  const std::string expected_seed =
-      GetParam().field_trial_group == kSeedFilesGroup ? compressed_seed
-                                                      : base64_seed;
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   bool store_seed_result = false;

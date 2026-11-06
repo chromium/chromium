@@ -478,7 +478,6 @@ TEST_F(TranslatePrefsTest, RemoveFromLanguageListClearsRecentLanguage) {
 
 TEST_F(TranslatePrefsTest, MoveLanguageToTheTop) {
   std::vector<std::string> languages;
-  std::string enabled;
   const int offset = 0;  // ignored
 
   // First we test all cases that result in no change.
@@ -564,7 +563,6 @@ TEST_F(TranslatePrefsTest, MoveLanguageToTheTop) {
 
 TEST_F(TranslatePrefsTest, MoveLanguageUp) {
   std::vector<std::string> languages;
-  std::string enabled;
 
   //---------------------------------------------------------------------------
   // First we test all cases that result in no change.
@@ -782,7 +780,6 @@ TEST_F(TranslatePrefsTest, MoveLanguageUp) {
 
 TEST_F(TranslatePrefsTest, MoveLanguageDown) {
   std::vector<std::string> languages;
-  std::string enabled;
 
   //---------------------------------------------------------------------------
   // First we test all cases that result in no change.

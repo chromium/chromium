@@ -651,9 +651,6 @@ TEST_F(DisplayResourceProviderSkiaTest,
   // In DisplayResourceProvider's namespace, use the mapped resource id.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
-  std::vector<
-      std::unique_ptr<DisplayResourceProvider::ScopedReadLockSharedImage>>
-      read_locks;
   for (size_t i = 0; i < kLockedResources; i++) {
     ResourceId mapped_resource_id = resource_map[ids[i]];
     lock_set_->LockResource(mapped_resource_id,

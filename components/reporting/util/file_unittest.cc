@@ -201,7 +201,6 @@ TEST(FileTest, RemoveAndTruncateLine) {
   ASSERT_OK(write_status) << write_status;
 
   // Load test data into string for substr method.
-  const std::string multi_line_ref(kMultiLineData);
   int expected_lines_removed = 1;
 
   // Remove at beginning of line

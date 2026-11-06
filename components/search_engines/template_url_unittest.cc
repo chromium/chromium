@@ -1521,7 +1521,6 @@ TEST_F(TemplateURLTest, SearchClient) {
   const std::string base_url_str("http://google.com/?");
   const std::string terms_str("{searchTerms}&{google:searchClient}");
   const std::string full_url_str = base_url_str + terms_str;
-  const std::u16string terms(ASCIIToUTF16(terms_str));
   search_terms_data_.set_google_base_url(base_url_str);
 
   TemplateURLData data;

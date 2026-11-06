@@ -363,8 +363,6 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<std::unique_ptr<syncer::EntityData>> new_entities;
-
   // Look through all tabs in this group and create entities for changes
   // that are not synced.
   const SavedTabGroup* group = model_->GetGroupContainingTab(saved_tab_id);

@@ -1331,7 +1331,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
 
   EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
 
-  std::vector<std::vector<uint8_t>> fetched_keys;
   // Callback should be called immediately.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;

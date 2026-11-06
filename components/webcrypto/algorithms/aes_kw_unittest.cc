@@ -331,7 +331,6 @@ TEST_F(WebCryptoAesKwTest, AesKwRawSymkeyUnwrapCorruptData) {
   // Use 256 bits of data with a 256-bit KEK
   const auto& test = kAesKwKnownAnswers[3];
   const auto test_kek = HexStringToBytes(test.kek);
-  const auto test_key = HexStringToBytes(test.key);
   const auto test_ciphertext = HexStringToBytes(test.ciphertext);
   const blink::WebCryptoAlgorithm wrapping_algorithm =
       CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesKw);

@@ -115,7 +115,6 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
           .GetAccountId();
-  const std::string kAccessToken = "access_token";
 
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
       token_callback;
@@ -137,7 +136,6 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
           .GetAccountId();
-  const std::string kAccessToken = "access_token";
 
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
       token_callback;

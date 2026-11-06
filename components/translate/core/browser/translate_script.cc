@@ -207,7 +207,6 @@ void TranslateScript::OnScriptFetchComplete(bool success,
     // Insert server params to pass experimental params to google translate
     // server.
     std::string server_params;
-    std::map<std::string, std::string> params;
     base::StringAppendF(
         &data_, "var gtTimeInfo = {'fetchStart': %0.f, 'fetchEnd': %0.f};\n",
         script_fetch_start_time_,

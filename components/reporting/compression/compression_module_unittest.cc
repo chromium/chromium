@@ -95,10 +95,6 @@ TEST_F(CompressionModuleTest, CompressPoorlyCompressibleRecordSnappy) {
   scoped_refptr<CompressionModule> test_compression_module =
       CompressionModule::Create(0, CompressionInformation::COMPRESSION_SNAPPY);
 
-  // Compress string directly with snappy as benchmark
-  const std::string expected_output =
-      BenchmarkCompressRecordSnappy(kPoorlyCompressibleTestString);
-
   test::TestMultiEvent<std::string, std::optional<CompressionInformation>>
       compressed_record_event;
   // Compress string with CompressionModule

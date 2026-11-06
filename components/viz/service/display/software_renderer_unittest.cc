@@ -503,7 +503,6 @@ TEST_F(SoftwareRendererTestPartialSwap, PartialSwap) {
     // tests.
     AggregatedRenderPassList list;
     AggregatedRenderPassId root_pass_id{1};
-    SurfaceDamageRectList surface_damage_rect_list;
     auto* root_pass = cc::AddRenderPass(
         &list, root_pass_id, gfx::Rect(viewport_size), gfx::Transform());
     cc::AddQuad(root_pass, gfx::Rect(viewport_size), SkColors::kBlack);
@@ -524,7 +523,6 @@ TEST_F(SoftwareRendererTestPartialSwap, PartialSwap) {
   {
     AggregatedRenderPassList list;
     AggregatedRenderPassId root_pass_id{1};
-    SurfaceDamageRectList surface_damage_rect_list;
     auto* root_pass = cc::AddRenderPass(
         &list, root_pass_id, gfx::Rect(viewport_size), gfx::Transform());
     cc::AddQuad(root_pass, gfx::Rect(viewport_size), SkColors::kGreen);
