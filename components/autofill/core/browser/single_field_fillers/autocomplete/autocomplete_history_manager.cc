@@ -49,6 +49,7 @@
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/prefs/pref_service.h"
 #include "components/webdata/common/web_data_results.h"
@@ -209,12 +210,10 @@ bool IsPredictedFieldTypeSaveable(const AutofillField* field) {
 
 // An equivalent of `IsPredictedFieldTypeSaveable` that operates on the values
 // of the HTML autocomplete attribute. It serves as an additional validation
-// e.g. for cases when predicted type is `UNKNOWN_TYPE`.
-bool IsHtmlFieldTypeSaveable(const AutofillField* field) {
-  if (!field) {
-    return true;
-  }
-  switch (field->html_type()) {
+// e.g. for cases when predicted type is `UNKNOWN_TYPE` or when the submitted
+// form is not cached.
+bool IsHtmlFieldTypeSaveable(HtmlFieldType field_type) {
+  switch (field_type) {
     case HtmlFieldType::kCreditCardVerificationCode:
     case HtmlFieldType::kCreditCardNumber:
     case HtmlFieldType::kIban:
@@ -268,6 +267,14 @@ bool IsHtmlFieldTypeSaveable(const AutofillField* field) {
       return true;
   }
   NOTREACHED();
+}
+
+bool IsHtmlFieldTypeSaveable(const FormFieldData& field,
+                             const AutofillField* autofill_field) {
+  return (!field.parsed_autocomplete() ||
+          IsHtmlFieldTypeSaveable(field.parsed_autocomplete()->field_type)) &&
+         (!autofill_field ||
+          IsHtmlFieldTypeSaveable(autofill_field->html_type()));
 }
 
 // Returns true if the given `field` in `form` and its value are valid to be
@@ -339,7 +346,7 @@ bool IsFieldValueSaveable(const FormFieldData& field,
   }
 
   // Reject fields with HTML types that are ineligible for autocomplete.
-  if (!IsHtmlFieldTypeSaveable(autofill_field)) {
+  if (!IsHtmlFieldTypeSaveable(field, autofill_field)) {
     return false;
   }
 

@@ -1493,6 +1493,37 @@ TEST_F(AutocompleteHistoryManagerTest,
                                                     &form_structure);
 }
 
+// Tests that fields with ineligible HTML autocomplete attributes are not saved
+// in history even when the submitted form is not cached (i.e. `form` is null).
+TEST_F(AutocompleteHistoryManagerTest,
+       AutocompleteAttributeBasedFiltering_WithoutFormStructure) {
+  FormData form = test::GetFormData(
+      {.fields = {{.name = u"Name not matching CC regex",
+                   .value = u"000",
+                   .autocomplete_attribute = "cc-csc"},
+                  {.name = u"Name not matching CC regex",
+                   .value = u"111",
+                   .autocomplete_attribute = "cc-number"},
+                  {.name = u"Name not matching CC regex",
+                   .value = u"222",
+                   .autocomplete_attribute = "iban"},
+                  {.name = u"Name not matching CC regex",
+                   .value = u"333",
+                   .autocomplete_attribute = "promo-code"},
+                  {.name = u"Name not matching CC regex",
+                   .value = u"444",
+                   .autocomplete_attribute = "given-name"},
+                  {.name = u"Name not matching CC regex", .value = u"555"}}});
+
+  EXPECT_CALL(
+      *(web_data_service_.get()),
+      AddFormFields(ElementsAre(Property(&FormFieldData::value, u"444"),
+                                Property(&FormFieldData::value, u"555"))));
+
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
+}
+
 // Tests that loyalty card fields are saved in autocomplete history if they
 // were entered manually (i.e., not autofilled).
 TEST_F(AutocompleteHistoryManagerTest, LoyaltyCardManualEntryIsSaved) {
