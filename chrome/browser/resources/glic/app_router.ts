@@ -56,7 +56,14 @@ export class AppRouter {
     this.browserProxy.pageCallbackRouter.clientReadyStateChanged.addListener(
         this.clientReadyStateChanged_.bind(this),
     );
+    this.browserProxy.pageCallbackRouter.showPendingProviderChange.addListener(
+        this.showPendingProviderChange_.bind(this),
+    );
     this.switchToView(AppView.GLIC);
+  }
+
+  private showPendingProviderChange_() {
+    this.glicController?.showPendingProviderChange();
   }
 
   private clientReadyStateChanged_(ready: boolean) {

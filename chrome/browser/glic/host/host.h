@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
@@ -244,6 +245,13 @@ class Host : public GlicSharingManagerProvider {
   void Hibernate();
   // Returns true if the host should maintain the web client.
   bool IsAwake() const;
+
+  // The provider change that was pending when this host was created. It's
+  // fixed for the host's lifetime, so a provider change never affects an
+  // existing instance, even across hibernation or reloads.
+  GlicProviderChange pending_provider_change() const {
+    return pending_provider_change_;
+  }
 
   // Request panel closing.
   void Close();
@@ -521,6 +529,8 @@ class Host : public GlicSharingManagerProvider {
   void OnActiveWebContentsChanged(content::WebContents* new_contents);
 
   raw_ptr<Profile> profile_;
+
+  const GlicProviderChange pending_provider_change_;
 
   // The instance that owns this host.
   raw_ptr<InstanceDelegate> instance_delegate_;

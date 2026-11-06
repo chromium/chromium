@@ -7,6 +7,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -132,6 +133,15 @@ GlicPageHandler::GlicPageHandler(
           base::BindRepeating(&GlicPageHandler::UpdateProfileReadyState,
                               base::Unretained(this))));
   UpdateProfileReadyState();
+
+  // Decided once per instance, when its host is created. GEiC requires
+  // NoWebview, so this WebUI only hosts Gemini-latched profiles and the only
+  // possible pending change is Gemini to GEiC.
+  if (host_->pending_provider_change() != GlicProviderChange::kNone) {
+    CHECK_EQ(host_->pending_provider_change(),
+             GlicProviderChange::kGeminiToGeic);
+    page_->ShowPendingProviderChange();
+  }
 }
 
 GlicPageHandler::~GlicPageHandler() {

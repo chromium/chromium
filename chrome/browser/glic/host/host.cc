@@ -95,6 +95,7 @@ Host::Host(Profile* profile,
            GlicInstance* glic_instance,
            InstanceDelegate* instance_delegate)
     : profile_(profile),
+      pending_provider_change_(GlicEnabling::GetPendingProviderChange(profile)),
       instance_delegate_(instance_delegate),
       glic_instance_(glic_instance),
       sharing_manager_provider_(sharing_manager_provider) {

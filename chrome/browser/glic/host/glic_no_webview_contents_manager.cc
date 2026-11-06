@@ -34,6 +34,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
@@ -119,6 +120,21 @@ ping();
   std::string js = base::ReplaceStringPlaceholders(
       kBootstrapScriptTemplate, {std::move(escaped_source)}, nullptr);
   return base::UTF8ToUTF16(js);
+}
+
+// The relaunch panel variant for `pending_change`.
+mojom::ErrorPanelType ErrorForPendingProviderChange(
+    GlicProviderChange pending_change) {
+  switch (pending_change) {
+    case GlicProviderChange::kGeminiToGeic:
+      return mojom::ErrorPanelType::kPendingProviderChangeGeminiToGeic;
+    case GlicProviderChange::kGeicToGemini:
+      return mojom::ErrorPanelType::kPendingProviderChangeGeicToGemini;
+    case GlicProviderChange::kGeicToOtherGeic:
+      return mojom::ErrorPanelType::kPendingProviderChangeGeicToOtherGeic;
+    case GlicProviderChange::kNone:
+      NOTREACHED();
+  }
 }
 
 std::optional<mojom::ErrorPanelType> ErrorForProfileReadyState(
@@ -701,7 +717,9 @@ void GlicNoWebviewContentsManager::AttachToHost(Host* host) {
     SetHostForGuest(*guest_contents(), host);
   }
 
-  if (error_reason_.has_value()) {
+  // A pending provider change takes priority over an error set before the
+  // contents were attached, which describes the latched provider.
+  if (!MaybeSetPendingProviderChangeError() && error_reason_.has_value()) {
     host_->ClientLoadErrorOccurred(*error_reason_);
   }
 
@@ -1209,11 +1227,15 @@ void GlicNoWebviewContentsManager::ClearTransientErrorState() {
 }
 
 void GlicNoWebviewContentsManager::UpdateForProfileReadyState(bool is_initial) {
+  // A pending provider change takes priority over profile errors, since a
+  // relaunch replaces the provider they describe.
+  if (MaybeSetPendingProviderChangeError()) {
+    return;
+  }
   mojom::ProfileReadyState ready_state =
       GlicEnabling::GetProfileReadyState(profile_);
-  std::optional<mojom::ErrorPanelType> error =
-      ErrorForProfileReadyState(ready_state);
-  if (error) {
+  if (std::optional<mojom::ErrorPanelType> error =
+          ErrorForProfileReadyState(ready_state)) {
     SetErrorState(*error, ReasonForProfileReadyState(ready_state));
   } else if (is_initial || error_type_->has_value()) {
     // Transitioned back to ready while showing an error, or initially ready;
@@ -1221,6 +1243,19 @@ void GlicNoWebviewContentsManager::UpdateForProfileReadyState(bool is_initial) {
     ClearErrorState();
     LoadGuest();
   }
+}
+
+bool GlicNoWebviewContentsManager::MaybeSetPendingProviderChangeError() {
+  // Decided once per instance, when its host is created. Contents that aren't
+  // attached to a host yet (e.g. warmed) load normally until they attach.
+  GlicProviderChange pending_change =
+      host_ ? host_->pending_provider_change() : GlicProviderChange::kNone;
+  if (pending_change == GlicProviderChange::kNone) {
+    return false;
+  }
+  SetErrorState(ErrorForPendingProviderChange(pending_change),
+                ClientLoadErrorReason::kPendingProviderChange);
+  return true;
 }
 
 void GlicNoWebviewContentsManager::OnProfileReadyStateChanged() {

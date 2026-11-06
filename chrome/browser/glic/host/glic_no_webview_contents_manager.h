@@ -367,6 +367,9 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void OnZoomLevelChange();
   void OnProfileReadyStateChanged();
   void UpdateForProfileReadyState(bool is_initial);
+  // Shows the relaunch panel if the attached host's instance was created with
+  // a pending provider change. Returns whether it did.
+  bool MaybeSetPendingProviderChangeError();
   void OnHibernationTimerExpired();
   void ResolvePendingWaitForLoadCallbacks();
 

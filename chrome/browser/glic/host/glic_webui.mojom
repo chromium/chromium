@@ -123,6 +123,11 @@ interface Page {
   // Notifies the page when the web client ready state changes.
   ClientReadyStateChanged(bool ready);
 
+  // Called when the page is adopted by an instance that was created while a
+  // provider change was pending. The page shows the relaunch panel instead of
+  // the client, which may already be loaded if the page was warmed.
+  ShowPendingProviderChange();
+
   // Notifies the page to adjust the zoom level of its hosted webview.
   Zoom(ZoomAction action);
 };

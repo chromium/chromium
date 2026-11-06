@@ -985,7 +985,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Ineligible Account"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ProfileReadyState) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_webui.mojom:ProfileReadyState) -->
 
 <!-- LINT.IfChange(GlicProfilesAllSomeNone) -->
 

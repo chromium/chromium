@@ -131,6 +131,10 @@ export class GlicAppController implements WebviewDelegate {
 
   private profileReadyState: ProfileReadyState|undefined = undefined;
   private profileReadyInitialState = Promise.withResolvers<void>();
+  // Whether the instance that adopted this page was created while a provider
+  // change was pending. Fixed for the page's lifetime, and takes priority over
+  // the profile ready state.
+  private hasPendingProviderChange = false;
 
   // Loading stage, affects metrics only.
   private loadingStage: LoadingStage = LoadingStage.NOT_LOADING;
@@ -615,7 +619,6 @@ export class GlicAppController implements WebviewDelegate {
       WebUiState.kPendingProviderChangeGeminiToGeic,
       {
         clientLoadErrorReason: ClientLoadErrorReason.kPendingProviderChange,
-        reloadOnOpen: true,
         onEnter:
             () => {
               this.destroyWebview();
@@ -750,6 +753,11 @@ export class GlicAppController implements WebviewDelegate {
       return;
     }
     this.trackLoadingStageEnd();
+
+    if (this.hasPendingProviderChange) {
+      this.setState(WebUiState.kPendingProviderChangeGeminiToGeic);
+      return;
+    }
 
     const readyState = this.profileReadyState;
     assert(readyState !== undefined);
@@ -1035,6 +1043,13 @@ export class GlicAppController implements WebviewDelegate {
     this.browserProxy.pageHandler.signInAndClosePanel();
   }
 
+  // Called when this page is adopted by an instance that was created while a
+  // provider change was pending.
+  showPendingProviderChange(): void {
+    this.hasPendingProviderChange = true;
+    this.setState(WebUiState.kPendingProviderChangeGeminiToGeic);
+  }
+
   clientReadyStateChanged(ready: boolean): void {
     if (!ready) {
       return;
@@ -1119,34 +1134,38 @@ export class GlicAppController implements WebviewDelegate {
     if (initialCall) {
       // The initial state is handled in `beginLoad()`.
       this.profileReadyInitialState.resolve();
-    } else {
-      switch (this.profileReadyState) {
-        case ProfileReadyState.kUnknownError:
-        case ProfileReadyState.kIneligible:
-          this.setState(WebUiState.kUnavailable);
-          break;
-        case ProfileReadyState.kIneligibleAccount:
-          this.setState(WebUiState.kIneligibleAccount);
-          break;
-        case ProfileReadyState.kLocationMismatch:
-          this.setState(WebUiState.kLocationMismatch);
-          break;
-        case ProfileReadyState.kDisabledByAdmin:
-          $.disabledByAdminPanel.classList.toggle(
-              'show-disabled-by-admin-link', false);
-          this.setState(WebUiState.kDisabledByAdmin);
-          break;
-        case ProfileReadyState.kSignInRequired:
-          this.setState(WebUiState.kSignIn);
-          break;
-        case ProfileReadyState.kReady:
-          if (this.stateDescriptor()?.reloadOnOpen) {
-            this.setState(WebUiState.kBeginLoad);
-          }
-          break;
-        default:
-          assertNotReachedCase(this.profileReadyState);
-      }
+      return;
+    }
+    // The relaunch panel takes priority over the profile ready state.
+    if (this.hasPendingProviderChange) {
+      return;
+    }
+    switch (this.profileReadyState) {
+      case ProfileReadyState.kUnknownError:
+      case ProfileReadyState.kIneligible:
+        this.setState(WebUiState.kUnavailable);
+        break;
+      case ProfileReadyState.kIneligibleAccount:
+        this.setState(WebUiState.kIneligibleAccount);
+        break;
+      case ProfileReadyState.kLocationMismatch:
+        this.setState(WebUiState.kLocationMismatch);
+        break;
+      case ProfileReadyState.kDisabledByAdmin:
+        $.disabledByAdminPanel.classList.toggle(
+            'show-disabled-by-admin-link', false);
+        this.setState(WebUiState.kDisabledByAdmin);
+        break;
+      case ProfileReadyState.kSignInRequired:
+        this.setState(WebUiState.kSignIn);
+        break;
+      case ProfileReadyState.kReady:
+        if (this.stateDescriptor()?.reloadOnOpen) {
+          this.setState(WebUiState.kBeginLoad);
+        }
+        break;
+      default:
+        assertNotReachedCase(this.profileReadyState);
     }
   }
 
