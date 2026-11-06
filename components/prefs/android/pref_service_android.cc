@@ -53,125 +53,86 @@ ScopedJavaLocalRef<jobject> PrefServiceAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-void PrefServiceAndroid::ClearPref(JNIEnv* env,
-                                   const JavaRef<jstring>& j_preference) {
-  pref_service_->ClearPref(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+void PrefServiceAndroid::ClearPref(const std::string& preference) {
+  pref_service_->ClearPref(preference);
 }
 
-bool PrefServiceAndroid::HasPrefPath(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_preference) {
-  return pref_service_->HasPrefPath(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+bool PrefServiceAndroid::HasPrefPath(const std::string& preference) {
+  return pref_service_->HasPrefPath(preference);
 }
 
-bool PrefServiceAndroid::GetBoolean(JNIEnv* env,
-                                    const JavaRef<jstring>& j_preference) {
-  return pref_service_->GetBoolean(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+bool PrefServiceAndroid::GetBoolean(const std::string& preference) {
+  return pref_service_->GetBoolean(preference);
 }
 
-void PrefServiceAndroid::SetBoolean(JNIEnv* env,
-                                    const JavaRef<jstring>& j_preference,
-                                    const bool j_value) {
-  pref_service_->SetBoolean(
-      base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
+void PrefServiceAndroid::SetBoolean(const std::string& preference, bool value) {
+  pref_service_->SetBoolean(preference, value);
 }
 
-int32_t PrefServiceAndroid::GetInteger(JNIEnv* env,
-                                       const JavaRef<jstring>& j_preference) {
-  return pref_service_->GetInteger(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+int32_t PrefServiceAndroid::GetInteger(const std::string& preference) {
+  return pref_service_->GetInteger(preference);
 }
 
-void PrefServiceAndroid::SetInteger(JNIEnv* env,
-                                    const JavaRef<jstring>& j_preference,
-                                    const int32_t j_value) {
-  pref_service_->SetInteger(
-      base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
+void PrefServiceAndroid::SetInteger(const std::string& preference,
+                                    int32_t value) {
+  pref_service_->SetInteger(preference, value);
 }
 
-double PrefServiceAndroid::GetDouble(JNIEnv* env,
-                                     const JavaRef<jstring>& j_preference) {
-  return pref_service_->GetDouble(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+double PrefServiceAndroid::GetDouble(const std::string& preference) {
+  return pref_service_->GetDouble(preference);
 }
 
-void PrefServiceAndroid::SetDouble(JNIEnv* env,
-                                   const JavaRef<jstring>& j_preference,
-                                   const double j_value) {
-  pref_service_->SetDouble(
-      base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
+void PrefServiceAndroid::SetDouble(const std::string& preference,
+                                   double value) {
+  pref_service_->SetDouble(preference, value);
 }
 
-int64_t PrefServiceAndroid::GetLong(JNIEnv* env,
-                                    const JavaRef<jstring>& j_preference) {
-  return pref_service_->GetInt64(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+int64_t PrefServiceAndroid::GetLong(const std::string& preference) {
+  return pref_service_->GetInt64(preference);
 }
 
-void PrefServiceAndroid::SetLong(JNIEnv* env,
-                                 const JavaRef<jstring>& j_preference,
-                                 const int64_t j_value) {
-  pref_service_->SetInt64(
-      base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
+void PrefServiceAndroid::SetLong(const std::string& preference, int64_t value) {
+  pref_service_->SetInt64(preference, value);
 }
 
-ScopedJavaLocalRef<jstring> PrefServiceAndroid::GetString(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_preference) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, pref_service_->GetString(
-               base::android::ConvertJavaStringToUTF8(env, j_preference)));
+std::string PrefServiceAndroid::GetString(const std::string& preference) {
+  return pref_service_->GetString(preference);
 }
 
-void PrefServiceAndroid::SetString(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_preference,
-    const base::android::JavaRef<jstring>& j_value) {
-  pref_service_->SetString(
-      base::android::ConvertJavaStringToUTF8(env, j_preference),
-      base::android::ConvertJavaStringToUTF8(env, j_value));
+void PrefServiceAndroid::SetString(const std::string& preference,
+                                   const std::string& value) {
+  pref_service_->SetString(preference, value);
 }
 
-bool PrefServiceAndroid::IsManagedPreference(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_preference) {
-  return pref_service_->IsManagedPreference(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+bool PrefServiceAndroid::IsManagedPreference(const std::string& preference) {
+  return pref_service_->IsManagedPreference(preference);
 }
 
-bool PrefServiceAndroid::HasRecommendation(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_preference) {
-  const PrefService::Preference* pref = pref_service_->FindPreference(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+bool PrefServiceAndroid::HasRecommendation(const std::string& preference) {
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(preference);
   return pref && pref->GetRecommendedValue() != nullptr;
 }
 
 bool PrefServiceAndroid::IsFollowingRecommendation(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_preference) {
-  const PrefService::Preference* pref = pref_service_->FindPreference(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+    const std::string& preference) {
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(preference);
   return pref && pref->GetRecommendedValue() &&
          *pref->GetRecommendedValue() == *pref->GetValue();
 }
 
 bool PrefServiceAndroid::IsRecommendedPreference(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_preference) {
-  const PrefService::Preference* pref = pref_service_->FindPreference(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+    const std::string& preference) {
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(preference);
   return pref && pref->IsRecommended();
 }
 
 bool PrefServiceAndroid::IsDefaultValuePreference(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_preference) {
-  const PrefService::Preference* pref = pref_service_->FindPreference(
-      base::android::ConvertJavaStringToUTF8(env, j_preference));
+    const std::string& preference) {
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(preference);
   return pref && pref->IsDefaultValue();
 }
 
