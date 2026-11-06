@@ -122,6 +122,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/text_input_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/url_util.h"
@@ -1768,6 +1769,48 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       InAnyContext(CheckJsResultAt(
           kPopupWebView, kWebUIInput,
           "el => `${el.selectionStart}|${el.selectionEnd}`", "2|7")));
+}
+
+// Verifies that, like with the Views omnibox, an IME composition in the WebUI
+// input ends before the input shows another tab's text, so that the IME doesn't
+// carry on composing into that text, and that the first tab's draft keeps the
+// composed text.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ImeCompositionEndsOnTabSwitch) {
+  // Composes "def" at the WebUI input's caret, like an IME.
+  auto compose = [](ui::TrackedElement* el) {
+    content::SendImeSetCompositionTextToWidget(
+        AsInstrumentedWebContents(el)
+            ->web_contents()
+            ->GetRenderWidgetHostView()
+            ->GetRenderWidgetHost(),
+        u"def", /*ime_text_spans=*/{}, gfx::Range::InvalidRange(),
+        /*selection_start=*/3, /*selection_end=*/3);
+  };
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("abc"),
+      // Record the text of each composition that ends.
+      InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput, R"(el => {
+        window.endedCompositions = [];
+        el.addEventListener(
+            'compositionend', e => window.endedCompositions.push(e.data));
+      })")),
+      InAnyContext(WithElement(kPopupWebView, compose)),
+      InAnyContext(WaitForWebUIInputValue("abcdef")),
+      // Open a New Tab Page. Its omnibox is focused too, so the input stays
+      // focused.
+      AddInstrumentedTab(kTab2, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab2), InAnyContext(WaitForWebUIInputValue("")),
+      // The composition ended before the input showed the New Tab Page's empty
+      // text.
+      InAnyContext(CheckJsResultAt(kPopupWebView, kWebUIInput,
+                                   "() => window.endedCompositions.join()",
+                                   "def")),
+      // Switch back to Tab 1, whose draft has the composed text.
+      UninstrumentWebContents(kPopupWebView),
+      SwitchTabAndRestorePopup(kTabStripElementId, 1),
+      WaitForWebUIInputValue("abcdef"));
 }
 
 // Verifies that a custom selection range on a steady-state URL is preserved
