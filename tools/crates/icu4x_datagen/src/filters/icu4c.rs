@@ -54,8 +54,9 @@ pub(crate) enum Icu4cFilterCategory {
     BrkitrTree,
     /// `translit` (`transliterator/*`).
     Translit,
-    /// `plurals` (`plurals/*` — in ICU4C `misc/plurals.res`, unfiltered unless
-    /// `locales_tree` is excluded).
+    /// `plurals` (`plurals/*` — in ICU4C `misc/plurals.res` and
+    /// `misc/pluralRanges.res`, filtered by `featureFilters.misc` file-stem
+    /// filter).
     Plurals,
     /// `locales_tree` (`datetime/*`, `decimal/*`, `percent/*`, `list/*`,
     /// `personnames/*`, `locale/exemplar_characters/*`).
@@ -658,16 +659,41 @@ impl ParsedIcu4cFilterFile {
                 return Ok(ResolvedLocaleFilter::Full);
             }
             Icu4cFilterCategory::Plurals => {
-                // In ICU4C, plurals is in `misc/plurals.res`. If `locales_tree`
-                // is excluded (e.g. flutter / flutter_desktop),
-                // exclude plurals too; otherwise include
-                // all localeFilter locales.
-                if let Some(n) = self.raw.feature_filters.get("locales_tree") {
-                    if Self::parse_filter_node_or_string(n)? == ResolvedLocaleFilter::Exclude {
-                        return Ok(ResolvedLocaleFilter::Exclude);
+                // In ICU4C (`filtration.py`), `plurals.res` and
+                // `pluralRanges.res` belong to the `misc` category (not a
+                // `*_tree`), so `localeFilter` never applies to them. Instead,
+                // `featureFilters.misc` filters `source/data/misc/*.txt` by file
+                // stem (e.g., `flutter.json` and `flutter_desktop.json` set
+                // `"misc": {"includelist": ["likelySubtags"]}`, excluding
+                // `plurals`), and none of the filter files apply
+                // `resourceFilters` to `plurals` or `pluralRanges`.
+                if let Some(misc_filter) = self.raw.feature_filters.get("misc") {
+                    match misc_filter {
+                        RawFilterNodeOrString::Mode(mode) if mode == "exclude" => {
+                            return Ok(ResolvedLocaleFilter::Exclude);
+                        }
+                        RawFilterNodeOrString::Mode(mode) if mode == "include" => {}
+                        RawFilterNodeOrString::Mode(mode) => {
+                            bail!("Unsupported misc filter mode: {mode:?}");
+                        }
+                        RawFilterNodeOrString::Node(node) => {
+                            if node.filter_type.as_deref() == Some("exclude") {
+                                return Ok(ResolvedLocaleFilter::Exclude);
+                            } else if let Some(inc) = &node.includelist {
+                                if !inc.iter().any(|s| s == "plurals") {
+                                    return Ok(ResolvedLocaleFilter::Exclude);
+                                }
+                            } else if let Some(exc) = &node.excludelist {
+                                if exc.iter().any(|s| s == "plurals") {
+                                    return Ok(ResolvedLocaleFilter::Exclude);
+                                }
+                            } else {
+                                bail!("Unsupported misc filter node: {node:?}");
+                            }
+                        }
                     }
                 }
-                return resolve_locale_filter();
+                return Ok(ResolvedLocaleFilter::Full);
             }
             _ => {}
         }
@@ -942,6 +968,10 @@ mod tests {
         assert_eq!(
             flutter.resolve_category(Icu4cFilterCategory::Plurals, true, false).unwrap(),
             ResolvedLocaleFilter::Exclude
+        );
+        assert_eq!(
+            common.resolve_category(Icu4cFilterCategory::Plurals, true, false).unwrap(),
+            ResolvedLocaleFilter::Full
         );
 
         // Verify `inspect_filters` resolves every category across all 8
