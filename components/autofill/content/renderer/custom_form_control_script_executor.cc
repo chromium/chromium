@@ -584,6 +584,21 @@ void CustomFormControlScriptExecutor::RunPendingCallback(
   std::move(callback).Run(isolate, context, value);
 }
 
+void CustomFormControlScriptExecutor::ClosePopover(
+    const blink::WebNode& node,
+    base::OnceCallback<void(bool success)> callback) {
+  CallFunction(MayReturnPromise(true), "closePopover", {node},
+               base::BindOnce(
+                   [](base::OnceCallback<void(bool success)> callback,
+                      v8::Isolate* isolate, v8::Local<v8::Context> context,
+                      v8::MaybeLocal<v8::Value> result) {
+                     // `closePopover()` returns nothing, so only whether the
+                     // call succeeded matters.
+                     std::move(callback).Run(!result.IsEmpty());
+                   },
+                   std::move(callback)));
+}
+
 void CustomFormControlScriptExecutor::WillReleaseScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {

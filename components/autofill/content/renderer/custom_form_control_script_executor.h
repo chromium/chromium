@@ -79,6 +79,12 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // custom form controls it detected. The method must not return a promise.
   std::vector<CustomFormControl> DetectCustomFormControls();
 
+  // Calls the manager's `closePopover()` with `node`, e.g. to close a popover
+  // that was opened to extract the options, and runs `callback` with whether
+  // the call succeeded. `callback` may run asynchronously.
+  void ClosePopover(const blink::WebNode& node,
+                    base::OnceCallback<void(bool success)> callback);
+
  private:
   friend class CustomFormControlScriptExecutorTestApi;
 

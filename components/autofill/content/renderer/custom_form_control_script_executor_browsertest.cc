@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "components/autofill/content/renderer/custom_form_control_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -177,7 +178,7 @@ class CustomFormControlScriptExecutorTest : public content::RenderViewTest {
     return result.value;
   }
 
-  blink::WebNode GetTarget() {
+  blink::WebElement GetTarget() {
     return GetMainFrame()->GetDocument().GetElementById("target");
   }
 
@@ -438,6 +439,66 @@ TEST_F(CustomFormControlScriptExecutorTest, CallsUseIsolatedWorld) {
   EXPECT_EQ(Call("mark", {GetTarget()}), "1");
   EXPECT_TRUE(
       IsUndefinedInMainWorld("document.getElementById('target').marked"));
+}
+
+constexpr char kClosePopoverScript[] = R"(
+  function createCustomFormControlManager() {
+    return {
+      closePopover(node) {
+        switch (node.dataset.mode) {
+          case 'sync': node.dataset.closed = 'sync'; return 42;
+          case 'throw': throw new Error('error');
+          case 'reject': return Promise.reject(new Error('error'));
+          default:
+            return new Promise(r => setTimeout(() => {
+              node.dataset.closed = 'async';
+              r();
+            }, 0));
+        }
+      },
+    };
+  }
+)";
+
+// Tests that `ClosePopover()` passes the element to `closePopover()` and
+// succeeds once its promise is fulfilled, or right away if it returns
+// something else.
+TEST_F(CustomFormControlScriptExecutorTest, ClosesPopover) {
+  LoadHTML("<div id=target></div>");
+  ASSERT_TRUE(executor_->LoadScript(kClosePopoverScript));
+  base::test::TestFuture<bool> later;
+  executor_->ClosePopover(GetTarget(), later.GetCallback());
+  EXPECT_FALSE(later.IsReady());
+  EXPECT_TRUE(later.Get());
+  EXPECT_EQ(GetTarget().GetAttribute("data-closed").Utf8(), "async");
+
+  ExecuteJavaScriptForTests(
+      "document.getElementById('target').dataset.mode = 'sync';");
+  base::test::TestFuture<bool> now;
+  executor_->ClosePopover(GetTarget(), now.GetCallback());
+  ASSERT_TRUE(now.IsReady());
+  EXPECT_TRUE(now.Get());
+  EXPECT_EQ(GetTarget().GetAttribute("data-closed").Utf8(), "sync");
+}
+
+// Tests that `ClosePopover()` fails if there is no manager, or if
+// `closePopover()` throws or its promise is rejected.
+TEST_F(CustomFormControlScriptExecutorTest, ClosePopoverFails) {
+  LoadHTML("<div id=target></div>");
+  base::test::TestFuture<bool> no_manager;
+  executor_->ClosePopover(GetTarget(), no_manager.GetCallback());
+  EXPECT_FALSE(no_manager.Get());
+
+  ASSERT_TRUE(executor_->LoadScript(kClosePopoverScript));
+  for (const char* mode : {"throw", "reject"}) {
+    SCOPED_TRACE(mode);
+    ExecuteJavaScriptForTests(
+        std::string("document.getElementById('target').dataset.mode = '") +
+        mode + "';");
+    base::test::TestFuture<bool> future;
+    executor_->ClosePopover(GetTarget(), future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
 }
 
 // Tests that loading another script replaces the manager, so that calls go to
