@@ -1551,6 +1551,11 @@ public final class ProductionSupportedFlagList {
                         + " the same app process is stuck holding the lock."),
         Flag.baseFeature("useicu4xnormalizer", "Auto-generated flag for useicu4xnormalizer."),
         Flag.baseFeature("AwMetricsLogTrimming", "Auto-generated flag for AwMetricsLogTrimming."),
+        Flag.baseFeature(
+                ContentFeatures.CASE_INSENSITIVE_MHTML_MUST_DOWNLOAD,
+                "When enabled, MHTML responses with mixed-case MIME types (e.g."
+                        + " \"Multipart/Related\") for URLs other than file: and content: are"
+                        + " treated as downloads, matching lowercase MHTML MIME types."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

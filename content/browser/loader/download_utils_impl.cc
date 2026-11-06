@@ -4,10 +4,12 @@
 
 #include "content/browser/loader/download_utils_impl.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -35,6 +37,18 @@ bool ShouldAlwaysRenderMhtmlAsHtml(const GURL& url) {
   return false;
 }
 
+// Returns true if `mime_type` is one of the MHTML MIME types. Matching is
+// case-insensitive unless the kCaseInsensitiveMhtmlMustDownload kill switch is
+// disabled.
+bool IsMhtmlMimeTypeForDownload(const std::string& mime_type) {
+  if (!base::FeatureList::IsEnabled(
+          features::kCaseInsensitiveMhtmlMustDownload)) {
+    return mime_type == "multipart/related" || mime_type == "message/rfc822";
+  }
+  return base::EqualsCaseInsensitiveASCII(mime_type, "multipart/related") ||
+         base::EqualsCaseInsensitiveASCII(mime_type, "message/rfc822");
+}
+
 }  // namespace
 
 namespace content {
@@ -54,8 +68,7 @@ bool MustDownload(BrowserContext* browser_context,
             browser_context, url, mime_type)) {
       return true;
     }
-    if (base::EqualsCaseInsensitiveASCII(mime_type, "multipart/related") ||
-        base::EqualsCaseInsensitiveASCII(mime_type, "message/rfc822")) {
+    if (IsMhtmlMimeTypeForDownload(mime_type)) {
       // Always allow rendering mhtml for content:// (on Android) and file:///.
       if (ShouldAlwaysRenderMhtmlAsHtml(url)) {
         return false;
