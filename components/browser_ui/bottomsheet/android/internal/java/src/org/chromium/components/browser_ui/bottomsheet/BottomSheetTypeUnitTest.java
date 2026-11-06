@@ -265,9 +265,41 @@ public class BottomSheetTypeUnitTest {
                 new BottomSheetType.Builder().setUserInitiated(true).build();
         BottomSheetType lowerPrecedence =
                 new BottomSheetType.Builder().setUserInitiated(false).build();
+        BottomSheetType otherUserInitiated =
+                new BottomSheetType.Builder()
+                        .setUserInitiated(true)
+                        .setModal(false)
+                        .setPersistent(true)
+                        .build();
 
         assertEquals(-1, BottomSheetType.compare(higherPrecedence, lowerPrecedence));
         assertEquals(1, BottomSheetType.compare(lowerPrecedence, higherPrecedence));
         assertEquals(0, BottomSheetType.compare(higherPrecedence, higherPrecedence));
+        assertEquals(0, BottomSheetType.compare(higherPrecedence, otherUserInitiated));
+        assertEquals(0, BottomSheetType.compare(otherUserInitiated, higherPrecedence));
+
+        // Verify strict weak ordering / transitivity across suppressible and mixed types.
+        BottomSheetType iph = BottomSheetType.Type.IPH;
+        BottomSheetType suppressibleUserInitiated =
+                new BottomSheetType.Builder().setUserInitiated(true).setSuppressible(true).build();
+        BottomSheetType passiveNonModal =
+                new BottomSheetType.Builder().setUserInitiated(false).setModal(false).build();
+        BottomSheetType suppressiblePassiveModal =
+                new BottomSheetType.Builder()
+                        .setUserInitiated(false)
+                        .setModal(true)
+                        .setSuppressible(true)
+                        .build();
+
+        assertEquals(-1, BottomSheetType.compare(higherPrecedence, suppressibleUserInitiated));
+        assertEquals(-1, BottomSheetType.compare(suppressibleUserInitiated, lowerPrecedence));
+        assertEquals(-1, BottomSheetType.compare(higherPrecedence, lowerPrecedence));
+
+        assertEquals(-1, BottomSheetType.compare(lowerPrecedence, suppressiblePassiveModal));
+        assertEquals(-1, BottomSheetType.compare(suppressiblePassiveModal, passiveNonModal));
+        assertEquals(-1, BottomSheetType.compare(passiveNonModal, iph));
+        assertEquals(-1, BottomSheetType.compare(lowerPrecedence, iph));
+        assertEquals(1, BottomSheetType.compare(iph, higherPrecedence));
+        assertEquals(1, BottomSheetType.compare(iph, suppressibleUserInitiated));
     }
 }

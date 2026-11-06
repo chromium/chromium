@@ -134,22 +134,12 @@ public final class BottomSheetType {
             return true;
         }
 
-        if (this.isUserCritical() != currentlyShowing.isUserCritical()) {
-            return this.isUserCritical();
+        int tierComparison = comparePrecedenceTier(this, currentlyShowing);
+        if (tierComparison != 0) {
+            return tierComparison < 0;
         }
 
-        if (this.isUserInitiated()) {
-            return true;
-        }
-        if (currentlyShowing.isUserInitiated()) {
-            return false;
-        }
-
-        if (this.isPersistent() != currentlyShowing.isPersistent()) {
-            return this.isPersistent();
-        }
-
-        return this.isModal();
+        return this.isUserInitiated() || this.isModal();
     }
 
     /**
@@ -159,8 +149,29 @@ public final class BottomSheetType {
      *     higher precedence than {@code a}, or 0 if they have equal precedence.
      */
     public static int compare(BottomSheetType a, BottomSheetType b) {
-        if (a.canSupersede(b)) return -1;
-        if (b.canSupersede(a)) return 1;
+        int tierComparison = comparePrecedenceTier(a, b);
+        if (tierComparison != 0) {
+            return tierComparison;
+        }
+        return Boolean.compare(a.isSuppressible(), b.isSuppressible());
+    }
+
+    private static int comparePrecedenceTier(BottomSheetType a, BottomSheetType b) {
+        if (a.isUserCritical() != b.isUserCritical()) {
+            return a.isUserCritical() ? -1 : 1;
+        }
+        if (a.isUserInitiated() != b.isUserInitiated()) {
+            return a.isUserInitiated() ? -1 : 1;
+        }
+        if (a.isUserInitiated()) {
+            return 0;
+        }
+        if (a.isPersistent() != b.isPersistent()) {
+            return a.isPersistent() ? -1 : 1;
+        }
+        if (a.isModal() != b.isModal()) {
+            return a.isModal() ? -1 : 1;
+        }
         return 0;
     }
 

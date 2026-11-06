@@ -110,6 +110,14 @@ public class BottomSheetHideReentrancyUnitTest {
         }
 
         @Override
+        public BottomSheetType getSheetType() {
+            return new BottomSheetType.Builder()
+                    .setUserInitiated(mPriority == ContentPriority.HIGH)
+                    .setSuppressible(mPriority == ContentPriority.LOW)
+                    .build();
+        }
+
+        @Override
         public int getPriority() {
             return mPriority;
         }

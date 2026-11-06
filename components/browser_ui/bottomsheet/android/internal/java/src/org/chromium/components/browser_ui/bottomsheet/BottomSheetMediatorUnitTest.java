@@ -71,6 +71,7 @@ public class BottomSheetMediatorUnitTest {
                         mModel, ContextUtils.getApplicationContext().getResources());
         mMediator.setSheetContainerDimensions(500, 1000);
         mMediator.addObserver(mObserver);
+        when(mContent.getSheetType()).thenReturn(new BottomSheetType.Builder().build());
     }
 
     @Test
@@ -188,6 +189,8 @@ public class BottomSheetMediatorUnitTest {
     @Test
     public void testCloseButton_PopupNonModal() {
         when(mContent.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mContent.getSheetType())
+                .thenReturn(new BottomSheetType.Builder().setModal(false).build());
         mMediator.updateCloseButton(/* isPopup= */ true, mContent);
 
         assertTrue(mModel.get(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY));
@@ -196,6 +199,8 @@ public class BottomSheetMediatorUnitTest {
     @Test
     public void testCloseButton_PopupModal() {
         when(mContent.hasCustomScrimLifecycle()).thenReturn(false);
+        when(mContent.getSheetType())
+                .thenReturn(new BottomSheetType.Builder().setModal(true).build());
         mMediator.updateCloseButton(/* isPopup= */ true, mContent);
 
         assertFalse(mModel.get(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY));
@@ -204,6 +209,8 @@ public class BottomSheetMediatorUnitTest {
     @Test
     public void testCloseButton_NonPopup() {
         when(mContent.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mContent.getSheetType())
+                .thenReturn(new BottomSheetType.Builder().setModal(false).build());
         mMediator.updateCloseButton(/* isPopup= */ false, mContent);
 
         assertFalse(mModel.get(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY));

@@ -132,6 +132,7 @@ public class BottomSheetCoordinatorUnitTest {
         initSheet(mBottomSheet, /* isLargeFormFactor= */ false);
 
         when(mSheetContent.getMaxResizeContentHeightRatio()).thenReturn(MAX_HEIGHT_RATIO);
+        doReturn(new BottomSheetType.Builder().build()).when(mSheetContent).getSheetType();
     }
 
     /**
@@ -219,6 +220,7 @@ public class BottomSheetCoordinatorUnitTest {
     private BottomSheetContent buildContent(
             boolean supportsLargeFormFactor, float halfRatio, float fullRatio) {
         BottomSheetContent content = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build()).when(content).getSheetType();
         doReturn(supportsLargeFormFactor).when(content).supportsLargeFormFactor();
         doReturn(halfRatio).when(content).getHalfHeightRatio();
         doReturn(fullRatio).when(content).getFullHeightRatio();
@@ -321,6 +323,9 @@ public class BottomSheetCoordinatorUnitTest {
         doReturn(HeightMode.DISABLED).when(mSheetContent).getPeekHeight();
         doReturn((float) HeightMode.DISABLED).when(mSheetContent).getHalfHeightRatio();
         doReturn(false).when(mSheetContent).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(true).build())
+                .when(mSheetContent)
+                .getSheetType();
 
         mBottomSheet.showContent(mSheetContent);
         assertEquals(
@@ -344,6 +349,9 @@ public class BottomSheetCoordinatorUnitTest {
         doReturn(HeightMode.DISABLED).when(mSheetContent).getPeekHeight();
         doReturn((float) HeightMode.DISABLED).when(mSheetContent).getHalfHeightRatio();
         doReturn(true).when(mSheetContent).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(false).build())
+                .when(mSheetContent)
+                .getSheetType();
 
         mBottomSheet.showContent(mSheetContent);
         assertEquals(
@@ -1055,6 +1063,7 @@ public class BottomSheetCoordinatorUnitTest {
 
         // Show different content (mock another content).
         BottomSheetContent newContent = mock();
+        when(newContent.getSheetType()).thenReturn(new BottomSheetType.Builder().build());
         when(newContent.getContentView()).thenReturn(new View(mActivity));
         when(newContent.getHalfHeightRatio()).thenReturn(0.5f);
         when(newContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
@@ -1181,6 +1190,9 @@ public class BottomSheetCoordinatorUnitTest {
         BottomSheetCoordinator sheet = buildSheet(/* isLargeFormFactor= */ true);
 
         doReturn(true).when(mSheetContent).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(false).build())
+                .when(mSheetContent)
+                .getSheetType();
         doReturn(true).when(mSheetContent).supportsLargeFormFactor();
         doReturn(new View(mActivity)).when(mSheetContent).getContentView();
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
@@ -1199,6 +1211,9 @@ public class BottomSheetCoordinatorUnitTest {
         BottomSheetCoordinator sheet = buildSheet(/* isLargeFormFactor= */ true);
 
         doReturn(false).when(mSheetContent).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(true).build())
+                .when(mSheetContent)
+                .getSheetType();
         doReturn(true).when(mSheetContent).supportsLargeFormFactor();
         doReturn(new View(mActivity)).when(mSheetContent).getContentView();
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
@@ -1218,6 +1233,9 @@ public class BottomSheetCoordinatorUnitTest {
 
         BottomSheetContent nonModalContent = mock(BottomSheetContent.class);
         doReturn(true).when(nonModalContent).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(false).build())
+                .when(nonModalContent)
+                .getSheetType();
         doReturn(true).when(nonModalContent).supportsLargeFormFactor();
         doReturn(new View(mActivity)).when(nonModalContent).getContentView();
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
@@ -1231,6 +1249,9 @@ public class BottomSheetCoordinatorUnitTest {
 
         BottomSheetContent modalContent = mock(BottomSheetContent.class);
         doReturn(false).when(modalContent).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(true).build())
+                .when(modalContent)
+                .getSheetType();
         doReturn(true).when(modalContent).supportsLargeFormFactor();
         doReturn(new View(mActivity)).when(modalContent).getContentView();
 
@@ -1248,6 +1269,9 @@ public class BottomSheetCoordinatorUnitTest {
         BottomSheetContent content = buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f);
         // A close button is only offered for non-modal popup content.
         doReturn(true).when(content).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(false).build())
+                .when(content)
+                .getSheetType();
         sheet.showContent(content);
         sheet.setSheetState(SheetState.FULL, false);
 
@@ -1276,6 +1300,9 @@ public class BottomSheetCoordinatorUnitTest {
         BottomSheetCoordinator sheet = buildSheet(/* isLargeFormFactor= */ false);
 
         doReturn(true).when(mSheetContent).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(false).build())
+                .when(mSheetContent)
+                .getSheetType();
         doReturn(new View(mActivity)).when(mSheetContent).getContentView();
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
@@ -1296,6 +1323,9 @@ public class BottomSheetCoordinatorUnitTest {
 
         doReturn(false).when(mSheetContent).supportsLargeFormFactor();
         doReturn(true).when(mSheetContent).hasCustomScrimLifecycle();
+        doReturn(new BottomSheetType.Builder().setModal(false).build())
+                .when(mSheetContent)
+                .getSheetType();
         doReturn(new View(mActivity)).when(mSheetContent).getContentView();
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
         doReturn((float) HeightMode.DEFAULT).when(mSheetContent).getFullHeightRatio();
@@ -1338,6 +1368,7 @@ public class BottomSheetCoordinatorUnitTest {
 
         // Content A supports large form factor -> clamped popup width.
         BottomSheetContent contentLff = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build()).when(contentLff).getSheetType();
         doReturn(true).when(contentLff).supportsLargeFormFactor();
         doReturn(new View(mActivity)).when(contentLff).getContentView();
         doReturn((float) HeightMode.DEFAULT).when(contentLff).getFullHeightRatio();
@@ -1354,6 +1385,7 @@ public class BottomSheetCoordinatorUnitTest {
 
         // Content B does not support large form factor -> falls back to mobile full width.
         BottomSheetContent contentFallback = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build()).when(contentFallback).getSheetType();
         doReturn(false).when(contentFallback).supportsLargeFormFactor();
         doReturn(new View(mActivity)).when(contentFallback).getContentView();
         doReturn((float) HeightMode.DEFAULT).when(contentFallback).getFullHeightRatio();
@@ -1650,6 +1682,7 @@ public class BottomSheetCoordinatorUnitTest {
 
         // Setup Sheet Content that requests a handlebar
         BottomSheetContent contentWithHandlebar = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build()).when(contentWithHandlebar).getSheetType();
         doReturn(true).when(contentWithHandlebar).supportsLargeFormFactor();
         doReturn(true).when(contentWithHandlebar).showHandlebar();
         doReturn(new View(mActivity)).when(contentWithHandlebar).getContentView();
@@ -1666,6 +1699,9 @@ public class BottomSheetCoordinatorUnitTest {
 
         // Setup Sheet Content that does not request a handlebar
         BottomSheetContent contentWithoutHandlebar = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build())
+                .when(contentWithoutHandlebar)
+                .getSheetType();
         doReturn(true).when(contentWithoutHandlebar).supportsLargeFormFactor();
         doReturn(false).when(contentWithoutHandlebar).showHandlebar();
         doReturn(new View(mActivity)).when(contentWithoutHandlebar).getContentView();
@@ -1692,6 +1728,7 @@ public class BottomSheetCoordinatorUnitTest {
                 };
 
         BottomSheetContent contentWithHandlebar = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build()).when(contentWithHandlebar).getSheetType();
         doReturn(true).when(contentWithHandlebar).supportsLargeFormFactor();
         doReturn(true).when(contentWithHandlebar).showHandlebar();
         doReturn((float) HeightMode.WRAP_CONTENT).when(contentWithHandlebar).getFullHeightRatio();
@@ -1713,6 +1750,7 @@ public class BottomSheetCoordinatorUnitTest {
         BottomSheetCoordinator sheet = buildSheet(/* isLargeFormFactor= */ true);
 
         BottomSheetContent contentWithHandlebar = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build()).when(contentWithHandlebar).getSheetType();
         doReturn(true).when(contentWithHandlebar).supportsLargeFormFactor();
         doReturn(true).when(contentWithHandlebar).showHandlebar();
         doReturn(50).when(contentWithHandlebar).getPeekHeight();
@@ -1798,6 +1836,7 @@ public class BottomSheetCoordinatorUnitTest {
 
         // For wrap-content sheets, container height is WRAP_CONTENT.
         BottomSheetContent wrapContent = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build()).when(wrapContent).getSheetType();
         doReturn(true).when(wrapContent).supportsLargeFormFactor();
         doReturn((float) HeightMode.WRAP_CONTENT).when(wrapContent).getFullHeightRatio();
         doReturn(new View(mActivity)).when(wrapContent).getContentView();
@@ -1845,6 +1884,9 @@ public class BottomSheetCoordinatorUnitTest {
 
         View toolbarView = new View(mActivity);
         BottomSheetContent contentWithToolbarAndHandlebar = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build())
+                .when(contentWithToolbarAndHandlebar)
+                .getSheetType();
         doReturn(true).when(contentWithToolbarAndHandlebar).showHandlebar();
         doReturn(toolbarView).when(contentWithToolbarAndHandlebar).getToolbarView();
         doReturn(new View(mActivity)).when(contentWithToolbarAndHandlebar).getContentView();
@@ -1872,6 +1914,9 @@ public class BottomSheetCoordinatorUnitTest {
 
         // Switch to sheet content without handlebar.
         BottomSheetContent contentWithoutHandlebar = mock(BottomSheetContent.class);
+        doReturn(new BottomSheetType.Builder().build())
+                .when(contentWithoutHandlebar)
+                .getSheetType();
         doReturn(false).when(contentWithoutHandlebar).showHandlebar();
         doReturn(toolbarView).when(contentWithoutHandlebar).getToolbarView();
         doReturn(new View(mActivity)).when(contentWithoutHandlebar).getContentView();
@@ -2316,6 +2361,7 @@ public class BottomSheetCoordinatorUnitTest {
         BottomSheetView sheet = coordinator.getView();
 
         BottomSheetContent desktopContent = mock(BottomSheetContent.class);
+        when(desktopContent.getSheetType()).thenReturn(new BottomSheetType.Builder().build());
         when(desktopContent.supportsLargeFormFactor()).thenReturn(true);
         when(desktopContent.showHandlebar()).thenReturn(true);
         when(desktopContent.getToolbarView()).thenReturn(new View(mActivity));
@@ -2367,6 +2413,7 @@ public class BottomSheetCoordinatorUnitTest {
         // Replacing the content with content that does not use the desktop layout removes the
         // hand pointer from the handlebar of the same sheet.
         BottomSheetContent phoneStyleContent = mock(BottomSheetContent.class);
+        when(phoneStyleContent.getSheetType()).thenReturn(new BottomSheetType.Builder().build());
         when(phoneStyleContent.supportsLargeFormFactor()).thenReturn(false);
         when(phoneStyleContent.showHandlebar()).thenReturn(true);
         when(phoneStyleContent.getToolbarView()).thenReturn(new View(mActivity));

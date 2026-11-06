@@ -67,6 +67,9 @@ public class TestBottomSheetContent implements BottomSheetContent {
      */
     private boolean mCanSuppressInAnyState;
 
+    /** The sheet type for this test content. */
+    private BottomSheetType mSheetType = new BottomSheetType.Builder().build();
+
     /**
      * @param context A context to inflate views with.
      * @param priority The content's priority.
@@ -140,6 +143,15 @@ public class TestBottomSheetContent implements BottomSheetContent {
     @Override
     public void destroy() {
         destroyCallbackHelper.notifyCalled();
+    }
+
+    public void setSheetType(BottomSheetType sheetType) {
+        mSheetType = sheetType;
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return mSheetType;
     }
 
     @Override

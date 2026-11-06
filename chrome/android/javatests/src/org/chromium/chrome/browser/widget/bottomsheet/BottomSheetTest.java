@@ -49,6 +49,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
@@ -97,6 +98,8 @@ public class BottomSheetTest {
                                     mTestRule.getActivity(),
                                     BottomSheetContent.ContentPriority.HIGH,
                                     false);
+                    mHighPriorityContent.setSheetType(
+                            new BottomSheetType.Builder().setUserInitiated(true).build());
                 });
         mHighPriorityContent.setPeekHeight(HeightMode.DISABLED);
         mHighPriorityContent.setHalfHeightRatio(0.5f);
@@ -261,6 +264,8 @@ public class BottomSheetTest {
                                     obscuringStateChangedHelper.notifyCalled());
                 });
         mHighPriorityContent.setHasCustomScrimLifecycle(true);
+        mHighPriorityContent.setSheetType(
+                new BottomSheetType.Builder().setUserInitiated(true).setModal(false).build());
 
         assertFalse("The tab should not be obscured.", handler.isTabContentObscured());
 
