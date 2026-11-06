@@ -89,6 +89,8 @@ void PasswordImportController::Import(
                       ImportResults::Status::IMPORT_ALREADY_ACTIVE);
       return;
     case State::kFinished:
+      importer_.reset();
+      break;
     case State::kIdle:
       break;
   }

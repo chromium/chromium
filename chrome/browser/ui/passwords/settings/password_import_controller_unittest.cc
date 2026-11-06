@@ -449,6 +449,31 @@ TEST_F(PasswordImportControllerTest,
   controller().ResetImporter(/*delete_file=*/true);
 }
 
+TEST_F(PasswordImportControllerTest, StartingNewImportResetsFinishedImporter) {
+  ASSERT_TRUE(base::WriteFile(temp_file_path(),
+                              "origin,username,password\n"
+                              "https://test.com,username,secret\n"));
+
+  base::test::TestFuture<password_manager::ImportResults> first_import_future;
+  controller().Import(web_contents(),
+                      password_manager::PasswordForm::Store::kProfileStore,
+                      ToImportCallback(&first_import_future));
+  ASSERT_EQ(first_import_future.Get().status,
+            password_manager::ImportResults::Status::SUCCESS);
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeCancellingSelectFileDialogFactory>());
+  base::test::TestFuture<password_manager::ImportResults> second_import_future;
+  controller().Import(web_contents(),
+                      password_manager::PasswordForm::Store::kProfileStore,
+                      ToImportCallback(&second_import_future));
+  EXPECT_EQ(second_import_future.Get().status,
+            password_manager::ImportResults::Status::DISMISSED);
+
+  EXPECT_CALL(import_file_deletion_callback(), Run).Times(0);
+  controller().ResetImporter(/*delete_file=*/true);
+}
+
 struct FormDescription {
   std::string origin;
   std::string username;
