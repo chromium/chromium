@@ -144,18 +144,9 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
 
  protected:
   OmniboxViewViewsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-        // is enabled and then remove these two Features.
-        {
-            omnibox::internal::kWebUIOmniboxPopup,
-            omnibox::internal::kWebUIOmniboxAimPopup,
-            // kWebUILocationBar however replaces OmniboxViewViews, so almost
-            // all tests here are inherently incompatible with it
-            features::kWebUILocationBar,
-        });
+    // kWebUILocationBar replaces OmniboxViewViews, so almost all tests here are
+    // inherently incompatible with it.
+    scoped_feature_list_.InitAndDisableFeature(features::kWebUILocationBar);
   }
   ~OmniboxViewViewsTest() override = default;
 
@@ -829,9 +820,23 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
 
+// Disables the WebUI omnibox popup so that the views popup
+// (`OmniboxPopupViewViews`) is used. Only the views popup implements
+// `OmniboxPopupView::GetPopupAccessibleNodeData()`; the WebUI popup exposes its
+// accessibility tree through its WebContents instead.
+class OmniboxViewViewsViewsPopupTest : public OmniboxViewViewsTest {
+ public:
+  OmniboxViewViewsViewsPopupTest() {
+    feature_list_.InitAndDisableFeature(omnibox::internal::kWebUIOmniboxPopup);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Ensure that the Omnibox popup exposes appropriate accessibility semantics,
 // given a current state of open or closed.
-IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsViewsPopupTest, AccessiblePopup) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   OmniboxViewViews* omnibox_view_views =
