@@ -8,6 +8,7 @@
 #import <variant>
 
 #import "base/i18n/time_formatting.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -33,18 +34,19 @@ using Source =
 // Size of the symbol icon displayed next to each source item.
 constexpr CGFloat kSourceIconPointSize = 20.0;
 
-// Returns the icon for a Gmail source.
-UIImage* GetGmailSourceIcon() {
-  return SymbolWithPointSize(SymbolMailFill, kSourceIconPointSize);
-}
-
-// Returns the icon for a Google Photos source.
-UIImage* GetPhotosSourceIcon() {
+// Returns the icon for the given source `type`.
+UIImage* GetSourceIcon(Source::Type type) {
+  switch (type) {
+    case Source::Type::kGmail:
+      return SymbolWithPointSize(SymbolMailFill, kSourceIconPointSize);
+    case Source::Type::kPhotos:
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return SymbolWithPointSize(SymbolGooglePhotos, kSourceIconPointSize);
+      return SymbolWithPointSize(SymbolGooglePhotos, kSourceIconPointSize);
 #else
-  return SymbolWithPointSize(SymbolPhoto, kSourceIconPointSize);
+      return SymbolWithPointSize(SymbolPhoto, kSourceIconPointSize);
 #endif
+  }
+  NOTREACHED();
 }
 
 // Formats a `timestamp` as a short date string, or returns an empty string if
@@ -79,7 +81,7 @@ BOOL EntityHasValidSources(const autofill::EntityInstance& entity) {
   if (!payload) {
     return NO;
   }
-  return std::ranges::any_of(payload->sources, [](const auto& source) {
+  return std::ranges::any_of(payload->sources, [](const Source& source) {
     return source.url.is_valid();
   });
 }
@@ -96,33 +98,23 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
   NSMutableArray<AutofillAiSourceItem*>* gmail_items = [NSMutableArray array];
   NSMutableArray<AutofillAiSourceItem*>* photos_items = [NSMutableArray array];
 
-  for (const auto& source : payload->sources) {
+  for (const Source& source : payload->sources) {
     if (!source.url.is_valid()) {
       continue;
     }
+    AutofillAiSourceItem* item = [[AutofillAiSourceItem alloc]
+        initWithTitle:GetSourceTitle(source)
+             subtitle:nil
+                  URL:source.url
+                 type:source.type()
+                 icon:GetSourceIcon(source.type())];
     switch (source.type()) {
-      case autofill::EntityInstance::PersonalContextRecordTypePayload::Source::
-          Type::kGmail: {
-        AutofillAiSourceItem* item =
-            [[AutofillAiSourceItem alloc] initWithTitle:GetSourceTitle(source)
-                                               subtitle:nil
-                                                    URL:source.url
-                                                   type:source.type()
-                                                   icon:GetGmailSourceIcon()];
+      case Source::Type::kGmail:
         [gmail_items addObject:item];
         break;
-      }
-      case autofill::EntityInstance::PersonalContextRecordTypePayload::Source::
-          Type::kPhotos: {
-        AutofillAiSourceItem* item =
-            [[AutofillAiSourceItem alloc] initWithTitle:GetSourceTitle(source)
-                                               subtitle:nil
-                                                    URL:source.url
-                                                   type:source.type()
-                                                   icon:GetPhotosSourceIcon()];
+      case Source::Type::kPhotos:
         [photos_items addObject:item];
         break;
-      }
     }
   }
 
