@@ -13,7 +13,6 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -59,8 +58,6 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
 
   // WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* rfh) override;
-  void OnTabWillBeRemoved(tabs::TabInterface* tab,
-                          tabs::TabInterface::DetachReason reason);
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
@@ -121,7 +118,6 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   // Timer to enforce a timeout when waiting for a cross-document navigation
   // to commit and finish parsing.
   base::OneShotTimer cross_document_timeout_timer_;
-  base::CallbackListSubscription tab_will_detach_subscription_;
   base::WeakPtrFactory<ScriptToolHost> weak_ptr_factory_{this};
 };
 

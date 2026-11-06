@@ -99,15 +99,18 @@ mojom::ActionResultPtr LogIfValidationFailed(AggregatedJournal& journal,
   return result;
 }
 
-// Returns the tab backing `actor_surface_handle`, or null if the surface (and
-// so its tab) is gone.
-tabs::TabInterface* GetTab(ActorSurfaceHandle actor_surface_handle) {
+// Closes the page backing `actor_surface_handle`, if it still exists. The tool
+// only creates tabs; a headless page is instead destroyed by dropping the
+// ScopedHeadlessActorSurface that owns it.
+void CloseActorSurface(ActorSurfaceHandle actor_surface_handle) {
   ActorSurface* actor_surface = actor_surface_handle.Get();
   if (!actor_surface) {
-    return nullptr;
+    return;
   }
-  std::optional<tabs::TabHandle> tab = actor_surface->GetTabHandle();
-  return tab ? tab->Get() : nullptr;
+  std::optional<tabs::TabHandle> tab_handle = actor_surface->GetTabHandle();
+  if (tabs::TabInterface* tab = tab_handle ? tab_handle->Get() : nullptr) {
+    tab->Close();
+  }
 }
 
 }  // namespace
@@ -358,9 +361,7 @@ LoadAndExtractContentTool::~LoadAndExtractContentTool() {
   // tabs.
   for (auto& per_tab_state : per_tab_state_) {
     // TODO(b/565820285): Add support for headless.
-    if (tabs::TabInterface* tab = GetTab(per_tab_state.actor_surface_handle)) {
-      tab->Close();
-    }
+    CloseActorSurface(per_tab_state.actor_surface_handle);
   }
 }
 
@@ -594,9 +595,7 @@ void LoadAndExtractContentTool::RemoveAndCloseTab(PerTabState& state) {
   // and its surface are gone.
   tool_delegate().RemoveActorSurface(state.actor_surface_handle);
   // TODO(b/565820285): For a headless page, destroy its surface instead.
-  if (tabs::TabInterface* tab = GetTab(state.actor_surface_handle)) {
-    tab->Close();
-  }
+  CloseActorSurface(state.actor_surface_handle);
   state.actor_surface_handle = ActorSurfaceHandle::Null();
 }
 

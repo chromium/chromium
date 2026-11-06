@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
@@ -45,6 +47,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "ui/base/page_transition_types.h"
+#include "url/url_constants.h"
 
 using base::test::TestFuture;
 
@@ -1325,6 +1329,83 @@ IN_PROC_BROWSER_TEST_F(
       R"([{"@context":"https://schema.org","@type":"Message","text":"navigated"}])");
   EXPECT_THAT(GetObservedToolNames(),
               testing::UnorderedElementsAre("deferred_tool"));
+}
+
+// Destroying a headless page (no tab, no window) fails the tool while it waits
+// for the navigation the tool started.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+                       HeadlessPageDestroyedWhileWaitingForNavigation) {
+  std::optional<ScopedHeadlessActorSurface> page =
+      actor_keyed_service().CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = page->actor_surface_handle();
+  content::WebContents* contents = handle.Get()->GetWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      contents, embedded_https_test_server().GetURL(
+                    "example.com", "/actor/script_tool_slow.html")));
+  ASSERT_TRUE(content::ExecJs(contents, R"(
+    document.modelContext.registerTool({
+      execute: async () => {
+        window.location.href = '/title1.html';
+        return new Promise(r => {});
+      },
+      name: 'navigate_and_hang',
+      description: 'test',
+      inputSchema: { type: 'object', properties: {} }
+    });
+  )"));
+
+  // Keep the task running when the page goes away, so the tool reports it.
+  TestFuture<mojom::ActionResultPtr> add_result;
+  actor_task().AddActorSurface(handle, /*stop_task_on_detach=*/false,
+                               add_result.GetCallback());
+  ExpectOkResult(*add_result.Get());
+
+  // MakeScriptToolRequest() only supports tabs.
+  std::unique_ptr<ToolRequest> action = std::make_unique<ScriptToolRequest>(
+      handle,
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(contents->GetPrimaryMainFrame())
+              ->token(),
+      "navigate_and_hang", "{}");
+  content::TestNavigationManager navigation(
+      contents,
+      embedded_https_test_server().GetURL("example.com", "/title1.html"));
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ASSERT_TRUE(navigation.WaitForRequestStart());
+
+  page.reset();
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+}
+
+// Moving the tab to another window doesn't fail the tool: the page is still
+// alive.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+                       TabMovedToOtherWindowDuringInvocationContinues) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL(
+                          "example.com", "/actor/script_tool_cancel.html")));
+  content::WebContents* contents = web_contents();
+  // Keep a second tab so the original window stays open.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ::ui::PAGE_TRANSITION_TYPED));
+
+  content::DOMMessageQueue message_queue(contents);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(MakeScriptToolRequest(
+                       *contents->GetPrimaryMainFrame(), "hanging_tool", "{}")),
+                   result.GetCallback());
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  ASSERT_EQ("\"hanging_tool_started\"", message);
+
+  chrome::MoveTabsToNewWindow(browser(), {0});
+  TinyWait();
+  EXPECT_FALSE(result.IsReady());
+
+  actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
+  ExpectErrorResult(result, mojom::ActionResultCode::kActionsCancelled);
 }
 
 }  // namespace actor

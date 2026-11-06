@@ -188,12 +188,6 @@ void ScriptToolHost::Invoke(ToolCallback callback) {
   ActorSurface* actor_surface = actor_surface_handle_.Get();
   CHECK(actor_surface);
   Observe(actor_surface->GetWebContents());
-  // TODO(b/567721071): Observe surface destruction instead of tab detach so
-  // headless surfaces are also handled.
-  if (tabs::TabInterface* tab = actor_surface_handle_.GetTabHandle().Get()) {
-    tab_will_detach_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
-        &ScriptToolHost::OnTabWillBeRemoved, weak_ptr_factory_.GetWeakPtr()));
-  }
   timeout_timer_.Start(FROM_HERE, GetToolExecutionTimeout(),
                        base::BindOnce(&ScriptToolHost::OnToolTimeout,
                                       weak_ptr_factory_.GetWeakPtr()));
@@ -432,13 +426,6 @@ void ScriptToolHost::DidFailLoad(content::RenderFrameHost* render_frame_host,
   }
 }
 
-void ScriptToolHost::OnTabWillBeRemoved(
-    tabs::TabInterface* tab,
-    tabs::TabInterface::DetachReason reason) {
-  PostErrorResult(std::move(tool_done_callback_),
-                  mojom::ActionResultCode::kTabWentAway, "Tab was closed");
-}
-
 void ScriptToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
   bool terminate_with_error = false;
   switch (lifecycle_) {
@@ -455,6 +442,11 @@ void ScriptToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
         terminate_with_error = true;
       }
       break;
+  }
+
+  // The page is going away, so no result will arrive.
+  if (web_contents()->IsBeingDestroyed()) {
+    terminate_with_error = true;
   }
 
   if (terminate_with_error) {
@@ -486,7 +478,6 @@ void ScriptToolHost::TearDown() {
   timeout_timer_.Stop();
   cross_document_timeout_timer_.Stop();
   Observe(nullptr);
-  tab_will_detach_subscription_ = {};
   target_document_render_frame_.reset();
   new_document_render_frame_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
