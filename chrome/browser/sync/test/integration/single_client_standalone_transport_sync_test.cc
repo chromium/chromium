@@ -42,13 +42,9 @@ using testing::ContainerEq;
 
 syncer::DataTypeSet GetTypesGatedBehindHistoryOptIn() {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // History, Tabs and Saved Tab Groups are enabled by default on ChromeOS,
-    // when the flag is enabled.
-    return {};
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  // History, Tabs and Saved Tab Groups are enabled by default on ChromeOS.
+  return {};
+#else
   syncer::DataTypeSet types = {syncer::COLLABORATION_GROUP,
                                syncer::HISTORY,
                                syncer::HISTORY_DELETE_DIRECTIVES,
@@ -64,14 +60,11 @@ syncer::DataTypeSet GetTypesGatedBehindHistoryOptIn() {
     types.Put(syncer::NOTEBOOK);
   }
   if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    types.Put(syncer::WORKSPACE_DESK);
-  }
-  if (base::FeatureList::IsEnabled(
           syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
     types.Put(syncer::DICTIONARY);
   }
   return types;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -101,7 +94,6 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
             syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
 #endif  // BUILDFLAG(IS_CHROMEOS)
             switches::kSyncEnableBookmarksInTransportMode,
-            syncer::kReplaceSyncPromosWithSignInPromos,
         },
         /*disabled_features=*/{});
   }
@@ -113,47 +105,6 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
  private:
   base::test::ScopedFeatureList override_features_;
 };
-
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/40067025): Remove this test once
-// kReplaceSyncPromosWithSignInPromos is launched.
-IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
-                       SwitchesBetweenTransportAndFeature) {
-  const syncer::DataType kDataTypeExcludedInTransportMode = syncer::AUTOFILL;
-  CHECK(!AllowedTypesInStandaloneTransportMode().Has(
-      kDataTypeExcludedInTransportMode));
-
-
-  // Setup a primary account, but don't actually enable Sync-the-feature (so
-  // that Sync will start in transport mode).
-  ASSERT_TRUE(SignIn());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
-
-  syncer::DataTypeSet expected_types =
-      Difference(AllowedTypesInStandaloneTransportMode(),
-                 GetTypesGatedBehindHistoryOptIn());
-
-
-  ASSERT_THAT(GetSyncService(0)->GetActiveDataTypes(),
-              ContainerEq(expected_types));
-
-  // Turn Sync-the-feature on.
-  ASSERT_TRUE(GetClient(0)->SetupSync());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  EXPECT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
-  EXPECT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
-  // Make sure that some data type which is not allowed in transport-only mode
-  // got activated.
-  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kAutofill));
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      kDataTypeExcludedInTransportMode));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests the behavior of receiving a "Reset Sync" operation from the dashboard
@@ -428,6 +379,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 // This test intends to test the mobile migration behavior, but runs on desktop.
 // Desktop and mobile have different behaviors, and as a consequence this test
 // is only an approximation.
+// TODO(crbug.com/40067025): Remove these tests once the Sync-to-Signin
+// migration code is removed.
 class ReplaceSyncWithSigninMigrationSyncTest : public SyncTest {
  public:
   ReplaceSyncWithSigninMigrationSyncTest() : SyncTest(SINGLE_CLIENT) {
@@ -579,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(ReplaceSyncWithSigninMigrationSyncTest,
 // On ChromeOS, there exists no sync setup incomplete state.
 #if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40067025): Remove these tests once
-// kReplaceSyncPromosWithSignInPromos is launched.
+// kMigrateOutOfSyncSetupIncompleteState and kUnoPhase2FollowUp are removed.
 class SyncSetupIncompleteMigrationSyncTest : public SyncTest {
  public:
   SyncSetupIncompleteMigrationSyncTest() : SyncTest(SINGLE_CLIENT) {
