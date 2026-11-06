@@ -753,7 +753,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     @Override
                     public void onItemsInserted(
                             List<? extends TabListItem> items, @Nullable TabListItem after) {
-                        // TODO(crbug.com/562590772): Attach per-tab observers for inserted items.
+                        onProviderItemsInserted(items, after);
                     }
 
                     @Override
@@ -2805,6 +2805,27 @@ public class TabListMediator implements TabListNotificationHandler {
         } else {
             endProviderUpdate();
         }
+    }
+
+    /**
+     * Inserts cards for items emitted by the {@link TabListDataProvider} and attaches per-tab
+     * observers.
+     *
+     * @param items The items to insert, in display order.
+     * @param after The item immediately preceding the insertion, or null to insert at the start of
+     *     the tab region.
+     */
+    private void onProviderItemsInserted(
+            List<? extends TabListItem> items, @Nullable TabListItem after) {
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        if (!mTrackingTabs || tabModel == null || !tabModel.isTabStateInitialized()) return;
+
+        int insertionIndex = mModelList.resolveInsertionIndex(after);
+        if (insertionIndex == TabModel.INVALID_TAB_INDEX) return;
+
+        beginProviderUpdate();
+        insertProviderItems(tabModel, items, insertionIndex);
+        endProviderUpdate();
     }
 
     /** Suppresses layout updates while applying a batch of provider changes to the model list. */

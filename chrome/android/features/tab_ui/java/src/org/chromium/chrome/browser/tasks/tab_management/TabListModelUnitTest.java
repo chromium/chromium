@@ -182,6 +182,71 @@ public class TabListModelUnitTest {
         assertFalse(tabListModel.matchesItems(List.of(tabItem(/* tabId= */ 1))));
     }
 
+    @Test
+    public void testResolveInsertionIndex_NullAfter() {
+        TabListModel tabListModel = new TabListModel();
+        // Empty model.
+        assertEquals(0, tabListModel.resolveInsertionIndex(/* after= */ null));
+
+        // Leading message card.
+        tabListModel.add(listItemWithType(ModelType.MESSAGE));
+        assertEquals(1, tabListModel.resolveInsertionIndex(/* after= */ null));
+
+        // Existing tabs: insert before them, after the message card.
+        tabListModel.add(tabListItem(/* tabId= */ 1));
+        tabListModel.add(tabListItem(/* tabId= */ 2));
+        assertEquals(1, tabListModel.resolveInsertionIndex(/* after= */ null));
+    }
+
+    @Test
+    public void testIndexFromItemAndResolveInsertionIndex_TabItem() {
+        TabListModel tabListModel = new TabListModel();
+        tabListModel.add(listItemWithType(ModelType.MESSAGE));
+        tabListModel.add(tabListItem(/* tabId= */ 1));
+        tabListModel.add(tabListItem(/* tabId= */ 2));
+
+        assertEquals(1, tabListModel.indexFromItem(tabItem(/* tabId= */ 1)));
+        assertEquals(2, tabListModel.indexFromItem(tabItem(/* tabId= */ 2)));
+        assertEquals(2, tabListModel.resolveInsertionIndex(tabItem(/* tabId= */ 1)));
+        assertEquals(3, tabListModel.resolveInsertionIndex(tabItem(/* tabId= */ 2)));
+    }
+
+    @Test
+    public void testIndexFromItemAndResolveInsertionIndex_TabGroupItem() {
+        TabListModel tabListModel = new TabListModel();
+        Token groupId = Token.createRandom();
+        Token headerGroupId = Token.createRandom();
+        tabListModel.add(tabListItem(/* tabId= */ 1));
+        // A TAB_GROUP card.
+        tabListModel.add(tabGroupListItem(groupId));
+        // A TAB card carrying a TAB_GROUP_HEADER_ID.
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(CardProperties.CARD_TYPE, ModelType.TAB)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, headerGroupId)
+                        .build();
+        tabListModel.add(new ListItem(UiType.TAB, headerModel));
+
+        assertEquals(1, tabListModel.indexFromItem(tabGroupItem(groupId)));
+        assertEquals(2, tabListModel.indexFromItem(tabGroupItem(headerGroupId)));
+        assertEquals(2, tabListModel.resolveInsertionIndex(tabGroupItem(groupId)));
+        assertEquals(3, tabListModel.resolveInsertionIndex(tabGroupItem(headerGroupId)));
+    }
+
+    @Test
+    public void testIndexFromItem_NotFound() {
+        TabListModel tabListModel = new TabListModel();
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX, tabListModel.indexFromItem(tabItem(/* tabId= */ 1)));
+
+        tabListModel.add(tabListItem(/* tabId= */ 1));
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX, tabListModel.indexFromItem(tabItem(/* tabId= */ 2)));
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX,
+                tabListModel.indexFromItem(tabGroupItem(Token.createRandom())));
+    }
+
     // End TabListDataProvider item lookup tests.
 
     @Test

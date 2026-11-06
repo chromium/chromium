@@ -286,6 +286,39 @@ public class TabListModel extends ModelList {
         return itemsIndex == items.size();
     }
 
+    /**
+     * Returns the {@link TabListModel} index of the card representing the given item.
+     *
+     * @param item The data provider item to find.
+     * @return The index of the card, or {@link TabModel#INVALID_TAB_INDEX} if there is none. Items
+     *     with a null tab or an empty group never got a card, so this is not asserted.
+     */
+    public int indexFromItem(TabListItem item) {
+        for (int i = 0; i < size(); i++) {
+            if (matchesItem(get(i).model, item)) {
+                return i;
+            }
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Resolves the {@link TabListModel} index at which items should be inserted after, or {@link
+     * #tabRegionStart()} when {@code after} is null.
+     *
+     * @param after The item immediately preceding the insertion, or null to insert at the start of
+     *     the tab region.
+     * @return The insertion index in {@link TabListModel}, or {@link TabModel#INVALID_TAB_INDEX} if
+     *     {@code after} is non-null and not found in the model.
+     */
+    public int resolveInsertionIndex(@Nullable TabListItem after) {
+        if (after == null) return tabRegionStart();
+        int index = indexFromItem(after);
+        assert index != TabModel.INVALID_TAB_INDEX
+                : "Anchor item not found in TabListModel: " + after;
+        return index == TabModel.INVALID_TAB_INDEX ? index : index + 1;
+    }
+
     // End TabListDataProvider item lookup methods.
 
     /**
