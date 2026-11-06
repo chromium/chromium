@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://new-tab-page/new_tab_page.js';
+import 'chrome://resources/cr_components/searchbox/searchbox_icon.js';
+import 'chrome://webui-test/strings.m.js';
 
-import {SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {SearchboxIconElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {createAutocompleteMatch} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import type {SearchboxIconElement} from 'chrome://resources/cr_components/searchbox/searchbox_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {assertIconMaskImageUrl} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 const HISTORY_URL: string = 'history-url';
@@ -181,9 +182,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     await microtasksFinished();
 
     const vectorIcon = icon.$.icon;
-    assertEquals(
-        window.getComputedStyle(vectorIcon).webkitMaskImage,
-        `url("chrome://new-tab-page/${match.iconPath}")`);
+    assertIconMaskImageUrl(icon, match.iconPath);
 
     const faviconImage = icon.$.faviconImage;
     const src = faviconImage.getAttribute('src');
@@ -214,9 +213,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     await microtasksFinished();
 
     const vectorIcon = icon.$.icon;
-    assertEquals(
-        window.getComputedStyle(vectorIcon).webkitMaskImage,
-        `url("chrome://new-tab-page/${match.iconPath}")`);
+    assertIconMaskImageUrl(icon, match.iconPath);
 
     const faviconImage = icon.$.faviconImage;
     const src = faviconImage.getAttribute('src');
@@ -348,9 +345,7 @@ suite('CrComponentsSearchboxIconTest', () => {
 
       assertTrue(isVisible(vectorIcon));
       assertFalse(isVisible(faviconImage));
-      assertEquals(
-          window.getComputedStyle(vectorIcon).webkitMaskImage,
-          `url("chrome://new-tab-page/${match.iconPath}")`);
+      assertIconMaskImageUrl(icon, match.iconPath);
     });
 
     test('renders mask icon for search match', async () => {
@@ -366,9 +361,7 @@ suite('CrComponentsSearchboxIconTest', () => {
       const faviconImage = icon.$.faviconImage;
       assertTrue(isVisible(vectorIcon));
       assertFalse(isVisible(faviconImage));
-      assertEquals(
-          window.getComputedStyle(vectorIcon).webkitMaskImage,
-          `url("chrome://new-tab-page/${match.iconPath}")`);
+      assertIconMaskImageUrl(icon, match.iconPath);
     });
 
     test('renders themed icon for document match', async () => {

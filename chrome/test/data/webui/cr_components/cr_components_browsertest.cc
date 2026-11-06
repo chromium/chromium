@@ -13,8 +13,55 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/command_line.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/test/base/web_ui_test_data_source.h"
 #include "components/history_clusters/core/features.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "ui/compositor/compositor_switches.h"
+#include "ui/webui/mojo_web_ui_controller.h"
+
+namespace {
+
+// A WebUIController for chrome://webui-test that enables Mojo JS bindings,
+// chrome.histograms, and Searchbox loadTimeData without depending on a
+// feature-specific WebUI host.
+class TestSearchboxWebUIController : public ui::MojoWebUIController {
+ public:
+  explicit TestSearchboxWebUIController(content::WebUI* web_ui)
+      : ui::MojoWebUIController(web_ui,
+                                /*enable_chrome_send=*/false,
+                                /*enable_chrome_histograms=*/true) {
+    Profile* profile = Profile::FromWebUI(web_ui);
+    content::WebUIDataSource* source =
+        webui::CreateAndAddWebUITestDataSource(profile);
+    source->UseStringsJs();
+    source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
+        profile, {.enable_voice_search = true}));
+
+    // Searchbox embedder-configured flags not set in
+    // SearchboxHandler::GetWebUIDataSourceDict().
+    source->AddBoolean("isFuseboxEnabled", false);
+    source->AddBoolean("energyEffectAnimationEnabled", false);
+  }
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+WEB_UI_CONTROLLER_TYPE_IMPL(TestSearchboxWebUIController)
+
+content::ScopedWebUIConfigRegistration RegisterSearchboxTestConfig() {
+  return content::ScopedWebUIConfigRegistration(
+      std::make_unique<
+          content::DefaultWebUIConfig<TestSearchboxWebUIController>>(
+          content::kChromeUIScheme, chrome::kChromeUIWebUITestHost));
+}
+
+}  // namespace
 #endif
 
 typedef WebUIMochaBrowserTest CrComponentsTest;
@@ -66,25 +113,26 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, LocalizedLink) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-typedef WebUIMochaBrowserTest CrComponentsSearchboxTest;
+using CrComponentsSearchboxTest = WebUIMochaBrowserTest;
+
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxMatchTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterSearchboxTestConfig();
   RunTest("cr_components/searchbox/searchbox_match_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxInputTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterSearchboxTestConfig();
   RunTest("cr_components/searchbox/searchbox_input_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxPlaceholderTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterSearchboxTestConfig();
   RunTest("cr_components/searchbox/placeholder_text_cycler_test.js",
           "runMochaSuite('PlaceholderTextCyclerTest');");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxDropdownTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterSearchboxTestConfig();
   RunTest("cr_components/searchbox/searchbox_dropdown_test.js", "mocha.run()");
 }
 
@@ -94,23 +142,23 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxSelectionMixin) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, KeywordModeManagerTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterSearchboxTestConfig();
   RunTest("cr_components/searchbox/keyword_mode_manager_test.js",
           "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxIconTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterSearchboxTestConfig();
   RunTest("cr_components/searchbox/searchbox_icon_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxMixinTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterSearchboxTestConfig();
   RunTest("cr_components/searchbox/searchbox_mixin_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxUtilsTest) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  auto config = RegisterSearchboxTestConfig();
   RunTest("cr_components/searchbox/searchbox_utils_test.js", "mocha.run()");
 }
 

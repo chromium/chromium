@@ -196,11 +196,15 @@ source_set("browser_tests") {
       "history/history_ui_browsertest.cc",
     ]
     deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/webui/cr_components/searchbox",
       "//chrome/test/base:chrome_test_utils",
+      "//chrome/test/base:web_ui_test_support",
       "//components/contextual_tasks/public:feature_list",
       "//components/history/core/test",
       "//components/history_clusters/core",
       "//components/lens:features",
+      "//ui/webui",
     ]
   }
 
@@ -734,14 +738,8 @@ generate_grd("build_grd") {
   ]
 
   if (enable_webui_ntp) {
-    deps += [
-      "cr_components/searchbox:build_grdp",
-      "new_tab_page:build_grdp",
-    ]
-    grdp_files += [
-      "$target_gen_dir/cr_components/searchbox/resources.grdp",
-      "$target_gen_dir/new_tab_page/resources.grdp",
-    ]
+    deps += [ "new_tab_page:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/new_tab_page/resources.grdp" ]
   }
 
   if (!is_android) {
@@ -887,11 +885,13 @@ generate_grd("build_grd") {
     deps += [
       "cr_components:build_grdp",
       "cr_components/composebox:build_grdp",
+      "cr_components/searchbox:build_grdp",
       "history:build_grdp",
     ]
     grdp_files += [
       "$target_gen_dir/cr_components/composebox/resources.grdp",
       "$target_gen_dir/cr_components/resources.grdp",
+      "$target_gen_dir/cr_components/searchbox/resources.grdp",
       "$target_gen_dir/history/resources.grdp",
     ]
   }

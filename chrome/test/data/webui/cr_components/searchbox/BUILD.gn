@@ -32,7 +32,6 @@ build_webui_tests("build") {
   ts_composite = true
 
   ts_deps = [
-    "//chrome/browser/resources/new_tab_page:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
@@ -40,12 +39,8 @@ build_webui_tests("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_path_mappings = [
-    "chrome://new-tab-page/strings.m.js|" +
+  ts_path_mappings =
+      [ "chrome://webui-test/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
-                    target_gen_dir),
-    "chrome://new-tab-page/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
-                    target_gen_dir),
-  ]
+                    target_gen_dir) ]
 }

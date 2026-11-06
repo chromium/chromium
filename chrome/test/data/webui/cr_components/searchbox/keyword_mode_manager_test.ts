@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://new-tab-page/strings.m.js';
+import 'chrome://webui-test/strings.m.js';
 
 import {KeywordModeEntryMethod, KeywordModeManager} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import type {KeywordClearedEvent} from '//resources/cr_components/searchbox/keyword_mode_manager.js';

@@ -61,9 +61,6 @@ build_webui_tests("build") {
     "chrome://contextual-tasks/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
                     target_gen_dir),
-    "chrome://new-tab-page/strings.m.js|" +
-        rebase_path("//tools/typescript/definitions/strings.d.ts",
-                    target_gen_dir),
     "chrome://webui-test/cr_components/searchbox/*|" + rebase_path(
             "$root_gen_dir/chrome/test/data/webui/cr_components/searchbox/tsc/*",
             target_gen_dir),

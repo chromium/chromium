@@ -21,7 +21,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, CrShortcutInput) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, ComposeboxAimButton) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/composebox/composebox_aim_button_test.js",
           "runMochaSuite('ComposeboxAimButtonFocusTest')");
 }
