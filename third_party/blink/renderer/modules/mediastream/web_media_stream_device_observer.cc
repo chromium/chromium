@@ -30,29 +30,9 @@ void WebMediaStreamDeviceObserver::AddStreams(
   observer_->AddStreams(label, stream_devices_set, stream_callbacks);
 }
 
-void WebMediaStreamDeviceObserver::AddStream(const WebString& label,
-                                             const MediaStreamDevice& device) {
-  observer_->AddStream(label, device);
-}
-
-bool WebMediaStreamDeviceObserver::RemoveStreams(const WebString& label) {
-  return observer_->RemoveStreams(label);
-}
 void WebMediaStreamDeviceObserver::RemoveStreamDevice(
     const MediaStreamDevice& device) {
   observer_->RemoveStreamDevice(device);
-}
-
-// Get the video session_id given a label. The label identifies a stream.
-base::UnguessableToken WebMediaStreamDeviceObserver::GetVideoSessionId(
-    const WebString& label) {
-  return observer_->GetVideoSessionId(label);
-}
-
-// Returns an audio session_id given a label.
-base::UnguessableToken WebMediaStreamDeviceObserver::GetAudioSessionId(
-    const WebString& label) {
-  return observer_->GetAudioSessionId(label);
 }
 
 }  // namespace blink

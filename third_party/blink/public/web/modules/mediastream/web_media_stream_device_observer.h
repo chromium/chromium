@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -61,14 +60,7 @@ class BLINK_MODULES_EXPORT WebMediaStreamDeviceObserver {
   void AddStreams(const WebString& label,
                   const mojom::blink::StreamDevicesSet& stream_devices_set,
                   const StreamCallbacks& stream_callbacks);
-  void AddStream(const WebString& label, const MediaStreamDevice& device);
-  bool RemoveStreams(const WebString& label);
   void RemoveStreamDevice(const MediaStreamDevice& device);
-
-  // Get the video session_id given a label. The label identifies a stream.
-  base::UnguessableToken GetVideoSessionId(const WebString& label);
-  // Returns an audio session_id given a label.
-  base::UnguessableToken GetAudioSessionId(const WebString& label);
 
  private:
   std::unique_ptr<MediaStreamDeviceObserver> observer_;

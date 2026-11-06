@@ -16,12 +16,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
-#include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -30,17 +27,25 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
   MediaStreamDeviceObserverTest()
       : observer_(std::make_unique<MediaStreamDeviceObserver>(nullptr)) {}
 
-  void OnDeviceOpened(base::OnceClosure quit_closure,
-                      bool success,
-                      const String& label,
-                      const blink::MediaStreamDevice& device) {
-    if (success) {
-      stream_label_ = label;
-      current_device_ = device;
-      observer_->AddStream(label, device);
-    }
-
-    std::move(quit_closure).Run();
+  // Adds a stream holding a single video `device` under `label`, with no-op
+  // callbacks.
+  void AddVideoStream(const String& label, const MediaStreamDevice& device) {
+    mojom::blink::StreamDevicesSet stream_devices_set;
+    stream_devices_set.stream_devices.push_back(
+        mojom::blink::StreamDevices::New(/*audio_device=*/std::nullopt,
+                                         device));
+    observer_->AddStreams(
+        label, stream_devices_set,
+        {
+            .on_device_stopped_cb = base::DoNothing(),
+            .on_device_changed_cb = base::DoNothing(),
+            .on_device_request_state_change_cb = base::DoNothing(),
+            .on_device_capture_configuration_change_cb = base::DoNothing(),
+            .on_device_capture_handle_change_cb = base::DoNothing(),
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+            .on_zoom_level_change_cb = base::DoNothing(),
+#endif
+        });
   }
 
   void AddStreams(
@@ -120,38 +125,23 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
 
  protected:
   test::TaskEnvironment task_environment_;
-  String stream_label_;
-  MockMojoMediaStreamDispatcherHost mock_dispatcher_host_;
   std::unique_ptr<MediaStreamDeviceObserver> observer_;
-  blink::MediaStreamDevice current_device_;
 };
 
 TEST_F(MediaStreamDeviceObserverTest, GetNonScreenCaptureDevices) {
-  const int kRequestId1 = 5;
-  const int kRequestId2 = 7;
+  const String kCameraStreamLabel = "camera_stream_label";
+  const String kScreenStreamLabel = "screen_stream_label";
+  MediaStreamDevice camera_device(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, "device_path",
+      "Camera Device");
+  MediaStreamDevice screen_device(
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      "screen_capture", "Screen Device");
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 
-  // OpenDevice request 1
-  base::RunLoop run_loop1;
-  mock_dispatcher_host_.OpenDevice(
-      kRequestId1, "device_path",
-      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                      Unretained(this), run_loop1.QuitClosure()));
-  run_loop1.Run();
-  String stream_label1 = stream_label_;
-
-  // OpenDevice request 2
-  base::RunLoop run_loop2;
-  mock_dispatcher_host_.OpenDevice(
-      kRequestId2, "screen_capture",
-      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                      Unretained(this), run_loop2.QuitClosure()));
-  run_loop2.Run();
-  String stream_label2 = stream_label_;
-
+  AddVideoStream(kCameraStreamLabel, camera_device);
+  AddVideoStream(kScreenStreamLabel, screen_device);
   EXPECT_EQ(observer_->label_stream_map_.size(), 2u);
 
   // Only the device with type
@@ -162,56 +152,47 @@ TEST_F(MediaStreamDeviceObserverTest, GetNonScreenCaptureDevices) {
   EXPECT_EQ(video_devices[0].type,
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
 
-  // Close the device from request 2.
-  observer_->RemoveStreams(stream_label2);
-  EXPECT_TRUE(observer_->GetVideoSessionId(stream_label2).is_empty());
+  // Close the screen capture device.
+  observer_->RemoveStreamDevice(screen_device);
+  EXPECT_FALSE(observer_->label_stream_map_.Contains(kScreenStreamLabel));
+  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
 
-  // Close the device from request 1.
-  observer_->RemoveStreams(stream_label1);
-  EXPECT_TRUE(observer_->GetVideoSessionId(stream_label1).is_empty());
+  // Close the camera device.
+  observer_->RemoveStreamDevice(camera_device);
+  EXPECT_FALSE(observer_->label_stream_map_.Contains(kCameraStreamLabel));
 
   // Verify that the request have been completed.
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 }
 
 TEST_F(MediaStreamDeviceObserverTest, OnDeviceStopped) {
-  const int kRequestId = 5;
+  const String kStreamLabel = "stream_label";
+  MediaStreamDevice device(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                           "device_path", "Camera Device");
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 
-  // OpenDevice request.
-  base::RunLoop run_loop1;
-  mock_dispatcher_host_.OpenDevice(
-      kRequestId, "device_path",
-      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                      Unretained(this), run_loop1.QuitClosure()));
-  run_loop1.Run();
-
+  AddVideoStream(kStreamLabel, device);
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
 
-  observer_->OnDeviceStopped(stream_label_, current_device_);
+  observer_->OnDeviceStopped(kStreamLabel, device);
 
   // Verify that the request have been completed.
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 }
 
 TEST_F(MediaStreamDeviceObserverTest, OnDeviceChanged) {
-  const int kRequestId1 = 5;
+  const String kStreamLabel = "stream_label";
   const base::UnguessableToken kSessionId = base::UnguessableToken::Create();
   const String example_video_id1 = "fake_video_device1";
   const String example_video_id2 = "fake_video_device2";
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 
-  // OpenDevice request.
-  base::RunLoop run_loop1;
-  mock_dispatcher_host_.OpenDevice(
-      kRequestId1, example_video_id1,
+  blink::MediaStreamDevice initial_video_device(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                      Unretained(this), run_loop1.QuitClosure()));
-  run_loop1.Run();
+      example_video_id1.Utf8(), "Fake Video Device");
+  AddVideoStream(kStreamLabel, initial_video_device);
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
   blink::MediaStreamDevices video_devices =
@@ -224,7 +205,8 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChanged) {
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       example_video_id2.Utf8(), "Fake Video Device");
   fake_video_device.set_session_id(kSessionId);
-  observer_->OnDeviceChanged(stream_label_, current_device_, fake_video_device);
+  observer_->OnDeviceChanged(kStreamLabel, initial_video_device,
+                             fake_video_device);
 
   // Verify that the device has been changed to the new |fake_video_device|.
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
@@ -233,9 +215,8 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChanged) {
   EXPECT_EQ(video_devices[0].id, example_video_id2.Utf8());
   EXPECT_EQ(video_devices[0].session_id(), kSessionId);
 
-  // Close the device from request.
-  observer_->RemoveStreams(stream_label_);
-  EXPECT_TRUE(observer_->GetVideoSessionId(stream_label_).is_empty());
+  // Close the changed device.
+  observer_->RemoveStreamDevice(fake_video_device);
 
   // Verify that the request have been completed.
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
@@ -250,7 +231,7 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChangedChangesDeviceAfterRebind) {
   // Add a device to the |observer_|, to be changed using OnChangedDevice().
   blink::MediaStreamDevice initial_device(kDeviceType, "initial_device",
                                           kDeviceName);
-  observer_->AddStream(kStreamLabel, initial_device);
+  AddVideoStream(kStreamLabel, initial_device);
 
   // Call the |observer_|'s bind callback and check that its internal
   // |receiver_| is bound.
@@ -287,30 +268,22 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChangedChangesDeviceAfterRebind) {
 }
 
 TEST_F(MediaStreamDeviceObserverTest, OnDeviceRequestStateChange) {
-  const int kRequestId = 5;
+  const String kStreamLabel = "stream_label";
+  MediaStreamDevice device(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                           "device_path", "Camera Device");
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 
-  // OpenDevice request.
-  base::RunLoop run_loop1;
-  mock_dispatcher_host_.OpenDevice(
-      kRequestId, "device_path",
-      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                      Unretained(this), run_loop1.QuitClosure()));
-  run_loop1.Run();
+  AddVideoStream(kStreamLabel, device);
+  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
+
+  observer_->OnDeviceRequestStateChange(
+      kStreamLabel, device, mojom::blink::MediaStreamStateChange::PAUSE);
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
 
   observer_->OnDeviceRequestStateChange(
-      stream_label_, current_device_,
-      mojom::blink::MediaStreamStateChange::PAUSE);
-
-  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
-
-  observer_->OnDeviceRequestStateChange(
-      stream_label_, current_device_,
-      mojom::blink::MediaStreamStateChange::PLAY);
+      kStreamLabel, device, mojom::blink::MediaStreamStateChange::PLAY);
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
 }

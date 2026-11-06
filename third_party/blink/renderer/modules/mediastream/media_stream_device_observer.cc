@@ -8,11 +8,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/modules/mediastream/user_media_processor.h"
 
 namespace blink {
 
@@ -296,33 +294,6 @@ void MediaStreamDeviceObserver::AddStreams(
   label_stream_map_.Set(label, streams);
 }
 
-void MediaStreamDeviceObserver::AddStream(const String& label,
-                                          const MediaStreamDevice& device) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  Stream stream;
-  if (IsAudioInputMediaType(device.type)) {
-    stream.audio_devices.push_back(device);
-  } else if (IsVideoInputMediaType(device.type)) {
-    stream.video_devices.push_back(device);
-  } else {
-    NOTREACHED();
-  }
-
-  label_stream_map_.Set(label, Vector<Stream>{std::move(stream)});
-}
-
-bool MediaStreamDeviceObserver::RemoveStreams(const String& label) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  auto it = label_stream_map_.find(label);
-  if (it == label_stream_map_.end())
-    return false;
-
-  label_stream_map_.erase(it);
-  return true;
-}
-
 void MediaStreamDeviceObserver::RemoveStreamDevice(
     const MediaStreamDevice& device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -350,34 +321,6 @@ void MediaStreamDeviceObserver::RemoveStreamDevice(
   for (const String& label : streams_to_remove) {
     label_stream_map_.erase(label);
   }
-}
-
-base::UnguessableToken MediaStreamDeviceObserver::GetAudioSessionId(
-    const String& label) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  auto it = label_stream_map_.find(label);
-  if (it == label_stream_map_.end() || it->value.empty() ||
-      it->value[0].audio_devices.empty())
-    return base::UnguessableToken();
-
-  // It is assumed that all devices belong to the same request and
-  // therefore have the same session id.
-  return it->value[0].audio_devices[0].session_id();
-}
-
-base::UnguessableToken MediaStreamDeviceObserver::GetVideoSessionId(
-    const String& label) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  auto it = label_stream_map_.find(label);
-  if (it == label_stream_map_.end() || it->value.empty() ||
-      it->value[0].video_devices.empty())
-    return base::UnguessableToken();
-
-  // It is assumed that all devices belong to the same request and
-  // therefore have the same session id.
-  return it->value[0].video_devices[0].session_id();
 }
 
 bool MediaStreamDeviceObserver::Stream::ContainsDevice(
