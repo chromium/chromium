@@ -35,7 +35,9 @@
 }
 
 #mainContent {
-  max-width: 320px;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 0 20px;
   text-align: center;
 }
 
@@ -46,18 +48,31 @@
   flex-direction: column;
   justify-content: center;
   min-height: 0;
+  padding: 0;
 }
 
 #header {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  justify-content: center;
+  font-size: 0;
+  line-height: 24px;
+}
+
+#header cr-icon {
+  margin-inline-end: 8px;
+  vertical-align: top;
+}
+
+#errorTitle {
+  display: inline;
+  vertical-align: top;
 }
 
 #mainContent cr-button {
   margin-top: 16px;
+}
+
+.body-text {
+  margin-inline: auto;
+  max-width: 304px;
 }
 
 .body-text a {
