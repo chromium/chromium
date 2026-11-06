@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/fake_network_state_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/test_support/technology_enablement_waiter.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,7 +57,10 @@ class ArcWifiHostImplTest : public testing::Test {
     bridge_service_ = std::make_unique<ArcBridgeService>();
     service_ =
         std::make_unique<ArcWifiHostImpl>(nullptr, bridge_service_.get());
-    base::RunLoop().RunUntilIdle();
+    // Load Shill's initial Wi-Fi state before the tests toggle it.
+    ash::TechnologyEnablementWaiter waiter(
+        ash::NetworkHandler::Get()->network_state_handler());
+    waiter.Wait(ash::NetworkTypePattern::WiFi(), /*waiting_state=*/true);
   }
 
   void TearDown() override {
