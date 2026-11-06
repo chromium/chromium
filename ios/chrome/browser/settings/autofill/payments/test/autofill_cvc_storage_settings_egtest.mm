@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import "base/ios/ios_util.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -203,20 +202,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
 }
 
 // Tests that the user actions for the delete CVCs flow are recorded correctly.
-// TODO(crbug.com/451607065): Test is disabled on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testDeleteActionsAreRecorded DISABLED_testDeleteActionsAreRecorded
-#else
-#define MAYBE_testDeleteActionsAreRecorded testDeleteActionsAreRecorded
-#endif
-- (void)MAYBE_testDeleteActionsAreRecorded {
-  // TODO(crbug.com/576277206): Re-enable on iPad with iOS 26 once the flake
-  // is fixed.
-  if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnIOS26OrLater() &&
-      !base::ios::IsRunningOnIOS27OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iPad with iOS 26.");
-  }
-
+- (void)testDeleteActionsAreRecorded {
   base::UserActionTester userActionTester;
 
   // Create & save local credit card.

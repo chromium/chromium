@@ -799,9 +799,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is dismissed when tapping the
 // keyboard.
-// TODO(crbug.com/41428686): started to be flaky and sometimes opens full list
-// when typing text.
-- (void)DISABLED_testTappingKeyboardDismissPasswordControllerPopOver {
+- (void)testTappingKeyboardDismissPasswordControllerPopOver {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }
@@ -1026,15 +1024,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback not showing for signed in users
 // with Passwords toggle in account settings disabled.
-// TODO(crbug.com/371189341): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPasswordGenerationFallbackSignedInPasswordsDisabled \
-  testPasswordGenerationFallbackSignedInPasswordsDisabled
-#else
-#define MAYBE_testPasswordGenerationFallbackSignedInPasswordsDisabled \
-  DISABLED_testPasswordGenerationFallbackSignedInPasswordsDisabled
-#endif
-- (void)MAYBE_testPasswordGenerationFallbackSignedInPasswordsDisabled {
+- (void)testPasswordGenerationFallbackSignedInPasswordsDisabled {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
@@ -1062,15 +1052,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback not showing for signed in users
 // with encryption error.
-// TODO(crbug.com/371189341): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPasswordGenerationFallbackSignedInEncryptionError \
-  testPasswordGenerationFallbackSignedInEncryptionError
-#else
-#define MAYBE_testPasswordGenerationFallbackSignedInEncryptionError \
-  DISABLED_testPasswordGenerationFallbackSignedInEncryptionError
-#endif
-- (void)MAYBE_testPasswordGenerationFallbackSignedInEncryptionError {
+- (void)testPasswordGenerationFallbackSignedInEncryptionError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];

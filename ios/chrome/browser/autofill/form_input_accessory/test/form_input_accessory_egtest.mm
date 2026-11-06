@@ -1120,12 +1120,6 @@ TAG_SMOKE_TEST(FormInputAccessoryEGTest, testFillAddressFieldsOnForm);
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone (the manual fill button has no title on iPhone)");
   }
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // Fails because it assumes a window will be compact after creating a new
-    // window.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
 
   [self loadAddressPage];
 

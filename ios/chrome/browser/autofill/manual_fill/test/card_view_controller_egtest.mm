@@ -711,8 +711,7 @@ void DismissPaymentBottomSheet() {
 
 // Tests that the credit card View Controller is dismissed when tapping the
 // keyboard.
-// TODO(crbug.com/40250530): reenable this flaky test.
-- (void)DISABLED_testTappingKeyboardDismissCreditCardControllerPopOver {
+- (void)testTappingKeyboardDismissCreditCardControllerPopOver {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }
@@ -833,8 +832,7 @@ void DismissPaymentBottomSheet() {
 }
 
 // Tests that masked credit card offer CVC input.
-// TODO(crbug.com/41428751) can't test this one until https tests are possible.
-- (void)DISABLED_testCreditCardServerNumberRequiresCVC {
+- (void)testCreditCardServerNumberRequiresCVC {
   [AutofillAppInterface saveMaskedCreditCard];
 
   // Bring up the keyboard.

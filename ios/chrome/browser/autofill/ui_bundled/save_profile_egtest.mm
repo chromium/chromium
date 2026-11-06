@@ -230,11 +230,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
     config.features_enabled.push_back(kAutofillFixXhrForXframe);
   }
 
-  // TODO(crbug.com/428189566): Re-enable after the test is fixed for
-  // ios-fieldtrial-rel.
-  if ([self
-          isRunningTest:
-              @selector(DISABLED_testSubmissionCountReporting_ScheduledTask)] ||
+  if ([self isRunningTest:@selector(
+                              testSubmissionCountReporting_ScheduledTask)] ||
       [self isRunningTest:@selector(testSubmissionCountReporting_UnloadPage)]) {
     config.features_enabled.push_back(kAutofillCountFormSubmissionInRenderer);
   }
@@ -966,9 +963,7 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
 
 // Tests submission count reporting with the scheduled task for the 2 types of
 // form submission, regular and programmatic.
-// TODO(crbug.com/428189566): Re-enable after the test is fixed for
-// ios-fieldtrial-rel.
-- (void)DISABLED_testSubmissionCountReporting_ScheduledTask {
+- (void)testSubmissionCountReporting_ScheduledTask {
   // Load the page without submitting the form.
   [self loadFullAddressFormWithParams:{.default_prevented = true,
                                        .multiple_submissions = true}];
