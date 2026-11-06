@@ -316,6 +316,57 @@ TEST_F(NetworkChangeNotifierMockedTest, ConnectionCostDefaultsToCellular) {
             NetworkChangeNotifier::GetConnectionCost());
 }
 
+namespace {
+
+// Verifies that NetworkChangeNotifier::GetConnectionCost() is already updated
+// synchronously when OnConnectionCostChanged() runs on observers.
+class CostConsistencyObserver
+    : public NetworkChangeNotifier::ConnectionCostObserver {
+ public:
+  void OnConnectionCostChanged(
+      NetworkChangeNotifier::ConnectionCost cost) override {
+    EXPECT_EQ(cost, NetworkChangeNotifier::GetConnectionCost());
+    ++calls_;
+  }
+
+  size_t calls() const { return calls_; }
+
+ private:
+  size_t calls_ = 0;
+};
+
+}  // namespace
+
+TEST_F(NetworkChangeNotifierMockedTest, SetConnectionCostAndNotifyObservers) {
+  TestConnectionCostObserver observer;
+  CostConsistencyObserver consistency_observer;
+  NetworkChangeNotifier::AddConnectionCostObserver(&observer);
+  NetworkChangeNotifier::AddConnectionCostObserver(&consistency_observer);
+
+  mock_notifier_.mock_network_change_notifier()
+      ->SetConnectionCostAndNotifyObservers(
+          NetworkChangeNotifier::CONNECTION_COST_METERED);
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_METERED,
+            NetworkChangeNotifier::GetConnectionCost());
+  ASSERT_EQ(1u, observer.cost_changed_calls());
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_METERED,
+            observer.last_cost_changed_input());
+  EXPECT_EQ(1u, consistency_observer.calls());
+
+  mock_notifier_.mock_network_change_notifier()
+      ->SetConnectionCostAndNotifyObservers(
+          NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_UNMETERED,
+            NetworkChangeNotifier::GetConnectionCost());
+  ASSERT_EQ(2u, observer.cost_changed_calls());
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_UNMETERED,
+            observer.last_cost_changed_input());
+  EXPECT_EQ(2u, consistency_observer.calls());
+
+  NetworkChangeNotifier::RemoveConnectionCostObserver(&consistency_observer);
+  NetworkChangeNotifier::RemoveConnectionCostObserver(&observer);
+}
+
 class NetworkChangeNotifierConnectionCostTest : public TestWithTaskEnvironment {
  public:
   void SetUp() override {

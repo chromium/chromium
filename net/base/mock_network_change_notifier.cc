@@ -96,6 +96,15 @@ void MockNetworkChangeNotifier::SetConnectionTypeAndNotifyObservers(
   base::RunLoop().RunUntilIdle();
 }
 
+void MockNetworkChangeNotifier::SetConnectionCostAndNotifyObservers(
+    ConnectionCost connection_cost) {
+  SetConnectionCost(connection_cost);
+  NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeForTests(
+      GetConnectionCost());
+  // Spin the message loop so the notification is delivered.
+  base::RunLoop().RunUntilIdle();
+}
+
 MockNetworkChangeNotifier::ConnectionCost
 MockNetworkChangeNotifier::GetCurrentConnectionCost() {
   if (use_default_connection_cost_implementation_)

@@ -61,6 +61,11 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
     connection_cost_ = connection_cost;
   }
 
+  // Sets the cached value of the connection cost, notifies
+  // ConnectionCostObservers of the effective connection cost, and spins the
+  // message loop so the notification is delivered.
+  void SetConnectionCostAndNotifyObservers(ConnectionCost connection_cost);
+
   bool IsDefaultNetworkActiveInternal() override;
 
   void SetIsDefaultNetworkActiveInternalForTesting(bool is_active) {
