@@ -7,7 +7,6 @@
 
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "RawPtrHelpers.h"
 #include "clang/AST/Decl.h"
@@ -28,11 +27,6 @@ struct RangedReplacement {
 struct CheckedCastReplacement {
   RangedReplacement opener;
   RangedReplacement closer;
-};
-
-struct FuncMapping {
-  const std::string function_name;
-  const std::string replacement_function_name;
 };
 
 class Project {
@@ -59,7 +53,6 @@ class Project {
         .closer = {.range = range.getEnd(), .text = ")"}};
   }
   virtual std::string_view GetRawSpanIncludePath() const = 0;
-  virtual std::string_view GetAutoSpanificationHelperIncludePath() const = 0;
   virtual std::string_view GetUnsafeTodoMacroName() const {
     return "UNSAFE_TODO";
   }
@@ -78,9 +71,11 @@ class Project {
   virtual std::string_view GetUnsafeTodoIncludePath() const {
     return "base/compiler_specific.h";
   }
-  virtual const std::vector<FuncMapping>& GetFuncMappingTable() const = 0;
   virtual bool IsExcludedFromProject(const clang::Decl& Node) const = 0;
   virtual bool SupportsStaticExtent() const { return true; }
+  // Whether two spans can be compared with ==/!=. Rewriting std::end() needs
+  // it to compare an iterator span with the empty end span.
+  virtual bool SpanHasEqualityOperator() const { return true; }
   virtual bool UseExplicitSizeForImplicitArrays() const { return false; }
 
  protected:

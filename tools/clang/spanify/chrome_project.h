@@ -54,18 +54,6 @@ class ChromeProject : public Project {
   std::string_view GetRawSpanIncludePath() const override {
     return "base/memory/raw_span.h";
   }
-  std::string_view GetAutoSpanificationHelperIncludePath() const override {
-    return "base/containers/auto_spanification_helper.h";
-  }
-  const std::vector<FuncMapping>& GetFuncMappingTable() const override {
-    static const std::vector<FuncMapping> kFuncMappingTable = {
-        {"std::begin", "base::SpanificationArrayBegin"},
-        {"std::end", "base::SpanificationArrayEnd"},
-        {"std::cbegin", "base::SpanificationArrayCBegin"},
-        {"std::cend", "base::SpanificationArrayCEnd"},
-    };
-    return kFuncMappingTable;
-  }
 
   bool IsExcludedFromProject(const clang::Decl& Node) const override {
     static const raw_ptr_plugin::FilterFile excluded_paths([] {

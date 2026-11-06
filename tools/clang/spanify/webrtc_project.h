@@ -46,13 +46,8 @@ class WebrtcProject : public Project {
     return "rtc_base/numerics/safe_conversions.h";
   }
   std::string_view GetRawSpanIncludePath() const override { return "<span>"; }
-  std::string_view GetAutoSpanificationHelperIncludePath() const override {
-    return "NOT_AVAILABLE rtc_base/containers/auto_spanification_helper.h";
-  }
-  const std::vector<FuncMapping>& GetFuncMappingTable() const override {
-    static const std::vector<FuncMapping> kFuncMappingTable = {};
-    return kFuncMappingTable;
-  }
+  // std::span has no operator==.
+  bool SpanHasEqualityOperator() const override { return false; }
   bool IsExcludedFromProject(const clang::Decl& Node) const override {
     const clang::SourceManager& source_manager =
         Node.getASTContext().getSourceManager();

@@ -61,7 +61,7 @@ class ReorderTarget:
             '#include <array>': None,
             '#include <cstdint>': None,
             '#include <utility>': None,
-            '#include "base/containers/auto_spanification_helper.h"': None,
+            '#include "base/compiler_specific.h"': None,
             '#include "base/containers/span.h"': None,
             '#include "base/memory/raw_span.h"': None,
             '#include "base/numerics/safe_conversions.h"': None,

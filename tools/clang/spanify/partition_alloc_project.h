@@ -71,15 +71,6 @@ class PartitionAllocProject : public Project {
   std::string_view GetRawSpanIncludePath() const override {
     return "partition_alloc/partition_alloc_base/memory/raw_span.h";
   }
-  std::string_view GetAutoSpanificationHelperIncludePath() const override {
-    return "partition_alloc/partition_alloc_base/containers/"
-           "auto_spanification_helper.h";
-  }
-
-  const std::vector<FuncMapping>& GetFuncMappingTable() const override {
-    static const std::vector<FuncMapping> kFuncMappingTable = {};
-    return kFuncMappingTable;
-  }
 
   bool IsExcludedFromProject(const clang::Decl& Node) const override {
     const clang::SourceManager& source_manager =

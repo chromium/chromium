@@ -163,46 +163,53 @@ void test_for_loop_with_c_array() {
   int arr[] = {1, 2, 3};
 
   // Expected rewrite:
-  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
-  //      it != base::SpanificationArrayEnd(arr);
+  // for (base::span<int> it = base::span<int>(arr);
+  //      it != base::span<int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (int* it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
-  //      it != base::SpanificationArrayCEnd(arr);
+  // for (base::span<const int> it = base::span<const int>(arr);
+  //      it != base::span<const int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (int const* it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
-  //      it != base::SpanificationArrayEnd(arr);
+  // for (base::span<int> it = base::span<int>(arr);
+  //      it != base::span<int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (auto it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
-  //      it != base::SpanificationArrayEnd(arr);
+  // for (base::span<int> it = base::span<int>(arr);
+  //      it != base::span<int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (auto* it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
-  //      it != base::SpanificationArrayCEnd(arr);
+  // for (base::span<const int> it = base::span<const int>(arr);
+  //      it != base::span<const int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
-  //      it != base::SpanificationArrayCEnd(arr);
+  // for (base::span<const int> it = base::span<const int>(arr);
+  //      it != base::span<const int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (auto* it = std::cbegin(arr); it != std::cend(arr); ++it) {
+  }
+  // Expected rewrite:
+  // for (base::span<int> it = base::span<int>(arr);
+  //      base::span<int>(arr).last(0u) != it;
+  //      it = it.subspan(1u)) {
+  // }
+  for (int* it = std::begin(arr); std::end(arr) != it; ++it) {
   }
   // Note that reverse_iterator (rbegin, rend, crbegin, crend) won't be
   // supported because reverse_iterator never be of a pointer type (`it++`
@@ -220,49 +227,66 @@ void test_for_loop_with_std_array() {
   std::ignore = arr[UnsafeIndex()];
 
   // Expected rewrite:
-  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
-  //      it != base::SpanificationArrayEnd(arr);
+  // for (base::span<int> it = base::span<int>(arr);
+  //      it != base::span<int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (int* it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
-  //      it != base::SpanificationArrayCEnd(arr);
+  // for (base::span<const int> it = base::span<const int>(arr);
+  //      it != base::span<const int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (int const* it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
-  //      it != base::SpanificationArrayEnd(arr);
+  // for (base::span<int> it = base::span<int>(arr);
+  //      it != base::span<int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (auto it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<int> it = base::SpanificationArrayBegin(arr);
-  //      it != base::SpanificationArrayEnd(arr);
+  // for (base::span<int> it = base::span<int>(arr);
+  //      it != base::span<int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (auto* it = std::begin(arr); it != std::end(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
-  //      it != base::SpanificationArrayCEnd(arr);
+  // for (base::span<const int> it = base::span<const int>(arr);
+  //      it != base::span<const int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
   }
   // Expected rewrite:
-  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
-  //      it != base::SpanificationArrayCEnd(arr);
+  // for (base::span<const int> it = base::span<const int>(arr);
+  //      it != base::span<const int>(arr).last(0u);
   //      it = it.subspan(1u)) {
   // }
   for (auto* it = std::cbegin(arr); it != std::cend(arr); ++it) {
+  }
+  // Expected rewrite:
+  // for (base::span<int> it = base::span<int>(arr);
+  //      base::span<int>(arr).last(0u) != it;
+  //      it = it.subspan(1u)) {
+  // }
+  for (int* it = std::begin(arr); std::end(arr) != it; ++it) {
   }
   // Note that reverse_iterator (rbegin, rend, crbegin, crend) won't be
   // supported because reverse_iterator never be of a pointer type (`it++`
   // cannot move backward if `it` is a raw pointer), hence they're out of
   // scope of the spanification.
 }
+
+template <typename T>
+void TemplateBeginEnd() {
+  T arr[3] = {};
+  // Only the instantiations see a C array, and they aren't rewritten.
+  // No rewrite expected.
+  for (T* it = std::begin(arr); it != std::end(arr); ++it) {
+  }
+}
+template void TemplateBeginEnd<int>();

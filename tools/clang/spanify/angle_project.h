@@ -6,7 +6,6 @@
 #define TOOLS_CLANG_SPANIFY_ANGLE_PROJECT_H_
 
 #include <string>
-#include <vector>
 
 #include "RawPtrHelpers.h"
 #include "Util.h"
@@ -53,9 +52,6 @@ class AngleProject : public Project {
   std::string_view GetRawSpanIncludePath() const override {
     return "PATH_TO_RAW_SPAN_H_NOT_AVAILABLE";
   }
-  std::string_view GetAutoSpanificationHelperIncludePath() const override {
-    return "NOT_AVAILABLE base/containers/auto_spanification_helper.h";
-  }
   std::string_view GetUnsafeTodoMacroName() const override {
     return "ANGLE_UNSAFE_TODO";
   }
@@ -64,10 +60,6 @@ class AngleProject : public Project {
   }
   std::string_view GetUnsafeTodoIncludePath() const override {
     return "common/unsafe_buffers.h";
-  }
-  const std::vector<FuncMapping>& GetFuncMappingTable() const override {
-    static const std::vector<FuncMapping> kFuncMappingTable = {};
-    return kFuncMappingTable;
   }
   bool UseExplicitSizeForImplicitArrays() const override { return true; }
   bool IsExcludedFromProject(const clang::Decl& Node) const override {
