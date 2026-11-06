@@ -137,8 +137,8 @@ std::string GetPlatformString() {
           switches::kFakeVariationsPlatform);
   if (!forced_platform.empty()) {
     static constexpr auto kPlatforms = base::MakeFixedFlatSet<std::string_view>(
-        {"android", "android_webview", "chromeos", "fuchsia", "ios", "linux",
-         "mac", "win"});
+        {"android", "android_desktop", "android_webview", "chromeos", "fuchsia",
+         "ios", "linux", "mac", "win"});
     if (kPlatforms.contains(forced_platform)) {
       return forced_platform;
     } else {

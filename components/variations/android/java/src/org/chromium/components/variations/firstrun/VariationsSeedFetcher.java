@@ -265,6 +265,7 @@ public class VariationsSeedFetcher {
         if (forcedPlatform != null) {
             if (Arrays.asList(
                             "android",
+                            "android_desktop",
                             "android_webview",
                             "chromeos",
                             "fuchsia",

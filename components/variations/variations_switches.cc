@@ -43,7 +43,8 @@ const char kFakeVariationsChannel[] = "fake-variations-channel";
 
 // Fakes the platform of the browser for variations seed fetching and field
 // trial filtering. Possible values are as follows: "android",
-// "android_webview", "chromeos", "fuchsia", "ios", "linux", "mac", and "win".
+// "android_desktop", "android_webview", "chromeos", "fuchsia", "ios", "linux",
+// "mac", and "win".
 //
 // Intended only for testing.
 const char kFakeVariationsPlatform[] = "fake-variations-platform";

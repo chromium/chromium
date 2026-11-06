@@ -92,6 +92,9 @@ Study::Platform ClientFilterableState::GetCurrentPlatform() {
     if (forced_platform == "android") {
       return Study::PLATFORM_ANDROID;
     }
+    if (forced_platform == "android_desktop") {
+      return Study::PLATFORM_ANDROID_DESKTOP;
+    }
     if (forced_platform == "android_webview") {
       return Study::PLATFORM_ANDROID_WEBVIEW;
     }

@@ -39,6 +39,10 @@ INSTANTIATE_TEST_SUITE_P(
             .platform_switch = "android",
             .expected_platform = Study::PLATFORM_ANDROID},
         PlatformOverrideTestParams{
+            .test_name = "AndroidDesktop",
+            .platform_switch = "android_desktop",
+            .expected_platform = Study::PLATFORM_ANDROID_DESKTOP},
+        PlatformOverrideTestParams{
             .test_name = "AndroidWebView",
             .platform_switch = "android_webview",
             .expected_platform = Study::PLATFORM_ANDROID_WEBVIEW},
