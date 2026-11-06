@@ -1,2 +1,1 @@
-# For non-mechanical changes, send to nwokedi@ first, as pre-reviewer.
-per-file threat_details_unittest.cc=skrakowi@chromium.org
+file://components/safe_browsing/content/browser/threat_details/OWNERS
