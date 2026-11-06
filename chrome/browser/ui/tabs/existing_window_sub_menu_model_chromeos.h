@@ -26,6 +26,13 @@ class ExistingWindowSubMenuModelChromeOS : public ExistingWindowSubMenuModel {
       ui::SimpleMenuModel::Delegate* parent_delegate,
       TabMenuModelDelegate* tab_menu_model_delegate,
       TabStripModel* model,
+      tabs::TabHandle context_tab);
+  // Temporary forwarding constructor:
+  ExistingWindowSubMenuModelChromeOS(
+      base::PassKey<ExistingWindowSubMenuModel> passkey,
+      ui::SimpleMenuModel::Delegate* parent_delegate,
+      TabMenuModelDelegate* tab_menu_model_delegate,
+      TabStripModel* model,
       int context_index);
   ExistingWindowSubMenuModelChromeOS(
       const ExistingWindowSubMenuModelChromeOS&) = delete;

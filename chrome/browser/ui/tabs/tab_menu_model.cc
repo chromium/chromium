@@ -158,7 +158,8 @@ void TabMenuModel::BuildForWebApp(int index) {
         ExistingWindowSubMenuModel::ShouldShowSubmenuForApp(
             tab_menu_model_delegate_)) {
       add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
-          delegate(), tab_menu_model_delegate_, tab_strip_, index);
+          delegate(), tab_menu_model_delegate_, tab_strip_,
+          tab_strip_->GetTabAtIndex(index)->GetHandle());
       AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                  l10n_util::GetPluralStringFUTF16(
                      IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
@@ -239,8 +240,8 @@ void TabMenuModel::BuildSendTabToSelfItem(int index,
 void TabMenuModel::AppendGlicItems(int index,
                                    int num_tabs,
                                    const std::vector<int>& indices) {
-  glic_tab_sub_menu_model_ =
-      std::make_unique<glic::GlicTabSubMenuModel>(tab_strip_, index);
+  glic_tab_sub_menu_model_ = std::make_unique<glic::GlicTabSubMenuModel>(
+      tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle());
 
   if (features::IsMenuSimplificationEnabled()) {
     AddSubMenuWithIcon(TabStripModel::CommandGlicShare,
@@ -342,8 +343,8 @@ void TabMenuModel::Build(int index) {
 
   if (!tab_strip_->GetSplitForTab(index).has_value()) {
     if (tab_strip_->GetActiveTab()->IsSplit()) {
-      swap_with_split_submenu_ =
-          std::make_unique<SplitTabSwapMenuModel>(tab_strip_, index);
+      swap_with_split_submenu_ = std::make_unique<SplitTabSwapMenuModel>(
+          tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle());
       AddSubMenuWithStringIdAndIcon(
           TabStripModel::CommandSwapWithActiveSplit,
           IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT, swap_with_split_submenu_.get(),
@@ -370,7 +371,8 @@ void TabMenuModel::Build(int index) {
     }
   } else {
     arrange_split_view_submenu_ = std::make_unique<SplitTabMenuModel>(
-        tab_strip_, SplitTabMenuModel::MenuSource::kTabContextMenu, index);
+        tab_strip_, SplitTabMenuModel::MenuSource::kTabContextMenu,
+        tab_strip_->GetTabAtIndex(index)->GetHandle());
     AddSubMenuWithStringIdAndIcon(
         TabStripModel::CommandArrangeSplit, IDS_TAB_CXMENU_ARRANGE_SPLIT,
         arrange_split_view_submenu_.get(),
@@ -430,11 +432,13 @@ void TabMenuModel::Build(int index) {
   }
 
   if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
-          tab_strip_, index, tab_menu_model_delegate_)) {
+          tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle(),
+          tab_menu_model_delegate_)) {
     // Create submenu with existing groups
     add_to_existing_group_submenu_ =
         std::make_unique<ExistingTabGroupSubMenuModel>(
-            delegate(), tab_menu_model_delegate_, tab_strip_, index);
+            delegate(), tab_menu_model_delegate_, tab_strip_,
+            tab_strip_->GetTabAtIndex(index)->GetHandle());
     AddSubMenu(TabStripModel::CommandAddToExistingGroup,
                l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
                                                 num_tabs),
@@ -477,7 +481,8 @@ void TabMenuModel::Build(int index) {
   if (ExistingWindowSubMenuModel::ShouldShowSubmenu(tab_strip_->profile())) {
     // Create submenu with existing windows
     add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
-        delegate(), tab_menu_model_delegate_, tab_strip_, index);
+        delegate(), tab_menu_model_delegate_, tab_strip_,
+        tab_strip_->GetTabAtIndex(index)->GetHandle());
     AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                l10n_util::GetPluralStringFUTF16(
                    IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
@@ -548,8 +553,8 @@ void TabMenuModel::Build(int index) {
                 : IDS_TAB_CXMENU_SOUND_UNMUTE_SITE,
       num_mute_tabs);
   if (is_single_split) {
-    split_mute_submenu_ =
-        std::make_unique<SplitTabMuteMenuModel>(tab_strip_, index, *split);
+    split_mute_submenu_ = std::make_unique<SplitTabMuteMenuModel>(
+        tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle(), *split);
     AddSubMenu(TabStripModel::CommandToggleSiteMuted, mute_label,
                split_mute_submenu_.get());
   } else {

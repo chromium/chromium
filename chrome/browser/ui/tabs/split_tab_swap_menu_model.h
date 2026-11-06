@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SPLIT_TAB_SWAP_MENU_MODEL_H_
 
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -29,6 +30,9 @@ class SplitTabSwapMenuModel : public ui::SimpleMenuModel,
     kSwapEndTab,
   };
 
+  explicit SplitTabSwapMenuModel(TabStripModel* tab_strip_model,
+                                 tabs::TabHandle context_tab);
+  // Temporary forwarding constructor:
   explicit SplitTabSwapMenuModel(TabStripModel* tab_strip_model, int tab_index);
   ~SplitTabSwapMenuModel() override;
 
@@ -43,7 +47,7 @@ class SplitTabSwapMenuModel : public ui::SimpleMenuModel,
   std::optional<split_tabs::SplitTabLayout> GetSplitLayout() const;
 
   raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
-  int tab_index_;
+  tabs::TabHandle context_tab_ = tabs::TabHandle::Null();
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SPLIT_TAB_SWAP_MENU_MODEL_H_

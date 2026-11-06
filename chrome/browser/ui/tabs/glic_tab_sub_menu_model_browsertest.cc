@@ -203,8 +203,8 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, CreateNewChatWithSingleTab) {
 
   // Execute the Create new chat command via the glic submenu model.
   base::HistogramTester histogram_tester;
-  auto submenu_model =
-      std::make_unique<GlicTabSubMenuModel>(tab_strip_model, 0);
+  auto submenu_model = std::make_unique<GlicTabSubMenuModel>(
+      tab_strip_model, tab_strip_model->GetTabAtIndex(0)->GetHandle());
   submenu_model->ExecuteCommand(TabStripModel::CommandGlicCreateNewChat, 0);
 
   // Wait for the tab to be pinned.
@@ -259,8 +259,8 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, CreateNewChatWithMultipleTabs) {
 
   // Execute the Create new chat command via the glic submenu model.
   base::HistogramTester histogram_tester;
-  auto submenu_model =
-      std::make_unique<GlicTabSubMenuModel>(tab_strip_model, 1);
+  auto submenu_model = std::make_unique<GlicTabSubMenuModel>(
+      tab_strip_model, tab_strip_model->GetTabAtIndex(1)->GetHandle());
   submenu_model->ExecuteCommand(TabStripModel::CommandGlicCreateNewChat, 0);
 
   // Wait for the tabs to be pinned.
@@ -614,8 +614,8 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, UnpinThenRepinTab) {
     glic::GlicTabPinningWaiter waiter(
         &service->active_instance_sharing_manager(), handles_to_wait_for);
 
-    auto submenu_model =
-        std::make_unique<GlicTabSubMenuModel>(tab_strip_model, 0);
+    auto submenu_model = std::make_unique<GlicTabSubMenuModel>(
+        tab_strip_model, tab->GetHandle());
     submenu_model->ExecuteCommand(TabStripModel::CommandGlicCreateNewChat, 0);
 
     waiter.Wait();
@@ -638,8 +638,8 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, UnpinThenRepinTab) {
     glic::GlicTabPinningWaiter waiter(
         &service->active_instance_sharing_manager(), handles_to_wait_for);
 
-    auto submenu_model =
-        std::make_unique<GlicTabSubMenuModel>(tab_strip_model, 0);
+    auto submenu_model = std::make_unique<GlicTabSubMenuModel>(
+        tab_strip_model, tab->GetHandle());
     submenu_model->ExecuteCommand(TabStripModel::CommandGlicCreateNewChat, 0);
 
     waiter.Wait();
@@ -722,8 +722,8 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest,
   selection.set_active(0);
   tab_strip_model->SetSelectionFromModel(selection);
 
-  auto submenu_model =
-      std::make_unique<GlicTabSubMenuModel>(tab_strip_model, 0);
+  auto submenu_model = std::make_unique<GlicTabSubMenuModel>(
+      tab_strip_model, tab_strip_model->GetTabAtIndex(0)->GetHandle());
   submenu_model->ExecuteCommand(TabStripModel::CommandGlicCreateNewChat, 0);
 
   GlicKeyedService* service = GetGlicKeyedService();

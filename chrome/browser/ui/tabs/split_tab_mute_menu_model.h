@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 #include "components/split_tabs/split_tab_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/menus/simple_menu_model.h"
 
 class TabStripModel;
@@ -33,8 +34,12 @@ class SplitTabMuteMenuModel : public ui::SimpleMenuModel,
     kToggleEndSiteMuted,
   };
 
-  // `tab_index` is the index of the tab the context menu was opened on, which
+  // `context_tab` is the tab the context menu was opened on, which
   // must be part of `split_id`.
+  SplitTabMuteMenuModel(TabStripModel* tab_strip_model,
+                        tabs::TabHandle context_tab,
+                        split_tabs::SplitTabId split_id);
+  // Temporary forwarding constructor:
   SplitTabMuteMenuModel(TabStripModel* tab_strip_model,
                         int tab_index,
                         split_tabs::SplitTabId split_id);
@@ -50,9 +55,9 @@ class SplitTabMuteMenuModel : public ui::SimpleMenuModel,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  // Returns the index of the tab targeted by `id`, or nullopt if `id` does not
-  // target a single view or the split no longer exists.
-  std::optional<int> GetTabIndexForCommand(CommandId id) const;
+  // Returns the tab targeted by `id`, or Null() if `id` does not target a
+  // single view or the split no longer exists.
+  tabs::TabHandle GetTabForCommand(CommandId id) const;
 
   // Returns true if the split is laid out side by side rather than stacked.
   bool IsSideBySide() const;
@@ -61,7 +66,7 @@ class SplitTabMuteMenuModel : public ui::SimpleMenuModel,
   bool WillMute(CommandId id) const;
 
   const raw_ptr<TabStripModel> tab_strip_model_;
-  const int tab_index_;
+  const tabs::TabHandle context_tab_;
   const split_tabs::SplitTabId split_id_;
 };
 

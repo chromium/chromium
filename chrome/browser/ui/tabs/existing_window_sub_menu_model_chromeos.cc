@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
@@ -49,12 +50,12 @@ ExistingWindowSubMenuModelChromeOS::ExistingWindowSubMenuModelChromeOS(
     ui::SimpleMenuModel::Delegate* parent_delegate,
     TabMenuModelDelegate* tab_menu_model_delegate,
     TabStripModel* model,
-    int context_index)
+    tabs::TabHandle context_tab)
     : ExistingWindowSubMenuModel(ExistingWindowSubMenuModel::GetPassKey(),
                                  parent_delegate,
                                  tab_menu_model_delegate,
                                  model,
-                                 context_index) {
+                                 context_tab) {
   // If we shouldn't group by desk, ExistingWindowSubMenuModel's ctor has
   // already built the menu.
   std::vector<BrowserWindowInterface*> tabbed_browser_windows =
@@ -67,6 +68,21 @@ ExistingWindowSubMenuModelChromeOS::ExistingWindowSubMenuModelChromeOS(
   ClearMenu();
   BuildMenuGroupedByDesk(tabbed_browser_windows);
 }
+
+ExistingWindowSubMenuModelChromeOS::ExistingWindowSubMenuModelChromeOS(
+    base::PassKey<ExistingWindowSubMenuModel> passkey,
+    ui::SimpleMenuModel::Delegate* parent_delegate,
+    TabMenuModelDelegate* tab_menu_model_delegate,
+    TabStripModel* model,
+    int context_index)
+    : ExistingWindowSubMenuModelChromeOS(
+          passkey,
+          parent_delegate,
+          tab_menu_model_delegate,
+          model,
+          model->ContainsIndex(context_index)
+              ? model->GetTabAtIndex(context_index)->GetHandle()
+              : tabs::TabHandle::Null()) {}
 
 ExistingWindowSubMenuModelChromeOS::~ExistingWindowSubMenuModelChromeOS() =
     default;

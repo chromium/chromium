@@ -200,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   // Create menu from browser 1.
   auto menu1 = ExistingWindowSubMenuModel::Create(
       nullptr, TabMenuModelDelegate::From(browser()),
-      browser()->GetTabStripModel(), 0);
+      browser()->GetTabStripModel(),
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(5u, menu1->GetItemCount());
   CheckBrowserTitle(menu1->GetLabelAt(2), kLongTabTitleExample, 3);
   CheckBrowserTitle(menu1->GetLabelAt(3), "Browser 3 Tab 2", 2);
@@ -209,7 +210,8 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   // Create menu from browser 2.
   auto menu2 = ExistingWindowSubMenuModel::Create(
       nullptr, TabMenuModelDelegate::From(browser_2),
-      browser_2->GetTabStripModel(), 0);
+      browser_2->GetTabStripModel(),
+      browser_2->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(5u, menu2->GetItemCount());
   CheckBrowserTitle(menu2->GetLabelAt(2), kLongTabTitleExample, 3);
   CheckBrowserTitle(menu2->GetLabelAt(3), "Browser 3 Tab 2", 2);
@@ -223,7 +225,8 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
 
   auto menu3 = ExistingWindowSubMenuModel::Create(
       nullptr, TabMenuModelDelegate::From(browser_3),
-      browser_3->GetTabStripModel(), 0);
+      browser_3->GetTabStripModel(),
+      browser_3->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(5u, menu3->GetItemCount());
   CheckBrowserTitle(menu3->GetLabelAt(2), kLongTabTitleExample, 1);
   CheckBrowserTitle(menu3->GetLabelAt(3), "Browser 1", 1);
@@ -257,7 +260,8 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   // Test that a non-incognito browser only shows non-incognito windows.
   auto menu = ExistingWindowSubMenuModel::Create(
       nullptr, TabMenuModelDelegate::From(browser()),
-      browser()->GetTabStripModel(), 0);
+      browser()->GetTabStripModel(),
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(4u, menu->GetItemCount());
   ASSERT_EQ(kBrowser3ExpectedTitle, menu->GetLabelAt(2));
   ASSERT_EQ(kBrowser2ExpectedTitle, menu->GetLabelAt(3));
@@ -265,7 +269,8 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   // Test that a incognito browser only shows incognito windows.
   auto menu_incognito = ExistingWindowSubMenuModel::Create(
       nullptr, TabMenuModelDelegate::From(incognito_browser_1),
-      incognito_browser_1->GetTabStripModel(), 0);
+      incognito_browser_1->GetTabStripModel(),
+      incognito_browser_1->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(3u, menu_incognito->GetItemCount());
   ASSERT_EQ(kIncognitoBrowser2ExpectedTitle, menu_incognito->GetLabelAt(2));
 
@@ -295,7 +300,8 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   // Test that popups do not show.
   auto menu = ExistingWindowSubMenuModel::Create(
       nullptr, TabMenuModelDelegate::From(browser()),
-      browser()->GetTabStripModel(), 0);
+      browser()->GetTabStripModel(),
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(4u, menu->GetItemCount());
   ASSERT_EQ(kBrowser3ExpectedTitle, menu->GetLabelAt(2));
   ASSERT_EQ(kBrowser2ExpectedTitle, menu->GetLabelAt(3));
@@ -366,7 +372,8 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
   // for the 5th desk since no browsers are in it.
   auto menu1 = ExistingWindowSubMenuModel::Create(
       nullptr, TabMenuModelDelegate::From(browser()),
-      browser()->GetTabStripModel(), 0);
+      browser()->GetTabStripModel(),
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(15u, menu1->GetItemCount());
   EXPECT_EQ(u"Desk 1 (Current)", menu1->GetLabelAt(2));
   CheckBrowserTitle(menu1->GetLabelAt(3), kBrowser2TabTitle, 1);
@@ -426,7 +433,8 @@ IN_PROC_BROWSER_TEST_F(ExistingWindowSubMenuModelTest,
   // map to their browser indices.
   auto menu1 = ExistingWindowSubMenuModel::Create(
       nullptr, TabMenuModelDelegate::From(browser()),
-      browser()->GetTabStripModel(), 0);
+      browser()->GetTabStripModel(),
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
   const auto& command_id_to_target_index =
       static_cast<chromeos::ExistingWindowSubMenuModelChromeOS*>(menu1.get())
           ->command_id_to_target_index_for_testing();

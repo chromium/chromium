@@ -5,7 +5,21 @@
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/resource/resource_bundle.h"
+
+ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
+    ui::SimpleMenuModel::Delegate* parent_delegate,
+    TabStripModel* model,
+    tabs::TabHandle context_tab,
+    int min_command_id,
+    int parent_new_command_id)
+    : SimpleMenuModel(this),
+      parent_delegate_(parent_delegate),
+      model_(model),
+      context_tab_(context_tab),
+      min_command_id_(min_command_id),
+      parent_new_command_id_(parent_new_command_id) {}
 
 ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
     ui::SimpleMenuModel::Delegate* parent_delegate,
@@ -13,12 +27,14 @@ ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
     int context_index,
     int min_command_id,
     int parent_new_command_id)
-    : SimpleMenuModel(this),
-      parent_delegate_(parent_delegate),
-      model_(model),
-      context_contents_(model->GetWebContentsAt(context_index)),
-      min_command_id_(min_command_id),
-      parent_new_command_id_(parent_new_command_id) {}
+    : ExistingBaseSubMenuModel(
+          parent_delegate,
+          model,
+          model->ContainsIndex(context_index)
+              ? model->GetTabAtIndex(context_index)->GetHandle()
+              : tabs::TabHandle::Null(),
+          min_command_id,
+          parent_new_command_id) {}
 
 bool ExistingBaseSubMenuModel::IsCommandIdAlerted(int command_id) const {
   return IsNewCommand(command_id) &&
@@ -107,6 +123,10 @@ bool ExistingBaseSubMenuModel::IsNewCommand(int command_id) const {
 
 void ExistingBaseSubMenuModel::ExecuteExistingCommand(size_t target_index) {}
 
+tabs::TabHandle ExistingBaseSubMenuModel::GetContextTab() const {
+  return context_tab_;
+}
+
 int ExistingBaseSubMenuModel::GetContextIndex() const {
-  return model_->GetIndexOfWebContents(context_contents_);
+  return model_->GetIndexOfTab(context_tab_.Get());
 }

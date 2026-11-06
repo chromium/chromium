@@ -44,17 +44,27 @@ ui::ImageModel GetMuteIcon(bool will_mute) {
 }  // namespace
 
 SplitTabMuteMenuModel::SplitTabMuteMenuModel(TabStripModel* tab_strip_model,
-                                             int tab_index,
+                                             tabs::TabHandle context_tab,
                                              split_tabs::SplitTabId split_id)
     : ui::SimpleMenuModel(this),
       tab_strip_model_(tab_strip_model),
-      tab_index_(tab_index),
+      context_tab_(context_tab),
       split_id_(split_id) {
   AddItem(static_cast<int>(CommandId::kToggleAllSitesMuted), std::u16string());
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
   AddItem(static_cast<int>(CommandId::kToggleStartSiteMuted), std::u16string());
   AddItem(static_cast<int>(CommandId::kToggleEndSiteMuted), std::u16string());
 }
+
+SplitTabMuteMenuModel::SplitTabMuteMenuModel(TabStripModel* tab_strip_model,
+                                             int tab_index,
+                                             split_tabs::SplitTabId split_id)
+    : SplitTabMuteMenuModel(
+          tab_strip_model,
+          tab_strip_model->ContainsIndex(tab_index)
+              ? tab_strip_model->GetTabAtIndex(tab_index)->GetHandle()
+              : tabs::TabHandle::Null(),
+          split_id) {}
 
 SplitTabMuteMenuModel::~SplitTabMuteMenuModel() = default;
 
@@ -115,14 +125,14 @@ bool SplitTabMuteMenuModel::IsCommandIdEnabled(int command_id) const {
   const CommandId id = static_cast<CommandId>(command_id);
   if (id == CommandId::kToggleAllSitesMuted) {
     return tab_strip_model_->IsContextMenuCommandEnabled(
-        tab_index_, TabStripModel::CommandToggleSiteMuted);
+        context_tab_, TabStripModel::CommandToggleSiteMuted);
   }
 
   // A site can only be muted once its tab has committed a navigation.
-  const std::optional<int> index = GetTabIndexForCommand(id);
-  return index.has_value() && !tab_strip_model_->GetWebContentsAt(*index)
-                                   ->GetLastCommittedURL()
-                                   .is_empty();
+  tabs::TabHandle tab = GetTabForCommand(id);
+  tabs::TabInterface* tab_ptr = tab.Get();
+  return tab_ptr && tab_ptr->GetContents() &&
+         !tab_ptr->GetContents()->GetLastCommittedURL().is_empty();
 }
 
 void SplitTabMuteMenuModel::ExecuteCommand(int command_id, int event_flags) {
@@ -133,13 +143,13 @@ void SplitTabMuteMenuModel::ExecuteCommand(int command_id, int event_flags) {
     // sites behaves and is logged exactly like the "Mute sites" item shown for
     // tabs that aren't in a split.
     tab_strip_model_->ExecuteContextMenuCommand(
-        tab_index_, TabStripModel::CommandToggleSiteMuted);
+        context_tab_, TabStripModel::CommandToggleSiteMuted);
     return;
   }
 
   // The split may have been removed while the menu was open.
-  const std::optional<int> index = GetTabIndexForCommand(id);
-  if (!index.has_value()) {
+  tabs::TabHandle tab = GetTabForCommand(id);
+  if (!tab.Get()) {
     return;
   }
 
@@ -150,21 +160,19 @@ void SplitTabMuteMenuModel::ExecuteCommand(int command_id, int event_flags) {
 
   // This changes the sound content setting for the view's site, so it also
   // affects the other view when both views show the same site.
-  tab_strip_model_->SetSitesMuted(
-      {tab_strip_model_->GetTabAtIndex(*index)->GetHandle()}, mute);
+  tab_strip_model_->SetSitesMuted({tab}, mute);
 }
 
-std::optional<int> SplitTabMuteMenuModel::GetTabIndexForCommand(
-    CommandId id) const {
+tabs::TabHandle SplitTabMuteMenuModel::GetTabForCommand(CommandId id) const {
   if (id == CommandId::kToggleAllSitesMuted ||
       !tab_strip_model_->ContainsSplit(split_id_)) {
-    return std::nullopt;
+    return tabs::TabHandle::Null();
   }
   const std::vector<tabs::TabInterface*> tabs_in_split =
       tab_strip_model_->GetSplitData(split_id_)->ListTabs();
   CHECK_EQ(tabs_in_split.size(), 2U);
-  return tab_strip_model_->GetIndexOfTab(
-      tabs_in_split[id == CommandId::kToggleStartSiteMuted ? 0 : 1]);
+  return tabs_in_split[id == CommandId::kToggleStartSiteMuted ? 0 : 1]
+      ->GetHandle();
 }
 
 bool SplitTabMuteMenuModel::IsSideBySide() const {
@@ -176,11 +184,9 @@ bool SplitTabMuteMenuModel::IsSideBySide() const {
 
 bool SplitTabMuteMenuModel::WillMute(CommandId id) const {
   if (id == CommandId::kToggleAllSitesMuted) {
-    return !tab_strip_model_->ContainsIndex(tab_index_) ||
-           tab_strip_model_->WillContextMenuMuteSites(
-               tab_strip_model_->GetTabAtIndex(tab_index_)->GetHandle());
+    return !context_tab_.Get() ||
+           tab_strip_model_->WillContextMenuMuteSites(context_tab_);
   }
-  const std::optional<int> index = GetTabIndexForCommand(id);
-  return !index.has_value() ||
-         !IsSiteMuted(tab_strip_model_->GetTabAtIndex(*index)->GetHandle());
+  tabs::TabHandle tab = GetTabForCommand(id);
+  return !tab.Get() || !IsSiteMuted(tab);
 }

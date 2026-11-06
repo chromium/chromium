@@ -836,6 +836,17 @@ class TabStripModel {
   void ExecuteContextMenuCommand(int context_index,
                                  ContextMenuCommand command_id);
 
+  // Returns whether any tab would close when executing the command `id`
+  // (CommandCloseTabsToRight or CommandCloseOtherTabs) for `context_tab`.
+  bool HasTabsClosedByCommand(tabs::TabHandle context_tab,
+                              ContextMenuCommand id) const;
+
+  std::vector<tabs::TabHandle> GetTabsForCommand(
+      tabs::TabHandle context_tab) const;
+  std::vector<tabs::TabHandle> GetTabsClosedByCommand(
+      tabs::TabHandle context_tab,
+      ContextMenuCommand id) const;
+
   // Returns a list of the group ids that are going to be deleted if a given
   // list of tab indexes are removed from the group. used by context menu
   // commands to decide whether to confirm group deletion.
@@ -1163,16 +1174,6 @@ class TabStripModel {
   // increasing order.
   std::vector<int> GetIndicesForCommand(int index) const;
 
-  // Returns whether any tab would close when executing the command `id`
-  // (CommandCloseTabsToRight or CommandCloseOtherTabs) for `context_tab`.
-  bool HasTabsClosedByCommand(tabs::TabHandle context_tab,
-                              ContextMenuCommand id) const;
-
-  std::vector<tabs::TabHandle> GetTabsForCommand(
-      tabs::TabHandle context_tab) const;
-  std::vector<tabs::TabHandle> GetTabsClosedByCommand(
-      tabs::TabHandle context_tab,
-      ContextMenuCommand id) const;
   // Returns sorted indices corresponding to `tabs`. Any tabs not present in
   // this model are ignored.
   std::vector<int> GetSortedIndicesForTabs(

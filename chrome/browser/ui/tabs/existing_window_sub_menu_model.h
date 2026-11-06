@@ -29,6 +29,12 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
       ui::SimpleMenuModel::Delegate* parent_delegate,
       TabMenuModelDelegate* tab_menu_model_delegate,
       TabStripModel* model,
+      tabs::TabHandle context_tab);
+  // Temporary forwarding Create:
+  static std::unique_ptr<ExistingWindowSubMenuModel> Create(
+      ui::SimpleMenuModel::Delegate* parent_delegate,
+      TabMenuModelDelegate* tab_menu_model_delegate,
+      TabStripModel* model,
       int context_index);
 
   // Clients shouldn't directly create instances of ExistingWindowSubMenuModel,
@@ -37,7 +43,7 @@ class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
                              ui::SimpleMenuModel::Delegate* parent_delegate,
                              TabMenuModelDelegate* tab_menu_model_delegate,
                              TabStripModel* model,
-                             int context_index);
+                             tabs::TabHandle context_tab);
   ExistingWindowSubMenuModel(const ExistingWindowSubMenuModel&) = delete;
   ExistingWindowSubMenuModel& operator=(const ExistingWindowSubMenuModel&) =
       delete;

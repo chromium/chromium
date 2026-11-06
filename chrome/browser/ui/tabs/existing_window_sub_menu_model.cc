@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/accelerators/accelerator.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -30,16 +31,27 @@ std::unique_ptr<ExistingWindowSubMenuModel> ExistingWindowSubMenuModel::Create(
     ui::SimpleMenuModel::Delegate* parent_delegate,
     TabMenuModelDelegate* tab_menu_model_delegate,
     TabStripModel* model,
-    int context_index) {
+    tabs::TabHandle context_tab) {
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<chromeos::ExistingWindowSubMenuModelChromeOS>(
       GetPassKey(), parent_delegate, tab_menu_model_delegate, model,
-      context_index);
+      context_tab);
 #else
   return std::make_unique<ExistingWindowSubMenuModel>(
       GetPassKey(), parent_delegate, tab_menu_model_delegate, model,
-      context_index);
+      context_tab);
 #endif
+}
+
+std::unique_ptr<ExistingWindowSubMenuModel> ExistingWindowSubMenuModel::Create(
+    ui::SimpleMenuModel::Delegate* parent_delegate,
+    TabMenuModelDelegate* tab_menu_model_delegate,
+    TabStripModel* model,
+    int context_index) {
+  return Create(parent_delegate, tab_menu_model_delegate, model,
+                model->ContainsIndex(context_index)
+                    ? model->GetTabAtIndex(context_index)->GetHandle()
+                    : tabs::TabHandle::Null());
 }
 
 ExistingWindowSubMenuModel::ExistingWindowSubMenuModel(
@@ -47,10 +59,10 @@ ExistingWindowSubMenuModel::ExistingWindowSubMenuModel(
     ui::SimpleMenuModel::Delegate* parent_delegate,
     TabMenuModelDelegate* tab_menu_model_delegate,
     TabStripModel* model,
-    int context_index)
+    tabs::TabHandle context_tab)
     : ExistingBaseSubMenuModel(parent_delegate,
                                model,
-                               context_index,
+                               context_tab,
                                kMinExistingWindowCommandId,
                                TabStripModel::CommandMoveTabsToNewWindow) {
   Build(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW,
@@ -133,6 +145,5 @@ ExistingWindowSubMenuModel::BuildMenuItemInfoVectorForBrowsers(
 }
 
 void ExistingWindowSubMenuModel::ExecuteExistingCommand(size_t target_index) {
-  model()->ExecuteAddToExistingWindowCommand(
-      model()->GetTabAtIndex(GetContextIndex())->GetHandle(), target_index);
+  model()->ExecuteAddToExistingWindowCommand(GetContextTab(), target_index);
 }

@@ -113,11 +113,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kExitSplitMenuItem);
 
 SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
                                      MenuSource menu_source,
-                                     std::optional<int> split_tab_index)
+                                     tabs::TabHandle split_tab)
     : ui::SimpleMenuModel(this),
       tab_strip_model_(tab_strip_model),
       menu_source_(menu_source),
-      split_tab_index_(split_tab_index) {
+      split_tab_(split_tab) {
   AddItemWithStringIdAndIcon(
       GetCommandIdInt(CommandId::kExitSplit), IDS_SPLIT_TAB_SEPARATE_VIEWS,
       ui::ImageModel::FromVectorIcon(
@@ -127,7 +127,7 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
   if (menu_source == MenuSource::kMiniToolbar) {
-    CHECK(split_tab_index.has_value());
+    CHECK(split_tab_.Get());
     AddItemWithStringIdAndIcon(
         GetCommandIdInt(CommandId::kCloseSpecifiedTab), IDS_SPLIT_TAB_CLOSE,
         ui::ImageModel::FromVectorIcon(
@@ -181,6 +181,18 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
                                            : kReportOldIcon));
   }
 }
+
+SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
+                                     MenuSource menu_source,
+                                     std::optional<int> split_tab_index)
+    : SplitTabMenuModel(
+          tab_strip_model,
+          menu_source,
+          (split_tab_index.has_value() &&
+           tab_strip_model->ContainsIndex(split_tab_index.value()))
+              ? tab_strip_model->GetTabAtIndex(split_tab_index.value())
+                    ->GetHandle()
+              : tabs::TabHandle::Null()) {}
 
 SplitTabMenuModel::~SplitTabMenuModel() = default;
 
@@ -261,10 +273,12 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case CommandId::kReversePosition:
       tab_strip_model_->ReverseTabsInSplit(split_id);
       break;
-    case CommandId::kCloseSpecifiedTab:
-      CloseWebContents(
-          tab_strip_model_->GetWebContentsAt(split_tab_index_.value()));
+    case CommandId::kCloseSpecifiedTab: {
+      tabs::TabInterface* split_tab = split_tab_.Get();
+      CHECK(split_tab);
+      CloseWebContents(split_tab->GetContents());
       break;
+    }
     case CommandId::kCloseStartTab: {
       int startIndex = base::i18n::IsRTL() ? 1 : 0;
       CloseWebContents(tabs_in_split[startIndex]->GetContents());
@@ -316,10 +330,8 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
 
 split_tabs::SplitTabId SplitTabMenuModel::GetSplitTabId() const {
   tabs::TabInterface* const tab =
-      split_tab_index_.has_value()
-          ? tab_strip_model_->GetTabAtIndex(split_tab_index_.value())
-          : tab_strip_model_->GetActiveTab();
-  CHECK(tab->IsSplit());
+      split_tab_.Get() ? split_tab_.Get() : tab_strip_model_->GetActiveTab();
+  CHECK(tab && tab->IsSplit());
   return tab->GetSplit().value();
 }
 

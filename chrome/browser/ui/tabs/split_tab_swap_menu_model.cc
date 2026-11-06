@@ -21,10 +21,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabSwapMenuModel,
                                       kSwapEndTabMenuItem);
 
 SplitTabSwapMenuModel::SplitTabSwapMenuModel(TabStripModel* tab_strip_model,
-                                             int tab_index)
+                                             tabs::TabHandle context_tab)
     : ui::SimpleMenuModel(this),
       tab_strip_model_(tab_strip_model),
-      tab_index_(tab_index) {
+      context_tab_(context_tab) {
   AddItem(static_cast<int>(CommandId::kSwapStartTab), std::u16string());
   AddItem(static_cast<int>(CommandId::kSwapEndTab), std::u16string());
 
@@ -35,6 +35,14 @@ SplitTabSwapMenuModel::SplitTabSwapMenuModel(TabStripModel* tab_strip_model,
       GetIndexOfCommandId(static_cast<int>(CommandId::kSwapEndTab)).value(),
       kSwapEndTabMenuItem);
 }
+
+SplitTabSwapMenuModel::SplitTabSwapMenuModel(TabStripModel* tab_strip_model,
+                                             int tab_index)
+    : SplitTabSwapMenuModel(
+          tab_strip_model,
+          tab_strip_model->ContainsIndex(tab_index)
+              ? tab_strip_model->GetTabAtIndex(tab_index)->GetHandle()
+              : tabs::TabHandle::Null()) {}
 
 SplitTabSwapMenuModel::~SplitTabSwapMenuModel() = default;
 
@@ -105,15 +113,13 @@ void SplitTabSwapMenuModel::ExecuteCommand(int command_id, int event_flags) {
   CHECK_EQ(tabs_in_split.size(), 2U);
 
   if (id == CommandId::kSwapStartTab) {
-    tab_strip_model_->UpdateTabInSplit(
-        tabs_in_split[0]->GetHandle(),
-        tab_strip_model_->GetTabAtIndex(tab_index_)->GetHandle(),
-        TabStripModel::SplitUpdateType::kSwap);
+    tab_strip_model_->UpdateTabInSplit(tabs_in_split[0]->GetHandle(),
+                                       context_tab_,
+                                       TabStripModel::SplitUpdateType::kSwap);
   } else if (id == CommandId::kSwapEndTab) {
-    tab_strip_model_->UpdateTabInSplit(
-        tabs_in_split[1]->GetHandle(),
-        tab_strip_model_->GetTabAtIndex(tab_index_)->GetHandle(),
-        TabStripModel::SplitUpdateType::kSwap);
+    tab_strip_model_->UpdateTabInSplit(tabs_in_split[1]->GetHandle(),
+                                       context_tab_,
+                                       TabStripModel::SplitUpdateType::kSwap);
   }
 }
 

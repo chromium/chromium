@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/menus/simple_menu_model.h"
 
 class TabStripModel;
@@ -17,6 +18,9 @@ namespace glic {
 class GlicTabSubMenuModel : public ui::SimpleMenuModel,
                             public ui::SimpleMenuModel::Delegate {
  public:
+  GlicTabSubMenuModel(TabStripModel* tab_strip_model,
+                      tabs::TabHandle context_tab);
+  // Temporary forwarding constructor:
   GlicTabSubMenuModel(TabStripModel* tab_strip_model, int context_index);
   ~GlicTabSubMenuModel() override;
 
@@ -31,7 +35,7 @@ class GlicTabSubMenuModel : public ui::SimpleMenuModel,
 
  private:
   const raw_ptr<TabStripModel> tab_strip_model_;
-  const int context_index_;
+  const tabs::TabHandle context_tab_;
   std::vector<ConversationInfo> recent_conversations_;
 };
 

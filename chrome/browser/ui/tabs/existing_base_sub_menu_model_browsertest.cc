@@ -54,7 +54,7 @@ class TestModel : public ExistingBaseSubMenuModel {
   TestModel(ui::SimpleMenuModel::Delegate* test_delegate, TabStripModel* model)
       : ExistingBaseSubMenuModel(test_delegate,
                                  model,
-                                 0,
+                                 model->GetTabAtIndex(0)->GetHandle(),
                                  kMinCommandId,
                                  kParentNewCommandId) {
     MenuItemInfo info1(kItem1Text);

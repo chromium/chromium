@@ -33,6 +33,8 @@ enum class SplitTabActiveLocation;
 enum class SplitTabLayout;
 }  // namespace split_tabs
 
+#include "components/tabs/public/tab_interface.h"
+
 class SplitTabMenuModel : public ui::SimpleMenuModel,
                           public ui::SimpleMenuModel::Delegate {
  public:
@@ -68,7 +70,11 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
 
   SplitTabMenuModel(TabStripModel* tab_strip_model,
                     MenuSource menu_source,
-                    std::optional<int> split_tab_index = std::nullopt);
+                    tabs::TabHandle split_tab = tabs::TabHandle::Null());
+  // Temporary forwarding constructor:
+  SplitTabMenuModel(TabStripModel* tab_strip_model,
+                    MenuSource menu_source,
+                    std::optional<int> split_tab_index);
   ~SplitTabMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate override
@@ -94,7 +100,7 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
 
   // This represents the tab that this menu model should be operating on. If
   // nothing is provided, use the currently active tab.
-  std::optional<int> split_tab_index_;
+  tabs::TabHandle split_tab_ = tabs::TabHandle::Null();
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SPLIT_TAB_MENU_MODEL_H_

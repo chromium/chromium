@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace glic {
@@ -21,10 +22,10 @@ constexpr int kMaxRecentConversations = 10;
 }  // namespace
 
 GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
-                                         int context_index)
+                                         tabs::TabHandle context_tab)
     : ui::SimpleMenuModel(this),
       tab_strip_model_(tab_strip_model),
-      context_index_(context_index) {
+      context_tab_(context_tab) {
   GlicKeyedService* glic_service =
       GlicKeyedService::Get(tab_strip_model_->profile());
   if (!glic_service) {
@@ -47,6 +48,14 @@ GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
   }
 }
 
+GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
+                                         int context_index)
+    : GlicTabSubMenuModel(
+          tab_strip_model,
+          tab_strip_model->ContainsIndex(context_index)
+              ? tab_strip_model->GetTabAtIndex(context_index)->GetHandle()
+              : tabs::TabHandle::Null()) {}
+
 GlicTabSubMenuModel::~GlicTabSubMenuModel() = default;
 
 bool GlicTabSubMenuModel::IsCommandIdChecked(int command_id) const {
@@ -59,21 +68,12 @@ bool GlicTabSubMenuModel::IsCommandIdEnabled(int command_id) const {
     return true;
   }
   return tab_strip_model_->IsContextMenuCommandEnabled(
-      context_index_,
-      static_cast<TabStripModel::ContextMenuCommand>(command_id));
+      context_tab_, static_cast<TabStripModel::ContextMenuCommand>(command_id));
 }
 
 void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  std::vector<tabs::TabInterface*> tabs;
-  if (tab_strip_model_->IsTabSelected(context_index_)) {
-    for (size_t index : tab_strip_model_->selection_model()
-                            .GetListSelectionModel()
-                            .selected_indices()) {
-      tabs.push_back(tab_strip_model_->GetTabAtIndex(index));
-    }
-  } else {
-    tabs.push_back(tab_strip_model_->GetTabAtIndex(context_index_));
-  }
+  std::vector<tabs::TabHandle> tabs =
+      tab_strip_model_->GetTabsForCommand(context_tab_);
 
   GlicKeyedService* service =
       GlicKeyedService::Get(tab_strip_model_->profile());
@@ -84,8 +84,7 @@ void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == TabStripModel::CommandGlicCreateNewChat ||
       (command_id >= kMinRecentConversationCommandId &&
        command_id <= kMaxRecentConversationCommandId)) {
-    tabs::TabInterface* target_tab = tabs::TabInterface::GetFromContents(
-        tab_strip_model_->GetWebContentsAt(context_index_));
+    tabs::TabInterface* target_tab = context_tab_.Get();
     if (!target_tab) {
       return;
     }
@@ -106,12 +105,7 @@ void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
           *target_tab, recent_conversations_[conversation_index].instance_id);
     }
 
-    std::vector<tabs::TabHandle> tab_handles;
-    for (auto* t : tabs) {
-      tab_handles.push_back(t->GetHandle());
-    }
-    options.tab_sharing =
-        TabSharingOptions(tab_handles, GlicPinTrigger::kContextMenu);
+    options.tab_sharing = TabSharingOptions(tabs, GlicPinTrigger::kContextMenu);
 
     service->instance_coordinator().Invoke(std::move(options));
   }

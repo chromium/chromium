@@ -11,13 +11,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/menus/simple_menu_model.h"
 
 class TabStripModel;
-
-namespace content {
-class WebContents;
-}
 
 // Base class for creating submenus for the tab context menu. This enforces the
 // format of the submenu as follows:
@@ -32,9 +29,19 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
  public:
   ExistingBaseSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
                            TabStripModel* model,
+                           tabs::TabHandle context_tab,
+                           int min_command_id,
+                           int parent_new_command_id_);
+  // Temporary forwarding constructor:
+  ExistingBaseSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
+                           TabStripModel* model,
                            int context_index,
                            int min_command_id,
                            int parent_new_command_id_);
+
+  tabs::TabHandle GetContextTab() const;
+  // Temporary shim for unmigrated subclasses:
+  int GetContextIndex() const;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdAlerted(int command_id) const override;
@@ -110,13 +117,11 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     return parent_delegate_;
   }
   TabStripModel* model() { return model_; }
-  int GetContextIndex() const;
 
  private:
   const raw_ptr<ui::SimpleMenuModel::Delegate> parent_delegate_;
   const raw_ptr<TabStripModel, DanglingUntriaged> model_;
-  const raw_ptr<const content::WebContents, DanglingUntriaged>
-      context_contents_;
+  const tabs::TabHandle context_tab_;
   const int min_command_id_;
   const int parent_new_command_id_;
 

@@ -27,6 +27,11 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   ExistingTabGroupSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
                                TabMenuModelDelegate* tab_menu_model_delegate,
                                TabStripModel* model,
+                               tabs::TabHandle context_tab);
+  // Temporary forwarding constructor:
+  ExistingTabGroupSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
+                               TabMenuModelDelegate* tab_menu_model_delegate,
+                               TabStripModel* model,
                                int context_index);
   ExistingTabGroupSubMenuModel(const ExistingTabGroupSubMenuModel&) = delete;
   ExistingTabGroupSubMenuModel& operator=(const ExistingTabGroupSubMenuModel&) =
@@ -36,6 +41,10 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   // Whether the submenu should be shown in the provided context. True iff
   // the submenu would show at least one group. Does not assume ownership of
   // `model`; `model` must outlive this instance.
+  static bool ShouldShowSubmenu(TabStripModel* model,
+                                tabs::TabHandle context_tab,
+                                TabMenuModelDelegate* tab_menu_model_delegate);
+  // Temporary forwarding shim:
   static bool ShouldShowSubmenu(TabStripModel* model,
                                 int context_index,
                                 TabMenuModelDelegate* tab_menu_model_delegate);
@@ -60,14 +69,12 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   // Whether the submenu should contain the group `group`. True iff at least
   // one tab that would be affected by the command is not in `group`.
   static bool ShouldShowGroup(TabStripModel* model,
-                              int context_index,
+                              tabs::TabHandle context_tab,
                               tab_groups::TabGroupId group);
 
-  // Returns a container of selected tab indices for specifying which
-  // tabs get added to a group. Returns {GetContentIndex()} if the
-  // content index is not selected.
-  std::vector<int> GetSelectedIndices();
-
+  // Returns a container of selected tabs for specifying which tabs get added to
+  // a group. Returns {GetContextTab()} if the context tab is not selected.
+  std::vector<tabs::TabHandle> GetSelectedTabs();
 
   // Takes the tabs at indices specified by |GetSelectedIndices()| and
   // adds them to the open tab group with the given local tab group id.
