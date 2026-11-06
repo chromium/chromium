@@ -3292,10 +3292,14 @@ bool Animation::Update(TimingUpdateReason reason) {
   // time of an animation also involves:
   //   * Running the update an animation’s finished state procedure.
   //   * Queueing animation events.
-
   if (!Outdated() && reason == kTimingUpdateForAnimationFrame &&
-      IsInDisplayLockedSubtree())
-    return true;
+      IsInDisplayLockedSubtree()) {
+    // IsInDisplayLockedSubtree() may trigger slot assignment recalc and update
+    // animation state.
+    if (!Outdated()) {
+      return !inactive_;
+    }
+  }
 
   ClearOutdated();
   bool idle =
