@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/branded_strings.h"
@@ -175,6 +176,20 @@ actions::BaseAction* AddChildBeforeFooter(
   return app_menu_root->AddChildAt(std::move(action),
                                    std::distance(children.begin(), footer));
 }
+
+class TestAppMenuButton : public AppMenuButton {
+ public:
+  explicit TestAppMenuButton(BrowserWindowInterface* browser)
+      : AppMenuButton(views::Button::PressedCallback()), browser_(browser) {}
+  ~TestAppMenuButton() override = default;
+
+  void ShowMenuWithFlags(int run_types) override {
+    RunActionMenu(browser_, run_types);
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+};
 
 class ActionAppMenuTest : public ActionAppMenuTestBase {
  public:
@@ -411,6 +426,71 @@ TEST_F(ActionAppMenuTest, RunAndCloseMenu) {
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
   EXPECT_FALSE(menu.IsShowing());
+}
+
+TEST_F(ActionAppMenuTest, AppMenuButtonCloseMenuDefersActionMenuReset) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kAppMenuGlowUp);
+
+  auto local_window =
+      std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
+  test_tab_strip_model_delegate_.SetBrowserWindowInterface(local_window.get());
+  ON_CALL(*local_window, GetProfile())
+      .WillByDefault(testing::Return(profile_.get()));
+  ON_CALL(*local_window, GetTabStripModel())
+      .WillByDefault(testing::Return(tab_strip_model_.get()));
+  ON_CALL(testing::Const(*local_window), GetTabStripModel())
+      .WillByDefault(testing::Return(tab_strip_model_.get()));
+  ON_CALL(*local_window, GetFeatures())
+      .WillByDefault(testing::ReturnRef(features_));
+  ON_CALL(testing::Const(*local_window), GetFeatures())
+      .WillByDefault(testing::ReturnRef(features_));
+  ON_CALL(*local_window, GetWindow())
+      .WillByDefault(testing::Return(&mock_base_window_));
+
+  auto local_actions = std::make_unique<BrowserActions>(local_window.get());
+
+  std::unique_ptr<views::Widget> local_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* test_button = local_widget->SetContentsView(
+      std::make_unique<TestAppMenuButton>(local_window.get()));
+
+  // 1. Normal close: menu closes, and the deferred task resets
+  // action_app_menu().
+  test_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(test_button->IsMenuShowing());
+  EXPECT_NE(test_button->action_app_menu(), nullptr);
+
+  test_button->CloseMenu();
+  EXPECT_FALSE(test_button->IsMenuShowing());
+  EXPECT_NE(test_button->action_app_menu(), nullptr);
+
+  base::RunLoop normal_close_run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, normal_close_run_loop.QuitClosure());
+  normal_close_run_loop.Run();
+  EXPECT_EQ(test_button->action_app_menu(), nullptr);
+
+  // 2. Shutdown case: menu closes, but the button and window are destroyed
+  // before the deferred task runs. Destroying the button cleans up
+  // action_app_menu() synchronously, and the pending task safely no-ops.
+  test_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(test_button->IsMenuShowing());
+  EXPECT_NE(test_button->action_app_menu(), nullptr);
+
+  test_button->CloseMenu();
+  EXPECT_FALSE(test_button->IsMenuShowing());
+  EXPECT_NE(test_button->action_app_menu(), nullptr);
+
+  local_widget.reset();
+  test_tab_strip_model_delegate_.SetBrowserWindowInterface(
+      &mock_window_interface_);
+  local_actions.reset();
+  local_window.reset();
+
+  base::RunLoop shutdown_run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, shutdown_run_loop.QuitClosure());
+  shutdown_run_loop.Run();
 }
 
 // On Windows, opening the menu from the keyboard selects the first item.

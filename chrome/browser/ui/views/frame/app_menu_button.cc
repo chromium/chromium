@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
@@ -82,8 +83,15 @@ void AppMenuButton::CloseMenu() {
   if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
     if (action_menu_) {
       action_menu_->CloseMenu();
-      base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-          FROM_HERE, std::move(action_menu_));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](base::WeakPtr<AppMenuButton> self) {
+                           if (self && self->action_menu_ &&
+                               !self->action_menu_->IsShowing()) {
+                             self->action_menu_.reset();
+                           }
+                         },
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   } else {
     if (menu_) {
