@@ -354,8 +354,8 @@ export class
     // when opening a side panel to cobrowse.
     const isUpdatedEntryPoint =
         this.contextualTasksUpdatedEntryPointsEnabled_ &&
-        (invocationSource === 'ContentAreaContextMenuPage' ||
-         invocationSource === 'AppMenu' ||
+        (invocationSource === 'ContentAreaContextMenuPageAskGoogle' ||
+         invocationSource === 'AppMenuAskGoogle' ||
          invocationSource === 'HomeworkActionChip');
     const isOmniboxAskG = this.webUIOmniboxAskGAboutThisPageEnabled_ &&
         invocationSource === 'OmniboxPageAction';
