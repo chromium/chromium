@@ -74,8 +74,13 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
         encodeURIComponent(item.iconSvg)}");`;
   }
 
+  protected onRailClick_(e: Event): void {
+    if (e.target !== e.currentTarget) {
+      e.stopPropagation();
+    }
+  }
+
   protected onItemClick_(e: Event): void {
-    e.stopPropagation();
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const item = this.getItems_()[index];
     if (!item) {
@@ -99,8 +104,7 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     }
   }
 
-  protected onLogoClick_(e: Event): void {
-    e.stopPropagation();
+  protected onLogoClick_(): void {
     const googleBaseUrl = loadTimeData.getString('googleBaseUrl');
     assert(googleBaseUrl);
     WindowProxy.getInstance().navigate(googleBaseUrl);

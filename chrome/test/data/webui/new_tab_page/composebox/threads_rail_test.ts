@@ -271,4 +271,39 @@ suite('NewTabPageThreadsRailTest', () => {
     }
     assertEquals(0, windowProxy.getCallCount('navigate'));
   });
+
+  test('only propagates clicks directly on #rail', async () => {
+    await createThreadsRail({
+      items: [
+        {
+          iconSvg: '<svg></svg>',
+          name: 'AI Mode history',
+          clientAction: LhsClientAction.EXPAND_RAIL,
+        },
+      ],
+    });
+    let hostClickCount = 0;
+    threadsRailElement.addEventListener('click', () => {
+      hostClickCount++;
+    });
+
+    const childSelectors = [
+      'cr-tooltip[for="logoButton"]',
+      'cr-tooltip[for="railItem-0"]',
+      '#iconsContainer',
+    ];
+    for (const selector of childSelectors) {
+      const child =
+          threadsRailElement.shadowRoot.querySelector<HTMLElement>(selector);
+      assertTrue(!!child);
+      child.click();
+      assertEquals(0, hostClickCount);
+    }
+
+    const rail =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#rail');
+    assertTrue(!!rail);
+    rail.click();
+    assertEquals(1, hostClickCount);
+  });
 });

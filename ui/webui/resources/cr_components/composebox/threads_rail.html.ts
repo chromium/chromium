@@ -8,7 +8,7 @@ import {type ThreadsRailElement} from './threads_rail.js';
 export function getHtml(this: ThreadsRailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <div id="rail">
+  <div id="rail" @click="${this.onRailClick_}">
     <cr-icon-button id="logoButton"
         suppress-rtl-flip
         @click="${this.onLogoClick_}"
