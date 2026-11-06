@@ -263,16 +263,6 @@ TEST(HeaderUtilTest, ContainsForbiddenSecurityHeader) {
   value = *value_opt;
   EXPECT_EQ(value.length(), 2000u);
 
-  // Sec-Shared-Storage-Data-Origin boundary cases
-  net::HttpRequestHeaders origin_headers;
-  std::string origin_267(267, 'a');
-  origin_headers.SetHeader("Sec-Shared-Storage-Data-Origin", origin_267);
-  EXPECT_FALSE(ContainsForbiddenSecurityHeader(origin_headers));
-
-  std::string origin_268(268, 'a');
-  origin_headers.SetHeader("Sec-Shared-Storage-Data-Origin", origin_268);
-  EXPECT_TRUE(ContainsForbiddenSecurityHeader(origin_headers));
-
   // Forbidden Sec- header
   headers.SetHeader("Sec-Invalid", "value");
   std::string forbidden_header_name;

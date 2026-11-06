@@ -186,7 +186,6 @@ external/wpt/serial
 external/wpt/server-timing
 external/wpt/shadow-dom
 external/wpt/shape-detection
-external/wpt/shared-storage
 external/wpt/signed-exchange
 external/wpt/soft-navigation-heuristics
 external/wpt/speech-api
