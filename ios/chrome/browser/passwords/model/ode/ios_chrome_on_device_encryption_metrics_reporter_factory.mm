@@ -12,11 +12,16 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
 #import "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
+#import "components/password_manager/core/browser/ode/passkey_trusted_vault_on_device_encryption_state_tracker.h"
 #import "components/password_manager/core/browser/ode/password_trusted_vault_on_device_encryption_state_tracker.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/sync/service/sync_service.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "components/trusted_vault/trusted_vault_service.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 
 IOSChromeOnDeviceEncryptionMetricsReporterFactory::
     IOSChromeOnDeviceEncryptionMetricsReporterFactory(PassKey key)
@@ -27,6 +32,7 @@ IOSChromeOnDeviceEncryptionMetricsReporterFactory::
           ServiceCreation::kCreateWithProfile,
           TestingCreation::kNoServiceForTests) {
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(IOSTrustedVaultServiceFactory::GetInstance());
 }
 
 void IOSChromeOnDeviceEncryptionMetricsReporterFactory::RegisterProfilePrefs(
@@ -46,10 +52,23 @@ IOSChromeOnDeviceEncryptionMetricsReporterFactory::BuildServiceInstanceFor(
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  // TODO(crbug.com/540854648): Implement passkey tracker on iOS, for now pass
-  // a no-op tracker.
-  auto passkey_tracker =
-      std::make_unique<password_manager::OnDeviceEncryptionStateTracker>();
+  std::unique_ptr<password_manager::OnDeviceEncryptionStateTracker>
+      passkey_tracker;
+  if (base::FeatureList::IsEnabled(kIOSPasskeyOnDeviceEncryptionStateTracker)) {
+    trusted_vault::TrustedVaultService* trusted_vault_service =
+        IOSTrustedVaultServiceFactory::GetForProfile(profile);
+    trusted_vault::TrustedVaultClient* passkey_trusted_vault_client =
+        trusted_vault_service ? trusted_vault_service->GetTrustedVaultClient(
+                                    trusted_vault::SecurityDomainId::kPasskeys)
+                              : nullptr;
+    passkey_tracker = std::make_unique<
+        password_manager::PasskeyTrustedVaultOnDeviceEncryptionStateTracker>(
+        sync_service, passkey_trusted_vault_client);
+  } else {
+    // Use a no-op tracker when the kill switch is disabled.
+    passkey_tracker =
+        std::make_unique<password_manager::OnDeviceEncryptionStateTracker>();
+  }
   auto password_tracker = std::make_unique<
       password_manager::PasswordTrustedVaultOnDeviceEncryptionStateTracker>(
       sync_service);

@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/translate/model",
+  "+ios/chrome/browser/trusted_vault/model",
   "+ios/chrome/browser/webauthn/model",
   "+ios/chrome/browser/webdata_services/model",
   # keep-sorted end

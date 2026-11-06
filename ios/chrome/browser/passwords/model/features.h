@@ -7,6 +7,9 @@
 
 #import "base/feature_list.h"
 
+// Kill switch for tracking passkey on-device encryption state on iOS.
+BASE_DECLARE_FEATURE(kIOSPasskeyOnDeviceEncryptionStateTracker);
+
 // Enable crowdsourcing uploads for the Password Manager. Used as a kill switch,
 // enabled by default.
 BASE_DECLARE_FEATURE(kPasswordManagerEnableCrowdsourcingUploads);

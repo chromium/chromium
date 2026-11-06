@@ -19,10 +19,11 @@ IOSTrustedVaultClient::IOSTrustedVaultClient(
     ChromeAccountManagerService* account_manager_service,
     signin::IdentityManager* identity_manager,
     TrustedVaultClientBackend* trusted_vault_client_backend,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    trusted_vault::SecurityDomainId security_domain_id)
     : account_manager_service_(account_manager_service),
       backend_(trusted_vault_client_backend),
-      security_domain_id_(trusted_vault::SecurityDomainId::kChromeSync) {
+      security_domain_id_(security_domain_id) {
   DCHECK(account_manager_service_);
   DCHECK(backend_);
 }
