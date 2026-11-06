@@ -2218,9 +2218,8 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
           contextual_tasks_ephemeral_element_id,
-          contextual_tasks::GetContextualTasksPinningStringId(
-              IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH),
-          IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_SHORTCUT,
+          IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_TEXT,
+          IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_TO_TOOLBAR,
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
@@ -2245,6 +2244,8 @@ void MaybeRegisterChromeFeaturePromos(
                       kActionSidePanelShowContextualTasks, true);
                 }
               }))
+          .SetBubbleTitleText(
+              IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_HEADER)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetCustomActionIsDefault(true)
@@ -2799,9 +2800,7 @@ void MaybeRegisterChromeTutorials(
             // Completion of the tutorial after the shortcut is pinned.
             BubbleStep(
                 kPinnedToolbarActionShowSidePanelContextualTasksElementId)
-                .SetBubbleBodyText(
-                    contextual_tasks::GetContextualTasksPinningStringId(
-                        IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3))
+                .SetBubbleBodyText(IDS_TUTORIAL_CONTEXTUAL_TASKS_SUCCESS)
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight)
                 .InAnyContext());
 
