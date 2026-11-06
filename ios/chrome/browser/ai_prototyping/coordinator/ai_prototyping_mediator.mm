@@ -940,6 +940,10 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
   completionHandler(suggestions.firstObject, NO);
 }
 
+- (void)actorTaskDidCancelSuggestionSelection:(actor::ActorTaskId)taskID {
+  // No-op: suggestions are selected synchronously, so none is ever pending.
+}
+
 - (void)actorTask:(actor::ActorTaskId)taskID
     requestUserInterventionWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle

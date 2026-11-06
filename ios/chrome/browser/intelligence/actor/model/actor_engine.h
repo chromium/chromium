@@ -257,7 +257,7 @@ class ActorEngine : public ToolDelegate {
       origin_gating::GatingDecision decision);
 
   // The handler for form filling and login tasks.
-  std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;
+  const std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;
 
   // The state machine responsible for validating, creating, invoking and
   // post-invocation of the current tool. Reused for every action so that it is

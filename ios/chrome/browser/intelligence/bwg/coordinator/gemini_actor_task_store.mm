@@ -218,9 +218,9 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 }
 
 - (void)disconnect {
-  // TODO(crbug.com/567035965): A pending intervention is dropped without an
-  // answer, leaving the task in `kWaitingOnUser`. Re-surface the intervention
-  // once the store outlives the container.
+  // TODO(crbug.com/567035965): A pending intervention or suggestion selection
+  // is dropped without an answer, leaving the task in `kWaitingOnUser`.
+  // Re-surface it once the store outlives the container.
   if (_actorService) {
     _actorService->SetTaskInterventionDelegate(_taskID, nil);
     _actorService->RemoveTaskUpdatesObserver(_taskID, self);
@@ -228,6 +228,9 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   }
   _intervention = nil;
   _interventionCompletion = nil;
+  _selectedSuggestion = nil;
+  _suggestions = nil;
+  _suggestionsItem = nil;
 }
 
 #pragma mark - ActorTaskDataSource
@@ -352,11 +355,23 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
                             rowItemWithActions:@[ manualAction, allowAction ]]];
 }
 
+- (void)actorTaskDidCancelSuggestionSelection:(actor::ActorTaskId)taskID {
+  // `_selectedSuggestion` is only set while a suggestion selection is pending,
+  // so other interventions are left untouched.
+  if (!_selectedSuggestion) {
+    return;
+  }
+  _selectedSuggestion = nil;
+  [self discardIntervention];
+  [self setSuggestions:nil forItem:nil];
+}
+
 - (void)actorTask:(actor::ActorTaskId)taskID
     requestUserInterventionWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle
                           buttonText:(NSString*)buttonText
                    completionHandler:(void (^)(void))completionHandler {
+  [self actorTaskDidCancelSuggestionSelection:taskID];
   [self discardIntervention];
   if (completionHandler) {
     _interventionCompletion = ^(InterventionActionIdentifier actionIdentifier) {

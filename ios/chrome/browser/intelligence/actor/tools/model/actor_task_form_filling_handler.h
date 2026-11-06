@@ -116,6 +116,12 @@ class ActorTaskFormFillingHandler {
   // without making a selection.
   void PromptToSelectAutofillSuggestion(size_t index);
 
+  // Drops the registered callbacks and suggestions without running the
+  // callbacks and, if a selection prompt is pending, asks the intervention
+  // delegate to dismiss it. Called by the tool that opened the prompt when it
+  // is cancelled or finishes.
+  void CancelPendingPrompt();
+
   // Retrieves the credential that the user has chosen to allow the
   // actor to use. The selected credential can be used for multi-step login
   // within the same task.
@@ -166,6 +172,9 @@ class ActorTaskFormFillingHandler {
   CredentialSelectedCallback credential_selected_callback_;
   // Success callback for autofill suggestion selection other than credentials.
   AutofillSuggestionSelectedCallback autofill_suggestion_selected_callback_;
+
+  // Whether a selection prompt is shown and awaiting the user's answer.
+  bool has_pending_prompt_ = false;
 
   base::WeakPtrFactory<ActorTaskFormFillingHandler> weak_ptr_factory_{this};
 };

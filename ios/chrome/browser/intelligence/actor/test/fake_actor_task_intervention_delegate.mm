@@ -12,6 +12,7 @@
 @property(nonatomic, readwrite) BOOL selectFromSuggestionsCalled;
 @property(nonatomic, readwrite, copy)
     NSArray<ActorFormSuggestion*>* promptedSuggestions;
+@property(nonatomic, readwrite) BOOL cancelSuggestionSelectionCalled;
 @end
 
 @implementation FakeActorTaskInterventionDelegate {
@@ -94,6 +95,11 @@
     ActorFormSuggestion* selection = suggestions.firstObject;
     [self runCompletionWithSuggestion:selection shouldStorePermission:NO];
   }
+}
+
+- (void)actorTaskDidCancelSuggestionSelection:(actor::ActorTaskId)taskID {
+  self.cancelSuggestionSelectionCalled = YES;
+  _selectSuggestionCompletionHandler = nil;
 }
 
 @end

@@ -698,6 +698,107 @@ TEST_F(GeminiActorTaskStoreTest, SelectSuggestionWithoutSuggestionsIsNoOp) {
   EXPECT_NSEQ(observer_.items, items);
 }
 
+// Tests that cancelling a pending suggestion selection dismisses it without
+// invoking its completion, so that a new selection can be prompted.
+TEST_F(GeminiActorTaskStoreTest, CancelSuggestionSelection) {
+  AttachAndRegister();
+  ActorFormSuggestion* suggestion =
+      CreateCredentialSuggestion(u"user@example.com", u"example.com");
+  __block BOOL completion_called = NO;
+  [store_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion ]
+          completionHandler:^(ActorFormSuggestion* selectedSuggestion,
+                              BOOL storePermission) {
+            completion_called = YES;
+          }];
+  ASSERT_NE(observer_.intervention, nil);
+
+  [store_ actorTaskDidCancelSuggestionSelection:task_id_];
+
+  EXPECT_FALSE(completion_called);
+  EXPECT_EQ(observer_.intervention, nil);
+  EXPECT_EQ(observer_.suggestions, nil);
+  EXPECT_EQ(observer_.suggestionsItem, nil);
+
+  [store_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion ]
+          completionHandler:nil];
+  EXPECT_NE(observer_.intervention, nil);
+  ASSERT_EQ(observer_.suggestions.count, 1u);
+  EXPECT_EQ(observer_.suggestions.firstObject, suggestion);
+}
+
+// Tests that cancelling a suggestion selection leaves a pending user
+// intervention untouched.
+TEST_F(GeminiActorTaskStoreTest,
+       CancelSuggestionSelectionKeepsUserIntervention) {
+  AttachAndRegister();
+  __block BOOL completion_called = NO;
+  [store_ actorTask:task_id_
+      requestUserInterventionWithTitle:@"Title"
+                              subtitle:@"Subtitle"
+                            buttonText:@"Continue"
+                     completionHandler:^{
+                       completion_called = YES;
+                     }];
+  ActuationInterventionData* intervention = observer_.intervention;
+  ASSERT_NE(intervention, nil);
+
+  [store_ actorTaskDidCancelSuggestionSelection:task_id_];
+
+  EXPECT_EQ(observer_.intervention, intervention);
+  [store_
+      resolveInterventionWithAction:observer_.intervention.actions.firstObject];
+  EXPECT_TRUE(completion_called);
+}
+
+// Tests that a user intervention replacing a pending suggestion selection
+// drops the suggestions without invoking the selection completion.
+TEST_F(GeminiActorTaskStoreTest, UserInterventionDropsPendingSuggestions) {
+  AttachAndRegister();
+  ActorFormSuggestion* suggestion =
+      CreateCredentialSuggestion(u"user@example.com", u"example.com");
+  __block BOOL completion_called = NO;
+  [store_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion ]
+          completionHandler:^(ActorFormSuggestion* selectedSuggestion,
+                              BOOL storePermission) {
+            completion_called = YES;
+          }];
+  ASSERT_EQ(observer_.suggestions.count, 1u);
+
+  [store_ actorTask:task_id_
+      requestUserInterventionWithTitle:@"Title"
+                              subtitle:@"Subtitle"
+                            buttonText:@"Continue"
+                     completionHandler:nil];
+
+  EXPECT_FALSE(completion_called);
+  EXPECT_EQ(observer_.suggestions, nil);
+  EXPECT_EQ(observer_.suggestionsItem, nil);
+  EXPECT_NSEQ(observer_.intervention.title, @"Title");
+}
+
+// Tests that disconnecting drops a pending suggestion selection, so that it is
+// not replayed to a later observer.
+TEST_F(GeminiActorTaskStoreTest, DisconnectDropsPendingSuggestions) {
+  AttachAndRegister();
+  ActorFormSuggestion* suggestion =
+      CreateCredentialSuggestion(u"user@example.com", u"example.com");
+  [store_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion ]
+          completionHandler:nil];
+  ASSERT_EQ(observer_.suggestions.count, 1u);
+
+  [store_ disconnect];
+
+  FakeTaskDataSourceObserver* lateObserver =
+      [[FakeTaskDataSourceObserver alloc] init];
+  [store_ addObserver:lateObserver];
+  EXPECT_EQ(lateObserver.intervention, nil);
+  EXPECT_EQ(lateObserver.suggestions, nil);
+}
+
 // Tests that a confirmation interrupt is surfaced as an intervention card and
 // that tapping its button resumes the task.
 TEST_F(GeminiActorTaskStoreTest, ConfirmationInterruptShowsInterventionCard) {

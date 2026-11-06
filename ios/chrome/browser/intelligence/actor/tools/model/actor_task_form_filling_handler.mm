@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 
+#import <utility>
+
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/task/sequenced_task_runner.h"
@@ -78,6 +80,8 @@ void ActorTaskFormFillingHandler::PromptToSelectCredential(
 
   credential_selected_callback_ = std::move(callback);
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  // Set before prompting as the delegate may answer synchronously.
+  has_pending_prompt_ = true;
 
   [intervention_delegate_ actorTask:task_id_
               selectFromSuggestions:suggestions
@@ -154,6 +158,8 @@ void ActorTaskFormFillingHandler::PromptToSelectAutofillSuggestion(
 
   NSArray<ActorFormSuggestion*>* suggestions = autofill_suggestions_[index];
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  // Set before prompting as the delegate may answer synchronously.
+  has_pending_prompt_ = true;
 
   [intervention_delegate_ actorTask:task_id_
               selectFromSuggestions:suggestions
@@ -166,9 +172,22 @@ void ActorTaskFormFillingHandler::PromptToSelectAutofillSuggestion(
                   }];
 }
 
+void ActorTaskFormFillingHandler::CancelPendingPrompt() {
+  credential_selected_callback_.Reset();
+  autofill_suggestion_selected_callback_.Reset();
+  autofill_suggestions_ = nil;
+  if (!std::exchange(has_pending_prompt_, false)) {
+    return;
+  }
+  // Ignore late answers to the dropped prompt.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  [intervention_delegate_ actorTaskDidCancelSuggestionSelection:task_id_];
+}
+
 void ActorTaskFormFillingHandler::OnCredentialSelectedByUser(
     ActorFormSuggestion* selected_suggestion,
     bool always_allow) {
+  has_pending_prompt_ = false;
   CHECK(credential_selected_callback_);
   if (!selected_suggestion.formSuggestion) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -183,6 +202,7 @@ void ActorTaskFormFillingHandler::OnCredentialSelectedByUser(
 void ActorTaskFormFillingHandler::OnAutofillSuggestionSelectedByUser(
     ActorFormSuggestion* selected_suggestion,
     size_t form_index) {
+  has_pending_prompt_ = false;
   CHECK(autofill_suggestion_selected_callback_);
   if (!selected_suggestion.formSuggestion) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -68,6 +68,10 @@ AttemptLoginTool::~AttemptLoginTool() {
 
 void AttemptLoginTool::Cancel() {
   StopObservingFormCache();
+  // Null when already cancelled by `WebStateDestroyed()`.
+  if (tool_delegate_) {
+    tool_delegate_->GetActorTaskFormFillingHandler()->CancelPendingPrompt();
+  }
   tool_delegate_ = nullptr;
   web_state_observation_.Reset();
   // TODO(crbug.com/472291829): If `selected_credential_` exists, consider

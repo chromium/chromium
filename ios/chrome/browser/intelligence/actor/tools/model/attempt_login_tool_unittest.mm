@@ -405,6 +405,68 @@ TEST_F(AttemptLoginToolTest, Execute_UserDeclinesCredential) {
             mojom::ActionResultCode::kLoginNoCredentialsAvailable);
 }
 
+// Tests that cancelling the tool while the credential prompt is shown dismisses
+// the prompt, so that the next prompt can be shown.
+TEST_F(AttemptLoginToolTest, Cancel_DropsPendingCredentialPrompt) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state_ptr = CreateAndInsertWebState();
+  action.set_tab_id(web_state_ptr->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state_ptr);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = false;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  tool->Execute(base::DoNothing());
+  ASSERT_TRUE(intervention_delegate().hasPendingSuggestionSelection);
+
+  tool->Cancel();
+  EXPECT_TRUE(intervention_delegate().cancelSuggestionSelectionCalled);
+
+  base::test::TestFuture<base::expected<std::optional<CredentialWithPermission>,
+                                        ToolExecutionResult>>
+      next_prompt;
+  form_filling_handler()->PromptToSelectCredential({cred},
+                                                   next_prompt.GetCallback());
+  [intervention_delegate() runCompletionWithSuggestion:nil];
+  ASSERT_TRUE(next_prompt.Get().has_value());
+  EXPECT_FALSE(next_prompt.Get().value().has_value());
+}
+
+// Tests that an answer to a credential prompt arriving after the tool is
+// cancelled is ignored.
+TEST_F(AttemptLoginToolTest, Cancel_IgnoresLateCredentialAnswer) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state_ptr = CreateAndInsertWebState();
+  action.set_tab_id(web_state_ptr->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state_ptr);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+
+  actor_login::Credential cred;
+  cred.id = actor_login::Credential::Id(123);
+  cred.has_persistent_permission = false;
+  fake_actor_login_service()->credentials_ = {cred};
+
+  tool->Execute(base::DoNothing());
+  ASSERT_TRUE(intervention_delegate().hasPendingSuggestionSelection);
+
+  // Detach the delegate so that it keeps its completion, as a detached delegate
+  // would.
+  form_filling_handler()->SetInterventionDelegateForTesting(nil);
+  tool->Cancel();
+
+  // Answer the dropped prompt; it must not reach the handler's `CHECK`.
+  [intervention_delegate()
+      runCompletionWithSuggestion:intervention_delegate()
+                                      .promptedSuggestions.firstObject];
+}
+
 // Tests that execution automatically selects and logs in using a credential
 // that has persistent permission, without prompting the user.
 TEST_F(AttemptLoginToolTest, Execute_PersistentCredentialDirectSelect_Success) {

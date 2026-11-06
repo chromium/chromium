@@ -59,6 +59,9 @@
 // pending.
 @property(nonatomic, readonly) BOOL hasPendingSuggestionSelection;
 
+// Whether `actorTaskDidCancelSuggestionSelection:` was called.
+@property(nonatomic, readonly) BOOL cancelSuggestionSelectionCalled;
+
 // Resets `requestConfirmationCalled` to NO.
 - (void)resetRequestConfirmationCalled;
 

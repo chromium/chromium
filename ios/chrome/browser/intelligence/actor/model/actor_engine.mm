@@ -8,6 +8,7 @@
 #import <string>
 #import <utility>
 
+#import "base/check_deref.h"
 #import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/strings/stringprintf.h"
@@ -166,13 +167,15 @@ ActorEngine::ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
                          ActorTask* owner_task)
     : state_(State::kInit),
       execution_updates_delegate_(execution_updates_delegate),
-      owner_task_(owner_task),
-      origin_gating_delegate_(owner_task ? owner_task->policy_checker()
-                                         : nullptr),
+      owner_task_(&CHECK_DEREF(owner_task)),
+      origin_gating_delegate_(owner_task_->policy_checker()),
+      form_filling_handler_(
+          ActorTaskFormFillingHandler::Create(base::PassKey<ActorEngine>(),
+                                              owner_task_->GetJournal(),
+                                              owner_task_->task_id())),
       tool_controller_(
           std::make_unique<ToolController>(/*tool_delegate=*/this)) {
   CHECK(execution_updates_delegate_);
-  CHECK(owner_task_);
   origin_gating::OriginGatingService* origin_gating_service =
       owner_task_->GetToolFactory()
           .profile_context_resolver()
@@ -254,10 +257,6 @@ ActorToolFactory& ActorEngine::GetToolFactory() const {
 }
 
 ActorTaskFormFillingHandler* ActorEngine::GetActorTaskFormFillingHandler() {
-  if (!form_filling_handler_) {
-    form_filling_handler_ = ActorTaskFormFillingHandler::Create(
-        base::PassKey<ActorEngine>(), GetJournal(), GetTaskId());
-  }
   return form_filling_handler_.get();
 }
 

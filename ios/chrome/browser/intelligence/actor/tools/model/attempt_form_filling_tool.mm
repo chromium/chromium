@@ -253,6 +253,12 @@ void AttemptFormFillingTool::Execute(ToolExecutionCallback callback) {
   }
 }
 
+void AttemptFormFillingTool::Cancel() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  tool_delegate_->GetActorTaskFormFillingHandler()->CancelPendingPrompt();
+  ActorTool::Cancel();
+}
+
 autofill::AutofillClientIOS& AttemptFormFillingTool::GetAutofillClient() const {
   CHECK(web_state_);
   autofill::AutofillClientIOS* client =

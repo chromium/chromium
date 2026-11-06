@@ -16,6 +16,11 @@
 // headless Actor mode).
 @protocol ActorTaskInterventionDelegate <NSObject>
 
+// Dismisses the prompt shown by `selectFromSuggestions:` for `taskID` without
+// calling its completion handler. Called when the tool that requested a
+// selection ends before the user answers.
+- (void)actorTaskDidCancelSuggestionSelection:(actor::ActorTaskId)taskID;
+
 // TODO(crbug.com/501043031): Remove @optional when API stabilizes.
 @optional
 

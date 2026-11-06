@@ -26,12 +26,14 @@
 #import "components/origin_gating/core/origin_gating_configuration.h"
 #import "components/origin_gating/core/origin_gating_registration.h"
 #import "components/origin_gating/core/origin_gating_service.h"
+#import "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -251,15 +253,22 @@ TEST_F(ActorEngineTest, ToolDelegateForwardingAndOwnership) {
   EXPECT_NE(tool_delegate->GetActorTaskFormFillingHandler(), nullptr);
 }
 
-// Tests that setting an intervention delegate on `ActorTask` initializes the
-// form filling handler on `ActorEngine`.
+// Tests that `ActorTask` forwards its intervention delegate to the form filling
+// handler of its engine.
 TEST_F(ActorEngineTest, SetInterventionDelegateForwarding) {
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
+  ActorTaskFormFillingHandler* handler =
+      task_->engine().GetActorTaskFormFillingHandler();
+  actor_login::Credential credential;
+  credential.id = actor_login::Credential::Id(1);
 
-  ToolDelegate* tool_delegate = engine_.get();
-  EXPECT_NE(tool_delegate->GetActorTaskFormFillingHandler(), nullptr);
+  handler->PromptToSelectCredential({credential}, base::DoNothing());
+  EXPECT_TRUE(delegate.selectFromSuggestionsCalled);
+
+  handler->CancelPendingPrompt();
+  EXPECT_TRUE(delegate.cancelSuggestionSelectionCalled);
 
   task_->SetInterventionDelegate(nil);
 }

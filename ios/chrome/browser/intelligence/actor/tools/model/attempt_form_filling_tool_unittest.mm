@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/test_future.h"
@@ -228,6 +229,21 @@ class AttemptFormFillingToolTest : public PlatformTest {
   }
   FakeActorTaskInterventionDelegate* intervention_delegate() {
     return intervention_delegate_;
+  }
+
+  // Expects the handler to accept and prompt new suggestions, which requires
+  // the previous suggestions to have been dropped.
+  void ExpectNewSuggestionsPrompted() {
+    base::test::TestFuture<
+        size_t, base::expected<std::optional<autofill::ActorSuggestion>,
+                               ToolExecutionResult>>
+        selection;
+    form_filling_handler()->RegisterAutofillSuggestionsAndCallback(
+        {CreateAddressFormFillingRequest()}, selection.GetRepeatingCallback());
+    form_filling_handler()->PromptToSelectAutofillSuggestion(0);
+    [intervention_delegate() runCompletionWithSuggestion:nil];
+    ASSERT_TRUE(selection.Get<1>().has_value());
+    EXPECT_FALSE(selection.Get<1>().value().has_value());
   }
 
  private:
@@ -1007,5 +1023,97 @@ TEST_F(AttemptFormFillingToolTest,
             "Credit card opaque token cannot be combined with address "
             "requests.");
   EXPECT_FALSE(intervention_delegate().selectFromSuggestionsCalled);
+}
+
+// Tests that cancelling the tool while a suggestion prompt is shown dismisses
+// the prompt and drops its suggestions, so that new suggestions can be
+// prompted.
+TEST_F(AttemptFormFillingToolTest, Cancel_DropsPendingSuggestionPrompt) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  std::unique_ptr<AttemptFormFillingTool> tool =
+      CreateTool(CreateAction(), web_state);
+  ASSERT_TRUE(tool);
+
+  std::vector<autofill::ActorFormFillingRequest> suggestions_result = {
+      CreateAddressFormFillingRequest(),
+  };
+  base::test::TestFuture<void> get_suggestions_called_future;
+  EXPECT_CALL(*mock_form_filling_service(),
+              GetSuggestions(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&suggestions_result, &get_suggestions_called_future](
+              autofill::AutofillClient& client,
+              base::span<const autofill::ActorFormFillingService::FillRequest>
+                  fill_requests,
+              autofill::ActorFormFillingService::GetSuggestionsCallback
+                  callback) {
+            std::move(callback).Run(std::move(suggestions_result));
+            get_suggestions_called_future.SetValue();
+          });
+  EXPECT_CALL(*mock_form_filling_service(), ScrollToForm(testing::_, 0));
+
+  tool->Execute(base::DoNothing());
+  ASSERT_TRUE(get_suggestions_called_future.Wait());
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+
+  tool->Cancel();
+  EXPECT_TRUE(intervention_delegate().cancelSuggestionSelectionCalled);
+
+  ExpectNewSuggestionsPrompted();
+}
+
+// Tests that cancelling a tool that completed successfully, as
+// `ToolController` does after every tool, drops its registered suggestions so
+// that the next tool can register its own.
+TEST_F(AttemptFormFillingToolTest,
+       Cancel_AfterSuccessDropsRegisteredSuggestions) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  std::unique_ptr<AttemptFormFillingTool> tool =
+      CreateTool(CreateAction(), web_state);
+  ASSERT_TRUE(tool);
+
+  std::vector<autofill::ActorFormFillingRequest> suggestions_result = {
+      CreateAddressFormFillingRequest(),
+  };
+  base::test::TestFuture<void> get_suggestions_called_future;
+  EXPECT_CALL(*mock_form_filling_service(),
+              GetSuggestions(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&suggestions_result, &get_suggestions_called_future](
+              autofill::AutofillClient& client,
+              base::span<const autofill::ActorFormFillingService::FillRequest>
+                  fill_requests,
+              autofill::ActorFormFillingService::GetSuggestionsCallback
+                  callback) {
+            std::move(callback).Run(std::move(suggestions_result));
+            get_suggestions_called_future.SetValue();
+          });
+  EXPECT_CALL(*mock_form_filling_service(), ScrollToForm(testing::_, 0));
+  EXPECT_CALL(*mock_form_filling_service(),
+              FillForm(testing::_, 0, testing::_));
+  EXPECT_CALL(*mock_form_filling_service(),
+              FillSuggestions(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](autofill::AutofillClient& client,
+             base::span<const autofill::ActorFormFillingSelection>
+                 chosen_suggestions,
+             base::OnceCallback<void(
+                 base::expected<std::string, autofill::ActorFormFillingError>)>
+                 callback) { std::move(callback).Run(""); });
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  tool->Execute(future.GetCallback());
+  ASSERT_TRUE(get_suggestions_called_future.Wait());
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  ASSERT_EQ(intervention_delegate().promptedSuggestions.count, 1u);
+  [intervention_delegate()
+      runCompletionWithSuggestion:intervention_delegate()
+                                      .promptedSuggestions.firstObject];
+  ASSERT_TRUE(future.Get().IsOk());
+
+  tool->Cancel();
+  EXPECT_FALSE(intervention_delegate().cancelSuggestionSelectionCalled);
+
+  ExpectNewSuggestionsPrompted();
 }
 }  // namespace actor

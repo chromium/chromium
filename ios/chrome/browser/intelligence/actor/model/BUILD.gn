@@ -117,6 +117,7 @@ source_set("unit_tests") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
+    "//components/password_manager/core/browser/actor_login:common",
     "//components/prefs",
     "//components/prefs:test_support",
 

@@ -63,6 +63,7 @@ class AttemptFormFillingTool : public WebActorTool {
   // ActorTool:
   void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
+  void Cancel() override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
   std::string DebugString() const override;
