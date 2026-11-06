@@ -40,6 +40,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "payment_link_validator_unittest.cc",
+    "payment_qr_validator_unittest.cc",
     "pix_validator_fuzzer_util_unittest.cc",
     "pix_validator_unittest.cc",
   ]
@@ -66,7 +67,10 @@ test("pix_validator_fuzzer") {
   sources = [ "pix_validator_fuzzer.cc" ]
 
   testonly = true
-  fuzztests = [ "GetPixQrCodeTypeTest.GetPixQrCodeTypeCanParseAnyString" ]
+  fuzztests = [
+    "GetPixQrCodeTypeTest.GetPixQrCodeTypeCanParseAnyString",
+    "ValidatePaymentQrCodeTest.ValidatePaymentQrCodeCanParseAnyString",
+  ]
 
   deps = [
     ":fuzzer_util",

@@ -42,8 +42,62 @@ pub mod ffi {
         UnknownPixCodeType,
     }
 
+    /// The scheme of a payment QR code, identified even if the code fails
+    /// validation.
+    enum PaymentQrCodeScheme {
+        /// No merchant account information template has a supported
+        /// identifier, or the input is not an EMV Merchant-Presented QR code.
+        Unknown,
+        /// Pix (Brazil).
+        Pix,
+        /// DuitNow (Malaysia).
+        DuitNow,
+        /// PromptPay (Thailand).
+        PromptPay,
+        /// QRIS (Indonesia).
+        Qris,
+        /// ShopeePay (Malaysia).
+        ShopeePay,
+        /// MoMo (Vietnam).
+        MoMo,
+    }
+
+    /// It is not currently possible to return a `Result<T, E>` with cxx, so the
+    /// success and error codes are flattened into a single enum.
+    enum PaymentQrCodeValidationResult {
+        /// A valid code of a scheme other than Pix.
+        Valid,
+        /// A valid static Pix code.
+        ValidPixStatic,
+        /// A valid dynamic Pix code.
+        ValidPixDynamic,
+
+        /// The input is not an EMV Merchant-Presented QR code: it does not
+        /// begin with the payload format indicator data object.
+        NotPaymentCode,
+        /// The input is a valid EMV Merchant-Presented QR code, but no merchant
+        /// account information template identifies a supported scheme, or its
+        /// Pix template is of an unknown type.
+        UnsupportedScheme,
+        /// A data object or template did not parse, or the CRC data object is
+        /// missing or not the final data object.
+        FailedTlvParsing,
+        /// The CRC does not match the rest of the input.
+        FailedCrcCheck,
+        /// The additional data field template data object is present but empty.
+        EmptyAdditionalDataFieldTemplate,
+    }
+
+    /// The scheme and the validation result are separate, so that failures
+    /// can be measured per scheme.
+    struct PaymentQrCodeValidation {
+        scheme: PaymentQrCodeScheme,
+        result: PaymentQrCodeValidationResult,
+    }
+
     extern "Rust" {
         fn get_pix_qr_code_type(code: &[u8]) -> PixQrCodeResult;
+        fn validate_payment_qr_code(code: &[u8]) -> PaymentQrCodeValidation;
     }
 }
 
@@ -78,4 +132,50 @@ impl std::convert::From<payment_qr_validator_rs::PixQrCodeResult> for ffi::PixQr
 
 fn get_pix_qr_code_type(code: &[u8]) -> ffi::PixQrCodeResult {
     payment_qr_validator_rs::get_pix_qr_code_type(code).into()
+}
+
+impl std::convert::From<payment_qr_validator_rs::PaymentQrCodeValidation>
+    for ffi::PaymentQrCodeValidation
+{
+    fn from(value: payment_qr_validator_rs::PaymentQrCodeValidation) -> Self {
+        use payment_qr_validator_rs::{PaymentQrCodeScheme, PaymentQrCodeValidationResult};
+        let scheme = match value.scheme {
+            None => ffi::PaymentQrCodeScheme::Unknown,
+            Some(PaymentQrCodeScheme::Pix) => ffi::PaymentQrCodeScheme::Pix,
+            Some(PaymentQrCodeScheme::DuitNow) => ffi::PaymentQrCodeScheme::DuitNow,
+            Some(PaymentQrCodeScheme::PromptPay) => ffi::PaymentQrCodeScheme::PromptPay,
+            Some(PaymentQrCodeScheme::Qris) => ffi::PaymentQrCodeScheme::Qris,
+            Some(PaymentQrCodeScheme::ShopeePay) => ffi::PaymentQrCodeScheme::ShopeePay,
+            Some(PaymentQrCodeScheme::MoMo) => ffi::PaymentQrCodeScheme::MoMo,
+        };
+        let result = match value.result {
+            PaymentQrCodeValidationResult::Valid => ffi::PaymentQrCodeValidationResult::Valid,
+            PaymentQrCodeValidationResult::ValidPixStatic => {
+                ffi::PaymentQrCodeValidationResult::ValidPixStatic
+            }
+            PaymentQrCodeValidationResult::ValidPixDynamic => {
+                ffi::PaymentQrCodeValidationResult::ValidPixDynamic
+            }
+            PaymentQrCodeValidationResult::NotPaymentCode => {
+                ffi::PaymentQrCodeValidationResult::NotPaymentCode
+            }
+            PaymentQrCodeValidationResult::UnsupportedScheme => {
+                ffi::PaymentQrCodeValidationResult::UnsupportedScheme
+            }
+            PaymentQrCodeValidationResult::FailedTlvParsing => {
+                ffi::PaymentQrCodeValidationResult::FailedTlvParsing
+            }
+            PaymentQrCodeValidationResult::FailedCrcCheck => {
+                ffi::PaymentQrCodeValidationResult::FailedCrcCheck
+            }
+            PaymentQrCodeValidationResult::EmptyAdditionalDataFieldTemplate => {
+                ffi::PaymentQrCodeValidationResult::EmptyAdditionalDataFieldTemplate
+            }
+        };
+        Self { scheme, result }
+    }
+}
+
+fn validate_payment_qr_code(code: &[u8]) -> ffi::PaymentQrCodeValidation {
+    payment_qr_validator_rs::validate_payment_qr_code(code).into()
 }
