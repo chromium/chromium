@@ -987,6 +987,21 @@ BASE_FEATURE(kAutofillPersonalizationAndTrustFedCmSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
+// The OTP surveys share a single feature, but require different trigger IDs.
+// Since Finch does not allow duplicate parameter names within a group, each
+// survey uses a separately named "en_site_id" parameter.
+BASE_FEATURE_PARAM(
+    std::string,
+    kAutofillPersonalizationAndTrustOneTimePasswordSurveyFilledTriggerId,
+    &kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
+    "filled_en_site_id",
+    "");
+BASE_FEATURE_PARAM(
+    std::string,
+    kAutofillPersonalizationAndTrustOneTimePasswordSurveyDismissedTriggerId,
+    &kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
+    "dismissed_en_site_id",
+    "");
 
 // Controls whether Autofill may fill across origins.
 // In payment forms, the cardholder name field is often on the merchant's origin

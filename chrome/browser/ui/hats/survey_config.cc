@@ -879,14 +879,20 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &::autofill::features::
           kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordFilled,
-      /*presupplied_trigger_id=*/std::nullopt,
+      /*presupplied_trigger_id=*/
+      ::autofill::features::
+          kAutofillPersonalizationAndTrustOneTimePasswordSurveyFilledTriggerId
+              .Get(),
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       autofill_personalization_and_trust_product_specific_data);
   survey_configs.emplace_back(
       &::autofill::features::
           kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordDismissed,
-      /*presupplied_trigger_id=*/std::nullopt,
+      /*presupplied_trigger_id=*/
+      ::autofill::features::
+          kAutofillPersonalizationAndTrustOneTimePasswordSurveyDismissedTriggerId
+              .Get(),
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
       with_client_context_psd_fields({
