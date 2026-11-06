@@ -406,7 +406,9 @@ public class ChromeTabUtils {
      *
      * @param sourceTab Source tab (or group) to merge.
      * @param destinationTab Destination tab to merge into.
+     * @deprecated Use {@code Journeys#mergeTabsToGroupProgrammatically()} with a Station instead.
      */
+    @Deprecated
     public static void mergeTabsToGroup(Tab sourceTab, Tab destinationTab) {
         Assert.assertTrue(ThreadUtils.runningOnUiThread());
 

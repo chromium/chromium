@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -34,12 +35,14 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabThumbnailCondition;
 import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.chrome.test.util.tabmodel.TabBinList;
 import org.chromium.chrome.test.util.tabmodel.TabBinList.TabBinPosition;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -518,6 +521,48 @@ public class Journeys {
 
         verifyTabGroupMergeSuccessful(tabs, currentModel);
         return groupCard;
+    }
+
+    /**
+     * Merges {@code sourceTab} (or its whole tab group) into {@code destinationTab}'s tab group
+     * programmatically, without going through the UI, and waits for the merged group to exist.
+     *
+     * <p>Use this for tests where grouping tabs is only setup. Use {@link
+     * #mergeTabsToNewGroup(TabSwitcherStation, List)} to group tabs through the tab switcher UI.
+     *
+     * @param page The current active station.
+     * @param sourceTab Source tab (or group) to merge.
+     * @param destinationTab Destination tab (or group) to merge into.
+     */
+    public static void mergeTabsToGroupProgrammatically(
+            CtaPageStation page, Tab sourceTab, Tab destinationTab) {
+        assert sourceTab.isIncognitoBranded() == destinationTab.isIncognitoBranded();
+        TabModel tabModel = page.getTabModel();
+        List<Tab> tabsToMerge =
+                runOnUiThreadBlocking(() -> getTabsInGroupOrSelf(tabModel, sourceTab));
+        List<Tab> destinationTabs =
+                runOnUiThreadBlocking(() -> getTabsInGroupOrSelf(tabModel, destinationTab));
+        List<Integer> expectedTabIds = new ArrayList<>();
+        for (Tab tab : tabsToMerge) {
+            expectedTabIds.add(tab.getId());
+        }
+        for (Tab tab : destinationTabs) {
+            expectedTabIds.add(tab.getId());
+        }
+        Collections.sort(expectedTabIds);
+
+        page.runOnUiThreadTo(
+                        () ->
+                                tabModel.mergeListOfTabsToGroup(
+                                        tabsToMerge,
+                                        destinationTab,
+                                        TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP))
+                .waitFor(new TabGroupExistsCondition(page.tabModelElement, expectedTabIds));
+    }
+
+    private static List<Tab> getTabsInGroupOrSelf(TabModel tabModel, Tab tab) {
+        Token tabGroupId = tab.getTabGroupId();
+        return tabGroupId != null ? tabModel.getTabsInGroup(tabGroupId) : List.of(tab);
     }
 
     /**
