@@ -137,8 +137,17 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
   run_loop.Run();
 }
 
-// Tests that the mediator exposes every provided credential as a suggestion
-// along with the domain, and notifies the consumer.
+// Tests that the mediator sends the domain to the consumer as soon as it is
+// set, before any credential is received.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestSetConsumerSendsDomain) {
+  OCMExpect([consumer_ setDomain:base::SysUTF8ToNSString(kTestDomain)]);
+
+  mediator_.consumer = consumer_;
+}
+
+// Tests that the mediator exposes every provided credential as a suggestion,
+// and notifies the consumer.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestParsesCredentialsAndNotifiesConsumer) {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
@@ -149,6 +158,7 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 
   EXPECT_FALSE(selection_future_.IsReady());
 
+  OCMExpect([consumer_ setDomain:base::SysUTF8ToNSString(kTestDomain)]);
   OCMExpect([consumer_
       setSuggestions:[OCMArg checkWithBlock:^BOOL(
                                  NSArray<FormSuggestion*>* suggestions) {
@@ -157,8 +167,7 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
                    isEqualToString:base::SysUTF16ToNSString(kUsername1)] &&
                [suggestions[1].value
                    isEqualToString:base::SysUTF16ToNSString(kUsername2)];
-      }]
-           andDomain:base::SysUTF8ToNSString(kTestDomain)]);
+      }]]);
   OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
 
   mediator_.consumer = consumer_;
@@ -169,9 +178,10 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 // credentials are received.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestConsumerSetBeforeCredentialsIsNotifiedOnArrival) {
+  OCMExpect([consumer_ setDomain:[OCMArg any]]);
   mediator_.consumer = consumer_;
 
-  OCMExpect([consumer_ setSuggestions:[OCMArg any] andDomain:[OCMArg any]]);
+  OCMExpect([consumer_ setSuggestions:[OCMArg any]]);
   OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
 
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
@@ -194,7 +204,8 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
                                       origin:url::Origin()
                                     callback:base::DoNothing()];
 
-  OCMExpect([consumer_ setSuggestions:[OCMArg any] andDomain:[OCMArg any]]);
+  OCMExpect([consumer_ setDomain:[OCMArg any]]);
+  OCMExpect([consumer_ setSuggestions:[OCMArg any]]);
   OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
 
   mediator_.consumer = consumer_;

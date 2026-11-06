@@ -13,6 +13,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/types/expected.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 #import "url/origin.h"
+#import "url/url_constants.h"
 
 namespace {
 
@@ -155,6 +157,7 @@ using password_manager::RemoteActorCredentialSharingResult;
     return;
   }
   _consumer = consumer;
+  [_consumer setDomain:[self shownDomain]];
   [self pushStateToConsumer];
 }
 
@@ -202,9 +205,21 @@ using password_manager::RemoteActorCredentialSharingResult;
 
 #pragma mark - Private
 
-// Pushes the suggestions, domain and favicon to `_consumer`. The consumer may
-// be set before the credentials arrive asynchronously, so this is a no-op
-// until both are available.
+// Returns the requested domain formatted for display. `GetShownOrigin()` is
+// needed to handle look-alike domains, and it requires an origin, so the
+// `https://` scheme is prepended only to make origin construction work; it is
+// stripped before display. The origin is discarded immediately and is never
+// used for a programmatic security decision.
+- (NSString*)shownDomain {
+  return base::SysUTF8ToNSString(
+      password_manager::GetShownOrigin(url::Origin::Create(
+          GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
+                             _request.domain()})))));
+}
+
+// Pushes the suggestions and favicon to `_consumer`. The consumer may be set
+// before the credentials arrive asynchronously, so this is a no-op until both
+// are available.
 - (void)pushStateToConsumer {
   if (!_consumer || _credentials.empty()) {
     return;
@@ -223,9 +238,7 @@ using password_manager::RemoteActorCredentialSharingResult;
                             payload:autofill::Suggestion::Payload()
                      requiresReauth:YES]];
   }
-  [_consumer setSuggestions:suggestions
-                  andDomain:base::SysUTF8ToNSString(
-                                password_manager::GetShownOrigin(_origin))];
+  [_consumer setSuggestions:suggestions];
   [self fetchFavicon];
 }
 

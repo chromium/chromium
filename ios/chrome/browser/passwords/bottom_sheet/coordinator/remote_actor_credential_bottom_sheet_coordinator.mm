@@ -110,6 +110,7 @@
   _viewController =
       [[RemoteActorCredentialBottomSheetViewController alloc] init];
   _viewController.mutator = _mediator;
+  _mediator.consumer = _viewController;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
@@ -117,6 +118,7 @@
 
 - (void)stop {
   _viewController.mutator = nil;
+  _mediator.consumer = nil;
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController = nil;
