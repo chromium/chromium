@@ -5635,15 +5635,21 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             1);
 
   // Objects request latency should not have an analytics id associated with it.
-  EXPECT_FALSE(
-      fake_query_controller->last_latency_gen204_analytics_id().has_value());
+  EXPECT_FALSE(fake_query_controller
+                   ->last_latency_gen204_analytics_id(
+                       lens::LensOverlayGen204Controller::LatencyType::
+                           kFullPageObjectsRequestFetchLatency)
+                   .has_value());
 
   // Objects request latency gen204 should have the same vsrid as the actual
   // request.
   EXPECT_THAT(
       fake_query_controller->sent_full_image_request_id(),
-      EqualsProto(
-          fake_query_controller->last_latency_gen204_request_id().value()));
+      EqualsProto(fake_query_controller
+                      ->last_latency_gen204_request_id(
+                          lens::LensOverlayGen204Controller::LatencyType::
+                              kFullPageObjectsRequestFetchLatency)
+                      .value()));
 
   std::string encoded_sent_objects_analytics_id = base32::Base32Encode(
       base::as_byte_span(
@@ -5742,11 +5748,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                     kInteractionRequestFetchLatency),
             1);
   EXPECT_EQ(encoded_sent_interaction_analytics_id,
-            fake_query_controller->last_latency_gen204_analytics_id().value());
+            fake_query_controller
+                ->last_latency_gen204_analytics_id(
+                    lens::LensOverlayGen204Controller::LatencyType::
+                        kInteractionRequestFetchLatency)
+                .value());
   EXPECT_THAT(
       fake_query_controller->sent_interaction_request_id(),
-      EqualsProto(
-          fake_query_controller->last_latency_gen204_request_id().value()));
+      EqualsProto(fake_query_controller
+                      ->last_latency_gen204_request_id(
+                          lens::LensOverlayGen204Controller::LatencyType::
+                              kInteractionRequestFetchLatency)
+                      .value()));
 
   // Log a copy text user task completion event.
   controller->RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(

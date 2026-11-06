@@ -411,8 +411,8 @@ void TestLensOverlayQueryController::SendLatencyGen204IfEnabled(
     std::optional<std::string> encoded_analytics_id,
     std::optional<lens::LensOverlayRequestId> request_id) {
   ++latency_gen_204_counter_[latency_type];
-  last_latency_gen204_analytics_id_ = encoded_analytics_id;
-  last_latency_gen204_request_id_ = request_id;
+  last_latency_gen204_analytics_id_[latency_type] = encoded_analytics_id;
+  last_latency_gen204_request_id_[latency_type] = request_id;
 }
 
 void TestLensOverlayQueryController::SendTaskCompletionGen204IfEnabled(

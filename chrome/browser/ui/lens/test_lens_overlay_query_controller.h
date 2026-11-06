@@ -339,13 +339,18 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return it == latency_gen_204_counter_.end() ? 0 : it->second;
   }
 
-  const std::optional<lens::LensOverlayRequestId>&
-  last_latency_gen204_request_id() const {
-    return last_latency_gen204_request_id_;
+  std::optional<lens::LensOverlayRequestId> last_latency_gen204_request_id(
+      lens::LensOverlayGen204Controller::LatencyType latency_type) const {
+    auto it = last_latency_gen204_request_id_.find(latency_type);
+    return it == last_latency_gen204_request_id_.end() ? std::nullopt
+                                                       : it->second;
   }
 
-  const std::optional<std::string>& last_latency_gen204_analytics_id() const {
-    return last_latency_gen204_analytics_id_;
+  std::optional<std::string> last_latency_gen204_analytics_id(
+      lens::LensOverlayGen204Controller::LatencyType latency_type) const {
+    auto it = last_latency_gen204_analytics_id_.find(latency_type);
+    return it == last_latency_gen204_analytics_id_.end() ? std::nullopt
+                                                         : it->second;
   }
 
   const std::optional<lens::LensOverlayRequestId>&
@@ -577,11 +582,17 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   std::optional<lens::LensOverlayServerClusterInfoRequest>
       last_cluster_info_request_;
 
-  // The last encoded request id attached to a latency gen204 ping.
-  std::optional<lens::LensOverlayRequestId> last_latency_gen204_request_id_;
+  // The last encoded request id attached to a latency gen204 ping, keyed by
+  // latency type.
+  base::flat_map<lens::LensOverlayGen204Controller::LatencyType,
+                 std::optional<lens::LensOverlayRequestId>>
+      last_latency_gen204_request_id_;
 
-  // The last analytics id attached to a latency gen204 ping.
-  std::optional<std::string> last_latency_gen204_analytics_id_;
+  // The last analytics id attached to a latency gen204 ping, keyed by latency
+  // type.
+  base::flat_map<lens::LensOverlayGen204Controller::LatencyType,
+                 std::optional<std::string>>
+      last_latency_gen204_analytics_id_;
 
   // The last analytics id attached to a task completion gen204 ping.
   std::optional<std::string> last_task_completion_gen204_analytics_id_;
