@@ -32,6 +32,8 @@ component("policy") {
     sources += [
       "linux/bpf_base_policy_linux.cc",
       "linux/bpf_base_policy_linux.h",
+      "linux/bpf_gpu_policy_android.cc",
+      "linux/bpf_gpu_policy_android.h",
       "linux/bpf_renderer_policy_linux.cc",
       "linux/bpf_renderer_policy_linux.h",
       "linux/landlock_gpu_policy_android.cc",
@@ -39,10 +41,12 @@ component("policy") {
       "linux/landlock_util.cc",
       "linux/landlock_util.h",
     ]
-    deps += [
+    public_deps += [
       "//sandbox:sandbox_buildflags",
-      "//sandbox/linux:sandbox_services",
       "//sandbox/linux:seccomp_bpf",
+    ]
+    deps += [
+      "//sandbox/linux:sandbox_services",
       "//third_party/jni_zero",
     ]
   }

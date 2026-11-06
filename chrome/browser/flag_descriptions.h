@@ -6513,6 +6513,11 @@ inline constexpr char kSafeBrowsingSyncCheckerCheckAllowlistDescription[] =
     "Enables Safe Browsing sync checker to check the allowlist before checking "
     "the blocklist.";
 
+inline constexpr char kSeccompFilterGpuSandboxName[] =
+    "Seccomp-BPF GPU sandbox";
+inline constexpr char kSeccompFilterGpuSandboxDescription[] =
+    "Enables the seccomp-bpf filter sandbox for the GPU process on Android.";
+
 inline constexpr char kSegmentationPlatformAndroidHomeModuleRankerV2Name[] =
     "Segmentation platform Android home module ranker V2";
 inline constexpr char

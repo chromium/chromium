@@ -14354,6 +14354,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMixedFixedIntervalMatcherName,
      flag_descriptions::kMixedFixedIntervalMatcherDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kMixedFixedIntervalMatcher)},
+
+    {"seccomp-filter-gpu-sandbox",
+     flag_descriptions::kSeccompFilterGpuSandboxName,
+     flag_descriptions::kSeccompFilterGpuSandboxDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(sandbox::policy::features::kSeccompFilterGpuSandbox)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"persistent-widget-api", flag_descriptions::kPersistentWidgetAPIName,
