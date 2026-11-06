@@ -8,9 +8,6 @@
 #
 # DO NOT ADD QUOTATION MARK AND TRAILING COMMA AT EACH LINE
 
-# b/537158036
-tast.flex.HWIS
-
 # b/549299789
 tast.secagentd.AuthenticationEvents
 tast.secagentd.FileEvents.cookies
