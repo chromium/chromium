@@ -24,7 +24,7 @@ struct ParamTraits;
 namespace media {
 
 // Class for passing bitstream buffers around.  Does not take ownership of the
-// data.  This is the media-namespace equivalent of PP_VideoBitstreamBuffer_Dev.
+// data.
 class MEDIA_EXPORT BitstreamBuffer {
  public:
   BitstreamBuffer();

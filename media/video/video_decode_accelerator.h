@@ -35,8 +35,6 @@ class SequencedTaskRunner;
 namespace media {
 
 // Video decoder interface.
-// This interface is extended by the various components that ultimately
-// implement the backend of PPB_VideoDecoder_Dev.
 class MEDIA_EXPORT VideoDecodeAccelerator {
  public:
   // Specification of a decoding profile supported by a decoder.

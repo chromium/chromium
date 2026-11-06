@@ -27,7 +27,6 @@ class MEDIA_EXPORT PictureBuffer {
 };
 
 // A decoded picture frame.
-// This is the media-namespace equivalent of PP_Picture_Dev.
 class MEDIA_EXPORT Picture {
  public:
   Picture(int32_t picture_buffer_id,

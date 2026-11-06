@@ -83,16 +83,3 @@ The algorithm is as follows:
     * If the stack becomes empty, do nothing.
     * If the next top session is transient, do nothing.
     * If the next top session is persistent, stop ducking it.
-
-### Handling Pepper
-
-Pepper is different from media elements since it has a different model. Pepper
-cannot be paused, but its volume can be changed. When considering Pepper, the
-above algorithm must be modified.
-
-When Pepper joins `MediaSession`, it should request persistent focus type. When
-AudioFocusManager wants to suspend a `MediaSession`, it must check whether the
-session has Pepper instance, and if yes, it should duck the session instead.
-
-Also, whenever a session abandons focus, and the next top session is INACTIVE,
-`AudioFocusManager` should find the next session having Pepper and unduck it.
