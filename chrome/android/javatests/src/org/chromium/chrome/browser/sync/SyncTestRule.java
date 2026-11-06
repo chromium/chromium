@@ -210,7 +210,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /** Adds an account of given account name to AccountManagerFacade and waits for the seeding. */
-    public CoreAccountInfo addAccount(AccountInfo account) {
+    public AccountInfo addAccount(AccountInfo account) {
         mSigninTestRule.addAccount(account);
         return account;
     }
@@ -218,16 +218,16 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     /**
      * @return The primary account.
      */
-    public CoreAccountInfo getPrimaryAccount() {
+    public AccountInfo getPrimaryAccount() {
         return mSigninTestRule.getPrimaryAccount();
     }
 
     /**
      * Sets up an account and signs in and enables history sync.
      *
-     * @return the test {@link CoreAccountInfo} that is signed in.
+     * @return the test {@link AccountInfo} that is signed in.
      */
-    public CoreAccountInfo setUpAccountAndEnableHistorySync() {
+    public AccountInfo setUpAccountAndEnableHistorySync() {
         mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
         SyncTestUtil.waitForSyncTransportActive();
         return TestAccounts.ACCOUNT1;
@@ -236,9 +236,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     /**
      * Set up a test account, sign in, and waits for sync machinery to become active.
      *
-     * @return the test {@link CoreAccountInfo} that is signed in.
+     * @return the test {@link AccountInfo} that is signed in.
      */
-    public CoreAccountInfo setUpAccountAndSignInForTesting() {
+    public AccountInfo setUpAccountAndSignInForTesting() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         SyncTestUtil.waitForSyncTransportActive();
         return TestAccounts.ACCOUNT1;
@@ -248,9 +248,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Set up a test account and sign in. Use this instead of setUpAccountAndSignInForTesting if
      * sync can't become active, e.g. because there is a policy preventing it.
      *
-     * @return the test {@link CoreAccountInfo} that is signed in.
+     * @return the test {@link AccountInfo} that is signed in.
      */
-    public CoreAccountInfo setUpAccountAndSignInWithoutWaitingForTesting() {
+    public AccountInfo setUpAccountAndSignInWithoutWaitingForTesting() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         return TestAccounts.ACCOUNT1;
     }

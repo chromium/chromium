@@ -13,7 +13,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 
 /**
  * Base class for defining methods for signing in an live account for testing. The correct version
@@ -36,20 +36,20 @@ public class LiveSigninTestUtil {
 
     /** Add a live account to the device and signs in for testing, but does not enable Sync. */
     public void addAccountWithPasswordThenSignin(String accountName, String password) {
-        CoreAccountInfo coreAccountInfo = addAccountWithPassword(accountName, password);
-        SigninTestUtil.signin(coreAccountInfo);
-        Log.i(TAG, "Finished signin for account %s", coreAccountInfo.toString());
+        AccountInfo accountInfo = addAccountWithPassword(accountName, password);
+        SigninTestUtil.signin(accountInfo);
+        Log.i(TAG, "Finished signin for account %s", accountInfo.toString());
     }
 
     /** Add a live account to the device and signs in for testing with consent level Sync. */
     public void addAccountWithPasswordThenSigninWithConsentLevelSync(
             String accountName, String password) {
-        CoreAccountInfo coreAccountInfo = addAccountWithPassword(accountName, password);
-        SigninTestUtil.signinWithConsentLevelSync(coreAccountInfo);
-        Log.i(TAG, "Finished signin and enabling sync for account %s", coreAccountInfo.toString());
+        AccountInfo accountInfo = addAccountWithPassword(accountName, password);
+        SigninTestUtil.signinWithConsentLevelSync(accountInfo);
+        Log.i(TAG, "Finished signin and enabling sync for account %s", accountInfo.toString());
     }
 
-    private CoreAccountInfo addAccountWithPassword(String accountName, String password) {
+    private AccountInfo addAccountWithPassword(String accountName, String password) {
         if (addAccountWithPasswordImpl(accountName, password)) {
             Log.i(TAG, "Added account %s to device successfully.", accountName);
         } else {
@@ -62,16 +62,16 @@ public class LiveSigninTestUtil {
                 },
                 MAX_TIME_TO_POLL_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        CoreAccountInfo coreAccountInfo =
+        AccountInfo accountInfo =
                 ThreadUtils.runOnUiThreadBlocking(() -> findAccountByEmailAddress(accountName));
-        return coreAccountInfo;
+        return accountInfo;
     }
 
     protected boolean addAccountWithPasswordImpl(String accountName, String password) {
         throw new UnsupportedOperationException();
     }
 
-    private CoreAccountInfo findAccountByEmailAddress(String email) {
+    private AccountInfo findAccountByEmailAddress(String email) {
         return IdentityServicesProvider.get()
                 .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                 .findExtendedAccountInfoByEmailAddress(email);

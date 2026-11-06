@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
@@ -71,7 +71,7 @@ public final class SigninTestUtil {
     /**
      * @return The primary account.
      */
-    static CoreAccountInfo getPrimaryAccount() {
+    static AccountInfo getPrimaryAccount() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return IdentityServicesProvider.get()
@@ -81,16 +81,16 @@ public final class SigninTestUtil {
     }
 
     /** Signs the user into the given account. */
-    public static void signin(CoreAccountInfo coreAccountInfo) {
-        signin(coreAccountInfo, /* waitForPrefsCommit= */ false);
+    public static void signin(AccountInfo accountInfo) {
+        signin(accountInfo, /* waitForPrefsCommit= */ false);
     }
 
     /** Signs the user into the given account and wait for the sign-in prefs to be committed */
-    public static void signinAndWaitForPrefsCommit(CoreAccountInfo coreAccountInfo) {
-        signin(coreAccountInfo, /* waitForPrefsCommit= */ true);
+    public static void signinAndWaitForPrefsCommit(AccountInfo accountInfo) {
+        signin(accountInfo, /* waitForPrefsCommit= */ true);
     }
 
-    private static void signin(CoreAccountInfo coreAccountInfo, boolean waitForPrefsCommit) {
+    private static void signin(AccountInfo accountInfo, boolean waitForPrefsCommit) {
         CallbackHelper completionCallbackHelper = new CallbackHelper();
         CallbackHelper prefsCommitCallbackHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
@@ -99,7 +99,7 @@ public final class SigninTestUtil {
                             IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.signin(
-                            coreAccountInfo,
+                            accountInfo,
                             SigninAccessPoint.WEB_SIGNIN,
                             new SigninManager.SignInCallback() {
                                 @Override
@@ -128,24 +128,25 @@ public final class SigninTestUtil {
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount());
+                    Assert.assertEquals(
+                            accountInfo.getId(), AccountInfo.getIdFrom(getPrimaryAccount()));
                 });
     }
 
     /** Signs into an account with the legacy Sync consent level. */
     // TODO(crbug.com/40066949): Remove once Sync-the-feature is fully removed.
     @WorkerThread
-    static void signinWithConsentLevelSync(CoreAccountInfo coreAccountInfo) {
-        signinAndWaitForPrefsCommit(coreAccountInfo);
+    static void signinWithConsentLevelSync(AccountInfo accountInfo) {
+        signinAndWaitForPrefsCommit(accountInfo);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
-                    signinManager.turnOnSyncForTesting(
-                            coreAccountInfo, SigninAccessPoint.WEB_SIGNIN);
-                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount());
+                    signinManager.turnOnSyncForTesting(accountInfo, SigninAccessPoint.WEB_SIGNIN);
+                    Assert.assertEquals(
+                            accountInfo.getId(), AccountInfo.getIdFrom(getPrimaryAccount()));
                 });
     }
 
@@ -155,7 +156,7 @@ public final class SigninTestUtil {
      * @param syncService Enable history sync with it.
      */
     @WorkerThread
-    public static void signinAndEnableHistorySync(CoreAccountInfo coreAccountInfo) {
+    public static void signinAndEnableHistorySync(AccountInfo accountInfo) {
         CallbackHelper callbackHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -163,7 +164,7 @@ public final class SigninTestUtil {
                             IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.signin(
-                            coreAccountInfo,
+                            accountInfo,
                             SigninAccessPoint.WEB_SIGNIN,
                             new SigninManager.SignInCallback() {
                                 @Override
@@ -190,7 +191,8 @@ public final class SigninTestUtil {
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount());
+                    Assert.assertEquals(
+                            accountInfo.getId(), AccountInfo.getIdFrom(getPrimaryAccount()));
                 });
         SyncTestUtil.waitForHistorySyncEnabled();
     }

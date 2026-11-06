@@ -318,7 +318,7 @@ public class SigninTestRule implements TestRule {
     /**
      * @return The primary account.
      */
-    public CoreAccountInfo getPrimaryAccount() {
+    public AccountInfo getPrimaryAccount() {
         return SigninTestUtil.getPrimaryAccount();
     }
 
