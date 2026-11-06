@@ -47,7 +47,7 @@ _harness/
 ├── REVIEWS.md                # Review spec & critique dimensions
 ├── agents.json               # Manifest registering harness personas
 ├── agents/                   # Reusable review personas (Markdown)
-│   ├── chromium_code_reviewer.md # Read-only code reviewer persona
+│   ├── chromium_code_reviewer.md # Owners code reviewer (read-only by default)
 │   └── chromium_design_reviewer.md # Skeptical Architect reviewer
 ├── skills.json               # Manifest registering harness skills
 ├── skills/                   # Reusable harness skills
