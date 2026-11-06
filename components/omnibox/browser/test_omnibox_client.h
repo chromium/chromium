@@ -95,6 +95,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   MOCK_METHOD(PrefService*, GetPrefs, (), (override));
   MOCK_METHOD(const PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(bool, IsAimPopupEnabled, (), (const, override));
+  MOCK_METHOD(void, OnPopupVisibilityChanged, (bool popup_is_open), (override));
   MOCK_METHOD(void,
               OpenUrl,
               (GURL, ui::mojom::WindowOpenDisposition),
