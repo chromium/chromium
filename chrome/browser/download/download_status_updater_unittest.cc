@@ -128,7 +128,6 @@ class DownloadStatusUpdaterTest : public testing::Test {
     if (manager_items_.size() <= static_cast<size_t>(manager_index))
       manager_items_.resize(manager_index+1);
 
-    std::vector<download::DownloadItem*> item_list;
     for (int i = 0; i < item_count; ++i) {
       std::unique_ptr<download::MockDownloadItem> item =
           std::make_unique<StrictMock<download::MockDownloadItem>>();

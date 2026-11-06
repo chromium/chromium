@@ -351,17 +351,16 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState_WithBadgeOverInt) {
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState_WithFileHandler) {
-  webapps::AppId app_id =
-      InstallWebApp([this](WebAppInstallInfo& web_app_info) {
-        apps::FileHandler file_handler;
-        file_handler.action = InstallableWebAppUrl().Resolve("/file_handler");
-        apps::FileHandler::AcceptEntry entry;
-        entry.mime_type = "image/jpeg";
-        entry.file_extensions.insert(".jpg");
-        entry.file_extensions.insert(".jpeg");
-        file_handler.accept.push_back(entry);
-        web_app_info.file_handlers.push_back(file_handler);
-      });
+  InstallWebApp([this](WebAppInstallInfo& web_app_info) {
+    apps::FileHandler file_handler;
+    file_handler.action = InstallableWebAppUrl().Resolve("/file_handler");
+    apps::FileHandler::AcceptEntry entry;
+    entry.mime_type = "image/jpeg";
+    entry.file_extensions.insert(".jpg");
+    entry.file_extensions.insert(".jpeg");
+    file_handler.accept.push_back(entry);
+    web_app_info.file_handlers.push_back(file_handler);
+  });
   const base::DictValue* result =
       SendCommandSync("PWA.getOsAppState",
                       base::DictValue{}.Set(

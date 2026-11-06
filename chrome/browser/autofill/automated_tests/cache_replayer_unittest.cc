@@ -615,8 +615,6 @@ TEST(AutofillCacheReplayerTest, CrossEnvironmentIntegrationTest) {
       file_path, ServerCacheReplayer::kOptionFailOnInvalidJsonRecord &
                      ServerCacheReplayer::kOptionFailOnEmpty);
 
-  std::string http_text;
-
   // First, check the exact same key combos we sent properly respond
   EXPECT_EQ(std::vector<bool>({true, true}),
             CheckFormsInCache(cache_replayer, {form1, form2}));

@@ -2216,8 +2216,6 @@ TEST_F(HostContentSettingsMapTest, GetSettingLastModified) {
   test_clock.SetNow(base::Time::Now());
   map->SetClockForTesting(&test_clock);
 
-  ContentSettingsForOneType host_settings;
-
   GURL url("https://www.google.com/");
 
   // Last modified date for non existent settings should be base::Time().

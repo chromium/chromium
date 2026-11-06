@@ -1288,7 +1288,6 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeChanged) {
   CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
-  const std::u16string kOriginalTitle(u"foo");
   const GURL kUrl("http://url.com");
   const BookmarkNode* node = model().bookmark_bar_node()->children()[0].get();
 

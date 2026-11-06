@@ -2371,7 +2371,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        SubmitQuery_WaitsForDelayedUpload) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is null.";
-  std::string kQuery = "recontextualize query";
 
   // Setup context with uploaded tab (not expired).
   SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents());

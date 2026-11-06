@@ -906,7 +906,6 @@ void ActorKeyedService::PerformActions(
     ActorTaskMetadata task_metadata,
     PerformActionsCallback callback) {
   TRACE_EVENT0("actor", "ActorKeyedService::PerformActions");
-  std::vector<ActionResultWithLatencyInfo> empty_results;
   auto* task = GetTask(task_id);
   if (!task) {
     GetJournal().Log(GURL(), task_id, "ActorKeyedService::PerformActions",

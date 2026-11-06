@@ -113,7 +113,6 @@ void MemoryDetails::CollectProcessData(
                                                 base::BlockingType::MAY_BLOCK);
 
   ProcessMap process_map = GetProcesses();
-  std::set<pid_t> browsers_found;
 
   ProcessData current_browser =
       GetProcessDataMemoryInformation(GetAllChildren(process_map, getpid()));

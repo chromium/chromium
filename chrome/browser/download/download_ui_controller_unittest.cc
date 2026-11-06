@@ -385,7 +385,6 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_HistoryDownload) {
   history_downloads.push_back(history::DownloadRow());
   history_downloads.front().id = 1;
 
-  std::vector<GURL> url_chain;
   GURL url;
   std::unique_ptr<MockDownloadItem> item = CreateMockInProgressDownload();
 

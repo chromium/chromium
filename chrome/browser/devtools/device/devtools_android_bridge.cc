@@ -150,7 +150,6 @@ void DevToolsAndroidBridge::OpenRemotePage(scoped_refptr<RemoteBrowser> browser,
       return;
   }
   std::string url = gurl.spec();
-  RemoteBrowser::ParsedVersion parsed_version = browser->GetParsedVersion();
 
   std::string query = base::EscapeQueryParamValue(url, false /* use_plus */);
   std::string request =

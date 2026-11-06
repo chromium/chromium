@@ -908,7 +908,6 @@ class ExecutionEngineFileSystemAccessApiBrowserTest
 IN_PROC_BROWSER_TEST_P(ExecutionEngineFileSystemAccessApiBrowserTest,
                        FilePickerForFileSystemAccessApiBlocked) {
   const base::FilePath test_file = CreateTestFile("");
-  const std::string file_contents = "file contents to write";
 
   ::ui::SelectFileDialog::SetFactory(
       std::make_unique<SelectPredeterminedFileDialogFactory>(

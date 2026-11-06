@@ -292,7 +292,6 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        DISABLED_SubmitSimpleValue_OTR_DoesNotSave) {
   set_active_browser(CreateIncognitoBrowser());
 
-  std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName,
                  ui::mojom::WindowOpenDisposition::kOffTheRecord);
@@ -307,7 +306,6 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        SubmitSimpleValue_Disabled_DoesNotSave) {
   pref_service()->SetBoolean(prefs::kAutofillProfileEnabled, false);
-  std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));

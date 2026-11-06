@@ -1194,7 +1194,6 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
 
 std::u16string DownloadUIModel::StatusTextBuilderBase::GetFailStateMessage(
     offline_items_collection::FailState fail_state) const {
-  std::u16string state_msg;
   return OfflineItemUtils::GetFailStateMessage(fail_state);
 }
 

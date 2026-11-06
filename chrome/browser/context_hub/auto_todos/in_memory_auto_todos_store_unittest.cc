@@ -188,7 +188,6 @@ TEST_F(InMemoryAutoTodosStoreTest, DeleteItemByTabId) {
 
   base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
   store_.GetAllItems(get_future.GetCallback());
-  auto items = get_future.Get();
   EXPECT_TRUE(get_future.Get().empty());
 
   base::test::TestFuture<bool> del_tab_fail_future;

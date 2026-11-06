@@ -512,8 +512,6 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
                          {// Disable saved state nudge.
                           compose::features::kEnableComposeSavedStateNudge});
 
-  std::string autocomplete_attribute;
-
   EXPECT_FALSE(compose_enabling_->ShouldTriggerSavedStatePopup(
       autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 }
@@ -658,8 +656,6 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
 }
 
 TEST_F(ComposeEnablingTest, ComposeSavedStateNotificationEnabledByDefault) {
-  std::string autocomplete_attribute;
-
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
       autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus));
 }
@@ -670,7 +666,6 @@ TEST_F(ComposeEnablingTest, SavedStateNotificationWithSavedStateNudgeDisabled) {
   // Enable everything.
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();
-  std::string autocomplete_attribute;
 
   // Saved State Notification does not trigger if saved state nudge is disabled.
   EXPECT_FALSE(compose_enabling_->ShouldTriggerSavedStatePopup(
@@ -687,7 +682,6 @@ TEST_F(ComposeEnablingTest,
   // Enable everything.
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();
-  std::string autocomplete_attribute;
 
   // Nudge still works, even if Saved State Notification is disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(

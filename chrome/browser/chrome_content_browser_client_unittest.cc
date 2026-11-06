@@ -865,8 +865,7 @@ TEST_F(ChromeContentBrowserClientTestWithWebContents,
   const GURL app_url("http://foo.com");
   const GURL out_of_scope_frame_url("http://foo-out.com");
 
-  auto app_id =
-      web_app::test::InstallDummyWebApp(profile(), "dummyapp", app_url);
+  web_app::test::InstallDummyWebApp(profile(), "dummyapp", app_url);
   base::test::TestFuture<std::optional<blink::mojom::RelatedApplication>>
       future;
 

@@ -317,8 +317,8 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile,
   sub_app_info->title = u"Sub App 1";
   sub_app_info->scope = sub_app_url;
   sub_app_info->parent_app_id = AppId();
-  webapps::AppId sub_app_id = web_app::test::InstallWebApp(
-      browser()->GetProfile(), std::move(sub_app_info));
+  web_app::test::InstallWebApp(browser()->GetProfile(),
+                               std::move(sub_app_info));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sub_app_url));
   DetachProtocolClient();
@@ -345,8 +345,8 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, SubApps_ListAndSiblingList) {
   sub_app_1_info->title = u"Sub App 1";
   sub_app_1_info->scope = sub_app_1_url;
   sub_app_1_info->parent_app_id = AppId();
-  webapps::AppId sub_app_1_id = web_app::test::InstallWebApp(
-      browser()->GetProfile(), std::move(sub_app_1_info));
+  web_app::test::InstallWebApp(browser()->GetProfile(),
+                               std::move(sub_app_1_info));
 
   GURL sub_app_2_url =
       embedded_test_server()->GetURL("/web_apps/has_manifest_id.html");
@@ -355,8 +355,8 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, SubApps_ListAndSiblingList) {
   sub_app_2_info->title = u"Sub App 2";
   sub_app_2_info->scope = sub_app_2_url;
   sub_app_2_info->parent_app_id = AppId();
-  webapps::AppId sub_app_2_id = web_app::test::InstallWebApp(
-      browser()->GetProfile(), std::move(sub_app_2_info));
+  web_app::test::InstallWebApp(browser()->GetProfile(),
+                               std::move(sub_app_2_info));
 
   // Inspect Sub-App 1:
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sub_app_1_url));
@@ -441,8 +441,8 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, GetAppId_NoManifestUrl) {
   sub_app_info->title = u"Sub App Without Manifest";
   sub_app_info->scope = sub_app_url;
   sub_app_info->parent_app_id = AppId();
-  webapps::AppId sub_app_id = web_app::test::InstallWebApp(
-      browser()->GetProfile(), std::move(sub_app_info));
+  web_app::test::InstallWebApp(browser()->GetProfile(),
+                               std::move(sub_app_info));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sub_app_url));
   DetachProtocolClient();

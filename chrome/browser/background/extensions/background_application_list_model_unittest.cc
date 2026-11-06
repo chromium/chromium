@@ -375,7 +375,6 @@ void RemoveExtension(extensions::ExtensionService* service,
       }
     }
     scoped_refptr<Extension> extension = cursor->get();
-    std::string id = extension->id();
     if (BackgroundApplicationListModel::IsBackgroundApp(*extension.get(),
                                                         service->profile())) {
       --*expected;
@@ -412,7 +411,6 @@ void TogglePermission(extensions::ExtensionService* service,
       }
     }
     scoped_refptr<Extension> extension = cursor->get();
-    std::string id = extension->id();
     if (BackgroundApplicationListModel::IsBackgroundApp(*extension.get(),
                                                         service->profile())) {
       --*expected;

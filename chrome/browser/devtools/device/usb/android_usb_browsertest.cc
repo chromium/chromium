@@ -340,7 +340,6 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
       case AdbMessage::kCommandOPEN: {
         DCHECK(!current_message_->arg1);
         DCHECK(current_message_->arg0);
-        std::string response;
         WriteResponse(++last_local_socket_,
                       current_message_->arg0,
                       AdbMessage::kCommandOKAY,

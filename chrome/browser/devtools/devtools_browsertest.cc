@@ -2913,7 +2913,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestReattachAfterCrash) {
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestPageWithNoJavaScript) {
   OpenDevToolsWindow("about:blank", false);
-  std::string result;
   ASSERT_EQ(
       "function",
       content::EvalJs(

@@ -2064,7 +2064,6 @@ TEST_F(ChromeComposeClientTest, TestInnerText) {
                           compose::mojom::InputMode::kPolish, false);
   compose::mojom::ComposeResponsePtr result = test_future.Take();
 
-  std::string result_string;
   EXPECT_TRUE(result);
 }
 
@@ -2113,7 +2112,6 @@ TEST_F(ChromeComposeClientTest, TestInnerTextNodeOffsetNotFound) {
                           compose::mojom::InputMode::kPolish, false);
   compose::mojom::ComposeResponsePtr result = test_future.Take();
 
-  std::string result_string;
   EXPECT_TRUE(result);
   histograms().ExpectUniqueSample(
       compose::kInnerTextNodeOffsetFound,

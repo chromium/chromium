@@ -48,7 +48,6 @@ ManagedConfigurationStore::SetCurrentPolicy(
       removed_keys.push_back(item.first);
     }
   }
-  value_store::ValueStoreChangeList changes;
   value_store::LeveldbValueStore::WriteResult result =
       store_->Remove(removed_keys);
 

@@ -169,7 +169,6 @@ void AppendCommandLineArguments(base::CommandLine* cmd_line,
   // IE has some quirks with quote characters. Send them verbatim instead
   // of percent-encoding them.
   PercentUnencodeQuotes(&url_spec);
-  std::vector<std::wstring> command_line;
   bool contains_url = false;
   for (const auto& arg : raw_args) {
     auto wide_arg = base::UTF8ToWide(arg);

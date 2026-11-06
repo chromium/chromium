@@ -242,7 +242,6 @@ vector<FilePath> Index::Search(const string& query) {
 FileId Index::GetFileId(const FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureInitialized();
-  string file_path_str = file_path.AsUTF8Unsafe();
   if (file_ids_.find(file_path) != file_ids_.end())
     return file_ids_[file_path];
   file_ids_[file_path] = ++last_file_id_;

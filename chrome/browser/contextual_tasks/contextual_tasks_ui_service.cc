@@ -2503,7 +2503,6 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   // The "deb=nocobrowse1" and "ncb=1" params allow bypassing interception.
   bool should_bypass_interception = false;
-  std::string bypass_reason;
 
   if (is_nav_to_ai) {
     should_bypass_interception =

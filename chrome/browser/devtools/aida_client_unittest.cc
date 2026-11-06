@@ -286,7 +286,6 @@ TEST_F(AidaClientTest, ReusesOAuthToken) {
   run_loop2.Run();
   EXPECT_TRUE(
       std::holds_alternative<network::ResourceRequest>(delegate.response_));
-  std::string another_authorization_header;
   EXPECT_EQ(authorization_header, delegate.authorization_header_);
 }
 
