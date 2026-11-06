@@ -1,5 +1,9 @@
 This is a testharness.js-based test.
-[FAIL] isolate-and-require-corp (derived from blob URL creator)
-  assert_equals: expected "failure" but got "success"
+[FAIL] "isolate-and-require-corp" on the worker script is ignored
+  assert_equals: expected "success" but got "failure"
+[FAIL] "isolate-and-require-corp" is not inherited from the owner - blob URL
+  assert_equals: expected "success" but got "failure"
+[FAIL] "isolate-and-require-corp" is not inherited from the owner - data URL
+  assert_equals: expected "success" but got "failure"
 Harness: the test ran to completion.
 

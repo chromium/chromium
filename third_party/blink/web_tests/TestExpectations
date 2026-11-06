@@ -2559,6 +2559,8 @@ crbug.com/579037499 [ Mac15 ] external/wpt/html/document-isolation-policy/naviga
 
 # ====== New tests from wpt-importer added here ======
 external/wpt/html/browsers/history/the-location-interface/location-replace-cross-site.html [ Failure ]
+crbug.com/582442904 external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=cross_origin&worker_dip=credentialless&window_dip=credentialless [ Failure ]
+crbug.com/582442904 external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=cross_origin&worker_dip=credentialless&window_dip=none [ Failure ]
 crbug.com/579025372 external/wpt/html/semantics/forms/the-select-element/select-validity-option-descendants.html [ Crash Failure ]
 crbug.com/579037498 external/wpt/custom-elements/duplicate-attr-constructor-crash.xhtml [ Crash Failure Pass ]
 crbug.com/579016479 external/wpt/css/css-anchor-position/position-area-overflow-icb-006-ltr.html [ Failure ]
@@ -3162,7 +3164,6 @@ crbug.com/429130576 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backen
 crbug.com/429130576 [ Mac14 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/service/getCharacteristic/characteristic-found.https.window.html [ Crash ]
 crbug.com/429130576 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/service/getCharacteristic/characteristic-found.https.window.html [ Crash ]
 crbug.com/428754582 [ Mac13 ] external/wpt/fetch/metadata/generated/window-location.https.sub.html [ Skip Timeout ]
-crbug.com/428769113 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=cross_origin&worker_dip=credentialless&window_dip=credentialless [ Skip Timeout ]
 crbug.com/428769113 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=cross_origin&worker_dip=none&window_dip=credentialless [ Skip Timeout ]
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error.tentative.html [ Crash ]
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error-downgraded.tentative.html [ Crash ]
