@@ -807,7 +807,7 @@ BASE_FEATURE(kOverscrollHistoryNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
 // and using an opaque origin makes the existing origin-based security checks
 // deny such access by default, similarly to CSP sandboxed documents. See
 // https://crbug.com/559567801.
-BASE_FEATURE(kPdfOpaqueOrigin, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPdfOpaqueOrigin, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync, base::FEATURE_DISABLED_BY_DEFAULT);
