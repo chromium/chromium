@@ -132,7 +132,9 @@ TEST_P(DisplayParameterizedCaptureModePixelTest,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 
-TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
+// TODO(crbug.com/562458199): Re-enable this test.
+TEST_P(DisplayParameterizedCaptureModePixelTest,
+       DISABLED_VideoCaptureNotification) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   StartVideoRecordingImmediately();
