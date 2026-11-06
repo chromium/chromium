@@ -411,9 +411,8 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
                                            kInactiveDocumentErrorMessage));
   }
 
-  if (!ExecutionContext::From(script_state)
-           ->IsFeatureEnabled(
-               network::mojom::PermissionsPolicyFeature::kTools)) {
+  if (!document_->GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kNotAllowedError,
@@ -1252,9 +1251,8 @@ ScriptPromise<IDLSequence<Tool>> ModelContext::getTools(
                                            kInactiveDocumentErrorMessage));
   }
 
-  if (!ExecutionContext::From(script_state)
-           ->IsFeatureEnabled(
-               network::mojom::PermissionsPolicyFeature::kTools)) {
+  if (!document_->GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
     return ScriptPromise<IDLSequence<Tool>>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kNotAllowedError,
@@ -1354,9 +1352,8 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
                                            kInactiveDocumentErrorMessage));
   }
 
-  if (!ExecutionContext::From(script_state)
-           ->IsFeatureEnabled(
-               network::mojom::PermissionsPolicyFeature::kTools)) {
+  if (!document_->GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
     return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kNotAllowedError,
@@ -1508,11 +1505,10 @@ ScriptPromise<IDLString> ModelContext::RequestContinuationToken(
                                            kInactiveDocumentErrorMessage));
   }
 
-  // The `kTools` permission has already been checked for the execution context
-  // associated with `script_state`.
-  CHECK(
-      ExecutionContext::From(script_state)
-          ->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kTools));
+  // The `kTools` permission has already been checked for `document_` when
+  // registering the tool.
+  CHECK(document_->GetExecutionContext()->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kTools));
 
   auto it = pending_executions_.find(invocation_id);
   if (it == pending_executions_.end()) {
@@ -1582,9 +1578,8 @@ ScriptPromise<IDLUndefined> ModelContext::resumeTool(
                                            kInactiveDocumentErrorMessage));
   }
 
-  if (!ExecutionContext::From(script_state)
-           ->IsFeatureEnabled(
-               network::mojom::PermissionsPolicyFeature::kTools)) {
+  if (!document_->GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kNotAllowedError,
