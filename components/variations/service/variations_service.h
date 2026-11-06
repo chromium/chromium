@@ -106,6 +106,12 @@ class VariationsService
     // variations server.
     virtual void OnSeedFetched() {}
 
+    // Called when a seed fetch (200 OK or 304 Not Modified) updates the stored
+    // country or administrative area.
+    // ATTENTION: This is also called when the seed date crosses a UTC day
+    // boundary so that observers are notified at least once per day.
+    virtual void OnCountryOrAdminAreaChanged() {}
+
     // Called when the VariationsService is being destroyed.
     virtual void OnVariationsServiceDestroyed() {}
 
@@ -351,6 +357,7 @@ class VariationsService
 
   // Processes the result of StoreSeed().
   void OnSeedStoreResult(bool is_delta_compressed,
+                         bool geo_or_day_changed,
                          bool store_success,
                          VariationsSeed seed);
 
@@ -394,7 +401,9 @@ class VariationsService
   // time and clears failure streaks. If `response_date` has a value (present on
   // secure HTTPS responses), updates the stored seed date. If `country_code` is
   // non-empty (present on secure HTTPS responses), updates the stored session
-  // country and administrative area.
+  // country and administrative area. Notifies observers via
+  // `OnCountryOrAdminAreaChanged()` if the stored country or administrative
+  // area changed or the seed date crossed a UTC day boundary.
   void RecordSuccessfulFetchSeedNotModified(
       std::optional<base::Time> response_date,
       std::string_view country_code = std::string_view(),
@@ -410,6 +419,8 @@ class VariationsService
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
                            Observer_OnExperimentChangesDetected);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, Observer_OnSeedFetched);
+  FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
+                           Observer_OnCountryOrAdminAreaChanged);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedStoredWhenOKStatus);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedNotStoredWhenNonOKStatus);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, InstanceManipulations);
@@ -455,6 +466,10 @@ class VariationsService
 
   // Notify observers that a variations seed has been successfully fetched.
   void NotifySeedFetched();
+
+  // Notifies observers that the country, administrative area, or seed date day
+  // has changed.
+  void NotifyCountryOrAdminAreaChanged();
 
   // Called by SimpleURLLoader when |pending_seed_request_| load completes.
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);

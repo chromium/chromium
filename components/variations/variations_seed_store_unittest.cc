@@ -3650,7 +3650,8 @@ TEST_P(VariationsSeedStoreTestAllGroupsDates, UpdateSeedDateAndLogDayChange) {
   }
 
   base::HistogramTester histogram_tester;
-  seed_store.UpdateSeedDateAndLogDayChange(params.new_seed_date);
+  EXPECT_EQ(seed_store.UpdateSeedDateAndLogDayChange(params.new_seed_date),
+            params.expected_result);
 
   // Check that the seed date updates only when the new date is not null.
   base::Time stored_seed_date = GetSeedInfo(seed_store).seed_date;
