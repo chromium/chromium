@@ -80,6 +80,8 @@ class ScriptsSmokeTest(unittest.TestCase):
       cmdline.extend(
         ['--chromium-output-dir', self.options.chromium_output_dir]
       )
+    if self.options.remote_platform_options.device:
+      cmdline.extend(['--device', self.options.remote_platform_options.device])
     return_code, stdout = self.RunPerfScript(cmdline)
     if sys.version_info.major == 3:
       self.assertRegex(stdout, r'Available benchmarks .*? are:')
@@ -145,6 +147,8 @@ class ScriptsSmokeTest(unittest.TestCase):
       cmdline += ' --browser-executable=%s' % self.options.browser_executable
     if self.options.chromium_output_dir:
       cmdline += ' --chromium-output-dir=%s' % self.options.chromium_output_dir
+    if self.options.remote_platform_options.device:
+      cmdline += ' --device=%s' % self.options.remote_platform_options.device
     return_code, stdout = self.RunPerfScript(cmdline)
     self.assertEqual(return_code, 0, stdout)
     try:
