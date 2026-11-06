@@ -50,6 +50,10 @@ bool IsAllowedGeminiEnterpriseHost(const GURL& url) {
           "vertexaisearch.cloud.google",
           "vertexaisearch.cloud.google.com",
           "vertexaisearch.gemini-us.google",
+          // Gemini Enterprise for Googlers, so it can be set through policy
+          // (e.g. for dogfood rollouts). Exact host only; other
+          // `ucs-*.corp.google.com` hosts are pre-production.
+          "ucs-widget.corp.google.com",
       });
   return kAllowedHosts.contains(url.host());
 }
@@ -65,7 +69,8 @@ bool IsAllowedGeminiEnterprisePreProductionHost(const GURL& url) {
       {"enterprise-", ".gemini.google.com"},
       // e.g. vertexaisearch-staging.gemini-us.google
       {"vertexaisearch-", ".gemini-us.google"},
-      // e.g. ucs-widget.corp.google.com, ucs-app-autopush.corp.google.com
+      // e.g. ucs-widget-staging.corp.google.com,
+      // ucs-app-autopush.corp.google.com
       {"ucs-", ".corp.google.com"},
       // e.g. ucs-widget-staging.corp.cloud.google
       {"ucs-", ".corp.cloud.google"},

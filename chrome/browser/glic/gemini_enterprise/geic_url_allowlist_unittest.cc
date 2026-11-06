@@ -21,13 +21,24 @@ TEST_F(GeicUrlAllowlistTest, AllowedHosts) {
       GURL("https://business.gemini.google/home")));
   EXPECT_TRUE(IsAllowedGeminiEnterpriseHost(
       GURL("https://vertexaisearch.cloud.google.com/home")));
+  // Gemini Enterprise for Googlers.
+  EXPECT_TRUE(IsAllowedGeminiEnterpriseHost(
+      GURL("https://ucs-widget.corp.google.com/home")));
+  // It intentionally also matches the pre-production `ucs-` pattern, so it can
+  // be set from policy, Finch or the command line.
+  EXPECT_TRUE(IsAllowedGeminiEnterprisePreProductionHost(
+      GURL("https://ucs-widget.corp.google.com/home")));
 }
 
 TEST_F(GeicUrlAllowlistTest, PreProductionHostsAreNotPolicyHosts) {
   EXPECT_FALSE(IsAllowedGeminiEnterpriseHost(
       GURL("https://business-staging.gemini.google/home")));
   EXPECT_FALSE(IsAllowedGeminiEnterpriseHost(
-      GURL("https://ucs-widget.corp.google.com/home")));
+      GURL("https://ucs-widget-staging.corp.google.com/home")));
+  EXPECT_FALSE(IsAllowedGeminiEnterpriseHost(
+      GURL("https://ucs-app-autopush.corp.google.com/home")));
+  EXPECT_FALSE(IsAllowedGeminiEnterpriseHost(
+      GURL("https://ucs-widget.corp.cloud.google/home")));
 }
 
 TEST_F(GeicUrlAllowlistTest, PreProductionHosts) {
@@ -35,7 +46,7 @@ TEST_F(GeicUrlAllowlistTest, PreProductionHosts) {
       "https://business-staging.gemini.google/home",
       "https://enterprise-autopush.gemini.google.com/home",
       "https://vertexaisearch-staging.gemini-us.google/home",
-      "https://ucs-widget.corp.google.com/home",
+      "https://ucs-widget-autopush.corp.google.com/home",
       "https://ucs-app-autopush.corp.cloud.google/home",
       // A new environment label needs no code change.
       "https://business-preprod.gemini.google/home",

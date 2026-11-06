@@ -4,19 +4,21 @@ rubric: security
 severity: blocking
 ---
 
-**Rule.** Always require `url.SchemeIs(url::kHttpsScheme)`, reject embedded
-credentials (`!url.has_username() && !url.has_password()`), and validate origins
-against `geic::IsAllowedGeminiEnterpriseHost` (called by `IsValidGuestUrl` in
-`geic_enabling.cc`, which permits `http://` or arbitrary hosts only when
-`switches::kGlicDev` is set) or `tab->IsExpectedOrigin(url)` (for `OpenAuthTab`
-URLs in `IsAuthTabURLAllowed`). Never hardcode internal staging, autopush, or
-corp hostnames in production source, and never log full auth URLs containing
-query parameters or tokens (`DVLOG` only `url::Origin::Create(url)`).
+**Rule.** Always require HTTPS (`url.SchemeIs(url::kHttpsScheme)`) and reject
+embedded credentials (`!url.has_username() && !url.has_password()`). Validate
+guest URLs by source: policy -> `geic::IsAllowedGeminiEnterpriseHost` (exact
+hosts); Finch -> also `geic::IsAllowedGeminiEnterprisePreProductionHost`
+(product-prefixed, single-label patterns); `--geic-guest-url` -> also localhost.
+Auth tab URLs -> `tab->IsExpectedOrigin(url)` (in `IsAuthTabURLAllowed`). Add
+hosts or patterns only in `geic_url_allowlist.cc`, after Chrome Security /
+CrAISec review. Never hardcode them elsewhere, and never broaden to wildcards
+like `*.corp.google.com`. Never log full auth URLs containing query parameters
+or tokens (`DVLOG` only `url::Origin::Create(url)`).
 
 **Why.** Accepting `http://`, arbitrary hosts, or embedded credentials in
 `GeminiEnterpriseUrl` or `OpenAuthTab` exposes enterprise users to
 man-in-the-middle attacks, open redirects, and phishing via privileged WebUI
-Mojo handlers. Hardcoding staging or corp hostnames leaks internal endpoints,
+Mojo handlers. Scattered or wildcard host checks bypass the reviewed allowlist,
 and logging full OAuth URLs leaks sensitive authorization codes, state tokens,
 and parameters into diagnostic logs.
 

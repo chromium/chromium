@@ -200,6 +200,8 @@ TEST_F(GeicEnablingTest, AcceptsAllowedHosts) {
       ResolvePolicyUrl("https://vertexaisearch.cloud.google.com/").is_empty());
   EXPECT_FALSE(
       ResolvePolicyUrl("https://vertexaisearch.gemini-us.google/").is_empty());
+  EXPECT_FALSE(ResolvePolicyUrl("https://ucs-widget.corp.google.com/side-panel")
+                   .is_empty());
 }
 
 TEST_F(GeicEnablingTest, PolicyRejectsPreProductionHosts) {

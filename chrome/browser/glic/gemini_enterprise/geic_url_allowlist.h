@@ -16,10 +16,12 @@ namespace geic {
 bool IsAllowedGeminiEnterpriseHost(const GURL& url);
 
 // Returns true if `url`'s host is a pre-production or internal corp Gemini
-// Enterprise host, which may only be configured through Finch or the command
-// line (never through policy). Hosts are matched by product-prefixed patterns
-// (e.g. `business-<label>.gemini.google` or `ucs-<label>.corp.google.com`),
-// where `<label>` is a single DNS label. Production hosts don't match. Only
+// Enterprise host. These hosts are accepted from Finch or the command line.
+// Policy accepts only hosts allowed by `IsAllowedGeminiEnterpriseHost()`,
+// which may include a host that also matches here (e.g.
+// `ucs-widget.corp.google.com`). Hosts are matched by product-prefixed
+// patterns (e.g. `business-<label>.gemini.google` or
+// `ucs-<label>.corp.google.com`), where `<label>` is a single DNS label. Only
 // the host is checked; callers are responsible for scheme and other URL
 // requirements.
 bool IsAllowedGeminiEnterprisePreProductionHost(const GURL& url);
