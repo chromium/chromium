@@ -8,8 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/proxy_override_rules_private.h"
 #include "components/proxy_config/proxy_prefs_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -116,6 +119,18 @@ ProxyOverrideRulesTransformer::BrowserToExtensionPref(
     const base::Value& browser_pref,
     bool is_incognito_profile) {
   return browser_pref.Clone();
+}
+
+bool ProxyOverrideRulesTransformer::IsExtensionModifiable(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(profile);
+  policy::PolicyService* policy_service =
+      profile->GetProfilePolicyConnector()
+          ? profile->GetProfilePolicyConnector()->policy_service()
+          : nullptr;
+  return proxy_config::AreUserProxyOverrideRulesAllowed(profile->GetPrefs(),
+                                                        policy_service);
 }
 
 }  // namespace extensions

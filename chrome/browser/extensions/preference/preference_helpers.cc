@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/pref_mapping.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/event_router.h"
@@ -17,6 +19,7 @@
 #include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/pref_transformer_interface.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -68,6 +71,13 @@ const char* GetLevelOfControl(Profile* profile,
   const PrefService::Preference* pref = prefs->FindPreference(browser_pref);
   if (!pref->IsExtensionModifiable())
     return kNotControllable;
+
+  PrefTransformerInterface* transformer =
+      PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
+  CHECK(transformer);
+  if (!transformer->IsExtensionModifiable(profile)) {
+    return kNotControllable;
+  }
 
   if (ExtensionPrefsHelper::Get(profile)->DoesExtensionControlPref(
           extension_id, browser_pref, from_incognito_ptr)) {
