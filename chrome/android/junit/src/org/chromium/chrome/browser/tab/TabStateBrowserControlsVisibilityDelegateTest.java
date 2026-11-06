@@ -68,6 +68,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     private static final String SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED =
             "Same-origin Omnibox minimization is not implemented yet, crbug.com/578150286";
     private static final int HIDDEN_TOP_CONTROLS_OFFSET = -56;
+    private static final int FALLBACK_SHOW_AFTER_MS = 1500;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -973,6 +974,197 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         verifyControlsShownWithoutAnimation();
 
         ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @DisabledTest(message = "crbug.com/579544014")
+    @EnableFeatures(
+            ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION
+                    + ":fallback_show_after_ms/"
+                    + FALLBACK_SHOW_AFTER_MS)
+    public void testSameOriginMinimization_SlowLoadFallbackLocksBeforeCommit() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(FALLBACK_SHOW_AFTER_MS - 1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+
+        // Reach fallback_show_after_ms while the navigation is still in flight.
+        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+
+        // Time spent waiting after fallback fires does not eat into the post-commit lock window.
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
+        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @DisabledTest(message = "crbug.com/579544014")
+    @EnableFeatures(
+            ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION
+                    + ":fallback_show_after_ms/"
+                    + FALLBACK_SHOW_AFTER_MS)
+    public void testSameOriginMinimization_SlowLoadFallbackCountsFromFirstOverlappingNavigation() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL firstDestinationUrl = JUnitTestGURLs.BLUE_2;
+        GURL secondDestinationUrl = JUnitTestGURLs.BLUE_3;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        NavigationHandle firstNav = startNavigation(firstDestinationUrl, /* navigationId= */ 1L);
+        ShadowSystemClock.advanceBy(FALLBACK_SHOW_AFTER_MS - 100, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        NavigationHandle secondNav = startNavigation(secondDestinationUrl, /* navigationId= */ 2L);
+        finishNavigation(
+                firstNav,
+                firstDestinationUrl,
+                /* hasCommitted= */ false,
+                /* isSameOrigin= */ false,
+                /* isErrorPage= */ false);
+        ShadowSystemClock.advanceBy(99, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+
+        // The user has waited fallback_show_after_ms since navigation 1 started, and aborting
+        // navigation 1 did not cancel the timer while navigation 2 remained in flight.
+        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        finishNavigation(secondNav, secondDestinationUrl, /* isSameOrigin= */ true);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
+        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION
+                    + ":fallback_show_after_ms/"
+                    + FALLBACK_SHOW_AFTER_MS)
+    public void testSameOriginMinimization_AbortedNavigationCancelsSlowLoadFallback() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        finishNavigation(
+                navigation,
+                destinationUrl,
+                /* hasCommitted= */ false,
+                /* isSameOrigin= */ false,
+                /* isErrorPage= */ false);
+
+        ShadowSystemClock.advanceBy(FALLBACK_SHOW_AFTER_MS, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+    }
+
+    @Test
+    @DisabledTest(message = "crbug.com/579544014")
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_TabHiddenMidNavigationLocksControls() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        // Hide and re-show the tab while the navigation is still in flight. Clear the pushes from
+        // the TAB_HIDDEN lock so the check below only sees the push made on return.
+        hideTab(TabHidingType.ACTIVITY_HIDDEN);
+        clearInvocations(mConstraintsHelperJniMock);
+        mTab.show(TabSelectionType.FROM_USER);
+
+        // On return the in-flight navigation holds the load lock until commit, even past
+        // getLoadDelayMs().
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+
+        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
+        ShadowSystemClock.advanceBy(loadDelayMs, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @DisabledTest(message = "crbug.com/579544435")
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_EditableFocusAtNavigationStartLocksControls() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        // Focus an editable node before navigation starts, then blur it before commit so only the
+        // navigation load lock keeps the controls SHOWN.
+        delegate.onNodeAttributeUpdated(/* editable= */ true, /* password= */ false);
+
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        delegate.onNodeAttributeUpdated(/* editable= */ false, /* password= */ false);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
+        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+
+        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
         ShadowLooper.runUiThreadTasks();
         assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
     }
