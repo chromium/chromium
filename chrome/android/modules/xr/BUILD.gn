@@ -228,5 +228,6 @@ android_library("javatests") {
     "//base:tristate_java",
     "//chrome/android/javatests:chrome_test_java_helper",
     "//components/thin_webview:java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }

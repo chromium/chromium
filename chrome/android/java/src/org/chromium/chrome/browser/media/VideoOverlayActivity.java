@@ -9,6 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Intent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.IntentUtils;
@@ -41,8 +45,11 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
     protected static final String WEB_CONTENTS_KEY =
             "org.chromium.chrome.browser.media.VideoOverlayActivity.WebContents";
 
+    @JniType("::OverlayWindowAndroid")
+    public interface NativeOverlayWindowAndroid extends JniTypeToken {}
+
     private @Nullable UnguessableToken mNativeToken;
-    private long mNativeOverlayWindowAndroid;
+    private @Nullable JniRawPtr<NativeOverlayWindowAndroid> mNativeOverlayWindowAndroid;
 
     private @Nullable Tab mInitiatorTab;
     private @Nullable InitiatorTabObserver mTabObserver;
@@ -158,11 +165,19 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
     }
 
     @CalledByNative
+    void clearNativePtr() {
+        if (mNativeOverlayWindowAndroid != null) {
+            mNativeOverlayWindowAndroid.release();
+            mNativeOverlayWindowAndroid = null;
+        }
+    }
+
+    @CalledByNative
     protected void onWindowDestroyed() {
-        if (mNativeOverlayWindowAndroid == 0) {
+        if (mNativeOverlayWindowAndroid == null) {
             return;
         }
-        mNativeOverlayWindowAndroid = 0;
+        clearNativePtr();
         finishOverlay(/* closeByNative= */ true);
     }
 
@@ -189,87 +204,87 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
             int stereoMode, int projectionType, boolean isRecommended) {}
 
     protected void togglePlayPause(boolean toggleOn) {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().togglePlayPause(mNativeOverlayWindowAndroid, toggleOn);
         }
     }
 
     protected void nextTrack() {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().nextTrack(mNativeOverlayWindowAndroid);
         }
     }
 
     protected void previousTrack() {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().previousTrack(mNativeOverlayWindowAndroid);
         }
     }
 
     protected void nextSlide() {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().nextSlide(mNativeOverlayWindowAndroid);
         }
     }
 
     protected void previousSlide() {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().previousSlide(mNativeOverlayWindowAndroid);
         }
     }
 
     protected void toggleMicrophone(boolean toggleOn) {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().toggleMicrophone(mNativeOverlayWindowAndroid, toggleOn);
         }
     }
 
     protected void toggleCamera(boolean toggleOn) {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().toggleCamera(mNativeOverlayWindowAndroid, toggleOn);
         }
     }
 
     protected void hangUp() {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().hangUp(mNativeOverlayWindowAndroid);
         }
     }
 
     protected void hide() {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().hide(mNativeOverlayWindowAndroid);
         }
     }
 
     private void compositorViewCreated(CompositorView compositorView) {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get()
                     .compositorViewCreated(mNativeOverlayWindowAndroid, compositorView);
         }
     }
 
     protected void onViewSizeChanged(int width, int height) {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get()
                     .onViewSizeChanged(mNativeOverlayWindowAndroid, width, height);
         }
     }
 
     protected void onBackToTab() {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().onBackToTab(mNativeOverlayWindowAndroid);
         }
     }
 
     protected void onDismissal() {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().onDismissal(mNativeOverlayWindowAndroid);
         }
     }
 
     protected void seekTo(long positionMs) {
-        if (mNativeOverlayWindowAndroid != 0) {
+        if (mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().seekTo(mNativeOverlayWindowAndroid, positionMs);
         }
     }
@@ -286,7 +301,7 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
     }
 
     public boolean isNativeHandleInitialized() {
-        return mNativeOverlayWindowAndroid != 0;
+        return mNativeOverlayWindowAndroid != null;
     }
 
     protected UnguessableToken getNativeToken() {
@@ -307,10 +322,10 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
     protected void finishOverlay(boolean closeByNative) {
         cleanup();
 
-        if (!closeByNative && mNativeOverlayWindowAndroid != 0) {
+        if (!closeByNative && mNativeOverlayWindowAndroid != null) {
             VideoOverlayActivityJni.get().destroyStartedByJava(mNativeOverlayWindowAndroid);
         }
-        mNativeOverlayWindowAndroid = 0;
+        clearNativePtr();
 
         if (mCompositorView != null) {
             mCompositorView.destroy();
@@ -333,37 +348,38 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
 
     @NativeMethods
     public interface Natives {
-        long onActivityStart(
+        @Nullable JniRawPtr<NativeOverlayWindowAndroid> onActivityStart(
                 UnguessableToken token, VideoOverlayActivity self, @Nullable WindowAndroid window);
 
-        void destroyStartedByJava(long nativeOverlayWindowAndroid);
+        void destroyStartedByJava(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void togglePlayPause(long nativeOverlayWindowAndroid, boolean toggleOn);
+        void togglePlayPause(JniPtr<NativeOverlayWindowAndroid> self, boolean toggleOn);
 
-        void nextTrack(long nativeOverlayWindowAndroid);
+        void nextTrack(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void previousTrack(long nativeOverlayWindowAndroid);
+        void previousTrack(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void nextSlide(long nativeOverlayWindowAndroid);
+        void nextSlide(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void previousSlide(long nativeOverlayWindowAndroid);
+        void previousSlide(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void toggleMicrophone(long nativeOverlayWindowAndroid, boolean toggleOn);
+        void toggleMicrophone(JniPtr<NativeOverlayWindowAndroid> self, boolean toggleOn);
 
-        void toggleCamera(long nativeOverlayWindowAndroid, boolean toggleOn);
+        void toggleCamera(JniPtr<NativeOverlayWindowAndroid> self, boolean toggleOn);
 
-        void hangUp(long nativeOverlayWindowAndroid);
+        void hangUp(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void hide(long nativeOverlayWindowAndroid);
+        void hide(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void compositorViewCreated(long nativeOverlayWindowAndroid, CompositorView compositorView);
+        void compositorViewCreated(
+                JniPtr<NativeOverlayWindowAndroid> self, CompositorView compositorView);
 
-        void onViewSizeChanged(long nativeOverlayWindowAndroid, int width, int height);
+        void onViewSizeChanged(JniPtr<NativeOverlayWindowAndroid> self, int width, int height);
 
-        void onBackToTab(long nativeOverlayWindowAndroid);
+        void onBackToTab(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void onDismissal(long nativeOverlayWindowAndroid);
+        void onDismissal(JniPtr<NativeOverlayWindowAndroid> self);
 
-        void seekTo(long nativeOverlayWindowAndroid, long positionMs);
+        void seekTo(JniPtr<NativeOverlayWindowAndroid> self, long positionMs);
     }
 }

@@ -21,6 +21,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.jni_zero.JniRawPtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -97,7 +98,7 @@ public class ImmersiveVideoPlaybackActivityTest {
         mTab = mActivityTestRule.getActivityTab();
         VideoOverlayActivityJni.setInstanceForTesting(mNativeMock);
         when(mNativeMock.onActivityStart(eq(mNativeWindowToken), any(), any()))
-                .thenReturn(NATIVE_OVERLAY);
+                .thenAnswer(inv -> JniRawPtr.createForTesting(NATIVE_OVERLAY));
         DeviceInfo.setIsXrForTesting(true);
 
         ImmersiveVideoPlaybackActivity.setPlaybackCoordinatorForTesting(mCoordinatorMock);
@@ -242,7 +243,7 @@ public class ImmersiveVideoPlaybackActivityTest {
         ImmersiveVideoPlaybackActivity activity = startImmersiveVideoPlaybackActivity();
 
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onPauseWithNative());
-        verify(mNativeMock).togglePlayPause(NATIVE_OVERLAY, false);
+        verify(mNativeMock).togglePlayPause(any(), eq(false));
 
         testExitOn(activity, () -> activity.close());
     }

@@ -20,6 +20,7 @@
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android_compositor.h"
 
 using WindowMap = base::flat_map<base::UnguessableToken, OverlayWindowAndroid*>;
@@ -105,11 +106,9 @@ void OverlayWindowAndroid::OnActivityStopped() {
 }
 
 void OverlayWindowAndroid::DestroyStartedByJava(JNIEnv* env) {
-  // Note that the java side also clears its native ptr when calling us, so it's
-  // okay that we don't notify it in the dtor.
-  // ** IMPORTANT ** Do not add calls here unless the above statement continues
-  // to be true.  It's unlikely that anything on the native side should call
-  // this method directly.
+  if (base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env)) {
+    Java_VideoOverlayActivity_clearNativePtr(env, obj);
+  }
   java_ref_.reset();
 
   // Stop the timer for completeness, though resetting `java_ref_` will make it
@@ -244,7 +243,8 @@ void OverlayWindowAndroid::OnDismissal(JNIEnv* env) {
   }
 }
 
-static int64_t JNI_VideoOverlayActivity_OnActivityStart(
+static jni_zero::JniRawPtr<OverlayWindowAndroid>
+JNI_VideoOverlayActivity_OnActivityStart(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_token,
     const jni_zero::JavaRef<jobject>& self,
@@ -253,10 +253,10 @@ static int64_t JNI_VideoOverlayActivity_OnActivityStart(
       env, j_token);
   OverlayWindowAndroid* thiz = OverlayWindowAndroid::FromToken(token);
   if (!thiz) {
-    return 0;
+    return nullptr;
   }
   thiz->Initialize(env, self, window);
-  return reinterpret_cast<int64_t>(thiz);
+  return jni_zero::MakeRaw(thiz);
 }
 
 void OverlayWindowAndroid::OnWindowDestroyedJava() {
