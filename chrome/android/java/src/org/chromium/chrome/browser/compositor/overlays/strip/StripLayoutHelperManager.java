@@ -329,6 +329,7 @@ public class StripLayoutHelperManager
 
         @Override
         public void click(float x, float y, int buttons, int modifiers) {
+            // Keep getClickedViewForTesting() in sync.
             if (DragDropGlobalState.hasValue()) {
                 return;
             }
@@ -1384,6 +1385,22 @@ public class StripLayoutHelperManager
 
     public @Nullable TintedCompositorButton getModelSelectorButton() {
         return mTrailingButtonsCoordinator.getModelSelectorButton();
+    }
+
+    /**
+     * Returns the view that a touch click at ({@code x}, {@code y}) would reach, without clicking,
+     * or null if the click would reach nothing or a trailing button other than the model selector.
+     * Same order as TabStripEventHandler#click(), so tests can check that a target is clickable
+     * before simulating a click.
+     */
+    public @Nullable StripLayoutView getClickedViewForTesting(float x, float y) {
+        if (DragDropGlobalState.hasValue()) return null;
+        TintedCompositorButton modelSelectorButton = getModelSelectorButton();
+        if (modelSelectorButton != null && modelSelectorButton.checkClickedOrHovered(x, y)) {
+            return modelSelectorButton;
+        }
+        if (mTrailingButtonsCoordinator.checkClickedOrHovered(x, y)) return null;
+        return getActiveStripLayoutHelper().getClickedViewForTesting(x, y);
     }
 
     @Override

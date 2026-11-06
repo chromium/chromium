@@ -19,8 +19,6 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.OptionalViewElement;
@@ -30,8 +28,6 @@ import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -53,7 +49,7 @@ import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.signin.SignedOutAccountMenuFacility;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
-import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -77,7 +73,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     public static final ViewSpec<View> TAB_SEARCH_BUTTON = viewSpec(withId(R.id.tab_search_button));
 
     // The first show inflates the whole overlay, which can take several seconds on loaded bots.
-    private static final long TAB_SEARCH_OVERLAY_OPEN_TIMEOUT_MS = 7500L;
+    public static final long TAB_SEARCH_OVERLAY_OPEN_TIMEOUT_MS = 7500L;
 
     public final OptionalViewElement<View> optionalToolbarMicButtonElement;
     public final OptionalViewElement<View> homeButtonElement;
@@ -186,6 +182,17 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         return signinButtonElement.clickTo().enterFacility(new SignedOutAccountMenuFacility());
     }
 
+    /**
+     * Expects the horizontal tab strip. Only tablets and desktop have one.
+     *
+     * <p>Each call enters a new {@link TabStripFacility}, so keep the returned one instead of
+     * calling this again on the same Station.
+     */
+    public TabStripFacility<CtaPageStation> expectTabStrip() {
+        assert getActivity().isTablet() : "The tab strip is only shown on tablets and desktop";
+        return noopTo().enterFacility(new TabStripFacility<>());
+    }
+
     /** Opens the Tab Search overlay by clicking the tab search button. */
     public TabSearchOverlayFacility<CtaPageStation> openTabSearchOverlay() {
         recheckActiveConditions();
@@ -208,21 +215,8 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         }
 
         // In the horizontal tab strip, the tab search button is drawn in the native composited UI
-        // without an Android View, so simulate a click on the compositor button directly.
-        StripLayoutHelper strip = TabStripUtils.getStripLayoutHelper(activity, mIsIncognito);
-        assert strip != null;
-        CompositorButton tabSearchButton = strip.getTabSearchButton();
-        assert tabSearchButton != null;
-        return runTo(
-                        () -> {
-                            TabStripUtils.settleDownCompositor(strip);
-                            TabStripUtils.clickCompositorButton(
-                                    tabSearchButton,
-                                    InstrumentationRegistry.getInstrumentation(),
-                                    activity);
-                        })
-                .withTimeout(TAB_SEARCH_OVERLAY_OPEN_TIMEOUT_MS)
-                .enterFacility(new TabSearchOverlayFacility<>());
+        // without an Android View, so click it through the TabStripFacility.
+        return expectTabStrip().openTabSearchOverlay();
     }
 
     /** Opens the Tab Search overlay via keyboard shortcut (Alt+Shift+A). */

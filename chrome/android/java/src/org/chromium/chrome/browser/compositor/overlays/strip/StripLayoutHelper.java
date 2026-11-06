@@ -3664,8 +3664,20 @@ public class StripLayoutHelper
     }
 
     private @Nullable StripLayoutView determineClickedView(float x, float y, int buttons) {
-        if (mNewTabButton.click(x, y, buttons)) return mNewTabButton;
-        if (mTabSearchButton.click(x, y, buttons)) return mTabSearchButton;
+        StripLayoutView view = hitTest(x, y, buttons);
+        // Resets the pressed state of the clicked button.
+        if (view == mNewTabButton) mNewTabButton.click(x, y, buttons);
+        if (view == mTabSearchButton) mTabSearchButton.click(x, y, buttons);
+        return view;
+    }
+
+    /** Returns the view that a click at ({@code x}, {@code y}) reaches, without side effects. */
+    private @Nullable StripLayoutView hitTest(float x, float y, int buttons) {
+        boolean isTouchOrPrimary = MotionEventUtils.isTouchOrPrimaryButton(buttons);
+        if (isTouchOrPrimary && mNewTabButton.checkClickedOrHovered(x, y)) return mNewTabButton;
+        if (isTouchOrPrimary && mTabSearchButton.checkClickedOrHovered(x, y)) {
+            return mTabSearchButton;
+        }
         StripLayoutView view = getViewAtPositionX(x, true);
         if (view instanceof StripLayoutTab clickedTab) {
             if (clickedTab.checkCloseHitTest(x, y) || MotionEventUtils.isTertiaryButton(buttons)) {
@@ -5093,6 +5105,13 @@ public class StripLayoutHelper
 
     public boolean getInReorderModeForTesting() {
         return mReorderDelegate.getInReorderMode();
+    }
+
+    /**
+     * Returns the view that a touch click at ({@code x}, {@code y}) would reach, without clicking.
+     */
+    public @Nullable StripLayoutView getClickedViewForTesting(float x, float y) {
+        return hitTest(x, y, MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
     }
 
     public void startReorderModeAtIndexForTesting(int index) {
