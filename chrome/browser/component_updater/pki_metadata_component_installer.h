@@ -112,8 +112,8 @@ class PKIMetadataComponentInstallerService final {
   struct LoadedPKIMetadata {
     LoadedPKIMetadata();
     ~LoadedPKIMetadata();
-    LoadedPKIMetadata(LoadedPKIMetadata&&);
-    LoadedPKIMetadata& operator=(LoadedPKIMetadata&&);
+    LoadedPKIMetadata(LoadedPKIMetadata&&) noexcept;
+    LoadedPKIMetadata& operator=(LoadedPKIMetadata&&) noexcept;
 
     bool network_service_only = false;
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -227,7 +227,8 @@ class PKIMetadataComponentInstallerService final {
     MtcCaIdAndLandmarkTrustAnchorIds();
     ~MtcCaIdAndLandmarkTrustAnchorIds();
     MtcCaIdAndLandmarkTrustAnchorIds(const MtcCaIdAndLandmarkTrustAnchorIds&);
-    MtcCaIdAndLandmarkTrustAnchorIds(MtcCaIdAndLandmarkTrustAnchorIds&&);
+    MtcCaIdAndLandmarkTrustAnchorIds(
+        MtcCaIdAndLandmarkTrustAnchorIds&&) noexcept;
 
     std::vector<uint8_t> ca_id;
     std::vector<std::vector<uint8_t>> landmark_trust_anchor_ids;

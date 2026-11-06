@@ -20,8 +20,8 @@ struct ProxyInfo {
   ProxyInfo(const ProxyInfo& proxy_info);
   ProxyInfo& operator=(const ProxyInfo& proxy_info);
 
-  ProxyInfo(ProxyInfo&& proxy_info);
-  ProxyInfo& operator=(ProxyInfo&& proxy_info);
+  ProxyInfo(ProxyInfo&& proxy_info) noexcept;
+  ProxyInfo& operator=(ProxyInfo&& proxy_info) noexcept;
 
   // Specifies the configuration is Web Proxy Auto Discovery (WPAD).
   bool auto_detect = false;

@@ -22,7 +22,7 @@ ProxyInfo::ProxyInfo(bool auto_detect,
 ProxyInfo::ProxyInfo(const ProxyInfo& proxy_info) = default;
 ProxyInfo& ProxyInfo::operator=(const ProxyInfo& proxy_info) = default;
 
-ProxyInfo::ProxyInfo(ProxyInfo&& proxy_info) = default;
-ProxyInfo& ProxyInfo::operator=(ProxyInfo&& proxy_info) = default;
+ProxyInfo::ProxyInfo(ProxyInfo&& proxy_info) noexcept = default;
+ProxyInfo& ProxyInfo::operator=(ProxyInfo&& proxy_info) noexcept = default;
 
 }  // namespace winhttp

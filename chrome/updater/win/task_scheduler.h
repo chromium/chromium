@@ -80,10 +80,10 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
   struct TaskInfo {
     TaskInfo();
     TaskInfo(const TaskInfo&);
-    TaskInfo(TaskInfo&&);
+    TaskInfo(TaskInfo&&) noexcept;
     ~TaskInfo();
     TaskInfo& operator=(const TaskInfo&);
-    TaskInfo& operator=(TaskInfo&&);
+    TaskInfo& operator=(TaskInfo&&) noexcept;
 
     std::wstring name;
 

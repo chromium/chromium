@@ -70,8 +70,8 @@ struct ComponentInfo {
                 const std::string& cohort_id);
   ComponentInfo(const ComponentInfo& other);
   ComponentInfo& operator=(const ComponentInfo& other);
-  ComponentInfo(ComponentInfo&& other);
-  ComponentInfo& operator=(ComponentInfo&& other);
+  ComponentInfo(ComponentInfo&& other) noexcept;
+  ComponentInfo& operator=(ComponentInfo&& other) noexcept;
   ~ComponentInfo();
 
   std::string id;
@@ -98,8 +98,8 @@ struct ComponentRegistration {
       bool allow_updates);
   ComponentRegistration(const ComponentRegistration& other);
   ComponentRegistration& operator=(const ComponentRegistration& other);
-  ComponentRegistration(ComponentRegistration&& other);
-  ComponentRegistration& operator=(ComponentRegistration&& other);
+  ComponentRegistration(ComponentRegistration&& other) noexcept;
+  ComponentRegistration& operator=(ComponentRegistration&& other) noexcept;
   ~ComponentRegistration();
 
   std::string app_id;

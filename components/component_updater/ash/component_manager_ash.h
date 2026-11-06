@@ -24,8 +24,8 @@ struct COMPONENT_EXPORT(COMPONENT_UPDATER_ASH) CompatibleComponentInfo {
   CompatibleComponentInfo(const CompatibleComponentInfo& rhs) = delete;
   CompatibleComponentInfo& operator=(const CompatibleComponentInfo& rhs) =
       delete;
-  CompatibleComponentInfo(CompatibleComponentInfo&& rhs);
-  CompatibleComponentInfo& operator=(CompatibleComponentInfo&& rhs);
+  CompatibleComponentInfo(CompatibleComponentInfo&& rhs) noexcept;
+  CompatibleComponentInfo& operator=(CompatibleComponentInfo&& rhs) noexcept;
   ~CompatibleComponentInfo();
   base::FilePath path;
   std::optional<base::Version> version;

@@ -342,10 +342,11 @@ struct PolicyServiceProxyConfiguration {
   PolicyServiceProxyConfiguration();
   ~PolicyServiceProxyConfiguration();
   PolicyServiceProxyConfiguration(const PolicyServiceProxyConfiguration&);
-  PolicyServiceProxyConfiguration(PolicyServiceProxyConfiguration&&);
+  PolicyServiceProxyConfiguration(PolicyServiceProxyConfiguration&&) noexcept;
   PolicyServiceProxyConfiguration& operator=(
       const PolicyServiceProxyConfiguration&);
-  PolicyServiceProxyConfiguration& operator=(PolicyServiceProxyConfiguration&&);
+  PolicyServiceProxyConfiguration& operator=(
+      PolicyServiceProxyConfiguration&&) noexcept;
 
   // Note `Get()` returns a nullopt when there's no proxy policies. Otherwise
   // `proxy_auto_detect` must have a value, and is only set to true when the

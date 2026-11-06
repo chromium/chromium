@@ -492,11 +492,11 @@ PolicyServiceProxyConfiguration::~PolicyServiceProxyConfiguration() = default;
 PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration(
     const PolicyServiceProxyConfiguration&) = default;
 PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration(
-    PolicyServiceProxyConfiguration&&) = default;
+    PolicyServiceProxyConfiguration&&) noexcept = default;
 PolicyServiceProxyConfiguration& PolicyServiceProxyConfiguration::operator=(
     const PolicyServiceProxyConfiguration&) = default;
 PolicyServiceProxyConfiguration& PolicyServiceProxyConfiguration::operator=(
-    PolicyServiceProxyConfiguration&&) = default;
+    PolicyServiceProxyConfiguration&&) noexcept = default;
 
 std::optional<PolicyServiceProxyConfiguration>
 PolicyServiceProxyConfiguration::Get(

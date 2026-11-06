@@ -19,9 +19,9 @@ CompatibleComponentInfo::CompatibleComponentInfo(
     : path(path_in), version(version_in) {}
 
 CompatibleComponentInfo::CompatibleComponentInfo(
-    CompatibleComponentInfo&& lhs) = default;
+    CompatibleComponentInfo&& lhs) noexcept = default;
 CompatibleComponentInfo& CompatibleComponentInfo::operator=(
-    CompatibleComponentInfo&& lhs) = default;
+    CompatibleComponentInfo&& lhs) noexcept = default;
 
 CompatibleComponentInfo::~CompatibleComponentInfo() = default;
 

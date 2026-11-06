@@ -28,7 +28,7 @@ class ScopedWinHttpProxyInfo {
   ScopedWinHttpProxyInfo(const ScopedWinHttpProxyInfo& other) = delete;
   ScopedWinHttpProxyInfo& operator=(const ScopedWinHttpProxyInfo& other) =
       delete;
-  ScopedWinHttpProxyInfo(ScopedWinHttpProxyInfo&& other) {
+  ScopedWinHttpProxyInfo(ScopedWinHttpProxyInfo&& other) noexcept {
     proxy_info_.dwAccessType = other.proxy_info_.dwAccessType;
     proxy_info_.lpszProxy = other.proxy_info_.lpszProxy;
     other.proxy_info_.lpszProxy = nullptr;
@@ -37,7 +37,7 @@ class ScopedWinHttpProxyInfo {
     other.proxy_info_.lpszProxyBypass = nullptr;
   }
 
-  ScopedWinHttpProxyInfo& operator=(ScopedWinHttpProxyInfo&& other) {
+  ScopedWinHttpProxyInfo& operator=(ScopedWinHttpProxyInfo&& other) noexcept {
     proxy_info_.dwAccessType = other.proxy_info_.dwAccessType;
     proxy_info_.lpszProxy = other.proxy_info_.lpszProxy;
     other.proxy_info_.lpszProxy = nullptr;

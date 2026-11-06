@@ -68,8 +68,8 @@ struct AppArgs {
   ~AppArgs();
   AppArgs(const AppArgs&);
   AppArgs& operator=(const AppArgs&);
-  AppArgs(AppArgs&&);
-  AppArgs& operator=(AppArgs&&);
+  AppArgs(AppArgs&&) noexcept;
+  AppArgs& operator=(AppArgs&&) noexcept;
 
   // An ASCII-encoded lowercase string. Must not be empty.
   std::string app_id;
@@ -111,8 +111,8 @@ struct TagArgs {
   ~TagArgs();
   TagArgs(const TagArgs&);
   TagArgs& operator=(const TagArgs&);
-  TagArgs(TagArgs&&);
-  TagArgs& operator=(TagArgs&&);
+  TagArgs(TagArgs&&) noexcept;
+  TagArgs& operator=(TagArgs&&) noexcept;
 
   std::string bundle_name;
   std::string installation_id;

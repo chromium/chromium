@@ -63,8 +63,8 @@ struct OS {
   OS();
   OS(const OS&) = delete;
   OS& operator=(const OS&) = delete;
-  OS(OS&&);
-  OS& operator=(OS&&);
+  OS(OS&&) noexcept;
+  OS& operator=(OS&&) noexcept;
   ~OS();
 
   std::string platform;
@@ -136,8 +136,8 @@ struct App {
   App();
   App(const App&) = delete;
   App& operator=(const App&) = delete;
-  App(App&&);
-  App& operator=(App&&);
+  App(App&&) noexcept;
+  App& operator=(App&&) noexcept;
   ~App();
 
   std::string app_id;
@@ -179,8 +179,8 @@ struct Request {
   Request();
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
-  Request(Request&&);
-  Request& operator=(Request&&);
+  Request(Request&&) noexcept;
+  Request& operator=(Request&&) noexcept;
   ~Request();
 
   std::string protocol_version;

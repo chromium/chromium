@@ -269,8 +269,8 @@ struct CrxComponent {
   CrxComponent();
   CrxComponent(const CrxComponent& other);
   CrxComponent& operator=(const CrxComponent& other);
-  CrxComponent(CrxComponent&& other);
-  CrxComponent& operator=(CrxComponent&& other);
+  CrxComponent(CrxComponent&& other) noexcept;
+  CrxComponent& operator=(CrxComponent&& other) noexcept;
   ~CrxComponent();
 
   // Optional SHA256 hash of the CRX's public key. If not supplied, the unpacker

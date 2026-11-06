@@ -70,8 +70,9 @@ ComponentInfo::ComponentInfo(const std::string& id,
       cohort_id(cohort_id) {}
 ComponentInfo::ComponentInfo(const ComponentInfo& other) = default;
 ComponentInfo& ComponentInfo::operator=(const ComponentInfo& other) = default;
-ComponentInfo::ComponentInfo(ComponentInfo&& other) = default;
-ComponentInfo& ComponentInfo::operator=(ComponentInfo&& other) = default;
+ComponentInfo::ComponentInfo(ComponentInfo&& other) noexcept = default;
+ComponentInfo& ComponentInfo::operator=(ComponentInfo&& other) noexcept =
+    default;
 ComponentInfo::~ComponentInfo() = default;
 
 ComponentRegistration::ComponentRegistration(
@@ -106,10 +107,10 @@ ComponentRegistration::ComponentRegistration(
     const ComponentRegistration& other) = default;
 ComponentRegistration& ComponentRegistration::operator=(
     const ComponentRegistration& other) = default;
-ComponentRegistration::ComponentRegistration(ComponentRegistration&& other) =
-    default;
+ComponentRegistration::ComponentRegistration(
+    ComponentRegistration&& other) noexcept = default;
 ComponentRegistration& ComponentRegistration::operator=(
-    ComponentRegistration&& other) = default;
+    ComponentRegistration&& other) noexcept = default;
 ComponentRegistration::~ComponentRegistration() = default;
 
 CrxUpdateService::CrxUpdateService(scoped_refptr<Configurator> config,

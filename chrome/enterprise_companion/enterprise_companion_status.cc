@@ -125,10 +125,10 @@ PersistedError::PersistedError(int space,
                                const std::string& description)
     : space(space), code(code), description(description) {}
 PersistedError::PersistedError(const PersistedError&) = default;
-PersistedError::PersistedError(PersistedError&&) = default;
+PersistedError::PersistedError(PersistedError&&) noexcept = default;
 PersistedError::~PersistedError() = default;
 PersistedError& PersistedError::operator=(const PersistedError&) = default;
-PersistedError& PersistedError::operator=(PersistedError&&) = default;
+PersistedError& PersistedError::operator=(PersistedError&&) noexcept = default;
 
 std::string EnterpriseCompanionStatus::description() const {
   return std::visit(

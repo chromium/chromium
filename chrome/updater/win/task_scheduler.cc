@@ -1419,11 +1419,11 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
 TaskScheduler::TaskInfo::TaskInfo() = default;
 TaskScheduler::TaskInfo::TaskInfo(const TaskScheduler::TaskInfo&) = default;
-TaskScheduler::TaskInfo::TaskInfo(TaskScheduler::TaskInfo&&) = default;
+TaskScheduler::TaskInfo::TaskInfo(TaskScheduler::TaskInfo&&) noexcept = default;
 TaskScheduler::TaskInfo& TaskScheduler::TaskInfo::operator=(
     const TaskScheduler::TaskInfo&) = default;
 TaskScheduler::TaskInfo& TaskScheduler::TaskInfo::operator=(
-    TaskScheduler::TaskInfo&&) = default;
+    TaskScheduler::TaskInfo&&) noexcept = default;
 TaskScheduler::TaskInfo::~TaskInfo() = default;
 
 // static.

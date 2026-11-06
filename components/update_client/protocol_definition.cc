@@ -11,8 +11,8 @@
 namespace update_client::protocol_request {
 
 OS::OS() = default;
-OS::OS(OS&&) = default;
-OS& OS::operator=(OS&&) = default;
+OS::OS(OS&&) noexcept = default;
+OS& OS::operator=(OS&&) noexcept = default;
 OS::~OS() = default;
 
 Updater::Updater() = default;
@@ -38,13 +38,13 @@ Ping::Ping(const Ping&) = default;
 Ping::~Ping() = default;
 
 App::App() = default;
-App::App(App&&) = default;
-App& App::operator=(App&&) = default;
+App::App(App&&) noexcept = default;
+App& App::operator=(App&&) noexcept = default;
 App::~App() = default;
 
 Request::Request() = default;
-Request::Request(Request&&) = default;
-Request& Request::operator=(Request&&) = default;
+Request::Request(Request&&) noexcept = default;
+Request& Request::operator=(Request&&) noexcept = default;
 Request::~Request() = default;
 
 }  // namespace update_client::protocol_request
