@@ -3808,6 +3808,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure"
+    units="ms" expires_after="2027-04-25">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The rest of the delayed main (TCP) job's wait time when a QUIC connection
+    attempt of the alternative job (or the DNS ALPN H3 job) fails after the QUIC
+    job reported its connection as in flight, while the QUIC job keeps trying
+    other endpoints. Only QuicSessionPool::AsyncDnsJob reports such failures, so
+    this is recorded only when the AsyncDnsQuicJob feature is enabled. This is
+    the wait that the AsyncDnsQuicJob FastFail param skips by resuming the main
+    job right away. Without FastFail, the main job keeps waiting.
+
+    Recorded in both FastFail arms, at most once per set of jobs of an
+    HttpStreamFactory::JobController (a proxy fallback restarts them). Not
+    recorded if the QUIC job already reported a failure when it initialized its
+    connection, or if another job was already bound to the request, so that both
+    arms apply the same recording condition per JobController. The aggregate
+    populations can still differ through effects on later requests, such as H2
+    session availability.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.MainJobWaitTimeWithAvailableSpdySession"
     units="ms" expires_after="2026-11-01">
   <owner>fayang@chromium.org</owner>

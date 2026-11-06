@@ -141,6 +141,12 @@ class HttpStreamFactory::JobController
   // Resume the other job if there's an error raised.
   void OnConnectionInitialized(Job* job, int rv) override;
 
+  // Invoked when a QUIC attempt of `job` fails after OnConnectionInitialized()
+  // reported the connection in flight. Records the main job's remaining wait,
+  // and with kAsyncDnsQuicJobFastFail, resumes the main job without waiting
+  // for the rest of its delay.
+  void OnQuicAttemptFailed(Job* job, int rv) override;
+
   // Return false if |job| can advance to the next state. Otherwise, |job|
   // will wait for Job::Resume() to be called before advancing.
   bool ShouldWait(Job* job) override;
@@ -270,6 +276,11 @@ class HttpStreamFactory::JobController
   // Returns whether |job| is an orphaned job.
   bool IsJobOrphaned(Job* job) const;
 
+  // Returns true if `job` is the QUIC job whose progress gates `main_job_`.
+  // `dns_alpn_h3_job_` gates it only while `alternative_job_` does not exist,
+  // matching MaybeResumeMainJob().
+  bool IsQuicJobGatingMainJob(const Job* job) const;
+
   // Calculates why Chrome uses a specific transport protocol for HTTP semantics
   // and returns it as an enum.
   // This returns ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON as a default value
@@ -375,6 +386,13 @@ class HttpStreamFactory::JobController
   // True if the main job was blocked and has been resumed in ResumeMainJob().
   bool main_job_is_resumed_ = false;
 
+  // True once OnConnectionInitialized() reported a failure of the QUIC job
+  // that gates the main job. Later attempt failures of that job are ignored.
+  bool quic_job_initialization_failed_ = false;
+
+  // True once OnQuicAttemptFailed() recorded the main job's remaining wait.
+  bool main_job_wait_remaining_recorded_ = false;
+
   // If true, delay main job even the request can be sent immediately on an
   // available SPDY session.
   bool delay_main_job_with_available_spdy_session_;
@@ -385,6 +403,9 @@ class HttpStreamFactory::JobController
 
   // Waiting time for the main job before it is resumed.
   base::TimeDelta main_job_wait_time_;
+
+  // When the most recently posted ResumeMainJob() task is scheduled to run.
+  base::TimeTicks main_job_resume_time_;
 
   // At the point where a Job is irrevocably tied to |request_|, we set this.
   // It will be nulled when the |request_| is finished.

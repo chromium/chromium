@@ -119,6 +119,11 @@ class HttpStreamFactory::Job
     // early chance to handle any errors.
     virtual void OnConnectionInitialized(Job* job, int rv) = 0;
 
+    // Invoked when a QUIC connection attempt of `job` fails with `rv` after
+    // OnConnectionInitialized() was called, while `job` keeps trying other
+    // endpoints.
+    virtual void OnQuicAttemptFailed(Job* job, int rv) = 0;
+
     // Return false if |job| can advance to the next state. Otherwise, |job|
     // will wait for Job::Resume() to be called before advancing.
     virtual bool ShouldWait(Job* job) = 0;
@@ -306,6 +311,11 @@ class HttpStreamFactory::Job
   // created. It's called with the result of either failed session creation or
   // an attempted crypto connection.
   void OnQuicSessionCreated(int result);
+
+  // For a QUIC job, called when a connection attempt fails after
+  // OnQuicHostResolution() or OnQuicSessionCreated() reported the connection as
+  // in flight, while the QUIC job keeps trying other endpoints.
+  void OnQuicAttemptFailed(int result);
 
   // Invoked when the underlying connection fails on the default network.
   void OnFailedOnDefaultNetwork(int result);

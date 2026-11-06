@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -627,6 +629,25 @@ class HttpStreamFactoryJobControllerTest
   void TestFirstQuicCandidateFails(bool async_quic_session,
                                    bool fast_fail,
                                    bool async_dns = false);
+  void TestOnQuicAttemptFailed(bool use_alternative_job, bool fast_fail);
+  void TestQuicAttemptFailsAfterConnectionInitialized(bool async_quic_session,
+                                                      bool fast_fail);
+
+  // Starts `job_controller_` for https://www.google.com with mock QUIC jobs
+  // whose DNS hangs. If `alt_host` is set, a QUIC alternative service on it
+  // creates `alternative_job_`, and also `dns_alpn_h3_job_` when it is not the
+  // origin's host. Without `alt_host`, only `dns_alpn_h3_job_` is created. If
+  // `quic_worked` is true, the main job waits 150 ms (1.5 * srtt) once
+  // unblocked. Otherwise it does not wait.
+  void StartWithDelayedMainJob(std::optional<std::string_view> alt_host,
+                               bool fast_fail,
+                               bool quic_worked = true);
+
+  void ExpectMainJobResume() {
+    EXPECT_CALL(*job_factory_.main_job(), Resume()).WillOnce([this]() {
+      job_factory_.main_job()->DoResume();
+    });
+  }
 };
 
 // Tests that are run with Happy Eyeballs v3 both enabled and disabled.
@@ -4771,6 +4792,477 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   TestFirstQuicCandidateFails(/*async_quic_session=*/true,
                               /*fast_fail=*/false,
                               /*async_dns=*/true);
+}
+
+void HttpStreamFactoryJobControllerTest::StartWithDelayedMainJob(
+    std::optional<std::string_view> alt_host,
+    bool fast_fail,
+    bool quic_worked) {
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
+      {{features::kAsyncDnsQuicJob,
+        {{"AsyncDnsQuicJobFastFail", fast_fail ? "true" : "false"}}}},
+      {features::kAdditionalDelayMainJob});
+
+  session_deps_.alternate_host_resolver =
+      std::make_unique<HangingHostResolver>();
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com");
+
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+
+  Initialize(request_info);
+
+  if (quic_worked) {
+    session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
+        true);
+    ServerNetworkStats stats;
+    stats.srtt = base::Milliseconds(100);
+    session_->http_server_properties()->SetServerNetworkStats(
+        url::SchemeHostPort(request_info.url), NetworkAnonymizationKey(),
+        stats);
+  }
+
+  if (alt_host) {
+    AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                           std::string(*alt_host), 443);
+    SetAlternativeService(request_info, alternative_service);
+  }
+
+  request_ = job_controller_->Start(
+      request_delegate_.get(), nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  ASSERT_TRUE(job_controller_->main_job());
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+}
+
+void HttpStreamFactoryJobControllerTest::TestOnQuicAttemptFailed(
+    bool use_alternative_job,
+    bool fast_fail) {
+  StartWithDelayedMainJob(
+      use_alternative_job ? std::optional<std::string_view>("www.google.com")
+                          : std::nullopt,
+      fast_fail);
+  HttpStreamFactory::Job* job = nullptr;
+  if (use_alternative_job) {
+    ASSERT_TRUE(job_controller_->alternative_job());
+    job = job_factory_.alternative_job();
+  } else {
+    EXPECT_FALSE(job_controller_->alternative_job());
+    ASSERT_TRUE(job_controller_->dns_alpn_h3_job());
+    job = job_factory_.dns_alpn_h3_job();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // The QUIC job's crypto handshake is in flight, so the main job starts
+  // waiting for its delay.
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+  job_controller_->OnConnectionInitialized(job, ERR_IO_PENDING);
+  FastForwardBy(base::Milliseconds(50));
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+
+  if (fast_fail) {
+    // The main job resumes right away, without waiting for the rest of its
+    // delay.
+    ExpectMainJobResume();
+    job_controller_->OnQuicAttemptFailed(job, ERR_QUIC_PROTOCOL_ERROR);
+    FastForwardBy(base::TimeDelta());
+    ASSERT_TRUE(
+        ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure",
+        base::Milliseconds(100), 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpStreamFactory.MainJobWaitTime", base::Milliseconds(50), 1);
+
+    // Neither another failure nor the original delay resumes it again.
+    EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+    job_controller_->OnQuicAttemptFailed(job, ERR_QUIC_PROTOCOL_ERROR);
+    FastForwardBy(base::Milliseconds(200));
+    histogram_tester.ExpectTotalCount(
+        "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure", 1);
+    // Only the failure that resumed the main job is logged.
+    EXPECT_EQ(
+        net_log_observer_
+            .GetEntriesWithType(
+                NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_QUIC_ATTEMPT_FAILED)
+            .size(),
+        1u);
+  } else {
+    // Without FastFail, the remaining wait is recorded, but the main job keeps
+    // waiting for its delay.
+    EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+    job_controller_->OnQuicAttemptFailed(job, ERR_QUIC_PROTOCOL_ERROR);
+    FastForwardBy(base::Milliseconds(50));
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure",
+        base::Milliseconds(100), 1);
+
+    // Another failure records nothing more.
+    job_controller_->OnQuicAttemptFailed(job, ERR_QUIC_PROTOCOL_ERROR);
+    FastForwardBy(base::Milliseconds(49));
+    ASSERT_TRUE(
+        ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+    histogram_tester.ExpectTotalCount(
+        "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure", 1);
+    // Both failures arrived while the main job was waiting.
+    EXPECT_EQ(
+        net_log_observer_
+            .GetEntriesWithType(
+                NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_QUIC_ATTEMPT_FAILED)
+            .size(),
+        2u);
+
+    ExpectMainJobResume();
+    FastForwardBy(base::Milliseconds(1));
+    ASSERT_TRUE(
+        ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpStreamFactory.MainJobWaitTime", base::Milliseconds(150), 1);
+  }
+  EXPECT_TRUE(job_controller_->main_job());
+}
+
+// An attempt failure before the connection is initialized has no effect.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedBeforeConnectionInitializedHasNoEffect) {
+  StartWithDelayedMainJob("www.google.com", /*fast_fail=*/true);
+  ASSERT_TRUE(job_controller_->alternative_job());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+  job_controller_->OnQuicAttemptFailed(job_factory_.alternative_job(),
+                                       ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure", 0);
+  EXPECT_THAT(
+      net_log_observer_.GetEntriesWithType(
+          NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_QUIC_ATTEMPT_FAILED),
+      IsEmpty());
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedResumesMainJobImmediatelyWithFastFail) {
+  TestOnQuicAttemptFailed(/*use_alternative_job=*/true, /*fast_fail=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedDnsAlpnH3JobResumesMainJobImmediatelyWithFastFail) {
+  TestOnQuicAttemptFailed(/*use_alternative_job=*/false, /*fast_fail=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedKeepsMainJobDelayByDefault) {
+  TestOnQuicAttemptFailed(/*use_alternative_job=*/true, /*fast_fail=*/false);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedDnsAlpnH3JobKeepsMainJobDelayByDefault) {
+  TestOnQuicAttemptFailed(/*use_alternative_job=*/false, /*fast_fail=*/false);
+}
+
+// When OnConnectionInitialized() already reported a QUIC failure, a later
+// attempt failure is neither recorded nor logged, even though the main job
+// still waits without FastFail. This keeps the condition the same in both arms.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedNotRecordedAfterFailedConnectionInitialization) {
+  StartWithDelayedMainJob("www.google.com", /*fast_fail=*/false);
+  ASSERT_TRUE(job_controller_->alternative_job());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+  job_controller_->OnConnectionInitialized(job_factory_.alternative_job(),
+                                           ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::Milliseconds(50));
+  job_controller_->OnQuicAttemptFailed(job_factory_.alternative_job(),
+                                       ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::Milliseconds(99));
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure", 0);
+  EXPECT_THAT(
+      net_log_observer_.GetEntriesWithType(
+          NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_QUIC_ATTEMPT_FAILED),
+      IsEmpty());
+
+  ExpectMainJobResume();
+  FastForwardBy(base::Milliseconds(1));
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+}
+
+// A failed initialization of `dns_alpn_h3_job_` while `alternative_job_`
+// exists does not affect the main job, so it does not keep a later attempt
+// failure of `alternative_job_` from being recorded.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedRecordedAfterIgnoredDnsAlpnH3JobFailure) {
+  StartWithDelayedMainJob("alt.google.com", /*fast_fail=*/false);
+  ASSERT_TRUE(job_controller_->alternative_job());
+  ASSERT_TRUE(job_controller_->dns_alpn_h3_job());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+  job_controller_->OnConnectionInitialized(job_factory_.dns_alpn_h3_job(),
+                                           ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+  job_controller_->OnConnectionInitialized(job_factory_.alternative_job(),
+                                           ERR_IO_PENDING);
+  FastForwardBy(base::Milliseconds(50));
+  job_controller_->OnQuicAttemptFailed(job_factory_.alternative_job(),
+                                       ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure",
+      base::Milliseconds(100), 1);
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+}
+
+// While `alternative_job_` exists, an attempt failure of `dns_alpn_h3_job_`
+// neither resumes the main job nor is recorded, because `dns_alpn_h3_job_`
+// does not gate the main job.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedFromDnsAlpnH3JobIgnoredWhileAlternativeJobExists) {
+  StartWithDelayedMainJob("alt.google.com", /*fast_fail=*/true);
+  ASSERT_TRUE(job_controller_->alternative_job());
+  ASSERT_TRUE(job_controller_->dns_alpn_h3_job());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+  job_controller_->OnConnectionInitialized(job_factory_.alternative_job(),
+                                           ERR_IO_PENDING);
+  job_controller_->OnConnectionInitialized(job_factory_.dns_alpn_h3_job(),
+                                           ERR_IO_PENDING);
+  FastForwardBy(base::Milliseconds(50));
+  job_controller_->OnQuicAttemptFailed(job_factory_.dns_alpn_h3_job(),
+                                       ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure", 0);
+}
+
+// An attempt failure after the main job's delay expired records nothing.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedAfterMainJobResumedRecordsNothing) {
+  StartWithDelayedMainJob("www.google.com", /*fast_fail=*/false);
+  ASSERT_TRUE(job_controller_->alternative_job());
+
+  base::HistogramTester histogram_tester;
+  ExpectMainJobResume();
+  job_controller_->OnConnectionInitialized(job_factory_.alternative_job(),
+                                           ERR_IO_PENDING);
+  FastForwardBy(base::Milliseconds(150));
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+
+  job_controller_->OnQuicAttemptFailed(job_factory_.alternative_job(),
+                                       ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure", 0);
+}
+
+// Without a main job delay, an attempt failure records nothing.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedWithoutMainJobDelayRecordsNothing) {
+  StartWithDelayedMainJob("www.google.com", /*fast_fail=*/false,
+                          /*quic_worked=*/false);
+  ASSERT_TRUE(job_controller_->alternative_job());
+  ASSERT_EQ(job_controller_->get_main_job_wait_time_for_tests(),
+            base::TimeDelta());
+
+  base::HistogramTester histogram_tester;
+  ExpectMainJobResume();
+  job_controller_->OnConnectionInitialized(job_factory_.alternative_job(),
+                                           ERR_IO_PENDING);
+  job_controller_->OnQuicAttemptFailed(job_factory_.alternative_job(),
+                                       ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure", 0);
+}
+
+// Once the request is bound to `dns_alpn_h3_job_`, an attempt failure of the
+// orphaned `alternative_job_` is not recorded, because the request no longer
+// waits for the main job.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnQuicAttemptFailedFromOrphanedJobNotRecorded) {
+  StartWithDelayedMainJob("alt.google.com", /*fast_fail=*/false);
+  ASSERT_TRUE(job_controller_->alternative_job());
+  ASSERT_TRUE(job_controller_->dns_alpn_h3_job());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+  job_controller_->OnConnectionInitialized(job_factory_.alternative_job(),
+                                           ERR_IO_PENDING);
+  FastForwardBy(base::Milliseconds(50));
+
+  auto http_stream = std::make_unique<HttpBasicStream>(
+      std::make_unique<ClientSocketHandle>(), false);
+  auto* http_stream_ptr = http_stream.get();
+  HttpStreamFactoryJobPeer::SetStream(job_factory_.dns_alpn_h3_job(),
+                                      std::move(http_stream));
+  job_controller_->OnStreamReady(job_factory_.dns_alpn_h3_job());
+  EXPECT_EQ(request_delegate_->WaitForHttpStream().get(), http_stream_ptr);
+  // The main job is kept to check whether the alternative service is broken.
+  ASSERT_TRUE(job_controller_->main_job());
+  ASSERT_TRUE(job_controller_->alternative_job());
+
+  job_controller_->OnQuicAttemptFailed(job_factory_.alternative_job(),
+                                       ERR_QUIC_PROTOCOL_ERROR);
+  FastForwardBy(base::TimeDelta());
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure", 0);
+}
+
+// The first QUIC candidate's attempt fails during its crypto handshake, after
+// the QUIC job reported its connection in flight, and the QUIC job moves on to
+// the second candidate.
+void HttpStreamFactoryJobControllerTest::
+    TestQuicAttemptFailsAfterConnectionInitialized(bool async_quic_session,
+                                                   bool fast_fail) {
+  SetAsyncQuicSession(async_quic_session);
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
+      {{features::kAsyncDnsQuicJob,
+        {{"AsyncDnsQuicJobFastFail", fast_fail ? "true" : "false"}}}},
+      {features::kAdditionalDelayMainJob});
+
+  session_deps_.host_resolver->set_synchronous_mode(false);
+  session_deps_.host_resolver->rules()->AddIPLiteralRule(
+      "www.google.com", "192.168.0.1,192.168.0.2", "");
+
+  quic_data_ = std::make_unique<MockQuicData>(version_);
+  quic_data_->AddReadPause();
+  quic_data_->AddRead(ASYNC, ERR_CONNECTION_REFUSED);
+
+  quic_data2_ = std::make_unique<MockQuicData>(version_);
+  if (async_quic_session) {
+    quic_data2_->AddConnect(ASYNC, ERR_IO_PENDING);
+  } else {
+    quic_data2_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  }
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com");
+
+  Initialize(request_info);
+
+  // The main job waits 150 ms (1.5 * srtt).
+  QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+  quic_session_pool->set_has_quic_ever_worked_on_current_network(true);
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(100);
+  session_->http_server_properties()->SetServerNetworkStats(
+      url::SchemeHostPort(GURL("https://www.google.com")),
+      NetworkAnonymizationKey(), stats);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                         443);
+  SetAlternativeService(request_info, alternative_service);
+
+  request_ = job_controller_->Start(
+      request_delegate_.get(), nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  ASSERT_TRUE(job_controller_->main_job());
+  ASSERT_TRUE(job_controller_->alternative_job());
+  EXPECT_TRUE(job_controller_->main_job()->is_waiting());
+
+  base::HistogramTester histogram_tester;
+
+  // DNS resolves and the first attempt's crypto handshake starts, so the main
+  // job starts waiting for its delay.
+  EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+  FastForwardBy(base::Milliseconds(50));
+  ASSERT_TRUE(
+      ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+
+  if (fast_fail) {
+    // The main job resumes right after the attempt fails.
+    ExpectMainJobResume();
+    quic_data_->Resume();
+    FastForwardBy(base::TimeDelta());
+    ASSERT_TRUE(
+        ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure",
+        base::Milliseconds(100), 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpStreamFactory.MainJobWaitTime", base::Milliseconds(50), 1);
+
+    // The original delay does not resume it again.
+    EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+    FastForwardBy(base::Milliseconds(200));
+  } else {
+    // Without FastFail, the remaining wait is recorded, but the main job keeps
+    // waiting for its delay.
+    EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
+    quic_data_->Resume();
+    FastForwardBy(base::TimeDelta());
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpJob.MainJobWaitRemainingOnQuicAttemptFailure",
+        base::Milliseconds(100), 1);
+    FastForwardBy(base::Milliseconds(99));
+    ASSERT_TRUE(
+        ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+
+    ExpectMainJobResume();
+    FastForwardBy(base::Milliseconds(1));
+    ASSERT_TRUE(
+        ::testing::Mock::VerifyAndClearExpectations(job_factory_.main_job()));
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpStreamFactory.MainJobWaitTime", base::Milliseconds(150), 1);
+  }
+  EXPECT_THAT(
+      net_log_observer_.GetEntriesWithType(
+          NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_QUIC_ATTEMPT_FAILED),
+      SizeIs(1));
+  // The QUIC job is still trying the second candidate.
+  EXPECT_TRUE(job_controller_->alternative_job());
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       QuicAttemptFailsAfterConnectionInitializedSyncQuicSessionFastFail) {
+  TestQuicAttemptFailsAfterConnectionInitialized(/*async_quic_session=*/false,
+                                                 /*fast_fail=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       QuicAttemptFailsAfterConnectionInitializedAsyncQuicSessionFastFail) {
+  TestQuicAttemptFailsAfterConnectionInitialized(/*async_quic_session=*/true,
+                                                 /*fast_fail=*/true);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       QuicAttemptFailsAfterConnectionInitializedSyncQuicSessionDelayed) {
+  TestQuicAttemptFailsAfterConnectionInitialized(/*async_quic_session=*/false,
+                                                 /*fast_fail=*/false);
+}
+
+TEST_F(HttpStreamFactoryJobControllerTest,
+       QuicAttemptFailsAfterConnectionInitializedAsyncQuicSessionDelayed) {
+  TestQuicAttemptFailsAfterConnectionInitialized(/*async_quic_session=*/true,
+                                                 /*fast_fail=*/false);
 }
 
 // Test that main job is blocked for kMaxDelayTimeForMainJob(3s) if

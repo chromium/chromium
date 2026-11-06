@@ -208,10 +208,18 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   // `callback` will be run with ERR_IO_PENDING.
   bool WaitForQuicSessionCreation(CompletionOnceCallback callback);
 
+  // May be called after Request() returns ERR_IO_PENDING.
+  // `callback` runs at most once, with the error of a connection attempt that
+  // failed after the job delivered every host resolution and session creation
+  // notification it promised to this request, while the job keeps trying other
+  // endpoints. Only `QuicSessionPool::AsyncDnsJob` reports such failures.
+  void WaitForAttemptFailure(CompletionOnceCallback callback);
+
   // QuicSessionPool::Jobs may notify associated requests at two points in the
   // connection process before completion: host resolution and session creation.
   // The `Expect` methods below inform the request whether it should expect
-  // these notifications.
+  // these notifications. After both, a job may also report attempt failures
+  // through `OnAttemptFailure()`.
 
   // Tells QuicSessionRequest that `QuicSessionPool::Job` will call
   // `OnHostResolutionComplete()` in the future. Must be called before
@@ -236,6 +244,11 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   // creation completes asynchronously after Request(), if
   // `ExpectQuicSessionCreation` was called.
   void OnQuicSessionCreationComplete(int rv);
+
+  // Called by the associated `QuicSessionPool::Job` when a connection attempt
+  // fails after all notifications above were delivered, and the job keeps
+  // trying other endpoints. See `WaitForAttemptFailure()`.
+  void OnAttemptFailure(int rv);
 
   void OnRequestComplete(int rv);
 
@@ -322,6 +335,9 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   CompletionOnceCallback host_resolution_callback_;
 
   CompletionOnceCallback create_session_callback_;
+
+  // Callback passed to WaitForAttemptFailure().
+  CompletionOnceCallback attempt_failure_callback_;
 
   base::WeakPtrFactory<QuicSessionRequest> weak_factory_{this};
 };

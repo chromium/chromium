@@ -12,10 +12,12 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/ech_mode.h"
@@ -340,29 +342,13 @@ void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfHostResolution(int rv) {
       NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_HOST_RESOLUTION_SIGNALED,
       "net_error", rv);
 
-  // A notified request may reenter the pool and add or remove requests on
-  // this job. Iterate over a snapshot of WeakPtrs, and skip requests that were
-  // removed or destroyed. Requests added mid-notification never expected this
-  // signal because `host_resolution_notified_` is already set.
-  auto weak_this = weak_factory_.GetWeakPtr();
-  std::vector<base::WeakPtr<QuicSessionRequest>> snapshot;
-  snapshot.reserve(requests().size());
-  for (QuicSessionRequest* request : requests()) {
-    snapshot.push_back(request->GetWeakPtr());
-  }
-  for (const auto& weak_request : snapshot) {
-    if (!weak_this) {
-      return;
-    }
-    if (!weak_request) {
-      continue;
-    }
-    if (!weak_this->requests().contains(weak_request.get())) {
-      continue;
-    }
-    weak_request->OnHostResolutionComplete(rv, dns_resolution_start_time_,
-                                           dns_resolution_end_time_);
-  }
+  // Requests added mid-notification never expected this signal because
+  // `host_resolution_notified_` is already set.
+  const base::TimeTicks start_time = dns_resolution_start_time_;
+  const base::TimeTicks end_time = dns_resolution_end_time_;
+  NotifyRequests([&](QuicSessionRequest& request) {
+    request.OnHostResolutionComplete(rv, start_time, end_time);
+  });
 }
 
 const std::vector<QuicSessionPool::AsyncDnsJob::UsableEndpoint>&
@@ -512,6 +498,31 @@ void QuicSessionPool::AsyncDnsJob::OnAttemptFailed(
         &connector == state.secondary_connector.get());
   state.prefer_ipv6 = !connector.is_attempting_ipv6();
   last_attempt_failure_ = AttemptFailure{rv, details};
+
+  // Failures before the signals fired are reported through the signals
+  // themselves. A later failure is invisible to callers while the job keeps
+  // trying other candidates, so report it separately. The failure that the
+  // session creation signal carried is not reported again. ERR_ABORTED is not
+  // reported because the connector stops instead of trying other candidates.
+  if (rv == ERR_ABORTED || !AllPromisedSignalsDelivered()) {
+    return;
+  }
+  if (connector.attempt_id().has_value() &&
+      connector.attempt_id() == session_creation_failure_attempt_id_) {
+    session_creation_failure_attempt_id_.reset();
+    return;
+  }
+  // A report that is already posted carries the most recent failure.
+  const bool post_task = !pending_attempt_failure_rv_.has_value();
+  pending_attempt_failure_rv_ = rv;
+  if (!post_task) {
+    return;
+  }
+  // Posted because this runs within the connector's state transitions, where
+  // the job must not be destroyed by a reentrant request callback.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&AsyncDnsJob::NotifyRequestsOfAttemptFailure,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void QuicSessionPool::AsyncDnsJob::OnSessionCreationDecided(
@@ -524,13 +535,18 @@ void QuicSessionPool::AsyncDnsJob::OnSessionCreationDecided(
     // The other connector already decided the signal. Its result stands.
     return;
   }
-  if (rv != OK && rv != ERR_IO_PENDING && !last_attempt_failure_.has_value()) {
-    // OnSessionCreationDecided() runs before OnAttemptComplete() records the
-    // failure. Populate `last_attempt_failure_` now in case a session creation
-    // callback reentrantly adds a new request to the job.
-    NetErrorDetails details;
-    connector.PopulateNetErrorDetails(&details);
-    last_attempt_failure_ = AttemptFailure{rv, details};
+  if (rv != OK && rv != ERR_IO_PENDING) {
+    if (!last_attempt_failure_.has_value()) {
+      // OnSessionCreationDecided() runs before OnAttemptComplete() records the
+      // failure. Populate `last_attempt_failure_` now in case a session
+      // creation callback reentrantly adds a new request to the job.
+      NetErrorDetails details;
+      connector.PopulateNetErrorDetails(&details);
+      last_attempt_failure_ = AttemptFailure{rv, details};
+    }
+    // The signal carries this attempt's failure. OnAttemptFailed() must not
+    // report it a second time.
+    session_creation_failure_attempt_id_ = connector.attempt_id();
   }
   NotifyRequestsOfSessionCreation(rv);
 }
@@ -544,11 +560,39 @@ void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfSessionCreation(int rv) {
           QUIC_SESSION_POOL_ASYNC_DNS_JOB_SESSION_CREATION_SIGNALED,
       "net_error", rv);
 
+  // Requests added mid-notification are not promised this signal because the
+  // connector's attempt has already finished creating its session.
+  NotifyRequests([rv](QuicSessionRequest& request) {
+    request.OnQuicSessionCreationComplete(rv);
+  });
+}
+
+void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfAttemptFailure() {
+  CHECK(pending_attempt_failure_rv_.has_value());
+  const int rv = *std::exchange(pending_attempt_failure_rv_, std::nullopt);
+
+  net_log_.AddEventWithIntParams(
+      NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_ATTEMPT_FAILURE_SIGNALED,
+      "net_error", rv);
+
+  // A request that joined after OnAttemptFailed() already got `rv` through
+  // set_last_attempt_failure(), so it receives the same failure twice.
+  // Callers treat the second report as a no-op.
+  NotifyRequests(
+      [rv](QuicSessionRequest& request) { request.OnAttemptFailure(rv); });
+}
+
+bool QuicSessionPool::AsyncDnsJob::AllPromisedSignalsDelivered() const {
+  return host_resolution_notified_ &&
+         (session_creation_notified_ ||
+          !base::FeatureList::IsEnabled(features::kAsyncQuicSession));
+}
+
+void QuicSessionPool::AsyncDnsJob::NotifyRequests(
+    base::FunctionRef<void(QuicSessionRequest&)> notify) {
   // A notified request may reenter the pool and add or remove requests on
-  // this job. Iterate over a snapshot of WeakPtrs, and skip requests that were
-  // removed or destroyed. Requests added mid-notification are not promised
-  // this signal because the connector's attempt has already finished creating
-  // its session.
+  // this job, or destroy the job. Iterate over a snapshot of WeakPtrs, and
+  // skip requests that were removed or destroyed.
   auto weak_this = weak_factory_.GetWeakPtr();
   std::vector<base::WeakPtr<QuicSessionRequest>> snapshot;
   snapshot.reserve(requests().size());
@@ -565,7 +609,7 @@ void QuicSessionPool::AsyncDnsJob::NotifyRequestsOfSessionCreation(int rv) {
     if (!weak_this->requests().contains(weak_request.get())) {
       continue;
     }
-    weak_request->OnQuicSessionCreationComplete(rv);
+    notify(*weak_request);
   }
 }
 

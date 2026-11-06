@@ -928,6 +928,8 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
         base::BindOnce(&Job::OnQuicHostResolution, base::Unretained(this)));
     expect_on_quic_session_created_ = quic_request_.WaitForQuicSessionCreation(
         base::BindOnce(&Job::OnQuicSessionCreated, ptr_factory_.GetWeakPtr()));
+    quic_request_.WaitForAttemptFailure(
+        base::BindOnce(&Job::OnQuicAttemptFailed, ptr_factory_.GetWeakPtr()));
   }
   return rv;
 }
@@ -954,6 +956,14 @@ void HttpStreamFactory::Job::OnQuicSessionCreated(int result) {
   DCHECK(expect_on_quic_session_created_);
   expect_on_quic_session_created_ = false;
   delegate_->OnConnectionInitialized(this, result);
+}
+
+void HttpStreamFactory::Job::OnQuicAttemptFailed(int result) {
+  // The pool reports attempt failures only after the signals it promised, so
+  // OnConnectionInitialized() has already been called.
+  CHECK(!expect_on_quic_host_resolution_);
+  CHECK(!expect_on_quic_session_created_);
+  delegate_->OnQuicAttemptFailed(this, result);
 }
 
 void HttpStreamFactory::Job::OnFailedOnDefaultNetwork(int result) {

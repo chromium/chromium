@@ -551,8 +551,22 @@ void QuicSessionRequest::OnQuicSessionCreationComplete(int rv) {
   }
 }
 
+void QuicSessionRequest::WaitForAttemptFailure(
+    CompletionOnceCallback callback) {
+  CHECK(pool_);
+  CHECK(attempt_failure_callback_.is_null());
+  attempt_failure_callback_ = std::move(callback);
+}
+
+void QuicSessionRequest::OnAttemptFailure(int rv) {
+  if (!attempt_failure_callback_.is_null()) {
+    std::move(attempt_failure_callback_).Run(rv);
+  }
+}
+
 void QuicSessionRequest::OnRequestComplete(int rv) {
   pool_ = nullptr;
+  attempt_failure_callback_.Reset();
   std::move(callback_).Run(rv);
 }
 
