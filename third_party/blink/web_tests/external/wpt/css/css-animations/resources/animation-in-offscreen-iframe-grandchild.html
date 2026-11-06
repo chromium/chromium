@@ -13,20 +13,23 @@
 </style>
 <div id="target"></div>
 <script>
-const animation = document.getElementById('target').getAnimations()[0];
+// Wait for the iframe to be rendered before querying its CSS animation.
+requestAnimationFrame(() => {
+  const animation = document.getElementById('target').getAnimations()[0];
 
-function animationState(type) {
-  parent.postMessage({
-    type,
-    playState: animation.playState,
-    currentTime: animation.currentTime,
-  }, '*');
-}
-
-animation.ready.then(() => animationState('ready'));
-addEventListener('message', event => {
-  if (event.data === 'report-state') {
-    animationState('state');
+  function animationState(type) {
+    parent.postMessage({
+      type,
+      playState: animation.playState,
+      currentTime: animation.currentTime,
+    }, '*');
   }
+
+  animation.ready.then(() => animationState('ready'));
+  addEventListener('message', event => {
+    if (event.data === 'report-state') {
+      animationState('state');
+    }
+  });
 });
 </script>
