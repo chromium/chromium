@@ -1869,12 +1869,14 @@ void RuleInvalidationDataVisitor<VisitorType>::AddFeaturesToInvalidationSet(
       invalidation_set->SetInsertionPointCrossing();
     }
   }
-  // TODO(crbug.com/337076014): Record entries in InvalidationSetToSelectorMap
-  // for ::slotted().
   if (features.invalidation_flags.InvalidatesSlotted()) {
     if constexpr (is_builder()) {
       invalidation_set->SetInvalidatesSlotted();
     }
+    InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+        invalidation_set,
+        InvalidationSetToSelectorMap::SelectorFeatureType::kSlotted,
+        g_empty_atom);
   }
   if (features.invalidation_flags.WholeSubtreeInvalid()) {
     SetWholeSubtreeInvalid(invalidation_set);

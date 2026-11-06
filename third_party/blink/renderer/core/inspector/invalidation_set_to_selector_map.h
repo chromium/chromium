@@ -56,6 +56,9 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
     kAttribute,
     kPart,
     kFocused,
+    // Marker used to resolve the style sheet for ::slotted selectors. No
+    // invalidation reason maps to this feature type.
+    kSlotted,
     kWholeSubtree
   };
 

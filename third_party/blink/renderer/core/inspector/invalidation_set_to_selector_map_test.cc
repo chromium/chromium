@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -1401,6 +1402,136 @@ TEST_F(InvalidationSetToSelectorMapTest, FocusedSelector) {
       ASSERT_NE(selector_list, nullptr);
       EXPECT_EQ(selector_list->size(), 1u);
       EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a :focus");
+      found_event_count++;
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, SlottedSelector) {
+  SetBodyInnerHTML(R"HTML(
+    <template id="custom-template">
+      <style>
+        .a ::slotted(.b) { background: yellow; }
+      </style>
+      <div class="a">Shadow Outer
+        <slot name="s">Slot</slot>
+      </div>
+    </template>
+    <div id="parent">
+      <span class="b" slot="s">Slotted</span>
+    </div>
+  )HTML");
+
+  Element* parent = GetElementById("parent");
+  ShadowRoot& shadow_root =
+      parent->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.appendChild(
+      To<HTMLTemplateElement>(GetElementById("custom-template"))
+          ->content()
+          ->cloneNode(true));
+  UpdateAllLifecyclePhasesForTest();
+
+  StartTracing();
+  shadow_root.QuerySelector(AtomicString(".a"))
+      ->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  auto analyzer = StopTracing();
+
+  trace_analyzer::TraceEventVector invalidation_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &invalidation_events);
+  size_t found_event_count = 0;
+  for (auto event : invalidation_events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched class") {
+      base::ListValue* selector_list = data_dict.FindList("selectors");
+      ASSERT_NE(selector_list, nullptr);
+      EXPECT_EQ(selector_list->size(), 1u);
+      EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a ::slotted(.b)");
+      const CSSStyleSheet* sheet =
+          To<HTMLStyleElement>(shadow_root.QuerySelector(AtomicString("style")))
+              ->sheet();
+      EXPECT_EQ(StyleSheetIdAtIndex(selector_list, 0),
+                IdentifiersFactory::IdForCSSStyleSheet(sheet).Utf8());
+      found_event_count++;
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, SlottedSelectorNestedSlots) {
+  SetBodyInnerHTML(R"HTML(
+    <template id="outer-template">
+      <div id="inner-host">
+        <slot id="s1" name="s1" slot="s2"></slot>
+      </div>
+    </template>
+    <template id="inner-template">
+      <style>
+        .a ::slotted(.b) { background: yellow; }
+      </style>
+      <div class="a">
+        <slot id="s2" name="s2"></slot>
+      </div>
+    </template>
+    <div id="outer-host">
+      <span id="slotted" class="b" slot="s1">Slotted</span>
+    </div>
+  )HTML");
+
+  ShadowRoot& outer_shadow_root =
+      GetElementById("outer-host")
+          ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  outer_shadow_root.appendChild(
+      To<HTMLTemplateElement>(GetElementById("outer-template"))
+          ->content()
+          ->cloneNode(true));
+  ShadowRoot& inner_shadow_root =
+      outer_shadow_root.QuerySelector(AtomicString("#inner-host"))
+          ->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  inner_shadow_root.appendChild(
+      To<HTMLTemplateElement>(GetElementById("inner-template"))
+          ->content()
+          ->cloneNode(true));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* s1 =
+      To<HTMLSlotElement>(outer_shadow_root.QuerySelector(AtomicString("#s1")));
+  auto* s2 =
+      To<HTMLSlotElement>(inner_shadow_root.QuerySelector(AtomicString("#s2")));
+  EXPECT_EQ(GetElementById("slotted")->AssignedSlot(), s1);
+  EXPECT_EQ(s1->AssignedSlot(), s2);
+
+  StartTracing();
+  inner_shadow_root.QuerySelector(AtomicString(".a"))
+      ->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  auto analyzer = StopTracing();
+
+  trace_analyzer::TraceEventVector invalidation_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &invalidation_events);
+  size_t found_event_count = 0;
+  for (auto event : invalidation_events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched class") {
+      base::ListValue* selector_list = data_dict.FindList("selectors");
+      ASSERT_NE(selector_list, nullptr);
+      EXPECT_EQ(selector_list->size(), 1u);
+      EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a ::slotted(.b)");
+      const CSSStyleSheet* sheet =
+          To<HTMLStyleElement>(
+              inner_shadow_root.QuerySelector(AtomicString("style")))
+              ->sheet();
+      EXPECT_EQ(StyleSheetIdAtIndex(selector_list, 0),
+                IdentifiersFactory::IdForCSSStyleSheet(sheet).Utf8());
       found_event_count++;
     }
   }
