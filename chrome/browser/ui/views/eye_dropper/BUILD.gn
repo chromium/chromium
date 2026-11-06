@@ -70,10 +70,13 @@ if (!is_android && !is_chromeos_device) {
       sources += [ "eye_dropper_view_aura_interactive_uitest.cc" ]
       deps = [
         ":eye_dropper",
-        "//chrome/test:test_support_ui",
+        "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/tabs:tab_strip",
+        "//chrome/test/base:in_process_browser_test",
         "//components/eye_dropper",
         "//content/public/browser",
         "//content/test:test_support",
+        "//ui/views",
       ]
     }
   }
@@ -111,8 +114,10 @@ if (!is_android) {
     deps = [
       ":eye_dropper",
       "//base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/test:dialog",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:ui_test_utils",
       "//content/public/browser",
       "//content/public/common",
       "//content/test:test_support",

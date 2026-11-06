@@ -88,7 +88,6 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//components/sync:test_support",
     "//content/test:test_support",
     "//testing/gmock",
