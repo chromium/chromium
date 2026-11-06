@@ -659,10 +659,12 @@ impl ProcessState {
         self.scheme_map.contains_key(scheme)
     }
 
-    // TODO(crbug.com/522872468): Call from the top-level `can_commit_url` and
-    // `ProcessState::can_request_url` once ported to Rust.
-    #[allow(dead_code)]
-    fn can_commit_url(&self, url: &ffi::GURL) -> bool {
+    // `pub(crate)` so that top-level `can_commit_url()` in
+    // `child_process_security_policy_impl.rs` can call this on a
+    // `&ProcessState` looked up from `process_states` (most other
+    // `ProcessState` methods are either `pub` for CXX FFI or private
+    // helpers within this module).
+    pub(crate) fn can_commit_url(&self, url: &ffi::GURL) -> bool {
         debug_assert!(
             !url.scheme_is_blob() && !url.scheme_is_filesystem(),
             "inner_url extraction should be done already."

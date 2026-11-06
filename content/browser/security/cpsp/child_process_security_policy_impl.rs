@@ -16,6 +16,7 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, MutexGuard};
 
 use browser_id_types::BrowsingInstanceId;
+use common_id_types::ChildProcessId;
 use file_path::ffi::FilePath;
 use storage_common_rust::FileSystemType;
 use unguessable_token::UnguessableToken;
@@ -56,9 +57,6 @@ mod ffi {
         #[namespace = "content"]
         type ChildProcessSecurityPolicyImpl;
 
-        // TODO(crbug.com/522872468): Call from `can_commit_url` and
-        // `can_request_url` once ported to Rust.
-        #[allow(dead_code)]
         #[namespace = "content"]
         #[Self = "ChildProcessSecurityPolicyImpl"]
         #[cxx_name = "IsMalformedBlobUrl"]
@@ -109,9 +107,6 @@ mod ffi {
         #[cxx_name = "CreateOriginWithDefaultPortIfNecessary"]
         fn create_origin_with_default_port_if_necessary(origin: &Origin) -> UniquePtr<Origin>;
 
-        // TODO(crbug.com/522872468): Call from `can_commit_url` once ported to
-        // Rust.
-        #[allow(dead_code)]
         #[namespace = "content::rust::child_process_security_policy"]
         #[cxx_name = "CanCommitMaybeOpaqueNewOrigin"]
         fn can_commit_maybe_opaque_new_origin(
@@ -120,11 +115,8 @@ mod ffi {
             url_is_precursor_of_opaque_origin: bool,
         ) -> bool;
 
-        // TODO(crbug.com/522872468): Call from `can_commit_url` once ported to
-        // Rust.
         // TODO(crbug.com/575911997): Remove this shim once Rust crash key
         // support is available.
-        #[allow(dead_code)]
         #[namespace = "content::rust::child_process_security_policy"]
         #[cxx_name = "LogCanCommitUrlFailureReason"]
         fn log_can_commit_url_failure_reason(failure_reason: &str);
@@ -146,6 +138,8 @@ mod ffi {
         fn is_pseudo_scheme(scheme: &str) -> bool;
         fn clear_registered_scheme_for_testing(scheme: &str);
         fn clear_all_registered_schemes_for_testing();
+
+        fn can_commit_url(child_id: ChildProcessId, url: &GURL) -> bool;
 
         fn add_v8_optimization_disabled_state_for_origin_if_not_cached(
             browsing_instance_id: BrowsingInstanceId,
@@ -315,7 +309,7 @@ fn is_web_safe_scheme(scheme: &str) -> bool {
 
 fn can_commit_scheme_in_any_process(scheme: &str) -> bool {
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    cpsp.known_schemes.get(scheme).is_some_and(|p| *p == SchemePolicy::RequestAndCommit)
+    cpsp.can_commit_scheme_in_any_process(scheme)
 }
 
 fn is_pseudo_scheme(scheme: &str) -> bool {
@@ -331,6 +325,120 @@ fn clear_registered_scheme_for_testing(scheme: &str) {
 fn clear_all_registered_schemes_for_testing() {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.known_schemes.clear();
+}
+
+fn can_commit_url(child_id: ChildProcessId, url: &ffi::GURL) -> bool {
+    if !url.is_valid() {
+        ffi::log_can_commit_url_failure_reason("invalid_url");
+        return false; // Can't commit invalid URLs.
+    }
+
+    let scheme = url.scheme();
+
+    // Of all the pseudo schemes, only about:blank and about:srcdoc are allowed
+    // to commit.
+    if is_pseudo_scheme(scheme) {
+        if !url.is_about_blank() && !url.is_about_srcdoc() {
+            ffi::log_can_commit_url_failure_reason("pseudo_scheme_non_blank_or_srcdoc");
+            return false;
+        } else {
+            // TODO(crbug.com/324934416): Consider continuing with the checks
+            // below.
+            return true;
+        }
+    }
+
+    // Blob and filesystem URLs require special treatment; validate the inner
+    // origin they embed.
+    if url.scheme_is_blob() || url.scheme_is_filesystem() {
+        if ffi::ChildProcessSecurityPolicyImpl::is_malformed_blob_url(url) {
+            ffi::log_can_commit_url_failure_reason("malformed_blob_url");
+            return false;
+        }
+
+        let origin = url_rust::origin::ffi::create_origin_from_gurl(url);
+        if origin.opaque() {
+            // As in CanRequestURL(), allow opaque blob URLs but reject opaque
+            // filesystem URLs.
+            if url.scheme_is_blob() {
+                return true;
+            }
+            ffi::log_can_commit_url_failure_reason("opaque_filesystem_url");
+            return false;
+        }
+        // No need to log a failure reason here, because it will be logged in
+        // the sole recursive call if that call returns false.
+        let inner_origin_url = url_rust::gurl::ffi::create_gurl_from_str(&origin.serialize());
+        return can_commit_url(child_id, &inner_origin_url);
+    }
+
+    // Allow data URLs to commit in any process. Note that the precursor origin
+    // should be checked separately.
+    // TODO(crbug.com/40226863): Use Crubit to access `url::kDataScheme` instead
+    // of a string literal (as CXX does not support C++ constants).
+    if url.scheme_is("data") {
+        return true;
+    }
+
+    // With site isolation, a URL from a site may only be committed in a process
+    // dedicated to that site. This check will ensure that `url` can't commit if
+    // the process is locked to a different site.
+    //
+    // We skip this check for the error page URL, chrome-error://chromewebdata.
+    // Error pages commit with the failed URL, but the renderer uses
+    // chrome-error://chromewebdata as the document URL, which can later reach
+    // this check (e.g., if document.open() is called on an error page; see
+    // https://crbug.com/326250356). This check can fail if the error page isn't
+    // isolated (e.g., for subframes on low-memory Android), since its process
+    // won't be locked to the error page site. We still verify in the
+    // `state.can_commit_url()` call below that the process has actually been
+    // granted access to this URL, which only happens when it commits an error
+    // page (see RenderFrameHostImpl::UpdatePermissionsForNavigation()).
+    //
+    // TODO(crbug.com/40226863): Use Crubit to access `kUnreachableWebDataURL`
+    // instead of a string literal (as CXX does not support C++ constants).
+    //
+    // TODO(crbug.com/582381736, crbug.com/582409893): Remove this callback into
+    // C++ `ChildProcessSecurityPolicyImpl::CanCommitMaybeOpaqueNewOrigin()`.
+    // Calling back from Rust CPSP into C++ CPSP for a large unmigrated method
+    // introduces a circular build dependency that blocks Crubit adoption (and
+    // migrating `CanCommitMaybeOpaqueNewOrigin()` to Rust will also require
+    // resolving the re-entrant CPSP lock / deadlock issue when computing
+    // expected `ProcessLock`s). Avoid repeating this C++ CPSP callback pattern
+    // in future migration work.
+    if *url != *url_rust::gurl::ffi::create_gurl_from_str("chrome-error://chromewebdata/")
+        && !ffi::can_commit_maybe_opaque_new_origin(
+            child_id, url, /* url_is_precursor_of_opaque_origin= */ false,
+        )
+    {
+        ffi::log_can_commit_url_failure_reason("cannot_access_origin");
+        return false;
+    }
+
+    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+
+    // Most schemes can commit in any process. Note that we check
+    // can_commit_scheme_in_any_process() here, which is stricter than
+    // is_web_safe_scheme().
+    //
+    // TODO(crbug.com/40429130): The line below does not enforce that http pages
+    // cannot commit in an extension process.
+    if cpsp.can_commit_scheme_in_any_process(scheme) {
+        return true;
+    }
+
+    let Some(state) = cpsp.process_states.get_for_query(&child_id) else {
+        ffi::log_can_commit_url_failure_reason("no_security_state_found");
+        return false;
+    };
+
+    // Otherwise, we consult the child process's security state to see if it is
+    // allowed to commit the URL.
+    let can_commit = state.can_commit_url(url);
+    if !can_commit {
+        ffi::log_can_commit_url_failure_reason("cpsp_state_cannot_commit_url");
+    }
+    can_commit
 }
 
 fn add_v8_optimization_disabled_state_for_origin_if_not_cached(
@@ -969,17 +1077,21 @@ pub struct ChildProcessSecurityPolicyImpl {
     //
     // Each origin entry stores information about:
     //
-    // 1. Which BrowsingInstances it applies to. This is a combination of a BrowsingInstance ID
-    //    `browsing_instance_id` and a bool flag `applies_to_future_browsing_instances` stored in
-    //    in each origin's IsolatedOriginEntry. When `applies_to_future_browsing_instances` is
-    //    true, the origin will be isolated in all BrowsingInstances with IDs equal to or greater
-    //    than `browsing_instance_id`. When `applies_to_future_browsing_instances` is false, the
-    //    origin will be isolated only in a single BrowsingInstance with ID `browsing_instance_id`.
+    // 1. Which BrowsingInstances it applies to. This is a combination of a
+    //    BrowsingInstance ID `browsing_instance_id` and a bool flag
+    //    `applies_to_future_browsing_instances` stored in in each origin's
+    //    IsolatedOriginEntry. When `applies_to_future_browsing_instances` is
+    //    true, the origin will be isolated in all BrowsingInstances with IDs
+    //    equal to or greater than `browsing_instance_id`. When
+    //    `applies_to_future_browsing_instances` is false, the origin will be
+    //    isolated only in a single BrowsingInstance with ID
+    //    `browsing_instance_id`.
     //
-    // 2. Optionally, which BrowserContext (profile) it applies to.  When the `browser_context_id`
-    //    field in the IsolatedOriginEntry is not None, a particular isolated origin entry only
-    //    applies to that BrowserContext. Note that the same origin may be isolated in different
-    //    profiles, possibly with different BrowsingInstance ID cut-offs.  For example:
+    // 2. Optionally, which BrowserContext (profile) it applies to.  When the
+    //    `browser_context_id` field in the IsolatedOriginEntry is not None, a
+    //    particular isolated origin entry only applies to that BrowserContext.
+    //    Note that the same origin may be isolated in different profiles,
+    //    possibly with different BrowsingInstance ID cut-offs.  For example:
     //
     //        https://foo.com -> { [https://test.foo.com profile_1 4],
     //                             [https://test.foo.com profile_2 7] }
@@ -1109,6 +1221,10 @@ impl ChildProcessSecurityPolicyImpl {
         // TODO(crbug.com/477584253): Consider switching this to use
         // std::sync::nonpoison::Mutex once it is stabilized.
         Self::get_instance().lock().unwrap()
+    }
+
+    fn can_commit_scheme_in_any_process(&self, scheme: &str) -> bool {
+        self.known_schemes.get(scheme).is_some_and(|p| *p == SchemePolicy::RequestAndCommit)
     }
 }
 

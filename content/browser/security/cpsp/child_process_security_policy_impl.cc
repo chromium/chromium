@@ -1569,10 +1569,9 @@ void ChildProcessSecurityPolicyImpl::GrantCommitOfExternalFileUrl(
   }
 
   // Note: We explicitly continue with C++ state update as well even when in
-  // Rust-only mode, since ProcessState::CanCommitURL and
-  // ProcessState::CanRequestURL have not yet been implemented in Rust. Once
-  // they are supported in Rust, this should be combined into a
-  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  // Rust-only mode, since ProcessState::CanRequestURL has not yet been
+  // implemented in Rust. Once it is supported in Rust, this should be combined
+  // into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
   GrantCommitOfExternalFileUrl_Cpp(child_id, url);
 }
 
@@ -1743,10 +1742,9 @@ void ChildProcessSecurityPolicyImpl::GrantCommitOrigin(
   }
 
   // Note: We explicitly continue with C++ state update as well even when in
-  // Rust-only mode, since ProcessState::CanCommitURL and
-  // ProcessState::CanRequestURL have not yet been implemented in Rust. Once
-  // they are supported in Rust, this should be combined into a
-  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  // Rust-only mode, since ProcessState::CanRequestURL has not yet been
+  // implemented in Rust. Once it is supported in Rust, this should be combined
+  // into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
   GrantCommitOrigin_Cpp(child_id, origin);
 }
 
@@ -1773,10 +1771,9 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOrigin(
   }
 
   // Note: We explicitly continue with C++ state update as well even when in
-  // Rust-only mode, since ProcessState::CanCommitURL and
-  // ProcessState::CanRequestURL have not yet been implemented in Rust. Once
-  // they are supported in Rust, this should be combined into a
-  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  // Rust-only mode, since ProcessState::CanRequestURL has not yet been
+  // implemented in Rust. Once it is supported in Rust, this should be combined
+  // into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
   GrantRequestOrigin_Cpp(child_id, origin);
 }
 
@@ -1801,10 +1798,9 @@ void ChildProcessSecurityPolicyImpl::GrantCommitScheme(
   }
 
   // Note: We explicitly continue with C++ state update as well even when in
-  // Rust-only mode, since ProcessState::CanCommitURL and
-  // ProcessState::CanRequestURL have not yet been implemented in Rust. Once
-  // they are supported in Rust, this should be combined into a
-  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  // Rust-only mode, since ProcessState::CanRequestURL has not yet been
+  // implemented in Rust. Once it is supported in Rust, this should be combined
+  // into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
   GrantCommitScheme_Cpp(child_id, scheme);
 }
 
@@ -1829,10 +1825,9 @@ void ChildProcessSecurityPolicyImpl::GrantRequestScheme(
   }
 
   // Note: We explicitly continue with C++ state update as well even when in
-  // Rust-only mode, since ProcessState::CanCommitURL and
-  // ProcessState::CanRequestURL have not yet been implemented in Rust. Once
-  // they are supported in Rust, this should be combined into a
-  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  // Rust-only mode, since ProcessState::CanRequestURL has not yet been
+  // implemented in Rust. Once it is supported in Rust, this should be combined
+  // into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
   GrantRequestScheme_Cpp(child_id, scheme);
 }
 
@@ -2045,6 +2040,13 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
 
 bool ChildProcessSecurityPolicyImpl::CanCommitURL(ChildProcessId child_id,
                                                   const GURL& url) {
+  RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
+      rust::child_process_security_policy::can_commit_url(child_id, url),
+      CanCommitURL_Cpp(child_id, url));
+}
+
+bool ChildProcessSecurityPolicyImpl::CanCommitURL_Cpp(ChildProcessId child_id,
+                                                      const GURL& url) {
   if (!url.is_valid()) {
     LogCanCommitUrlFailureReason("invalid_url");
     return false;  // Can't commit invalid URLs.
@@ -2084,7 +2086,7 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(ChildProcessId child_id,
     }
     // No need to log a failure reason here, because it will be logged in the
     // sole recursive call if that call returns false.
-    return CanCommitURL(child_id, GURL(origin.Serialize()));
+    return CanCommitURL_Cpp(child_id, GURL(origin.Serialize()));
   }
 
   // Allow data URLs to commit in any process. Note that the precursor origin

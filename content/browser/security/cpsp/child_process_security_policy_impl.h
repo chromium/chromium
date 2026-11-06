@@ -338,6 +338,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // handlers. Used primarily as a helper for CanCommitOriginAndUrl and thus not
   // exposed publicly.
   bool CanCommitURL(ChildProcessId child_id, const GURL& url);
+  bool CanCommitURL_Cpp(ChildProcessId child_id, const GURL& url);
   // TODO(crbug.com/379869738): Remove this method when usages are ported.
   bool CanCommitURL(int child_id, const GURL& url);
 
