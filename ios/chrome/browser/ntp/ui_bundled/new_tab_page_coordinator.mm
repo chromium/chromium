@@ -2568,6 +2568,7 @@
   AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
         arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK_GT(images.count, 0u);
   [self dismissComposeboxPicker];
 
   ComposeboxAttachmentSelection* attachments =
@@ -2690,8 +2691,11 @@
   RecordHomeAction(IOSHomeActionType::kQuickActionAIM, [self isStartSurface]);
   [self.NTPMetricsRecorder recordAIMButtonTapped];
 
-  if ([self canFocusComposeboxForAIM] &&
-      MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
+  if ([self canFocusComposeboxForAIM]) {
+    ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
+        initWithEntrypoint:ComposeboxEntrypoint::kNTPAIMButton];
+
+    ShowComposebox(self.browser, params);
     return;
   }
 
@@ -2705,17 +2709,11 @@
                    [self isStartSurface]);
   [self.NTPMetricsRecorder recordAIMImageGenerationButtonTapped];
 
-  if (![self canFocusComposeboxForAIM]) {
-    return;
+  if ([self canFocusComposeboxForAIM]) {
+    ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
+        initWithEntrypoint:ComposeboxEntrypoint::kNTPImageGenerationButton];
+    ShowComposebox(self.browser, params);
   }
-
-  ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
-      initWithEntrypoint:ComposeboxEntrypoint::kNTPImageGenerationButton
-                   query:nil
-                toolMode:ComposeboxMode::kImageGeneration
-               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
-          attachmentList:nil];
-  ShowComposebox(self.browser, params);
 }
 
 - (void)openAIMAttachImage {
@@ -2726,19 +2724,18 @@
                    [self isStartSurface]);
   [self.NTPMetricsRecorder recordAIMAttachImageButtonTapped];
 
-  if (![self canFocusComposeboxForAIM]) {
-    return;
+  if ([self canFocusComposeboxForAIM]) {
+    NSUInteger attachmentLimit =
+        [_composeboxInputStateManager remainingNumberOfImagesAllowed];
+
+    // Builds the picker presenter.
+    _composeboxPickerPresenter = [[ComposeboxPickerPresenter alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser];
+    _composeboxPickerPresenter.delegate = self;
+
+    [_composeboxPickerPresenter presentGalleryPickerWithLimit:attachmentLimit];
   }
-  NSUInteger limit =
-      [_composeboxInputStateManager remainingNumberOfImagesAllowed];
-
-  // Builds the picker presenter.
-  _composeboxPickerPresenter = [[ComposeboxPickerPresenter alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
-  _composeboxPickerPresenter.delegate = self;
-
-  [_composeboxPickerPresenter presentGalleryPickerWithLimit:limit];
 }
 
 - (void)preloadVoiceSearch {

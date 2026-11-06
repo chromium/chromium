@@ -55,11 +55,26 @@
 }
 
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint {
+  ComposeboxMode toolMode;
+  switch (entrypoint) {
+    case ComposeboxEntrypoint::kNTPAIMButton:
+    case ComposeboxEntrypoint::kCobrowse:
+    case ComposeboxEntrypoint::kNTPAttachImageButton:
+      toolMode = ComposeboxMode::kAIM;
+      break;
+    case ComposeboxEntrypoint::kNTPImageGenerationButton:
+      toolMode = ComposeboxMode::kImageGeneration;
+      break;
+    case ComposeboxEntrypoint::kNTPFakebox:
+    case ComposeboxEntrypoint::kNTPPlusButton:
+    case ComposeboxEntrypoint::kOther:
+      toolMode = ComposeboxMode::kRegularSearch;
+      break;
+  }
+
   return [self initWithEntrypoint:entrypoint
                             query:nil
-                         toolMode:entrypoint == ComposeboxEntrypoint::kCobrowse
-                                      ? ComposeboxMode::kAIM
-                                      : ComposeboxMode::kRegularSearch
+                         toolMode:toolMode
                         modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
                    attachmentList:nil];
 }
