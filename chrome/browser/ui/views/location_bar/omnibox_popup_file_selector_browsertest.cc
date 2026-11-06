@@ -128,6 +128,39 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
+                       CancelFileSelectionNotifiesClosedAndDetachesListener) {
+  auto* omnibox_controller = BrowserWindow::FromBrowser(browser())
+                                 ->GetLocationBar()
+                                 ->GetOmniboxController();
+  MockOmniboxEditModel mock_edit_model(omnibox_controller);
+
+  OmniboxPopupFileSelector file_selector(
+      browser()->GetWindow()->GetNativeWindow());
+  int opened_count = 0;
+  int closed_count = 0;
+  file_selector.set_file_chooser_opened_callback(
+      base::BindRepeating([](int* count) { ++(*count); }, &opened_count));
+  file_selector.set_file_chooser_closed_callback(
+      base::BindRepeating([](int* count) { ++(*count); }, &closed_count));
+
+  file_selector.OpenFileUploadDialog(
+      browser()->GetTabStripModel()->GetActiveWebContents(),
+      /*is_image=*/true, &mock_edit_model, std::nullopt,
+      /*was_ai_mode_open=*/true);
+  EXPECT_EQ(1, opened_count);
+  EXPECT_EQ(0, closed_count);
+
+  // Canceling an active file selection must close the chooser without
+  // reopening AI mode, and a subsequent cancel must be a no-op.
+  EXPECT_CALL(mock_edit_model, OpenAiMode(testing::_)).Times(0);
+  file_selector.CancelFileSelection();
+  EXPECT_EQ(1, closed_count);
+
+  file_selector.CancelFileSelection();
+  EXPECT_EQ(1, closed_count);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
                        UploadUnsupportedTextFileUpdatesContextData) {
   auto* omnibox_controller = BrowserWindow::FromBrowser(browser())
                                  ->GetLocationBar()

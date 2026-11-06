@@ -236,6 +236,10 @@ class OmniboxEverywhereUI
   // Notifies the WebUI that the overflow (three-dot) menu closed.
   void OnOverflowMenuClosed();
 
+  // Cancels any open transient UI owned by this WebUI controller (context
+  // menus, screenshot menu, file chooser, Drive picker, or hotkey bubble).
+  void CancelTransientUi();
+
   bool is_composebox_mode() const { return is_composebox_mode_; }
   void SetIsComposebox(bool is_composebox);
   void OnDismissMostVisited();

@@ -72,6 +72,10 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
       std::optional<lens::ImageEncodingOptions> image_encoding_options,
       bool was_ai_mode_open);
 
+  // Cancels any open file selection dialog and notifies listeners that file
+  // selection has closed.
+  void CancelFileSelection();
+
   void OnFileDataReady(std::unique_ptr<FileData> file_data);
 
   void UpdateSearchboxContextData(

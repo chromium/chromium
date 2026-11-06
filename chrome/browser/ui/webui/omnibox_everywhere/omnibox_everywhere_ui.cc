@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/webui/omnibox_everywhere/composebox_everywhere_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug_page_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_handler.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_hotkey_bubble_view.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_page_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/common/webui_url_constants.h"
@@ -1139,6 +1140,27 @@ void OmniboxEverywhereUI::OnOverflowMenuClosed() {
   }
   // Clear stale hover state on the overflow button after the menu closes.
   SynthesizeMouseMoveEvent();
+}
+
+void OmniboxEverywhereUI::CancelTransientUi() {
+  if (context_menu_) {
+    context_menu_->Cancel();
+    context_menu_.reset();
+  }
+  if (screenshot_menu_runner_ && screenshot_menu_runner_->IsRunning()) {
+    screenshot_menu_runner_->Cancel();
+  }
+  ResetScreenshotMenu();
+  if (file_selector_) {
+    file_selector_->CancelFileSelection();
+  }
+  if (omnibox_handler_) {
+    omnibox_handler_->CleanupDrivePicker();
+  }
+  if (composebox_handler_) {
+    composebox_handler_->CleanupDrivePicker();
+  }
+  omnibox_everywhere::OmniboxEverywhereHotkeyBubbleView::CloseIfOpen();
 }
 
 void OmniboxEverywhereUI::OnFileChooserOpened() {

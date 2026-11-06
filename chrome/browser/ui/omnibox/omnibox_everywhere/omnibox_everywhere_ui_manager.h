@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
 #endif
 
+class OmniboxEverywhereUI;
 class Profile;
 class ScopedKeepAlive;
 class SkBitmap;
@@ -327,6 +328,7 @@ class OmniboxEverywhereUIManager
 #endif
   void OnMostVisitedPrefChanged();
   OmniboxEverywhereService* GetOmniboxEverywhereService();
+  OmniboxEverywhereUI* GetOmniboxEverywhereUI();
   // Ends the active FRE session when the popup is closed or destroyed. Note
   // that `Demote()` (persistent mode deactivation) and window minimization
   // intentionally preserve the active FRE session across reactivations.
@@ -360,11 +362,14 @@ class OmniboxEverywhereUIManager
   // Destroys the widget and the WebContents, and releases keep-alives.
   void DestroyWidgetAndWebContents();
 
-  // Destroys the widget and the UI it owns (dialogs, menus, overlays) and
-  // resets transient UI state, but keeps the WebContents so the next widget
-  // reuses it. Unlike DestroyWidgetAndWebContents(), safe to call from within a
-  // call on the WebContents.
-  void DestroyWidget();
+  // Temporarily keeps `web_contents()` in `kHiddenButPainting` across hiding
+  // or offscreen preference updates so Blink applies pending updates and runs
+  // AutoResize offscreen before entering `kHidden`.
+  void KeepWebContentsPaintingBriefly();
+
+  // Cancels any open modal dialogs or transient UI owned by the widget or its
+  // WebUI controller and resets modal interaction state.
+  void CancelOpenModalDialogs();
 
   // Cancels any pending deactivation tasks or deferred-dismissal poll timer.
   void CancelPendingDeactivation();

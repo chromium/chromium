@@ -373,15 +373,15 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
   std::optional<gfx::Rect> widget_bounds;
 #if BUILDFLAG(IS_WIN)
   // Windows keeps a window on the virtual desktop it was last shown on, so if
-  // the widget is on another desktop, recreate it, which opens it on the
-  // current one. This falls through to the creation path below, which keeps
-  // its position and reuses the `WebContents`. Leave it alone while a dialog is
-  // open, since recreating it would dismiss the dialog.
+  // the widget is on another desktop, recreate the widget and its WebContents
+  // (starting a new FRE session) at the same position, which opens it on the
+  // current desktop. Leave it alone while a dialog is open, since recreating it
+  // would dismiss the dialog.
   if (widget_ && profile_ == profile && !HasOpenModalDialog() &&
       !is_on_current_virtual_desktop_.Run(
           views::HWNDForWidget(widget_.get()))) {
     widget_bounds = widget_->GetRestoredBounds();
-    DestroyWidget();
+    DestroyWidgetAndWebContents();
   }
 #endif
   last_shown_time_ = base::TimeTicks::Now();
@@ -655,7 +655,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   }
 #endif  // BUILDFLAG(IS_WIN)
   widget_->MakeCloseSynchronous(base::BindOnce(
-      &OmniboxEverywhereUIManager::OnWidgetClosed, base::Unretained(this)));
+      &OmniboxEverywhereUIManager::OnWidgetClosed, weak_factory_.GetWeakPtr()));
   widget_observation_.Observe(widget_.get());
 
   CHECK(widget_->non_client_view() && widget_->non_client_view()->frame_view());
@@ -722,23 +722,64 @@ void OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged() {
 }
 
 void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
-  // Don't tear down the widget if it is visible on screen or minimized on the
+  // Don't disturb the widget if it is visible on screen or minimized on the
   // taskbar.
   if (!widget_ || IsVisible() || widget_->IsMinimized()) {
     return;
   }
-  // Clean up the widget when the pref changes so there is not flicker when the
-  // omnibox is re-invoked, while keeping the WebContents alive in case a Mojo
-  // handler on `contents_wrapper_` (such as `MostVisitedHandler`) is on the
-  // call stack.
-  DestroyWidget();
-  ReleaseKeepAlives();
+  // Temporarily keep the hidden WebContents painting so Blink applies the
+  // Most Visited Mojo update and runs AutoResize offscreen before the widget
+  // is next shown, without destroying the widget or losing its position.
+  KeepWebContentsPaintingBriefly();
+}
+
+void OmniboxEverywhereUIManager::KeepWebContentsPaintingBriefly() {
+  if (!web_contents()) {
+    return;
+  }
+  if (capture_release_timer_.IsRunning()) {
+    capture_release_timer_.Reset();
+  } else {
+    capture_release_timer_.Start(
+        FROM_HERE, kPostHideCaptureDuration,
+        base::DoNothingWithBoundArgs(web_contents()->IncrementCapturerCount(
+            gfx::Size(), /*stay_hidden=*/true, /*stay_awake=*/false,
+            /*is_activity=*/false)));
+  }
+}
+
+void OmniboxEverywhereUIManager::CancelOpenModalDialogs() {
+  if (disclosure_dialog_widget_) {
+    disclosure_dialog_widget_->Hide();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(disclosure_dialog_widget_));
+  }
+  region_select_overlay_.reset();
+  {
+    base::AutoReset<bool> suppress_restore(
+        &suppress_restore_on_screenshare_picker_closed_, true);
+    CancelChromeDefaultPicker();
+  }
+  if (OmniboxEverywhereUI* ui = GetOmniboxEverywhereUI()) {
+    ui->CancelTransientUi();
+  }
+  hotkey_dropdown_deactivation_task_.Cancel();
+  open_modals_.Clear();
+  UpdateModalInteractionState();
 }
 
 OmniboxEverywhereService*
 OmniboxEverywhereUIManager::GetOmniboxEverywhereService() {
   return profile_ ? OmniboxEverywhereServiceFactory::GetForProfile(profile_)
                   : nullptr;
+}
+
+OmniboxEverywhereUI* OmniboxEverywhereUIManager::GetOmniboxEverywhereUI() {
+  content::WebContents* contents = web_contents();
+  content::WebUI* web_ui = contents ? contents->GetWebUI() : nullptr;
+  return (web_ui && web_ui->GetController())
+             ? web_ui->GetController()->GetAs<OmniboxEverywhereUI>()
+             : nullptr;
 }
 
 void OmniboxEverywhereUIManager::EndFreSession() {
@@ -769,18 +810,7 @@ void OmniboxEverywhereUIManager::Close() {
   last_shown_time_.reset();
   CancelPendingDeactivation();
   if (widget_) {
-    if (HasOpenModalDialog()) {
-      // TODO(crbug.com/567673370): Ideally, we should only close the open
-      // modals and not destroy the widget or the WebContents here (preserving
-      // the widget's position). For now, destroy the widget to close dialogs
-      // that can't be dismissed directly (e.g. native file choosers), while
-      // keeping the WebContents alive in case Close() is reached from inside a
-      // call on it (e.g. OpenURLFromTab).
-      DestroyWidget();
-      EndFreSession();
-      ReleaseKeepAlives();
-      return;
-    }
+    CancelOpenModalDialogs();
     context_menu_controller_->Cancel();
 #if BUILDFLAG(IS_MAC)
     // On macOS, reset auxiliary collection behaviors before hiding so the
@@ -790,19 +820,11 @@ void OmniboxEverywhereUIManager::Close() {
       omnibox_everywhere::DisassociatePopupOnMac(widget_->GetNativeWindow());
     }
 #endif
-    if (widget_->IsVisible() && web_contents()) {
+    if (widget_->IsVisible()) {
       // Temporarily keep the WebContents painting (`kHiddenButPainting`) across
       // `widget_->Hide()` so Blink finishes collapsing the dropdown and
       // running AutoResize offscreen before entering `kHidden`.
-      if (capture_release_timer_.IsRunning()) {
-        capture_release_timer_.Reset();
-      } else {
-        capture_release_timer_.Start(
-            FROM_HERE, kPostHideCaptureDuration,
-            base::DoNothingWithBoundArgs(web_contents()->IncrementCapturerCount(
-                gfx::Size(), /*stay_hidden=*/true, /*stay_awake=*/false,
-                /*is_activity=*/false)));
-      }
+      KeepWebContentsPaintingBriefly();
     }
 #if defined(USE_AURA)
     // Aura does not deliver events to hidden windows, so the handler may never
@@ -858,19 +880,10 @@ void OmniboxEverywhereUIManager::Minimize() {
 #endif  // BUILDFLAG(IS_WIN)
 
 void OmniboxEverywhereUIManager::DestroyWidgetAndWebContents() {
-  DestroyWidget();
-  permission_prompt_observation_.Reset();
-  contents_wrapper_.reset();
-  draggable_region_.reset();
-  browser_collection_observation_.Reset();
-  EndFreSession();
-  ReleaseKeepAlives();
-}
-
-void OmniboxEverywhereUIManager::DestroyWidget() {
   capture_release_timer_.Stop();
   CancelPendingDeactivation();
   if (disclosure_dialog_widget_) {
+    disclosure_dialog_widget_->Hide();
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(disclosure_dialog_widget_));
   }
@@ -893,6 +906,7 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
         web_view->set_context_menu_controller(nullptr);
       }
     }
+    widget_->Hide();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -911,6 +925,12 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
   pending_auto_resize_size_.reset();
   region_select_overlay_.reset();
   last_shown_time_.reset();
+  permission_prompt_observation_.Reset();
+  contents_wrapper_.reset();
+  draggable_region_.reset();
+  browser_collection_observation_.Reset();
+  EndFreSession();
+  ReleaseKeepAlives();
 }
 
 void OmniboxEverywhereUIManager::CancelPendingDeactivation() {
@@ -1204,6 +1224,9 @@ void OmniboxEverywhereUIManager::OnFileChooserOpened() {
 
 void OmniboxEverywhereUIManager::OnFileChooserClosed() {
   SetModalOpen(Modal::kFileChooser, false);
+  if (!is_closing_ && IsVisible()) {
+    ActivateAndFocus();
+  }
 }
 
 void OmniboxEverywhereUIManager::OnDrivePickerOpened() {
@@ -1280,11 +1303,7 @@ bool OmniboxEverywhereUIManager::CancelChromeDefaultPicker(
                              true);
   }
 
-  auto* web_contents = this->web_contents();
-  auto* webui = web_contents ? web_contents->GetWebUI() : nullptr;
-  auto* ui = (webui && webui->GetController())
-                 ? webui->GetController()->GetAs<OmniboxEverywhereUI>()
-                 : nullptr;
+  OmniboxEverywhereUI* ui = GetOmniboxEverywhereUI();
 
   if (ui && ui->CancelChromeDefaultPicker()) {
     if (open_modals_.Has(Modal::kScreensharePicker)) {
@@ -1385,7 +1404,7 @@ void OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed(
           FROM_HERE, base::BindOnce(
                          [](base::WeakPtr<OmniboxEverywhereUIManager> self,
                             base::OnceClosure on_accepted) {
-                           if (!self || !self->widget_) {
+                           if (!self || !self->IsVisible()) {
                              return;
                            }
                            std::move(on_accepted).Run();
@@ -1396,8 +1415,7 @@ void OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed(
     if (on_cancelled) {
       std::move(on_cancelled).Run();
     }
-    if (widget_ && !widget_->IsClosed() &&
-        !open_modals_.Has(Modal::kScreensharePicker) &&
+    if (IsVisible() && !open_modals_.Has(Modal::kScreensharePicker) &&
         !region_select_overlay_) {
       ActivateAndFocus();
     }

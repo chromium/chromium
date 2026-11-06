@@ -144,6 +144,16 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
                            owning_window_);
 }
 
+void OmniboxPopupFileSelector::CancelFileSelection() {
+  if (!file_dialog_) {
+    return;
+  }
+  file_dialog_->ListenerDestroyed();
+  file_dialog_.reset();
+  deactivation_blocker_.reset();
+  NotifyFileSelectionClosed();
+}
+
 namespace {
 
 using FileData = OmniboxPopupFileSelector::FileData;
