@@ -101,9 +101,11 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
@@ -120,6 +122,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_ui.h"
@@ -2416,6 +2419,56 @@ TEST_F(ChromeContentBrowserClientTest,
   content::WebContents* other_web_contents =
       web_contents_factory.CreateWebContents(profile());
   EXPECT_EQ(profile(), client.GetUserBrowserContext(*other_web_contents));
+}
+
+// Tests that Chrome's NavigationThrottles, CommitDeferringConditions,
+// URLLoaderThrottles and PrefetchServiceDelegate aren't created for
+// TopChromeWebUIProfile, which doesn't have the prefs and keyed services they
+// depend on.
+TEST_F(ChromeContentBrowserClientTest,
+       TopChromeWebUIProfileSkipsChromeNavigationThrottles) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents =
+      web_contents_factory.CreateWebContents(top_chrome_webui_profile);
+  ChromeContentBrowserClient client;
+  const GURL url("chrome://webui-toolbar/");
+
+  // Navigation throttles.
+  content::MockNavigationHandle navigation_handle(
+      url, web_contents->GetPrimaryMainFrame());
+  content::MockNavigationThrottleRegistry registry(
+      &navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  client.CreateThrottlesForNavigation(registry);
+  EXPECT_TRUE(registry.throttles().empty());
+
+  // Commit deferring conditions.
+  EXPECT_TRUE(client
+                  .CreateCommitDeferringConditionsForNavigation(
+                      &navigation_handle,
+                      content::CommitDeferringCondition::NavigationType::kOther)
+                  .empty());
+
+  // URL loader throttles.
+  network::ResourceRequest request;
+  request.url = url;
+  request.destination = network::mojom::RequestDestination::kDocument;
+  EXPECT_TRUE(client
+                  .CreateURLLoaderThrottles(
+                      request, top_chrome_webui_profile,
+                      base::BindRepeating(
+                          []() -> content::WebContents* { return nullptr; }),
+                      /*navigation_ui_data=*/nullptr,
+                      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+                      /*navigation_id=*/std::optional<int64_t>(1))
+                  .empty());
+
+  // Prefetch service delegate.
+  EXPECT_FALSE(client.CreatePrefetchServiceDelegate(top_chrome_webui_profile));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

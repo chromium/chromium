@@ -5788,6 +5788,14 @@ ChromeContentBrowserClient::CreateCommitDeferringConditionsForNavigation(
     content::CommitDeferringCondition::NavigationType navigation_type) {
   std::vector<std::unique_ptr<content::CommitDeferringCondition>> conditions;
 
+  // TopChromeWebUIProfile only hosts Top Chrome WebUIs, and does not have the
+  // keyed services and prefs that the conditions below depend on.
+  if (Profile::FromBrowserContext(
+          navigation_handle->GetWebContents()->GetBrowserContext())
+          ->IsTopChromeWebUIProfile()) {
+    return conditions;
+  }
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   MaybeAddCondition(
       safe_browsing::MaybeCreateCommitDeferringCondition(*navigation_handle),
@@ -6233,6 +6241,12 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
   CHECK(browser_context, base::NotFatalUntil::M163);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile, base::NotFatalUntil::M163);
+
+  // TopChromeWebUIProfile only hosts Top Chrome WebUIs, and does not have the
+  // keyed services and prefs that the throttles below depend on.
+  if (profile->IsTopChromeWebUIProfile()) {
+    return result;
+  }
 
   ChromeNavigationUIData* chrome_navigation_ui_data =
       static_cast<ChromeNavigationUIData*>(navigation_ui_data);
@@ -8886,6 +8900,11 @@ ChromeContentBrowserClient::CreateAnchorElementPreconnectDelegate(
 std::unique_ptr<content::PrefetchServiceDelegate>
 ChromeContentBrowserClient::CreatePrefetchServiceDelegate(
     content::BrowserContext* browser_context) {
+  // TopChromeWebUIProfile only hosts Top Chrome WebUIs, which do not prefetch,
+  // and does not have the prefs that the delegate depends on.
+  if (Profile::FromBrowserContext(browser_context)->IsTopChromeWebUIProfile()) {
+    return nullptr;
+  }
   return std::make_unique<ChromePrefetchServiceDelegate>(browser_context);
 }
 

@@ -290,6 +290,14 @@ void MaybeCreateAndAddVisitedLinkNavigationThrottle(
 void CreateAndAddChromeThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
   content::NavigationHandle& handle = registry.GetNavigationHandle();
+  // TopChromeWebUIProfile only hosts Top Chrome WebUIs, and does not have the
+  // keyed services and prefs that the throttles below depend on. Like the
+  // initial WebUI navigation, skip them.
+  if (Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext())
+          ->IsTopChromeWebUIProfile()) {
+    return;
+  }
+
   if (handle.IsInMainFrame()) {
     // MetricsNavigationThrottle requires that it runs before
     // NavigationThrottles that may delay or cancel navigations, so only
