@@ -155,4 +155,53 @@ public class PartnerBookmarksReaderTest {
 
         Mockito.verify(mJniMock).partnerBookmarksCreationComplete(Mockito.anyLong());
     }
+
+    @Test
+    public void shutDown_Called_WithBookmarksFirstThenCustomizations() {
+        PartnerBookmarksReader reader =
+                createPartnerBookmarksReader(
+                        /* browserCustomizationsInitialized= */ true,
+                        /* hasNullNativePointer= */ false);
+        Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
+        reader.onBookmarksRead();
+        mBrowserCustomizationsInitCallback.getValue().run();
+
+        Mockito.verify(mJniMock, Mockito.times(1))
+                .destroy(PartnerBookmarksReader.NULL_NATIVE_POINTER + 1);
+    }
+
+    @Test
+    public void shutDown_Called_WithCustomizationsFirstThenBookmarks() {
+        PartnerBookmarksReader reader =
+                createPartnerBookmarksReader(
+                        /* browserCustomizationsInitialized= */ true,
+                        /* hasNullNativePointer= */ false);
+        Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
+        mBrowserCustomizationsInitCallback.getValue().run();
+        reader.onBookmarksRead();
+
+        Mockito.verify(mJniMock, Mockito.times(1))
+                .destroy(PartnerBookmarksReader.NULL_NATIVE_POINTER + 1);
+    }
+
+    @Test
+    public void shutDown_NotCalled_WithoutBookmarksRead() {
+        createPartnerBookmarksReader(
+                /* browserCustomizationsInitialized= */ true, /* hasNullNativePointer= */ false);
+        Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
+        mBrowserCustomizationsInitCallback.getValue().run();
+
+        Mockito.verify(mJniMock, Mockito.never()).destroy(Mockito.anyLong());
+    }
+
+    @Test
+    public void shutDown_NotCalled_WithoutBrowserCustomizations() {
+        PartnerBookmarksReader reader =
+                createPartnerBookmarksReader(
+                        /* browserCustomizationsInitialized= */ true,
+                        /* hasNullNativePointer= */ false);
+        reader.onBookmarksRead();
+
+        Mockito.verify(mJniMock, Mockito.never()).destroy(Mockito.anyLong());
+    }
 }

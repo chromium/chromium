@@ -132,6 +132,9 @@ public class PartnerBookmarksReader {
                     }
                     mFinishedResolvingBrowserCustomizations = true;
                     maybeMarkCreationComplete();
+                    synchronized (mProgressLock) {
+                        if (canShutdown()) shutDown();
+                    }
                 });
     }
 
