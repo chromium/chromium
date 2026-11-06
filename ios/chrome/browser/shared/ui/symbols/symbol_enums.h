@@ -39,6 +39,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolGPayPillIconV2,
   SymbolMulticolorChromeball,
   SymbolPageInsights,
+  SymbolSparkleTrail,
 #else
   SymbolGeminiNonBrandedLogo,
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)

@@ -53,6 +53,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"multicolor_chromeball", SymbolType::kCustom};
     case SymbolPageInsights:
       return {@"page_insights", SymbolType::kCustom};
+    case SymbolSparkleTrail:
+      return {@"sparkle_trail", SymbolType::kCustom};
 #else
     case SymbolGeminiNonBrandedLogo:
       return {@"sparkle", SymbolType::kSystem};
