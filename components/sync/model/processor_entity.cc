@@ -91,7 +91,7 @@ void ProcessorEntity::SetCommitData(std::unique_ptr<EntityData> data) {
   }
   data->creation_time = ProtoTimeToTime(metadata().creation_time());
   data->modification_time = ProtoTimeToTime(metadata().modification_time());
-  if (metadata().attachment_metadata().has_attachment()) {
+  if (metadata().attachment_metadata().attachment().has_temporary_blob_id()) {
     data->attachment_metadata = AttachmentMetadata::FromProto(
         metadata().attachment_metadata().attachment());
   }
