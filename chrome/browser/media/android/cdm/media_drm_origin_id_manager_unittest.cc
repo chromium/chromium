@@ -50,6 +50,10 @@ constexpr base::TimeDelta kStartupDelay = base::Minutes(1);
 
 class MediaDrmOriginIdManagerTest : public testing::Test {
  public:
+  void TearDown() override {
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
+
   // By default MediaDrmOriginIdManager will attempt to pre-provision origin
   // IDs at startup. For most tests this should be disabled.
   void Initialize(bool enable_preprovision_at_startup = false) {
@@ -117,7 +121,7 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
     auto& dict = GetDict(kMediaDrmOriginIds);
     DVLOG(1) << DisplayPref(dict);
     const auto* list = dict.FindList(kAvailableOriginIds);
-    EXPECT_TRUE(list);
+    ASSERT_TRUE(list);
     EXPECT_EQ(list->size(), kExpectedPreferenceListSize);
   }
 
@@ -133,7 +137,7 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
     const auto* list = dict.FindList(kAvailableOriginIds);
     // PreProvision() should have pre-provisioned
     // |kExpectedPreferenceListSize| origin IDs.
-    EXPECT_TRUE(list);
+    ASSERT_TRUE(list);
     EXPECT_EQ(list->size(), kExpectedPreferenceListSize);
   }
 
@@ -277,6 +281,7 @@ TEST_F(MediaDrmOriginIdManagerTest, OriginIdNotInList) {
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
   auto& dict = GetDict(kMediaDrmOriginIds);
   auto* list = dict.FindList(kAvailableOriginIds);
+  ASSERT_TRUE(list);
   EXPECT_FALSE(std::ranges::contains(
       *list, base::UnguessableTokenToValue(origin_id.value())));
 }
