@@ -127,6 +127,10 @@ constexpr CGFloat kSymbolActionPointSizeUICleanup = 19.0;
 // The spacing between the items in the button stack.
 constexpr CGFloat kButtonSpacing = 9.0;
 constexpr CGFloat kButtonSpacingUICleanup = 16.0;
+// The minimum touch target diameter for the trailing stack buttons when
+// `kNewTabPageUICleanup` is enabled, sized so the voice search and lens touch
+// targets meet at the midpoint without overlapping.
+constexpr CGFloat kFakeboxButtonMinimumTouchTargetUICleanup = 38.0;
 
 // The height of the divider between the mic and lens icons.
 constexpr CGFloat kIconDividerHeight = 13.0;
@@ -749,16 +753,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
   AddSquareConstraints(leadingView, imageSize);
 
-  CGFloat leadingViewConstraintConstant;
-  if (IsChromeNextIaEnabled()) {
-    leadingViewConstraintConstant = [self fakeboxLeadingSpace];
-  } else {
-    leadingViewConstraintConstant = [self omniboxLeadingSpace];
-  }
-
   self.leadingViewConstraint = [leadingView.leadingAnchor
       constraintEqualToAnchor:searchField.leadingAnchor
-                     constant:leadingViewConstraintConstant];
+                     constant:[self fakeboxLeadingSpace]];
 
   [NSLayoutConstraint activateConstraints:@[
     self.leadingViewConstraint,
@@ -1448,6 +1445,16 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if (self.fakeOmniboxContainer) {
     [self addLeadingViewToSearchField:self.fakeOmniboxContainer];
     [self setFakeboxColorsWithProgress:_lastAnimationPercent];
+    [self updateLogoAnimationWithProgress:_lastAnimationPercent];
+    [self updateHintLabelAnimationWithProgress:_lastAnimationPercent];
+  }
+}
+
+// Configures the touch target for `button` in the fakebox button stack.
+- (void)configureTouchTargetForFakeboxButton:
+    (ExtendedTouchTargetButton*)button {
+  if (IsNewTabPageUICleanupEnabled()) {
+    button.minimumDiameter = kFakeboxButtonMinimumTouchTargetUICleanup;
   }
 }
 
@@ -1507,6 +1514,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  [self configureTouchTargetForFakeboxButton:self.voiceSearchButton];
   self.voiceSearchButton.enabled = _voiceSearchIsEnabled;
   self.voiceSearchButton.isAccessibilityElement = _voiceSearchIsEnabled;
   [_buttonStack addArrangedSubview:self.voiceSearchButton];
@@ -1523,6 +1531,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     }
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [self configureTouchTargetForFakeboxButton:self.lensButton];
     [_buttonStack addArrangedSubview:self.lensButton];
     [self.layoutGuideCenter referenceView:self.lensButton
                                 underName:kFakeboxLensIconGuide];
