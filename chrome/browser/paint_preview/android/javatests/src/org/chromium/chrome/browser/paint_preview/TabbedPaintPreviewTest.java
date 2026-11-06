@@ -26,10 +26,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -48,7 +46,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the {@link TabbedPaintPreview} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedPaintPreviewTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

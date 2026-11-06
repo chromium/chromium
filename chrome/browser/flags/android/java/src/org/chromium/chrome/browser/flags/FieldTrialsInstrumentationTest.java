@@ -28,7 +28,6 @@ import org.chromium.components.cached_flags.StringCachedFeatureParam;
 
 /** Integration tests for {@link org.chromium.base.test.util.FieldTrials}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DoNotBatch(
         reason =
                 "Test flag configurations in isolation for predictability and control of native"

@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -25,7 +24,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 /** Tests the behavior of {@link ChromeFeatureList} in instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class ChromeFeatureListInstrumentationTest {
     @Rule

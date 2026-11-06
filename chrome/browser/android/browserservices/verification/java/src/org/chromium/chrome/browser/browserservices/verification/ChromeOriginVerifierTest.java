@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for ChromeOriginVerifier. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(ChromeOriginVerifierTest.TEST_BATCH_NAME)
 public class ChromeOriginVerifierTest {
     public static final String TEST_BATCH_NAME = "chrome_origin_verifier";

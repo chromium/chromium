@@ -58,10 +58,7 @@ import java.util.concurrent.TimeoutException;
  * a JNI bridge to verify the behavior of the C++ class.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
 @Restriction(RESTRICTION_TYPE_NON_AUTO)
 @Batch(Batch.PER_CLASS)
 public class AutoPiPTabModelObserverHelperTest {

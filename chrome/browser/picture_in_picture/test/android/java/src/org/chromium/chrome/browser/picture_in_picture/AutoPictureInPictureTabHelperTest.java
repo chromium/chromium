@@ -39,7 +39,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.PictureInPictureActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -69,10 +68,9 @@ import java.util.concurrent.TimeoutException;
 /** Test suite for {@link AutoPictureInPictureTabHelper}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.AUTO_ACCEPT_CAMERA_AND_MICROPHONE_CAPTURE,
     ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM,
-    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
+    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY
 })
 @EnableFeatures({MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID})
 @Restriction(RESTRICTION_TYPE_NON_AUTO)
