@@ -98,8 +98,8 @@ class ActiveTabTracker : public TabModelObserver {
 // `ActiveTabTracker` with `TabModelObserver` on Android.
 class ActiveTabObserver : public TabModelListObserver {
  public:
-  ActiveTabObserver() { TabModelList::AddObserver(this); }
-  ~ActiveTabObserver() override { TabModelList::RemoveObserver(this); }
+  ActiveTabObserver() { TabModelList::AddGlobalObserver(this); }
+  ~ActiveTabObserver() override { TabModelList::RemoveGlobalObserver(this); }
 
  private:
   void OnTabModelAdded(TabModel* tab_model) override {

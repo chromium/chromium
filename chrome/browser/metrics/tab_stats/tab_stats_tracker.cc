@@ -127,10 +127,10 @@ ActiveAndroidTabAndWindowCounts CalculateActiveAndroidTabAndWindowCounts() {
   base::flat_set<gfx::NativeWindow> unique_native_windows;
   size_t unassociated_window_count = 0;
 
-  for (const TabModel* tab_model : TabModelList::models()) {
+  TabModelList::ForEachAll([&](TabModel* tab_model) {
     if (tab_model->GetTabModelType() != TabModel::TabModelType::kStandard ||
         tab_model->IsEmptyRegularModelForEphemeralOrIncognitoCct()) {
-      continue;
+      return true;
     }
 
     const int model_tab_count = tab_model->GetTabCount();
@@ -164,7 +164,8 @@ ActiveAndroidTabAndWindowCounts CalculateActiveAndroidTabAndWindowCounts() {
     } else if (model_tab_count > 0 || tab_model->IsActiveModel()) {
       ++unassociated_window_count;
     }
-  }
+    return true;
+  });
 
   counts.window_count =
       unique_native_windows.size() + unassociated_window_count;
@@ -246,9 +247,10 @@ void TabStatsTracker::TabStripInterface::CloseTabAtForTesting(size_t index) {
 // static
 void TabStatsTracker::TabStripInterface::ForEach(
     base::FunctionRef<void(const TabStripInterface&)> func) {
-  for (TabModel* tab_model : TabModelList::models()) {
+  TabModelList::ForEachAll([&func](TabModel* tab_model) {
     func(TabStripInterface(tab_model));
-  }
+    return true;
+  });
 }
 
 #else  // !BUILDFLAG(IS_ANDROID)
@@ -328,17 +330,18 @@ class TabStatsTracker::TabWatcher final : public TabModelListObserver,
                                           public TabAndroid::Observer {
  public:
   explicit TabWatcher(TabStatsTracker& tracker) : tracker_(tracker) {
-    for (TabModel* tab_model : TabModelList::models()) {
+    TabModelList::AddGlobalObserver(this);
+    TabModelList::ForEachAll([this](TabModel* tab_model) {
       OnTabModelAdded(tab_model);
       for (int i = 0; i < tab_model->GetTabCount(); ++i) {
         OnTabAdded(*tab_model, tab_model->GetTabAt(i));
       }
       tracker_->OnTabStripNewTabCount(tab_model->GetTabCount());
-    }
-    TabModelList::AddObserver(this);
+      return true;
+    });
   }
 
-  ~TabWatcher() final { TabModelList::RemoveObserver(this); }
+  ~TabWatcher() final { TabModelList::RemoveGlobalObserver(this); }
 
   // TabModelListObserver:
 
