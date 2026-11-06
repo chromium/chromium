@@ -523,6 +523,13 @@ group("blink_generate_devtools_grd") {
   public_deps = [ "$devtools_frontend_path:generate_devtools_grd" ]
 }
 
+# devtools-frontend.zip with all files served by the remote DevTools server.
+# The official archive configs reference this group as the SBOM GN target, so
+# its label must not depend on where DevTools lives in the source tree.
+group("blink_devtools_frontend_zip") {
+  public_deps = [ "$devtools_frontend_path:devtools_frontend_zip" ]
+}
+
 resources_out_dir = "$blink_public_output_dir/resources"
 
 grit("resources") {

@@ -65,13 +65,12 @@
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
-            "dirs": ["gen/third_party/devtools-frontend/src/front_end"],
-            "rename_dirs": [
-                {"from_dir": ".", "to_dir": "devtools-frontend"}
+            "files": [
+                "devtools-frontend.zip"
             ],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Linux_x64/{%position%}/devtools-frontend.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
+            "gcs_path": "Linux_x64/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
         },
         {
             "files": [
