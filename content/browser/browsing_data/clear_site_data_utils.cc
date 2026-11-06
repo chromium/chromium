@@ -69,6 +69,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 
   void RunAndDestroySelfWhenDone() {
     CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+    // Keep a baseline count of 1 until all tasks have been scheduled so that
+    // synchronous task completion cannot destroy `this` before the method
+    // finishes, and so that `callback_` and self-deletion still run if no
+    // individual tasks are scheduled.
+    CHECK_EQ(pending_task_count_, 0, base::NotFatalUntil::M159);
+    pending_task_count_ = 1;
+
     // Cookies and channel IDs are scoped to
     // a) eTLD+1 of |origin|'s host if |origin|'s host is a registrable domain
     //    or a subdomain thereof
@@ -190,7 +197,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
                                   weak_factory_.GetWeakPtr(), 0));
     }
 
-    CHECK_GT(pending_task_count_, 0, base::NotFatalUntil::M159);
+    OnBrowsingDataRemoverDone(/*failed_data_types=*/0);
   }
 
  private:
@@ -201,8 +208,9 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       return;
     }
 
-    std::move(callback_).Run();
+    base::OnceClosure callback = std::move(callback_);
     delete this;
+    std::move(callback).Run();
   }
 
   const std::optional<StoragePartitionConfig> storage_partition_config_;
@@ -240,7 +248,7 @@ void ClearSiteData(
   CHECK(!clear_site_data_types.Has(ClearSiteDataType::kStorage) ||
             storage_buckets_to_remove.empty(),
         base::NotFatalUntil::M159);
-  if (!browser_context) {
+  if (!browser_context || browser_context->ShutdownStarted()) {
     std::move(callback).Run();
     return;
   }
