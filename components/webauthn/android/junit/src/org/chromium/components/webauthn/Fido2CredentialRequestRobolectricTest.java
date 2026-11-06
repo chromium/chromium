@@ -1230,6 +1230,53 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
+    public void testIntentMetrics_userCancellationMessages_recordUserCancellation() {
+        // GMS Core reports user cancellation as NOT_ALLOWED_ERR with a module-specific message,
+        // optionally prefixed with an internal error code.
+        String[] cancellationMessages = {
+            Fido2CredentialRequest.CANCELLED_ERROR_MSG,
+            Fido2CredentialRequest.FIDO_CANCELLED_REQUEST_ERROR_MSG,
+            Fido2CredentialRequest.FIDO_CANCELLED_VERIFICATION_ERROR_MSG,
+            Fido2CredentialRequest.FIDO_CANCELLED_FLOW_ERROR_MSG,
+        };
+        for (String message : cancellationMessages) {
+            for (int requestType :
+                    new int[] {
+                        Fido2ApiRequestType.MAKE_CREDENTIAL, Fido2ApiRequestType.GET_ASSERTION
+                    }) {
+                Mockito.clearInvocations(mRequestCallbackMock);
+                assertIntentOutcome(
+                        requestType,
+                        Activity.RESULT_OK,
+                        Fido2ApiTestHelper.createErrorIntent(
+                                Fido2Api.NOT_ALLOWED_ERR, "[50135] " + message),
+                        ApiCallEvent.CANCELLED);
+
+                ArgumentCaptor<WebauthnRequestResponse> responseCaptor =
+                        ArgumentCaptor.forClass(WebauthnRequestResponse.class);
+                verify(mRequestCallbackMock).onComplete(responseCaptor.capture());
+                WebauthnRequestResponse response = responseCaptor.getValue();
+                RequestMetrics metrics = response.getRequestMetrics();
+                if (requestType == Fido2ApiRequestType.MAKE_CREDENTIAL) {
+                    assertThat(response.getAuthenticatorStatus())
+                            .isEqualTo(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                    assertThat(metrics.getMakeCredentialOutcome())
+                            .isEqualTo(MakeCredentialOutcome.USER_CANCELLATION);
+                    assertThat(metrics.getMakeCredentialResult())
+                            .isEqualTo(CredentialRequestResult.USER_CANCELLED);
+                } else {
+                    assertThat(response.getGetCredentialResponse().getGetAssertionResponse().status)
+                            .isEqualTo(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                    assertThat(metrics.getGetAssertionOutcome())
+                            .isEqualTo(GetAssertionOutcome.USER_CANCELLATION);
+                    assertThat(metrics.getGetAssertionResult())
+                            .isEqualTo(CredentialRequestResult.USER_CANCELLED);
+                }
+            }
+        }
+    }
+
+    @Test
     public void testIntentMetrics_unresolvedThenResultWithoutRequestCallback() {
         // A launched PendingIntent without a result yet is a bare STARTED.
         HistogramWatcher watcher =

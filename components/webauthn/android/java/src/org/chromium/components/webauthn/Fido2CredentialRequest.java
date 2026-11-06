@@ -89,7 +89,13 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     static final String CREDENTIAL_EXISTS_ERROR_MSG =
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
+    // User cancellation messages. "Cancelled by user." comes from the GMS Core passkey UI; the
+    // others come from the GMS Core FIDO module (security key / hybrid sheet, user verification,
+    // and confirmation prompts), which reports cancellation as NOT_ALLOWED_ERR with these messages.
     static final String CANCELLED_ERROR_MSG = "Cancelled by user.";
+    static final String FIDO_CANCELLED_REQUEST_ERROR_MSG = "User canceled the request";
+    static final String FIDO_CANCELLED_VERIFICATION_ERROR_MSG = "User canceled verification";
+    static final String FIDO_CANCELLED_FLOW_ERROR_MSG = "User canceled the flow.";
     private static final String IMMEDIATE_TIMEOUT_HISTOGRAM =
             "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi";
 
@@ -216,8 +222,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                                 errorCode, makeBuilder.build()));
                 break;
             case WebauthnRequestCallback.CallbackType.GET_CREDENTIAL:
-                RequestMetrics.Builder builder =
-                        new RequestMetrics.Builder();
+                RequestMetrics.Builder builder = new RequestMetrics.Builder();
                 if (response != null) {
                     builder.setGetAssertionOutcome(response);
                 }
@@ -1429,6 +1434,14 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         }
     }
 
+    private static boolean isUserCancelledFidoError(@Nullable String errorMsg) {
+        if (errorMsg == null) return false;
+        return errorMsg.contains(CANCELLED_ERROR_MSG)
+                || errorMsg.contains(FIDO_CANCELLED_REQUEST_ERROR_MSG)
+                || errorMsg.contains(FIDO_CANCELLED_VERIFICATION_ERROR_MSG)
+                || errorMsg.contains(FIDO_CANCELLED_FLOW_ERROR_MSG);
+    }
+
     private static @AndroidApiCallMetrics.ApiCallEvent int classifyFido2ResponseOutcome(
             @Nullable Object response, @Fido2ApiRequestType int requestType) {
         if (response == null) {
@@ -1440,9 +1453,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             if (error.first == Fido2Api.TIMEOUT_ERR) {
                 return AndroidApiCallMetrics.ApiCallEvent.TIMED_OUT;
             }
-            if (error.first == Fido2Api.NOT_ALLOWED_ERR
-                    && error.second != null
-                    && error.second.contains(CANCELLED_ERROR_MSG)) {
+            if (error.first == Fido2Api.NOT_ALLOWED_ERR && isUserCancelledFidoError(error.second)) {
                 return AndroidApiCallMetrics.ApiCallEvent.CANCELLED;
             }
             return AndroidApiCallMetrics.ApiCallEvent.FAILED;
@@ -1839,7 +1850,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                                 || errorMsg.contains(NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG))) {
                     return MakeCredentialOutcome.RK_NOT_SUPPORTED;
                 }
-                if (errorMsg != null && errorMsg.contains(CANCELLED_ERROR_MSG)) {
+                if (isUserCancelledFidoError(errorMsg)) {
                     return MakeCredentialOutcome.USER_CANCELLATION;
                 }
                 return MakeCredentialOutcome.PLATFORM_NOT_ALLOWED;
@@ -1874,7 +1885,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                                 || errorMsg.contains(NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG))) {
                     return GetAssertionOutcome.RK_NOT_SUPPORTED;
                 }
-                if (errorMsg != null && errorMsg.contains(CANCELLED_ERROR_MSG)) {
+                if (isUserCancelledFidoError(errorMsg)) {
                     return GetAssertionOutcome.USER_CANCELLATION;
                 }
                 return GetAssertionOutcome.PLATFORM_NOT_ALLOWED;
