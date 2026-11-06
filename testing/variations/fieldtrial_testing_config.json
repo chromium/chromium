@@ -1805,8 +1805,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillAiWalletShopping",
-                        "AutofillEnableAutofillSettingsEnterprisePolicy"
+                        "AutofillAiWalletShopping"
                     ]
                 }
             ]
@@ -2018,6 +2017,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillDisallowCountryCodeFilling"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillEnableAutofillSettingsEnterprisePolicy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableAutofillSettingsEnterprisePolicy"
                     ]
                 }
             ]
