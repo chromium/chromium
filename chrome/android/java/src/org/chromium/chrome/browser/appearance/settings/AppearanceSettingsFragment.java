@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarConstants;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarActionEligibility;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
@@ -56,6 +58,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     public static final String PREF_BOOKMARK_BAR = "bookmark_bar";
     public static final String PREF_BOOKMARK_BAR_SWITCH = "bookmark_bar_switch";
     public static final String PREF_BOTTOM_BAR_SWITCH = "bottom_bar_switch";
+    public static final String PREF_GLIC_BOTTOM_BAR_BUTTON_SWITCH = "glic_bottom_bar_button_switch";
     public static final String PREF_HOMEPAGE = "homepage";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
@@ -63,6 +66,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
     private static final String USER_ACTION_BOTTOM_BAR_ENABLED = "Settings.BottomBar.Enabled";
     private static final String USER_ACTION_BOTTOM_BAR_DISABLED = "Settings.BottomBar.Disabled";
+    private static final String USER_ACTION_GLIC_BUTTON_ENABLED =
+            "Glic.Settings.BottomBarGlicButton.Enabled";
+    private static final String USER_ACTION_GLIC_BUTTON_DISABLED =
+            "Glic.Settings.BottomBarGlicButton.Disabled";
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -86,6 +93,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         initAddressBarPref();
         initToolbarShortcutPref();
         initBottomBarPref();
+        initGlicBottomBarButtonPref();
         initHomepagePref();
         initTabPositionPref();
     }
@@ -127,6 +135,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         updateAddressBarPref();
         updateUiThemePref();
         updateBottomBarPref();
+        updateGlicBottomBarButtonPref();
         if (shouldShowHomepagePref(getContext())) {
             HomepageManager.getInstance().addListener(this);
             updateHomepagePref();
@@ -380,8 +389,51 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                             enabled
                                     ? USER_ACTION_BOTTOM_BAR_ENABLED
                                     : USER_ACTION_BOTTOM_BAR_DISABLED);
+                    updateGlicBottomBarButtonPref();
                     return true;
                 });
+    }
+
+    /** Initializes the Gemini bottom bar button switch, or removes it when it is not offered. */
+    private void initGlicBottomBarButtonPref() {
+        if (!shouldOfferGlicBottomBarButtonPref(getContext(), getProfile())) {
+            removePreference(PREF_GLIC_BOTTOM_BAR_BUTTON_SWITCH);
+            return;
+        }
+        ChromeSwitchPreference glicSwitch = findPreference(PREF_GLIC_BOTTOM_BAR_BUTTON_SWITCH);
+        assert glicSwitch != null;
+        glicSwitch.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(getProfile()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return GlicEnabling.isDisabledByPolicy(getProfile());
+                    }
+                });
+        glicSwitch.setOnPreferenceChangeListener(
+                (pref, newValue) -> {
+                    boolean enabled = (boolean) newValue;
+                    BottomBarConfigUtils.setGlicButtonEnabled(enabled);
+                    RecordUserAction.record(
+                            enabled
+                                    ? USER_ACTION_GLIC_BUTTON_ENABLED
+                                    : USER_ACTION_GLIC_BUTTON_DISABLED);
+                    return true;
+                });
+    }
+
+    /**
+     * Syncs the Gemini bottom bar button switch with the current prefs. The switch is shown only
+     * while the bottom bar is on, and is unchecked when Gemini is disabled by policy.
+     */
+    private void updateGlicBottomBarButtonPref() {
+        ChromeSwitchPreference glicSwitch = findPreference(PREF_GLIC_BOTTOM_BAR_BUTTON_SWITCH);
+        if (glicSwitch == null) return;
+        glicSwitch.setVisible(BottomBarConfigUtils.isBottomBarUserEnabled());
+        // Rows cache their card corners by position, so refresh them after a visibility change.
+        notifyPreferencesUpdated();
+        glicSwitch.setChecked(
+                !GlicEnabling.isDisabledByPolicy(getProfile())
+                        && BottomBarConfigUtils.isGlicButtonEnabled());
     }
 
     /**
@@ -497,6 +549,19 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         return BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context);
     }
 
+    static boolean shouldOfferGlicBottomBarButtonPref(Context context, Profile profile) {
+        if (!BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context)
+                || !BottomBarConfigUtils.isBottomBarEligible(context)) {
+            return false;
+        }
+        // The bottom bar resolves the candidate action when it starts, which has not happened if
+        // Chrome started with the bottom bar off.
+        if (BottomBarActionEligibility.getCachedCandidateExtraAction() == null) {
+            BottomBarActionEligibility.getCandidateExtraAction(profile);
+        }
+        return BottomBarActionEligibility.shouldShowBottomBarGlicSetting(profile);
+    }
+
     static boolean shouldShowHomepagePref(Context context) {
         return BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context)
                 && HomepageManager.shouldShowHomepageSettings();
@@ -558,6 +623,12 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
                     if (!BottomBarConfigUtils.shouldShowSettingsToggle(context)) {
                         indexData.removeEntryForKey(prefFragment, PREF_BOTTOM_BAR_SWITCH);
+                    }
+
+                    if (!shouldOfferGlicBottomBarButtonPref(context, profile)
+                            || !BottomBarConfigUtils.isBottomBarUserEnabled()) {
+                        indexData.removeEntryForKey(
+                                prefFragment, PREF_GLIC_BOTTOM_BAR_BUTTON_SWITCH);
                     }
 
                     if (BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context)) {

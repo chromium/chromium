@@ -4308,8 +4308,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TOOLBAR_SHORTCUT" desc="Title for toolbar shortcut toggle button in adaptive toolbar button preference page.">
         Toolbar shortcut
       </message>
-      <!-- TODO(crbug.com/556961273): Make translateable once the copy is final. -->
-      <message name="IDS_ADDRESS_BAR_SHORTCUT" desc="Title for the address bar shortcut setting and toggle button in the adaptive toolbar button preference page." translateable="false">
+      <message name="IDS_ADDRESS_BAR_SHORTCUT" desc="Title for the address bar shortcut setting and toggle button in the adaptive toolbar button preference page.">
         Address bar shortcut
       </message>
       <message name="IDS_TOOLBAR_LONG_PRESS_OPTIONS_IPH" desc="The in-product-help message shown to inform the user they can change placement of the address bar from a long-press menu.">
@@ -7207,8 +7206,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SETTINGS_SHOW_GEMINI_IN_BOTTOM_BAR_TITLE" desc="Title for the settings toggle to show or hide Gemini in the bottom bar. [CHAR_LIMIT=32]">
         Show Gemini in the bottom toolbar
       </message>
+      <message name="IDS_SETTINGS_SHOW_GEMINI_IN_TOOLBAR_TITLE" desc="Title for the switch in the Appearance settings page that shows or hides the Gemini button in the toolbar at the bottom of the screen. [CHAR_LIMIT=32]">
+        Show Gemini in the toolbar
+      </message>
       <message name="IDS_SETTINGS_SHOW_GEMINI_IN_BOTTOM_BAR_SUMMARY" desc="Summary description for the settings toggle to show Gemini in the bottom bar.">
         Quickly open Gemini when you need it
+      </message>
+      <message name="IDS_SETTINGS_SHOW_GEMINI_SHORTCUT_TITLE" desc="Title for the row in Gemini in Chrome settings that shows where the Gemini shortcut button appears. Tapping it opens the settings page that controls the shortcut. [CHAR_LIMIT=32]">
+        Show Gemini shortcut
+      </message>
+      <message name="IDS_SETTINGS_SHOW_GEMINI_SHORTCUT_IN_TOOLBAR" desc="Summary under the 'Show Gemini shortcut' setting when the Gemini button is shown in the toolbar at the bottom of the screen. [CHAR_LIMIT=32]">
+        In toolbar
+      </message>
+      <message name="IDS_SETTINGS_SHOW_GEMINI_SHORTCUT_IN_ADDRESS_BAR" desc="Summary under the 'Show Gemini shortcut' setting when the Gemini button is shown as the shortcut next to the address bar. [CHAR_LIMIT=32]">
+        In address bar
       </message>
 
       <!-- HTTPS-First Mode settings strings -->
