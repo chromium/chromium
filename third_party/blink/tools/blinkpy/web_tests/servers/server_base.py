@@ -66,6 +66,32 @@ class ServerError(Exception):
     pass
 
 
+LOCK_HELD_ERROR_MESSAGE = (
+    'Another instance of run_web_tests.py or run_wpt_tests.py is holding the '
+    'OS lock (%s). Simultaneous runs are not supported due to shared server '
+    'ports; wait for the other run to finish and try again.'
+)
+
+
+def runtime_path(filesystem, platform):
+    # On Mac and Linux tmpdir is set to '/tmp' for (i) consistency and
+    # (ii) because it is hardcoded in the Apache ScoreBoardFile directive.
+    is_shared_tmp = platform.is_mac() or platform.is_linux()
+    tmpdir = '/tmp' if is_shared_tmp else tempfile.gettempdir()
+    path = filesystem.join(tmpdir, 'WebKit')
+    filesystem.maybe_make_directory(path)
+    if is_shared_tmp:
+        try:
+            filesystem.chmod(path, 0o1777)
+        except OSError:
+            pass
+    return path
+
+
+def lock_path(filesystem, platform):
+    return filesystem.join(runtime_path(filesystem, platform), 'web_tests.lock')
+
+
 class ServerBase(object):
     """A skeleton class for starting and stopping servers used by the web tests."""
 
@@ -76,14 +102,7 @@ class ServerBase(object):
         self._platform = port_obj.host.platform
         self._output_dir = output_dir
 
-        # On Mac and Linux tmpdir is set to '/tmp' for (i) consistency and
-        # (ii) because it is hardcoded in the Apache ScoreBoardFile directive.
-        tmpdir = tempfile.gettempdir()
-        if self._platform.is_mac() or self._platform.is_linux():
-            tmpdir = '/tmp'
-
-        self._runtime_path = self._filesystem.join(tmpdir, 'WebKit')
-        self._filesystem.maybe_make_directory(self._runtime_path)
+        self._runtime_path = runtime_path(self._filesystem, self._platform)
         self._filesystem.maybe_make_directory(self._output_dir)
 
         # Subclasses must override these fields.

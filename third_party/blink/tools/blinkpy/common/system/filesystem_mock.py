@@ -36,6 +36,7 @@ import unittest
 from unittest.mock import patch
 
 from blinkpy.common.system.filesystem import (
+    FileLockError,
     _remove_contents,
     _sanitize_filename,
 )
@@ -66,6 +67,7 @@ class MockFileSystem(object):
         self.files = files or {}
         self.executable_files = set()
         self.written_files = {}
+        self.locked_files = set()
         self.last_tmpdir = None
         self.current_tmpno = 0
         self.cwd = cwd
@@ -91,6 +93,9 @@ class MockFileSystem(object):
         if self.sep in path:
             return path.rsplit(self.sep, 1)
         return ('', path)
+
+    def chmod(self, path, mode):
+        pass
 
     def make_executable(self, file_path):
         self.executable_files.add(file_path)
@@ -500,6 +505,20 @@ class MockFileSystem(object):
     def sanitize_filename(self, filename, replacement='_'):
         return _sanitize_filename(filename, replacement)
 
+    @contextlib.contextmanager
+    def lock_file(self, path):
+        norm_path = self.abspath(path)
+        parent = self.dirname(norm_path)
+        if parent:
+            self.maybe_make_directory(parent)
+        if norm_path in self.locked_files:
+            raise FileLockError('Failed to lock %s' % path)
+        self.locked_files.add(norm_path)
+        try:
+            yield
+        finally:
+            self.locked_files.discard(norm_path)
+
     def _open_mock(self, filename, mode='r', **_kwargs):
         """A mock for Python's built-in `open` backed by this Blink FS."""
         mode_match = re.match(r'([rwa])(b?)', mode)
@@ -526,6 +545,12 @@ class MockFileSystem(object):
             stack.enter_context(patch('os.makedirs', self.maybe_make_directory))
             stack.enter_context(patch('os.replace', self.move))
             stack.enter_context(patch('os.unlink', self.remove))
+            stack.enter_context(
+                patch(
+                    'tempfile.gettempdir',
+                    lambda: self.sep + '__im_tmp',
+                )
+            )
             stack.enter_context(
                 patch(
                     'tempfile.TemporaryFile',

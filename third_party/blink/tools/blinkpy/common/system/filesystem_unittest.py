@@ -33,11 +33,12 @@
 
 import os
 import stat
+import subprocess
 import sys
 import tempfile
 import unittest
 
-from blinkpy.common.system.filesystem import FileSystem
+from blinkpy.common.system.filesystem import FileLockError, FileSystem
 
 
 class GenericFileSystemTests(object):
@@ -163,6 +164,20 @@ class GenericFileSystemTests(object):
             self.fs.sanitize_filename('test.html?wss&run', replacement='-'),
             'test.html-wss-run',
         )
+
+    def test_lock_file_exclusive_and_release(self):
+        lock_path = self.fs.join(self.generic_test_dir, 'subdir', 'test.lock')
+        with self.fs.lock_file(lock_path):
+            with self.assertRaises(FileLockError):
+                with self.fs.lock_file(lock_path):
+                    pass
+
+        with self.assertRaises(RuntimeError):
+            with self.fs.lock_file(lock_path):
+                raise RuntimeError('boom')
+
+        with self.fs.lock_file(lock_path):
+            pass
 
 
 class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
@@ -388,3 +403,43 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
         else:
             self.fs.rmtree(long_path2, ignore_errors=False)
         self.fs.rmtree(long_path1, ignore_errors=False)
+
+    def test_lock_file_across_processes_and_crash_release(self):
+        lock_path = self.fs.join(self.generic_test_dir, 'cross_proc.lock')
+        blink_tools_dir = os.path.abspath(
+            os.path.join(self._this_dir, '..', '..', '..')
+        )
+        script = (
+            'import sys; '
+            'sys.path.insert(0, %r); '
+            'from blinkpy.common.system.filesystem import FileSystem; '
+            'fs = FileSystem();\n'
+            'with fs.lock_file(%r):\n'
+            '    sys.stdout.write("LOCKED\\n"); sys.stdout.flush();\n'
+            '    sys.stdin.readline()\n'
+        ) % (blink_tools_dir, lock_path)
+        proc = subprocess.Popen(
+            [sys.executable, '-c', script],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        try:
+            self.assertEqual(proc.stdout.readline().strip(), 'LOCKED')
+            with self.assertRaises(FileLockError):
+                with self.fs.lock_file(lock_path):
+                    pass
+
+            # Abruptly killing the holder must immediately release the OS lock.
+            proc.kill()
+            proc.wait(timeout=5)
+            with self.fs.lock_file(lock_path):
+                pass
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait(timeout=5)
+            for pipe in (proc.stdin, proc.stdout, proc.stderr):
+                if pipe:
+                    pipe.close()

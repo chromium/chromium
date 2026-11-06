@@ -494,6 +494,32 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         self.assertEqual(details.exit_code, exit_codes.OK_EXIT_STATUS)
         self.assert_contains(err, 'No tests to run.\n')
 
+    def test_simultaneous_run_fails_clearly(self):
+        host = MockHost()
+        options, parsed_args = parse_args(['http/tests/passes/text.html'], True)
+        port_obj = host.port_factory.get(options.platform, options)
+        port_obj.start_http_server = mock.MagicMock()
+
+        with host.filesystem.lock_file('/tmp/WebKit/web_tests.lock'):
+            details, err = run_and_capture(port_obj, options, parsed_args)
+
+        self.assertEqual(
+            details.exit_code, exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
+        )
+        self.assert_contains(
+            err,
+            'Another instance of run_web_tests.py or run_wpt_tests.py is '
+            'holding the OS lock (/tmp/WebKit/web_tests.lock). Simultaneous '
+            'runs are not supported due to shared server ports; wait for the '
+            'other run to finish and try again.\n',
+        )
+        port_obj.start_http_server.assert_not_called()
+
+        # Once the other run releases the lock, running tests succeeds.
+        details, _ = run_and_capture(port_obj, options, parsed_args)
+        self.assertEqual(details.exit_code, exit_codes.OK_EXIT_STATUS)
+        port_obj.start_http_server.assert_called_once()
+
     def test_natural_order(self):
         tests_to_run = [
             'passes/audio.html',

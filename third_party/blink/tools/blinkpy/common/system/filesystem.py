@@ -33,6 +33,7 @@ filesystem, and can be replaced with a MockFileSystem in tests.
 
 from __future__ import unicode_literals
 
+import contextlib
 import glob
 import hashlib
 import logging
@@ -43,6 +44,12 @@ import subprocess
 import sys
 import tempfile
 import time
+import weakref
+
+if sys.platform == 'win32':
+    import msvcrt
+else:
+    import fcntl
 
 try:
     import exceptions
@@ -51,6 +58,25 @@ except ImportError:
     import builtins as exceptions
 
 _log = logging.getLogger(__name__)
+
+_active_lock_files = weakref.WeakSet()
+
+
+def _close_inherited_lock_files():
+    for lock_file in list(_active_lock_files):
+        try:
+            lock_file.close()
+        except OSError:
+            pass
+    _active_lock_files.clear()
+
+
+if hasattr(os, 'register_at_fork'):
+    os.register_at_fork(after_in_child=_close_inherited_lock_files)
+
+
+class FileLockError(OSError):
+    """Raised when a non-blocking file lock cannot be acquired."""
 
 
 class FileSystem(object):
@@ -394,6 +420,9 @@ class FileSystem(object):
         """Return (dirname + os.sep + basename, '.' + ext)"""
         return os.path.splitext(path)
 
+    def chmod(self, path, mode):
+        os.chmod(self._path_for_access(path), mode)
+
     def make_executable(self, file_path):
         os.chmod(
             file_path,
@@ -423,6 +452,59 @@ class FileSystem(object):
             The sanitized filename.
         """
         return _sanitize_filename(filename, replacement)
+
+    def _open_lock_file(self, path):
+        access_path = self._path_for_access(path)
+        if sys.platform == 'win32':
+            return open(access_path, 'a+b')
+        # On POSIX, `flock(LOCK_EX)` works on read-only file descriptors. Open
+        # existing lock files with `'rb'` so multiple users sharing `/tmp` do
+        # not need write permission or trigger `fs.protected_regular` on
+        # `O_CREAT`.
+        try:
+            f = open(access_path, 'rb')
+        except FileNotFoundError:
+            try:
+                f = open(access_path, 'a+b')
+            except PermissionError:
+                f = open(access_path, 'rb')
+        try:
+            os.fchmod(
+                f.fileno(),
+                stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH,
+            )
+        except OSError:
+            pass
+        return f
+
+    @contextlib.contextmanager
+    def lock_file(self, path):
+        """Acquires an exclusive, non-blocking OS lock on `path`."""
+        parent = self.dirname(path)
+        if parent:
+            self.maybe_make_directory(parent)
+        with self._open_lock_file(path) as f:
+            _active_lock_files.add(f)
+            try:
+                try:
+                    if sys.platform == 'win32':
+                        f.seek(0)
+                        msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+                    else:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except OSError as error:
+                    raise FileLockError('Failed to lock %s' % path) from error
+                try:
+                    yield
+                finally:
+                    if not f.closed:
+                        if sys.platform == 'win32':
+                            f.seek(0)
+                            msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+                        else:
+                            fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+            finally:
+                _active_lock_files.discard(f)
 
 
 # _remove_contents is implemented in terms of other FileSystem functions. To
