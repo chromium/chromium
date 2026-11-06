@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,9 +45,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.ThemeType;
@@ -1301,6 +1302,7 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testUnarchiveAndRestoreTabs_RestoreFrozenTabWithWebContentsState() {
         Tab tab =
                 mActivityTestRule.loadUrlInNewTab(
@@ -1329,8 +1331,7 @@ public class TabArchiverTest {
 
         assertNotNull(archivedTab);
         assertNull(archivedTab.getWebContents());
-        WebContentsState oldContentsState = archivedTab.getWebContentsState();
-        assertNotNull(oldContentsState);
+        assertNotNull(archivedTab.getWebContentsState());
 
         // Unarchive and restore the frozen tab into the regular tab model.
         runOnUiThreadBlocking(
@@ -1347,9 +1348,8 @@ public class TabArchiverTest {
         Tab restoredTab = runOnUiThreadBlocking(() -> mRegularTabModel.getTabById(tab.getId()));
         assertNotNull(restoredTab);
 
-        // Verify that the restored tab has an independent WebContentsState instance and can be
-        // loaded / selected without crashing.
-        assertNotSame(oldContentsState, restoredTab.getWebContentsState());
+        // The restored tab may share the archived tab's immutable WebContentsState; verify it can
+        // still be loaded after the archived tab was closed.
         runOnUiThreadBlocking(
                 () -> {
                     assertTrue(restoredTab.loadIfNeeded(/* forceBackingSize= */ false));

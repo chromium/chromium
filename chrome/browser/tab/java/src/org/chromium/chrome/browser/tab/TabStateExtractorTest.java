@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -105,11 +104,7 @@ public class TabStateExtractorTest {
 
         WebContentsState result = TabStateExtractor.getWebContentsState(mTabMock);
 
-        assertNotNull(result);
-        assertNotSame(webContentsState, result);
-        assertEquals(webContentsState.buffer(), result.buffer());
-        assertEquals(webContentsState.version(), result.version());
-        assertEquals(2, result.getRefCountForTesting());
+        assertEquals(webContentsState, result);
     }
 
     @Test

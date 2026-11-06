@@ -41,8 +41,12 @@ class TabStateStorageBackend {
   // Performs an atomic database update.
   void Update(std::unique_ptr<TabStateStorageUpdater> updater);
 
+  // Invoked on the background DB sequence with the loaded data, returning a
+  // closure to run on the UI sequence once the load finishes.
+  // TODO(crbug.com/582296321): Decouple LoadAllNodes from UI-closure return
+  // callbacks.
   using OnStorageLoadedData =
-      base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
+      base::OnceCallback<base::OnceClosure(std::unique_ptr<StorageLoadedData>)>;
   void LoadAllNodes(std::string_view window_tag,
                     bool is_off_the_record,
                     std::unique_ptr<StorageLoadedData::Builder> builder,
@@ -83,8 +87,7 @@ class TabStateStorageBackend {
 
   void IncrementBoostCounter();
   void DecrementBoostCounter();
-  void OnLoadDone(OnStorageLoadedData on_storage_loaded_data,
-                  std::unique_ptr<StorageLoadedData> storage_loaded_data);
+  void OnLoadDone(base::OnceClosure on_load_done);
 
   const base::FilePath profile_path_;
   const bool support_off_the_record_data_;

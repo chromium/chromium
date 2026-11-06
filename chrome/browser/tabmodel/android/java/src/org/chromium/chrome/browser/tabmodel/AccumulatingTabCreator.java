@@ -94,8 +94,6 @@ public class AccumulatingTabCreator implements TabCreator {
     public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         if (mIsRecording) {
             createFrozenTabArgumentsList.add(new CreateFrozenTabArguments(state, id, index));
-        } else if (state.contentsState != null) {
-            state.contentsState.destroy();
         }
         return null;
     }

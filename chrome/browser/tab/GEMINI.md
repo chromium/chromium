@@ -116,7 +116,7 @@ A `Tab` exists in one of the following mutually distinct runtime states:
 - **Mutual Exclusion Invariant in `discardAndAppendPendingNavigation`**:
   A `Tab` **never** holds both `mWebContentsState` and `mPendingLoadParams` simultaneously. Calling `TabImpl#discardAndAppendPendingNavigation(params, title)` handles three cases:
   1. **Lazy Tab (`mWebContents == null && mWebContentsState == null`)**: Replaces `mPendingLoadParams` in-place.
-  2. **Frozen Tab (`mWebContentsState != null`)**: Serializes the pending navigation directly into the pickled `WebContentsState` buffer via `WebContentsState.appendPendingNavigation(...)`. In C++, `WebContentsState::AppendPendingNavigation` falls back to creating a single-entry `WebContentsStateByteBuffer` if unpickling or the off-the-record profile check fails; only if JNI `ByteBuffer` creation itself returns `null` does Java destroy `mWebContentsState` and fall back to setting `mPendingLoadParams`.
+  2. **Frozen Tab (`mWebContentsState != null`)**: Serializes the pending navigation directly into the pickled `WebContentsState` buffer via `WebContentsState.appendPendingNavigation(...)`. In C++, `WebContentsState::AppendPendingNavigation` falls back to creating a single-entry `WebContentsStateByteBuffer` if unpickling or the off-the-record profile check fails; only if JNI `ByteBuffer` creation itself returns `null` does Java clear `mWebContentsState` and fall back to setting `mPendingLoadParams`.
   3. **Live/Discarded Tab (`mWebContents != null`)**: Discards `mWebContents` in-place (`DiscardReason.APPEND_NAVIGATION`) and stores `mPendingLoadParams`.
 - **Consumption in `loadIfNeeded()`**:
   - If `mPendingLoadParams != null`, `loadIfNeeded()` initializes `WebContents` (if still null), calls `loadUrl(mPendingLoadParams)`, and clears `mPendingLoadParams = null`.
@@ -155,8 +155,8 @@ A `Tab` exists in one of the following mutually distinct runtime states:
   - `tabs::TabFeatures` & `UnownedUserDataHost`: C++ cross-platform features scoped to `TabAndroid` / `TabInterface`.
   - `PersistedTabData`: Asynchronously persisted per-tab key-value data (`ShoppingPersistedTabData`, `ArchivePersistedTabData`).
   - `TabStateAttributesRegistry`: Tracks tab persistence dirtiness (`DirtinessState`) with **separate tracking per `StoreKey`** so legacy `TabPersistentStoreImpl` and modern `TabStateStore` can run in shadow/migration mode without clearing each other's dirty bits.
-- **`WebContentsState` Reference-Counted Native Buffers**:
-  - `WebContentsState` wraps a direct `ByteBuffer` backed by reference-counted native `PackedData`. Always use the copy constructor `new WebContentsState(existingState)` when extracting state from a frozen tab (`TabStateExtractor`) so background storage or restore tasks never read freed native memory if the tab is destroyed concurrently.
+- **`WebContentsState` GC-Managed Direct Buffers**:
+  - `WebContentsState` is immutable wrt its GC-managed direct `ByteBuffer` (`ByteBuffer.allocateDirect`, allocated on the background DB sequence when loading `StorageLoadedData` on Android) and has no `destroy()` method; `appendPendingNavigation` and `deleteNavigationEntries` return new `WebContentsState` instances rather than mutating the buffer in place.
 - **Deprecated APIs (Do Not Use in New Code)**:
   - `getRootId()` / `setRootId()`: Deprecated; use `getTabGroupId()` (`Token`) and `TabCollection` hierarchy APIs instead.
   - `getMediaState()` / `setMediaState()`: Deprecated; use `getAlertState()` / `tabs::TabAlertController` instead.
