@@ -33,6 +33,28 @@ source_set("net_export_header") {
   sources = [ "net_export.h" ]
 }
 
+# sockaddr_util has its own build target so that //mojo/public/cpp/platform can
+# use it without depending on the whole of //net.
+source_set("sockaddr_util") {
+  visibility = [
+    "//mojo/public/cpp/platform",
+    "//net:net_public_deps",
+  ]
+  sources = [
+    "sockaddr_storage.cc",
+    "sockaddr_storage.h",
+  ]
+  if (is_posix || is_fuchsia) {
+    sources += [
+      "sockaddr_util_posix.cc",
+      "sockaddr_util_posix.h",
+    ]
+  }
+  defines = [ "NET_IMPLEMENTATION" ]
+  public_deps = [ ":net_export_header" ]
+  deps = [ "//base" ]
+}
+
 # registry_controlled_domains has its own build target so that code
 # (eg ios's credential_provider_extension) can use it without depending on the
 # whole of //net.

@@ -56,7 +56,7 @@ component("platform") {
       "platform_channel_server_posix.cc",
       "socket_utils_posix.cc",
     ]
-    deps += [ "//net" ]
+    deps += [ "//net/base:sockaddr_util" ]
   }
 
   if (is_fuchsia) {
