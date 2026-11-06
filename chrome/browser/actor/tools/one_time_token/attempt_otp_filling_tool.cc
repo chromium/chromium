@@ -281,7 +281,7 @@ AttemptOtpFillingTool::~AttemptOtpFillingTool() {
   if (!pending_cancellation_event_) {
     return;
   }
-  RecordAttemptOtpFillingEvent(*pending_cancellation_event_);
+  RecordEvent(*pending_cancellation_event_);
   if (*pending_cancellation_event_ ==
       AttemptOtpFillingToolEvent::kCancelledDuringOptInCard) {
     RecordGmailOtpOptInCardInteraction(
@@ -349,9 +349,8 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
   RecordConsentFetchDuration(base::TimeTicks::Now() - start_time,
                              consent_states.has_value());
   if (!consent_states.has_value()) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::
-            kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent);
+    RecordEvent(AttemptOtpFillingToolEvent::
+                    kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent);
     LogJournalEvent("AttemptOtpFillingTool::OnUserDataProcessingConsentFetched",
                     JournalDetailsBuilder()
                         .Add("error", "Consent states fetch returned nullopt")
@@ -376,8 +375,7 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
       GetGmailAndGoogleSmartFeaturesConsent(*consent_states));
 
   if (consent_states->comms_apps == one_time_tokens::ConsentState::kDisabled) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kGmailSmartFeaturesConsentRequired);
+    RecordEvent(AttemptOtpFillingToolEvent::kGmailSmartFeaturesConsentRequired);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpGmailConsentRequired,
                    /*requires_page_stabilization=*/false,
@@ -386,7 +384,7 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
   }
 
   if (consent_states->google_apps == one_time_tokens::ConsentState::kDisabled) {
-    RecordAttemptOtpFillingEvent(
+    RecordEvent(
         AttemptOtpFillingToolEvent::kGoogleSmartFeaturesConsentRequired);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpGoogleConsentRequired,
@@ -401,8 +399,7 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
   }
 
   if (within_cool_off_period) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kWithinOptInCoolOffPeriod);
+    RecordEvent(AttemptOtpFillingToolEvent::kWithinOptInCoolOffPeriod);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpUnableToFill,
                    /*requires_page_stabilization=*/false,
@@ -425,8 +422,7 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
   // details.
   pending_cancellation_event_.reset();
   if (!response || response.is_null()) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kOptInNullResponse);
+    RecordEvent(AttemptOtpFillingToolEvent::kOptInNullResponse);
     RecordGmailOtpOptInCardInteraction(
         GmailOtpOptInCardInteraction::kErrorResponse);
     std::move(callback).Run(
@@ -437,8 +433,7 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
   }
 
   if (response->is_error_reason()) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kOptInErrorResponse);
+    RecordEvent(AttemptOtpFillingToolEvent::kOptInErrorResponse);
     RecordGmailOtpOptInCardInteraction(
         GmailOtpOptInCardInteraction::kErrorResponse);
     LogJournalEvent("AttemptOtpFillingTool::OnGmailOtpOptInResponse",
@@ -456,8 +451,7 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
 
   PrefService* prefs = tool_delegate().GetProfile().GetPrefs();
   if (!opt_in_permission_granted) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kOptInPermissionDenied);
+    RecordEvent(AttemptOtpFillingToolEvent::kOptInPermissionDenied);
     RecordGmailOtpOptInCardInteraction(
         GmailOtpOptInCardInteraction::kPermissionDenied);
     autofill::prefs::SetAutofillGmailOtpFillingActivationDismissalTimestamp(
@@ -489,16 +483,14 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
                       .Build());
 
   if (!actor_surface) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kTabWentAwayBeforeInvocation);
+    RecordEvent(AttemptOtpFillingToolEvent::kTabWentAwayBeforeInvocation);
     return MakeResult(mojom::ActionResultCode::kTabWentAway,
                       /*requires_page_stabilization=*/false,
                       "Target tab was destroyed before invocation.");
   }
 
   if (!last_observation) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kNoLastTabObservation);
+    RecordEvent(AttemptOtpFillingToolEvent::kNoLastTabObservation);
     return MakeResult(mojom::ActionResultCode::kOtpNoLastTabObservation,
                       /*requires_page_stabilization=*/false,
                       "Last tab observation is null.");
@@ -510,8 +502,7 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
     autofill::FieldGlobalId field_id = GetFieldIdFromPageTarget(
         last_observation, actor_surface_handle_, trigger_field);
     if (!field_id) {
-      RecordAttemptOtpFillingEvent(
-          AttemptOtpFillingToolEvent::kTriggerFieldNotFound);
+      RecordEvent(AttemptOtpFillingToolEvent::kTriggerFieldNotFound);
       return MakeResult(mojom::ActionResultCode::kOtpFieldNotFound,
                         /*requires_page_stabilization=*/false,
                         "Trigger field not found.");
@@ -536,7 +527,7 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
   mojom::ActionResultPtr action_result = GetResultFromFormFillingStatus(status);
 
   if (!IsOk(*action_result)) {
-    RecordAttemptOtpFillingEvent(GetMetricsEventFromFormFillingStatus(status));
+    RecordEvent(GetMetricsEventFromFormFillingStatus(status));
   }
   return action_result;
 }
@@ -561,8 +552,7 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
   content::RenderFrameHost* otp_frame =
       GetOtpFrame(GetTargetActorSurface(), trigger_field_ids_);
   if (!otp_frame) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound);
+    RecordEvent(AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound);
     LogJournalEvent("AttemptOtpFillingTool::Invoke",
                     JournalDetailsBuilder()
                         .Add("error", "No frame containing an OTP")
@@ -664,8 +654,7 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
   content::RenderFrameHost* otp_frame =
       GetOtpFrame(GetTargetActorSurface(), trigger_field_ids_);
   if (!otp_frame) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound);
+    RecordEvent(AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpTargetFrameNotFound,
                    /*requires_page_stabilization=*/false,
@@ -753,7 +742,7 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
       default:
         break;
     }
-    RecordAttemptOtpFillingEvent(event);
+    RecordEvent(event);
     std::move(callback).Run(
         MakeResult(code, /*requires_page_stabilization=*/false, message));
     return;
@@ -778,7 +767,7 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
                     JournalDetailsBuilder()
                         .AddError("Form filling context validation failed")
                         .Build());
-    RecordAttemptOtpFillingEvent(GetBeforeFillingMetricsEvent(status));
+    RecordEvent(GetBeforeFillingMetricsEvent(status));
     std::move(callback).Run(std::move(validation_result));
     return;
   }
@@ -823,11 +812,10 @@ void AttemptOtpFillingTool::OnOtpFilled(ToolCallback callback, bool success) {
                   JournalDetailsBuilder().Add("success", success).Build());
 
   if (success) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kFillingOtpSuccess);
+    RecordEvent(AttemptOtpFillingToolEvent::kFillingOtpSuccess);
     std::move(callback).Run(MakeOkResult());
   } else {
-    RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent::kFillingOtpError);
+    RecordEvent(AttemptOtpFillingToolEvent::kFillingOtpError);
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kOtpFillFailure,
                                        /*requires_page_stabilization=*/false,
                                        "Failed to fill OTP."));
@@ -884,7 +872,7 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
                     JournalDetailsBuilder()
                         .Add("error", "Gmail OTP confirmation response is null")
                         .Build());
-    RecordAttemptOtpFillingEvent(
+    RecordEvent(
         AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid);
     RecordGmailOtpConfirmationDialogInteraction(
         GmailOtpConfirmationDialogInteraction::kErrorResponse);
@@ -900,7 +888,7 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
                     JournalDetailsBuilder()
                         .Add("error_reason", response->get_error_reason())
                         .Build());
-    RecordAttemptOtpFillingEvent(
+    RecordEvent(
         AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid);
     RecordGmailOtpConfirmationDialogInteraction(
         GmailOtpConfirmationDialogInteraction::kErrorResponse);
@@ -918,7 +906,7 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
             .Add("error",
                  "Gmail OTP confirmation response lacks response payload")
             .Build());
-    RecordAttemptOtpFillingEvent(
+    RecordEvent(
         AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid);
     RecordGmailOtpConfirmationDialogInteraction(
         GmailOtpConfirmationDialogInteraction::kErrorResponse);
@@ -935,7 +923,7 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
                       .Build());
 
   if (!permission_granted) {
-    RecordAttemptOtpFillingEvent(
+    RecordEvent(
         AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser);
     RecordGmailOtpConfirmationDialogInteraction(
         GmailOtpConfirmationDialogInteraction::kPermissionDenied);
@@ -966,7 +954,7 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
                     JournalDetailsBuilder()
                         .AddError("Form filling context validation failed")
                         .Build());
-    RecordAttemptOtpFillingEvent(GetBeforeFillingMetricsEvent(status));
+    RecordEvent(GetBeforeFillingMetricsEvent(status));
     std::move(callback).Run(std::move(validation_result));
     return;
   }
@@ -982,6 +970,10 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
       std::move(otp),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AttemptOtpFillingTool::RecordEvent(AttemptOtpFillingToolEvent event) {
+  RecordAttemptOtpFillingEvent(event);
 }
 
 }  // namespace actor

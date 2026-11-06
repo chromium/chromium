@@ -90,6 +90,8 @@ class AttemptOtpFillingTool : public Tool {
   void LogJournalEvent(std::string_view event_name,
                        std::vector<mojom::JournalDetailsPtr> journal_details);
 
+  void RecordEvent(AttemptOtpFillingToolEvent event);
+
   ActorSurfaceHandle actor_surface_handle_;
   std::vector<PageTarget> trigger_fields_;
   std::vector<autofill::FieldGlobalId> trigger_field_ids_;
