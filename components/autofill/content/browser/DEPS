@@ -6,7 +6,6 @@ include_rules = [
   "+components/optimization_guide/content/browser",
   "+components/optimization_guide/proto",
   "+components/profile_metrics",
-  "+components/services/storage",
   "+components/webauthn",
   "+components/credential_management",
   "+components/page_load_metrics/browser",

@@ -4,10 +4,6 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("autofill_shared_storage_proto") {
-  sources = [ "autofill_shared_storage.proto" ]
-}
-
 static_library("browser") {
   sources = [
     "autofill_log_router_factory.cc",
@@ -48,14 +44,12 @@ static_library("browser") {
     "//components/autofill/core/common",
     "//components/keyed_service/content",
     "//components/optimization_guide/content/browser",
-    "//components/services/storage",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
     "//skia",
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
-    ":autofill_shared_storage_proto",
     "//base:i18n",
     "//components/autofill/core/browser/integrators/password_manager",
     "//components/credential_management:browser",
