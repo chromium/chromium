@@ -25,7 +25,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -44,6 +44,7 @@ import org.chromium.components.autofill.TestViewStructure;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.Visibility;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.WindowAndroid;
@@ -91,7 +92,10 @@ public class TabImplTest {
                             mActivityTestRule
                                     .getActivity()
                                     .getCurrentTabCreator()
-                                    .createFrozenTab(state, tab.getId(), /* index= */ 1);
+                                    .createFrozenTab(
+                                            state,
+                                            tab.getId(),
+                                            /* index= */ TabModel.INVALID_TAB_INDEX);
                 });
     }
 
@@ -286,7 +290,6 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @DisabledTest(message = "https://crbug.com/574025790")
     public void testTabLoadIfNeededEnsuresBackingForMediaCapture() {
         TabImpl tab = createFrozenTab();
 
@@ -449,6 +452,9 @@ public class TabImplTest {
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/simple.html");
         ThreadUtils.runOnUiThreadBlocking(() -> tab.loadUrl(new LoadUrlParams(url2)));
 
+        WebContents webContents = tab.getWebContents();
+        assertNotNull(webContents);
+        CriteriaHelper.pollUiThread(() -> !webContents.getNavigationController().needsReload());
         assertNull("Pending load params should be null", tab.getPendingLoadParams());
         assertEquals("URL should be updated", url2, tab.getUrl().getSpec());
         // Title will be updated asynchronously.
