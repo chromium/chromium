@@ -13,6 +13,7 @@ import android.view.InputDevice;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -21,6 +22,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A singleton that helps detecting changes in input devices through the interface {@link
@@ -91,7 +93,8 @@ public class InputDeviceObserver implements InputDeviceListener {
     }
 
     @CalledByNative
-    public static InputDeviceData[] getInputDevices() {
+    public static @JniType("std::vector<jni_zero::ScopedJavaLocalRef<jobject>>") InputDeviceData[]
+            getInputDevices() {
         ThreadUtils.assertOnBackgroundThread();
         ArrayList<InputDeviceData> devices = new ArrayList<>();
         for (int deviceId : InputDevice.getDeviceIds()) {
@@ -136,7 +139,7 @@ public class InputDeviceObserver implements InputDeviceListener {
             boolean isTouchscreen) {
         return new InputDeviceData(
                 device.getId(),
-                device.getName(),
+                Objects.requireNonNullElse(device.getName(), ""),
                 device.isExternal(),
                 device.isVirtual(),
                 device.getVendorId(),
@@ -162,7 +165,7 @@ public class InputDeviceObserver implements InputDeviceListener {
         @CalledByNative
         public InputDeviceData(
                 int id,
-                String name,
+                @JniType("std::string") String name,
                 boolean isExternal,
                 boolean isVirtual,
                 int vendorId,
@@ -189,7 +192,7 @@ public class InputDeviceObserver implements InputDeviceListener {
         }
 
         @CalledByNative
-        public String getName() {
+        public @JniType("std::string") String getName() {
             return mName;
         }
 

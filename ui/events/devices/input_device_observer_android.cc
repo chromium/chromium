@@ -4,6 +4,7 @@
 
 #include "ui/events/devices/input_device_observer_android.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_observer_android_test_helper.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -57,8 +59,7 @@ InputDeviceType GetInputDeviceType(bool is_virtual, bool is_external) {
 KeyboardDevice KeyboardDeviceFromJava(JNIEnv* env,
                                       const JavaRef<jobject>& j_device) {
   int id = Java_InputDeviceData_getId(env, j_device);
-  std::string name = base::android::ConvertJavaStringToUTF8(
-      env, Java_InputDeviceData_getName(env, j_device));
+  std::string name = Java_InputDeviceData_getName(env, j_device);
   bool is_external = Java_InputDeviceData_isExternal(env, j_device);
   bool is_virtual = Java_InputDeviceData_isVirtual(env, j_device);
 
@@ -71,8 +72,7 @@ KeyboardDevice KeyboardDeviceFromJava(JNIEnv* env,
 
 InputDevice MouseDeviceFromJava(JNIEnv* env, const JavaRef<jobject>& j_device) {
   int id = Java_InputDeviceData_getId(env, j_device);
-  std::string name = base::android::ConvertJavaStringToUTF8(
-      env, Java_InputDeviceData_getName(env, j_device));
+  std::string name = Java_InputDeviceData_getName(env, j_device);
   bool is_external = Java_InputDeviceData_isExternal(env, j_device);
   bool is_virtual = Java_InputDeviceData_isVirtual(env, j_device);
 
@@ -86,8 +86,7 @@ InputDevice MouseDeviceFromJava(JNIEnv* env, const JavaRef<jobject>& j_device) {
 TouchpadDevice TouchpadDeviceFromJava(JNIEnv* env,
                                       const JavaRef<jobject>& j_device) {
   int id = Java_InputDeviceData_getId(env, j_device);
-  std::string name = base::android::ConvertJavaStringToUTF8(
-      env, Java_InputDeviceData_getName(env, j_device));
+  std::string name = Java_InputDeviceData_getName(env, j_device);
   bool is_external = Java_InputDeviceData_isExternal(env, j_device);
   bool is_virtual = Java_InputDeviceData_isVirtual(env, j_device);
 
@@ -101,8 +100,7 @@ TouchpadDevice TouchpadDeviceFromJava(JNIEnv* env,
 TouchscreenDevice TouchscreenDeviceFromJava(JNIEnv* env,
                                             const JavaRef<jobject>& j_device) {
   int id = Java_InputDeviceData_getId(env, j_device);
-  std::string name = base::android::ConvertJavaStringToUTF8(
-      env, Java_InputDeviceData_getName(env, j_device));
+  std::string name = Java_InputDeviceData_getName(env, j_device);
   bool is_external = Java_InputDeviceData_isExternal(env, j_device);
   bool is_virtual = Java_InputDeviceData_isVirtual(env, j_device);
 
@@ -125,25 +123,20 @@ InputDeviceObserverAndroid::FetchInputDeviceLists() {
                                                 base::BlockingType::MAY_BLOCK);
   InputDeviceLists lists;
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  ScopedJavaLocalRef<jobjectArray> j_devices =
+  std::vector<ScopedJavaLocalRef<jobject>> j_devices =
       Java_InputDeviceObserver_getInputDevices(env);
-  if (j_devices) {
-    jsize size = env->GetArrayLength(j_devices.obj());
-    for (jsize i = 0; i < size; ++i) {
-      ScopedJavaLocalRef<jobject> j_device = ScopedJavaLocalRef<jobject>::Adopt(
-          env, env->GetObjectArrayElement(j_devices.obj(), i));
-      if (Java_InputDeviceData_isKeyboard(env, j_device)) {
-        lists.keyboards.push_back(KeyboardDeviceFromJava(env, j_device));
-      }
-      if (Java_InputDeviceData_isMouse(env, j_device)) {
-        lists.mice.push_back(MouseDeviceFromJava(env, j_device));
-      }
-      if (Java_InputDeviceData_isTouchpad(env, j_device)) {
-        lists.touchpads.push_back(TouchpadDeviceFromJava(env, j_device));
-      }
-      if (Java_InputDeviceData_isTouchscreen(env, j_device)) {
-        lists.touchscreens.push_back(TouchscreenDeviceFromJava(env, j_device));
-      }
+  for (const auto& j_device : j_devices) {
+    if (Java_InputDeviceData_isKeyboard(env, j_device)) {
+      lists.keyboards.push_back(KeyboardDeviceFromJava(env, j_device));
+    }
+    if (Java_InputDeviceData_isMouse(env, j_device)) {
+      lists.mice.push_back(MouseDeviceFromJava(env, j_device));
+    }
+    if (Java_InputDeviceData_isTouchpad(env, j_device)) {
+      lists.touchpads.push_back(TouchpadDeviceFromJava(env, j_device));
+    }
+    if (Java_InputDeviceData_isTouchscreen(env, j_device)) {
+      lists.touchscreens.push_back(TouchscreenDeviceFromJava(env, j_device));
     }
   }
   return lists;
@@ -193,7 +186,7 @@ void InputDeviceObserverAndroid::RemoveObserver(
   Java_InputDeviceObserver_removeObserver(env);
 }
 
-static void JNI_InputDeviceObserver_InputConfigurationChanged(JNIEnv* env) {
+static void JNI_InputDeviceObserver_InputConfigurationChanged() {
   InputDeviceObserverAndroid::GetInstance()
       ->UpdateAndNotifyDeviceConfigurationChanged();
 }
@@ -301,10 +294,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateInputDeviceDataForTesting(
     bool is_virtual,
     int vendor_id,
     int product_id) {
-  ScopedJavaLocalRef<jstring> jname =
-      base::android::ConvertUTF8ToJavaString(env, name);
   return Java_InputDeviceData_Constructor(
-      env, id, jname, is_external, is_virtual, vendor_id, product_id,
+      env, id, name, is_external, is_virtual, vendor_id, product_id,
       /*isKeyboard=*/false, /*isMouse=*/false, /*isTouchpad=*/false,
       /*isTouchscreen=*/false);
 }
