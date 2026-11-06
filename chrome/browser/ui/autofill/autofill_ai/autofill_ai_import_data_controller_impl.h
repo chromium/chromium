@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -76,11 +75,6 @@ class AutofillAiImportDataControllerImpl
   BubbleType GetBubbleType() const override;
   bool ShouldReshowOnTabVisible() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
-
-  // content::WebContentsObserver:
-  // Used to re-show the bubble when it was previously closed due to the user
-  // clicking on a link in the bubble.
-  void OnVisibilityChanged(content::Visibility visibility) override;
 
  protected:
   explicit AutofillAiImportDataControllerImpl(

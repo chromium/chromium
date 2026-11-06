@@ -375,24 +375,6 @@ void FilledCardInformationBubbleControllerImpl::PrimaryPageChanged(
   HideBubble(/*initiated_by_bubble_manager=*/false);
 }
 
-void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (IsBubbleManagerEnabled()) {
-    // BubbleManager will handle the effects of tab changes.
-    return;
-  }
-
-  // If the bubble hasn't been shown yet due to changing the tab during
-  // kFilledCardInformationBubbleDelay, show the bubble after switching back
-  // to the tab.
-  if (visibility == content::Visibility::VISIBLE && !bubble_has_been_shown_ &&
-      should_icon_be_visible_) {
-    QueueOrShowBubble();
-  } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble(/*initiated_by_bubble_manager=*/false);
-  }
-}
-
 bool FilledCardInformationBubbleControllerImpl::ShouldReshowOnTabVisible()
     const {
   // If the bubble hasn't been shown yet due to changing the tab during

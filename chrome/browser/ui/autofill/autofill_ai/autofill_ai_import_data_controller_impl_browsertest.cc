@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/visibility.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -210,8 +209,10 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
   controller()->OnBubbleClosed(
       AutofillClient::AutofillAiBubbleResult::kCancelled);
   ASSERT_FALSE(controller()->IsShowingBubble());
+  EXPECT_FALSE(controller()->ShouldReshowOnTabVisible());
 
-  controller()->OnVisibilityChanged(content::Visibility::VISIBLE);
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_FALSE(controller()->IsShowingBubble());
 }
 

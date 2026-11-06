@@ -38,7 +38,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/visibility.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -189,23 +188,6 @@ void AutofillAiImportDataControllerImpl::OnGoToWalletLinkClicked() {
                       ? chrome::kWalletPassesPageURL
                       : chrome::kWalletPrivatePassHelpCenterURL);
   OpenUrlAndReopenBubbleOnReturn(wallet_url);
-}
-
-void AutofillAiImportDataControllerImpl::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (IsBubbleManagerEnabled()) {
-    // BubbleManager will handle the effects of tab changes.
-    return;
-  }
-
-  // TODO(crbug.com/441742849): Consider moving this logic to
-  // `AutofillBubbleControllerBase`, for now keep it specific to this class to
-  // avoid interfering with other bubbles in transactions.
-  AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
-  if (visibility == content::Visibility::VISIBLE &&
-      reopen_bubble_when_web_contents_becomes_visible_) {
-    QueueOrShowBubble();
-  }
 }
 
 bool AutofillAiImportDataControllerImpl::ShouldReshowOnTabVisible() const {
