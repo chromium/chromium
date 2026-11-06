@@ -651,17 +651,16 @@ class GnParser:
                 _remove_out_prefix(output) for output in desc['outputs']
             )
             target.arch[arch].args = desc['args']
-        elif target.type == 'source_set':
-            target.arch[arch].sources.update(
-                source
-                for source in desc.get('sources', [])
-                if not source.startswith("//out")
-            )
         elif target.is_linker_unit_type():
             target.arch[arch].sources.update(
                 source
                 for source in desc.get('sources', [])
                 if not source.startswith("//out")
+            )
+            target.arch[arch].inputs.update(
+                inp
+                for inp in desc.get('inputs', [])
+                if not inp.startswith(("//out", "//build/config/"))
             )
         elif target.type == 'aidl_interface':
             # It's assumed that all of AIDLs' attributes are not arch-specific.

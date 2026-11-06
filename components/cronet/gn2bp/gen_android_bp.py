@@ -541,12 +541,19 @@ def create_extras_modules(
     # globs do not capture them for CC action sandboxing. Expose them via a
     # filegroup referenced by ${GN2BP_MODULE_PREFIX}cc_defaults.
     libcxx_headers = _new_extra_module("filegroup", "libcxx_headers")
-    libcxx_headers.srcs = {
-        "buildtools/third_party/libc++/__assertion_handler",
-        "buildtools/third_party/libc++/__config_site",
-        "third_party/libc++/src/include/**/*",
-        "third_party/libc++/src/src/support/runtime/*.ipp",
-    }
+    libcxx_target_name = "//buildtools/third_party/libc++:libc++"
+    if libcxx_target_name in gn.all_targets:
+        libcxx_target = gn.get_target(libcxx_target_name)
+        for inp in libcxx_target.common.inputs:
+            libcxx_headers.srcs.add(gn_utils.label_to_path(inp))
+        for cflag in libcxx_target.common.cflags:
+            if cflag.startswith("-isystem../../third_party/libc++/"):
+                inc_path = cflag.removeprefix("-isystem../../").rstrip("/")
+                libcxx_headers.srcs.add(f"{inc_path}/**/*")
+        for inc_dir in libcxx_target.common.include_dirs:
+            if inc_dir.startswith("//third_party/libc++/"):
+                clean_dir = gn_utils.label_to_path(inc_dir).rstrip("/")
+                libcxx_headers.srcs.add(f"{clean_dir}/**/*.ipp")
     libcxx_headers.visibility = {"//external/cronet:__subpackages__"}
 
     return modules

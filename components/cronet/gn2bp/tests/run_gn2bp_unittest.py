@@ -248,6 +248,21 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         cxx_action.common.include_dirs.add("//third_party/empty_inc/include")
         gn.all_targets[cxx_action.name] = cxx_action
 
+        libcxx = gn_utils.GnParser.Target(
+            "//buildtools/third_party/libc++:libc++", "static_library"
+        )
+        libcxx.common.inputs.update(
+            {
+                "//buildtools/third_party/libc++/__assertion_handler",
+                "//buildtools/third_party/libc++/__config_site",
+            }
+        )
+        libcxx.common.cflags.append(
+            "-isystem../../third_party/libc++/src/include"
+        )
+        libcxx.common.include_dirs.add("//third_party/libc++/src/src/")
+        gn.all_targets[libcxx.name] = libcxx
+
         top_bp = gen_android_bp.soong_ast.Blueprint()
         ctx = gen_android_bp.translation_context.TranslationContext("tot")
         for extra_mod in gen_android_bp.create_extras_modules(gn, ctx):
@@ -324,7 +339,7 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             "third_party/boringssl/**",
             "third_party/empty_inc/include/**",
             "third_party/libc++/src/include/**",
-            "third_party/libc++/src/src/support/runtime/*.ipp",
+            "third_party/libc++/src/src/**/*.ipp",
             "third_party/rust/chromium_crates_io/vendor/cxx-v1/include/cxx.h",
             "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/LICENSE",
             "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/METADATA",
@@ -635,6 +650,20 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
                 "//net/data/ssl/certificates/",
             ],
         )
+        libcxx = _add_target(
+            "//buildtools/third_party/libc++:libc++",
+            "static_library",
+        )
+        libcxx.common.inputs.update(
+            {
+                "//buildtools/third_party/libc++/__assertion_handler",
+                "//buildtools/third_party/libc++/__config_site",
+            }
+        )
+        libcxx.common.cflags.append(
+            "-isystem../../third_party/libc++/src/include"
+        )
+        libcxx.common.include_dirs.add("//third_party/libc++/src/src/")
 
         ctx = gen_android_bp.translation_context.TranslationContext("tot")
         mods = {
@@ -642,6 +671,15 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         }
 
         self.assertNotIn("tot_cronet_api_java", mods)
+        self.assertEqual(
+            mods["tot_cronet_libcxx_headers"].srcs,
+            {
+                "buildtools/third_party/libc++/__assertion_handler",
+                "buildtools/third_party/libc++/__config_site",
+                "third_party/libc++/src/include/**/*",
+                "third_party/libc++/src/src/**/*.ipp",
+            },
+        )
         self.assertEqual(
             mods["tot_cronet_java"].static_libs,
             {
