@@ -241,6 +241,17 @@ suite('OverflowMenuTest', () => {
           1,
           metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel', true));
       assertEquals(
+          2,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.PinSidePanel.AiPage'));
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.PinSidePanel.AiPage', true));
+      assertEquals(
+          0,
+          metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel.Srp'));
+      assertEquals(
           0, metrics.count('ContextualTasks.WebUI.UserAction.UnpinSidePanel'));
     });
 
@@ -263,6 +274,84 @@ suite('OverflowMenuTest', () => {
           1,
           metrics.count(
               'ContextualTasks.WebUI.UserAction.UnpinSidePanel', true));
+      assertEquals(
+          2,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.UnpinSidePanel.AiPage'));
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.UnpinSidePanel.AiPage', true));
+      assertEquals(
+          0,
+          metrics.count('ContextualTasks.WebUI.UserAction.UnpinSidePanel.Srp'));
+      assertEquals(
+          0, metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel'));
+    });
+
+    test('records metrics on pin click on SRP', async () => {
+      loadTimeData.overrideValues({enablePinButtonOnSrp: true});
+      overflowMenu.isAiPage = false;
+      overflowMenu.isPinned = false;
+      await microtasksFinished();
+
+      const pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+
+      pinButton.click();
+      await toolbarProxy.handler.whenCalled('pinSidePanel');
+
+      assertEquals(
+          2, metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel'));
+      assertEquals(
+          1,
+          metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel', true));
+      assertEquals(
+          2,
+          metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel.Srp'));
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.PinSidePanel.Srp', true));
+      assertEquals(
+          0,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.PinSidePanel.AiPage'));
+      assertEquals(
+          0, metrics.count('ContextualTasks.WebUI.UserAction.UnpinSidePanel'));
+    });
+
+    test('records metrics on unpin click on SRP', async () => {
+      loadTimeData.overrideValues({enablePinButtonOnSrp: true});
+      overflowMenu.isAiPage = false;
+      overflowMenu.isPinned = true;
+      await microtasksFinished();
+
+      const pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+
+      pinButton.click();
+      await toolbarProxy.handler.whenCalled('unpinSidePanel');
+
+      assertEquals(
+          2, metrics.count('ContextualTasks.WebUI.UserAction.UnpinSidePanel'));
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.UnpinSidePanel', true));
+      assertEquals(
+          2,
+          metrics.count('ContextualTasks.WebUI.UserAction.UnpinSidePanel.Srp'));
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.UnpinSidePanel.Srp', true));
+      assertEquals(
+          0,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.UnpinSidePanel.AiPage'));
       assertEquals(
           0, metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel'));
     });
