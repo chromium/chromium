@@ -64,6 +64,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.content.browser.input.ImeAdapterImpl;
@@ -577,6 +578,8 @@ public class TabBottomSheetManagerTest {
         // Create and show another bottom sheet content of higher priority.
         BottomSheetContent otherContent = mock(BottomSheetContent.class);
         when(otherContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        when(otherContent.getSheetType())
+                .thenReturn(new BottomSheetType.Builder().setUserInitiated(true).build());
         when(otherContent.allowInSheetContentSnackbars()).thenReturn(true);
         var alwaysFalse =
                 ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.alwaysFalse());
