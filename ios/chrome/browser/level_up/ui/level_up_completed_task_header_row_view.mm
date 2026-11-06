@@ -8,23 +8,40 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@implementation LevelUpCompletedTaskHeaderRowView
+@implementation LevelUpCompletedTaskHeaderRowView {
+  // The header title displaying the number of completed tasks.
+  NSString* _titleText;
+}
+
+#pragma mark - UIAccessibility
+
+- (NSString*)accessibilityLabel {
+  return _titleText;
+}
+
+#pragma mark - Public
 
 - (void)configureWithCompletedTasksCount:(NSInteger)count
                                 expanded:(BOOL)expanded {
-  NSString* titleText =
+  _titleText =
       l10n_util::GetPluralNSStringF(IDS_IOS_LEVEL_UP_COMPLETED_TASKS, count);
 
-  [self configureWithTitle:titleText
+  [self configureWithTitle:_titleText
                description:nil
            backgroundColor:[UIColor colorNamed:kSecondaryBackgroundColor]
            chevronExpanded:expanded
            separatorHidden:!expanded];
+  self.accessibilityExpandedStatus =
+      expanded ? UIAccessibilityExpandedStatusExpanded
+               : UIAccessibilityExpandedStatusCollapsed;
 }
 
 - (void)setExpanded:(BOOL)expanded {
   [self setSeparatorHidden:!expanded];
   [self setChevronExpanded:expanded animated:YES];
+  self.accessibilityExpandedStatus =
+      expanded ? UIAccessibilityExpandedStatusExpanded
+               : UIAccessibilityExpandedStatusCollapsed;
 }
 
 @end

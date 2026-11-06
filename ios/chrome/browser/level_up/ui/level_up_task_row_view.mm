@@ -140,6 +140,12 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
   _chevronView.transform = CGAffineTransformIdentity;
   _task = task;
 
+  if (task.completed) {
+    self.accessibilityTraits |= UIAccessibilityTraitSelected;
+  } else {
+    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+  }
+
   [_iconView configureWithTask:task];
 
   [_rowStack setCustomSpacing:UIStackViewSpacingUseDefault
