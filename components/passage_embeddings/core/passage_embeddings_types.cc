@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #include "base/check.h"
 #include "base/not_fatal_until.h"
@@ -39,7 +40,8 @@ Embedding& Embedding::operator=(Embedding&&) = default;
 std::optional<std::vector<float>> Embedding::Normalize(
     std::vector<float> data) {
   float magnitude = GetMagnitude(data);
-  if (magnitude <= std::numeric_limits<float>::epsilon()) {
+  if (!std::isfinite(magnitude) ||
+      magnitude <= std::numeric_limits<float>::epsilon()) {
     return std::nullopt;
   }
   for (float& v : data) {

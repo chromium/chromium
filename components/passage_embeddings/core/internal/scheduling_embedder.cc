@@ -356,10 +356,17 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
     std::vector<mojom::PassageEmbeddingsResultPtr> results,
     ComputeEmbeddingsStatus status) {
   std::vector<Embedding> embeddings;
+  bool normalization_failed = false;
   for (auto& result : results) {
     std::optional<std::vector<float>> normalized =
         Embedding::Normalize(std::move(result->embeddings));
-    DCHECK(normalized);
+    if (!normalized) {
+      // The service returned a vector that can't be scaled to unit length.
+      // Results are matched to jobs by position, so keep the ones before it
+      // and drop the rest. The job that owns the bad vector fails below.
+      normalization_failed = true;
+      break;
+    }
     embeddings.emplace_back(std::move(normalized.value()));
   }
 
@@ -372,23 +379,6 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
     work_submitted_ = false;
     SubmitWorkToEmbedder();
     return;
-  }
-
-  if (embeddings.empty()) {
-    Job completed_job = std::move(active_jobs_.front());
-    active_jobs_.pop_front();
-    FinishJob(std::move(completed_job), status,
-              /*record_histograms=*/!execute_for_gemma_);
-    // Continue on to allow possibility of resuming any remaining jobs.
-    // This upholds the 1:1 callback requirement and gives jobs another
-    // chance to succeed even when primary embedder fails a batch.
-    // Note, we don't fail all jobs here, only the first. Failing fewer could
-    // result in retry loops requiring special handling in order to keep the 1:1
-    // callback guarantee. And failing more than the first is unnecessary since
-    // progress can be made while giving the later jobs another chance to
-    // succeed. Note, if a failure is caused by a passage from a later job
-    // in a batch, failing the first job may not be the optimal recovery
-    // strategy, but the underlying embedder is not expected to fail at all.
   }
 
   // Take embeddings into jobs and pop them as they're filled. The
@@ -408,10 +398,28 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
       FinishJob(std::move(completed_job), status,
                 /*record_histograms=*/!execute_for_gemma_);
     } else {
-      // Job is not fully completed. Stop processing results and move it
-      // back to pending in the next step.
+      // Job is not fully completed. Stop processing results. Below, it either
+      // fails or goes back to pending.
       break;
     }
+  }
+
+  // Fail the first remaining incomplete job if a vector couldn't be
+  // normalized or if the service returned no results:
+  // - If normalization_failed, this job owns the bad vector (unless the
+  //   service sent more results than passages), and resubmitting its passage
+  //   would get the same vector back.
+  // - If results was empty, the failing passage isn't known; failing the lead
+  //   job avoids retry loops while upholding the 1:1 callback guarantee (even
+  //   if a later job's passage caused the batch failure, as the embedder is
+  //   not expected to fail in practice).
+  // Remaining jobs are re-queued below so they still have a chance to
+  // succeed.
+  if ((embeddings.empty() || normalization_failed) && !active_jobs_.empty()) {
+    Job completed_job = std::move(active_jobs_.front());
+    active_jobs_.pop_front();
+    FinishJob(std::move(completed_job), status,
+              /*record_histograms=*/!execute_for_gemma_);
   }
 
   // Move any remaining active jobs (including any partially filled one) back to

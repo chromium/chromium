@@ -150,8 +150,9 @@ class Embedding {
   //   value of similarity score - consider using it for sorting (ranking).
   float ScoreWith(const Embedding& other_embedding) const;
 
-  // Scale the vector to unit length. Returns nullopt if the vector has
-  // near-zero magnitude and cannot be normalized.
+  // Scales the vector to unit length. Returns nullopt if that isn't possible:
+  // the magnitude is near zero, or isn't finite because a component is NaN or
+  // infinite or the sum of squares overflows.
   static std::optional<std::vector<float>> Normalize(std::vector<float> data);
 
   // Const accessor used for storage.

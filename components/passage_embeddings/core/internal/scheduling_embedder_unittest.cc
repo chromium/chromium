@@ -5,6 +5,7 @@
 #include "components/passage_embeddings/core/internal/scheduling_embedder.h"
 
 #include <initializer_list>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -143,6 +144,172 @@ TEST_F(SchedulingEmbedderTest, TranslatesServiceOutput) {
   ASSERT_EQ(embeddings.size(), 2u);
   EXPECT_THAT(embeddings[0].GetData(), ElementsAre(1.0f, 0.0f));
   EXPECT_THAT(embeddings[1].GetData(), ElementsAre(0.0f, 1.0f));
+  EXPECT_EQ(job.id(), received_job_id);
+  EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
+}
+
+// Verifies that a vector that can't be scaled to unit length fails the job
+// instead of crashing or producing an invalid embedding.
+TEST_F(SchedulingEmbedderTest, FailsJobOnEmbeddingThatCannotBeNormalized) {
+  const float kNaN = std::numeric_limits<float>::quiet_NaN();
+  const float kInfinity = std::numeric_limits<float>::infinity();
+  const float kMax = std::numeric_limits<float>::max();
+  const std::vector<std::vector<float>> kBadVectors = {
+      {}, {0.0f, 0.0f}, {kNaN, 1.0f}, {kInfinity, 0.0f}, {kMax, 0.0f}};
+
+  for (const std::vector<float>& bad_vector : kBadVectors) {
+    SCOPED_TRACE(testing::PrintToString(bad_vector));
+    auto embedder = std::make_unique<SchedulingEmbedder>(
+        embedder_metadata_provider_.get(),
+        base::BindRepeating(&GetEmbeddingsStub::GetEmbeddings,
+                            base::Unretained(&get_embeddings_stub_)),
+        /*max_jobs=*/4u,
+        /*max_batch_size=*/1u,
+        /*use_performance_scenario=*/false);
+
+    EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
+        .WillOnce(
+            [&](std::vector<std::string> passages, PassagePriority priority,
+                SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+              std::vector<mojom::PassageEmbeddingsResultPtr> results;
+              results.push_back(
+                  mojom::PassageEmbeddingsResult::New(bad_vector));
+              std::move(callback).Run(std::move(results),
+                                      ComputeEmbeddingsStatus::kSuccess);
+            });
+
+    ComputePassagesEmbeddingsFuture future;
+    Embedder::Job job = embedder->ComputePassagesEmbeddings(
+        PassagePriority::kPassive, {"p1"}, future.GetCallback());
+
+    auto [passages, embeddings, received_job_id, status] = future.Take();
+    EXPECT_THAT(passages, ElementsAre("p1"));
+    EXPECT_TRUE(embeddings.empty());
+    EXPECT_EQ(job.id(), received_job_id);
+    EXPECT_EQ(status, ComputeEmbeddingsStatus::kExecutionFailure);
+    testing::Mock::VerifyAndClearExpectations(&get_embeddings_stub_);
+  }
+}
+
+// Verifies that only the job that owns a vector that can't be normalized fails,
+// as soon as its batch returns: the jobs before it keep their results, and the
+// jobs after it are resubmitted.
+TEST_F(SchedulingEmbedderTest,
+       FailsOnlyOwnerOfEmbeddingThatCannotBeNormalized) {
+  auto embedder = std::make_unique<SchedulingEmbedder>(
+      embedder_metadata_provider_.get(),
+      base::BindRepeating(&GetEmbeddingsStub::GetEmbeddings,
+                          base::Unretained(&get_embeddings_stub_)),
+      /*max_jobs=*/4u,
+      /*max_batch_size=*/4u,
+      /*use_performance_scenario=*/false);
+
+  struct Call {
+    std::vector<std::string> passages;
+    SchedulingEmbedder::GetEmbeddingsResultCallback callback;
+  };
+  std::vector<Call> calls;
+  EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
+      .WillRepeatedly(
+          [&](std::vector<std::string> passages, PassagePriority priority,
+              SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+            calls.push_back({std::move(passages), std::move(callback)});
+          });
+
+  // Job 0 is submitted alone; jobs 1, 2 and 3 wait and then share a batch.
+  Embedder::Job job0 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"p0"}, base::BindOnce(&IgnoreResults));
+  ComputePassagesEmbeddingsFuture future1;
+  Embedder::Job job1 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"p1"}, future1.GetCallback());
+  ComputePassagesEmbeddingsFuture future2;
+  Embedder::Job job2 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"p2a", "p2b"}, future2.GetCallback());
+  ComputePassagesEmbeddingsFuture future3;
+  Embedder::Job job3 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"p3"}, future3.GetCallback());
+
+  ASSERT_EQ(calls.size(), 1u);
+  std::move(calls[0].callback)
+      .Run(GenerateExpectedServiceOutput({"p0"}),
+           ComputeEmbeddingsStatus::kSuccess);
+  ASSERT_EQ(calls.size(), 2u);
+  EXPECT_THAT(calls[1].passages, ElementsAre("p1", "p2a", "p2b", "p3"));
+
+  // The vector for p2b is bad.
+  const float kNaN = std::numeric_limits<float>::quiet_NaN();
+  std::vector<mojom::PassageEmbeddingsResultPtr> results;
+  results.push_back(
+      mojom::PassageEmbeddingsResult::New(std::vector<float>{1.0f, 0.0f}));
+  results.push_back(
+      mojom::PassageEmbeddingsResult::New(std::vector<float>{0.0f, 1.0f}));
+  results.push_back(
+      mojom::PassageEmbeddingsResult::New(std::vector<float>{kNaN, 1.0f}));
+  results.push_back(
+      mojom::PassageEmbeddingsResult::New(std::vector<float>{1.0f, 1.0f}));
+  std::move(calls[1].callback)
+      .Run(std::move(results), ComputeEmbeddingsStatus::kSuccess);
+
+  // Job 1 keeps its result. Job 2 fails right away, without the result it got
+  // for p2a. The result after the bad vector is dropped, so job 3 is
+  // resubmitted alone.
+  ASSERT_TRUE(future1.IsReady());
+  auto [passages1, embeddings1, job_id1, status1] = future1.Take();
+  ASSERT_EQ(embeddings1.size(), 1u);
+  EXPECT_THAT(embeddings1[0].GetData(), ElementsAre(1.0f, 0.0f));
+  EXPECT_EQ(status1, ComputeEmbeddingsStatus::kSuccess);
+  ASSERT_TRUE(future2.IsReady());
+  auto [passages2, embeddings2, job_id2, status2] = future2.Take();
+  EXPECT_THAT(passages2, ElementsAre("p2a", "p2b"));
+  EXPECT_TRUE(embeddings2.empty());
+  EXPECT_EQ(status2, ComputeEmbeddingsStatus::kExecutionFailure);
+  EXPECT_FALSE(future3.IsReady());
+  ASSERT_EQ(calls.size(), 3u);
+  EXPECT_THAT(calls[2].passages, ElementsAre("p3"));
+
+  std::move(calls[2].callback)
+      .Run(GenerateExpectedServiceOutput({"p3"}),
+           ComputeEmbeddingsStatus::kSuccess);
+  ASSERT_TRUE(future3.IsReady());
+  auto [passages3, embeddings3, job_id3, status3] = future3.Take();
+  EXPECT_EQ(embeddings3.size(), 1u);
+  EXPECT_EQ(status3, ComputeEmbeddingsStatus::kSuccess);
+  EXPECT_EQ(calls.size(), 3u);
+}
+
+// Verifies that a vector that can't be normalized after the result for the
+// last passage, which only a misbehaving service would send, is ignored: the
+// job keeps its result and nothing is resubmitted.
+TEST_F(SchedulingEmbedderTest, IgnoresBadEmbeddingAfterLastPassage) {
+  auto embedder = std::make_unique<SchedulingEmbedder>(
+      embedder_metadata_provider_.get(),
+      base::BindRepeating(&GetEmbeddingsStub::GetEmbeddings,
+                          base::Unretained(&get_embeddings_stub_)),
+      /*max_jobs=*/4u,
+      /*max_batch_size=*/1u,
+      /*use_performance_scenario=*/false);
+
+  EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
+      .WillOnce([](std::vector<std::string> passages, PassagePriority priority,
+                   SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+        const float kNaN = std::numeric_limits<float>::quiet_NaN();
+        std::vector<mojom::PassageEmbeddingsResultPtr> results;
+        results.push_back(mojom::PassageEmbeddingsResult::New(
+            std::vector<float>{1.0f, 0.0f}));
+        results.push_back(mojom::PassageEmbeddingsResult::New(
+            std::vector<float>{kNaN, 1.0f}));
+        std::move(callback).Run(std::move(results),
+                                ComputeEmbeddingsStatus::kSuccess);
+      });
+
+  ComputePassagesEmbeddingsFuture future;
+  Embedder::Job job = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"p1"}, future.GetCallback());
+
+  auto [passages, embeddings, received_job_id, status] = future.Take();
+  EXPECT_THAT(passages, ElementsAre("p1"));
+  ASSERT_EQ(embeddings.size(), 1u);
+  EXPECT_THAT(embeddings[0].GetData(), ElementsAre(1.0f, 0.0f));
   EXPECT_EQ(job.id(), received_job_id);
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
 }
