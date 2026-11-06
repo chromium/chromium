@@ -76,6 +76,11 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
         boolean includePdfTabs =
                 IntentUtils.safeGetBooleanExtra(
                         getIntent(), ChromeItemPickerExtras.EXTRA_INCLUDE_PDF_TABS, false);
+        boolean shouldShowSelectTabsIph =
+                IntentUtils.safeGetBooleanExtra(
+                        getIntent(),
+                        ChromeItemPickerExtras.EXTRA_SHOULD_SHOW_SELECT_TABS_IPH,
+                        false);
 
         mItemPickerCoordinator =
                 new TabItemPickerCoordinator(
@@ -87,7 +92,8 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
                         containerView,
                         preselectedIds,
                         allowedSelectionCount,
-                        includePdfTabs);
+                        includePdfTabs,
+                        shouldShowSelectTabsIph);
 
         mItemPickerCoordinator.showTabItemPicker(this::handlePickerShowAttempt);
     }

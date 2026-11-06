@@ -92,6 +92,7 @@ public class TabItemPickerCoordinator {
     private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds = new HashSet<>();
     private final int mAllowedSelectionCount;
     private final boolean mIncludePdfTabs;
+    private final boolean mShouldShowSelectTabsIph;
     private final Set<Integer> mCachedTabIdsSet = new HashSet<>();
     private @Nullable Callback<Boolean> mSuccessCallback;
     private @Nullable TabModelSelector mTabModelSelector;
@@ -110,7 +111,8 @@ public class TabItemPickerCoordinator {
             ViewGroup containerView,
             ArrayList<Integer> preselectedTabIds,
             int allowedSelectionCount,
-            boolean includePdfTabs) {
+            boolean includePdfTabs,
+            boolean shouldShowSelectTabsIph) {
 
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
@@ -121,6 +123,7 @@ public class TabItemPickerCoordinator {
         mPreselectedTabIds = preselectedTabIds;
         mAllowedSelectionCount = allowedSelectionCount;
         mIncludePdfTabs = includePdfTabs;
+        mShouldShowSelectTabsIph = shouldShowSelectTabsIph;
 
         mBackPressCallback =
                 new OnBackPressedCallback(/* enabled= */ false) {
@@ -365,6 +368,9 @@ public class TabItemPickerCoordinator {
                 tabs,
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 /* recyclerViewPosition= */ position);
+        if (mShouldShowSelectTabsIph && !tabs.isEmpty()) {
+            mTabListEditorCoordinator.maybeShowSelectTabsIph();
+        }
         if (mPreselectedTabIds.isEmpty()) return;
         Set<TabListEditorItemSelectionId> selectionSet = new HashSet<>();
         for (Integer id : mPreselectedTabIds) {

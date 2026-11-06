@@ -12,6 +12,10 @@ public final class ChromeItemPickerExtras {
     // Prevent instantiation
     private ChromeItemPickerExtras() {}
 
+    /** Intent extra indicating whether the picker should show the select-tabs IPH. */
+    public static final String EXTRA_SHOULD_SHOW_SELECT_TABS_IPH =
+            "EXTRA_SHOULD_SHOW_SELECT_TABS_IPH";
+
     /** Intent extra for the list of tab IDs that should be preselected on startup. */
     public static final String EXTRA_PRESELECTED_TAB_IDS = "EXTRA_PRESELECTED_TAB_IDS";
 

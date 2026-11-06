@@ -910,6 +910,7 @@ class FuseboxMediator implements BackPressHandler {
         int maxAllowedTabs = tabIds.size() + mModelList.getRemainingAttachments();
         intent.putExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
 
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_SHOULD_SHOW_SELECT_TABS_IPH, true);
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);
     }

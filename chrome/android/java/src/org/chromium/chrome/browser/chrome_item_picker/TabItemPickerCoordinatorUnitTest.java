@@ -116,7 +116,8 @@ public class TabItemPickerCoordinatorUnitTest {
                         mContainerView,
                         new ArrayList<Integer>(),
                         TabListEditorCoordinator.UNLIMITED_SELECTION,
-                        /* includePdfTabs= */ false);
+                        /* includePdfTabs= */ false,
+                        /* shouldShowSelectTabsIph= */ false);
         mItemPickerCoordinator = Mockito.spy(realCoordinator);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
@@ -194,7 +195,8 @@ public class TabItemPickerCoordinatorUnitTest {
                         mContainerView,
                         new ArrayList<Integer>(),
                         TabListEditorCoordinator.UNLIMITED_SELECTION,
-                        /* includePdfTabs= */ false);
+                        /* includePdfTabs= */ false,
+                        /* shouldShowSelectTabsIph= */ false);
 
         coordinatorWithInvalidId.showTabItemPicker(mCallback);
         mProfileSupplierImpl.set(mProfile);
@@ -403,7 +405,8 @@ public class TabItemPickerCoordinatorUnitTest {
         return tab;
     }
 
-    private List<Tab> showPickerAndGetShownTabs(boolean includePdfTabs, List<Tab> allTabs) {
+    private List<Tab> showPickerAndGetShownTabs(
+            boolean includePdfTabs, boolean shouldShowSelectTabsIph, List<Tab> allTabs) {
         TabItemPickerCoordinator coordinator =
                 Mockito.spy(
                         new TabItemPickerCoordinator(
@@ -415,7 +418,8 @@ public class TabItemPickerCoordinatorUnitTest {
                                 mContainerView,
                                 new ArrayList<Integer>(),
                                 TabListEditorCoordinator.UNLIMITED_SELECTION,
-                                includePdfTabs));
+                                includePdfTabs,
+                                shouldShowSelectTabsIph));
         doReturn(mTabListEditorCoordinator)
                 .when(coordinator)
                 .createTabListEditorCoordinator(any(TabModelSelector.class));
@@ -461,6 +465,7 @@ public class TabItemPickerCoordinatorUnitTest {
         List<Tab> shownTabs =
                 showPickerAndGetShownTabs(
                         /* includePdfTabs= */ true,
+                        /* shouldShowSelectTabsIph= */ false,
                         Arrays.asList(webTab, localPdfTab, ntpTab, incognitoPdfTab));
 
         assertEquals(Arrays.asList(webTab, localPdfTab), shownTabs);
@@ -474,7 +479,9 @@ public class TabItemPickerCoordinatorUnitTest {
 
         List<Tab> shownTabs =
                 showPickerAndGetShownTabs(
-                        /* includePdfTabs= */ false, Arrays.asList(webTab, localPdfTab));
+                        /* includePdfTabs= */ false,
+                        /* shouldShowSelectTabsIph= */ false,
+                        Arrays.asList(webTab, localPdfTab));
 
         assertEquals(Collections.singletonList(webTab), shownTabs);
     }
@@ -539,5 +546,32 @@ public class TabItemPickerCoordinatorUnitTest {
         mItemPickerCoordinator.showTabItemPicker(mCallback);
         // Destroying the coordinator should not crash.
         mItemPickerCoordinator.destroy();
+    }
+
+    @Test
+    public void testShowEditorUi_showsSelectTabsIph() {
+        showPickerAndGetShownTabs(
+                /* includePdfTabs= */ false,
+                /* shouldShowSelectTabsIph= */ true,
+                List.of(mockTabActiveState(1, /* isActive= */ true)));
+        verify(mTabListEditorCoordinator).maybeShowSelectTabsIph();
+    }
+
+    @Test
+    public void testShowEditorUi_emptyTabs_doesNotShowSelectTabsIph() {
+        showPickerAndGetShownTabs(
+                /* includePdfTabs= */ false,
+                /* shouldShowSelectTabsIph= */ true,
+                Collections.emptyList());
+        verify(mTabListEditorCoordinator, never()).maybeShowSelectTabsIph();
+    }
+
+    @Test
+    public void testShowEditorUi_shouldNotShowSelectTabsIph_doesNotShowIph() {
+        showPickerAndGetShownTabs(
+                /* includePdfTabs= */ false,
+                /* shouldShowSelectTabsIph= */ false,
+                List.of(mockTabActiveState(1, /* isActive= */ true)));
+        verify(mTabListEditorCoordinator, never()).maybeShowSelectTabsIph();
     }
 }

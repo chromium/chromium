@@ -2202,6 +2202,9 @@ public class FuseboxMediatorUnitTest {
         assertEquals(
                 FuseboxAttachmentModelList.MAX_ATTACHMENTS,
                 intent.getIntExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, -1));
+        assertTrue(
+                intent.getBooleanExtra(
+                        ChromeItemPickerExtras.EXTRA_SHOULD_SHOW_SELECT_TABS_IPH, false));
     }
 
     @Test
