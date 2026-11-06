@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller.h"
 #include "components/grit/components_scaled_resources.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -37,7 +38,12 @@ AuthenticatorSelectionDialogViewAndroid::
 }
 
 AuthenticatorSelectionDialogViewAndroid::
-    ~AuthenticatorSelectionDialogViewAndroid() = default;
+    ~AuthenticatorSelectionDialogViewAndroid() {
+  if (java_object_) {
+    Java_AuthenticatorSelectionDialogBridge_clearNativePtr(
+        base::android::AttachCurrentThread(), java_object_);
+  }
+}
 
 void AuthenticatorSelectionDialogViewAndroid::Dismiss(bool user_closed_dialog,
                                                       bool server_success) {
@@ -85,7 +91,7 @@ bool AuthenticatorSelectionDialogViewAndroid::ShowDialog(
       CreateJavaAuthenticatorOptions(env, options);
 
   java_object_.Reset(Java_AuthenticatorSelectionDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android));
+      env, jni_zero::MakeRaw(this), window_android));
 
   if (java_object_.is_null()) {
     return false;

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +56,10 @@ public class AuthenticatorSelectionDialogBridgeTest {
                     .setType(CardUnmaskChallengeOptionType.SMS_OTP)
                     .build();
 
-    private static final long NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW = 100L;
+    private JniRawPtr<
+                    AuthenticatorSelectionDialogBridge
+                            .NativeAuthenticatorSelectionDialogViewAndroid>
+            mNativeDialogView;
 
     private final List<AuthenticatorOption> mOptions = new ArrayList<>();
 
@@ -69,13 +74,21 @@ public class AuthenticatorSelectionDialogBridgeTest {
         mOptions.add(OPTION_1);
         mOptions.add(OPTION_2);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
+        mNativeDialogView = JniRawPtr.createForTesting(100L);
         mAuthenticatorSelectionDialogBridge =
                 new AuthenticatorSelectionDialogBridge(
-                        NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW,
+                        mNativeDialogView,
                         ApplicationProvider.getApplicationContext(),
                         mModalDialogManager);
         AuthenticatorSelectionDialogBridgeJni.setInstanceForTesting(mNativeMock);
         mAuthenticatorSelectionDialogBridge.show(mOptions);
+    }
+
+    @After
+    public void tearDown() {
+        if (mNativeDialogView != null) {
+            mNativeDialogView.release();
+        }
     }
 
     @Test
@@ -85,7 +98,7 @@ public class AuthenticatorSelectionDialogBridgeTest {
         mAuthenticatorSelectionDialogBridge.dismiss();
         // Verify that no dialog is shown and that the callback is triggered on dismissal.
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDismissed(mNativeDialogView);
     }
 
     @Test
@@ -94,7 +107,7 @@ public class AuthenticatorSelectionDialogBridgeTest {
         mAuthenticatorSelectionDialogBridge.dismiss();
 
         // Make sure the native side is notified only once.
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDismissed(mNativeDialogView);
     }
 
     @Test
@@ -103,7 +116,7 @@ public class AuthenticatorSelectionDialogBridgeTest {
         mAuthenticatorSelectionDialogBridge.onDialogDismissed();
         mAuthenticatorSelectionDialogBridge.onDialogDismissed();
 
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDismissed(mNativeDialogView);
     }
 
     @Test
@@ -111,23 +124,21 @@ public class AuthenticatorSelectionDialogBridgeTest {
         mAuthenticatorSelectionDialogBridge.onDialogDismissed();
         mAuthenticatorSelectionDialogBridge.onOptionSelected(OPTION_1.getIdentifier());
 
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW);
-        verify(mNativeMock, times(0)).onOptionSelected(anyLong(), anyString());
+        verify(mNativeMock, times(1)).onDismissed(mNativeDialogView);
+        verify(mNativeMock, times(0)).onOptionSelected(any(), anyString());
     }
 
     @Test
     public void testDismissedCalledOnPositiveButtonClick() throws Exception {
         mModalDialogManager.clickPositiveButton();
 
-        verify(mNativeMock, times(1))
-                .onOptionSelected(
-                        NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW, OPTION_1.getIdentifier());
+        verify(mNativeMock, times(1)).onOptionSelected(mNativeDialogView, OPTION_1.getIdentifier());
     }
 
     @Test
     public void testDismissedCalledOnNegativeButtonClick() throws Exception {
         mModalDialogManager.clickNegativeButton();
 
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDismissed(mNativeDialogView);
     }
 }

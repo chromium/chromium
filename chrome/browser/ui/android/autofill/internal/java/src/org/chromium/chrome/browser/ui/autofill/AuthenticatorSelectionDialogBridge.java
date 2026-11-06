@@ -8,12 +8,14 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.base.WindowAndroid;
@@ -27,25 +29,32 @@ import java.util.List;
 @JNINamespace("autofill")
 @NullMarked
 public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectionDialog.Listener {
-    private long mNativeCardUnmaskAuthenticationSelectionDialogView;
+    @JniType("autofill::AuthenticatorSelectionDialogViewAndroid")
+    interface NativeAuthenticatorSelectionDialogViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAuthenticatorSelectionDialogViewAndroid>
+            mNativeAuthenticatorSelectionDialogView;
     private final AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
 
     public AuthenticatorSelectionDialogBridge(
-            long nativeAuthenticatorSelectionDialogView,
+            @Nullable JniRawPtr<NativeAuthenticatorSelectionDialogViewAndroid>
+                    nativeAuthenticatorSelectionDialogView,
             Context context,
             ModalDialogManager modalDialogManager) {
-        mNativeCardUnmaskAuthenticationSelectionDialogView = nativeAuthenticatorSelectionDialogView;
+        mNativeAuthenticatorSelectionDialogView = nativeAuthenticatorSelectionDialogView;
         mAuthenticatorSelectionDialog =
                 new AuthenticatorSelectionDialog(context, this, modalDialogManager);
     }
 
     @CalledByNative
     public static @Nullable AuthenticatorSelectionDialogBridge create(
-            long nativeAuthenticatorSelectionDialogView,
+            JniRawPtr<NativeAuthenticatorSelectionDialogViewAndroid>
+                    nativeAuthenticatorSelectionDialogView,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         Context context = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (context == null || modalDialogManager == null) {
+            nativeAuthenticatorSelectionDialogView.release();
             return null;
         }
         return new AuthenticatorSelectionDialogBridge(
@@ -132,31 +141,35 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
      */
     @Override
     public void onOptionSelected(String authenticatorOptionIdentifier) {
-        if (mNativeCardUnmaskAuthenticationSelectionDialogView == 0) return;
+        if (mNativeAuthenticatorSelectionDialogView == null) return;
         AuthenticatorSelectionDialogBridgeJni.get()
                 .onOptionSelected(
-                        mNativeCardUnmaskAuthenticationSelectionDialogView,
-                        authenticatorOptionIdentifier);
+                        mNativeAuthenticatorSelectionDialogView, authenticatorOptionIdentifier);
     }
 
     /** Notify that the dialog was dismissed. */
     @Override
     public void onDialogDismissed() {
-        if (mNativeCardUnmaskAuthenticationSelectionDialogView == 0) return;
+        if (mNativeAuthenticatorSelectionDialogView == null) return;
         AuthenticatorSelectionDialogBridgeJni.get()
-                .onDismissed(mNativeCardUnmaskAuthenticationSelectionDialogView);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.RESET_NATIVE_POINTER_IN_CREDIT_CARD_AUTH_DIALOG)) {
-            mNativeCardUnmaskAuthenticationSelectionDialogView = 0;
+                .onDismissed(mNativeAuthenticatorSelectionDialogView);
+        clearNativePtr();
+    }
+
+    @CalledByNative
+    void clearNativePtr() {
+        if (mNativeAuthenticatorSelectionDialogView != null) {
+            mNativeAuthenticatorSelectionDialogView.release();
+            mNativeAuthenticatorSelectionDialogView = null;
         }
     }
 
     @NativeMethods
     interface Natives {
         void onOptionSelected(
-                long nativeAuthenticatorSelectionDialogViewAndroid,
+                JniPtr<NativeAuthenticatorSelectionDialogViewAndroid> self,
                 @JniType("std::string") String authenticatorOptionIdentifier);
 
-        void onDismissed(long nativeAuthenticatorSelectionDialogViewAndroid);
+        void onDismissed(JniPtr<NativeAuthenticatorSelectionDialogViewAndroid> self);
     }
 }
