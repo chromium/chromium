@@ -59,8 +59,6 @@ tast.apps.SystemWebAppsInstallGuest
 # b/422132031
 tast.inputs.VirtualKeyboardHandwriting.docked
 tast.inputs.VirtualKeyboardHandwriting.floating
-tast.inputs.VirtualKeyboardJapaneseInputMode
-tast.inputs.VirtualKeyboardSpeech
 
 # b/424789710
 tast.apps.LaunchGalleryFromNotifications.stable
