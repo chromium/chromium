@@ -392,8 +392,9 @@ void DlpContentManager::ScreenShareInfo::Resume() {
 }
 
 void DlpContentManager::ScreenShareInfo::ChangeStateBeforeSourceChange() {
-  CHECK(state_ == State::kPaused || state_ == State::kRunning,
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/579908037): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(state_ == State::kPaused || state_ == State::kRunning);
   CHECK(media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS,
         base::NotFatalUntil::M161);
   if (state_ == State::kPaused) {
