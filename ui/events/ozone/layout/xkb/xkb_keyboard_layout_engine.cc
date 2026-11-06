@@ -823,7 +823,11 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  const int kNonShiftlikeModifiers =
+      EF_CONTROL_DOWN | EF_ALT_DOWN | EF_COMMAND_DOWN;
+
   // Classify the keysym and convert to DOM and VKEY representations.
+  bool control_transformed_to_nul = false;
   if (dom_code != DomCode::DIGIT2 || (flags & EF_CONTROL_DOWN) == 0) {
     // Non-character key. (We only support NUL as ^@ and ^2.)
     *dom_key = NonPrintableXKeySymToDomKey(xkb_keysym);
@@ -834,9 +838,15 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
       return true;
     }
     if (character == 0) {
-      *dom_key = DomKey::UNIDENTIFIED;
-      *key_code = DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
-      return true;
+      if ((flags & kNonShiftlikeModifiers) == 0) {
+        *dom_key = DomKey::UNIDENTIFIED;
+        *key_code = DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
+        return true;
+      }
+      // XKB's Control transformation maps some printable keys to NUL (e.g.
+      // Ctrl+Space and Ctrl+`). Let the fallback below find the character
+      // without the modifier.
+      control_transformed_to_nul = true;
     }
   }
 
@@ -844,8 +854,6 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
   // non-printable and a non-shiftlike modifier is down, we preferentially
   // return a printable key as if the modifier were not down.
   // https://w3c.github.io/uievents/#keys-guidelines
-  const int kNonShiftlikeModifiers =
-      EF_CONTROL_DOWN | EF_ALT_DOWN | EF_COMMAND_DOWN;
   if ((flags & kNonShiftlikeModifiers) && IsControlCharacter(character)) {
     int normal_ui_flags = flags & ~kNonShiftlikeModifiers;
     xkb_mod_mask_t normal_xkb_flags = EventFlagsToXkbFlags(normal_ui_flags);
@@ -859,6 +867,12 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
       character = normal_character;
       xkb_keysym = normal_keysym;
     }
+  }
+
+  if (control_transformed_to_nul && character == 0) {
+    *dom_key = DomKey::UNIDENTIFIED;
+    *key_code = DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
+    return true;
   }
 
   *dom_key = DomKey::FromCharacter(character);

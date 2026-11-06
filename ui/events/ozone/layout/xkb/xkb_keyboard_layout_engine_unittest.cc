@@ -1144,6 +1144,71 @@ TEST(XkbKeyboardLayoutEngineTest, NumpadDecimalGerman) {
 #endif
 }
 
+// Regression test for crbug.com/467734216. XKB's Control transformation maps
+// Ctrl+Space (and Ctrl+`) to NUL. Per the UI Events key guidelines, the key
+// must then be the character produced without the non-shiftlike modifier, not
+// DomKey::UNIDENTIFIED.
+TEST(XkbKeyboardLayoutEngineTest, ControlTransformedToNul) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(layout_engine, "us"));
+
+  DomKey dom_key = DomKey::NONE;
+  KeyboardCode key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::SPACE, ui::EF_CONTROL_DOWN,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::FromCharacter(' '), dom_key);
+  EXPECT_EQ(ui::VKEY_SPACE, key_code);
+
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::SPACE,
+                                   ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::FromCharacter(' '), dom_key);
+  EXPECT_EQ(ui::VKEY_SPACE, key_code);
+
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::BACKQUOTE, ui::EF_CONTROL_DOWN,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::FromCharacter('`'), dom_key);
+  EXPECT_EQ(ui::VKEY_OEM_3, key_code);
+
+  // Ctrl+2 and Ctrl+Shift+2 (^@) keep producing the unmodified characters.
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::DIGIT2, ui::EF_CONTROL_DOWN,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::FromCharacter('2'), dom_key);
+  EXPECT_EQ(ui::VKEY_2, key_code);
+
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::DIGIT2,
+                                   ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::FromCharacter('@'), dom_key);
+  EXPECT_EQ(ui::VKEY_2, key_code);
+
+  // Ctrl+A is unaffected.
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::FromCharacter('a'), dom_key);
+  EXPECT_EQ(ui::VKEY_A, key_code);
+
+  // Ctrl+Enter remains DomKey::ENTER.
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::ENTER, ui::EF_CONTROL_DOWN,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::ENTER, dom_key);
+  EXPECT_EQ(ui::VKEY_RETURN, key_code);
+}
+
 TEST(XkbKeyboardLayoutEngineTest, NoStateBeforeKeymap) {
   // GTK IM events (e.g. from fcitx5 on first input activation) can arrive
   // before the compositor delivers the first keymap. The engine must not
