@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/notimplemented.h"
+#import "base/time/time.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
@@ -88,6 +89,8 @@ class ToolController {
     std::unique_ptr<ActorTool> tool;
     ResultCallback completion_callback;
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry;
+    base::TimeTicks execute_start_time;
+    base::TimeTicks execute_end_time;
   };
 
   void SetState(State state);

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_util.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -98,7 +99,16 @@ void ActionTargetJavaScriptFeature::GetTargetFrame(web::WebState* web_state,
   CHECK(web_frame);
   CHECK(web_state);
 
+  if (depth == 0) {
+    if (target.node_id().has_value()) {
+      RecordActionTargetType(ActionTargetType::kDomNodeId);
+    } else if (target.coordinate().has_value()) {
+      RecordActionTargetType(ActionTargetType::kCoordinate);
+    }
+  }
+
   if (depth >= kMaxTargetIframeDepth) {
+    RecordTargetFrameResolutionResult(mojom::ActionResultCode::kToolTimeout);
     std::move(callback).Run(base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kToolTimeout)));
     return;
@@ -134,10 +144,12 @@ void ActionTargetJavaScriptFeature::GetTargetFrameByDocumentIdentifier(
                                     target.node_id()->document_identifier);
 
   if (!target_frame.has_value()) {
+    RecordTargetFrameResolutionResult(target_frame.error().code());
     std::move(callback).Run(base::unexpected(target_frame.error()));
     return;
   }
 
+  RecordTargetFrameResolutionResult(mojom::ActionResultCode::kOk);
   std::move(callback).Run(TargetFrameResult{*target_frame, target});
 }
 
@@ -160,10 +172,11 @@ void ActionTargetJavaScriptFeature::GetTargetFrameByCoordinate(
                      std::move(cb_for_js), depth, base::ElapsedTimer()),
       kActorJavaScriptExecutionTimeout);
   if (!sent) {
-    std::move(cb_for_error)
-        .Run(base::unexpected(ToolExecutionResult(
-            InternalToolErrorCode::
-                kJavascriptFeatureFailedToCallJavaScriptFunction)));
+    ToolExecutionResult error_result(
+        InternalToolErrorCode::
+            kJavascriptFeatureFailedToCallJavaScriptFunction);
+    RecordTargetFrameResolutionResult(error_result.code());
+    std::move(cb_for_error).Run(base::unexpected(error_result));
   }
 }
 
@@ -176,12 +189,14 @@ void ActionTargetJavaScriptFeature::OnTargetIframeResolved(
     base::ElapsedTimer timer,
     const base::Value* result) {
   if (!web_state) {
+    RecordTargetFrameResolutionResult(mojom::ActionResultCode::kTabWentAway);
     std::move(callback).Run(base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kTabWentAway)));
     return;
   }
 
   if (!current_frame) {
+    RecordTargetFrameResolutionResult(mojom::ActionResultCode::kFrameWentAway);
     std::move(callback).Run(base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway)));
     return;
@@ -189,11 +204,13 @@ void ActionTargetJavaScriptFeature::OnTargetIframeResolved(
 
   auto parsed_result = ParseResolveTargetIframeResult(result, timer);
   if (!parsed_result.has_value()) {
+    RecordTargetFrameResolutionResult(parsed_result.error().code());
     std::move(callback).Run(base::unexpected(parsed_result.error()));
     return;
   }
 
   if (!parsed_result->has_value()) {
+    RecordTargetFrameResolutionResult(mojom::ActionResultCode::kOk, depth);
     std::move(callback).Run(
         TargetFrameResult{current_frame.get(), std::move(target)});
     return;
@@ -205,6 +222,7 @@ void ActionTargetJavaScriptFeature::OnTargetIframeResolved(
                                     child_data.remote_frame_token);
 
   if (!target_frame.has_value()) {
+    RecordTargetFrameResolutionResult(target_frame.error().code());
     std::move(callback).Run(base::unexpected(target_frame.error()));
     return;
   }

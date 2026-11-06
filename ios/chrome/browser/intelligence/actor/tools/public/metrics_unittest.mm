@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 
+#import "base/strings/strcat.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
 #import "components/actor/public/mojom/actor_types.mojom-shared.h"
@@ -130,6 +131,97 @@ TEST_F(MetricsTest, RecordJavaScriptResultCode) {
       "IOS.Actor.Tools.JavaScriptExecutionDuration.Click", 0);
   histogram_tester.ExpectTotalCount(
       "IOS.Actor.Tools.JavaScriptResultCode.ActionTarget", 0);
+}
+
+// Tests that `RecordToolTimings` records execution and page stabilization
+// durations to the expected histograms.
+TEST_F(MetricsTest, RecordToolTimings) {
+  base::HistogramTester histogram_tester;
+
+  RecordToolTimings("ClickTool", base::Milliseconds(120),
+                    base::Milliseconds(340));
+
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat(
+          {kIOSActorToolsExecutionDurationPrefixMetricName, "ClickTool"}),
+      base::Milliseconds(120), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat(
+          {kIOSActorToolsPageStabilizationPrefixMetricName, "ClickTool"}),
+      base::Milliseconds(340), 1);
+}
+
+// Tests that `RecordToolActionResultCode` records both aggregate and per-tool
+// action result codes.
+TEST_F(MetricsTest, RecordToolActionResultCode) {
+  base::HistogramTester histogram_tester;
+
+  RecordToolActionResultCode("ClickTool",
+                             ToolExecutionResult(mojom::ActionResultCode::kOk));
+
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kOk, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kIOSActorToolsActionResultCodePrefixMetricName, "ClickTool"}),
+      mojom::ActionResultCode::kOk, 1);
+}
+
+// Tests that `RecordActionTargetType` records the target type to the
+// expected histogram.
+TEST_F(MetricsTest, RecordActionTargetType) {
+  base::HistogramTester histogram_tester;
+
+  RecordActionTargetType(ActionTargetType::kDomNodeId);
+  RecordActionTargetType(ActionTargetType::kCoordinate);
+
+  histogram_tester.ExpectBucketCount(kIOSActorToolsActionTargetTypeMetricName,
+                                     ActionTargetType::kDomNodeId, 1);
+  histogram_tester.ExpectBucketCount(kIOSActorToolsActionTargetTypeMetricName,
+                                     ActionTargetType::kCoordinate, 1);
+  histogram_tester.ExpectTotalCount(kIOSActorToolsActionTargetTypeMetricName,
+                                    2);
+}
+
+// Tests that `RecordActionResultCode` records the action result code.
+TEST_F(MetricsTest, RecordActionResultCode) {
+  base::HistogramTester histogram_tester;
+
+  RecordActionResultCode(mojom::ActionResultCode::kOk);
+  RecordActionResultCode(mojom::ActionResultCode::kUrlBlocked);
+
+  histogram_tester.ExpectBucketCount(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kOk, 1);
+  histogram_tester.ExpectBucketCount(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kUrlBlocked, 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorExecutionEngineActionResultCodeMetricName, 2);
+}
+
+// Tests that `RecordTargetFrameResolutionResult` records the result code and
+// iframe depth when provided.
+TEST_F(MetricsTest, RecordTargetFrameResolutionResult) {
+  base::HistogramTester histogram_tester;
+
+  RecordTargetFrameResolutionResult(mojom::ActionResultCode::kOk,
+                                    /*iframe_depth=*/2);
+  RecordTargetFrameResolutionResult(mojom::ActionResultCode::kToolTimeout);
+  RecordTargetFrameResolutionResult(mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectBucketCount(
+      kIOSActorToolsTargetFrameResolutionResultMetricName,
+      mojom::ActionResultCode::kOk, 2);
+  histogram_tester.ExpectBucketCount(
+      kIOSActorToolsTargetFrameResolutionResultMetricName,
+      mojom::ActionResultCode::kToolTimeout, 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorToolsTargetFrameResolutionResultMetricName, 3);
+
+  histogram_tester.ExpectUniqueSample(kIOSActorToolsTargetIframeDepthMetricName,
+                                      2, 1);
 }
 
 }  // namespace actor

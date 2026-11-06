@@ -17,12 +17,14 @@
 #import "base/strings/stringprintf.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/journal_details_builder.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -156,9 +158,7 @@ void ToolController::CreateToolAndValidate(const ActorToolRequest& request,
                                            ResultCallback callback) {
   CHECK_EQ(state_, State::kReady);
   SetState(State::kCreating);
-  std::string tool_name =
-      ActorActionCaseToToolName(request.action().action_case())
-          .value_or("unknown tool");
+  std::string tool_name = ToolTypeToToolName(request.GetToolType());
 
   LogToolExecutionResult(journal(), GURL(), task_id(),
                          "Attempting to create tool: " + tool_name,
@@ -169,6 +169,7 @@ void ToolController::CreateToolAndValidate(const ActorToolRequest& request,
       factory.CreateTool(request, tool_delegate_);
 
   if (!tool_result.has_value()) {
+    RecordToolActionResultCode(tool_name, tool_result.error());
     LogToolExecutionResult(journal(), GURL(), task_id(),
                            "Failed to create tool request: " + tool_name,
                            tool_result.error());
@@ -226,6 +227,7 @@ void ToolController::Invoke(ResultCallback result_callback) {
   CHECK(active_state_);
   SetState(State::kPreInvoke);
   active_state_->completion_callback = std::move(result_callback);
+  active_state_->execute_start_time = base::TimeTicks::Now();
 
   // TODO(crbug.com/520098751): Call ActorTool::TimeOfUseValidation here.
 
@@ -274,6 +276,7 @@ void ToolController::FailCurrentToolInternal(mojom::ActionResultCode code) {
 
 void ToolController::DidFinishToolExecution(ToolExecutionResult result) {
   CHECK(active_state_);
+  active_state_->execute_end_time = base::TimeTicks::Now();
 
   if (!IsPageStabilityEnabled() || !result.requires_page_stabilization() ||
       !observation_delayer_) {
@@ -301,7 +304,6 @@ void ToolController::WaitForObservation(ToolExecutionResult result) {
 void ToolController::ObservationDelayComplete(
     ToolExecutionResult action_result,
     ObservationDelayController::Result observation_result) {
-  // TODO(crbug.com/498991756): Record UMA about what observation_result is.
   switch (observation_result) {
     case ObservationDelayController::Result::kOk:
       PostInvokeTool(std::move(action_result));
@@ -333,6 +335,14 @@ void ToolController::PostInvokeTool(ToolExecutionResult result) {
     return;
   }
 
+  std::string tool_name =
+      ToolTypeToToolName(active_state_->tool->GetToolType());
+  base::TimeTicks end_time = base::TimeTicks::Now();
+  RecordToolTimings(
+      tool_name,
+      active_state_->execute_end_time - active_state_->execute_start_time,
+      end_time - active_state_->execute_end_time);
+
   SetState(State::kPostInvoke);
   // TODO(crbug.com/520098751): Call ActorTool::UpdateTaskAfterInvoke here.
   CompleteToolRequest(std::move(result));
@@ -343,6 +353,10 @@ void ToolController::CompleteToolRequest(ToolExecutionResult result) {
 
   // Drops callbacks bound to the completed tool.
   weak_ptr_factory_.InvalidateWeakPtrs();
+
+  std::string tool_name =
+      ToolTypeToToolName(active_state_->tool->GetToolType());
+  RecordToolActionResultCode(tool_name, result);
 
   EndAsyncJournalEntry(active_state_->journal_entry.get(), result);
 

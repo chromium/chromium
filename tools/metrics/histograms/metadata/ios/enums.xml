@@ -254,6 +254,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h:IncognitoLockSettingStartupState) -->
 
+<!-- LINT.IfChange(IOSActorActionTargetType) -->
+
+<enum name="IOSActorActionTargetType">
+  <int value="0" label="DOM node"/>
+  <int value="1" label="Coordinate"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/public/metrics.h:IOSActorActionTargetType) -->
+
 <!-- LINT.IfChange(IOSActorBackgroundTaskEndReason) -->
 
 <enum name="IOSActorBackgroundTaskEndReason">

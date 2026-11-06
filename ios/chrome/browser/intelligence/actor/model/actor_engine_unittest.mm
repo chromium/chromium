@@ -9,6 +9,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
@@ -281,6 +283,7 @@ TEST_F(ActorEngineTest, ToolDelegateInterruptAndUninterrupt) {
 // Tests that a single action executing successfully completes the engine
 // sequence with a success result.
 TEST_F(ActorEngineTest, ActSuccess) {
+  base::HistogramTester histogram_tester;
   std::vector<std::unique_ptr<ActorToolRequest>> actions;
   actions.push_back(MakeSuccessfulActorToolRequest());
 
@@ -303,6 +306,9 @@ TEST_F(ActorEngineTest, ActSuccess) {
   EXPECT_TRUE(callback_called);
   EXPECT_EQ(results.size(), 1U);
   EXPECT_TRUE(results[0].tool_result.IsOk());
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kOk, 1);
 }
 
 // Tests that a single action failing aborts the engine sequence and returns a
@@ -550,6 +556,7 @@ TEST_F(ActorEngineTest, OnWillExecuteToolCalled) {
 // Tests that executing a sequence containing a null tool completes
 // with a failure result code (kToolUnknown) instead of crashing.
 TEST_F(ActorEngineTest, ActWithNullTool) {
+  base::HistogramTester histogram_tester;
   std::vector<std::unique_ptr<ActorToolRequest>> actions;
   actions.push_back(nullptr);
 
@@ -576,6 +583,9 @@ TEST_F(ActorEngineTest, ActWithNullTool) {
             mojom::ActionResultCode::kToolUnknown);
   EXPECT_TRUE(HasJournalEntryWithDetail(*journal_, "ExecutionEngine::Act",
                                         "Actions[0]", "null tool"));
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kToolUnknown, 1);
 }
 
 // Test that FailCurrentTool is a safe no-op when the engine is not in the

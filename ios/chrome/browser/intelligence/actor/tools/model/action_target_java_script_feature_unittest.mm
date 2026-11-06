@@ -428,6 +428,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
   ActionTarget target =
       CreateTargetWithDocumentIdentifier(remote_token.ToString());
 
+  base::HistogramTester histograms;
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>
       future;
@@ -437,6 +438,12 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
   auto result = future.Get();
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result->frame, iframe);
+  histograms.ExpectUniqueSample(kIOSActorToolsActionTargetTypeMetricName,
+                                ActionTargetType::kDomNodeId, 1);
+  histograms.ExpectUniqueSample(
+      kIOSActorToolsTargetFrameResolutionResultMetricName,
+      mojom::ActionResultCode::kOk, 1);
+  histograms.ExpectTotalCount(kIOSActorToolsTargetIframeDepthMetricName, 0);
 }
 
 TEST_F(ActionTargetJavaScriptFeatureTest, MaxDepthExceeded) {
@@ -445,6 +452,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, MaxDepthExceeded) {
 
   ActionTarget target = CreateTargetWithCoordinates();
 
+  base::HistogramTester histograms;
   base::test::TestFuture<base::expected<
       ActionTargetJavaScriptFeature::TargetFrameResult, ToolExecutionResult>>
       future;
@@ -455,6 +463,10 @@ TEST_F(ActionTargetJavaScriptFeatureTest, MaxDepthExceeded) {
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kToolTimeout);
+  histograms.ExpectUniqueSample(
+      kIOSActorToolsTargetFrameResolutionResultMetricName,
+      mojom::ActionResultCode::kToolTimeout, 1);
+  histograms.ExpectTotalCount(kIOSActorToolsTargetIframeDepthMetricName, 0);
 }
 
 }  // namespace

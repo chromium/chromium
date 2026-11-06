@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_PUBLIC_METRICS_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_PUBLIC_METRICS_H_
 
+#import <optional>
 #import <string_view>
 
 #import "base/time/time.h"
@@ -55,6 +56,72 @@ inline constexpr std::string_view
 inline constexpr std::string_view
     kIOSActorObservationDelayLcpDelayNeededMetricName =
         "IOS.Actor.ObservationDelay.LcpDelayNeeded";
+
+// Tool Execution & Page Stabilization Timing Histogram Prefixes.
+// Based on Desktop's `Actor.Tools.ExecutionDuration.{ToolRequest}` and
+// `Actor.Tools.PageStabilization.{ToolRequest}` metrics in
+// `chrome/browser/actor/actor_metrics.cc`.
+inline constexpr char kIOSActorToolsExecutionDurationPrefixMetricName[] =
+    "IOS.Actor.Tools.ExecutionDuration.";
+inline constexpr char kIOSActorToolsPageStabilizationPrefixMetricName[] =
+    "IOS.Actor.Tools.PageStabilization.";
+
+// Tool Action Result Code Histograms.
+// Based on Desktop's `Actor.ExecutionEngine.Action.ResultCode` metric in
+// `chrome/browser/actor/actor_metrics.cc`.
+inline constexpr char kIOSActorExecutionEngineActionResultCodeMetricName[] =
+    "IOS.Actor.ExecutionEngine.Action.ResultCode";
+inline constexpr char kIOSActorToolsActionResultCodePrefixMetricName[] =
+    "IOS.Actor.Tools.ActionResultCode.";
+
+// Target Resolution & Validation Histograms.
+// Based on Desktop's `Actor.DomNodeResult` and target resolution metrics in
+// `chrome/renderer/actor/tool_utils.cc` and
+// `chrome/browser/actor/tools/page_target_util.cc`.
+inline constexpr char kIOSActorToolsActionTargetTypeMetricName[] =
+    "IOS.Actor.Tools.ActionTargetType";
+inline constexpr char kIOSActorToolsTargetFrameResolutionResultMetricName[] =
+    "IOS.Actor.Tools.TargetFrameResolutionResult";
+inline constexpr char kIOSActorToolsTargetIframeDepthMetricName[] =
+    "IOS.Actor.Tools.TargetIframeDepth";
+
+// Represents the type of page target specified by the model for a web tool.
+// Logged for the IOS.Actor.Tools.ActionTargetType histogram.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSActorActionTargetType)
+enum class ActionTargetType {
+  kDomNodeId = 0,
+  kCoordinate = 1,
+  kMaxValue = kCoordinate,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSActorActionTargetType)
+
+// Records the execution duration and post-execution page stabilization duration
+// for a completed tool invocation.
+void RecordToolTimings(std::string_view tool_name,
+                       base::TimeDelta execution_duration,
+                       base::TimeDelta page_stabilization_duration);
+
+// Records the external `mojom::ActionResultCode` (both aggregate and per-tool)
+// for a completed tool request.
+void RecordToolActionResultCode(std::string_view tool_name,
+                                const ToolExecutionResult& result);
+
+// Records the external `mojom::ActionResultCode` for an action execution
+// outcome (Desktop equivalent: `Actor.ExecutionEngine.Action.ResultCode`).
+void RecordActionResultCode(mojom::ActionResultCode result_code);
+
+// Records whether a web tool targeted a DOM node ID or viewport coordinates.
+void RecordActionTargetType(ActionTargetType target_type);
+
+// Records the result code of resolving the target `WebFrame` for an
+// `ActionTarget` and, on success, the optional iframe nesting depth (`0` for
+// main frame).
+void RecordTargetFrameResolutionResult(
+    mojom::ActionResultCode result_code,
+    std::optional<int> iframe_depth = std::nullopt);
 
 // Returns the full histogram name for recording the execution duration of
 // `call` (e.g. `IOS.Actor.Tools.JavaScriptExecutionDuration.Click`).

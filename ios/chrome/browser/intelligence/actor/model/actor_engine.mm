@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -496,6 +497,10 @@ void ActorEngine::FinishedUiPostInvoke(ActionResult result) {
 
 void ActorEngine::CompleteActions(ActionResult result) {
   bool success = result.tool_result.IsOk();
+  if (!success &&
+      (state_ == State::kPreExecutionChecks || state_ == State::kUiPreInvoke)) {
+    RecordActionResultCode(result.tool_result.code());
+  }
 
   // Successful tool results are already appended in `FinishedToolInvoke`,
   // therefore only record/overwrite the result if it is a failure.

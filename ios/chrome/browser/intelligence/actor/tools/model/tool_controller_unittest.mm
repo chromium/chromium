@@ -9,6 +9,8 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
+#import "base/strings/strcat.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -230,6 +233,7 @@ class ToolControllerTest : public PlatformTest, public ToolDelegate {
 
 // Tests that a tool can be created, validated, and invoked successfully.
 TEST_F(ToolControllerTest, SuccessfulExecutionFlow) {
+  base::HistogramTester histograms;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kActorTools);
 
@@ -271,10 +275,27 @@ TEST_F(ToolControllerTest, SuccessfulExecutionFlow) {
   EXPECT_TRUE(invoke_callback_called);
   ASSERT_TRUE(invoke_result.has_value());
   EXPECT_TRUE(invoke_result->IsOk());
+
+  histograms.ExpectUniqueSample(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kOk, 1);
+  histograms.ExpectUniqueSample(
+      base::StrCat(
+          {kIOSActorToolsActionResultCodePrefixMetricName, "WaitTool"}),
+      mojom::ActionResultCode::kOk, 1);
+  histograms.ExpectTotalCount(
+      base::StrCat(
+          {kIOSActorToolsExecutionDurationPrefixMetricName, "WaitTool"}),
+      1);
+  histograms.ExpectTotalCount(
+      base::StrCat(
+          {kIOSActorToolsPageStabilizationPrefixMetricName, "WaitTool"}),
+      1);
 }
 
 // Tests that if tool validation fails the ToolController returns the error.
 TEST_F(ToolControllerTest, ValidationFailure) {
+  base::HistogramTester histograms;
   // A request that will pass creation but fail validation.
   std::unique_ptr<ActorToolRequest> request = MakeFailingActorToolRequest();
 
@@ -284,11 +305,15 @@ TEST_F(ToolControllerTest, ValidationFailure) {
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
   EXPECT_EQ(result.code(), mojom::ActionResultCode::kArgumentsInvalid);
+  histograms.ExpectUniqueSample(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kArgumentsInvalid, 1);
 }
 
 // Tests that if tool creation fails synchronously, it transitions back to READY
 // and doesn't crash the state machine during Cancel.
 TEST_F(ToolControllerTest, SyncCreationFailure) {
+  base::HistogramTester histograms;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kActorTools);
 
@@ -316,6 +341,14 @@ TEST_F(ToolControllerTest, SyncCreationFailure) {
   ASSERT_TRUE(creation_result.has_value());
   EXPECT_FALSE(creation_result->IsOk());
   EXPECT_EQ(ToolController::State::kReady, controller_->state());
+
+  histograms.ExpectUniqueSample(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kToolUnknown, 1);
+  histograms.ExpectUniqueSample(
+      base::StrCat(
+          {kIOSActorToolsActionResultCodePrefixMetricName, "UnknownTool"}),
+      mojom::ActionResultCode::kToolUnknown, 1);
 
   // The controller accepts the next tool.
   base::test::TestFuture<ToolExecutionResult> validation_future;
@@ -369,6 +402,7 @@ TEST_F(ToolControllerTest, DestroyingControllerCancelsActiveTool) {
 // Tests that if a navigation occurs during the observation delay, the
 // observation is restarted.
 TEST_F(ToolControllerTest, RestartObservationOnNavigation) {
+  base::HistogramTester histograms;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kActorTools, {{"PageStabilityEnabled", "true"}});
@@ -407,6 +441,14 @@ TEST_F(ToolControllerTest, RestartObservationOnNavigation) {
   // Fast forward by another 4 seconds (total 10s after the navigation).
   task_environment_.FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(invoke_future.Get().IsOk());
+
+  histograms.ExpectUniqueSample(
+      kIOSActorExecutionEngineActionResultCodeMetricName,
+      mojom::ActionResultCode::kOk, 1);
+  histograms.ExpectUniqueSample(
+      base::StrCat(
+          {kIOSActorToolsActionResultCodePrefixMetricName, "WaitTool"}),
+      mojom::ActionResultCode::kOk, 1);
 }
 
 // Tests that deleting the ToolController synchronously inside its completion

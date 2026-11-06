@@ -82,6 +82,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h:IOSActorJavaScriptCall,//ios/chrome/browser/intelligence/actor/tools/public/metrics.mm:IOSActorJavaScriptCall) -->
 
+<!-- LINT.IfChange(IOSActorUiToolName) -->
+
+<variants name="IOSActorUiToolName">
+  <variant name="ActivateTabTool" summary="Activate tab tool"/>
+  <variant name="AttemptFormFillingTool" summary="Attempt form filling tool"/>
+  <variant name="AttemptLoginTool" summary="Attempt login tool"/>
+  <variant name="ClickTool" summary="Click tool"/>
+  <variant name="CloseTabTool" summary="Close tab tool"/>
+  <variant name="CreateTabTool" summary="Create tab tool"/>
+  <variant name="DragAndReleaseTool" summary="Drag and release tool"/>
+  <variant name="HistoryBackTool" summary="History back tool"/>
+  <variant name="HistoryForwardTool" summary="History forward tool"/>
+  <variant name="NavigateTool" summary="Navigate tool"/>
+  <variant name="ScrollTool" summary="Scroll tool"/>
+  <variant name="ScrollToTool" summary="Scroll to tool"/>
+  <variant name="SelectTool" summary="Select tool"/>
+  <variant name="TypeTool" summary="Type tool"/>
+  <variant name="UnknownTool" summary="Unknown tool"/>
+  <variant name="WaitTool" summary="Wait tool"/>
+</variants>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.mm:IOSActorUiToolName) -->
+
 <variants name="IOSFrameType">
   <variant name="Aggregate"
       summary="aggregated across all frames on the webpage"/>
@@ -326,6 +349,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Actor.ExecutionEngine.Action.ResultCode"
+    enum="ActionResultCode" expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records the ActionResultCode of completed or failed tool requests in
+    ToolController on iOS.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Actor.ObservationDelay.DidNavigate" enum="Boolean"
     expires_after="2027-04-15">
   <owner>kaklilu@google.com</owner>
@@ -429,6 +462,35 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Actor.Tools.ActionResultCode.{ActorUiToolName}"
+    enum="ActionResultCode" expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>Records the ActionResultCode of {ActorUiToolName} on iOS.</summary>
+  <token key="ActorUiToolName" variants="IOSActorUiToolName"/>
+</histogram>
+
+<histogram name="IOS.Actor.Tools.ActionTargetType"
+    enum="IOSActorActionTargetType" expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records the type of ActionTarget (DOM node vs. viewport coordinate)
+    validated by WebActorTool on iOS.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.Tools.ExecutionDuration.{ActorUiToolName}"
+    units="ms" expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Measures the duration of {ActorUiToolName} execution from when Execute() is
+    called until it completes.
+  </summary>
+  <token key="ActorUiToolName" variants="IOSActorUiToolName"/>
+</histogram>
+
 <histogram name="IOS.Actor.Tools.JavaScriptExecutionDuration.{Call}" units="ms"
     expires_after="2027-04-15">
   <owner>kaklilu@google.com</owner>
@@ -452,6 +514,37 @@ chromium-metrics-reviews@google.com.
     for {Call}. Not recorded when the call returns a malformed payload.
   </summary>
   <token key="Call" variants="IOSActorJavaScriptCall"/>
+</histogram>
+
+<histogram name="IOS.Actor.Tools.PageStabilization.{ActorUiToolName}"
+    units="ms" expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Measures the duration spent waiting for page stabilization after
+    {ActorUiToolName} finishes execution on iOS.
+  </summary>
+  <token key="ActorUiToolName" variants="IOSActorUiToolName"/>
+</histogram>
+
+<histogram name="IOS.Actor.Tools.TargetFrameResolutionResult"
+    enum="ActionResultCode" expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records the ActionResultCode of resolving the target WebFrame for an
+    ActionTarget on iOS.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.Tools.TargetIframeDepth" units="layers"
+    expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Recorded upon successful target frame resolution via coordinate search. 0
+    represents the top-level main frame.
+  </summary>
 </histogram>
 
 <histogram name="IOS.AIHub.Action" enum="IOSAIHubAction"
