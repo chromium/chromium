@@ -63,9 +63,10 @@ import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 /**
@@ -221,7 +222,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/369532182")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testMenuOptions_switchProvider_shownOnNougat() throws Throwable {
         launchHomeFragment();
 
@@ -235,7 +236,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/369532182")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     // Hamcrest's allOf(Matcher...) has generic varargs; each call site uses multiple matchers.
     @SuppressWarnings("unchecked")
     public void testMenuOptions_reportBug() throws Throwable {
@@ -269,7 +270,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/369532182")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testMenuOptions_checkUpdates_withPlayStore() throws Throwable {
         launchHomeFragment();
 
@@ -305,7 +306,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/369532182")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testMenuOptions_aboutDevTools() throws Throwable {
         launchHomeFragment();
 
@@ -327,7 +328,7 @@ public class DeveloperUiTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/369532182")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testMenuOptions_safeMode() throws Throwable {
         launchHomeFragment();
 
