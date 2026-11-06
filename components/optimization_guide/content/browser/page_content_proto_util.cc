@@ -1036,6 +1036,10 @@ void ConvertScriptTool(
     proto_script_tool->set_input_schema(*tool.input_schema);
   }
 
+  if (tool.output_schema) {
+    proto_script_tool->set_output_schema(*tool.output_schema);
+  }
+
   if (tool.annotations) {
     proto_script_tool->mutable_annotations()->set_read_only(
         tool.annotations->read_only);

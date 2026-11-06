@@ -2117,6 +2117,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestScriptTools, Basic) {
   EXPECT_EQ(tool.input_schema(),
             "{\"type\":\"object\",\"properties\":{\"text\":{\"description\":"
             "\"Value to echo\",\"type\":\"string\"}},\"required\":[\"text\"]}");
+  EXPECT_FALSE(tool.has_output_schema());
   EXPECT_TRUE(tool.annotations().read_only());
 }
 
@@ -2148,6 +2149,24 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestScriptTools,
   EXPECT_EQ(tool.description(), "echo input");
   EXPECT_FALSE(tool.has_input_schema());
   EXPECT_FALSE(tool.annotations().read_only());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestScriptTools,
+                       OutputSchema) {
+  LoadPage(https_server()->GetURL("/script_tool_output_schema.html"));
+
+  const auto& frame_data = page_content().main_frame_data();
+  ASSERT_EQ(frame_data.script_tools().size(), 1u);
+
+  const auto& tool = frame_data.script_tools().at(0);
+  EXPECT_EQ(tool.name(), "echo");
+  EXPECT_EQ(tool.description(), "echo input");
+  EXPECT_EQ(tool.input_schema(),
+            "{\"type\":\"object\",\"properties\":{\"text\":{\"description\":"
+            "\"Value to echo\",\"type\":\"string\"}},\"required\":[\"text\"]}");
+  EXPECT_EQ(tool.output_schema(),
+            "{\"type\":\"object\",\"properties\":{\"text\":{\"description\":"
+            "\"Echoed value\",\"type\":\"string\"}},\"required\":[\"text\"]}");
 }
 
 class PageContentProtoProviderBrowserTestMediaData
