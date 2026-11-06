@@ -39,6 +39,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/gesture_event_details.h"
@@ -134,6 +135,18 @@ base::RepeatingCallback<bool()> GetDragActive() {
   return base::BindRepeating([]() { return TabDragController::IsActive(); });
 }
 
+BrowserWindowInterface& GetLatestBrowser() {
+  CHECK(!GlobalBrowserCollection::GetInstance()->IsEmpty());
+  BrowserWindowInterface* latest_browser = nullptr;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&latest_browser](BrowserWindowInterface* browser) {
+        latest_browser = browser;
+        return true;
+      });
+  CHECK(latest_browser);
+  return *latest_browser;
+}
+
 }  // namespace
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
@@ -194,17 +207,6 @@ class TabDragTest
   }
 
  protected:
-  BrowserWindowInterface& GetLatestBrowser() {
-    CHECK(!GlobalBrowserCollection::GetInstance()->IsEmpty());
-    BrowserWindowInterface* latest_browser = nullptr;
-    GlobalBrowserCollection::GetInstance()->ForEach(
-        [&latest_browser](BrowserWindowInterface* browser) {
-          latest_browser = browser;
-          return true;
-        });
-    CHECK(latest_browser);
-    return *latest_browser;
-  }
 
   BrowserView& GetBrowserView() {
     BrowserView* browser_view =
@@ -316,7 +318,8 @@ class TabDragTest
                 [](gfx::Vector2d drag_offset, ui::TrackedElement* element) {
                   return element->GetScreenBounds().CenterPoint() + drag_offset;
                 },
-                offset)),
+                offset))
+            .SetMustRemainVisible(false),
         RunScheduledLayout());
   }
 
@@ -325,6 +328,16 @@ class TabDragTest
       ASSERT_TRUE(ui_controls::SendKeyPress(
           GetLatestBrowser().GetWindow()->GetNativeWindow(), ui::VKEY_ESCAPE,
           false, false, false, false));
+    });
+  }
+
+  // TODO(crbug.com/582409410): Remove this once the remaining Windows nested
+  // run loop timer leak on mouse release is fixed (see crrev.com/c/7915696),
+  // and use ReleaseMouse() instead.
+  auto ReleaseMouseAsync() {
+    return Do([&]() {
+      ASSERT_TRUE(ui_controls::SendMouseEvents(
+          ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::UP));
     });
   }
 
@@ -381,9 +394,22 @@ class TabDragTest
                     }));
   }
 
+  views::View* GetDetachedTabView() {
+    BrowserWindowInterface& detached_browser = GetLatestBrowser();
+    auto* detached_browser_view =
+        BrowserView::GetBrowserViewForBrowser(&detached_browser);
+    views::test::RunScheduledLayout(detached_browser_view);
+    auto* region = views::AsViewClass<BaseTabStripRegionView>(
+        detached_browser_view->tab_strip_view());
+    return region->root_node_for_testing()
+        ->GetNodeForHandle(
+            detached_browser.GetTabStripModel()->GetTabAtIndex(0)->GetHandle())
+        ->view();
+  }
+
   auto WaitForDetachedWindowVisible() {
     return Steps(PollState(kDetachedWindowVisiblePoller,
-                           [this]() {
+                           []() {
                              BrowserWindowInterface& latest =
                                  GetLatestBrowser();
                              BrowserView* browser_view =
@@ -393,7 +419,13 @@ class TabDragTest
                                     !widget->IsMoveLoopSupported();
                            }),
                  WaitForState(kDetachedWindowVisiblePoller, true),
-                 StopObservingState(kDetachedWindowVisiblePoller));
+                 StopObservingState(kDetachedWindowVisiblePoller),
+                 // Move the mouse slightly so the move loop positions the
+                 // detached window on X11.
+                 MoveMouseTo(base::BindLambdaForTesting([]() {
+                   return display::Screen::Get()->GetCursorScreenPoint() +
+                          gfx::Vector2d(0, 10);
+                 })));
   }
 
   auto MoveMouseOutOfTabstrip() {
@@ -1563,10 +1595,9 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DragToDetachIntoNewWindow) {
       WaitForDetachedWindowVisible(), ReleaseMouse(),
       WaitForState(kDragStatePoller, false),
       CheckResult(
-          [this]() { return GetLatestBrowser().GetTabStripModel()->count(); },
-          1),
+          []() { return GetLatestBrowser().GetTabStripModel()->count(); }, 1),
       CheckResult(
-          [this]() {
+          []() {
             return GetLatestBrowser()
                 .GetTabStripModel()
                 ->GetWebContentsAt(0)
@@ -1639,10 +1670,9 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DetachMultipleTabs) {
       WaitForDetachedWindowVisible(), ReleaseMouse(),
       WaitForState(kDragStatePoller, false),
       CheckResult(
-          [this]() { return GetLatestBrowser().GetTabStripModel()->count(); },
-          2),
+          []() { return GetLatestBrowser().GetTabStripModel()->count(); }, 2),
       CheckResult(
-          [this]() {
+          []() {
             return GetLatestBrowser()
                 .GetTabStripModel()
                 ->GetWebContentsAt(0)
@@ -1650,7 +1680,7 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DetachMultipleTabs) {
           },
           GURL(chrome::kChromeUIBookmarksURL)),
       CheckResult(
-          [this]() {
+          []() {
             return GetLatestBrowser()
                 .GetTabStripModel()
                 ->GetWebContentsAt(1)
@@ -1673,7 +1703,7 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DetachPinnedTab) {
       WaitForDetachedWindowVisible(), ReleaseMouse(),
       WaitForState(kDragStatePoller, false),
       CheckResult(
-          [this]() {
+          []() {
             return GetLatestBrowser()
                 .GetTabStripModel()
                 ->GetWebContentsAt(0)
@@ -1777,6 +1807,20 @@ class HorizontalTabDragTest : public TabDragTest {
     ui::GestureEvent event(point_in_widget.x(), point_in_widget.y(), 0,
                            ui::EventTimeForNow(), details);
     GetBrowserView().GetWidget()->OnGestureEvent(&event);
+  }
+
+  auto ReleaseAndVerifyDetachedTabExpands(const gfx::Rect& initial_tab_bounds) {
+    return Steps(ReleaseMouseAsync(), WaitForState(kDragStatePoller, false),
+                 Do([this, &initial_tab_bounds]() {
+                   views::View* detached_tab = GetDetachedTabView();
+                   ASSERT_TRUE(detached_tab);
+
+                   // The tab expands to its standard width at the start of the
+                   // tab strip.
+                   EXPECT_EQ(detached_tab->bounds().x(), 0);
+                   EXPECT_GT(detached_tab->bounds().width(),
+                             initial_tab_bounds.width());
+                 }));
   }
 
   void TestDragMultipleCompressedTabsOutOfAndIntoGroup() {
@@ -2033,6 +2077,121 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragMultipleCompressedTabs) {
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+                       DetachCompressedTabPreservesBoundsDuringDrag) {
+  gfx::Rect initial_tab_bounds;
+
+  RunTestSequence(
+      Do([this]() {
+        for (int i = 0; i < 11; ++i) {
+          chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                           /*foreground=*/false);
+        }
+        views::test::RunScheduledLayout(&GetBrowserView());
+      }),
+      Do([&]() {
+        views::View* tab5 = GetTabViewAt(5);
+        ASSERT_TRUE(tab5);
+        initial_tab_bounds = tab5->bounds();
+        EXPECT_GT(initial_tab_bounds.x(), 0);
+      }),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      PollState(kDragStatePoller, GetDragActive()),
+      StartDragTabByOffset(5, gfx::Vector2d(15, 0)),
+      WaitForState(kDragStatePoller, true), MoveMouseOutOfTabstrip(),
+      WaitForState(kBrowserCountPoller, 2u), WaitForDetachedWindowVisible(),
+      Do([&]() {
+        views::View* detached_tab = GetDetachedTabView();
+        ASSERT_TRUE(detached_tab);
+
+        // Preserves compressed tab width while dragging in the detached window.
+        // Matches legacy
+        // DetachToBrowserTabDragControllerTest.DetachToOwnWindow.
+        EXPECT_EQ(detached_tab->bounds().width(), initial_tab_bounds.width());
+
+        // Preserves the horizontal drag offset (+15px from drag start).
+        // Matches legacy TabStripTest.RelayoutAfterDraggedTabBoundsUpdate.
+        EXPECT_EQ(detached_tab->bounds().x(), initial_tab_bounds.x() + 15);
+
+        // The cursor remains anchored directly over the tab.
+        bool check_screen_bounds =
+            detached_tab->GetWidget()->IsMoveLoopSupported();
+#if BUILDFLAG(IS_OZONE)
+        check_screen_bounds &= !ui::OzonePlatform::RunningOnWaylandForTest() &&
+                               !ui::OzonePlatform::RunningOnX11ForTest();
+#endif
+        if (check_screen_bounds) {
+          EXPECT_TRUE(detached_tab->GetBoundsInScreen().Contains(
+              display::Screen::Get()->GetCursorScreenPoint()));
+        }
+      }),
+      ReleaseAndVerifyDetachedTabExpands(initial_tab_bounds));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DetachTabToRightStartsAtZero) {
+#if BUILDFLAG(IS_OZONE)
+  // Wayland clients do not receive global coordinates outside surfaces and
+  // exit via a synthesized vertical detach on wl_data_device.leave even when
+  // window move loops (xdg_toplevel_drag_v1) are supported.
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland cannot track horizontal offsets past window edge";
+  }
+#endif
+  // System DnD cannot track horizontal offsets past the right edge of the
+  // window, exiting via a synthesized vertical detach instead. This is
+  // consistent with the legacy horizontal tab strip behavior.
+  if (!GetBrowserView().GetWidget()->IsMoveLoopSupported()) {
+    GTEST_SKIP() << "Not relevant for fallback tab dragging";
+  }
+
+  gfx::Rect initial_tab_bounds;
+
+  RunTestSequence(
+      Do([this]() {
+        for (int i = 0; i < 11; ++i) {
+          chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                           /*foreground=*/false);
+        }
+        views::test::RunScheduledLayout(&GetBrowserView());
+      }),
+      Do([&]() {
+        views::View* tab0 = GetTabViewAt(0);
+        ASSERT_TRUE(tab0);
+        initial_tab_bounds = tab0->bounds();
+      }),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      PollState(kDragStatePoller, GetDragActive()),
+      // Move 15px to cross the drag threshold and start dragging.
+      StartDragTabByOffset(0, gfx::Vector2d(15, 0)),
+      WaitForState(kDragStatePoller, true),
+      // Drag past the right edge of the browser view to detach horizontally.
+      MoveMouseTo(base::BindLambdaForTesting([this]() {
+        const gfx::Rect window_bounds = GetBrowserView().GetBoundsInScreen();
+        return gfx::Point(window_bounds.right() + 50, window_bounds.y() + 20);
+      })),
+      WaitForState(kBrowserCountPoller, 2u), WaitForDetachedWindowVisible(),
+      Do([&]() {
+        views::View* detached_tab = GetDetachedTabView();
+        ASSERT_TRUE(detached_tab);
+
+        // Tabs detached horizontally start at the beginning of the tab strip.
+        // Matches legacy TabDragController::GetTabOffsetForDetachedWindow.
+        EXPECT_EQ(detached_tab->bounds().x(), 0);
+        EXPECT_EQ(detached_tab->bounds().width(), initial_tab_bounds.width());
+        bool check_screen_bounds =
+            detached_tab->GetWidget()->IsMoveLoopSupported();
+#if BUILDFLAG(IS_OZONE)
+        check_screen_bounds &= !ui::OzonePlatform::RunningOnWaylandForTest() &&
+                               !ui::OzonePlatform::RunningOnX11ForTest();
+#endif
+        if (check_screen_bounds) {
+          EXPECT_TRUE(detached_tab->GetBoundsInScreen().Contains(
+              display::Screen::Get()->GetCursorScreenPoint()));
+        }
+      }),
+      ReleaseAndVerifyDetachedTabExpands(initial_tab_bounds));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
                        GestureScrollEndWithoutDragDoesNotSynthesizeTapOnTab) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -2167,6 +2326,53 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
 IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
                        DragMultipleCompressedTabsBetweenTwoGroups) {
   TestDragMultipleCompressedTabsBetweenTwoGroups();
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+                       DetachPinnedTabPreservesBoundsDuringDrag) {
+  gfx::Rect initial_tab_bounds;
+
+  RunTestSequence(
+      Do([this]() {
+        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                         /*foreground=*/false);
+        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                         /*foreground=*/false);
+        browser()->GetTabStripModel()->SetTabPinned(0, true);
+        browser()->GetTabStripModel()->SetTabPinned(1, true);
+        views::test::RunScheduledLayout(&GetBrowserView());
+      }),
+      Do([&]() {
+        views::View* tab1 = GetTabViewAt(1);
+        ASSERT_TRUE(tab1);
+        initial_tab_bounds = tab1->bounds();
+        EXPECT_GT(initial_tab_bounds.x(), 0);
+      }),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      PollState(kDragStatePoller, GetDragActive()),
+      StartDragTabByOffset(1, gfx::Vector2d(0, 100)),
+      WaitForState(kBrowserCountPoller, 2u), WaitForDetachedWindowVisible(),
+      Do([&]() {
+        views::View* detached_tab = GetDetachedTabView();
+        ASSERT_TRUE(detached_tab);
+
+        // Preserves the pinned tab's relative X offset during drag.
+        EXPECT_EQ(detached_tab->bounds().x(), initial_tab_bounds.x());
+        EXPECT_EQ(detached_tab->bounds().width(), initial_tab_bounds.width());
+
+        // The cursor remains anchored directly over the pinned tab.
+        bool check_screen_bounds =
+            detached_tab->GetWidget()->IsMoveLoopSupported();
+#if BUILDFLAG(IS_OZONE)
+        check_screen_bounds &= !ui::OzonePlatform::RunningOnWaylandForTest() &&
+                               !ui::OzonePlatform::RunningOnX11ForTest();
+#endif
+        if (check_screen_bounds) {
+          EXPECT_TRUE(detached_tab->GetBoundsInScreen().Contains(
+              display::Screen::Get()->GetCursorScreenPoint()));
+        }
+      }),
+      ReleaseMouseAsync(), WaitForState(kDragStatePoller, false));
 }
 
 class HorizontalTabDragRTLTest : public HorizontalTabDragTest {
