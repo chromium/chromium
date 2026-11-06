@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -14,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -33,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
@@ -40,8 +43,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -56,11 +63,15 @@ public class TabFaviconTest {
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private WebContents mWebContents;
-    private @Mock WebContents mNewWebContents;
+    @Mock private WebContents mNewWebContents;
     @Mock private FaviconHelper mFaviconHelper;
+    @Mock private RenderFrameHost mMainFrame;
+    @Mock private NavigationHandle mNavigation;
+    @Mock private TabObserver mTabObserver;
 
     private UserDataHost mUserDataHost;
     private TabFavicon mTabFavicon;
+    private Bitmap mCachedFavicon;
 
     @Before
     public void setUp() {
@@ -99,6 +110,39 @@ public class TabFaviconTest {
             mTabFavicon.onFaviconAvailable(
                     bitmap, JUnitTestGURLs.EXAMPLE_URL, /* isFallback= */ false);
         }
+    }
+
+    /**
+     * Sets up a tab showing chrome://newtab with a cached favicon for the document at {@code
+     * JUnitTestGURLs.URL_1}, and a navigation that committed a new document ({@code
+     * JUnitTestGURLs.URL_2}) under the same visible URL. The WebUI NTP gate is satisfied: desktop
+     * device and Google as the default search engine (the feature flag is enabled per test).
+     */
+    private void setUpNewDocumentUnderSameVisibleUrl() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+
+        ObserverList<TabObserver> observers = new ObserverList<>();
+        observers.addObserver(mTabObserver);
+        doReturn(observers).when(mTab).getTabObservers();
+        doReturn(JUnitTestGURLs.NTP_URL).when(mTab).getUrl();
+        doReturn(mMainFrame).when(mWebContents).getMainFrame();
+        doReturn(JUnitTestGURLs.URL_1).when(mMainFrame).getLastCommittedURL();
+
+        mTabFavicon.onFaviconAvailable(
+                makeBitmap(IDEAL_SIZE, Color.GREEN), JUnitTestGURLs.URL_1, /* isFallback= */ false);
+        mCachedFavicon = mTabFavicon.getFavicon();
+        assertNotNull(mCachedFavicon);
+
+        doReturn(true).when(mNavigation).hasCommitted();
+        doReturn(false).when(mNavigation).isSameDocument();
+        doReturn(JUnitTestGURLs.URL_2).when(mNavigation).getUrl();
+    }
+
+    private void assertFaviconKept() {
+        assertSame(mCachedFavicon, mTabFavicon.getFavicon());
+        verify(mTabObserver, never()).onFaviconUpdated(mTab, null, null);
     }
 
     @Test
@@ -398,5 +442,110 @@ public class TabFaviconTest {
 
         mTabFavicon.onContentChanged(mTab);
         verify(mTabFaviconJni, times(2)).setWebContents(12345L, mWebContents);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_UnderSameVisibleUrlInvalidatesFavicon() {
+        setUpNewDocumentUnderSameVisibleUrl();
+
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+
+        assertNull(mTabFavicon.getFavicon());
+        verify(mTabObserver).onFaviconUpdated(mTab, null, null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_SameDocumentNavigationKeepsFavicon() {
+        setUpNewDocumentUnderSameVisibleUrl();
+        doReturn(true).when(mNavigation).isSameDocument();
+
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+
+        assertFaviconKept();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_UncommittedNavigationKeepsFavicon() {
+        setUpNewDocumentUnderSameVisibleUrl();
+        doReturn(false).when(mNavigation).hasCommitted();
+
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+
+        assertFaviconKept();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_SameDocumentUrlKeepsFavicon() {
+        setUpNewDocumentUnderSameVisibleUrl();
+        doReturn(JUnitTestGURLs.URL_1).when(mNavigation).getUrl();
+
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+
+        assertFaviconKept();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_VisibleUrlChangeIsLeftToPageUrlChanged() {
+        setUpNewDocumentUnderSameVisibleUrl();
+        // A navigation that also changes the visible URL is already handled by pageUrlChanged(),
+        // so observers must not be notified a second time.
+        doReturn(JUnitTestGURLs.URL_2).when(mTab).getUrl();
+
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+
+        verify(mTabObserver, never()).onFaviconUpdated(mTab, null, null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_NoCachedFaviconIsNoOp() {
+        setUpNewDocumentUnderSameVisibleUrl();
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+        verify(mTabObserver).onFaviconUpdated(mTab, null, null);
+
+        // A second navigation with nothing cached must not notify again.
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+
+        verify(mTabObserver, times(1)).onFaviconUpdated(mTab, null, null);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_FaviconFetchedAfterInvalidationIsServedAgain() {
+        setUpNewDocumentUnderSameVisibleUrl();
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+        assertNull(mTabFavicon.getFavicon());
+
+        doReturn(JUnitTestGURLs.URL_2).when(mMainFrame).getLastCommittedURL();
+        mTabFavicon.onFaviconAvailable(
+                makeBitmap(IDEAL_SIZE, Color.BLUE), JUnitTestGURLs.URL_2, /* isFallback= */ false);
+
+        assertNotNull(mTabFavicon.getFavicon());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_WebUiNtpDisabledKeepsFavicon() {
+        setUpNewDocumentUnderSameVisibleUrl();
+
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+
+        assertFaviconKept();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+    public void testNewDocument_NonDesktopDeviceKeepsFavicon() {
+        setUpNewDocumentUnderSameVisibleUrl();
+        DeviceInfo.setIsDesktopForTesting(false);
+
+        mTabFavicon.maybeInvalidateFaviconForNewDocument(mNavigation);
+
+        assertFaviconKept();
     }
 }

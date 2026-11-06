@@ -20,6 +20,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -56,6 +59,11 @@ public class TabFavicon extends TabWebContentsUserData {
     private int mFaviconHeight;
     // The URL of the tab when mFavicon was fetched.
     private @Nullable GURL mFaviconTabUrl;
+    // The last committed URL of the primary main frame when mFavicon was fetched. mFaviconTabUrl
+    // is the *visible* URL, which can stay the same across a cross-document navigation (e.g.
+    // chrome://newtab resolving to a different New Tab Page after the default search engine
+    // changed), so on its own it can't tell whether mFavicon still belongs to the current document.
+    private @Nullable GURL mFaviconCommittedUrl;
     private boolean mIsFaviconFallback;
     @VisibleForTesting @Nullable FaviconHelper mFaviconHelper;
 
@@ -163,6 +171,11 @@ public class TabFavicon extends TabWebContentsUserData {
             TabFaviconJni.get().onDestroyed(mNativeTabFavicon);
             mNativeTabFavicon = 0;
         }
+    }
+
+    @Override
+    public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+        maybeInvalidateFaviconForNewDocument(navigation);
     }
 
     /**
@@ -309,6 +322,48 @@ public class TabFavicon extends TabWebContentsUserData {
         return !currentTabUrl.equals(mFaviconTabUrlForNavigationTransition);
     }
 
+    /** Returns the last committed URL of the primary main frame, or null if there is none. */
+    private @Nullable GURL getLastCommittedMainFrameUrl() {
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) return null;
+        RenderFrameHost mainFrame = webContents.getMainFrame();
+        return mainFrame != null ? mainFrame.getLastCommittedURL() : null;
+    }
+
+    /**
+     * Drops the cached favicon if {@code navigation} committed a different document while the
+     * visible URL stayed the same, so that {@link #getFavicon(boolean)} doesn't keep serving the
+     * previous document's favicon. This happens for chrome://newtab, whose visible URL doesn't
+     * change when it resolves to a different New Tab Page (e.g. after the default search engine
+     * changed from a third-party engine to Google); for every other navigation the visible URL
+     * changes too and the cache is already bypassed by {@link #pageUrlChanged()}.
+     *
+     * <p>Only the WebUI NTP keeps one visible URL across different documents, so this is limited to
+     * configurations where chrome://newtab is served by the WebUI NTP.
+     */
+    @VisibleForTesting
+    void maybeInvalidateFaviconForNewDocument(NavigationHandle navigation) {
+        if (!UrlOverrideUtils.isWebUiNtpOverrideEnabled()) return;
+        if (mFavicon == null || !navigation.hasCommitted() || navigation.isSameDocument()) {
+            return;
+        }
+        if (pageUrlChanged()) return;
+        if (mFaviconCommittedUrl == null || mFaviconCommittedUrl.equals(navigation.getUrl())) {
+            return;
+        }
+        mFavicon = null;
+        mFaviconWidth = 0;
+        mFaviconHeight = 0;
+        mFaviconTabUrl = null;
+        mFaviconCommittedUrl = null;
+        mIsFaviconFallback = false;
+        // Tell observers (e.g. the tab strip) to re-query the favicon, as the new document may
+        // never provide one of its own.
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onFaviconUpdated(mTab, null, null);
+        }
+    }
+
     @CalledByNative
     private static void onFaviconAvailable(
             @JniType("TabAndroid*") Tab tab, Bitmap icon, @JniType("GURL") GURL iconUrl) {
@@ -337,6 +392,7 @@ public class TabFavicon extends TabWebContentsUserData {
         mFaviconWidth = icon.getWidth();
         mFaviconHeight = icon.getHeight();
         mFaviconTabUrl = mTab.getUrl();
+        mFaviconCommittedUrl = getLastCommittedMainFrameUrl();
         mIsFaviconFallback = isFallback;
         for (TabObserver observer : mTab.getTabObservers()) {
             observer.onFaviconUpdated(mTab, icon, iconUrl);
