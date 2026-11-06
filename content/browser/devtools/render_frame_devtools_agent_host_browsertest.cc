@@ -5,10 +5,13 @@
 
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 
+#include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/values.h"
@@ -25,6 +28,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -39,6 +43,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
@@ -54,6 +59,11 @@ class RenderFrameDevToolsAgentHostBrowserTest : public ContentBrowserTest {
 
 namespace {
 
+class MockActivationDelegate : public WebContentsDelegate {
+ public:
+  MOCK_METHOD(void, ActivateContents, (WebContents*), (override));
+};
+
 // A DevToolsAgentHostClient implementation doing nothing.
 class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
  public:
@@ -68,6 +78,55 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 };
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
+                       ActivateInnerWebContentsActivatesOutermost) {
+  testing::StrictMock<MockActivationDelegate> outer_delegate;
+  testing::StrictMock<MockActivationDelegate> inner_delegate;
+  std::unique_ptr<WebContents> outer_contents = WebContents::Create(
+      WebContents::CreateParams(shell()->web_contents()->GetBrowserContext()));
+  ASSERT_TRUE(NavigateToURL(outer_contents.get(),
+                            GURL("data:text/html,<iframe></iframe>")));
+  RenderFrameHost* child_frame =
+      ChildFrameAt(outer_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+
+  std::unique_ptr<WebContents> inner_contents = WebContents::Create(
+      WebContents::CreateParams(shell()->web_contents()->GetBrowserContext()));
+  WebContents* inner = inner_contents.get();
+  outer_contents->AttachInnerWebContents(std::move(inner_contents), child_frame,
+                                         /*is_full_page=*/false);
+  outer_contents->SetDelegate(&outer_delegate);
+  inner->SetDelegate(&inner_delegate);
+  scoped_refptr<DevToolsAgentHost> agent_host =
+      DevToolsAgentHost::GetOrCreateFor(inner);
+
+  EXPECT_CALL(outer_delegate, ActivateContents(outer_contents.get()));
+  EXPECT_CALL(inner_delegate, ActivateContents(testing::_)).Times(0);
+  EXPECT_TRUE(agent_host->Activate());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
+                       ActivateHandlesSynchronousWebContentsDestruction) {
+  testing::StrictMock<MockActivationDelegate> delegate;
+  std::unique_ptr<WebContents> contents = WebContents::Create(
+      WebContents::CreateParams(shell()->web_contents()->GetBrowserContext()));
+  contents->SetDelegate(&delegate);
+  scoped_refptr<DevToolsAgentHost> agent_host =
+      DevToolsAgentHost::GetOrCreateFor(contents.get());
+  const std::string agent_host_id = agent_host->GetId();
+
+  EXPECT_CALL(delegate, ActivateContents(contents.get()))
+      .WillOnce([&](WebContents*) {
+        contents.reset();
+        agent_host.reset();
+        EXPECT_TRUE(DevToolsAgentHost::GetForId(agent_host_id));
+      });
+  EXPECT_FALSE(agent_host->Activate());
+  EXPECT_FALSE(contents);
+  EXPECT_FALSE(agent_host);
+  EXPECT_FALSE(DevToolsAgentHost::GetForId(agent_host_id));
+}
 
 IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
                        OlderCommitKeepsPendingNavigationTarget) {

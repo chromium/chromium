@@ -699,6 +699,9 @@ HEADLESS_PROTOCOL_TEST(ScreenDetailsWorkAreaScaled,
 
 HEADLESS_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
+HEADLESS_PROTOCOL_TEST(ActivateTargetFullscreen,
+                       "shared/activate-target-fullscreen.js")
+
 HEADLESS_PROTOCOL_TEST(RequestFullscreenOnSecondaryScreen,
                        "shared/request-fullscreen-on-secondary-screen.js")
 

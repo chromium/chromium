@@ -1011,10 +1011,15 @@ GURL RenderFrameDevToolsAgentHost::GetFaviconURL() {
 }
 
 bool RenderFrameDevToolsAgentHost::Activate() {
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(web_contents());
-  if (wc) {
-    wc->Activate();
-    return true;
+  scoped_refptr<RenderFrameDevToolsAgentHost> protect(this);
+  if (web_contents()) {
+    static_cast<WebContentsImpl*>(web_contents()->GetOutermostWebContents())
+        ->Activate();
+    // Re-check this since activation can synchronously destroy the WebContents.
+    if (web_contents()) {
+      web_contents()->GetOutermostWebContents()->Focus();
+      return true;
+    }
   }
   return false;
 }
