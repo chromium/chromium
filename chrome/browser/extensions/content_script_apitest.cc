@@ -207,6 +207,10 @@ class ContentScriptApiTest : public ExtensionApiTest {
     mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
+  net::EmbeddedTestServer* https_test_server() {
+    return https_test_server_.get();
+  }
+
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
@@ -3342,6 +3346,170 @@ IN_PROC_BROWSER_TEST_F(InjectedScriptServiceWorkerBrowserTest,
                                    ".then(reg => Boolean(reg))"));
   EXPECT_EQ(false, content::EvalJs(web_contents,
                                    "!!navigator.serviceWorker.controller"));
+}
+
+class ContentScriptSameSiteProcessApiTest : public ContentScriptApiTest {
+ public:
+  ContentScriptSameSiteProcessApiTest() {
+    // Ensure same-site, cross-origin frames share a renderer process so the
+    // child frame's WindowProxy is backed by a LocalWindowProxy.
+    feature_list_.InitAndDisableFeature(
+        features::kOriginKeyedProcessesByDefault);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that an isolated-world content script running on one origin cannot
+// pass a same-site, cross-origin iframe's WindowProxy as a WebIDL callback
+// interface (NodeFilter) to enter the victim frame's isolated-world realm and
+// leak objects from it, even when the extension has host permissions for both
+// origins.
+IN_PROC_BROWSER_TEST_F(ContentScriptSameSiteProcessApiTest,
+                       CrossOriginCallbackInterfaceBlockedInIsolatedWorld) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Isolated world callback interface check",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": ["https://a.example.com/*", "https://b.example.com/*"],
+    "content_scripts": [{
+      "matches": ["https://a.example.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }, {
+      "matches": ["https://b.example.com/*"],
+      "all_frames": true,
+      "js": ["noop.js"]
+    }]
+  })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("noop.js"), "");
+
+  // Once the test driver navigates frames[0] to b.example.com and posts a
+  // trigger message, the content script tries to use the cross-origin
+  // WindowProxy as a NodeFilter in createTreeWalker(). With the fix in place,
+  // Blink refuses to enter the victim frame's isolated-world context and
+  // throws a SecurityError constructed in the caller's own realm (so
+  // `err instanceof DOMException` is true in this realm and no foreign
+  // Object.prototype is reachable).
+  test_dir.WriteFile(FILE_PATH_LITERAL("content.js"), R"(
+    window.addEventListener('message', () => {
+      const win = frames[0];
+      let directAccessBlocked = false;
+      try {
+        void win.document;
+      } catch (e) {
+        directAccessBlocked = (e instanceof DOMException) &&
+                              e.name === 'SecurityError';
+      }
+
+      const root = document.createElement('div');
+      root.appendChild(document.createElement('span'));
+      const walker = document.createTreeWalker(
+          root, NodeFilter.SHOW_ALL, win);
+      let caught = null;
+      try {
+        walker.nextNode();
+      } catch (e) {
+        caught = e;
+      }
+
+      if (!caught) {
+        chrome.test.sendMessage('FAIL: nextNode did not throw');
+        return;
+      }
+      const isOwnRealmException =
+          (caught instanceof DOMException) &&
+          Object.getPrototypeOf(caught) === DOMException.prototype;
+      if (!directAccessBlocked) {
+        chrome.test.sendMessage('FAIL: direct access was not blocked');
+      } else if (!isOwnRealmException || caught.name !== 'SecurityError') {
+        chrome.test.sendMessage(
+            'FAIL: leaked foreign or wrong exception: ' + String(caught));
+      } else {
+        chrome.test.sendMessage('PASS');
+      }
+    });
+    chrome.test.sendMessage('READY');
+  )");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  const GURL main_url =
+      https_test_server()->GetURL("a.example.com", "/iframe.html");
+  const GURL cross_origin_child_url =
+      https_test_server()->GetURL("b.example.com", "/simple.html");
+
+  ExtensionTestMessageListener ready_listener("READY");
+  ASSERT_TRUE(NavigateToURL(web_contents, main_url));
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Navigate the child frame to a same-site, cross-origin URL (stays in the
+  // same renderer process, so its WindowProxy is backed by a LocalWindowProxy
+  // whose isolated-world context could otherwise be entered).
+  ASSERT_TRUE(
+      NavigateIframeToURL(web_contents, "test", cross_origin_child_url));
+  content::RenderFrameHost* child =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child);
+  ASSERT_EQ(cross_origin_child_url, child->GetLastCommittedURL());
+  ASSERT_EQ(web_contents->GetPrimaryMainFrame()->GetProcess(),
+            child->GetProcess());
+
+  ExtensionTestMessageListener result_listener;
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.postMessage('go', '*');"));
+  ASSERT_TRUE(result_listener.WaitUntilSatisfied());
+  EXPECT_EQ("PASS", result_listener.message());
+}
+
+// Companion to CrossOriginCallbackInterfaceBlockedInIsolatedWorld: when a
+// content script registers an event listener whose callback function comes from
+// a different same-origin frame's isolated world, the cross-context access
+// check allows the event to be dispatched.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
+                       SameOriginCallbackInterfaceAllowedInIsolatedWorld) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Isolated world callback interface allowed for same-origin",
+    "version": "1.0",
+    "manifest_version": 3,
+    "content_scripts": [{
+      "matches": ["https://a.example.com/*"],
+      "all_frames": true,
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }]
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("content.js"), R"(
+    if (window !== top) {
+      window.childListener = (e) => {
+        chrome.test.sendMessage(
+            e.type === 'custom' ? 'PASS' : 'FAIL: ' + e.type);
+      };
+    } else {
+      window.addEventListener('load', () => {
+        const target = document.createElement('div');
+        target.addEventListener('custom', frames[0].childListener);
+        target.dispatchEvent(new Event('custom'));
+      });
+    }
+  )");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  const GURL main_url =
+      https_test_server()->GetURL("a.example.com", "/iframe.html");
+
+  ExtensionTestMessageListener result_listener;
+  ASSERT_TRUE(NavigateToURL(web_contents, main_url));
+  ASSERT_TRUE(result_listener.WaitUntilSatisfied());
+  EXPECT_EQ("PASS", result_listener.message());
 }
 
 }  // namespace extensions

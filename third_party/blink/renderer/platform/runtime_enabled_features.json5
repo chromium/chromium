@@ -4098,6 +4098,15 @@
       status: "stable",
     },
     {
+      // When enabled, cross-context access from an isolated world (e.g. an
+      // extension content script) to another context in the same world is
+      // subject to the same frame-origin access check as the main world.
+      // Previously such access was unconditionally allowed. Kill switch.
+      // TODO(crbug.com/577455288): remove by m164 if no regressions are reported.
+      name: "IsolatedWorldCrossContextAccessCheck",
+      status: "stable",
+    },
+    {
       name: "JavaScriptCompileHintsPerFunctionMagicRuntime",
       status: "experimental",
       origin_trial_feature_name: "JavaScriptCompileHintsPerFunctionMagic",

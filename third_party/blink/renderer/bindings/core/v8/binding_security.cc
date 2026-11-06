@@ -48,8 +48,10 @@
 #include "third_party/blink/renderer/core/html/image_document.h"
 #include "third_party/blink/renderer/core/html/media/media_document.h"
 #include "third_party/blink/renderer/core/html/text_document.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -222,8 +224,13 @@ bool BindingSecurity::ShouldAllowAccessToV8ContextInternal(
   const DOMWrapperWorld& accessing_world = accessing_script_state->World();
   const DOMWrapperWorld& target_world = target_script_state->World();
   CHECK_EQ(accessing_world.GetWorldId(), target_world.GetWorldId());
-  return !accessing_world.IsMainWorld() ||
-         CanAccessWindow(ToLocalDOMWindow(accessing_script_state),
+
+  if (!accessing_world.IsMainWorld() &&
+      !RuntimeEnabledFeatures::IsolatedWorldCrossContextAccessCheckEnabled()) {
+    return true;
+  }
+
+  return CanAccessWindow(ToLocalDOMWindow(accessing_script_state),
                          ToLocalDOMWindow(target_script_state));
 }
 
