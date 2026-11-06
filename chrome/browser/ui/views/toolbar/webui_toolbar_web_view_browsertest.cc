@@ -6493,8 +6493,10 @@ class WebUIToolbarFullyEnabledBrowserTest
 // caption when the vertical tab strip is shown, while the action itself is not.
 // Uses the extensions menu button, which is never moved to the overflow menu,
 // so this doesn't depend on the window width.
-IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
-                       IsPositionInWindowCaptionInExtensionsContainer) {
+// TODO(crbug.com/582480011): Deflake and re-enable.
+IN_PROC_BROWSER_TEST_F(
+    WebUIToolbarFullyEnabledBrowserTest,
+    DISABLED_IsPositionInWindowCaptionInExtensionsContainer) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   ASSERT_TRUE(webui_toolbar_view);
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
