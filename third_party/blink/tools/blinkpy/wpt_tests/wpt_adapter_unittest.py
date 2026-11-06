@@ -77,6 +77,10 @@ class WPTAdapterTest(unittest.TestCase):
                 """),
         )
         self.fs.write_text_file(
+            self.finder.path_from_wpt_tests('config.tmpl.json'),
+            json.dumps({'aliases': []}),
+        )
+        self.fs.write_text_file(
             self.finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps(
                 {
@@ -212,6 +216,34 @@ class WPTAdapterTest(unittest.TestCase):
         )
         calls.cleanup.assert_called_once_with()
         calls.load_runner.assert_not_called()
+
+    def test_simultaneous_run_fails_clearly(self):
+        adapter, calls = self._make_port_test_adapter()
+
+        with self.fs.lock_file('/tmp/WebKit/web_tests.lock'):
+            with self.assertLogs('run_wpt_tests', level='ERROR') as log_ctx:
+                exit_code = adapter.run_tests()
+
+        self.assertEqual(exit_code, exit_codes.UNEXPECTED_ERROR_EXIT_STATUS)
+        self.assertIn(
+            'ERROR:run_wpt_tests:'
+            'Another instance of run_web_tests.py or run_wpt_tests.py is '
+            'holding the OS lock (/tmp/WebKit/web_tests.lock). Simultaneous '
+            'runs are not supported due to shared server ports; wait for the '
+            'other run to finish and try again.',
+            log_ctx.output,
+        )
+        calls.setup.assert_not_called()
+        calls.load_runner.assert_not_called()
+        calls.run.assert_not_called()
+        calls.copy_viewer.assert_not_called()
+        calls.process_results.assert_not_called()
+
+        # Once the other run releases the lock, running tests succeeds.
+        self.assertEqual(adapter.run_tests(), exit_codes.OK_EXIT_STATUS)
+        calls.setup.assert_called_once_with()
+        calls.load_runner.assert_called_once()
+        calls.run.assert_called_once()
 
     def test_basic_passthrough(self):
         mock_datetime = self._mocks.enter_context(

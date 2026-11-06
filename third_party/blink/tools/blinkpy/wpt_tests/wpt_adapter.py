@@ -19,11 +19,13 @@ from typing import List, Optional
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
+from blinkpy.common.system.filesystem import FileLockError
 from blinkpy.tool.blink_tool import BlinkTool
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.web_tests import command_line
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.servers import server_base
 from blinkpy.wpt_tests import product
 from blinkpy.wpt_tests.logging import (
     GroupingFormatter,
@@ -76,7 +78,10 @@ class WPTAdapter:
             repeat_each=self.options.repeat_each,
             processes=product.processes,
         )
-        self._expectations = TestExpectations(self.port)
+
+    @functools.cached_property
+    def _expectations(self):
+        return TestExpectations(self.port)
 
     @classmethod
     def from_args(
@@ -544,6 +549,23 @@ class WPTAdapter:
             yield runner_options
 
     def run_tests(self) -> int:
+        lock_file = server_base.lock_path(self.fs, self.host.platform)
+        try:
+            with self.fs.lock_file(lock_file):
+                return self._run_tests()
+        except FileLockError:
+            logger.error(server_base.LOCK_HELD_ERROR_MESSAGE, lock_file)
+            return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
+
+    def _run_tests(self) -> int:
+        if self.product.name == 'chrome_ios':
+            # Xcode needs to be installed early so that `git clone` works.
+            _maybe_install_xcode(self.options.xcode_build_version)
+        if self.options.use_upstream_wpt:
+            self.checkout_upstream_wpt()
+        self.set_up_derived_options()
+        self.create_config_files()
+
         exit_code = 0
         show_results = self.port.get_option('show_results')
         try:
@@ -795,16 +817,9 @@ def main(argv) -> int:
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
     try:
         adapter = WPTAdapter.from_args(host, argv)
-        if adapter.product.name == 'chrome_ios':
-            # Xcode needs to be installed early so that `git clone` works.
-            _maybe_install_xcode(adapter.options.xcode_build_version)
-        if adapter.options.use_upstream_wpt:
-            adapter.checkout_upstream_wpt()
-        adapter.set_up_derived_options()
-        adapter.create_config_files()
         exit_code = adapter.run_tests()
     except KeyboardInterrupt:
-        # This clause catches interrupts outside `WPTAdapter.run_tests()`.
+        # This clause catches interrupts outside `WPTAdapter.test_env()`.
         exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
     except Exception as error:
         logger.exception(error)
