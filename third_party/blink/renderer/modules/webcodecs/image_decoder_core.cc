@@ -114,6 +114,7 @@ GuessPrimaryAndTransfer(SkYUVColorSpace yuv_cs) {
       return {gfx::ColorSpace::PrimaryID::BT709,
               gfx::ColorSpace::TransferID::SRGB};
     case kIdentity_SkYUVColorSpace:
+    default:
       NOTREACHED();
   };
 }
@@ -235,6 +236,7 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(SkYUVColorSpace yuv_cs,
                              gfx::ColorSpace::RangeID::LIMITED,
                              custom_primaries_ptr, custom_transfer_ptr);
     case kIdentity_SkYUVColorSpace:
+    default:
       NOTREACHED();
   };
 }

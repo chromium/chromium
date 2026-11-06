@@ -1022,6 +1022,7 @@ const libyuv::YuvConstants* GetYuvContantsForColorSpace(
       // GBR, YCgCo equivalent support.
       return &YUV_MATRIX(libyuv::kYuvI601Constants);
     case kIdentity_SkYUVColorSpace:
+    default:
       NOTREACHED();
   };
 #undef YUV_MATRIX
