@@ -72,16 +72,17 @@ void ChromeSafeBrowsingHatsDelegateAndroid::LaunchRedWarningSurveyInternal(
   // may have been closed or navigated away, find the currently active tab
   // to anchor the survey.
   content::WebContents* anchor_web_contents = nullptr;
-  for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile_ || !tab_model->IsActiveModel()) {
-      continue;
+  TabModelList::ForEach(profile_, [&](TabModel* tab_model) {
+    if (!tab_model->IsActiveModel()) {
+      return true;
     }
     content::WebContents* active_contents = tab_model->GetActiveWebContents();
     if (active_contents && !active_contents->IsBeingDestroyed()) {
       anchor_web_contents = active_contents;
-      break;
+      return false;
     }
-  }
+    return true;
+  });
 
   if (!anchor_web_contents) {
     return;

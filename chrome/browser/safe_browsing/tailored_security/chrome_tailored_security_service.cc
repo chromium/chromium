@@ -54,20 +54,19 @@ namespace {
 
 #if BUILDFLAG(IS_ANDROID)
 content::WebContents* GetWebContentsForProfile(Profile* profile) {
-  for (const TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile) {
-      continue;
-    }
-
+  content::WebContents* found_contents = nullptr;
+  TabModelList::ForEach(profile, [&](TabModel* tab_model) {
     int tab_count = tab_model->GetTabCount();
     for (int i = 0; i < tab_count; i++) {
       content::WebContents* web_contents = tab_model->GetWebContentsAt(i);
       if (web_contents) {
-        return web_contents;
+        found_contents = web_contents;
+        return false;
       }
     }
-  }
-  return nullptr;
+    return true;
+  });
+  return found_contents;
 }
 #endif
 
@@ -267,19 +266,9 @@ void ChromeTailoredSecurityService::OnTabModelAdded(TabModel* tab_model) {
 }
 
 void ChromeTailoredSecurityService::OnTabModelRemoved(TabModel* tab_model) {
-  if (!observed_tab_model_) {
-    return;
+  if (observed_tab_model_ == tab_model) {
+    RemoveTabModelObserver();
   }
-
-  for (const TabModel* remaining_model : TabModelList::models()) {
-    // We want to make sure our tab model is still not in the
-    // tab model list, because we don't want to delete it
-    // prematurely.
-    if (observed_tab_model_ == remaining_model) {
-      return;
-    }
-  }
-  RemoveTabModelObserver();
 }
 
 void ChromeTailoredSecurityService::RegisterObserver() {
@@ -291,7 +280,7 @@ void ChromeTailoredSecurityService::AddTabModelListObserver() {
   if (observing_tab_model_list_) {
     return;
   }
-  TabModelList::AddObserver(this);
+  TabModelList::AddObserver(this, profile_);
   observing_tab_model_list_ = true;
 }
 
@@ -299,21 +288,21 @@ void ChromeTailoredSecurityService::AddTabModelObserver() {
   if (observed_tab_model_) {
     return;
   }
-  for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile_) {
-      continue;
-    }
+  TabModelList::ForEach(profile_, [&](TabModel* tab_model) {
     tab_model->AddObserver(this);
     // Saving the tab_model so we can stop observing the tab
     // model after we start a new tailored security logic sequence.
     observed_tab_model_ = tab_model;
-    return;
-  }
+    return false;
+  });
 }
 
 void ChromeTailoredSecurityService::RemoveTabModelListObserver() {
+  if (!observing_tab_model_list_) {
+    return;
+  }
   observing_tab_model_list_ = false;
-  TabModelList::RemoveObserver(this);
+  TabModelList::RemoveObserver(this, profile_);
 }
 
 void ChromeTailoredSecurityService::RemoveTabModelObserver() {
