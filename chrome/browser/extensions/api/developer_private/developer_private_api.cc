@@ -107,7 +107,9 @@ DeveloperPrivateAPI::DeveloperPrivateAPI(content::BrowserContext* context)
 DeveloperPrivateAPI::UnpackedRetryId DeveloperPrivateAPI::AddUnpackedPath(
     content::WebContents* web_contents,
     const base::FilePath& path) {
-  CHECK(web_contents, base::NotFatalUntil::M161);
+  // TODO(crbug.com/580039993): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(web_contents);
   last_unpacked_directory_ = path;
   WebContentsData* data = GetOrCreateWebContentsData(web_contents);
   IdToPathMap& paths = data->allowed_unpacked_paths;
