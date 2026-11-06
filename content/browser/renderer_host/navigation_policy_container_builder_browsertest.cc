@@ -606,4 +606,98 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
                 network::mojom::WebSandboxFlags::kOrigin);
 }
 
+// Verifies that when a cross-document history navigation to `about:srcdoc` is
+// deferred (e.g., while the main frame handles a same-document `navigate`
+// event) and the parent updates `sandbox` and `srcdoc` during the deferral, the
+// deferred navigation commits the `srcdoc` value that was snapshotted alongside
+// its `FramePolicy` when the `NavigationRequest` was created, rather than
+// pairing the updated `srcdoc` value with the earlier unsandboxed policy.
+IN_PROC_BROWSER_TEST_F(
+    NavigationPolicyContainerBuilderBrowserTest,
+    SrcdocDeferredHistoryNavigationUsesSnapshottedSrcdocValue) {
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), LoopbackUrl()));
+  NavigationController& controller = shell()->web_contents()->GetController();
+
+  // Create an initially unsandboxed `srcdoc` iframe.
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+      const iframe = document.createElement('iframe');
+      iframe.id = 'child';
+      iframe.srcdoc = '<p>initial</p>';
+      document.body.appendChild(iframe);
+    )",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+  }
+
+  ASSERT_EQ(1u, root_frame_host()->child_count());
+  FrameTreeNode* child = root_frame_host()->child_at(0);
+  ASSERT_TRUE(child->current_url().IsAboutSrcdoc());
+  EXPECT_FALSE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
+            GetPolicies(child->current_frame_host()).sandbox_flags);
+  ASSERT_EQ(1, controller.GetEntryCount());
+
+  // Push a same-document history entry in the main frame and navigate the
+  // child away so that `history.go(-2)` will trigger both a main-frame
+  // same-document history navigation and a deferred subframe cross-document
+  // history navigation back to `about:srcdoc`.
+  EXPECT_TRUE(ExecJs(root_frame_host(), "history.pushState({}, '', '#step1');",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_EQ(2, controller.GetEntryCount());
+
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(child->current_frame_host(),
+                       JsReplace("location.href = $1;", PublicUrl()),
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+  }
+  ASSERT_EQ(3, controller.GetEntryCount());
+
+  // While the main-frame `navigate` event defers the subframe's history
+  // navigation to `about:srcdoc`, add `sandbox="allow-scripts"` and update
+  // `srcdoc` on the iframe element without a user gesture.
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+      navigation.addEventListener('navigate', () => {
+        const iframe = document.getElementById('child');
+        iframe.setAttribute('sandbox', 'allow-scripts');
+        iframe.srcdoc = '<p>updated</p>';
+      }, {once: true});
+      history.go(-2);
+    )",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+  }
+
+  // The deferred history navigation must commit the `srcdoc` content that was
+  // snapshotted when the request and its unsandboxed `FramePolicy` were
+  // created, rather than loading `<p>updated</p>` without sandbox restrictions.
+  child = root_frame_host()->child_at(0);
+  EXPECT_TRUE(child->current_url().IsAboutSrcdoc());
+  EXPECT_EQ("initial",
+            EvalJs(child->current_frame_host(), "document.body.textContent"));
+  EXPECT_FALSE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
+            GetPolicies(child->current_frame_host()).sandbox_flags);
+
+  // Subsequent history navigations to `about:srcdoc` started after the
+  // attribute updates must apply both the updated `sandbox` policy and the
+  // updated `srcdoc` content.
+  ASSERT_TRUE(HistoryGoToIndex(shell()->web_contents(), 2));
+  ASSERT_TRUE(HistoryGoToIndex(shell()->web_contents(), 0));
+
+  child = root_frame_host()->child_at(0);
+  EXPECT_TRUE(child->current_url().IsAboutSrcdoc());
+  EXPECT_EQ("updated",
+            EvalJs(child->current_frame_host(), "document.body.textContent"));
+  EXPECT_TRUE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_NE(network::mojom::WebSandboxFlags::kNone,
+            GetPolicies(child->current_frame_host()).sandbox_flags &
+                network::mojom::WebSandboxFlags::kOrigin);
+}
+
 }  // namespace content
