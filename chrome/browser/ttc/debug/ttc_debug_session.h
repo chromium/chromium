@@ -10,6 +10,7 @@
 
 #include <array>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -36,11 +37,14 @@ class SessionJournal;
 // interface. It keeps:
 //  - per-stage pipeline health and counters (Snapshot),
 //  - a timeline of events for the whole session,
+//  - per-turn latency records and a "no response" watchdog,
 //  - the exact audio sent and received (TtcSessionAudioRecorder).
 // Input is ignored once the session has ended. Observers (the debug page)
 // receive batched updates at most every kFlushInterval.
 //
-// Memory is bounded: text is truncated (kMaxTextLength).
+// Memory is bounded: text is truncated (kMaxTextLength, kMaxTranscriptLength),
+// and turns beyond their cap are dropped and counted in
+// Snapshot::dropped_items.
 class TtcDebugSession final : public DebugSink {
  public:
   enum class Stage {
@@ -77,10 +81,15 @@ class TtcDebugSession final : public DebugSink {
     int64_t server_frames = 0;
     int64_t audio_chunks_received = 0;
     int64_t audio_chunks_played = 0;
+    bool speaking = false;
+    bool no_response_suspected = false;
+    std::string no_response_detail;
     std::string last_error;
     size_t audio_bytes = 0;
     size_t audio_cap_bytes = 0;
     bool audio_cap_reached = false;
+    // Turns dropped because their cap was reached.
+    int64_t dropped_items = 0;
     std::array<StageStatus, kStageCount> stages;
   };
 
@@ -91,15 +100,19 @@ class TtcDebugSession final : public DebugSink {
     kServerFrame,
     kOutputLevel,
     kPlayback,
+    kSpeechStart,
+    kSpeechEnd,
     kTranscriptIn,
     kTranscriptOut,
     kTurnComplete,
     kInterrupted,
+    kNoResponseSuspected,
     kTransport,
     kCaptureMuted,
     kError,
     kSessionStarted,
     kAudioCapReached,
+    kItemsTruncated,
     kSessionEnded,
   };
 
@@ -108,6 +121,23 @@ class TtcDebugSession final : public DebugSink {
     EventKind kind = EventKind::kMicLevel;
     float value = 0;
     std::string label;
+  };
+
+  enum class TurnStatus { kOpen, kOk, kNoAudio, kInterrupted, kNoResponse };
+
+  struct Turn {
+    int index = 0;
+    TurnStatus status = TurnStatus::kOpen;
+    std::optional<double> speech_start_ms;
+    double speech_end_ms = 0;
+    std::optional<double> first_transcript_ms;
+    std::optional<double> first_audio_ms;
+    std::optional<double> first_playback_ms;
+    // Where this turn's server audio sits in the recorded output stream.
+    std::optional<double> audio_out_start_ms;
+    std::optional<double> audio_out_end_ms;
+    std::string input_transcript;
+    std::string output_transcript;
   };
 
   // What changed since the previous update.
@@ -121,6 +151,7 @@ class TtcDebugSession final : public DebugSink {
     // Index in events() of new_events[0].
     size_t first_event_index = 0;
     std::vector<TimelineEvent> new_events;
+    std::vector<Turn> changed_turns;
   };
 
   class Observer : public base::CheckedObserver {
@@ -130,7 +161,15 @@ class TtcDebugSession final : public DebugSink {
     virtual void OnDebugUpdate(const Update& update) = 0;
   };
 
+  // Voice activity thresholds on the mic RMS level (0..1).
+  static constexpr float kSpeechOnLevel = 0.02f;
+  static constexpr float kSpeechOffLevel = 0.01f;
   static constexpr float kDigitalSilenceLevel = 1e-4f;
+  // Duration of one mic level / audio input chunk.
+  static constexpr base::TimeDelta kChunkDuration = base::Milliseconds(100);
+  static constexpr int kSpeechOnChunks = 3;   // 300 ms at 100 ms chunks.
+  static constexpr int kSpeechOffChunks = 8;  // 800 ms.
+  static constexpr base::TimeDelta kNoResponseTimeout = base::Seconds(6);
   static constexpr base::TimeDelta kFlushInterval = base::Milliseconds(100);
 
   // Memory bounds. The frequent events (IsFrequentEvent()), several a second
@@ -141,8 +180,11 @@ class TtcDebugSession final : public DebugSink {
   // Total bytes of event labels; further events are dropped like past their
   // cap.
   static constexpr size_t kMaxEventLabelBytes = 16 * 1024 * 1024;
+  static constexpr size_t kMaxTurns = 1000;
   // Labels.
   static constexpr size_t kMaxTextLength = 4096;
+  // Each transcript of a turn.
+  static constexpr size_t kMaxTranscriptLength = 16 * 1024;
 
   // Stage health: how recent a signal must be to count.
   static constexpr base::TimeDelta kActivityWindow = base::Seconds(1);
@@ -169,6 +211,7 @@ class TtcDebugSession final : public DebugSink {
   // Whether events of `kind` come several a second while audio flows: mic and
   // output levels, chunks sent and playback. They're left out of ToValue().
   static bool IsFrequentEvent(EventKind kind);
+  static std::string_view TurnStatusName(TurnStatus status);
 
   // Marks the TTC session as ended. Data stays available for the debug page.
   void End();
@@ -177,6 +220,7 @@ class TtcDebugSession final : public DebugSink {
 
   Snapshot GetSnapshot() const;
   const std::vector<TimelineEvent>& events() const { return events_; }
+  const std::vector<Turn>& turns() const { return turns_; }
   const TtcSessionAudioRecorder& recorder() const { return recorder_; }
 
   // Everything except audio, for attaching to bugs. This includes the
@@ -234,6 +278,18 @@ class TtcDebugSession final : public DebugSink {
   void HandleFrame(const UserTurnState& state);
   void HandleFrame(const UnknownFrame& frame);
   void LogToJournal(std::string_view name, std::string detail);
+  // Returns the open turn, opening one if needed. Null if kMaxTurns is
+  // reached.
+  Turn* EnsureOpenTurn(double speech_end_ms);
+  // The last turn, if it is still open.
+  Turn* OpenTurn();
+  void CloseOpenTurn(TurnStatus status);
+  void MarkTurnChanged(const Turn& turn);
+  // Counts an item dropped because of a cap, and reports the first one.
+  void DropItem(std::string_view what);
+  void OnServerActivity();
+  void ArmWatchdog();
+  void OnWatchdogFired();
   void ComputeStages(Snapshot& snapshot) const;
   void MaybeReportCapReached();
   // Whether audio arrived after the last playback and wasn't dropped by an
@@ -255,6 +311,10 @@ class TtcDebugSession final : public DebugSink {
   std::optional<double> last_mic_level_ms_;
   float last_mic_level_ = 0;
   int consecutive_silent_chunks_ = 0;
+  int speech_on_run_ = 0;
+  int speech_off_run_ = 0;
+  bool speaking_ = false;
+  double speech_start_ms_ = 0;
 
   // Transport.
   bool transport_connected_ = false;
@@ -268,6 +328,7 @@ class TtcDebugSession final : public DebugSink {
   int64_t server_frames_ = 0;
   std::optional<double> last_server_frame_ms_;
   std::optional<double> last_server_error_ms_;
+  std::optional<double> last_speech_end_ms_;
 
   // Output.
   int64_t audio_chunks_received_ = 0;
@@ -279,6 +340,11 @@ class TtcDebugSession final : public DebugSink {
   std::optional<double> last_render_error_ms_;
 
   std::string last_error_;
+  bool no_response_suspected_ = false;
+  std::string no_response_detail_;
+  // The turn closed by the watchdog, or 0 if there was none.
+  int no_response_turn_ = 0;
+  base::OneShotTimer watchdog_;
 
   std::vector<TimelineEvent> events_;
   size_t frequent_events_ = 0;
@@ -287,12 +353,20 @@ class TtcDebugSession final : public DebugSink {
   // others (the ones ToValue() exports) separately.
   bool frequent_events_truncated_ = false;
   bool events_truncated_ = false;
+  std::vector<Turn> turns_;
+
+  // Items dropped because of the caps.
+  int64_t dropped_items_ = 0;
+  bool items_truncated_reported_ = false;
+  // Whether a turn is being dropped, so that it is only counted once.
+  bool dropping_turn_ = false;
 
   TtcSessionAudioRecorder recorder_;
   bool cap_reported_ = false;
 
   // Pending observer updates.
   size_t first_unflushed_event_ = 0;
+  std::set<int> changed_turns_;
   base::RepeatingTimer flush_timer_;
   base::ObserverList<Observer> observers_;
 
