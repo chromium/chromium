@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -20,6 +21,8 @@ void SignInAndEnableAccountBookmarkNodes(Profile* profile) {
       identity_manager, account_info.GetAccountId(),
       "https://avatar.com/avatar.png", gfx::test::CreateImage(/*size=*/32));
   // Normally done by sync, but sync is not fully up in this test.
-  BookmarkModelFactory::GetForBrowserContext(profile)
-      ->CreateAccountPermanentFolders();
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+  bookmark_model->CreateAccountPermanentFolders();
 }

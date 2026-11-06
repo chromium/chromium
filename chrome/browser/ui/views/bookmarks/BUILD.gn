@@ -170,6 +170,7 @@ source_set("test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//components/bookmarks/browser",
+    "//components/bookmarks/test",
     "//components/signin/public/identity_manager:test_support",
     "//ui/gfx:test_support",
   ]
