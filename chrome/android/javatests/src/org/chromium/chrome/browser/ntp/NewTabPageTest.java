@@ -916,8 +916,6 @@ public class NewTabPageTest {
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testAiModeButton_auroraV2Redirect() {
-        mActivityTestRule.skipWindowAndTabStateCleanup();
-
         clickAiModeButton();
         if (OmniboxCapabilities.isFuseboxSupportedDeviceType()) {
             mOmnibox.checkFocus(true);
@@ -937,8 +935,6 @@ public class NewTabPageTest {
         if (mActivityTestRule.getActivity().isTablet()) return;
 
         OmniboxFeatures.sRedirectComposeplateButton.setForTesting(true);
-        mActivityTestRule.skipWindowAndTabStateCleanup();
-
         clickAiModeButton();
         mOmnibox.checkFocus(true);
     }
@@ -951,8 +947,6 @@ public class NewTabPageTest {
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testAiModeButton_fuseboxWithoutRedirect() {
         if (mActivityTestRule.getActivity().isTablet()) return;
-
-        mActivityTestRule.skipWindowAndTabStateCleanup();
 
         clickAiModeButton();
         verifyComposeplateUrlNavigation();
