@@ -8,7 +8,6 @@
 
 -All/PDFExtensionJSInk2Test.Ink2/*
 -All/PDFExtensionJSInk2Test.Ink2BottomToolbar/*
--All/PDFExtensionJSInk2Test.Ink2TextBottomToolbar/*
 -All/PDFExtensionScrollTest.WithArrowLeftRightScrollToPage/*
 -All/PDFExtensionJSInk2TextTest.Ink2TextBottomToolbar/*
 -All/SearchEnginePreconnectorNoDelaysBrowserTest.PreconnectOnlyInForeground/*
@@ -24,7 +23,6 @@
 -PrintBrowserTest.NoResizeEvent
 -PrintBrowserTest.NoScrolling
 -ProfilePickerEnterpriseCreationFlowBrowserTest.CreateSignedInProfileWithSuggestedTwoFactorAuthSetup
--ReadAnythingReadAloudPhraseHighlightingMochaTest.*
 -All/WebAppBrowserTest.PWASizeIsCorrectlyRestored/*
 -All/WebAppBrowserTest.SetBounds/*
 -All/WebAppBrowserTest.WindowOffsetsClampedToScreen/*
@@ -46,12 +44,9 @@
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/Standard_Accept
 
 -BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
--BrowserViewTest.GetAccessibleTabModalDialogTree
 -CrElementsTest.CrLazyList
 -DevModeToggle/UserScriptsUITest.ToggleControls_UserScriptsAPIUsage/0
--EnclaveAuthenticatorWithTimeout.SecurityDomainCheckTimesOut
 -ExtensionWebRequestApiTest.ExtensionRequestRedirectToServer
--HeadlessModeProtocolBrowserTest.InputClipboardOps
 -OmniboxSearchAggregatorTest.*
 -ProfileHelperTest.OpenNewWindowForProfile
 -SearchPrefetchServiceNavigationPrefetchBrowserTest.NavigationPrefetchIsServedForOmniboxOpenSelection

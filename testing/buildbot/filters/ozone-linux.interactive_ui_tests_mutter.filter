@@ -18,9 +18,7 @@
 -ExtensionApiTest.WindowOpenFocus
 -GeolocationUsageObserverBrowsertest.GetCurrentPositionWhileWatchingPosition
 -NotificationsTestWithFakeMediaStream.ShouldQueueDuringScreenPresent
--PasswordBubbleInteractiveUiTest.AutoSigninNoFocus
 -PopupBlockerBrowserTest.ModalPopUnder
--SettingsGlicPageFocusTest.GlicPageFocus
 -StartupBrowserCreatorTest.LastUsedProfileActivated
 -WebAppProfileSwitcherBrowserTest.SwitchWebAppProfileActivateWindowOnly
 -WidgetInputMethodInteractiveTest.Activation
@@ -53,17 +51,12 @@
 -BookmarkBarViewTest21.ContextMenusForEmptyFolder
 
 # Failing on try bot due to DCHECK
--AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/*
 -TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*
 
 # TODO(crbug.com/334413759) The test can fail due to delays in omnibox popup
 # being launched when it is an accelerated bubble and so the subsequent click
 # to unselect it can fail.
 -*/DragAndDropBrowserTest.DropUrlIntoOmnibox/*
-
-# TODO(crbug.com/456675144): Disable HandleReauth, fails due to unsupported
-# window activation on Wayland/Mutter.
--All/AttemptLoginToolInteractiveUiTest.HandleReauth/1
 
 # TODO(crbug.com/569788689): failing on linux wayland mutter.
 -WebUILocationBarInteractiveUiTest.ClickLocationIcon/Full
