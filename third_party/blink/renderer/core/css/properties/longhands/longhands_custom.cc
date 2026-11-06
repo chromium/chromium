@@ -7684,7 +7684,7 @@ const CSSValue* Order::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSNumericLiteralValue::Create(style.Order(),
-                                        CSSPrimitiveValue::UnitType::kNumber);
+                                        CSSPrimitiveValue::UnitType::kInteger);
 }
 
 const CSSValue* OriginTrialTestProperty::CSSValueFromComputedStyleInternal(
@@ -8700,7 +8700,7 @@ const CSSValue* ReadingOrder::CSSValueFromComputedStyleInternal(
     bool,
     CSSValuePhase) const {
   return CSSNumericLiteralValue::Create(style.ReadingOrder(),
-                                        CSSPrimitiveValue::UnitType::kNumber);
+                                        CSSPrimitiveValue::UnitType::kInteger);
 }
 
 const CSSValue* Resize::CSSValueFromComputedStyleInternal(
@@ -11520,7 +11520,7 @@ const CSSValue* WebkitLineClamp::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   return CSSNumericLiteralValue::Create(style.WebkitLineClamp(),
-                                        CSSPrimitiveValue::UnitType::kNumber);
+                                        CSSPrimitiveValue::UnitType::kInteger);
 }
 
 const CSSValue* AlternativeWebkitLineClampLonghand::ParseSingleValue(

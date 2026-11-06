@@ -2310,11 +2310,11 @@ CSSValue* ComputedStyleUtils::ValueForGridPosition(
     // Do not include the numeric value of 1 if followed by a line name.
     if (position.SpanPosition() != 1 || !has_named_line) {
       list->Append(*CSSNumericLiteralValue::Create(
-          position.SpanPosition(), CSSPrimitiveValue::UnitType::kNumber));
+          position.SpanPosition(), CSSPrimitiveValue::UnitType::kInteger));
     }
   } else {
     list->Append(*CSSNumericLiteralValue::Create(
-        position.IntegerPosition(), CSSPrimitiveValue::UnitType::kNumber));
+        position.IntegerPosition(), CSSPrimitiveValue::UnitType::kInteger));
   }
 
   if (has_named_line) {
