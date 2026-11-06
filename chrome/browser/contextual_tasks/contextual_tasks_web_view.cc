@@ -98,7 +98,8 @@ void ContextualTasksWebView::ConfigureWebContentsBackground(
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       wc, SK_ColorTRANSPARENT);
   wc->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
-  const bool is_dark_mode = contextual_tasks::ShouldUseDarkMode(profile);
+  const bool is_dark_mode =
+      contextual_tasks::ShouldUseDarkModeForProfile(profile);
   blink::web_pref::WebPreferences prefs = wc->GetOrCreateWebPreferences();
   prefs.preferred_color_scheme =
       is_dark_mode ? blink::mojom::PreferredColorScheme::kDark
@@ -119,8 +120,8 @@ ContextualTasksWebView::ContextualTasksWebView(
   SetAcceleratorHandling(views::WebContentsAcceleratorHandling::kEnabled);
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
-    const bool is_dark_mode =
-        contextual_tasks::ShouldUseDarkMode(browser_window->GetProfile());
+    const bool is_dark_mode = contextual_tasks::ShouldUseDarkModeForProfile(
+        browser_window->GetProfile());
     const SkColor background_color =
         is_dark_mode ? kDarkModeBackgroundColor : SK_ColorWHITE;
     SetBackground(views::CreateSolidBackground(background_color));
@@ -312,9 +313,10 @@ void ContextualTasksWebView::OnThemeChanged() {
   }
 
   Profile* profile = browser_window_->GetProfile();
-  const SkColor background_color = contextual_tasks::ShouldUseDarkMode(profile)
-                                       ? kDarkModeBackgroundColor
-                                       : SK_ColorWHITE;
+  const SkColor background_color =
+      contextual_tasks::ShouldUseDarkModeForProfile(profile)
+          ? kDarkModeBackgroundColor
+          : SK_ColorWHITE;
   SetBackground(views::CreateSolidBackground(background_color));
   if (content_container_) {
     content_container_->SetBackground(

@@ -2069,13 +2069,11 @@ ContextualTasksUiService::GetCommonSearchParamsMapForContextualTasks(
     return {};
   }
 
-  bool is_dark_mode = false;
-  // TODO(crbug.com/536100150): Add support for Desktop Android
-#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/536100150): On Desktop Android, this is only true for
+  // incognito; regular profiles don't follow the app's light/dark setting yet.
   Profile* profile =
       Profile::FromBrowserContext(source_contents->GetBrowserContext());
-  is_dark_mode = contextual_tasks::ShouldUseDarkMode(profile);
-#endif
+  bool is_dark_mode = ShouldUseDarkModeForProfile(profile);
 
   bool is_side_panel =
       tabs::TabInterface::MaybeGetFromContents(source_contents) == nullptr;

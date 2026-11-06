@@ -587,7 +587,7 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
       aim_eligibility_service && aim_eligibility_service->IsAimEligible();
   dict.Set("isAimEligible", is_aim_eligible);
 
-  dict.Set("darkMode", contextual_tasks::ShouldUseDarkMode(profile));
+  dict.Set("darkMode", contextual_tasks::ShouldUseDarkModeForProfile(profile));
   dict.Set("isAiPage", false);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

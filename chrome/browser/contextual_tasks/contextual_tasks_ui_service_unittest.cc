@@ -5936,4 +5936,22 @@ TEST_F(ContextualTasksUiServiceTest, SidePanelUrlChangesSyncStaleCsParam) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Incognito always uses dark mode, on all platforms.
+TEST_F(ContextualTasksUiServiceTest,
+       SidePanelUrlChangesUseDarkModeInIncognito) {
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          otr_profile, content::SiteInstance::Create(otr_profile));
+
+  const GURL url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+      GURL("https://www.google.com/search?udm=50&q=test"),
+      panel_contents.get());
+
+  std::string cs_value;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(url, "cs", &cs_value));
+  EXPECT_EQ(cs_value, "1");
+}
+
 }  // namespace contextual_tasks

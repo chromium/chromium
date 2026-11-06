@@ -77,6 +77,7 @@
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/color/color_provider_key.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -949,16 +950,27 @@ void RecordSidePanelLinkClickedMetrics(
       open_disposition);
 }
 
-bool ShouldUseDarkMode(Profile* profile, const GURL& url) {
-  std::optional<bool> url_dark_mode = GetDarkModeFromUrl(url);
-  if (url_dark_mode.has_value()) {
+bool ShouldUseDarkMode(content::WebContents* web_contents, const GURL& url) {
+  CHECK(web_contents);
+  // 1. An explicit CS URL param wins.
+  if (std::optional<bool> url_dark_mode = GetDarkModeFromUrl(url)) {
     return *url_dark_mode;
   }
-  return ShouldUseDarkMode(profile);
+  // 2. Use dark mode if it's incognito or the Desktop theme is dark.
+  if (ShouldUseDarkModeForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+    return true;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // 3. TODO(crbug.com/536100150): Android has no ThemeService, so fall back to
+  // the WebContents color mode, which follows the app's light/dark setting.
+  return web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+#else
+  return false;
+#endif
 }
 
-bool ShouldUseDarkMode(Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)
+bool ShouldUseDarkModeForProfile(Profile* profile) {
   // Assume light mode as fallback.
   if (!profile) {
     return false;
@@ -969,6 +981,7 @@ bool ShouldUseDarkMode(Profile* profile) {
     return true;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // In all other cases, respect the theme service dark mode preferences.
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
   return theme_service && theme_service->BrowserUsesDarkColors();

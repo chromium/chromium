@@ -35,6 +35,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -75,6 +77,7 @@ class ContextualTasksUtilsTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>> browser_window_;
   std::unique_ptr<BrowserActions> browser_actions_;
@@ -561,27 +564,35 @@ TEST_F(ContextualTasksUtilsTest, RemoveTabUnderline_ClosedTabDoesNotCrash) {
 }
 #endif
 
-TEST_F(ContextualTasksUtilsTest, ShouldUseDarkMode_NullProfile) {
-  EXPECT_FALSE(ShouldUseDarkMode(nullptr));
-  EXPECT_FALSE(ShouldUseDarkMode(nullptr, GURL()));
+TEST_F(ContextualTasksUtilsTest, ShouldUseDarkModeForProfile_NullProfile) {
+  EXPECT_FALSE(ShouldUseDarkModeForProfile(nullptr));
 }
 
 TEST_F(ContextualTasksUtilsTest, ShouldUseDarkMode_UrlParamOverridesProfile) {
   GURL dark_url("https://example.com/search?cs=1");
   GURL light_url("https://example.com/search?cs=0");
 
-  EXPECT_TRUE(ShouldUseDarkMode(profile_.get(), dark_url));
-  EXPECT_FALSE(ShouldUseDarkMode(profile_.get(), light_url));
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  EXPECT_TRUE(ShouldUseDarkMode(web_contents.get(), dark_url));
+  EXPECT_FALSE(ShouldUseDarkMode(web_contents.get(), light_url));
 
   Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);
-  EXPECT_TRUE(ShouldUseDarkMode(otr_profile, dark_url));
-  EXPECT_FALSE(ShouldUseDarkMode(otr_profile, light_url));
+  std::unique_ptr<content::WebContents> otr_web_contents =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  EXPECT_TRUE(ShouldUseDarkMode(otr_web_contents.get(), dark_url));
+  EXPECT_FALSE(ShouldUseDarkMode(otr_web_contents.get(), light_url));
 }
 
 TEST_F(ContextualTasksUtilsTest, ShouldUseDarkMode_IncognitoProfile) {
   Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);
-  EXPECT_TRUE(ShouldUseDarkMode(otr_profile));
-  EXPECT_TRUE(ShouldUseDarkMode(otr_profile, GURL("https://example.com")));
+  EXPECT_TRUE(ShouldUseDarkModeForProfile(otr_profile));
+
+  std::unique_ptr<content::WebContents> otr_web_contents =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  EXPECT_TRUE(
+      ShouldUseDarkMode(otr_web_contents.get(), GURL("https://example.com")));
 }
 
 class MockAimMessagePoster : public AimMessagePoster {

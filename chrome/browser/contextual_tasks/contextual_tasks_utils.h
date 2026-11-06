@@ -243,16 +243,19 @@ int GetContextualTasksPinningStringId(int default_resource_id);
 int GetContextualTasksEphemeralButtonContextMenuCloseTextId();
 #endif
 
-// Returns whether dark mode should be used for the given profile and URL.
-// If the URL contains a 'cs' parameter, that takes precedence. Otherwise,
-// returns true if ThemeService uses dark colors or if the profile is
-// off-the-record (Incognito).
-bool ShouldUseDarkMode(Profile* profile, const GURL& url);
+// Returns whether dark mode should be used for `web_contents` showing `url`,
+// checking in order of priority:
+// 1. The 'cs' parameter of `url`, if present.
+// 2. ShouldUseDarkModeForProfile() for the profile of `web_contents`.
+// 3. On Android, which has no ThemeService, the color mode of `web_contents`.
+// `web_contents` must not be null.
+bool ShouldUseDarkMode(content::WebContents* web_contents, const GURL& url);
 
 // Returns whether dark mode should be used for the given profile. Returns true
 // if ThemeService uses dark colors or if the profile is off-the-record
-// (Incognito).
-bool ShouldUseDarkMode(Profile* profile);
+// (Incognito). On Android, which has no ThemeService, returns true only for
+// off-the-record profiles.
+bool ShouldUseDarkModeForProfile(Profile* profile);
 
 // Returns the ClientToAimMessage containing the HandshakePing
 // with supported capabilities.

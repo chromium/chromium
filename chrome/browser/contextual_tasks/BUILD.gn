@@ -226,6 +226,7 @@ source_set("impl") {
     "//components/visited_url_ranking/public",
     "//content/public/browser",
     "//third_party/lens_server_proto:lens_overlay_proto",
+    "//ui/color",
   ]
 
   if (enable_extensions_core) {

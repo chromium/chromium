@@ -445,7 +445,7 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (Profile* profile = browser_window_->GetProfile()) {
-    is_dark_mode_ = contextual_tasks::ShouldUseDarkMode(profile);
+    is_dark_mode_ = contextual_tasks::ShouldUseDarkModeForProfile(profile);
     if (ThemeService* theme_service =
             ThemeServiceFactory::GetForProfile(profile)) {
       theme_service_observation_.Observe(theme_service);
@@ -3303,7 +3303,7 @@ void ContextualTasksSidePanelCoordinator::
   }
 
   Profile* profile = browser_window_->GetProfile();
-  const bool dark_mode = contextual_tasks::ShouldUseDarkMode(profile);
+  const bool dark_mode = contextual_tasks::ShouldUseDarkModeForProfile(profile);
   if (dark_mode == is_dark_mode_) {
     return;
   }

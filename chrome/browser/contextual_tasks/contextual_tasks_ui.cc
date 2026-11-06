@@ -98,7 +98,6 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_provider_key.h"
 #include "ui/webui/buildflags.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
@@ -133,16 +132,8 @@
 
 namespace {
 
-void UpdateDarkModePreferenceFromUrl(content::WebContents* wc,
-                                     const GURL& url,
-                                     Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)
-  bool use_dark = contextual_tasks::ShouldUseDarkMode(profile, url);
-#else
-  std::optional<bool> is_dark_mode = contextual_tasks::GetDarkModeFromUrl(url);
-  bool use_dark = is_dark_mode.value_or(wc->GetColorMode() ==
-                                        ui::ColorProviderKey::ColorMode::kDark);
-#endif
+void UpdateDarkModePreferenceForWebContents(content::WebContents* wc,
+                                            bool use_dark) {
   blink::web_pref::WebPreferences prefs = wc->GetOrCreateWebPreferences();
   prefs.preferred_color_scheme =
       use_dark ? blink::mojom::PreferredColorScheme::kDark
@@ -372,15 +363,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   }
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
-#if !BUILDFLAG(IS_ANDROID)
-  bool is_dark_mode = contextual_tasks::ShouldUseDarkMode(profile, url);
+  const bool is_dark_mode =
+      contextual_tasks::ShouldUseDarkMode(web_ui->GetWebContents(), url);
   source->AddBoolean("darkMode", is_dark_mode);
-#else
-  bool is_dark_mode = web_ui->GetWebContents()->GetColorMode() ==
-                      ui::ColorProviderKey::ColorMode::kDark;
-  source->AddBoolean("darkMode", is_dark_mode);
-#endif
-  UpdateDarkModePreferenceFromUrl(web_ui->GetWebContents(), url, profile);
+  UpdateDarkModePreferenceForWebContents(web_ui->GetWebContents(),
+                                         is_dark_mode);
 
   // Overwrite searchbox strings with actual session state if composebox is
   // enabled.
@@ -708,12 +695,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       contextual_search::ContextualSearchMetricsRecorder::
           ContextualSearchSourceToString(
               contextual_search::ContextualSearchSource::kContextualTasks));
-#if !BUILDFLAG(IS_ANDROID)
-  bool is_dark_mode = contextual_tasks::ShouldUseDarkMode(profile);
-#else
-  bool is_dark_mode = false;
-#endif
-  dict.Set("darkMode", is_dark_mode);
+  dict.Set("darkMode", contextual_tasks::ShouldUseDarkModeForProfile(profile));
   dict.Set("protectedErrorPageTopLine",
            l10n_util::GetStringUTF16(
                IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE));
@@ -1863,9 +1845,9 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   // settings.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->IsSameDocument()) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    UpdateDarkModePreferenceFromUrl(web_contents(), url, profile);
+    UpdateDarkModePreferenceForWebContents(
+        web_contents(),
+        contextual_tasks::ShouldUseDarkMode(web_contents(), url));
   }
   bool is_url_changed = false;
   bool last_committed_url_was_empty = last_committed_url_.is_empty();
