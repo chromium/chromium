@@ -3151,7 +3151,6 @@ test("content_unittests") {
       "../browser/web_contents/web_contents_view_mac_unittest.mm",
       "../browser/web_contents/web_drag_dest_mac_unittest.mm",
       "../browser/web_contents/web_drag_source_mac_unittest.mm",
-      "../browser/webnn/webnn_browser_host_impl_mac_unittest.cc",
       "../common/mac/attributed_string_type_converters_unittest.mm",
       "../renderer/sandbox_mac_v2_unittest.mm",
     ]
