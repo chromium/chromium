@@ -757,4 +757,12 @@ TEST_F(ComponentUpdaterTest,
   EXPECT_TRUE(item.component);
 }
 
+TEST_F(ComponentUpdaterTest, Cancel) {
+  const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
+  EXPECT_CALL(update_client(), Cancel(id)).WillOnce(Return(true));
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
+  EXPECT_TRUE(component_updater().Cancel(id));
+}
+
 }  // namespace component_updater

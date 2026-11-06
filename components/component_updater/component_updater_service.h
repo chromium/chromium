@@ -200,6 +200,14 @@ class ComponentUpdateService {
   // function returns true in case of success and false in case of errors.
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
+
+  // Cancels the update of the component with the given `id`, whether the
+  // update is queued or in progress. Other components in the same update task
+  // are not affected. A download in progress is aborted; an update that is
+  // past the point where it can be cancelled runs to completion. The component
+  // ends in `ComponentState::kUpdateError` with `ServiceError::CANCELLED`.
+  // Returns true if an active or queued update for `id` was found.
+  virtual bool Cancel(const std::string& id) = 0;
 #if BUILDFLAG(CHROME_FOR_TESTING)
   // Runs local loop delaying the caller's execution until all the registered
   // required components are up to date.

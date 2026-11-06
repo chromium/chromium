@@ -455,6 +455,11 @@ void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
                      base::TimeTicks::Now()));
 }
 
+bool CrxUpdateService::Cancel(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return update_client_->Cancel(id);
+}
+
 bool CrxUpdateService::CheckForUpdates(
     UpdateScheduler::OnFinishedCallback on_finished) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

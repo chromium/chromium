@@ -58,6 +58,7 @@ class MockComponentUpdateService : public ComponentUpdateService {
               GetComponentDetails,
               (const std::string& id, CrxUpdateItem* item),
               (const, override));
+  MOCK_METHOD(bool, Cancel, (const std::string& id), (override));
 #if BUILDFLAG(CHROME_FOR_TESTING)
   MOCK_METHOD(void,
               EnsureRequiredComponentsReady,

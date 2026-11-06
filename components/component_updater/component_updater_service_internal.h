@@ -61,6 +61,7 @@ class CrxUpdateService : public ComponentUpdateService,
                      base::OnceClosure callback) override;
   bool GetComponentDetails(const std::string& id,
                            CrxUpdateItem* item) const override;
+  bool Cancel(const std::string& id) override;
   base::Version GetRegisteredVersion(const std::string& app_id) override;
   base::Version GetMaxPreviousProductVersion(
       const std::string& app_id) override;
