@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestOrigins;
 import org.chromium.url.Origin;
 
@@ -327,6 +328,30 @@ public class PdfUtilsUnitTest {
     public void testGetPdfReDownloadUrl_Invalid() {
         String downloadUrl = PdfUtils.getPdfReDownloadUrl(PDF_LINK_ENCODED_INVALID);
         Assert.assertNull("The re-download url should be null", downloadUrl);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_HANDLE_PDF_IN_IFRAME)
+    public void testGetPdfReDownloadUrlForNavigation() {
+        Assert.assertEquals(
+                PDF_LINK,
+                PdfUtils.getPdfReDownloadUrlForNavigation(new GURL(PDF_LINK), /* isPdf= */ true));
+        Assert.assertNull(
+                PdfUtils.getPdfReDownloadUrlForNavigation(new GURL(PDF_LINK), /* isPdf= */ false));
+        Assert.assertEquals(
+                PDF_LINK,
+                PdfUtils.getPdfReDownloadUrlForNavigation(
+                        new GURL(PDF_LINK_ENCODED), /* isPdf= */ false));
+        Assert.assertEquals(
+                PDF_BLOB_URL,
+                PdfUtils.getPdfReDownloadUrlForNavigation(
+                        new GURL(mPdfPageBlobUrl), /* isPdf= */ false));
+        Assert.assertNull(
+                PdfUtils.getPdfReDownloadUrlForNavigation(
+                        new GURL(mPdfPageBlobUrl), /* isPdf= */ true));
+        Assert.assertNull(
+                PdfUtils.getPdfReDownloadUrlForNavigation(
+                        new GURL(PDF_LINK_ENCODED_INVALID), /* isPdf= */ false));
     }
 
     @Test

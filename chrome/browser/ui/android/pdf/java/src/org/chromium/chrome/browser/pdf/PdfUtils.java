@@ -610,6 +610,38 @@ public class PdfUtils {
     }
 
     /**
+     * Returns the URL to load to re-download the PDF for a committed navigation that did not show a
+     * native page, or {@code null} if no re-download is needed.
+     *
+     * @param url The URL that was loaded.
+     * @param isPdf Whether the navigation is for PDF content.
+     */
+    public static @Nullable String getPdfReDownloadUrlForNavigation(GURL url, boolean isPdf) {
+        String urlSpec = url.getSpec();
+        // This is restricted to HTTP(S) URLs specifically, as these are the only schemes that
+        // necessitate a PDF re-download.
+        if (isPdf) return getPdfReDownloadUrl(urlSpec);
+
+        if (!UrlConstants.CHROME_NATIVE_SCHEME.equals(url.getScheme())
+                || !UrlConstants.PDF_HOST.equals(url.getHost())) {
+            return null;
+        }
+
+        String downloadUrl = getPdfReDownloadUrl(urlSpec);
+        if (downloadUrl != null) return downloadUrl;
+
+        // getPdfReDownloadUrl restricts to HTTP(S). Explicitly allow blob schemes since they are
+        // ephemeral and require re-load.
+        if (!ChromeFeatureList.sAndroidHandlePdfInIframe.isEnabled()) return null;
+
+        String decodedUrl = decodePdfPageUrl(urlSpec);
+        if (decodedUrl == null || !decodedUrl.startsWith(UrlConstants.BLOB_SCHEME + ":")) {
+            return null;
+        }
+        return decodedUrl;
+    }
+
+    /**
      * Returns whether two PDF URLs (which may be raw HTTP(S)/content/file URLs or encoded {@code
      * chrome-native://pdf/...} URLs) refer to the same PDF document URL.
      *
