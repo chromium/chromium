@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -34,7 +33,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -53,7 +51,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Test suite for displaying and functioning of app modal JavaScript onbeforeunload dialogs. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class JavascriptAppModalDialogTest {
     public static final String JAVASCRIPT_DIALOG_BATCH_NAME = "javascript_dialog";

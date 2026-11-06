@@ -17,8 +17,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -37,7 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link RequestCoordinatorBridge}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class RequestCoordinatorBridgeTest {
     @Rule

@@ -27,7 +27,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -56,7 +55,7 @@ import java.util.concurrent.TimeoutException;
 /** Integration test for the whole saving/updating password workflow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
+@CommandLineFlags.Add("show-autofill-signatures")
 public class PasswordSavingIntegrationTest {
     @Rule(order = 0)
     public SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();

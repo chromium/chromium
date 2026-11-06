@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -42,10 +41,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 /** Tests for colors used in UI components in the native android New Tab Page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "disable-features=IPH_FeedHeaderMenu"
-})
+@CommandLineFlags.Add("disable-features=IPH_FeedHeaderMenu")
 public class NewTabPageColorWithFeedV2Test {
     private static final int MIN_ITEMS_AFTER_LOAD = 10;
 

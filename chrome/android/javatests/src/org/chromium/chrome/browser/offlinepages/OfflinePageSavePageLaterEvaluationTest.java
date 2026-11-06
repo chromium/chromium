@@ -25,7 +25,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Manual;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluationBridge;
 import org.chromium.chrome.browser.offlinepages.evaluation.OfflinePageEvaluationBridge.OfflinePageEvaluationObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,7 +59,6 @@ import java.util.concurrent.TimeUnit;
  * etc.) by writing metrics to a file on external storage.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OfflinePageSavePageLaterEvaluationTest {
     /** Class which is used to calculate time difference. */
     @Rule

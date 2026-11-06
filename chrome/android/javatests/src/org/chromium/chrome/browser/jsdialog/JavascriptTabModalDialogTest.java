@@ -38,7 +38,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -47,7 +46,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -76,7 +74,6 @@ import java.util.concurrent.TimeoutException;
 /** Test suite for displaying and functioning of tab modal JavaScript alert, confirm and prompt. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(JavascriptAppModalDialogTest.JAVASCRIPT_DIALOG_BATCH_NAME)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class JavascriptTabModalDialogTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =

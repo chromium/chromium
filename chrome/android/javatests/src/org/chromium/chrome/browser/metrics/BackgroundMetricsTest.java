@@ -17,7 +17,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -31,10 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests relating to UMA reported while Chrome is backgrounded. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    MetricsSwitches.FORCE_ENABLE_METRICS_REPORTING
-})
+@CommandLineFlags.Add(MetricsSwitches.FORCE_ENABLE_METRICS_REPORTING)
 @DoNotBatch(reason = "AI automated batching was unsuccessful.")
 public final class BackgroundMetricsTest {
     // Note: these rules might conflict and so calls to their methods must be handled carefully.

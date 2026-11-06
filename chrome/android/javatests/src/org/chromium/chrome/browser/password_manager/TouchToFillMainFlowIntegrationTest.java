@@ -27,7 +27,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -52,7 +51,7 @@ import java.util.concurrent.TimeoutException;
         reason =
                 "TODO(crbug.com/40232561): add resetting logic for"
                         + "FakePasswordStoreAndroidBackend to allow batching")
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
+@CommandLineFlags.Add("show-autofill-signatures")
 public class TouchToFillMainFlowIntegrationTest {
     private static final String FORM_URL = "/chrome/test/data/password/simple_password.html";
     private static final String PASSWORD_ATTRIBUTE_NAME = "pm_parser_annotation";

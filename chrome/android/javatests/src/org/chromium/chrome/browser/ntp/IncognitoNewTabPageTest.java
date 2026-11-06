@@ -27,10 +27,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -42,7 +40,6 @@ import java.util.Locale;
 /** Integration tests for IncognitoNewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNewTabPageTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =

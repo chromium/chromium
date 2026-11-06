@@ -156,7 +156,6 @@ import java.util.function.Supplier;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_STARTUP_PROMOS,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })

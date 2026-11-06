@@ -37,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -48,7 +47,6 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationContentDetectionManager.SuspiciousNotificationWarningInteractions;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -80,7 +78,6 @@ import java.util.concurrent.TimeoutException;
  * <p>Web Notifications are only supported on Android JellyBean and beyond.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures(ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)
 public class NotificationPlatformBridgeTest {
     public final FreshCtaTransitTestRule mActivityTestRule =

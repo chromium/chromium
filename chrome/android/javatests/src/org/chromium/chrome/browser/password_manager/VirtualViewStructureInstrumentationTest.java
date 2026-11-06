@@ -15,7 +15,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -26,7 +25,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 /** This test verifies the metrics logged for the AutofillVirtualViewStructure feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
+@CommandLineFlags.Add("show-autofill-signatures")
 public class VirtualViewStructureInstrumentationTest {
     static final String AUTOFILL_PREF_USES_VIRTUAL_STRUCTURE =
             "autofill.using_virtual_view_structure";

@@ -17,7 +17,6 @@ import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -31,10 +30,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 /** Tests for the Lookalike URL interstitial (aka confusables). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MediumTest
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
-})
+@CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
 @ParameterizedCommandLineFlags({
     @Switches,
     @Switches("enable-features=" + ChromeFeatureList.LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI),

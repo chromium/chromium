@@ -30,7 +30,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -54,10 +53,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for checking whether the media are paused when unplugging the headset */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
-})
+@CommandLineFlags.Add(MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY)
 @Batch(Batch.PER_CLASS)
 public class MediaSessionTest {
     @Rule

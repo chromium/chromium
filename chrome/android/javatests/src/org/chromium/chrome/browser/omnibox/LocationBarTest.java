@@ -50,7 +50,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
@@ -78,7 +77,6 @@ import java.util.Set;
 /** Instrumentation tests for the LocationBar component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
 })

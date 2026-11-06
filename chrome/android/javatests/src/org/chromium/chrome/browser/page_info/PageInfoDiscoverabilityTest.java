@@ -32,13 +32,11 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
@@ -71,7 +69,6 @@ import java.util.List;
 /** Testing the interactions with permissions on a site and how it affects page info. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344672094): Failing when batched, batch this again.
 public class PageInfoDiscoverabilityTest {
     public final AutoResetCtaTransitTestRule mActivityTestRule =

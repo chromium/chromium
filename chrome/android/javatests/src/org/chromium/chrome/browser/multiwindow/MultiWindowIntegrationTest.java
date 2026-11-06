@@ -44,7 +44,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 /** Integration testing for Android's N+ MultiWindow. */
 @Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MultiWindowIntegrationTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -104,10 +103,7 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
-        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
-    })
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testMoveTabTwice() {
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return;
@@ -148,10 +144,7 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
-        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
-    })
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     @DisabledTest(message = "crbug.com/432308780")
     public void testMovingLastTabKeepsActivityAlive() {
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {

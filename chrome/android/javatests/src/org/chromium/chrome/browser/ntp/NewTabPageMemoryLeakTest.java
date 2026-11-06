@@ -24,7 +24,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -46,10 +45,7 @@ import java.util.List;
 
 /** Tests to check memory leak of the native android New Tab Page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "disable-features=IPH_FeedHeaderMenu"
-})
+@CommandLineFlags.Add("disable-features=IPH_FeedHeaderMenu")
 @Batch(Batch.PER_CLASS)
 // Tests the Java native NTP, which is not used on desktop (it uses the WebUI NTP).
 @Restriction(DeviceFormFactor.PHONE_OR_TABLET)

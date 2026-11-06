@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
@@ -21,11 +20,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** Unit tests for CloseWatcher's ability to receive signals from the system back button. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-experimental-web-platform-features",
-    "enable-features=CloseWatcher"
-})
+@CommandLineFlags.Add({"enable-experimental-web-platform-features", "enable-features=CloseWatcher"})
 @Batch(Batch.PER_CLASS)
 public class CloseWatcherTest {
 

@@ -26,7 +26,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -42,7 +41,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the UpdateMenuItemHelper. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable_update_menu_item"})
+@CommandLineFlags.Add("enable_update_menu_item")
 public class UpdateMenuItemHelperTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

@@ -20,12 +20,10 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -44,7 +42,6 @@ import java.util.concurrent.ExecutionException;
 
 /** Integration tests for the partner disabling incognito mode feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PartnerDisableIncognitoModeIntegrationTest {
     private final BasePartnerBrowserCustomizationIntegrationTestRule
             mPartnerBrowserCustomizationRule =

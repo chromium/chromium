@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -130,10 +129,7 @@ import java.util.concurrent.TimeUnit;
  * <p>TODO(crbug.com/40602800): Add new goldens and enable ExploreSites.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "disable-features=IPH_FeedHeaderMenu"
-})
+@CommandLineFlags.Add("disable-features=IPH_FeedHeaderMenu")
 @EnableFeatures(
         ChromeFeatureList.HOME_BUTTON_REMOVAL
                 + ":set_default_to_false_on_homepage_on_desktop/false")
