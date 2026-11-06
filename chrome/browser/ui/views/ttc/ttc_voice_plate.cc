@@ -5,18 +5,22 @@
 #include "chrome/browser/ui/views/ttc/ttc_voice_plate.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/voice/waveform_mode.h"
 #include "chrome/browser/ui/views/voice/waveform_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -51,6 +55,8 @@ TtcVoicePlate::TtcVoicePlate(views::View* anchor_view,
   waveform_view_ = contents->AddChildView(
       std::make_unique<WaveformView>(/*full_size=*/true));
   waveform_view_->SetProperty(views::kElementIdentifierKey, kWaveformElementId);
+  // Screen readers report the session state through the waveform.
+  waveform_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
 
   views::ImageButton* close_button =
       contents->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
@@ -74,6 +80,12 @@ TtcVoicePlate::TtcVoicePlate(views::View* anchor_view,
   close_button->SetProperty(views::kElementIdentifierKey,
                             kCloseButtonElementId);
 
+  SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_TTC_ENTRYPOINT_LABEL));
+  // The plate is recreated each time it moves to another window. An alert
+  // dialog (the default for bubbles without a focused view) would re-announce
+  // it on every move; SetMode() announces when listening starts instead.
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+
   SetContentsView(std::move(contents));
   CreateWidget();
 }
@@ -81,7 +93,34 @@ TtcVoicePlate::TtcVoicePlate(views::View* anchor_view,
 TtcVoicePlate::~TtcVoicePlate() = default;
 
 void TtcVoicePlate::SetMode(WaveformMode mode) {
+  if (mode == waveform_view_->mode()) {
+    return;
+  }
   waveform_view_->SetMode(mode);
+
+  std::u16string name;
+  switch (mode) {
+    case WaveformMode::kProcessing:
+      name = l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_PROCESSING_ACCNAME);
+      break;
+    case WaveformMode::kLive:
+      name = l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_LISTENING_ACCNAME);
+      break;
+    case WaveformMode::kIdle:
+    case WaveformMode::kWaiting:
+      break;
+  }
+  views::ViewAccessibility& waveform_accessibility =
+      waveform_view_->GetViewAccessibility();
+  waveform_accessibility.SetName(
+      name, name.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                         : ax::mojom::NameFrom::kAttribute);
+
+  // A plate recreated in another window is set to kLive before it is shown;
+  // only announce listening when the user can see the change.
+  if (mode == WaveformMode::kLive && GetWidget() && GetWidget()->IsVisible()) {
+    waveform_accessibility.AnnouncePolitely(name);
+  }
 }
 
 void TtcVoicePlate::UpdateAudioLevel(float audio_level) {

@@ -18,6 +18,7 @@ source_set("ttc") {
   ]
 
   deps = [
+    "//chrome/app:generated_resources",
     "//chrome/browser/ui/views:layout_provider",
     "//components/strings",
     "//components/vector_icons",
@@ -33,9 +34,12 @@ source_set("unit_tests") {
     ":ttc",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:generated_resources",
     "//chrome/browser/ui/views/voice",
     "//chrome/test:test_support",
     "//testing/gtest",
+    "//ui/accessibility",
+    "//ui/base",
     "//ui/events",
     "//ui/gfx",
     "//ui/views",
