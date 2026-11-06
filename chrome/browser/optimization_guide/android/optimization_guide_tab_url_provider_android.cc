@@ -24,13 +24,8 @@ OptimizationGuideTabUrlProviderAndroid::GetUrlsOfActiveTabs(
     const base::TimeDelta& duration_since_last_shown) {
   std::vector<TabRepresentation> tabs;
 
-  const TabModelList::TabModelVector& tab_models = TabModelList::models();
-  for (size_t tab_model_idx = 0; tab_model_idx < tab_models.size();
-       tab_model_idx++) {
-    const TabModel* tab_model = tab_models[tab_model_idx];
-    if (tab_model->GetProfile() != profile_)
-      continue;
-
+  size_t tab_model_idx = 0;
+  TabModelList::ForEach(profile_, [&](TabModel* tab_model) {
     size_t tab_count = static_cast<size_t>(tab_model->GetTabCount());
     for (size_t tab_idx = 0; tab_idx < tab_count; tab_idx++) {
       TabRepresentation tab;
@@ -57,7 +52,9 @@ OptimizationGuideTabUrlProviderAndroid::GetUrlsOfActiveTabs(
         tabs.push_back(tab);
       }
     }
-  }
+    ++tab_model_idx;
+    return true;
+  });
   SortTabs(&tabs);
 
   std::vector<GURL> urls;

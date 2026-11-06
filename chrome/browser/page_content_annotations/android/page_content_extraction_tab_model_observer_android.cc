@@ -20,30 +20,25 @@ PageContentExtractionTabModelObserverAndroid::
         Profile* profile,
         PageContentExtractionService* service)
     : profile_(profile), service_(service) {
-  TabModelList::AddObserver(this);
-  for (TabModel* tab_model : TabModelList::models()) {
+  TabModelList::AddObserver(this, profile_);
+  TabModelList::ForEach(profile_, [&](TabModel* tab_model) {
     OnTabModelAdded(tab_model);
-  }
+    return true;
+  });
 }
 
 PageContentExtractionTabModelObserverAndroid::
     ~PageContentExtractionTabModelObserverAndroid() {
-  TabModelList::RemoveObserver(this);
+  TabModelList::RemoveObserver(this, profile_);
 }
 
 void PageContentExtractionTabModelObserverAndroid::OnTabModelAdded(
     TabModel* tab_model) {
-  if (tab_model->GetProfile() != profile_) {
-    return;
-  }
   tab_model_observations_.AddObservation(tab_model);
 }
 
 void PageContentExtractionTabModelObserverAndroid::OnTabModelRemoved(
     TabModel* tab_model) {
-  if (tab_model->GetProfile() != profile_) {
-    return;
-  }
   tab_model_observations_.RemoveObservation(tab_model);
 }
 
@@ -74,10 +69,7 @@ void PageContentExtractionTabModelObserverAndroid::TabClosureUndone(
 
 void PageContentExtractionTabModelObserverAndroid::OnTabStateInitialized() {
   std::set<int64_t> active_tab_ids;
-  for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile_) {
-      continue;
-    }
+  TabModelList::ForEach(profile_, [&](TabModel* tab_model) {
     for (int i = 0; i < tab_model->GetTabCount(); ++i) {
       TabAndroid* tab = tab_model->GetTabAt(i);
       const GURL& url = tab->GetURL();
@@ -93,7 +85,8 @@ void PageContentExtractionTabModelObserverAndroid::OnTabStateInitialized() {
 
       active_tab_ids.insert(tab->GetAndroidId());
     }
-  }
+    return true;
+  });
   if (service_->IsOnDiskCacheEnabled()) {
     service_->RunCleanUpTasksWithActiveTabs(std::move(active_tab_ids));
   }
