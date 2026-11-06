@@ -14,6 +14,10 @@ import android.view.ViewTreeObserver;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -30,14 +34,17 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Default AndroidOverlay impl.  Uses a separate (shared) overlay thread to own a Dialog instance,
- * probably via a separate object that operates only on that thread.  We will post messages to /
- * from that thread from the UI thread.
+ * Default AndroidOverlay impl. Uses a separate (shared) overlay thread to own a Dialog instance,
+ * probably via a separate object that operates only on that thread. We will post messages to / from
+ * that thread from the UI thread.
  */
 @JNINamespace("content")
 @NullMarked
 public class DialogOverlayImpl
         implements AndroidOverlay, DialogOverlayCore.Host, ViewTreeObserver.OnPreDrawListener {
+    @JniType("::content::DialogOverlayImpl")
+    interface NativeDialogOverlayImpl extends JniTypeToken {}
+
     private static final String TAG = "DialogOverlayImpl";
 
     private @Nullable AndroidOverlayClient mClient;
@@ -46,7 +53,7 @@ public class DialogOverlayImpl
 
     private @Nullable DialogOverlayCore mDialogCore;
 
-    private long mNativeHandle;
+    private @Nullable JniRawPtr<NativeDialogOverlayImpl> mNativeHandle;
 
     // If nonzero, then we have registered a surface with this ID.
     private int mSurfaceId;
@@ -98,7 +105,7 @@ public class DialogOverlayImpl
                                 config.routingToken.low,
                                 config.powerEfficient);
 
-        if (mNativeHandle == 0) {
+        if (mNativeHandle == null) {
             notifyDestroyed();
             cleanup();
             return;
@@ -124,11 +131,10 @@ public class DialogOverlayImpl
         // Notify |mDialogCore| that it has been released.
         if (mDialogCore != null) {
             mDialogCore.release();
-
-            // Note that we might get messagaes from |mDialogCore| after this, since they might be
-            // dispatched before |r| arrives.  Clearing |mDialogCore| causes us to ignore them.
-            cleanup();
         }
+        // Note that we might get messages from |mDialogCore| after this, since they might be
+        // dispatched before |r| arrives.  Clearing |mDialogCore| causes us to ignore them.
+        cleanup();
 
         // Notify the provider that we've been released by the client.  Note that the surface might
         // not have been destroyed yet, but that's okay.  We could wait for a callback from the
@@ -153,7 +159,7 @@ public class DialogOverlayImpl
 
         mLastRect = copyRect(rect);
 
-        if (mDialogCore == null) return;
+        if (mDialogCore == null || mNativeHandle == null) return;
 
         // |rect| is relative to the compositor surface.  Convert it to be relative to the screen.
         DialogOverlayImplJni.get().getCompositorOffset(mNativeHandle, rect);
@@ -296,9 +302,10 @@ public class DialogOverlayImpl
         }
 
         // Note that we might not be registered for a token.
-        if (mNativeHandle != 0) {
+        if (mNativeHandle != null) {
             DialogOverlayImplJni.get().destroy(mNativeHandle);
-            mNativeHandle = 0;
+            mNativeHandle.release();
+            mNativeHandle = null;
         }
 
         // Also clear out |mDialogCore| to prevent us from sending useless messages to it.  Note
@@ -360,26 +367,28 @@ public class DialogOverlayImpl
     @NativeMethods
     interface Natives {
         /**
-         * Initializes native side.  Will register for onWindowToken callbacks on |this|.  Returns a
-         * handle that should be provided to nativeDestroy.  This will not call back with a window
-         * token immediately.  Call nativeCompleteInit() for the initial token.
+         * Initializes native side. Will register for onWindowToken callbacks on |this|. Returns a
+         * handle that should be provided to destroy(). This will not call back with a window token
+         * immediately. Call completeInit() for the initial token.
          */
-        long init(DialogOverlayImpl caller, long high, long low, boolean isPowerEfficient);
+        @Nullable JniRawPtr<NativeDialogOverlayImpl> init(
+                DialogOverlayImpl caller, long high, long low, boolean isPowerEfficient);
 
-        void completeInit(long nativeDialogOverlayImpl);
+        void completeInit(JniPtr<NativeDialogOverlayImpl> self);
 
-        /** Stops native side and deallocates |handle|. */
-        void destroy(long nativeDialogOverlayImpl);
+        /** Stops native side and schedules deallocation of |self|. */
+        void destroy(JniPtr<NativeDialogOverlayImpl> self);
 
         /**
          * Calls back ReceiveCompositorOffset with the screen location (in the
-         * View.getLocationOnScreen sense) of the compositor for our WebContents.  Sends |rect|
-         * along verbatim.
+         * View.getLocationOnScreen sense) of the compositor for our WebContents. Sends |rect| along
+         * verbatim.
          */
-        void getCompositorOffset(long nativeDialogOverlayImpl, Rect rect);
+        void getCompositorOffset(JniPtr<NativeDialogOverlayImpl> self, Rect rect);
 
         /**
          * Register a surface and return the surface id for it.
+         *
          * @param surface Surface that we should register.
          * @return surface id that we associated with |surface|.
          */

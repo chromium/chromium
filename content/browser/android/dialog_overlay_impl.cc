@@ -17,6 +17,7 @@
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 
@@ -29,41 +30,42 @@ using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-static int64_t JNI_DialogOverlayImpl_Init(JNIEnv* env,
-                                          const JavaRef<jobject>& obj,
-                                          int64_t high,
-                                          int64_t low,
-                                          bool power_efficient) {
+static jni_zero::JniRawPtr<DialogOverlayImpl> JNI_DialogOverlayImpl_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    int64_t high,
+    int64_t low,
+    bool power_efficient) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
-    return 0;
+    return nullptr;
   }
 
   RenderFrameHostImpl* rfhi =
       content::RenderFrameHostImpl::FromOverlayRoutingToken(token.value());
 
   if (!rfhi)
-    return 0;
+    return nullptr;
 
   // If the RenderFrameHost does not have a live RenderFrame, immediately bail
   // out: not only is there nothing to do, the `RenderFrameDeleted()`
   // notification to clean up the overlay would never be called.
   if (!rfhi->IsRenderFrameLive())
-    return 0;
+    return nullptr;
 
   WebContentsImpl* web_contents_impl = static_cast<WebContentsImpl*>(
       content::WebContents::FromRenderFrameHost(rfhi));
 
   // If the overlay would not be immediately used, fail the request.
   if (!rfhi->IsActive() || !web_contents_impl || web_contents_impl->IsHidden())
-    return 0;
+    return nullptr;
 
   // Dialog-based overlays are not supported for persistent video.
   if (web_contents_impl->has_persistent_video())
-    return 0;
+    return nullptr;
 
   // If we require a power-efficient overlay, then approximate that with "is
   // fullscreen".  The reason is that we want to be somewhat sure that we don't
@@ -72,14 +74,14 @@ static int64_t JNI_DialogOverlayImpl_Init(JNIEnv* env,
   // as is the nav bar (if present).  The chrome activity surface also gets
   // hidden when possible.
   if (power_efficient && !web_contents_impl->IsFullscreen())
-    return 0;
+    return nullptr;
 
   bool observe_container_view =
       GetContentClient()
           ->browser()
           ->ShouldObserveContainerViewLocationForDialogOverlays();
 
-  return reinterpret_cast<int64_t>(new DialogOverlayImpl(
+  return jni_zero::MakeRaw(new DialogOverlayImpl(
       obj, rfhi, web_contents_impl, power_efficient, observe_container_view));
 }
 
