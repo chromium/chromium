@@ -452,11 +452,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kAutofillAmbientAutofillFilterEntitiesWithoutSource,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Personal Context Autofill AI suggestions display detailed
-// source info submenus on Desktop.
-BASE_FEATURE(kAutofillAmbientAutofillSourceAttribution,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the spii cache is enabled for Ambient Autofill.
 BASE_FEATURE(kAutofillAmbientAutofillSpiiCache,
              base::FEATURE_DISABLED_BY_DEFAULT);

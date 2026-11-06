@@ -439,7 +439,6 @@
                         "AutofillAiShowPersonalContextFillingYourInfoDialog",
                         "AutofillAmbientAutofill",
                         "AutofillAmbientAutofillFilterEntitiesWithoutSource",
-                        "AutofillAmbientAutofillSourceAttribution",
                         "AutofillAmbientAutofillSuppression",
                         "PersonalContextHandleEncryptedPayloads",
                         "PersonalContextLogNonEligibilityUma",
@@ -465,7 +464,6 @@
                     "enable_features": [
                         "AutofillAmbientAutofill",
                         "AutofillAmbientAutofillFilterEntitiesWithoutSource",
-                        "AutofillAmbientAutofillSourceAttribution",
                         "AutofillAmbientAutofillSuppression",
                         "PersonalContextHandleEncryptedPayloads",
                         "PersonalContextLogNonEligibilityUma",

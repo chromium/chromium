@@ -356,8 +356,7 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
             features::kAutofillAiServerModel,
             features::kAutofillAiWalletPrivatePasses,
             features::kAutofillAiWalletFlightReservation,
-            features::kAutofillAiOrder,
-            features::kAutofillAmbientAutofillSourceAttribution};
+            features::kAutofillAiOrder};
   }
 
  private:
@@ -1187,32 +1186,6 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                                      l10n_util::GetStringUTF16(
                                          IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
                                      Suggestion::Icon::kSettings)))));
-}
-
-TEST_F(AutofillAiSuggestionGeneratorTest,
-       GetFillingSuggestion_PersonalContext_DetailedSourceDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kAutofillAmbientAutofillSourceAttribution,
-           features::kAutofillAmbientAutofillSuppression});
-
-  EntityInstance passport_personal_context =
-      GetPassportEntityInstanceWithRandomGuid(
-          {.record_type =
-               EntityInstance::PersonalContextRecordTypePayload{
-                   .sources = {Source{.url = GURL("https://photos.example.com"),
-                                      .metadata = PhotosSourceMetadata{}}}},
-           .use_count = 0});
-  SetEntities({passport_personal_context});
-  SetForm({PASSPORT_NUMBER, NAME_FULL});
-
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              IdentityDocSuggestionsAre(
-                  MaybeSuggestedByGeminiTitle(),
-                  AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
-                                         Suggestion::AutofillAiPayload(
-                                             passport_personal_context.guid())),
-                        ChildrenAre())));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,

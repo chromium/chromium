@@ -124,8 +124,6 @@ void SetUpEligibleUser() {
   config.features_enabled.push_back(
       autofill::features::kAutofillAmbientAutofill);
   config.features_enabled.push_back(
-      autofill::features::kAutofillAmbientAutofillSourceAttribution);
-  config.features_enabled.push_back(
       autofill::features::kAutofillAmbientAutofillSuppression);
   config.features_enabled.push_back(
       autofill::features::kAutofillAiWithDataSchema);

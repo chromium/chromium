@@ -687,10 +687,6 @@ std::optional<AttributionData> BuildAttributionData(
 std::optional<Suggestion> CreatePersonalContextSourceAttributionSuggestion(
     const EntityInstance& entity) {
   CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kPersonalContext);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillSourceAttribution)) {
-    return std::nullopt;
-  }
 
   std::optional<AttributionData> attribution_data = BuildAttributionData(
       std::get<EntityPayload>(entity.record_type_data()).sources);

@@ -709,10 +709,6 @@ void UndoInSessionSuppressedEntity(
   if (!activeWebState) {
     return NO;
   }
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAmbientAutofillSourceAttribution)) {
-    return NO;
-  }
 
   base::optional_ref<const autofill::EntityInstance> entity =
       autofill::GetEntityInstance(

@@ -322,12 +322,8 @@ TEST_F(FormInputAccessoryCoordinatorTest,
 }
 
 // Tests that `hasSourcesForSuggestion:` returns YES only for a personal context
-// entity with non-empty sources when
-// `kAutofillAmbientAutofillSourceAttribution` is enabled.
-TEST_F(FormInputAccessoryCoordinatorTest,
-       HasSourcesForSuggestion_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillAmbientAutofillSourceAttribution);
+// entity with non-empty sources.
+TEST_F(FormInputAccessoryCoordinatorTest, HasSourcesForSuggestion) {
   PopulateEntitiesForSourceAttribution();
 
   FormSuggestion* suggestion_with_sources =
@@ -338,21 +334,6 @@ TEST_F(FormInputAccessoryCoordinatorTest,
   EXPECT_TRUE([coordinator_ hasSourcesForSuggestion:suggestion_with_sources]);
   EXPECT_FALSE(
       [coordinator_ hasSourcesForSuggestion:suggestion_without_sources]);
-}
-
-// Tests that `hasSourcesForSuggestion:` returns NO when
-// `kAutofillAmbientAutofillSourceAttribution` is disabled.
-TEST_F(FormInputAccessoryCoordinatorTest,
-       HasSourcesForSuggestion_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillAmbientAutofillSourceAttribution);
-  PopulateEntitiesForSourceAttribution();
-
-  FormSuggestion* suggestion_with_sources =
-      CreateAutofillAiSuggestion(kOrderGuid);
-
-  EXPECT_FALSE([coordinator_ hasSourcesForSuggestion:suggestion_with_sources]);
 }
 
 // Tests that selecting a source item in
