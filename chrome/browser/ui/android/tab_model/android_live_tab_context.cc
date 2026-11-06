@@ -325,11 +325,14 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextWithID(
 
   // If we can't find the correct model, fall back to first non-incognito model
   // for `profile`.
-  for (const TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() == profile && !model->IsOffTheRecord()) {
-      return model->GetLiveTabContext();
+  const TabModel* fallback_model = nullptr;
+  TabModelList::ForEach(profile, [&](TabModel* model) {
+    if (!model->IsOffTheRecord()) {
+      fallback_model = model;
+      return false;
     }
-  }
+    return true;
+  });
 
-  return nullptr;
+  return fallback_model ? fallback_model->GetLiveTabContext() : nullptr;
 }

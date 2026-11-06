@@ -149,25 +149,23 @@ std::vector<int64_t> TabMatcherAndroid::GetOpenAndroidTabs(
   // - tab models for not matching profile (eg. incognito vs non-incognito)
   // - custom and trusted tabs.
   std::vector<TabModel*> tab_models;
-  for (TabModel* model : TabModelList::models()) {
-    if (profile_ != model->GetProfile())
-      continue;
-
+  TabModelList::ForEach(profile_, [&](TabModel* model) {
     auto type = model->activity_type();
     if (type == ActivityType::kCustomTab ||
         type == ActivityType::kTrustedWebActivity) {
-      continue;
+      return true;
     }
 
     // Ignore tab models for closed/persisted windows (headless) on Desktop
     // Android.
     if (is_desktop &&
         model->GetTabModelType() == TabModel::TabModelType::kHeadless) {
-      continue;
+      return true;
     }
 
     tab_models.push_back(model);
-  }
+    return true;
+  });
 
   CHECK(input);
   if (omnibox::IsAndroidHubOrTabSearch(input->current_page_classification()) &&

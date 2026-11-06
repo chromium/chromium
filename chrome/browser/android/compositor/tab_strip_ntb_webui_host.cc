@@ -87,10 +87,11 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(
           tabs_api::AndroidTabStripApiInjector::CreateWithoutEventBridge(
               tab_model,
               TabModel::TabLaunchType::FROM_CHROME_UI))) {
-  TabModelList::AddObserver(this);
-  profile_observation_.Observe(tab_model->GetProfile());
+  Profile* profile = tab_model->GetProfile();
+  TabModelList::AddObserver(this, profile);
+  profile_observation_.Observe(profile);
   const GURL url(chrome::kChromeUITabStripNtbURL);
-  web_contents_ = CreateWebContents(tab_model->GetProfile(), url);
+  web_contents_ = CreateWebContents(profile, url);
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   web_contents_->SetDelegate(this);
   // The page only paints the button; the tab strip behind must show through.
@@ -139,6 +140,7 @@ void TabStripNtbWebUiHost::Reset() {
   if (!web_contents_) {
     return;
   }
+  TabModelList::RemoveObserver(this, profile_observation_.GetSource());
   profile_observation_.Reset();
   input_event_observation_.Reset();
   java_coordinator_.Reset();
@@ -152,7 +154,6 @@ void TabStripNtbWebUiHost::Reset() {
   // TabModel* never dangles.
   service_.reset();
   tab_model_ = nullptr;
-  TabModelList::RemoveObserver(this);
 }
 
 void TabStripNtbWebUiHost::Resize(int32_t width_px, int32_t height_px) {

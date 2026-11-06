@@ -33,9 +33,11 @@ TEST_F(TabStripNtbWebUiHostTest, ResetOnTabModelRemovedUnblocksOtrDestruction) {
   ASSERT_NE(nullptr, host.GetWebContents());
   content::WebContentsDestroyedWatcher watcher(host.GetWebContents());
 
-  // Removing an unrelated TabModel is a no-op.
+  // Removing an unrelated TabModel (from another profile or the same profile)
+  // is a no-op.
   {
     OwningTestTabModel other_tab_model(profile());
+    OwningTestTabModel other_otr_tab_model(otr_profile);
   }
   EXPECT_NE(nullptr, host.GetWebContents());
 
