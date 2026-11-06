@@ -292,7 +292,6 @@ TEST_F(DownloadDBCacheTest, RemoveEntry) {
   db_->LoadCallback(true);
   ASSERT_EQ(loaded_entries.size(), 2u);
 
-  std::string guid = loaded_entries[0].GetGuid();
   std::string guid2 = loaded_entries[1].GetGuid();
   db_cache_->RemoveEntry(loaded_entries[0].GetGuid());
   db_->UpdateCallback(true);

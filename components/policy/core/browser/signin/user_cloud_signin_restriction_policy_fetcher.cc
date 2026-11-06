@@ -177,7 +177,6 @@ void UserCloudSigninRestrictionPolicyFetcher::
     OnManagedAccountsSigninRestrictionResult(
         base::OnceCallback<void(ProfileSeparationPolicies)> callback,
         std::optional<std::string> response_body) {
-  std::string restriction;
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 

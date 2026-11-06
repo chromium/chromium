@@ -141,8 +141,6 @@ TEST_F(GraphImplOperationsTest, GetFrameNodes) {
 }
 
 TEST_F(GraphImplOperationsTest, VisitFrameTree) {
-  auto frame_nodes = GraphImplOperations::GetFrameNodes(page1_.get());
-
   std::vector<FrameNodeImpl*> visited;
   EXPECT_TRUE(GraphImplOperations::VisitFrameTreePreOrder(
       page1_.get(), [&visited](FrameNodeImpl* frame_node) -> bool {

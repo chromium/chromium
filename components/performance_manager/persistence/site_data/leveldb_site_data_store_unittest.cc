@@ -232,7 +232,7 @@ TEST_F(LevelDBSiteDataStoreTest, GetDatabaseSize) {
 }
 
 TEST_F(LevelDBSiteDataStoreTest, DatabaseRecoveryTest) {
-  std::vector<url::Origin> site_origins = AddDummyEntriesToDB(10);
+  AddDummyEntriesToDB(10);
 
   db_.reset();
 

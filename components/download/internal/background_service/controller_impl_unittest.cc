@@ -491,8 +491,6 @@ TEST_F(DownloadServiceControllerImplTest,
   Entry entry3 = test::BuildBasicEntry(Entry::State::COMPLETE);
   entry3.completion_time = base::Time::Now();
 
-  std::vector<Entry> entries = {entry1, entry2, entry3};
-
   EXPECT_CALL(*task_scheduler_,
               ScheduleTask(DownloadTaskType::CLEANUP_TASK, _, _, _, _, _))
       .Times(0);

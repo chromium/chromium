@@ -93,7 +93,6 @@ class FakeOptimizationGuideDecider
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationGuideDecisionCallback callback) override {
-    std::string url_spec = url.spec();
     if (optimization_type == optimization_guide::proto::PAGE_ENTITIES &&
         url == GURL("http://hasmetadata.com/")) {
       optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;

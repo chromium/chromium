@@ -413,7 +413,6 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
 TEST_F(SecurePaymentConfirmationAppFactoryTest,
        ProvidesBrowserBoundingToSecurePaymentConfirmationApp) {
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
-  std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
   auto method_data = mojom::PaymentMethodData::New();
   method_data->supported_method = "secure-payment-confirmation";
   method_data->secure_payment_confirmation =
@@ -421,8 +420,6 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   std::vector<std::vector<uint8_t>> credential_ids =
       method_data->secure_payment_confirmation->credential_ids;
   ASSERT_EQ(credential_ids.size(), 1u);
-  std::string relying_party_id =
-      method_data->secure_payment_confirmation->rp_id;
   GURL icon = method_data->secure_payment_confirmation->instrument->icon;
 
   secure_payment_confirmation_app_factory_->SetBrowserBoundKeyStoreForTesting(

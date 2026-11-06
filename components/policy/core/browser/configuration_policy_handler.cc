@@ -486,7 +486,6 @@ bool SchemaValidatingPolicyHandler::CheckPolicySettings(
 
   PolicyErrorPath error_path;
   std::string error;
-  std::vector<PolicyMap::PolicyMapType::value_type> errors_with_path;
   bool result = schema_.Validate(*value, strategy_, &error_path, &error);
 
   if (errors && !error.empty()) {

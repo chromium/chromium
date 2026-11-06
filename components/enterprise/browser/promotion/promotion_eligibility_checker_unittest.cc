@@ -90,8 +90,6 @@ TEST_F(PromotionEligibilityCheckerTest, DeterminePromotionEligibilitySuccess) {
   response.mutable_promotions()->set_policy_page_promotion(
       enterprise_management::CHROME_ENTERPRISE_CORE);
 
-  std::string actual_oauth_token;
-
   auto client = std::make_unique<policy::MockCloudPolicyClient>();
 
   auto* client_ptr = client.get();

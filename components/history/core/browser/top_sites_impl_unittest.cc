@@ -598,7 +598,6 @@ TEST_F(TopSitesImplTest, SaveToDB) {
   GURL google_url("http://google.com");
   std::u16string google_title(u"Google");
   GURL news_url("http://news.google.com");
-  std::u16string news_title(u"Google News");
 
   // Add asdf_url to history.
   AddPageToHistory(asdf_url, asdf_title);
@@ -646,7 +645,6 @@ TEST_F(TopSitesImplTest, RealDatabase) {
   GURL google3_url("http://www.google.com");
   std::u16string google_title(u"Google");
   GURL news_url("http://news.google.com");
-  std::u16string news_title(u"Google News");
 
   url.url = asdf_url;
   url.title = asdf_title;

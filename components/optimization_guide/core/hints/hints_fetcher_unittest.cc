@@ -128,7 +128,6 @@ class HintsFetcherTest : public testing::Test,
 
   void VerifyHasPendingFetchRequests() {
     EXPECT_GE(test_url_loader_factory_.NumPending(), 1);
-    std::string key_value;
     for (const auto& pending_request :
          *test_url_loader_factory_.pending_requests()) {
       EXPECT_EQ(pending_request.request.method, "POST");
@@ -273,7 +272,6 @@ TEST_P(HintsFetcherTest, FetchInProgress_HostsHintsRefreshed) {
   EXPECT_FALSE(FetchHints({"foo.com"}, /*urls=*/{}));
   EXPECT_FALSE(FetchHints({"bar.com"}, /*urls=*/{}));
 
-  std::vector<std::string> hosts{"foo.com", "bar.com"};
   // Advancing the clock so that it's still one hour before the hints need to be
   // refreshed.
   test_clock->Advance(StoreUpdateData::kMaxStoreDuration -
@@ -718,7 +716,6 @@ TEST_P(HintsFetcherTest, OnlyURLsToFetch) {
 
 TEST_P(HintsFetcherTest, NoHostsOrURLsToFetch) {
   base::HistogramTester histogram_tester;
-  std::string response_content;
 
   EXPECT_FALSE(FetchHints({} /* hosts */, /*urls=*/{}));
   EXPECT_FALSE(hints_fetched());

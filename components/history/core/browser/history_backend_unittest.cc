@@ -3233,10 +3233,9 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
 
     // Map `page_url3` to `icon_url1` so that the test does not delete the
     // favicon at `icon_url1`.
-    std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results =
-        backend_->UpdateFaviconMappingsAndFetch({page_url3}, icon_url1,
-                                                IconType::kFavicon,
-                                                GetEdgeSizesSmallAndLarge());
+    backend_->UpdateFaviconMappingsAndFetch({page_url3}, icon_url1,
+                                            IconType::kFavicon,
+                                            GetEdgeSizesSmallAndLarge());
     ClearBroadcastedNotifications();
   }
 
@@ -3258,10 +3257,9 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
 
   // UpdateFaviconMappingsAndFetch()
   {
-    std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results =
-        backend_->UpdateFaviconMappingsAndFetch({page_url1}, icon_url2,
-                                                IconType::kFavicon,
-                                                GetEdgeSizesSmallAndLarge());
+    backend_->UpdateFaviconMappingsAndFetch({page_url1}, icon_url2,
+                                            IconType::kFavicon,
+                                            GetEdgeSizesSmallAndLarge());
     EXPECT_THAT(favicon_changed_notifications_page_urls(),
                 ElementsAre(page_url1));
     EXPECT_EQ(0u, favicon_changed_notifications_icon_urls().size());
@@ -3288,10 +3286,9 @@ TEST_F(HistoryBackendTest,
 
   // UpdateFaviconMappingsAndFetch() for two page URLs.
   {
-    std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results =
-        backend_->UpdateFaviconMappingsAndFetch({page_url1, page_url2},
-                                                icon_url, IconType::kFavicon,
-                                                GetEdgeSizesSmallAndLarge());
+    backend_->UpdateFaviconMappingsAndFetch({page_url1, page_url2}, icon_url,
+                                            IconType::kFavicon,
+                                            GetEdgeSizesSmallAndLarge());
     EXPECT_THAT(favicon_changed_notifications_page_urls(),
                 ElementsAre(page_url1, page_url2));
     ClearBroadcastedNotifications();
@@ -3300,10 +3297,9 @@ TEST_F(HistoryBackendTest,
   // UpdateFaviconMappingsAndFetch() for two page URLs, but only one needs an
   // update.
   {
-    std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results =
-        backend_->UpdateFaviconMappingsAndFetch({page_url3, page_url4},
-                                                icon_url, IconType::kFavicon,
-                                                GetEdgeSizesSmallAndLarge());
+    backend_->UpdateFaviconMappingsAndFetch({page_url3, page_url4}, icon_url,
+                                            IconType::kFavicon,
+                                            GetEdgeSizesSmallAndLarge());
     EXPECT_THAT(favicon_changed_notifications_page_urls(),
                 ElementsAre(page_url3));
   }
@@ -3331,10 +3327,9 @@ TEST_F(HistoryBackendTest,
 
     // Map `page_url3` to `icon_url1` so that the test does not delete the
     // favicon at `icon_url1`.
-    std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results =
-        backend_->UpdateFaviconMappingsAndFetch({page_url3}, icon_url1,
-                                                IconType::kFavicon,
-                                                GetEdgeSizesSmallAndLarge());
+    backend_->UpdateFaviconMappingsAndFetch({page_url3}, icon_url1,
+                                            IconType::kFavicon,
+                                            GetEdgeSizesSmallAndLarge());
     ClearBroadcastedNotifications();
   }
 
@@ -3428,10 +3423,8 @@ TEST_F(HistoryBackendTest, NoFaviconChangedNotifications) {
 
   // UpdateFaviconMappingsAndFetch()
   {
-    std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results =
-        backend_->UpdateFaviconMappingsAndFetch({page_url}, icon_url,
-                                                IconType::kFavicon,
-                                                GetEdgeSizesSmallAndLarge());
+    backend_->UpdateFaviconMappingsAndFetch(
+        {page_url}, icon_url, IconType::kFavicon, GetEdgeSizesSmallAndLarge());
   }
 
   EXPECT_EQ(0u, favicon_changed_notifications_page_urls().size());
@@ -3450,7 +3443,6 @@ TEST_F(HistoryBackendTest, CloneFaviconMappingsForPages) {
   // Setup
   {
     // A mapping exists for `landing_page_url1`.
-    std::vector<favicon_base::FaviconRawBitmapData> favicon_bitmap_data;
     backend_->SetFavicons(
         {landing_page_url1}, IconType::kFavicon, icon_url,
         {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)});
@@ -3465,7 +3457,6 @@ TEST_F(HistoryBackendTest, CloneFaviconMappingsForPages) {
     ClearBroadcastedNotifications();
   }
 
-  std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results_out;
   backend_->CloneFaviconMappingsForPages(
       landing_page_url1, {IconType::kFavicon},
       {landing_page_url1, landing_page_url2});

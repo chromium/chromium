@@ -1213,7 +1213,6 @@ TEST_F(DeviceManagementServiceTest, AcceptMimeTypeFromProxy) {
   auto* request = GetPendingRequest();
   EXPECT_EQ(0, request->request.load_flags & net::LOAD_BYPASS_PROXY);
   const GURL original_url(request->request.url);
-  const std::string upload_data(network::GetUploadData(request->request));
 
   // Generate a callback with a valid http response, containing a charset in the
   // Content-type header.

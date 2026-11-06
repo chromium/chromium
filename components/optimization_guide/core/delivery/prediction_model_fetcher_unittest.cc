@@ -203,7 +203,6 @@ TEST_F(PredictionModelFetcherTest, FetchReturnBadResponse) {
 
 TEST_F(PredictionModelFetcherTest, EmptyModelInfo) {
   base::HistogramTester histogram_tester;
-  std::string response_content;
   EXPECT_FALSE(FetchModels(/*models_request_info=*/{},
                            proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                            "en-US"));

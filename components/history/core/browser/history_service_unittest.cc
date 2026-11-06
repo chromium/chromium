@@ -1758,7 +1758,6 @@ TEST_F(OrderingHistoryServiceTest, EnsureCorrectOrder) {
   VisitRow deleted_visit_row = VisitRow();
   deleted_visit_row.visit_time = visit_time;
   DeletedVisit deleted_visit(deleted_visit_row, deleted_visited_link);
-  std::vector<DeletedVisit> deleted_visits = {deleted_visit};
 
   // Prepare a mock `AddPage` request for the VisitedLink.
   HistoryAddPageArgs request(

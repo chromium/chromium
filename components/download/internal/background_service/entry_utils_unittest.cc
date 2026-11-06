@@ -48,11 +48,6 @@ TEST(DownloadServiceEntryUtilsTest, MapEntriesToClients) {
       util::BuildDownloadMetaData(&entry3, &driver),
       util::BuildDownloadMetaData(&entry4, &driver),
       util::BuildDownloadMetaData(&entry5, &driver)};
-  std::vector<DownloadMetaData> expected_pruned_list = {
-      util::BuildDownloadMetaData(&entry1, &driver),
-      util::BuildDownloadMetaData(&entry2, &driver),
-      util::BuildDownloadMetaData(&entry3, &driver),
-      util::BuildDownloadMetaData(&entry5, &driver)};
 
   // If DownloadClient::TEST isn't a valid Client, all of the associated entries
   // should move to the DownloadClient::INVALID bucket.

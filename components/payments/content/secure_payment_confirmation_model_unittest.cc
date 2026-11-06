@@ -20,14 +20,11 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
 
   std::vector<PaymentApp::PaymentEntityLogo*> header_logos;
   std::u16string title(u"Use Touch ID to verify and complete your purchase?");
-  std::u16string merchant_label(u"Store");
   std::u16string merchant_name(u"Test Merchant");
   std::u16string merchant_origin(u"merchant.com");
-  std::u16string instrument_label(u"Payment");
   std::u16string instrument_value(u"Mastercard");
   std::u16string instrument_details_value(u"****4444");
   SkBitmap instrument_icon;
-  std::u16string total_label(u"Total");
   std::u16string total_value(u"$20.00 USD");
   std::u16string verify_button_label(u"Verify");
   std::u16string cancel_button_label(u"Cancel");

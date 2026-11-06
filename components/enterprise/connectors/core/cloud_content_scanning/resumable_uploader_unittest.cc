@@ -882,7 +882,6 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
 TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
-  std::string body;
 
   auto callback =
       base::BindLambdaForTesting([&run_loop](bool success, int http_status,
@@ -917,7 +916,6 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
        HandlesSuccessfulMetadataOnlyScan) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
-  std::string body;
 
   auto callback =
       base::BindLambdaForTesting([&run_loop](bool success, int http_status,

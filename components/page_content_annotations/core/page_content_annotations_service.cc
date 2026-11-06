@@ -865,7 +865,6 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
     model_annotations.entities.emplace_back(entity.entity_id(), entity.score());
   }
 
-  std::vector<history::VisitContentModelAnnotations::Category> categories;
   for (const auto& category : page_entities_metadata.categories()) {
     int category_score = static_cast<int>(100 * category.score());
     if (category_score < features::kMinimumPageCategoryScoreToPersist) {

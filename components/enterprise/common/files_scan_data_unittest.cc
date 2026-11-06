@@ -112,8 +112,6 @@ TEST_F(FilesScanDataTest, Directories) {
   base::FilePath path_2_2 =
       AddFile(folder_2.Append(base::FilePath(FILE_PATH_LITERAL("b.txt"))));
 
-  std::vector<base::FilePath> paths = {path_1_1, path_1_2, path_2_1, path_2_2};
-
   FilesScanData files_scan_data({SubDirPath(folder_1), SubDirPath(folder_2)});
 
   base::RunLoop run_loop;

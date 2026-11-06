@@ -13,7 +13,6 @@ namespace {
 // Converts Entry::State to histogram suffix.
 // Should maps to suffix string in histograms.xml.
 std::string EntryStateToHistogramSuffix(Entry::State state) {
-  std::string suffix;
   switch (state) {
     case Entry::State::NEW:
       return "New";

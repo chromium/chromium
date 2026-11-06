@@ -1557,8 +1557,6 @@ TEST_F(MostVisitedSitesWithCustomLinksTest,
        DisableCustomLinksWhenNotInitialized) {
   const char kTestUrl[] = "http://site1/";
   const char16_t kTestTitle[] = u"Site 1";
-  std::vector<CustomLinksManager::Link> expected_links(
-      {CustomLinksManager::Link{GURL(kTestUrl), kTestTitle}});
   std::map<SectionType, NTPTilesVector> sections;
 
   // Build tiles when custom links is not initialized. Tiles should be from
@@ -1964,8 +1962,6 @@ TEST_F(MostVisitedSitesWithCustomLinksTest,
        UninitializeCustomLinksIfFirstActionFails) {
   const char kTestUrl[] = "http://site1/";
   const char16_t kTestTitle[] = u"Site 1";
-  std::vector<CustomLinksManager::Link> expected_links(
-      {CustomLinksManager::Link{GURL(kTestUrl), kTestTitle}});
   std::map<SectionType, NTPTilesVector> sections;
 
   // Build initial tiles with Top Sites.
@@ -2414,7 +2410,6 @@ TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
   const char16_t kTestTitle[] = u"Site 1";
   const std::vector<EnterpriseShortcut> initial_links = {
       MakeEnterpriseShortcut(kTestTitle, kTestUrl)};
-  const std::vector<EnterpriseShortcut> empty_links;
   std::map<SectionType, NTPTilesVector> sections;
 
   // Initial build.
@@ -2479,7 +2474,6 @@ TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
           .with_top_sites(true));
 
   ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
-  NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
   EXPECT_THAT(sections.at(SectionType::PERSONALIZED),
               ElementsAre(MatchesTile(kEnterpriseTitle, kEnterpriseUrl,
                                       TileSource::ENTERPRISE_SHORTCUTS),

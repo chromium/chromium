@@ -1793,7 +1793,6 @@ TEST_P(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   const VisitID visit_id1 = 1;
   const URLID url_id1 = 10;
   const SegmentID segment_id1 = 20;
-  const std::string metadata_value1 = "BLOB1";
 
   // Open the db for manual manipulation.
   {

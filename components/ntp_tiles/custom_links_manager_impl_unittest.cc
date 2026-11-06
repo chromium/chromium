@@ -571,7 +571,6 @@ TEST_F(CustomLinksManagerImplTest, UndoDeleteLinkAfterAdd) {
 }
 
 TEST_F(CustomLinksManagerImplTest, ShouldDeleteMostVisitedOnHistoryDeletion) {
-  NTPTilesVector initial_tiles = FillTestTiles(kTestCase2);
   std::vector<Link> initial_links = FillTestLinks(kTestCase2);
   std::vector<Link> expected_links(initial_links);
   // Remove the link that will be deleted on history clear.
