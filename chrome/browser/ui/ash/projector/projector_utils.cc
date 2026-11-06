@@ -9,9 +9,9 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/untrusted_projector_ui.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
@@ -56,8 +56,13 @@ bool IsProjectorAppEnabled(const Profile* profile) {
     return false;
   }
 
-  // Projector for regular consumer users.
-  if (!profile->GetProfilePolicyConnector()->IsManaged()) {
+  // Projector for regular consumer users. IsProjectorAllowedForProfile() made
+  // sure the User exists. Its policy status is known once its Profile has been
+  // added, which happened before the session started. If it isn't, treat the
+  // user as unmanaged, matching ProfileUserManagerController's default.
+  const user_manager::User& user =
+      CHECK_DEREF(ash::ProfileHelper::Get()->GetUserByProfile(profile));
+  if (!user.is_managed().value_or(false)) {
     return true;
   }
 

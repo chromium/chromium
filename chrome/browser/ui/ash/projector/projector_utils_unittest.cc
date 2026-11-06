@@ -39,7 +39,8 @@ class ScopedLogIn {
   ScopedLogIn(
       ash::FakeChromeUserManager* fake_user_manager,
       const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::UserType::kRegular)
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
+      bool is_managed = false)
       : fake_user_manager_(fake_user_manager), account_id_(account_id) {
     // Prevent access to DBus. This switch is reset in case set from test SetUp
     // due massive usage of InitFromArgv.
@@ -60,12 +61,16 @@ class ScopedLogIn {
         break;
       case user_manager::UserType::kChild:
         LogInChildUser();
-        return;
+        break;
       case user_manager::UserType::kGuest:
         LogInGuestUser();
-        return;
+        break;
       default:
         NOTREACHED();
+    }
+    if (is_managed) {
+      fake_user_manager_->SetUserPolicyStatus(account_id_, /*is_managed=*/true,
+                                              /*is_affiliated=*/false);
     }
   }
 
@@ -126,7 +131,6 @@ class ProjectorUtilsTest : public testing::Test {
     if (is_child()) {
       builder.SetIsSupervisedProfile();
     }
-    builder.OverridePolicyConnectorIsManagedForTesting(is_managed());
     profile_ = builder.Build();
   }
 
@@ -189,7 +193,8 @@ TEST_F(ProjectorUtilsManagedTest, IsProjectorAllowedForProfile_ManagedAccount) {
   ScopedLogIn login(
       GetFakeUserManager(),
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId));
+                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      user_manager::UserType::kRegular, is_managed());
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
 }
 
@@ -197,7 +202,7 @@ TEST_F(ProjectorUtilsChildTest, IsProjectorAllowedForProfile_ChildUser) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId),
-                    user_manager::UserType::kChild);
+                    user_manager::UserType::kChild, is_managed());
 
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
 }
@@ -232,7 +237,8 @@ TEST_F(ProjectorUtilsManagedTest, IsProjectorAppEnabled_ManagedAccount) {
   ScopedLogIn login(
       GetFakeUserManager(),
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId));
+                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      user_manager::UserType::kRegular, is_managed());
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));
 }
 
@@ -240,7 +246,7 @@ TEST_F(ProjectorUtilsChildTest, IsProjectorAppEnabled_ChildUser) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId),
-                    user_manager::UserType::kChild);
+                    user_manager::UserType::kChild, is_managed());
 
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));
 }
