@@ -20,15 +20,13 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
-#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
-#include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_context_menu_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
@@ -37,7 +35,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -45,22 +42,12 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/ntp_tiles/custom_links_pref_names.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_pref_names.h"
-#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/search_engines/test_ai_mode_button_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/drop_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
-#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/accelerators/accelerator.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_buffer.h"
-#include "ui/base/clipboard/scoped_clipboard_writer.h"
-#include "ui/base/emoji/emoji_panel_helper.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -77,19 +64,13 @@
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/mock_activation_controller.h"
-#include "ui/views/test/test_platform_native_widget.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
-#include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "ui/views/widget/native_widget_mac.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 // clang-format off
@@ -119,34 +100,6 @@
 namespace omnibox_everywhere {
 
 namespace {
-
-#if BUILDFLAG(IS_MAC)
-using BaseTestNativeWidget =
-    views::test::TestPlatformNativeWidget<views::NativeWidgetMac>;
-#elif BUILDFLAG(IS_WIN)
-using BaseTestNativeWidget =
-    views::test::TestPlatformNativeWidget<views::DesktopNativeWidgetAura>;
-#endif
-
-class TestNativeWidget : public BaseTestNativeWidget {
- public:
-  TestNativeWidget(views::internal::NativeWidgetDelegate* delegate,
-                   base::RepeatingClosure on_show_emoji_panel)
-      : BaseTestNativeWidget(delegate,
-                             /*mock_capture=*/false,
-                             /*destroyed=*/nullptr),
-        on_show_emoji_panel_(std::move(on_show_emoji_panel)) {}
-  ~TestNativeWidget() override = default;
-
-  void ShowEmojiPanel() override {
-    if (on_show_emoji_panel_) {
-      on_show_emoji_panel_.Run();
-    }
-  }
-
- private:
-  base::RepeatingClosure on_show_emoji_panel_;
-};
 
 class ScopedScreenOverride {
  public:
@@ -210,28 +163,6 @@ class TestMenuRunnerHandler : public views::MenuRunnerHandler {
                  int32_t types) override {}
 };
 
-class TestingAimEligibilityService : public ChromeAimEligibilityService {
- public:
-  TestingAimEligibilityService(Profile* profile, bool is_fusebox_eligible)
-      : ChromeAimEligibilityService(*profile->GetPrefs(),
-                                    /*template_url_service=*/nullptr,
-                                    /*url_loader_factory=*/nullptr,
-                                    /*identity_manager=*/nullptr,
-                                    /*configuration=*/{}),
-        is_fusebox_eligible_(is_fusebox_eligible) {}
-
-  variations::VariationsService* GetVariationsService() const override {
-    return nullptr;
-  }
-
-  bool IsAimEligible() const override { return is_fusebox_eligible_; }
-  bool IsFuseboxEligible() const override { return is_fusebox_eligible_; }
-  bool IsAimAllowedByDse() const override { return is_fusebox_eligible_; }
-
- private:
-  const bool is_fusebox_eligible_;
-};
-
 class TestingOmniboxEverywhereService : public OmniboxEverywhereService {
  public:
   explicit TestingOmniboxEverywhereService(Profile* profile)
@@ -269,56 +200,6 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
                                  temp_start_menu_dir_.GetPath());
 #endif
     ChromeViewsTestBase::SetUp();
-    views::ViewsDelegate::GetInstance()->set_native_widget_factory(
-        base::BindRepeating(
-            [](OmniboxEverywhereUIManagerTest* test,
-               const views::Widget::InitParams& init_params,
-               views::internal::NativeWidgetDelegate* delegate)
-                -> views::NativeWidget* {
-#if defined(USE_AURA)
-              if (init_params.parent &&
-                  init_params.type != views::Widget::InitParams::TYPE_MENU &&
-                  init_params.type != views::Widget::InitParams::TYPE_TOOLTIP) {
-                return nullptr;
-              }
-#endif
-              return new TestNativeWidget(
-                  delegate, base::BindRepeating(
-                                [](OmniboxEverywhereUIManagerTest* test) {
-                                  ++test->emoji_panel_shown_count_;
-                                },
-                                base::Unretained(test)));
-            },
-            base::Unretained(this)));
-  }
-
-  int emoji_panel_shown_count() const { return emoji_panel_shown_count_; }
-
-  void SetUpAimEligibilityService(bool is_fusebox_eligible) {
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_,
-        base::BindRepeating(
-            [](bool fusebox_eligible, content::BrowserContext* context)
-                -> std::unique_ptr<KeyedService> {
-              return std::make_unique<TestingAimEligibilityService>(
-                  static_cast<TestingProfile*>(context), fusebox_eligible);
-            },
-            is_fusebox_eligible));
-  }
-
-  void SetUpAiModeButtonService() {
-    AiModeButtonServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          auto service = std::make_unique<TestAiModeButtonService>(
-              /*template_url_service=*/nullptr);
-          AiModeButtonUiConfig test_config(
-              SearchEngineType::SEARCH_ENGINE_GOOGLE, u"AI Mode", u"Google",
-              /*favicon_url=*/"", /*navigation_url=*/"",
-              /*navigation_url_empty=*/"");
-          service->current_ui_config_ = test_config;
-          return service;
-        }));
   }
 
   std::unique_ptr<OmniboxEverywhereUIManager> CreateUIManager() {
@@ -327,24 +208,29 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
             [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
               return std::make_unique<TestWebUIContentsWrapper>(profile);
             }));
-    ui_manager->SetMenuRunnerFactoryForTesting(base::BindRepeating(
-        [](ui::MenuModel* model, base::RepeatingClosure on_closed) {
-          auto runner = std::make_unique<views::MenuRunner>(
-              model,
-              views::MenuRunner::HAS_MNEMONICS |
-                  views::MenuRunner::CONTEXT_MENU,
-              std::move(on_closed));
-          views::test::MenuRunnerTestAPI(runner.get())
-              .SetMenuRunnerHandler(std::make_unique<TestMenuRunnerHandler>());
-          return runner;
-        }));
+    ui_manager->context_menu_controller_for_testing()
+        ->SetMenuRunnerFactoryForTesting(base::BindRepeating(
+            [](base::RepeatingClosure* last_on_closed, ui::MenuModel* model,
+               base::RepeatingClosure on_closed) {
+              *last_on_closed = on_closed;
+              auto runner = std::make_unique<views::MenuRunner>(
+                  model,
+                  views::MenuRunner::HAS_MNEMONICS |
+                      views::MenuRunner::CONTEXT_MENU,
+                  std::move(on_closed));
+              views::test::MenuRunnerTestAPI(runner.get())
+                  .SetMenuRunnerHandler(
+                      std::make_unique<TestMenuRunnerHandler>());
+              return runner;
+            },
+            base::Unretained(&last_context_menu_closed_callback_)));
     return ui_manager;
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
-  int emoji_panel_shown_count_ = 0;
+  base::RepeatingClosure last_context_menu_closed_callback_;
 #if BUILDFLAG(IS_WIN)
   base::ScopedTempDir temp_start_menu_dir_;
   std::optional<base::ScopedPathOverride> start_menu_override_;
@@ -964,8 +850,9 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_TRUE(widget->IsVisible());
 
   // Simulate context menu open.
-  ui_manager->set_is_context_menu_open_for_testing(true);
-  EXPECT_TRUE(ui_manager->is_context_menu_open_for_testing());
+  ui_manager->context_menu_controller_for_testing()->HandleContextMenu(
+      content::ContextMenuParams());
+  EXPECT_TRUE(ui_manager->context_menu_controller_for_testing()->IsOpen());
 
   // Becoming invisible on screen while a context menu is open should NOT close
   // the widget.
@@ -1282,27 +1169,30 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_DemoteCancelsOpenContextMenu) {
   params.is_editable = true;
 
   bool menu_runner_created = false;
-  ui_manager->SetMenuRunnerFactoryForTesting(base::BindRepeating(
-      [](bool* created, ui::MenuModel* model,
-         base::RepeatingClosure on_closed) {
-        *created = true;
-        auto runner = std::make_unique<views::MenuRunner>(
-            model,
-            views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
-            on_closed);
-        views::test::MenuRunnerTestAPI(runner.get())
-            .SetMenuRunnerHandler(std::make_unique<TestMenuRunnerHandler>());
-        return runner;
-      },
-      &menu_runner_created));
+  ui_manager->context_menu_controller_for_testing()
+      ->SetMenuRunnerFactoryForTesting(base::BindRepeating(
+          [](bool* created, ui::MenuModel* model,
+             base::RepeatingClosure on_closed) {
+            *created = true;
+            auto runner = std::make_unique<views::MenuRunner>(
+                model,
+                views::MenuRunner::HAS_MNEMONICS |
+                    views::MenuRunner::CONTEXT_MENU,
+                on_closed);
+            views::test::MenuRunnerTestAPI(runner.get())
+                .SetMenuRunnerHandler(
+                    std::make_unique<TestMenuRunnerHandler>());
+            return runner;
+          },
+          &menu_runner_created));
 
   ui_manager->HandleContextMenu(*rfh, params);
   EXPECT_TRUE(menu_runner_created);
-  EXPECT_TRUE(ui_manager->is_context_menu_open_for_testing());
+  EXPECT_TRUE(ui_manager->context_menu_controller_for_testing()->IsOpen());
 
   // Demote() while context menu is open should cancel the runner and demote.
   ui_manager->Demote();
-  EXPECT_FALSE(ui_manager->is_context_menu_open_for_testing());
+  EXPECT_FALSE(ui_manager->context_menu_controller_for_testing()->IsOpen());
   EXPECT_TRUE(ui_manager->widget()->IsVisible());
   EXPECT_EQ(ui_manager->widget()->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
 
@@ -1354,7 +1244,9 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
 
-  ui_manager->set_is_context_menu_open_for_testing(true);
+  ui_manager->context_menu_controller_for_testing()->HandleContextMenu(
+      content::ContextMenuParams());
+  ASSERT_TRUE(ui_manager->context_menu_controller_for_testing()->IsOpen());
 
   // Simulate deactivation while menu is open.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
@@ -1362,7 +1254,8 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
   // Closing context menu while inactive in persistent mode leaves widget
   // visible.
-  ui_manager->OnContextMenuClosedForTesting();
+  ASSERT_TRUE(last_context_menu_closed_callback_);
+  last_context_menu_closed_callback_.Run();
   EXPECT_TRUE(widget->IsVisible());
 
   ui_manager->Close();
@@ -1939,8 +1832,9 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringContextMenu) {
   EXPECT_TRUE(widget->IsVisible());
 
   // Mark context menu as open.
-  ui_manager->set_is_context_menu_open_for_testing(true);
-  EXPECT_TRUE(ui_manager->is_context_menu_open_for_testing());
+  ui_manager->context_menu_controller_for_testing()->HandleContextMenu(
+      content::ContextMenuParams());
+  EXPECT_TRUE(ui_manager->context_menu_controller_for_testing()->IsOpen());
 
   // Simulating deactivation while context menu is open should NOT close the
   // widget.
@@ -1953,7 +1847,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringContextMenu) {
   task_environment()->FastForwardBy(
       omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
       base::Milliseconds(1));
-  ui_manager->OnContextMenuClosedForTesting();
+  ASSERT_TRUE(last_context_menu_closed_callback_);
+  last_context_menu_closed_callback_.Run();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
   EXPECT_TRUE(ui_manager->widget());
@@ -1972,295 +1867,52 @@ TEST_F(OmniboxEverywhereUIManagerTest, CloseCancelsOpenContextMenu) {
   params.is_editable = true;
 
   bool menu_runner_created = false;
-  ui_manager->SetMenuRunnerFactoryForTesting(base::BindRepeating(
-      [](bool* created, ui::MenuModel* model,
-         base::RepeatingClosure on_closed) {
-        *created = true;
-        auto runner = std::make_unique<views::MenuRunner>(
-            model,
-            views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
-            on_closed);
-        views::test::MenuRunnerTestAPI(runner.get())
-            .SetMenuRunnerHandler(std::make_unique<TestMenuRunnerHandler>());
-        return runner;
-      },
-      &menu_runner_created));
+  ui_manager->context_menu_controller_for_testing()
+      ->SetMenuRunnerFactoryForTesting(base::BindRepeating(
+          [](bool* created, ui::MenuModel* model,
+             base::RepeatingClosure on_closed) {
+            *created = true;
+            auto runner = std::make_unique<views::MenuRunner>(
+                model,
+                views::MenuRunner::HAS_MNEMONICS |
+                    views::MenuRunner::CONTEXT_MENU,
+                on_closed);
+            views::test::MenuRunnerTestAPI(runner.get())
+                .SetMenuRunnerHandler(
+                    std::make_unique<TestMenuRunnerHandler>());
+            return runner;
+          },
+          &menu_runner_created));
 
   ui_manager->HandleContextMenu(*rfh, params);
   EXPECT_TRUE(menu_runner_created);
-  EXPECT_TRUE(ui_manager->is_context_menu_open_for_testing());
+  EXPECT_TRUE(ui_manager->context_menu_controller_for_testing()->IsOpen());
 
   // Calling Close() while context menu is open should cancel the runner and
   // reset state.
   ui_manager->Close();
-  EXPECT_FALSE(ui_manager->is_context_menu_open_for_testing());
+  EXPECT_FALSE(ui_manager->context_menu_controller_for_testing()->IsOpen());
   EXPECT_FALSE(ui_manager->widget()->IsVisible());
 }
 
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-
-  content::ContextMenuParams params;
-  params.is_editable = true;
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-
-  size_t index = 0;
-  if (ui::IsEmojiPanelSupported()) {
-    EXPECT_EQ(model->GetCommandIdAt(index++),
-              omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji);
-    EXPECT_EQ(model->GetTypeAt(index++),
-              ui::MenuModel::ItemType::TYPE_SEPARATOR);
-    EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-        omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji));
-  }
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kUndo);
-  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kCut);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kCopy);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kPaste);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kDelete);
-  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll);
-  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(
-      model->GetCommandIdAt(index++),
-      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
-#if BUILDFLAG(IS_MAC)
-  EXPECT_EQ(
-      model->GetCommandIdAt(index++),
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionMenu);
-#endif  // BUILDFLAG(IS_MAC)
-  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::
-                kCustomizeKeyboardShortcut);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize);
-  EXPECT_EQ(model->GetCommandIdAt(index++),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
-#endif  // BUILDFLAG(IS_WIN)
-  EXPECT_EQ(model->GetItemCount(), index);
-}
-
-#if BUILDFLAG(IS_MAC)
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuWritingDirectionSubmenu) {
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-
-  content::ContextMenuParams params;
-  params.is_editable = true;
-  params.writing_direction_default =
-      blink::ContextMenuData::kCheckableMenuItemDisabled;
-  params.writing_direction_left_to_right =
-      blink::ContextMenuData::kCheckableMenuItemEnabled |
-      blink::ContextMenuData::kCheckableMenuItemChecked;
-  params.writing_direction_right_to_left =
-      blink::ContextMenuData::kCheckableMenuItemEnabled;
-  ASSERT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  std::optional<size_t> submenu_index = model->GetIndexOfCommandId(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionMenu);
-  ASSERT_TRUE(submenu_index.has_value());
-  ui::MenuModel* submenu = model->GetSubmenuModelAt(*submenu_index);
-  ASSERT_TRUE(submenu);
-  ASSERT_EQ(submenu->GetItemCount(), 3u);
-  EXPECT_EQ(
-      submenu->GetCommandIdAt(0),
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionDefault);
-  EXPECT_EQ(
-      submenu->GetCommandIdAt(1),
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionLtr);
-  EXPECT_EQ(
-      submenu->GetCommandIdAt(2),
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionRtl);
-
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::
-          kWritingDirectionDefault));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionLtr));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionRtl));
-
-  EXPECT_FALSE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::
-          kWritingDirectionDefault));
-  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionLtr));
-  EXPECT_FALSE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionRtl));
-
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionRtl, 0);
-}
-#endif  // BUILDFLAG(IS_MAC)
-
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuEmojiCommand) {
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-
-  // Non-editable context omits and disables kEmoji.
-  content::ContextMenuParams non_editable_params;
-  non_editable_params.is_editable = false;
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, non_editable_params));
-  EXPECT_FALSE(ui_manager->context_menu_model_for_testing()
-                   ->GetIndexOfCommandId(
-                       omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji)
-                   .has_value());
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji));
-
-  ui::Accelerator accelerator;
-  EXPECT_FALSE(ui_manager->GetAcceleratorForCommandId(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kUndo, &accelerator));
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(ui_manager->GetAcceleratorForCommandId(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji, &accelerator));
-#endif
-
-  // Editable context enables kEmoji and ExecuteCommand(kEmoji) triggers
-  // ShowEmojiPanel() on the widget without invoking native OS global panels in
-  // unit_tests.
-  content::ContextMenuParams editable_params;
-  editable_params.is_editable = true;
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, editable_params));
-  if (ui::IsEmojiPanelSupported()) {
-    EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-        omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji));
-    EXPECT_EQ(emoji_panel_shown_count(), 0);
-    ui_manager->ExecuteCommand(
-        omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji, 0);
-    EXPECT_EQ(emoji_panel_shown_count(), 1);
-  }
-}
-
 TEST_F(OmniboxEverywhereUIManagerTest,
-       ContextMenuModelNonEditableElementWithSelection) {
+       DestroyWidgetClearsWebViewContextMenuController) {
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
+  ASSERT_TRUE(ui_manager->widget_delegate());
 
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
+  views::View* contents_view = ui_manager->widget_delegate()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+  EXPECT_EQ(contents_view->context_menu_controller(),
+            ui_manager->context_menu_controller_for_testing());
 
-  content::ContextMenuParams params;
-  params.is_editable = false;
-  params.selection_text = u"selected text";
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(model->GetItemCount(), 12u);
-#else
-  EXPECT_EQ(model->GetItemCount(), 9u);
-#endif  // BUILDFLAG(IS_WIN)
-  EXPECT_EQ(model->GetCommandIdAt(0),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kCopy);
-  EXPECT_EQ(model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(2),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll);
-  EXPECT_EQ(model->GetTypeAt(3), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(
-      model->GetCommandIdAt(4),
-      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
-  EXPECT_EQ(model->GetTypeAt(5), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(6),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
-  EXPECT_EQ(model->GetCommandIdAt(7),
-            omnibox_everywhere::OmniboxEverywhereUIManager::
-                kCustomizeKeyboardShortcut);
-  EXPECT_EQ(model->GetCommandIdAt(8),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(model->GetTypeAt(9), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(10),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize);
-  EXPECT_EQ(model->GetCommandIdAt(11),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
-#endif  // BUILDFLAG(IS_WIN)
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelNonEditableBackground) {
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-
-  // Right-clicking on empty background space (not editable, no selection text).
-  content::ContextMenuParams params;
-  params.is_editable = false;
-  params.selection_text = u"";
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(model->GetItemCount(), 8u);
-#else
-  EXPECT_EQ(model->GetItemCount(), 5u);
-#endif  // BUILDFLAG(IS_WIN)
-  EXPECT_EQ(
-      model->GetCommandIdAt(0),
-      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
-  EXPECT_EQ(model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(2),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
-  EXPECT_EQ(model->GetCommandIdAt(3),
-            omnibox_everywhere::OmniboxEverywhereUIManager::
-                kCustomizeKeyboardShortcut);
-  EXPECT_EQ(model->GetCommandIdAt(4),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(model->GetTypeAt(5), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(6),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize);
-  EXPECT_EQ(model->GetCommandIdAt(7),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
-#endif  // BUILDFLAG(IS_WIN)
+  // Shutdown() calls DestroyWidget(), which posts the widget for deferred
+  // deletion. Before the task queue drains, the WebView's context menu
+  // controller pointer must already be cleared so it cannot dangle if the
+  // manager is destroyed first.
+  ui_manager->Shutdown();
+  EXPECT_EQ(contents_view->context_menu_controller(), nullptr);
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -2268,85 +1920,56 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
+  ASSERT_TRUE(ui_manager->widget_delegate());
 
-  views::View* contents_view = ui_manager->widget()->GetContentsView();
+  views::View* contents_view = ui_manager->widget_delegate()->GetContentsView();
   ASSERT_TRUE(contents_view);
 
   // Trigger context menu via views::ContextMenuController (e.g. right-click on
   // draggable background region).
-  ui_manager->ShowContextMenuForView(contents_view, gfx::Point(50, 50),
-                                     ui::mojom::MenuSourceType::kMouse);
+  contents_view->ShowContextMenu(gfx::Point(50, 50),
+                                 ui::mojom::MenuSourceType::kMouse);
 
   const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
+      ui_manager->context_menu_controller_for_testing()->model_for_testing();
   ASSERT_TRUE(model);
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(model->GetItemCount(), 8u);
 #else
   EXPECT_EQ(model->GetItemCount(), 5u);
 #endif  // BUILDFLAG(IS_WIN)
-  EXPECT_EQ(
-      model->GetCommandIdAt(0),
-      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
+  EXPECT_EQ(model->GetCommandIdAt(0),
+            omnibox_everywhere::OmniboxEverywhereContextMenuController::
+                kManageSearchEngines);
   EXPECT_EQ(model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
   EXPECT_EQ(model->GetCommandIdAt(2),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
+            omnibox_everywhere::OmniboxEverywhereContextMenuController::
+                kShowShortcuts);
   EXPECT_EQ(model->GetCommandIdAt(3),
-            omnibox_everywhere::OmniboxEverywhereUIManager::
+            omnibox_everywhere::OmniboxEverywhereContextMenuController::
                 kCustomizeKeyboardShortcut);
-  EXPECT_EQ(model->GetCommandIdAt(4),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
+  EXPECT_EQ(
+      model->GetCommandIdAt(4),
+      omnibox_everywhere::OmniboxEverywhereContextMenuController::kSettings);
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(model->GetTypeAt(5), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(6),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize);
+  EXPECT_EQ(
+      model->GetCommandIdAt(6),
+      omnibox_everywhere::OmniboxEverywhereContextMenuController::kMinimize);
   EXPECT_EQ(model->GetCommandIdAt(7),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
+            omnibox_everywhere::OmniboxEverywhereContextMenuController::kClose);
 #endif  // BUILDFLAG(IS_WIN)
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(OmniboxEverywhereUIManagerTest,
-       ContextMenuOmitsWindowControlsWhenEphemeral) {
-  base::ScopedClosureRunner reset_pref;
-  if (g_browser_process && g_browser_process->local_state()) {
-    g_browser_process->local_state()->SetBoolean(
-        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
-    reset_pref.ReplaceClosure(base::BindOnce([]() {
-      if (g_browser_process && g_browser_process->local_state()) {
-        g_browser_process->local_state()->ClearPref(
-            omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel);
-      }
-    }));
-  }
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-
-  content::ContextMenuParams params;
-  params.is_editable = false;
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  EXPECT_EQ(model->GetItemCount(), 5u);
-  EXPECT_EQ(model->GetCommandIdAt(4),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
-}
-
 TEST_F(OmniboxEverywhereUIManagerTest, ExecuteCloseCommandHidesWidget) {
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
   ASSERT_TRUE(ui_manager->IsVisible());
 
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kClose, 0);
+  ui_manager->context_menu_controller_for_testing()->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereContextMenuController::kClose, 0);
 
   // Close hides the widget but keeps it reshowable via hotkey or tray icon.
   EXPECT_TRUE(ui_manager->widget());
@@ -2359,8 +1982,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ExecuteMinimizeCommandKeepsWidgetAlive) {
   ASSERT_TRUE(ui_manager->widget());
   ASSERT_TRUE(ui_manager->IsVisible());
 
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize, 0);
+  ui_manager->context_menu_controller_for_testing()->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereContextMenuController::kMinimize, 0);
 
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(ui_manager->widget()->IsMinimized());
@@ -2385,374 +2008,16 @@ TEST_F(OmniboxEverywhereUIManagerTest, MinimizeDoesNotRecordFreImpression) {
   };
   const auto counts_before = fre_impression_counts();
 
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize, 0);
+  ui_manager->context_menu_controller_for_testing()->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereContextMenuController::kMinimize, 0);
   EXPECT_EQ(counts_before, fre_impression_counts());
 
   // Close does record one, so the expectation above isn't vacuous.
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kClose, 0);
+  ui_manager->context_menu_controller_for_testing()->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereContextMenuController::kClose, 0);
   EXPECT_NE(counts_before, fre_impression_counts());
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
-  SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
-  SetUpAiModeButtonService();
-
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-
-  content::ContextMenuParams params;
-  params.is_editable = true;
-  params.edit_flags = blink::ContextMenuDataEditFlags::kCanCut |
-                      blink::ContextMenuDataEditFlags::kCanCopy |
-                      blink::ContextMenuDataEditFlags::kCanUndo |
-                      blink::ContextMenuDataEditFlags::kCanDelete;
-  ui_manager->HandleContextMenu(*rfh, params);
-
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kUndo));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kCut));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kCopy));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kDelete));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::
-          kCustomizeKeyboardShortcut));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kSettings));
-#if BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kMinimize));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kClose));
-#endif  // BUILDFLAG(IS_WIN)
-
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch));
-
-  // Without edit flags, Cut, Copy, Undo, and Delete should be disabled if
-  // selection is empty.
-  params.edit_flags = 0;
-  params.selection_text = u"";
-  ui_manager->HandleContextMenu(*rfh, params);
-
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kUndo));
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kCut));
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kCopy));
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kDelete));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch));
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll));
-
-  // When not editable and without kCanPaste flag, Paste is disabled.
-  params.is_editable = false;
-  ui_manager->HandleContextMenu(*rfh, params);
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
-
-  // When not editable but kCanPaste flag is explicitly present, Paste is
-  // enabled.
-  params.edit_flags = blink::ContextMenuDataEditFlags::kCanPaste;
-  ui_manager->HandleContextMenu(*rfh, params);
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest, ExecutePasteAndSearchCommand) {
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(u"https://example.com/");
-  }
-
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch));
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch, 0);
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuPasteAndSearchAndGoLabels) {
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-  content::ContextMenuParams params;
-  params.is_editable = true;
-
-  // 1. Search query on clipboard -> "Paste and Search for “8551957”".
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(u"8551957");
-  }
-  ASSERT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  std::optional<size_t> paste_and_go_index = model->GetIndexOfCommandId(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch);
-  ASSERT_TRUE(paste_and_go_index.has_value());
-  EXPECT_EQ(model->GetLabelAt(*paste_and_go_index),
-            l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, u"8551957"));
-
-  // 2. URL on clipboard -> "Paste and Go to example.com".
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(u"https://example.com/");
-  }
-  ASSERT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-  model = ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  paste_and_go_index = model->GetIndexOfCommandId(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch);
-  ASSERT_TRUE(paste_and_go_index.has_value());
-  EXPECT_NE(model->GetLabelAt(*paste_and_go_index).find(u"example.com"),
-            std::u16string::npos);
-
-  // 3. Empty clipboard -> generic "Paste and Go".
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  ASSERT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-  model = ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  paste_and_go_index = model->GetIndexOfCommandId(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch);
-  ASSERT_TRUE(paste_and_go_index.has_value());
-  EXPECT_EQ(model->GetLabelAt(*paste_and_go_index),
-            l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY));
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest,
-       ContextMenuManageSearchEnginesSafetyGuard) {
-  auto ui_manager = CreateUIManager();
-  // Before showing (no WebContents / no profile), commands are disabled.
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
-
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
-
-  ui_manager->Shutdown();
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuAiModeFuseboxIneligible) {
-  SetUpAimEligibilityService(/*is_fusebox_eligible=*/false);
-  SetUpAiModeButtonService();
-
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-  content::ContextMenuParams params;
-  params.is_editable = false;
-  params.selection_text = u"";
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  EXPECT_FALSE(
-      model
-          ->GetIndexOfCommandId(
-              omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode)
-          .has_value());
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuAiModeFuseboxEligible) {
-  SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
-  SetUpAiModeButtonService();
-
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-  content::ContextMenuParams params;
-  params.is_editable = false;
-  params.selection_text = u"";
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  EXPECT_TRUE(
-      model
-          ->GetIndexOfCommandId(
-              omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode)
-          .has_value());
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuAlwaysShowAiModeToggle) {
-  SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
-  SetUpAiModeButtonService();
-
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  profile_.GetPrefs()->SetBoolean(
-      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode, true);
-  profile_.GetPrefs()->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
-  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
-
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode, 0);
-  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(
-      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode));
-  EXPECT_FALSE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
-  // Verify that the browser omnibox preference remains unaffected.
-  EXPECT_TRUE(
-      profile_.GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
-
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode, 0);
-  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
-      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode));
-  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
-  EXPECT_TRUE(
-      profile_.GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuShowShortcutsToggle) {
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  profile_.GetPrefs()->SetInteger(
-      omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
-      static_cast<int>(
-          omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
-  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
-
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts, 0);
-  EXPECT_EQ(profile_.GetPrefs()->GetInteger(
-                omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
-            static_cast<int>(
-                omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
-  EXPECT_FALSE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
-
-  ui_manager->ExecuteCommand(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts, 0);
-  EXPECT_EQ(profile_.GetPrefs()->GetInteger(
-                omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
-            static_cast<int>(
-                omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
-  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
-      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
-}
-
-TEST_F(OmniboxEverywhereUIManagerTest,
-       ContextMenuShowShortcutsHiddenWhenNoShortcutsAvailable) {
-  auto ui_manager = CreateUIManager();
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget());
-
-  auto* rfh = ui_manager->contents_wrapper_for_testing()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame();
-  content::ContextMenuParams params;
-  params.is_editable = false;
-
-  // By default, personal shortcuts are enabled, so the option should be
-  // present.
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-  const ui::SimpleMenuModel* model =
-      ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  EXPECT_TRUE(
-      model
-          ->GetIndexOfCommandId(
-              omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts)
-          .has_value());
-
-  // Without enterprise policy shortcuts, the option is always present.
-  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
-                                  false);
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-  model = ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  EXPECT_TRUE(
-      model
-          ->GetIndexOfCommandId(
-              omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts)
-          .has_value());
-
-  // Add enterprise shortcuts policy so both checkboxes exist.
-  {
-    ScopedListPrefUpdate update(
-        profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
-    update->Append(base::DictValue()
-                       .Set("url", "https://corp.example.com")
-                       .Set("title", "Corp"));
-  }
-
-  // When both checkboxes are unchecked, no shortcuts can be shown at all.
-  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
-                                  false);
-  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
-                                  false);
-
-  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-  model = ui_manager->context_menu_model_for_testing();
-  ASSERT_TRUE(model);
-  EXPECT_FALSE(
-      model
-          ->GetIndexOfCommandId(
-              omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts)
-          .has_value());
-}
 
 // TODO(crbug.com/546710681): Re-enable test on linux
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
