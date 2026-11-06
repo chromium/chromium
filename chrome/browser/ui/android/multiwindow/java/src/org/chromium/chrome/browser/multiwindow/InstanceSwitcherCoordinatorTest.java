@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -36,6 +37,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -64,7 +67,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1114,7 +1116,6 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/566768773")
     public void testRenameWindow() throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
@@ -1157,11 +1158,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Enter a new name and save.
         final String newName = "test name";
-        onView(withId(R.id.title_input_text)).inRoot(isDialog()).perform(replaceText(newName));
-        onView(withText(R.string.save))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()))
-                .perform(click());
+        saveRenameDialog(newName, renameCallbackHelper, renameCallbackCount);
 
         // Check that the instance title is updated in the list.
         onView(withId(R.id.active_instance_list))
@@ -1274,8 +1271,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isDisplayed()));
 
         // Enter an empty name and save.
-        onView(withId(R.id.title_input_text)).inRoot(isDialog()).perform(replaceText(""));
-        onView(withText(R.string.save)).inRoot(isDialog()).perform(click());
+        saveRenameDialog("", renameCallbackHelper, renameCallbackCount);
 
         // Check that the rename callback was called.
         assertEquals(renameCallbackCount + 1, renameCallbackHelper.getCallCount());
@@ -1361,8 +1357,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isDisplayed()));
 
         // Enter an empty name and save.
-        onView(withId(R.id.title_input_text)).inRoot(isDialog()).perform(replaceText(""));
-        onView(withText(R.string.save)).inRoot(isDialog()).perform(click());
+        saveRenameDialog("", renameCallbackHelper, renameCallbackCount);
 
         // Check that the instance title is updated to the default title for an incognito window.
         String defaultTitle = "Incognito window";
@@ -1430,7 +1425,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isDisplayed()));
 
         // Click the cancel button.
-        onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
+        cancelRenameDialog();
 
         // Check that the "Name this window" dialog is dismissed.
         onView(withText(R.string.instance_switcher_header))
@@ -2134,6 +2129,37 @@ public class InstanceSwitcherCoordinatorTest {
                                         view.findViewById(R.id.more).performClick();
                                     }
                                 }));
+    }
+
+    private void saveRenameDialog(
+            String newName, CallbackHelper renameCallbackHelper, int currentCallCount)
+            throws TimeoutException {
+        // Replace text and dismiss the soft keyboard to settle the window layout
+        // before clicking Save, preventing input channel disposal during IME animation.
+        onView(withId(R.id.title_input_text))
+                .inRoot(isDialog())
+                .perform(replaceText(newName), closeSoftKeyboard());
+        onView(allOf(withId(R.id.positive_button), withText(R.string.save)))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+        renameCallbackHelper.waitForCallback(currentCallCount);
+        waitForRenameDialogDismissed();
+    }
+
+    private void cancelRenameDialog() {
+        onView(withId(R.id.title_input_text)).inRoot(isDialog()).perform(closeSoftKeyboard());
+        onView(allOf(withId(R.id.negative_button), withText(R.string.cancel)))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+        waitForRenameDialogDismissed();
+    }
+
+    private void waitForRenameDialogDismissed() {
+        // Wait for the nested rename dialog to fully dismiss before matching the parent
+        // instance switcher dialog root, avoiding ambiguous dialog root lookups.
+        waitForNoView(withId(R.id.title_input_text));
     }
 
     private static Matcher<View> withItemCount(final int count) {
