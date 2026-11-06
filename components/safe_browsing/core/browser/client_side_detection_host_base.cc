@@ -1330,6 +1330,11 @@ void ClientSideDetectionHostBase::
           ? "ClientSideDetectionScamDetectionRequestWithUrl.Enabled"
           : "ClientSideDetectionScamDetectionRequestWithUrl.Control");
 
+  verdict->mutable_population()->add_finch_active_groups(
+      base::FeatureList::IsEnabled(kClientSideDetectionIncludeTitleInInnerText)
+          ? "ClientSideDetectionIncludeTitleInInnerText.Enabled"
+          : "ClientSideDetectionIncludeTitleInInnerText.Control");
+
   if (verdict->client_side_detection_type() ==
       ClientSideDetectionType::FORCE_REQUEST) {
     if (base::FeatureList::IsEnabled(
@@ -1758,6 +1763,17 @@ void ClientSideDetectionHostBase::OnInnerTextComplete(
     std::optional<bool> did_match_high_confidence_allowlist,
     bool is_invalid_ip,
     std::string inner_text) {
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionIncludeTitleInInnerText) &&
+      inner_text.size() > kInnerTextMinThresholdBytes) {
+    std::string page_title = GetPageTitle();
+    base::UmaHistogramCounts10000(
+        "SBClientPhishing.IntelligentScanPageTitleSize", page_title.size());
+    if (!page_title.empty()) {
+      inner_text = base::StrCat({page_title, "\n", inner_text});
+    }
+  }
+
   base::UmaHistogramCounts100000(
       "SBClientPhishing.IntelligentScanInnerTextSize", inner_text.size());
   base::UmaHistogramCounts100000(

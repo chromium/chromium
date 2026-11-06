@@ -995,6 +995,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.IntelligentScanPageTitleSize" units="bytes"
+    expires_after="2027-11-04">
+  <owner>bcl@google.com</owner>
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the UTF-8 size (in bytes) of the page's explicit title (0 if the
+    page has no title) when inner text extraction completes with body text above
+    the minimum threshold for an intelligent scan and
+    ClientSideDetectionIncludeTitleInInnerText is enabled.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.IntelligentScanVerdict{RequestType}"
     enum="IntelligentScanVerdict" expires_after="2027-03-07">
   <owner>nwokedi@chromium.org</owner>

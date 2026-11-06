@@ -27,6 +27,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
@@ -770,6 +771,18 @@ void ClientSideDetectionHost::CaptureScreenshot(ScreenshotCallback callback) {
 
 void ClientSideDetectionHost::GetInnerText(HostInnerTextCallback callback) {
   delegate_->GetInnerText(std::move(callback));
+}
+
+std::string ClientSideDetectionHost::GetPageTitle() const {
+  if (!web_contents()) {
+    return std::string();
+  }
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  if (!entry) {
+    return std::string();
+  }
+  return base::UTF16ToUTF8(entry->GetTitle());
 }
 
 bool ClientSideDetectionHost::IsAccountSignedIn() {

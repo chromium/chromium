@@ -256,6 +256,12 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   void set_site_engagement_score(std::optional<double> score) {
     site_engagement_score_ = score;
   }
+
+  std::string GetPageTitle() const override { return page_title_; }
+
+  void set_page_title(std::string page_title) {
+    page_title_ = std::move(page_title);
+  }
   MOCK_METHOD(void,
               ShowBlockingPage,
               (GURL phishing_url,
@@ -279,6 +285,7 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   using ClientSideDetectionHostBase::CanSendSamplePing;
   using ClientSideDetectionHostBase::classification_image_;
   using ClientSideDetectionHostBase::classifier_;
+  using ClientSideDetectionHostBase::current_url;
   using ClientSideDetectionHostBase::ExtractClipboardData;
   using ClientSideDetectionHostBase::GetTierValue;
   using ClientSideDetectionHostBase::HasDonePreclassificationCheckOnSameURL;
@@ -289,6 +296,7 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   using ClientSideDetectionHostBase::is_csd_running;
   using ClientSideDetectionHostBase::is_uniform_image_retry_timer_running;
   using ClientSideDetectionHostBase::MaybeSendClientPhishingRequest;
+  using ClientSideDetectionHostBase::MaybeStartIntelligentScanForScamDetection;
   using ClientSideDetectionHostBase::NewRequestTypeTierHigher;
   using ClientSideDetectionHostBase::OnCreditCardFormVisitCount;
   using ClientSideDetectionHostBase::OnImageEmbeddingDone;
@@ -298,7 +306,6 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   using ClientSideDetectionHostBase::PhishingDetectionDone;
   using ClientSideDetectionHostBase::PhishingImageEmbeddingDone;
   using ClientSideDetectionHostBase::SendRequest;
-  using ClientSideDetectionHostBase::current_url;
   using ClientSideDetectionHostBase::set_current_url;
   using ClientSideDetectionHostBase::set_is_classifying;
   using ClientSideDetectionHostBase::set_is_csd_running;
@@ -315,6 +322,7 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
       credit_card_form::ReferringApp::kNoReferringApp;
   std::optional<double> site_engagement_score_;
   std::optional<GURL> current_url_override_;
+  std::string page_title_;
   bool use_browser_side_image_embedding_ = false;
   gfx::Image next_screenshot_;
   bool defer_screenshot_ = false;
@@ -1750,6 +1758,118 @@ TEST_F(ClientSideDetectionHostBaseTest,
       ClientSideDetectionHostBase::ImageEmbeddingResult::kCancelled, 1);
   histograms.ExpectTotalCount(
       "SBClientPhishing.KeyboardLock.IsFinalImageUniform", 0);
+}
+
+class ClientSideDetectionHostBaseIntelligentScanTitleTest
+    : public ClientSideDetectionHostBaseTest {
+ protected:
+  std::unique_ptr<ClientPhishingRequest> PrepareIntelligentScan(
+      std::string page_title,
+      std::string inner_text) {
+    host_ = std::make_unique<TestClientSideDetectionHostBase>(
+        cache_manager_.get(), &prefs_, /*history_service=*/nullptr,
+        mock_csd_service_.GetWeakPtr(), /*is_off_the_record=*/false,
+        &mock_intelligent_scan_delegate_);
+    host_->set_current_url(url_);
+    host_->set_page_title(std::move(page_title));
+
+    EXPECT_CALL(mock_intelligent_scan_delegate_,
+                ShouldRequestIntelligentScan(_))
+        .WillOnce(Return(true));
+    EXPECT_CALL(mock_intelligent_scan_delegate_,
+                GetIntelligentScanModelType(true))
+        .WillOnce(Return(IntelligentScanDelegate::ModelType::kServerSide));
+    EXPECT_CALL(*host_, GetInnerText(_))
+        .WillOnce([inner_text =
+                       std::move(inner_text)](HostInnerTextCallback callback) {
+          std::move(callback).Run(inner_text);
+        });
+
+    auto verdict = std::make_unique<ClientPhishingRequest>();
+    verdict->set_url(url_.spec());
+    verdict->set_client_side_detection_type(FORCE_REQUEST);
+    return verdict;
+  }
+
+  const GURL url_{"https://example.com/"};
+  MockClientSideDetectionServiceBase mock_csd_service_;
+  MockIntelligentScanDelegate mock_intelligent_scan_delegate_;
+};
+
+TEST_F(ClientSideDetectionHostBaseIntelligentScanTitleTest,
+       ExcludesTitleWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kClientSideDetectionIncludeTitleInInnerText);
+  base::HistogramTester histogram_tester;
+  auto verdict = PrepareIntelligentScan("Test Title", "Page body text");
+  EXPECT_CALL(mock_intelligent_scan_delegate_,
+              StartIntelligentScan("Page body text", url_.spec(), _, _))
+      .WillOnce(Return(base::UnguessableToken::Create()));
+
+  host_->MaybeStartIntelligentScanForScamDetection(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.IntelligentScanPageTitleSize", 0);
+}
+
+TEST_F(ClientSideDetectionHostBaseIntelligentScanTitleTest,
+       PrependsTitleWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      kClientSideDetectionIncludeTitleInInnerText);
+  base::HistogramTester histogram_tester;
+  auto verdict = PrepareIntelligentScan("Test Title", "Page body text");
+  const std::string expected_text = "Test Title\nPage body text";
+  EXPECT_CALL(mock_intelligent_scan_delegate_,
+              StartIntelligentScan(expected_text, url_.spec(), _, _))
+      .WillOnce(Return(base::UnguessableToken::Create()));
+
+  host_->MaybeStartIntelligentScanForScamDetection(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanPageTitleSize",
+      std::string("Test Title").size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanInnerTextSize", expected_text.size(), 1);
+}
+
+TEST_F(ClientSideDetectionHostBaseIntelligentScanTitleTest,
+       NoLeadingNewlineWhenTitleEmpty) {
+  base::test::ScopedFeatureList feature_list(
+      kClientSideDetectionIncludeTitleInInnerText);
+  base::HistogramTester histogram_tester;
+  auto verdict = PrepareIntelligentScan(/*page_title=*/"", "Page body text");
+  EXPECT_CALL(mock_intelligent_scan_delegate_,
+              StartIntelligentScan("Page body text", url_.spec(), _, _))
+      .WillOnce(Return(base::UnguessableToken::Create()));
+
+  host_->MaybeStartIntelligentScanForScamDetection(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanPageTitleSize", 0, 1);
+}
+
+TEST_F(ClientSideDetectionHostBaseIntelligentScanTitleTest,
+       DoesNotPrependTitleWhenBodyIsBelowMinThreshold) {
+  base::test::ScopedFeatureList feature_list(
+      kClientSideDetectionIncludeTitleInInnerText);
+  base::HistogramTester histogram_tester;
+  auto verdict = PrepareIntelligentScan("Test Title", /*inner_text=*/"");
+  EXPECT_CALL(mock_intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
+      .Times(0);
+  EXPECT_CALL(mock_csd_service_, SendClientReportPhishingRequest(_, _, _));
+
+  host_->MaybeStartIntelligentScanForScamDetection(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.IntelligentScanPageTitleSize", 0);
 }
 
 // Unit tests for ExtractClipboardData

@@ -149,6 +149,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionImageEmbeddingMatch);
 extern const base::FeatureParam<bool>
     kCsdImageEmbeddingMatchWithIntelligentScan;
 
+// Prepends the page title to the extracted inner text sent during client-side
+// detection intelligent scans.
+BASE_DECLARE_FEATURE(kClientSideDetectionIncludeTitleInInnerText);
+
 // Delays and retries KEYBOARD_LOCK_REQUESTED image embedding when the blurred
 // viewport image is uniform (e.g. blank white or black).
 BASE_DECLARE_FEATURE(kClientSideDetectionKeyboardLockUniformPageDelay);

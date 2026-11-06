@@ -142,6 +142,11 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // page.
   virtual void GetInnerText(HostInnerTextCallback callback) = 0;
 
+  // Returns the title explicitly provided by the current page (e.g. `<title>`
+  // or `document.title`), or an empty string if the page has no title. Must not
+  // fall back to synthesizing a title from the URL.
+  virtual std::string GetPageTitle() const = 0;
+
   // Calls the CSD service to classify phishing through thresholds presented in
   // `verdict`.
   virtual void ClassifyPhishingThroughThresholds(

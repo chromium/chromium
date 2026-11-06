@@ -16,6 +16,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/rand_util.h"
 #import "base/strings/strcat.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/db/allowlist_checker_client.h"
 #import "components/safe_browsing/core/browser/db/database_manager.h"
@@ -240,6 +241,20 @@ void ClientSideDetectionHostIOS::GetInnerText(HostInnerTextCallback callback) {
     [page_context_wrapper_ setShouldGetSnapshot:YES];
   }
   [page_context_wrapper_ populatePageContextFieldsAsync];
+}
+
+std::string ClientSideDetectionHostIOS::GetPageTitle() const {
+  if (!web_state_ || !web_state_->GetNavigationManager()) {
+    return std::string();
+  }
+  // Use `NavigationItem::GetTitle()` rather than `WebState::GetTitle()` to
+  // avoid falling back to a URL-synthesized display title.
+  web::NavigationItem* item =
+      web_state_->GetNavigationManager()->GetLastCommittedItem();
+  if (!item) {
+    return std::string();
+  }
+  return base::UTF16ToUTF8(item->GetTitle());
 }
 
 void ClientSideDetectionHostIOS::MaybeCaptureScreenshotAndStartIntelligentScan(

@@ -4834,4 +4834,24 @@ TEST_F(ClientSideDetectionHostIOSTest,
       "SBClientPhishing.Multimodal.ScreenshotCaptureSize", 0);
 }
 
+TEST_F(ClientSideDetectionHostIOSTest,
+       GetPageTitleReturnsExplicitTitleAndOmitsSynthesizedUrl) {
+  web::FakeNavigationManager* nav_manager =
+      static_cast<web::FakeNavigationManager*>(
+          web_state_.GetNavigationManager());
+  auto item = web::NavigationItem::Create();
+  item->SetURL(GURL(kExampleUrl));
+  nav_manager->SetLastCommittedItem(item.get());
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  // `NavigationItem::GetTitleForDisplay()` synthesizes a fallback display title
+  // from the URL when no explicit title is set, whereas `GetPageTitle()` must
+  // return "".
+  EXPECT_FALSE(item->GetTitleForDisplay().empty());
+  EXPECT_EQ("", host->GetPageTitle());
+
+  item->SetTitle(u"Test Title");
+  EXPECT_EQ("Test Title", host->GetPageTitle());
+}
+
 }  // namespace safe_browsing

@@ -76,6 +76,7 @@ class ClientSideDetectionHost
   bool IsErrorDocument() override;
   std::optional<double> GetSiteEngagementScore(const GURL& url) const override;
   void GetInnerText(HostInnerTextCallback callback) override;
+  std::string GetPageTitle() const override;
   void MaybeStartImageEmbedding(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,

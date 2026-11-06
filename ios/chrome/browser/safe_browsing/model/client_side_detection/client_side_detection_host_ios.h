@@ -89,6 +89,7 @@ class ClientSideDetectionHostIOS
   bool IsAccountSignedIn() override;
   bool IsErrorDocument() override;
   void GetInnerText(HostInnerTextCallback callback) override;
+  std::string GetPageTitle() const override;
   // Note: On iOS, the tab screenshot is captured alongside inner text in
   // `GetInnerText()` via `PageContextWrapper` and cached in
   // `intelligent_scan_tab_screenshot_`, rather than being captured here.

@@ -178,6 +178,9 @@ const base::FeatureParam<bool> kCsdImageEmbeddingMatchWithIntelligentScan{
     &kClientSideDetectionImageEmbeddingMatch,
     "CsdImageEmbeddingMatchWithIntelligentScan", /*default_value=*/true};
 
+BASE_FEATURE(kClientSideDetectionIncludeTitleInInnerText,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionKeyboardLockUniformPageDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kCsdKeyboardLockUniformPageDelayDurationMs{
@@ -632,6 +635,7 @@ base::ListValue GetFeatureStatusList() {
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
       &kClientSideDetectionIframeInnerText,
       &kClientSideDetectionImageEmbeddingMatch,
+      &kClientSideDetectionIncludeTitleInInnerText,
       &kClientSideDetectionKeyboardLockUniformPageDelay,
       &kClientSideDetectionKillswitch,
       &kClientSideDetectionLocalResourceCheckFix,

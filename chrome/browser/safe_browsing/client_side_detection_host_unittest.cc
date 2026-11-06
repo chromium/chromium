@@ -7135,4 +7135,16 @@ TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED, 1);
 }
 
+TEST_F(ClientSideDetectionHostTest,
+       GetPageTitleReturnsExplicitTitleAndOmitsSynthesizedUrl) {
+  // `WebContents::GetTitle()` synthesizes a fallback display title from the URL
+  // when no explicit title is set, whereas `GetPageTitle()` must return "".
+  EXPECT_FALSE(web_contents()->GetTitle().empty());
+  EXPECT_EQ("", csd_host_->GetPageTitle());
+
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      u"Test Title");
+  EXPECT_EQ("Test Title", csd_host_->GetPageTitle());
+}
+
 }  // namespace safe_browsing
