@@ -329,7 +329,6 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             "base/third_party/nspr/prtime.cc",
             "buildtools/third_party/libc++/__assertion_handler",
             "buildtools/third_party/libc++/__config_site",
-            "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
             "components/cronet/android/test/test_server/data/**",
             "components/prefs/Android.bp",
             "components/prefs/pref_service.cc",
@@ -671,6 +670,10 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         }
 
         self.assertNotIn("tot_cronet_api_java", mods)
+        self.assertEqual(mods["tot_cronet_java_tests"].type, "java_library")
+        self.assertIsNone(
+            getattr(mods["tot_cronet_java_tests"], "manifest", None)
+        )
         self.assertEqual(
             mods["tot_cronet_libcxx_headers"].srcs,
             {

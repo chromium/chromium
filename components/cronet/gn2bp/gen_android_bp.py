@@ -462,8 +462,7 @@ def create_extras_modules(
         )
     javatests_resources.visibility = {"//external/cronet:__subpackages__"}
 
-    java_tests = _new_extra_module("android_library", "java_tests")
-    java_tests.manifest = "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml"
+    java_tests = _new_extra_module("java_library", "java_tests")
     java_tests.sdk_version = "module_current"
     java_tests.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
     java_tests.static_libs = {

@@ -119,6 +119,9 @@ def destination_files_for_channel(import_channel):
         # TODO: https://crbug.com/387975197 - we shouldn't have to manually
         # maintain this list; ideally Copybara should handle this automatically
         # through the consistency file just like it does for partial file diffs.
+        # TODO: https://crbug.com/473553598 - Remove once `${GN2BP_MODULE_PREFIX}java_tests`
+        # switching to `java_library` has been imported to both `tot` and `stable`
+        # and this stub file is deleted in AOSP.
         "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
     ]
 
