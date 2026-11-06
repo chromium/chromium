@@ -30,9 +30,11 @@ class AutofillAiSourceAttributionInfoTest : public testing::Test {
 };
 
 TEST_F(AutofillAiSourceAttributionInfoTest, ConstructFromGmailSource) {
+  base::Time timestamp = base::Time::FromSecondsSinceUnixEpoch(1700000000);
   Source gmail_source{
       .url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
-      .metadata = GmailSourceMetadata{.title = "Flight Confirmation"},
+      .metadata = GmailSourceMetadata{.title = "Flight Confirmation",
+                                      .timestamp = timestamp},
   };
 
   AutofillAiSourceAttributionInfo info(gmail_source);
@@ -40,6 +42,35 @@ TEST_F(AutofillAiSourceAttributionInfoTest, ConstructFromGmailSource) {
   EXPECT_EQ(info.source_type, Source::Type::kGmail);
   EXPECT_EQ(info.url, GURL("https://mail.google.com/mail/u/0/#inbox/123"));
   EXPECT_EQ(info.title, u"Flight Confirmation");
+}
+
+TEST_F(AutofillAiSourceAttributionInfoTest,
+       ConstructFromGmailSourceWithoutTitleUsesTimestamp) {
+  base::Time timestamp = base::Time::FromSecondsSinceUnixEpoch(1700000000);
+  Source gmail_source{
+      .url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+      .metadata = GmailSourceMetadata{.timestamp = timestamp},
+  };
+
+  AutofillAiSourceAttributionInfo info(gmail_source);
+
+  EXPECT_EQ(info.source_type, Source::Type::kGmail);
+  EXPECT_EQ(info.url, GURL("https://mail.google.com/mail/u/0/#inbox/123"));
+  EXPECT_EQ(info.title, base::TimeFormatShortDate(timestamp));
+}
+
+TEST_F(AutofillAiSourceAttributionInfoTest,
+       ConstructFromGmailSourceWithoutTitleOrTimestamp) {
+  Source gmail_source{
+      .url = GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+      .metadata = GmailSourceMetadata{.timestamp = base::Time()},
+  };
+
+  AutofillAiSourceAttributionInfo info(gmail_source);
+
+  EXPECT_EQ(info.source_type, Source::Type::kGmail);
+  EXPECT_EQ(info.url, GURL("https://mail.google.com/mail/u/0/#inbox/123"));
+  EXPECT_EQ(info.title, u"");
 }
 
 TEST_F(AutofillAiSourceAttributionInfoTest, ConstructFromPhotosSource) {

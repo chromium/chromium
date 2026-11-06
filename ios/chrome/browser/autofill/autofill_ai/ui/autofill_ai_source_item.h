@@ -17,7 +17,7 @@ using AutofillAiSourceType =
 // Represents a single source item displayed in the Autofill AI sources sheet.
 @interface AutofillAiSourceItem : NSObject
 
-// Title of the source item (e.g., "Gmail message 1").
+// Title of the source item (e.g., an email subject or a formatted date).
 @property(nonatomic, copy, readonly) NSString* title;
 
 // Optional subtitle of the source item (e.g., a formatted date), or nil.

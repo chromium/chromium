@@ -14,13 +14,14 @@ class EntityInstance;
 }  // namespace autofill
 
 // Returns YES if the given `entity` has personal context payload containing at
-// least one source with a valid URL.
+// least one source with a valid URL and displayable metadata (title or
+// timestamp for Gmail, timestamp for Photos).
 BOOL EntityHasValidSources(const autofill::EntityInstance& entity);
 
 // Extracts and groups source items from the given `entity`.
 // Sources are grouped by service (Gmail first, then Google Photos) and only
-// sources with valid URLs are included. Returns an empty array if no valid
-// sources are found.
+// sources with valid URLs and displayable metadata are included. Returns an
+// empty array if no valid sources are found.
 NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
     const autofill::EntityInstance& entity);
 

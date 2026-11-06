@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_util.h"
 
 #import "base/i18n/time_formatting.h"
-#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -27,7 +26,6 @@ using PhotosSourceMetadata = autofill::EntityInstance::
     PersonalContextRecordTypePayload::PhotosSourceMetadata;
 using Source =
     autofill::EntityInstance::PersonalContextRecordTypePayload::Source;
-using SourceType = Source::Type;
 using PersonalContextRecordTypePayload =
     autofill::EntityInstance::PersonalContextRecordTypePayload;
 
@@ -60,16 +58,20 @@ TEST_F(AutofillAiSourcesUtilTest, TestExtractSourcesFromEntity_InvalidURLs) {
   EXPECT_EQ(groups.count, 0u);
 }
 
-// Tests extracting Gmail sources with a custom title.
+// Tests extracting Gmail sources with a custom title, verifying that the title
+// takes precedence over the timestamp.
 TEST_F(AutofillAiSourcesUtilTest, TestExtractSourcesFromEntity_GmailWithTitle) {
   const GURL url = GURL("https://mail.google.com/mail/u/0/#inbox/msg1");
+  base::Time timestamp;
+  ASSERT_TRUE(base::Time::FromUTCString("2025-10-15 14:30:00", &timestamp));
   autofill::EntityInstance entity = autofill::test::GetOrderEntityInstance(
       {.record_type = PersonalContextRecordTypePayload{
            .sources = {
                Source{
                    .url = url,
                    .metadata =
-                       GmailSourceMetadata{.title = "Your order confirmation"}},
+                       GmailSourceMetadata{.title = "Your order confirmation",
+                                           .timestamp = timestamp}},
            }}});
 
   EXPECT_TRUE(EntityHasValidSources(entity));
@@ -79,15 +81,17 @@ TEST_F(AutofillAiSourcesUtilTest, TestExtractSourcesFromEntity_GmailWithTitle) {
   EXPECT_NSEQ(groups[0].items[0].title, @"Your order confirmation");
 }
 
-// Tests extracting Gmail sources.
-TEST_F(AutofillAiSourcesUtilTest, TestExtractSourcesFromEntity_GmailOnly) {
-  const GURL url1("https://mail.google.com/mail/u/0/#inbox/msg1");
-  const GURL url2("https://mail.google.com/mail/u/0/#inbox/msg2");
+// Tests extracting Gmail sources without a title falls back to the timestamp.
+TEST_F(AutofillAiSourcesUtilTest,
+       TestExtractSourcesFromEntity_GmailWithTimestampFallback) {
+  const GURL url("https://mail.google.com/mail/u/0/#inbox/msg1");
+  base::Time timestamp;
+  ASSERT_TRUE(base::Time::FromUTCString("2025-10-14 09:15:00", &timestamp));
   autofill::EntityInstance entity = autofill::test::GetOrderEntityInstance(
       {.record_type = PersonalContextRecordTypePayload{
            .sources = {
-               Source{.url = url1, .metadata = GmailSourceMetadata{}},
-               Source{.url = url2, .metadata = GmailSourceMetadata{}},
+               Source{.url = url,
+                      .metadata = GmailSourceMetadata{.timestamp = timestamp}},
            }}});
 
   EXPECT_TRUE(EntityHasValidSources(entity));
@@ -98,41 +102,27 @@ TEST_F(AutofillAiSourcesUtilTest, TestExtractSourcesFromEntity_GmailOnly) {
   EXPECT_NSEQ(
       group.title,
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SOURCES_GMAIL_SECTION_TITLE));
-  ASSERT_EQ(group.items.count, 2u);
+  ASSERT_EQ(group.items.count, 1u);
 
-  AutofillAiSourceItem* item1 = group.items[0];
-  EXPECT_NSEQ(item1.title,
-              l10n_util::GetNSStringF(
-                  IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_GMAIL_MESSAGE,
-                  base::NumberToString16(1)));
-  EXPECT_EQ(item1.URL, url1);
-  EXPECT_EQ(item1.type, AutofillAiSourceType::kGmail);
-  EXPECT_NE(item1.icon, nil);
-
-  AutofillAiSourceItem* item2 = group.items[1];
-  EXPECT_NSEQ(item2.title,
-              l10n_util::GetNSStringF(
-                  IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_GMAIL_MESSAGE,
-                  base::NumberToString16(2)));
-  EXPECT_EQ(item2.URL, url2);
-  EXPECT_EQ(item2.type, AutofillAiSourceType::kGmail);
-  EXPECT_NE(item2.icon, nil);
+  AutofillAiSourceItem* item = group.items[0];
+  EXPECT_NSEQ(item.title,
+              base::SysUTF16ToNSString(base::TimeFormatShortDate(timestamp)));
+  EXPECT_EQ(item.URL, url);
+  EXPECT_EQ(item.type, AutofillAiSourceType::kGmail);
+  EXPECT_NE(item.icon, nil);
 }
 
 // Tests extracting Google Photos sources with timestamps.
 TEST_F(AutofillAiSourcesUtilTest,
        TestExtractSourcesFromEntity_PhotosWithTimestamp) {
-  const GURL photo_url1("https://photos.google.com/photo/123");
-  const GURL photo_url2("https://photos.google.com/photo/456");
-  base::Time timestamp1;
-  ASSERT_TRUE(base::Time::FromUTCString("2025-10-15 14:30:00", &timestamp1));
+  const GURL photo_url("https://photos.google.com/photo/123");
+  base::Time timestamp;
+  ASSERT_TRUE(base::Time::FromUTCString("2025-10-15 14:30:00", &timestamp));
   autofill::EntityInstance entity = autofill::test::GetOrderEntityInstance(
       {.record_type = PersonalContextRecordTypePayload{
            .sources = {
-               Source{
-                   .url = photo_url1,
-                   .metadata = PhotosSourceMetadata{.timestamp = timestamp1}},
-               Source{.url = photo_url2, .metadata = PhotosSourceMetadata{}},
+               Source{.url = photo_url,
+                      .metadata = PhotosSourceMetadata{.timestamp = timestamp}},
            }}});
 
   EXPECT_TRUE(EntityHasValidSources(entity));
@@ -143,60 +133,14 @@ TEST_F(AutofillAiSourcesUtilTest,
   EXPECT_NSEQ(
       group.title,
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SOURCES_PHOTOS_SECTION_TITLE));
-  ASSERT_EQ(group.items.count, 2u);
+  ASSERT_EQ(group.items.count, 1u);
 
-  AutofillAiSourceItem* item1 = group.items[0];
-  EXPECT_NSEQ(item1.title,
-              base::SysUTF16ToNSString(base::TimeFormatShortDate(timestamp1)));
-  EXPECT_EQ(item1.URL, photo_url1);
-  EXPECT_EQ(item1.type, AutofillAiSourceType::kPhotos);
-  EXPECT_NE(item1.icon, nil);
-
-  AutofillAiSourceItem* item2 = group.items[1];
-  EXPECT_NSEQ(item2.title, l10n_util::GetNSStringF(
-                               IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_SAVED_PHOTO,
-                               base::NumberToString16(1)));
-  EXPECT_EQ(item2.URL, photo_url2);
-  EXPECT_EQ(item2.type, AutofillAiSourceType::kPhotos);
-  EXPECT_NE(item2.icon, nil);
-}
-
-// Tests extracting Google Photos sources without timestamps (fallback labels).
-TEST_F(AutofillAiSourcesUtilTest, TestExtractSourcesFromEntity_PhotosOnly) {
-  const GURL photo_url1("https://photos.google.com/photo/123");
-  const GURL photo_url2("https://photos.google.com/photo/456");
-  autofill::EntityInstance entity = autofill::test::GetOrderEntityInstance(
-      {.record_type = PersonalContextRecordTypePayload{
-           .sources = {
-               Source{.url = photo_url1, .metadata = PhotosSourceMetadata{}},
-               Source{.url = photo_url2, .metadata = PhotosSourceMetadata{}},
-           }}});
-
-  EXPECT_TRUE(EntityHasValidSources(entity));
-  NSArray<AutofillAiSourceGroup*>* groups = ExtractSourcesFromEntity(entity);
-  ASSERT_EQ(groups.count, 1u);
-
-  AutofillAiSourceGroup* group = groups[0];
-  EXPECT_NSEQ(
-      group.title,
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SOURCES_PHOTOS_SECTION_TITLE));
-  ASSERT_EQ(group.items.count, 2u);
-
-  AutofillAiSourceItem* item1 = group.items[0];
-  EXPECT_NSEQ(item1.title, l10n_util::GetNSStringF(
-                               IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_SAVED_PHOTO,
-                               base::NumberToString16(1)));
-  EXPECT_EQ(item1.URL, photo_url1);
-  EXPECT_EQ(item1.type, AutofillAiSourceType::kPhotos);
-  EXPECT_NE(item1.icon, nil);
-
-  AutofillAiSourceItem* item2 = group.items[1];
-  EXPECT_NSEQ(item2.title, l10n_util::GetNSStringF(
-                               IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_SAVED_PHOTO,
-                               base::NumberToString16(2)));
-  EXPECT_EQ(item2.URL, photo_url2);
-  EXPECT_EQ(item2.type, AutofillAiSourceType::kPhotos);
-  EXPECT_NE(item2.icon, nil);
+  AutofillAiSourceItem* item = group.items[0];
+  EXPECT_NSEQ(item.title,
+              base::SysUTF16ToNSString(base::TimeFormatShortDate(timestamp)));
+  EXPECT_EQ(item.URL, photo_url);
+  EXPECT_EQ(item.type, AutofillAiSourceType::kPhotos);
+  EXPECT_NE(item.icon, nil);
 }
 
 // Tests extracting mixed sources contains both Gmail and Photos groups in

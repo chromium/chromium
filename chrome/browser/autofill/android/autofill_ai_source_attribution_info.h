@@ -37,9 +37,9 @@ struct AutofillAiSourceAttributionInfo {
 
   SourceType source_type;
   GURL url;
-  // Formatted display title (e.g. email subject for Gmail, or localized date
-  // for Photos). This is a derived presentation string and cannot be parsed
-  // back into a Photos timestamp.
+  // Formatted display title (e.g. email subject or localized date for Gmail, or
+  // localized date for Photos). This is a derived presentation string and
+  // cannot be parsed back into a timestamp.
   std::u16string title;
 };
 
