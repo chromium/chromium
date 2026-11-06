@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INSTANCE_COORDINATOR_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INSTANCE_COORDINATOR_METRICS_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_limit.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 
@@ -63,8 +66,8 @@ class GlicInstanceCoordinatorMetrics {
   explicit GlicInstanceCoordinatorMetrics(DataProvider* data_provider);
   ~GlicInstanceCoordinatorMetrics();
 
-  // Starts periodic recording of memory metrics.
-  void StartPeriodicMemoryMetricsRecording();
+  // Starts periodic recording of instance count and memory metrics.
+  void StartPeriodicMetricsRecording();
 
   // Called by the coordinator whenever an instance's visibility changes.
   void OnInstanceVisibilityChanged();
@@ -97,6 +100,9 @@ class GlicInstanceCoordinatorMetrics {
   // created.
   void RecordCountActuatingOnTaskCreation();
 
+  // Called on coordinator shutdown to finalize and record shutdown metrics.
+  void OnShutdown();
+
  private:
   GlicMetricReporter GetMetricReporter() const;
   // Helper to calculate currently visible instances using
@@ -117,6 +123,9 @@ class GlicInstanceCoordinatorMetrics {
   // suffix.
   void RecordMemoryFootprint(std::string_view suffix);
 
+  // Called periodically to record the total number of Glic instances.
+  void RecordPeriodicInstanceCount();
+
   const raw_ptr<DataProvider> data_provider_;
 
   // Tracks the start time of a "Concurrent Visibility" period, which is a
@@ -129,7 +138,16 @@ class GlicInstanceCoordinatorMetrics {
   // Tracks the ID of the currently active conversation.
   std::optional<std::string> active_conversation_id_;
 
+  // Tracks the peak total number of Glic instances (awake or hibernated) that
+  // existed concurrently.
+  size_t peak_instance_count_ = 0;
+
+  // Monotonic latch set once OnShutdown() runs; suppresses post-shutdown
+  // instance count updates during teardown.
+  bool is_shutdown_ = false;
+
   base::RepeatingTimer memory_metrics_timer_;
+  base::RepeatingTimer instance_count_metrics_timer_;
 };
 
 }  // namespace glic

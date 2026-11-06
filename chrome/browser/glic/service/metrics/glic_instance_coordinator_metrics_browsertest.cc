@@ -301,6 +301,36 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
       "Glic.Instances.CountActuating.OnTaskCreation", 2, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
+                       PeakCountOnShutdown) {
+  GlicHistogramTester histogram_tester;
+
+  // 1. Open the first instance and prevent blank-instance auto-deletion on
+  // tab switch.
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance1, OpenGlicForActiveTab());
+  PreventBlankDeletionOnClose(instance1);
+
+  // 2. Open the second instance.
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance2, OpenGlicForActiveTab());
+
+  // 3. Remove one instance so the total instance count drops back to 1.
+  coordinator().RemoveInstance(instance2->id(),
+                               InstanceRemovalReason::kArchived);
+
+  // Peak count metric is not recorded until shutdown.
+  histogram_tester.ExpectTotalCount("Glic.Instances.PeakCount.OnShutdown", 0);
+
+  // 4. Shut down coordinator and verify peak of 2 was recorded.
+  coordinator().Shutdown();
+  histogram_tester.ExpectUniqueSample("Glic.Instances.PeakCount.OnShutdown", 2,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.Instances.PeakCount.OnShutdown", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.Instances.PeakCount.OnShutdown", 0);
+}
+
 class GlicInstanceCoordinatorMetricsHibernationTest
     : public GlicInstanceCoordinatorMetricsBrowserTest {
  public:

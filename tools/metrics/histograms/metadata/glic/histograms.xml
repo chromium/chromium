@@ -3157,6 +3157,29 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Instances.Count.Periodic" units="instances"
+    expires_after="2027-11-01">
+  <owner>bryantchandler@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    The total number of Glic instances (including hibernated instances, and
+    excluding pre-warmed WebContents not yet attached to an instance) in a
+    profile. Recorded periodically (every 10 minutes) while the profile's
+    GlicInstanceCoordinator is alive, but ONLY when at least one instance exists
+    (0 is never recorded).
+
+    Analysis Note: Because this is emitted on a timer, raw total counts are
+    time-weighted and heavily biased toward long-running sessions (uptime bias)
+    and users who leave instances open in the background. To analyze the typical
+    concurrency per user without uptime skew, use per-client aggregation (e.g.,
+    Count Unique Clients or Client Proportion in the UMA dashboard, or
+    per-client mean/max in SQL). For session-level high water marks without
+    periodic bias, prefer Glic{GlicProvider}.Instances.PeakCount.OnShutdown.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Instances.CountActuating.OnTaskCreation"
     units="instances" expires_after="2027-06-01">
   <owner>bryantchandler@google.com</owner>
@@ -3176,6 +3199,22 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     The number of awake Glic instances (with WebUI contents loaded). Recorded
     every time a GlicInstance has its WebUI contents created (either on initial
     creation or when waking up from hibernation). Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instances.PeakCount.OnShutdown"
+    units="instances" expires_after="2027-11-01">
+  <owner>bryantchandler@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    The peak total number of Glic instances (including hibernated instances, and
+    excluding pre-warmed WebContents not yet attached to an instance) that
+    existed concurrently in a profile during the lifetime of its
+    GlicInstanceCoordinator. Recorded when the coordinator shuts down, only if
+    at least one instance existed. Metrics recorded on shutdown may not be
+    recorded on unclean Chrome exits or on Android where backgrounded processes
+    are terminated without a clean shutdown path. Scope: {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>

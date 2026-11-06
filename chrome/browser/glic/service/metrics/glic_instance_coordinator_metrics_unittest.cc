@@ -8,12 +8,15 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
+#include "chrome/common/chrome_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -312,6 +315,163 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
   histogram_tester_.ExpectUniqueSample(
       "Glic.Consumer.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kSwitchedToLastActive, 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMetricsTest, PeakCountOnShutdown_ZeroInstances) {
+  metrics_->OnShutdown();
+  histogram_tester_.ExpectTotalCount("Glic.Instances.PeakCount.OnShutdown", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.Instances.PeakCount.OnShutdown", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instances.PeakCount.OnShutdown", 0);
+}
+
+TEST_F(GlicInstanceCoordinatorMetricsTest,
+       PeakCountOnShutdown_HighWaterMarkAndIdempotent) {
+  std::vector<GlicInstanceImpl*> one_instance(1, nullptr);
+  std::vector<GlicInstanceImpl*> three_instances(3, nullptr);
+
+  // 1. One instance created.
+  EXPECT_CALL(provider_, GetInstances())
+      .WillOnce(testing::Return(one_instance));
+  metrics_->RecordCountOnCreation();
+
+  // 2. Scaled up to three instances.
+  EXPECT_CALL(provider_, GetInstances())
+      .WillOnce(testing::Return(three_instances));
+  metrics_->RecordCountOnCreation();
+
+  // 3. Coordinator shuts down after instances were removed. Peak should be 3.
+  metrics_->OnShutdown();
+  histogram_tester_.ExpectUniqueSample("Glic.Instances.PeakCount.OnShutdown", 3,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Instances.PeakCount.OnShutdown", 3, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.Instances.PeakCount.OnShutdown", 0);
+
+  // 4. Subsequent OnShutdown() call should be idempotent and not double-emit.
+  metrics_->OnShutdown();
+  histogram_tester_.ExpectTotalCount("Glic.Instances.PeakCount.OnShutdown", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.Instances.PeakCount.OnShutdown", 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMetricsTest,
+       PeakCountOnShutdown_ClampsOverflowToMaxBucket) {
+  std::vector<GlicInstanceImpl*> sixty_instances(60, nullptr);
+  EXPECT_CALL(provider_, GetInstances())
+      .WillOnce(testing::Return(sixty_instances));
+  metrics_->RecordCountOnCreation();
+
+  metrics_->OnShutdown();
+  // kMaxInstanceCountExclusive is 51, so samples >= 51 land in overflow bucket
+  // 51.
+  histogram_tester_.ExpectUniqueSample("Glic.Instances.PeakCount.OnShutdown",
+                                       51, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Instances.PeakCount.OnShutdown", 51, 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMetricsTest,
+       PostShutdown_SuppressesCreationAndPeriodicMetrics) {
+  std::vector<GlicInstanceImpl*> two_instances(2, nullptr);
+  EXPECT_CALL(provider_, GetInstances())
+      .WillOnce(testing::Return(two_instances));
+
+  metrics_->StartPeriodicMetricsRecording();
+  metrics_->RecordCountOnCreation();
+  metrics_->OnShutdown();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Instances.Count.OnCreation", 2, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Instances.PeakCount.OnShutdown", 2,
+                                       1);
+
+  // Subsequent creation calls, timer restarts, and elapsed 10m ticks after
+  // OnShutdown must not emit additional samples.
+  EXPECT_CALL(provider_, GetInstances()).Times(0);
+  metrics_->RecordCountOnCreation();
+  metrics_->StartPeriodicMetricsRecording();
+  task_environment_.FastForwardBy(base::Minutes(10));
+
+  histogram_tester_.ExpectTotalCount("Glic.Instances.Count.OnCreation", 1);
+  histogram_tester_.ExpectTotalCount("Glic.Instances.Count.Periodic", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instances.PeakCount.OnShutdown", 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMetricsTest,
+       PeriodicInstanceCount_SkipsZeroAndIncludesHibernated) {
+  metrics_->StartPeriodicMetricsRecording();
+
+  // Zero instances: timer fires after 10 minutes, but nothing is recorded.
+  EXPECT_CALL(provider_, GetInstances())
+      .WillOnce(testing::Return(std::vector<GlicInstanceImpl*>{}));
+  task_environment_.FastForwardBy(base::Minutes(10));
+  histogram_tester_.ExpectTotalCount("Glic.Instances.Count.Periodic", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Consumer.Instances.Count.Periodic",
+                                     0);
+  testing::Mock::VerifyAndClearExpectations(&provider_);
+
+  // Two instances exist (hibernated): timer fires after 10 minutes, records
+  // count 2.
+  std::vector<GlicInstanceImpl*> two_instances(2, nullptr);
+  EXPECT_CALL(provider_, GetInstances())
+      .WillRepeatedly(testing::Return(two_instances));
+  task_environment_.FastForwardBy(base::Minutes(10));
+  histogram_tester_.ExpectUniqueSample("Glic.Instances.Count.Periodic", 2, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Consumer.Instances.Count.Periodic",
+                                       2, 1);
+
+  // Another 10 minutes: records count 2 again.
+  task_environment_.FastForwardBy(base::Minutes(10));
+  histogram_tester_.ExpectBucketCount("Glic.Instances.Count.Periodic", 2, 2);
+  histogram_tester_.ExpectBucketCount("Glic.Consumer.Instances.Count.Periodic",
+                                      2, 2);
+  histogram_tester_.ExpectTotalCount("Glic.Instances.Count.Periodic", 2);
+
+  // Destroying metrics flushes peak count observed via periodic ticks.
+  metrics_.reset();
+  histogram_tester_.ExpectUniqueSample("Glic.Instances.PeakCount.OnShutdown", 2,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Instances.PeakCount.OnShutdown", 2, 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMetricsTest,
+       PeriodicInstanceCount_KillswitchDisablesTimer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kGlicRecordPeriodicInstanceCountMetrics);
+
+  EXPECT_CALL(provider_, GetInstances()).Times(0);
+  metrics_->StartPeriodicMetricsRecording();
+  task_environment_.FastForwardBy(base::Minutes(20));
+
+  histogram_tester_.ExpectTotalCount("Glic.Instances.Count.Periodic", 0);
+}
+
+TEST_F(GlicInstanceCoordinatorMetricsTest,
+       PeriodicInstanceCount_PeriodIndependentFromMemoryMetrics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kGlicRecordMemoryFootprintMetrics,
+                             {{"period", "5m"}}}},
+      /*disabled_features=*/{});
+
+  std::vector<GlicInstanceImpl*> two_instances(2, nullptr);
+  EXPECT_CALL(provider_, GetInstances())
+      .WillRepeatedly(testing::Return(two_instances));
+
+  metrics_->StartPeriodicMetricsRecording();
+
+  // At 5 minutes, memory metrics period elapses, but periodic instance count
+  // (hardcoded 10m) must not fire yet.
+  task_environment_.FastForwardBy(base::Minutes(5));
+  histogram_tester_.ExpectTotalCount("Glic.Instances.Count.Periodic", 0);
+
+  // At 10 minutes total, periodic instance count fires once.
+  task_environment_.FastForwardBy(base::Minutes(5));
+  histogram_tester_.ExpectUniqueSample("Glic.Instances.Count.Periodic", 2, 1);
 }
 
 }  // namespace

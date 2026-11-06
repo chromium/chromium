@@ -340,6 +340,11 @@ BASE_FEATURE(kGlicActivityHub, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings,
              FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
 
+BASE_FEATURE(kGlicRecordPeriodicInstanceCountMetrics,
+             // Enabled on all platforms including BUILDFLAG(IS_ANDROID);
+             // cpp_feature_parser requires a literal FeatureState constant.
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWhatsNewLuminous, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicForceFcmExperimentalTriggerFailure,

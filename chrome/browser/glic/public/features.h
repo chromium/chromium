@@ -268,6 +268,8 @@ BASE_DECLARE_FEATURE(kGlicActivityHub);
 // OS notification. Kill switch: when disabled, the original strings are shown.
 BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings);
 
+BASE_DECLARE_FEATURE(kGlicRecordPeriodicInstanceCountMetrics);
+
 BASE_DECLARE_FEATURE(kGlicWhatsNewLuminous);
 
 // Test only. When enabled, Android drops incoming Glic experimental triggering

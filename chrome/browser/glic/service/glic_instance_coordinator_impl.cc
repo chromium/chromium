@@ -194,10 +194,11 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       this, profile_, enabling);
   onboarding_tracker_ =
       std::make_unique<GlicOnboardingTracker>(profile_, enabling);
-  metrics_.StartPeriodicMemoryMetricsRecording();
+  metrics_.StartPeriodicMetricsRecording();
 }
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
+  metrics_.OnShutdown();
   CHECK(active_instance_sharing_manager_);
   active_instance_sharing_manager_->SetActiveSharingManager(nullptr);
 
@@ -685,6 +686,8 @@ bool GlicInstanceCoordinatorImpl::MaybeStartWarming(
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {
+  metrics_.OnShutdown();
+
   // Take ownership of the handlers to avoid iterator invalidation when
   // Cancel() removes them from invoke_handlers_.
   std::multimap<GlicInstance*, std::unique_ptr<GlicInvokeHandler>> handlers(
