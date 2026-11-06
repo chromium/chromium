@@ -40,6 +40,17 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.cc:AttemptOtpFillingConsentFetchOutcomeSuffix) -->
 
+<!-- LINT.IfChange(AttemptOtpFillingOptInState) -->
+
+<variants name="AttemptOtpFillingOptInState">
+  <variant name="AlreadyOptedIn" summary="when the user was already opted in"/>
+  <variant name="NewlyOptedIn"
+      summary="when the user opted in during this attempt"/>
+  <variant name="NotOptedIn" summary="when the user was not opted in"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.cc:AttemptOtpFillingOptInStateSuffix) -->
+
 <!-- LINT.IfChange(AttemptOtpFillingPredictedOtpType) -->
 
 <variants name="AttemptOtpFillingPredictedOtpType">
@@ -162,6 +173,19 @@ found in the LICENSE file.
     the task is stopped, paused or cancelled, or the tab is closed) before the
     named asynchronous step completes. Recorded at most once per attempt.
   </summary>
+</histogram>
+
+<histogram
+    name="OneTimeTokens.Actor.AttemptOtpFilling.ToolInvocation.{OptInState}"
+    enum="AttemptOtpFillingEvent" expires_after="2027-06-30">
+  <owner>salmaabdelaziz@google.com</owner>
+  <owner>passwordmanager-mobile-eng@google.com</owner>
+  <summary>
+    Same as OneTimeTokens.Actor.AttemptOtpFilling.ToolInvocation, sliced by the
+    Gmail OTP opt-in state for {OptInState}. Recorded alongside the base
+    histogram, at most once per attempt. Not recorded when a mock OTP is used.
+  </summary>
+  <token key="OptInState" variants="AttemptOtpFillingOptInState"/>
 </histogram>
 
 <histogram

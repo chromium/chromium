@@ -306,6 +306,9 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
   PrefService* prefs = tool_delegate().GetProfile().GetPrefs();
   bool gmail_otp_filling_enabled =
       autofill::prefs::IsAutofillGmailOtpFillingEnabled(prefs);
+  opt_in_state_ = gmail_otp_filling_enabled
+                      ? AttemptOtpFillingOptInState::kAlreadyOptedIn
+                      : AttemptOtpFillingOptInState::kNotOptedIn;
   base::Time dismissal_timestamp =
       autofill::prefs::GetAutofillGmailOtpFillingActivationDismissalTimestamp(
           prefs);
@@ -466,6 +469,7 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
   RecordGmailOtpOptInCardInteraction(
       GmailOtpOptInCardInteraction::kPermissionGranted);
   autofill::prefs::SetAutofillGmailOtpFillingEnabled(prefs, true);
+  opt_in_state_ = AttemptOtpFillingOptInState::kNewlyOptedIn;
   autofill::prefs::ClearAutofillGmailOtpFillingActivationDismissalTimestamp(
       prefs);
   std::move(callback).Run(MakeOkResult());
@@ -973,7 +977,7 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
 }
 
 void AttemptOtpFillingTool::RecordEvent(AttemptOtpFillingToolEvent event) {
-  RecordAttemptOtpFillingEvent(event);
+  RecordAttemptOtpFillingEvent(event, opt_in_state_);
 }
 
 }  // namespace actor

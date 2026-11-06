@@ -107,6 +107,12 @@ class AttemptOtpFillingTool : public Tool {
   // as the stage at which the tool was cancelled.
   std::optional<AttemptOtpFillingToolEvent> pending_cancellation_event_;
 
+  // Tracks the user's Gmail OTP opt-in state to select the
+  // `ToolInvocation.{OptInState}` patterned histogram suffix. It remains
+  // `std::nullopt` for mock OTP runs or before `Validate()` checks the
+  // opt-in pref.
+  std::optional<AttemptOtpFillingOptInState> opt_in_state_;
+
   base::WeakPtrFactory<AttemptOtpFillingTool> weak_factory_{this};
 };
 

@@ -400,6 +400,10 @@ std::string ConsentFetchDurationHistogram(std::string_view outcome) {
       {kAttemptOtpFillingConsentFetchDurationHistogram, ".", outcome});
 }
 
+std::string ToolInvocationHistogram(std::string_view opt_in_state) {
+  return base::StrCat({kAttemptOtpFillingToolHistogram, ".", opt_in_state});
+}
+
 void ExpectNoCancellationRecorded(const base::HistogramTester& tester) {
   for (AttemptOtpFillingToolEvent event : {
            AttemptOtpFillingToolEvent::kCancelledDuringConsentFetch,
@@ -460,8 +464,11 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionDenied) {
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now(),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kOptInPermissionDenied, 1);
+  histogram_tester_.ExpectBucketCount(
+      ToolInvocationHistogram("NotOptedIn"),
       AttemptOtpFillingToolEvent::kOptInPermissionDenied, 1);
   histogram_tester_.ExpectUniqueSample(
       kGmailOtpOptInCardInteractionHistogram,
@@ -516,6 +523,9 @@ TEST_F(AttemptOtpFillingToolTest,
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kWithinOptInCoolOffPeriod, 1);
+  histogram_tester_.ExpectBucketCount(
+      ToolInvocationHistogram("NotOptedIn"),
       AttemptOtpFillingToolEvent::kWithinOptInCoolOffPeriod, 1);
 }
 
@@ -635,8 +645,11 @@ TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringOptInCard) {
     ExpectNoCancellationRecorded(histogram_tester_);
   }
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kCancelledDuringOptInCard, 1);
+  histogram_tester_.ExpectBucketCount(
+      ToolInvocationHistogram("NotOptedIn"),
       AttemptOtpFillingToolEvent::kCancelledDuringOptInCard, 1);
   histogram_tester_.ExpectUniqueSample(kGmailOtpOptInCardInteractionHistogram,
                                        GmailOtpOptInCardInteraction::kCancelled,
@@ -721,6 +734,9 @@ TEST_F(AttemptOtpFillingToolTest,
 
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      ToolInvocationHistogram("AlreadyOptedIn"),
       AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
   ExpectNoCancellationRecorded(histogram_tester_);
 }
@@ -1021,6 +1037,11 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
+  histogram_tester_.ExpectTotalCount(ToolInvocationHistogram("AlreadyOptedIn"),
+                                     0);
+  histogram_tester_.ExpectTotalCount(ToolInvocationHistogram("NewlyOptedIn"),
+                                     0);
+  histogram_tester_.ExpectTotalCount(ToolInvocationHistogram("NotOptedIn"), 0);
 }
 
 // `Invoke()` fails with `kOtpFillFailure` when the result of
@@ -1950,6 +1971,42 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectUniqueSample(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kErrorResponse, 1);
+}
+
+TEST_F(AttemptOtpFillingToolTest,
+       ValidateThenInvoke_OptInPermissionGranted_NewlyOptedInRecorded) {
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
+      .WillOnce(RunOnceCallback<0>(GmailOtpOptInResult::NewResponse(
+          webui::mojom::GmailOtpOptInResponse::New(true))));
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+      .WillOnce(Return(CreateValidLoginContext()));
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
+      .WillOnce(RunOnceCallback<5>("123456"));
+  EXPECT_CALL(delegate().mock_otp_service(), FillOtp)
+      .WillOnce(RunOnceCallback<3>(true));
+
+  PageTarget target(gfx::Point(10, 10));
+  AttemptOtpFillingTool tool = CreateTool({target}, /*for_signin=*/true);
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+  SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+      prefs(), base::Time::Now() - base::Days(90));
+
+  TestFuture<ActionResultPtr> validate_future;
+  tool.Validate(validate_future.GetCallback());
+  EXPECT_EQ(kOk, validate_future.Take()->code);
+
+  SetupSuccessfulTimeOfUseValidation(tool, target);
+
+  TestFuture<ActionResultPtr> invoke_future;
+  tool.Invoke(invoke_future.GetCallback());
+  EXPECT_EQ(kOk, invoke_future.Take()->code);
+
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      ToolInvocationHistogram("NewlyOptedIn"),
+      AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
 }
 
 }  // namespace actor

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ATTEMPT_OTP_FILLING_METRICS_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_ONE_TIME_TOKEN_ATTEMPT_OTP_FILLING_METRICS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "chrome/browser/actor/tools/one_time_token/actor_login_flow_verifier.h"
@@ -142,6 +143,21 @@ enum class AttemptOtpFillingStep {
   kAfterConfirmation,
 };
 
+// The user's Gmail OTP opt-in state during an `AttemptOtpFilling` attempt. This
+// enum is only used to select the `ToolInvocation.{OptInState}` patterned
+// histogram suffix and is never logged as a bucket value.
+enum class AttemptOtpFillingOptInState {
+  // The user was already opted into Gmail OTP filling when the attempt started.
+  kAlreadyOptedIn,
+  // The user opted into Gmail OTP filling via the opt-in card during the
+  // attempt.
+  kNewlyOptedIn,
+  // The user was not opted into Gmail OTP filling when the event was recorded.
+  // This includes users who declined the opt-in card during this attempt, hit
+  // an error or cool-off period, or were already opted out previously.
+  kNotOptedIn,
+};
+
 // Histogram name for AttemptOtpFilling tool invocation events.
 inline constexpr char kAttemptOtpFillingToolHistogram[] =
     "OneTimeTokens.Actor.AttemptOtpFilling.ToolInvocation";
@@ -175,7 +191,11 @@ inline constexpr char kAttemptOtpFillingValidateFormFillingContextHistogram[] =
     "OneTimeTokens.Actor.AttemptOtpFilling.ValidateFormFillingContext";
 
 // Records events during the AttemptOtpFilling tool invocation events.
-void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event);
+// `opt_in_state` is optional because mock OTP runs skip the opt-in check
+// entirely and record only the base histogram.
+void RecordAttemptOtpFillingEvent(
+    AttemptOtpFillingToolEvent event,
+    std::optional<AttemptOtpFillingOptInState> opt_in_state = std::nullopt);
 
 // Records user interactions with the Gmail OTP opt-in card.
 void RecordGmailOtpOptInCardInteraction(
