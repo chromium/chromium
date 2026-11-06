@@ -68,7 +68,7 @@ class AbaSearchJourneyCueTarget : public contextual_cueing::CueTarget {
   void OnTabDidActivate(tabs::TabInterface* tab);
 
   // Records that the cue has shown for the tab's journey.
-  void OnCueShown();
+  void OnCueShown(bool is_anchored_message);
 
   // Builds the cue's text, unless the journey can no longer be restored.
   void GenerateContent(GenerateCallback callback);

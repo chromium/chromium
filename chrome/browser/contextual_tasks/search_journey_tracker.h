@@ -39,18 +39,23 @@ struct CopyRecord {
   bool is_context_menu_search = false;
 };
 
-// Coarse labels that Search can send about the query. Only used to slice
-// metrics.
+// Coarse labels that Search can send about the query. Used to slice metrics and
+// allow short queries when `kABASearchJourneysMinWordsWithoutHint` is set.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Recorded in
+// `ContextualTasks.SearchJourney.Cue.{Interaction}.QueryHint`.
+// LINT.IfChange(AimPromoQueryHint)
 enum class AimPromoQueryHint {
-  kEduHomework = 0,
-  kEduConceptual = 1,
-  kHowToWebApp = 2,
-  kMinValue = kEduHomework,
+  kNone = 0,
+  kEduHomework = 1,
+  kEduConceptual = 2,
+  kHowToWebApp = 3,
   kMaxValue = kHowToWebApp,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:AimPromoQueryHint)
 
 using AimPromoQueryHints = base::EnumSet<AimPromoQueryHint,
-                                         AimPromoQueryHint::kMinValue,
+                                         AimPromoQueryHint::kEduHomework,
                                          AimPromoQueryHint::kMaxValue>;
 
 // Parameters that a Google search results page registers so Chrome can later
@@ -94,6 +99,9 @@ struct JourneyState {
   // Whether the query matches text copied, or selected for a context-menu
   // search, on Tab A. This only labels the journey; it never gates it.
   bool matched_copy = false;
+  // Whether the query matches text selected for a context-menu ("Search Google
+  // for...") search on Tab A.
+  bool is_context_menu_search = false;
   // Whether Tab B has closed. Closing Tab B usually re-activates Tab A, which
   // counts as a return, so the journey is kept.
   bool search_tab_closed = false;
@@ -101,6 +109,9 @@ struct JourneyState {
   std::optional<AimPromoParams> promo_params;
   // Labels registered along with `promo_params`.
   AimPromoQueryHints query_hints;
+  // Whether eligibility metrics have been recorded for this journey. Recorded
+  // at most once, on the first qualifying return to Tab A.
+  bool eligible_recorded = false;
   // Whether the journey's contextual cue has shown. It only shows once.
   bool cue_shown = false;
 };
@@ -202,8 +213,9 @@ class SearchJourneyTracker : public KeyedService,
 
   // Returns the journey whose Tab A is `source_tab_id` if its AI Overview can
   // be restored: the journey hasn't expired, Tab A is still on `nav_entry_id`,
-  // and Tab B's results page registered restore parameters. Otherwise, returns
-  // nullptr.
+  // Tab B's results page registered restore parameters, and the query meets
+  // `GetABASearchJourneysMinWordsWithoutHint()` (or has a query hint).
+  // Otherwise, returns nullptr.
   const JourneyState* GetRestorableJourney(SessionID source_tab_id,
                                            int nav_entry_id) const;
 
@@ -211,9 +223,15 @@ class SearchJourneyTracker : public KeyedService,
   // been restored, so it can't be restored again.
   void OnJourneyRestored(SessionID source_tab_id);
 
+  // Records once per journey that the contextual cue for the journey whose
+  // Tab A is `source_tab_id` is eligible to be shown on return to Tab A.
+  void OnJourneyCueEligible(SessionID source_tab_id);
+
   // Records that the contextual cue for the journey whose Tab A is
   // `source_tab_id` has shown, so that it doesn't show again.
-  void OnJourneyCueShown(SessionID source_tab_id);
+  // `is_anchored_message` is true if the cue was shown as the expanded
+  // anchored message, or false if it was shown as the collapsed chip.
+  void OnJourneyCueShown(SessionID source_tab_id, bool is_anchored_message);
 
   // Clears copy records for `tab_id` and any journey whose Tab A is `tab_id`.
   // Journeys whose Tab B is `tab_id` are kept and marked as closed.
@@ -243,9 +261,11 @@ class SearchJourneyTracker : public KeyedService,
                   std::u16string_view text,
                   bool is_context_menu_search);
 
-  // Returns whether `search_terms` matches a copy recorded on `tab_id`.
-  bool MatchesCopyFromTab(SessionID tab_id,
-                          std::u16string_view search_terms) const;
+  // Returns the most recent copy record on `tab_id` whose hash matches
+  // `search_terms`, or nullptr if none matches.
+  const CopyRecord* FindMatchingCopyFromTab(
+      SessionID tab_id,
+      std::u16string_view search_terms) const;
 
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>

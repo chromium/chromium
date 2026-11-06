@@ -54,11 +54,14 @@ class SearchJourneyTabFeature : public content::WebContentsObserver {
   bool RestoreJourneyInSidePanel();
 
   // Returns whether the contextual cue for this tab's journey should show: the
-  // journey can be restored in the side panel, and its cue hasn't shown yet.
+  // journey can be restored in the side panel, the side panel isn't already
+  // open, and the journey's cue hasn't shown yet.
   bool ShouldShowCue() const;
 
   // Records that the contextual cue for this tab's journey has shown.
-  void OnCueShown();
+  // `is_anchored_message` is true if the cue was shown as the expanded
+  // anchored message, or false if it was shown as the collapsed chip.
+  void OnCueShown(bool is_anchored_message);
 
   // content::WebContentsObserver:
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,

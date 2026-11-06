@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -350,6 +351,17 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
   ASSERT_NE(it, journeys.end());
   ASSERT_TRUE(it->second.promo_params.has_value());
   EXPECT_EQ(it->second.promo_params->mstk, "token");
+
+  // Returning while the profile is ineligible for Contextual Tasks records
+  // ReturnedToSourceTab, but not Eligible.
+  base::UserActionTester user_action_tester;
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.ReturnedToSourceTab"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Eligible"),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchJourneyTabFeatureBrowserTest,
@@ -679,10 +691,17 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
   ASSERT_TRUE(cue_target);
 
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   tab_list()->ActivateTab(source_tab->GetHandle());
   EXPECT_FALSE(cue_target->IsEligible());
   // Returning doesn't evaluate a cue that can't show.
   histogram_tester.ExpectTotalCount("ContextualCueing.V2.Decision", 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.ReturnedToSourceTab"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Eligible"),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
@@ -706,6 +725,7 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
 // blocked.
 IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
                        ShowsAsChipWhenLoudCuesBlocked) {
+  base::UserActionTester user_action_tester;
   BlockLoudCues();
   tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
   ASSERT_TRUE(source_tab);
@@ -720,6 +740,18 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
       [&]() { return observer.GetCurrentPageActionState().showing; }));
   EXPECT_FALSE(observer.GetCurrentPageActionState().anchored_message_showing);
   EXPECT_FALSE(GetCueTarget(source_tab)->IsEligible());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Eligible"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown.Chip"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown.AnchoredMessage"),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, GeneratesCueText) {
@@ -754,6 +786,8 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, GeneratesCueText) {
 // clicking it restores the journey in the side panel.
 IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
                        ShowsCueOnReturnAndRestoresJourneyOnClick) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
   ASSERT_TRUE(source_tab);
   page_actions::PageActionController* page_action_controller =
@@ -769,6 +803,19 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
   EXPECT_EQ(observer.GetCurrentPageActionState().tooltip,
             l10n_util::GetStringUTF16(
                 IDS_CONTEXTUAL_TASKS_SEARCH_JOURNEY_CUE_ACTION));
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Eligible"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.WordCount", 4, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown.AnchoredMessage"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Shown.WordCount", 4, 1);
 
   EXPECT_CALL(*ui_service(),
               StartTaskUiInSidePanelImpl(testing::_, source_tab, testing::_,
@@ -781,6 +828,14 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
   EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !observer.GetCurrentPageActionState().showing; }));
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Clicked"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Clicked.WordCount", 4, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Restored"),
+            1);
 }
 
 // Tests that the cue shows at most once per journey, even if the user returns

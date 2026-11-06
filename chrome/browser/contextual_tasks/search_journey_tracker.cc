@@ -8,10 +8,17 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/google/core/common/google_util.h"
@@ -29,6 +36,39 @@ namespace {
 // Added to Google searches whose query matches recently copied text. `1` means
 // an exact match.
 constexpr char kCopyMatchParam[] = "ictfc";
+
+size_t CountWords(std::u16string_view text) {
+  return base::SplitStringPiece(text, base::kWhitespaceUTF16,
+                                base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY)
+      .size();
+}
+
+void RecordCueSliceMetrics(std::string_view interaction,
+                           const JourneyState& journey) {
+  const std::string prefix =
+      base::StrCat({"ContextualTasks.SearchJourney.Cue.", interaction, "."});
+  base::UmaHistogramBoolean(base::StrCat({prefix, "CopyMatch"}),
+                            journey.matched_copy);
+  base::UmaHistogramBoolean(base::StrCat({prefix, "ContextMenuSearch"}),
+                            journey.is_context_menu_search);
+  base::UmaHistogramBoolean(base::StrCat({prefix, "SearchTabClosed"}),
+                            journey.search_tab_closed);
+  base::UmaHistogramCounts100(
+      base::StrCat({prefix, "WordCount"}),
+      base::saturated_cast<int>(CountWords(journey.search_terms)));
+  base::UmaHistogramLongTimes(
+      base::StrCat({prefix, "SearchDwellTime"}),
+      base::TimeTicks::Now() - journey.search_committed_time);
+  if (journey.query_hints.empty()) {
+    base::UmaHistogramEnumeration(base::StrCat({prefix, "QueryHint"}),
+                                  AimPromoQueryHint::kNone);
+  } else {
+    for (AimPromoQueryHint hint : journey.query_hints) {
+      base::UmaHistogramEnumeration(base::StrCat({prefix, "QueryHint"}), hint);
+    }
+  }
+}
 
 }  // namespace
 
@@ -153,6 +193,10 @@ bool SearchJourneyTracker::OnTabActivated(SessionID tab_id, int nav_entry_id) {
     // Any other tab is an intermediate tab, as in A -> B -> C -> A.
     return !allow_intermediate_tabs;
   });
+  if (returned) {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.SearchJourney.ReturnedToSourceTab"));
+  }
   return returned;
 }
 
@@ -229,8 +273,14 @@ void SearchJourneyTracker::OnSearchNavigationCommitted(
   journey.search_tab_id = search_tab_id;
   journey.search_terms = std::u16string(search_terms);
   journey.search_committed_time = base::TimeTicks::Now();
-  journey.matched_copy = MatchesCopyFromTab(source_tab_->tab_id, search_terms);
+  if (const CopyRecord* matching_copy =
+          FindMatchingCopyFromTab(source_tab_->tab_id, search_terms)) {
+    journey.matched_copy = true;
+    journey.is_context_menu_search = matching_copy->is_context_menu_search;
+  }
   active_journeys_.insert_or_assign(source_tab_->tab_id, std::move(journey));
+  base::RecordAction(
+      base::UserMetricsAction("ContextualTasks.SearchJourney.Armed"));
 }
 
 bool SearchJourneyTracker::OnAimPromoParamsReceived(
@@ -249,6 +299,8 @@ bool SearchJourneyTracker::OnAimPromoParamsReceived(
         journey.search_terms == search_terms) {
       journey.promo_params = std::move(params);
       journey.query_hints = query_hints;
+      base::RecordAction(base::UserMetricsAction(
+          "ContextualTasks.SearchJourney.PromoParamsReceived"));
       return true;
     }
   }
@@ -269,17 +321,54 @@ const JourneyState* SearchJourneyTracker::GetRestorableJourney(
       !journey.promo_params.has_value()) {
     return nullptr;
   }
+  const size_t min_words_without_hint =
+      GetABASearchJourneysMinWordsWithoutHint();
+  if (min_words_without_hint > 0 && journey.query_hints.empty() &&
+      CountWords(journey.search_terms) < min_words_without_hint) {
+    return nullptr;
+  }
   return &journey;
 }
 
 void SearchJourneyTracker::OnJourneyRestored(SessionID source_tab_id) {
-  active_journeys_.erase(source_tab_id);
+  auto it = active_journeys_.find(source_tab_id);
+  if (it == active_journeys_.end()) {
+    return;
+  }
+  if (it->second.cue_shown) {
+    base::RecordAction(
+        base::UserMetricsAction("ContextualTasks.SearchJourney.Cue.Clicked"));
+    RecordCueSliceMetrics("Clicked", it->second);
+  }
+  base::RecordAction(
+      base::UserMetricsAction("ContextualTasks.SearchJourney.Restored"));
+  active_journeys_.erase(it);
 }
 
-void SearchJourneyTracker::OnJourneyCueShown(SessionID source_tab_id) {
+void SearchJourneyTracker::OnJourneyCueEligible(SessionID source_tab_id) {
   auto it = active_journeys_.find(source_tab_id);
-  if (it != active_journeys_.end()) {
+  if (it != active_journeys_.end() && !it->second.eligible_recorded) {
+    it->second.eligible_recorded = true;
+    base::RecordAction(
+        base::UserMetricsAction("ContextualTasks.SearchJourney.Eligible"));
+    RecordCueSliceMetrics("Eligible", it->second);
+  }
+}
+
+void SearchJourneyTracker::OnJourneyCueShown(SessionID source_tab_id,
+                                             bool is_anchored_message) {
+  auto it = active_journeys_.find(source_tab_id);
+  if (it != active_journeys_.end() && !it->second.cue_shown) {
     it->second.cue_shown = true;
+    base::RecordAction(
+        base::UserMetricsAction("ContextualTasks.SearchJourney.Cue.Shown"));
+    base::RecordAction(
+        is_anchored_message
+            ? base::UserMetricsAction(
+                  "ContextualTasks.SearchJourney.Cue.Shown.AnchoredMessage")
+            : base::UserMetricsAction(
+                  "ContextualTasks.SearchJourney.Cue.Shown.Chip"));
+    RecordCueSliceMetrics("Shown", it->second);
   }
 }
 
@@ -351,18 +440,21 @@ void SearchJourneyTracker::RecordCopy(SessionID source_tab_id,
   }
 }
 
-bool SearchJourneyTracker::MatchesCopyFromTab(
+const CopyRecord* SearchJourneyTracker::FindMatchingCopyFromTab(
     SessionID tab_id,
     std::u16string_view search_terms) const {
   const std::optional<size_t> query_hash =
       NormalizeForJourneyMatch(search_terms);
   if (!query_hash.has_value()) {
-    return false;
+    return nullptr;
   }
-  return std::ranges::any_of(ring_buffer_, [&](const CopyRecord& record) {
-    return record.source_tab_id == tab_id &&
-           record.normalized_query_hash == *query_hash;
-  });
+  for (const CopyRecord& record : base::Reversed(ring_buffer_)) {
+    if (record.source_tab_id == tab_id &&
+        record.normalized_query_hash == *query_hash) {
+      return &record;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace contextual_tasks

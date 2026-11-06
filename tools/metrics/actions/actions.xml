@@ -10475,6 +10475,100 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.SearchJourney.Armed">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when an ABA search journey is armed because a Google search
+    committed in the search tab after the user left an eligible source tab.
+  </description>
+</action>
+
+<action name="ContextualTasks.SearchJourney.Cue.Clicked">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks the ABA search journey contextual cue on the
+    source tab to restore the journey in the Contextual Tasks side panel.
+  </description>
+</action>
+
+<action name="ContextualTasks.SearchJourney.Cue.Shown"
+    not_user_triggered="true">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the ABA search journey contextual cue is shown on the source
+    tab.
+  </description>
+</action>
+
+<action name="ContextualTasks.SearchJourney.Cue.Shown.AnchoredMessage"
+    not_user_triggered="true">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the ABA search journey contextual cue is first shown on the
+    source tab as the expanded anchored message.
+  </description>
+</action>
+
+<action name="ContextualTasks.SearchJourney.Cue.Shown.Chip"
+    not_user_triggered="true">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the ABA search journey contextual cue is first shown on the
+    source tab as the collapsed omnibox chip.
+  </description>
+</action>
+
+<action name="ContextualTasks.SearchJourney.Eligible" not_user_triggered="true">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded once per ABA search journey on the first return to the source tab
+    when the journey has a restorable AI Overview and passes eligibility gates.
+  </description>
+</action>
+
+<action name="ContextualTasks.SearchJourney.PromoParamsReceived"
+    not_user_triggered="true">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the search results page registers AI Overview restore
+    parameters for an active ABA search journey.
+  </description>
+</action>
+
+<action name="ContextualTasks.SearchJourney.Restored">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when an ABA search journey's AI Overview is restored in the
+    Contextual Tasks side panel.
+  </description>
+</action>
+
+<action name="ContextualTasks.SearchJourney.ReturnedToSourceTab">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user returns to the source tab of an active ABA search
+    journey while the tab is still on the navigation entry they left.
+  </description>
+</action>
+
+<action name="ContextualTasks.SidePanel.UserAction.Close.AbaOnRamp">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user closes the side panel for a session entered via the
+    ABA search journey contextual cue.
+  </description>
+</action>
+
 <action name="ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick">
   <owner>nguyenbryan@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

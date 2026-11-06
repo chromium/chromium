@@ -397,6 +397,11 @@ const base::FeatureParam<bool> kABASearchJourneysAllowIntermediateTabs(
     "aba_search_journeys_allow_intermediate_tabs",
     false);
 
+const base::FeatureParam<size_t> kABASearchJourneysMinWordsWithoutHint(
+    &kABASearchJourneys,
+    "aba_search_journeys_min_words_without_hint",
+    0);
+
 bool IsABASearchJourneysEnabled() {
   return base::FeatureList::IsEnabled(kABASearchJourneys);
 }
@@ -425,6 +430,13 @@ size_t GetABASearchJourneysMinQueryMatchLength() {
 bool ShouldAllowABASearchJourneysIntermediateTabs() {
   return IsABASearchJourneysEnabled() &&
          kABASearchJourneysAllowIntermediateTabs.Get();
+}
+
+size_t GetABASearchJourneysMinWordsWithoutHint() {
+  if (!IsABASearchJourneysEnabled()) {
+    return 0;
+  }
+  return kABASearchJourneysMinWordsWithoutHint.Get();
 }
 
 BASE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout,

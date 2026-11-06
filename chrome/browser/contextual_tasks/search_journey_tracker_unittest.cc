@@ -11,6 +11,8 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -590,7 +592,7 @@ TEST_F(SearchJourneyTrackerTest, OnJourneyCueShownMarksJourney) {
   ASSERT_TRUE(GetJourney(kSourceTab1));
   EXPECT_FALSE(GetJourney(kSourceTab1)->cue_shown);
 
-  tracker_.OnJourneyCueShown(kSourceTab1);
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/true);
 
   ASSERT_TRUE(GetJourney(kSourceTab1));
   EXPECT_TRUE(GetJourney(kSourceTab1)->cue_shown);
@@ -598,7 +600,7 @@ TEST_F(SearchJourneyTrackerTest, OnJourneyCueShownMarksJourney) {
 
 TEST_F(SearchJourneyTrackerTest, NewSearchInSearchTabResetsCueShown) {
   StartJourney(kSourceTab1, kSearchTab1, u"first query");
-  tracker_.OnJourneyCueShown(kSourceTab1);
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/true);
 
   tracker_.OnSearchNavigationCommitted(kSearchTab1, u"second query");
 
@@ -608,8 +610,156 @@ TEST_F(SearchJourneyTrackerTest, NewSearchInSearchTabResetsCueShown) {
 }
 
 TEST_F(SearchJourneyTrackerTest, OnJourneyCueShownWithoutJourneyIsIgnored) {
-  tracker_.OnJourneyCueShown(kSourceTab1);
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/true);
   EXPECT_TRUE(tracker_.GetActiveJourneysForTesting().empty());
+}
+
+TEST_F(SearchJourneyTrackerTest, MinWordsWithoutHintGate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kABASearchJourneys,
+      {{"aba_search_journeys_min_words_without_hint", "5"}});
+  EXPECT_EQ(GetABASearchJourneysMinWordsWithoutHint(), 5u);
+
+  // A 4-word query without hints is blocked.
+  StartJourney(kSourceTab1, kSearchTab1, u"how do tides work");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"how do tides work", CreatePromoParams(), {}));
+  EXPECT_FALSE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+
+  // Registering a hint allows the same 4-word query.
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"how do tides work", CreatePromoParams(),
+      {AimPromoQueryHint::kEduConceptual}));
+  EXPECT_TRUE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+
+  // A 5-word query is allowed even without hints.
+  StartJourney(kSourceTab1, kSearchTab1, u"how do ocean tides work");
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, u"how do ocean tides work", CreatePromoParams(), {}));
+  EXPECT_TRUE(tracker_.GetRestorableJourney(kSourceTab1, kNavEntryId));
+}
+
+TEST_F(SearchJourneyTrackerTest, RecordsFunnelAndCueSliceMetrics) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  const std::u16string kQuery = u"how do ocean tides work";
+  tracker_.OnContextMenuSearchRecorded(kSourceTab1, kNavEntryId, kQuery);
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("ContextualTasks.SearchJourney.Armed"),
+      1);
+
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, kQuery, CreatePromoParams(),
+      {AimPromoQueryHint::kEduHomework, AimPromoQueryHint::kHowToWebApp}));
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.PromoParamsReceived"),
+            1);
+
+  task_environment_.AdvanceClock(base::Minutes(12));
+  tracker_.OnTabDestroyed(kSearchTab1);
+  EXPECT_TRUE(tracker_.OnTabActivated(kSourceTab1, kNavEntryId));
+  tracker_.OnJourneyCueEligible(kSourceTab1);
+  // A second OnJourneyCueEligible for the same journey does not double-count.
+  tracker_.OnJourneyCueEligible(kSourceTab1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.ReturnedToSourceTab"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Eligible"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.CopyMatch", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.ContextMenuSearch", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.SearchTabClosed", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.WordCount", 5, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.SearchDwellTime",
+      base::Minutes(12), 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SearchJourney.Cue.Eligible.QueryHint", 2);
+
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/true);
+  // A second OnJourneyCueShown for the same journey does not double-count.
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/false);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown.AnchoredMessage"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown.Chip"),
+            0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Shown.CopyMatch", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Shown.ContextMenuSearch", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Shown.SearchTabClosed", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Shown.WordCount", 5, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "ContextualTasks.SearchJourney.Cue.Shown.SearchDwellTime",
+      base::Minutes(12), 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SearchJourney.Cue.Shown.QueryHint", 2);
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.SearchJourney.Cue.Shown.QueryHint",
+      AimPromoQueryHint::kEduHomework, 1);
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.SearchJourney.Cue.Shown.QueryHint",
+      AimPromoQueryHint::kHowToWebApp, 1);
+
+  task_environment_.AdvanceClock(base::Minutes(3));
+  tracker_.OnJourneyRestored(kSourceTab1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Clicked"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Restored"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Clicked.CopyMatch", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Clicked.ContextMenuSearch", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Clicked.SearchTabClosed", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Clicked.WordCount", 5, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "ContextualTasks.SearchJourney.Cue.Clicked.SearchDwellTime",
+      base::Minutes(15), 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SearchJourney.Cue.Clicked.QueryHint", 2);
+}
+
+TEST_F(SearchJourneyTrackerTest,
+       CopyMatchDistinguishesClipboardCopyFromContextMenuSearch) {
+  base::HistogramTester histogram_tester;
+  const std::u16string kQuery = u"how do ocean tides work";
+
+  // A context-menu search followed by a regular clipboard copy of the same text
+  // should use the most recent record (the regular copy).
+  tracker_.OnContextMenuSearchRecorded(kSourceTab1, kNavEntryId, kQuery);
+  tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(kSearchTab1, kQuery,
+                                                CreatePromoParams(), {}));
+
+  tracker_.OnJourneyCueEligible(kSourceTab1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.CopyMatch", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.ContextMenuSearch", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Eligible.QueryHint",
+      AimPromoQueryHint::kNone, 1);
 }
 
 TEST_F(SearchJourneyTrackerTest, JourneyTtlExpiry) {
@@ -684,6 +834,7 @@ TEST_F(SearchJourneyTrackerTest, FeatureParamsZeroWhenFeatureDisabled) {
   EXPECT_EQ(GetABASearchJourneysTtl(), base::TimeDelta());
   EXPECT_EQ(GetABASearchJourneysMaxRingBufferSize(), 0u);
   EXPECT_EQ(GetABASearchJourneysMinQueryMatchLength(), 0u);
+  EXPECT_EQ(GetABASearchJourneysMinWordsWithoutHint(), 0u);
   EXPECT_FALSE(ShouldAllowABASearchJourneysIntermediateTabs());
   EXPECT_FALSE(SearchJourneyTracker::NormalizeForJourneyMatch(u"valid query")
                    .has_value());

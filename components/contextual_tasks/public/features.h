@@ -222,6 +222,7 @@ extern const base::FeatureParam<base::TimeDelta> kABASearchJourneysTtl;
 extern const base::FeatureParam<size_t> kABASearchJourneysMaxRingBufferSize;
 extern const base::FeatureParam<size_t> kABASearchJourneysMinQueryMatchLength;
 extern const base::FeatureParam<bool> kABASearchJourneysAllowIntermediateTabs;
+extern const base::FeatureParam<size_t> kABASearchJourneysMinWordsWithoutHint;
 
 bool IsABASearchJourneysEnabled();
 
@@ -233,6 +234,11 @@ size_t GetABASearchJourneysMinQueryMatchLength();
 // the source tab (A -> B -> C -> A) keeps the journey. Off by default, so only
 // A -> B -> A counts.
 bool ShouldAllowABASearchJourneysIntermediateTabs();
+
+// Minimum word count required for an ABA search journey's query when the search
+// results page didn't register any `AimPromoQueryHint`s. `0` (the default)
+// allows queries of any length.
+size_t GetABASearchJourneysMinWordsWithoutHint();
 
 BASE_DECLARE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout);
 

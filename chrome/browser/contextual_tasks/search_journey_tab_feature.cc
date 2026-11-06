@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
@@ -145,16 +146,24 @@ bool SearchJourneyTabFeature::ShouldShowCue() const {
   if (!CanRestoreJourneyInSidePanel()) {
     return false;
   }
+  // There's nothing to offer if the side panel is already open.
+  if (ContextualTasksPanelController* panel_controller =
+          ContextualTasksPanelController::From(
+              tab_->GetBrowserWindowInterface());
+      panel_controller && panel_controller->IsPanelOpenForContextualTask()) {
+    return false;
+  }
   const JourneyState* journey = tracker_->GetRestorableJourney(
       sessions::SessionTabHelper::IdForTab(web_contents()),
       GetLastCommittedEntryId(web_contents()));
   return journey && !journey->cue_shown;
 }
 
-void SearchJourneyTabFeature::OnCueShown() {
+void SearchJourneyTabFeature::OnCueShown(bool is_anchored_message) {
   if (tracker_ && web_contents()) {
     tracker_->OnJourneyCueShown(
-        sessions::SessionTabHelper::IdForTab(web_contents()));
+        sessions::SessionTabHelper::IdForTab(web_contents()),
+        is_anchored_message);
   }
 }
 
@@ -201,8 +210,12 @@ void SearchJourneyTabFeature::OnTabDidActivate(tabs::TabInterface* tab) {
   if (!tracker_ || !web_contents()) {
     return;
   }
-  tracker_->OnTabActivated(sessions::SessionTabHelper::IdForTab(web_contents()),
-                           GetLastCommittedEntryId(web_contents()));
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+  if (tracker_->OnTabActivated(tab_id,
+                               GetLastCommittedEntryId(web_contents())) &&
+      ShouldShowCue()) {
+    tracker_->OnJourneyCueEligible(tab_id);
+  }
 }
 
 void SearchJourneyTabFeature::OnTabWillDeactivate(tabs::TabInterface* tab) {

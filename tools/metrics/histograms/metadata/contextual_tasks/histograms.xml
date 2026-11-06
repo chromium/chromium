@@ -23,6 +23,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AbaSearchJourneyCueInteraction">
+  <variant name="Clicked"
+      summary="clicked to restore the journey in the side panel"/>
+  <variant name="Eligible"
+      summary="eligible on the first qualifying return to the source tab"/>
+  <variant name="Shown" summary="shown on the source tab"/>
+</variants>
+
 <histogram name="ContextualTasks.ActiveTab.UserAction.LinkClicked"
     enum="Boolean" expires_after="2027-03-07">
   <owner>sophiechang@chromium.org</owner>
@@ -901,6 +909,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContextualTasks.SearchJourney.Cue.{Interaction}.ContextMenuSearch"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the ABA search journey contextual cue is {Interaction}.
+    Records whether the journey's search query matched text selected for a
+    context-menu search on the source tab.
+  </summary>
+  <token key="Interaction" variants="AbaSearchJourneyCueInteraction"/>
+</histogram>
+
+<histogram name="ContextualTasks.SearchJourney.Cue.{Interaction}.CopyMatch"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the ABA search journey contextual cue is {Interaction}.
+    Records whether the journey's search query matched text copied or selected
+    for a context-menu search on the source tab.
+  </summary>
+  <token key="Interaction" variants="AbaSearchJourneyCueInteraction"/>
+</histogram>
+
+<histogram name="ContextualTasks.SearchJourney.Cue.{Interaction}.QueryHint"
+    enum="AimPromoQueryHint" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the ABA search journey contextual cue is {Interaction}, once
+    for each AimPromoQueryHint registered by the search results page for the
+    journey, or once as None if the search results page registered no hints.
+  </summary>
+  <token key="Interaction" variants="AbaSearchJourneyCueInteraction"/>
+</histogram>
+
+<histogram
+    name="ContextualTasks.SearchJourney.Cue.{Interaction}.SearchDwellTime"
+    units="ms" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the ABA search journey contextual cue is {Interaction}.
+    Measures the time elapsed since the search navigation committed in the
+    search tab.
+  </summary>
+  <token key="Interaction" variants="AbaSearchJourneyCueInteraction"/>
+</histogram>
+
+<histogram
+    name="ContextualTasks.SearchJourney.Cue.{Interaction}.SearchTabClosed"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the ABA search journey contextual cue is {Interaction}.
+    Records whether the search tab had been closed by that time.
+  </summary>
+  <token key="Interaction" variants="AbaSearchJourneyCueInteraction"/>
+</histogram>
+
+<histogram name="ContextualTasks.SearchJourney.Cue.{Interaction}.WordCount"
+    units="words" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the ABA search journey contextual cue is {Interaction}.
+    Records the number of whitespace-separated words in the journey's search
+    query.
+  </summary>
+  <token key="Interaction" variants="AbaSearchJourneyCueInteraction"/>
+</histogram>
+
 <histogram name="ContextualTasks.Session.Completed" enum="Boolean"
     expires_after="2027-03-07">
   <owner>sophiechang@chromium.org</owner>
@@ -911,6 +993,17 @@ chromium-metrics-reviews@google.com.
     the user, the window housing the side panel is closed, or the Chrome session
     has ended. Note that a cobrowsing session is only considered to have started
     if a user enters a query via the side panel. Always recorded as true.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Session.Duration.AbaOnRamp" units="ms"
+    expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a cobrowsing session opened via the ABA search journey
+    contextual cue is closed or ended. Measures the time elapsed from when the
+    side panel was opened until it was closed.
   </summary>
 </histogram>
 
@@ -984,6 +1077,17 @@ chromium-metrics-reviews@google.com.
     and bidirectional handshake acknowledgment (OnHandshakeComplete) after being
     opened. Measures the elapsed time from the initial side panel Show() request
     until the frontend application is initialized and connected.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.SidePanel.UserAction.Close.AbaOnRamp"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the side panel close button, for sessions that
+    were entered via the ABA search journey contextual cue. Always recorded as
+    true.
   </summary>
 </histogram>
 

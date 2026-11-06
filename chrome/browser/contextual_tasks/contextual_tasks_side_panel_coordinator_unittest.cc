@@ -658,6 +658,12 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, GetActiveEntrySource) {
 
   EXPECT_EQ(ContextualTasksPanelController::EntrySource::kAskGoogle,
             coordinator_->GetActiveEntrySource());
+
+  coordinator_->Show(
+      false, omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH);
+
+  EXPECT_EQ(ContextualTasksPanelController::EntrySource::kAbaOnRamp,
+            coordinator_->GetActiveEntrySource());
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelSetsEntryPoint) {
@@ -4866,6 +4872,32 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                                       0, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.SidePanel.UserAction.CloseHadLinkClick", false, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       AbaOnRampSessionDuration_AndCloseSidePanelMetrics) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH);
+
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.AbaOnRamp", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.Close.AbaOnRamp", true, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.AbaOnRamp"));
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,

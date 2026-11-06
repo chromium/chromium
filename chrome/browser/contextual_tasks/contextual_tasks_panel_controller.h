@@ -63,7 +63,8 @@ class ContextualTasksPanelController {
     kAskGoogle = 4,
     kEphemeralToolbarButton = 5,
     kPermanentToolbarButton = 6,
-    kMaxValue = kPermanentToolbarButton,
+    kAbaOnRamp = 7,
+    kMaxValue = kAbaOnRamp,
   };
 
   // Whether clicking the permanently pinned toolbar button to open the side

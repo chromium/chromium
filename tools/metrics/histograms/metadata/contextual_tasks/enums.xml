@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AimPromoQueryHint) -->
+
+<enum name="AimPromoQueryHint">
+  <int value="0" label="None"/>
+  <int value="1" label="EduHomework"/>
+  <int value="2" label="EduConceptual"/>
+  <int value="3" label="HowToWebApp"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/search_journey_tracker.h:AimPromoQueryHint) -->
+
 <enum name="ContextualTasksContextDeterminationStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Embedder not available"/>

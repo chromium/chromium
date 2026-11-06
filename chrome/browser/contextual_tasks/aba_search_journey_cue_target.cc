@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -60,13 +59,7 @@ bool AbaSearchJourneyCueTarget::RequiresModelExecution() const {
 
 bool AbaSearchJourneyCueTarget::IsEligible() const {
   SearchJourneyTabFeature* feature = SearchJourneyTabFeature::From(&tab_.get());
-  if (!feature || !feature->ShouldShowCue()) {
-    return false;
-  }
-  // There's nothing to offer if the side panel is already open.
-  ContextualTasksPanelController* panel_controller =
-      ContextualTasksPanelController::From(tab_->GetBrowserWindowInterface());
-  return !panel_controller || !panel_controller->IsPanelOpenForContextualTask();
+  return feature && feature->ShouldShowCue();
 }
 
 void AbaSearchJourneyCueTarget::CheckEligibility(
@@ -92,12 +85,12 @@ bool AbaSearchJourneyCueTarget::IsPageEligible(
 }
 
 void AbaSearchJourneyCueTarget::OnChipShown() {
-  OnCueShown();
+  OnCueShown(/*is_anchored_message=*/false);
 }
 
 void AbaSearchJourneyCueTarget::OnAnchoredMessageShown(
     page_actions::PageActionPriorityCategory priority) {
-  OnCueShown();
+  OnCueShown(/*is_anchored_message=*/true);
 }
 
 void AbaSearchJourneyCueTarget::OnAnchoredMessageClicked(
@@ -152,10 +145,10 @@ void AbaSearchJourneyCueTarget::OnTabDidActivate(tabs::TabInterface* tab) {
   controller->EvaluateCueForTarget(GetType());
 }
 
-void AbaSearchJourneyCueTarget::OnCueShown() {
+void AbaSearchJourneyCueTarget::OnCueShown(bool is_anchored_message) {
   if (SearchJourneyTabFeature* feature =
           SearchJourneyTabFeature::From(&tab_.get())) {
-    feature->OnCueShown();
+    feature->OnCueShown(is_anchored_message);
   }
 }
 
