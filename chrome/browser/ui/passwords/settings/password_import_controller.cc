@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -77,17 +78,19 @@ void PasswordImportController::Import(
     PasswordForm::Store to_store,
     ImportResultsCallback results_callback) {
   CHECK(web_contents);
-  if (!import_results_callback_.is_null() ||
-      (importer_ &&
-       (importer_->IsState(PasswordImporter::kInProgress) ||
-        importer_->IsState(
-            PasswordImporter::kUserInteractionRequired)))) {
-    // Early return to prevent crashes due to already active import process in
-    // other window.
-    // For consistency |results_callback| is always run asynchronously.
-    PostAsyncResult(std::move(results_callback),
-                    ImportResults::Status::IMPORT_ALREADY_ACTIVE);
-    return;
+  switch (GetState()) {
+    case State::kSelectingFile:
+    case State::kInProgress:
+    case State::kConflicts:
+      // Early return to prevent crashes due to already active import process in
+      // other window.
+      // For consistency `results_callback` is always run asynchronously.
+      PostAsyncResult(std::move(results_callback),
+                      ImportResults::Status::IMPORT_ALREADY_ACTIVE);
+      return;
+    case State::kFinished:
+    case State::kIdle:
+      break;
   }
 
   import_results_callback_ = std::move(results_callback);
@@ -99,38 +102,44 @@ void PasswordImportController::Import(
 void PasswordImportController::ContinueImport(
     const std::vector<int>& selected_ids,
     ImportResultsCallback results_callback) {
-  if (importer_ &&
-      importer_->IsState(
-          PasswordImporter::kUserInteractionRequired)) {
-    importer_->ContinueImport(selected_ids, std::move(results_callback));
-    return;
+  switch (GetState()) {
+    case State::kConflicts:
+      importer_->ContinueImport(selected_ids, std::move(results_callback));
+      return;
+    case State::kSelectingFile:
+    case State::kInProgress:
+    case State::kFinished:
+      // This can be reached in 2 cases:
+      // 1) `continueImport` is called from the dev console.
+      // 2) Import state is not synced across tabs, so another tab already
+      //    continued or restarted the import while this tab was showing
+      //    conflicts.
+      // For consistency `results_callback` is always run asynchronously.
+      PostAsyncResult(std::move(results_callback),
+                      ImportResults::Status::IMPORT_ALREADY_ACTIVE);
+      return;
+    case State::kIdle:
+      // Unexpected in the normal UI flow, but reachable if `continueImport` is
+      // called from the dev console or after another tab resets the importer.
+      PostAsyncResult(std::move(results_callback),
+                      ImportResults::Status::UNKNOWN_ERROR);
+      return;
   }
-  // Respond with `IMPORT_ALREADY_ACTIVE`, when `PasswordImporter` is available
-  // and not in the `CONFLICTS` state. Otherwise, return `UNKNOWN_ERROR`.
-  // This code can be reached in 2 cases:
-  // 1) `chrome.passwordsPrivate.continueImport` is called from the dev console.
-  //    This should prevent crashing the browser by calling the private API.
-  // 2) Import state is not synced across tabs, hence if import has been
-  // launched from one window, but then continued from another window. If the
-  // user also continues in the original window, we reach this code.
-  // For consistency |results_callback| is always run asynchronously.
-  PostAsyncResult(std::move(results_callback),
-                  importer_ ? ImportResults::Status::IMPORT_ALREADY_ACTIVE
-                            : ImportResults::Status::UNKNOWN_ERROR);
 }
 
 void PasswordImportController::ResetImporter(bool delete_file) {
-  // Importer can be reset only in kNotStarted, kFinished,
-  // kUserInteractionRequired states, but not in kInProgress.
-  if (!importer_ ||
-      importer_->IsState(PasswordImporter::kInProgress)) {
-    return;
-  }
-  if (delete_file &&
-      importer_->IsState(PasswordImporter::kFinished)) {
-    // File deletion can only be triggered if the importer is in kFinished
-    // state.
-    importer_->DeleteFile();
+  switch (GetState()) {
+    case State::kSelectingFile:
+    case State::kInProgress:
+      return;
+    case State::kFinished:
+      if (delete_file) {
+        importer_->DeleteFile();
+      }
+      break;
+    case State::kConflicts:
+    case State::kIdle:
+      break;
   }
   importer_.reset();
 }
@@ -153,6 +162,26 @@ void PasswordImportController::FileSelectionCanceled() {
                     ImportResults::Status::DISMISSED);
   }
   select_file_dialog_.reset();
+}
+
+PasswordImportController::State PasswordImportController::GetState() const {
+  if (select_file_dialog_) {
+    return State::kSelectingFile;
+  }
+  if (!importer_) {
+    return State::kIdle;
+  }
+  switch (importer_->GetState()) {
+    case PasswordImporter::kNotStarted:
+      return State::kIdle;
+    case PasswordImporter::kInProgress:
+      return State::kInProgress;
+    case PasswordImporter::kUserInteractionRequired:
+      return State::kConflicts;
+    case PasswordImporter::kFinished:
+      return State::kFinished;
+  }
+  NOTREACHED();
 }
 
 void PasswordImportController::PresentImportFileSelector(

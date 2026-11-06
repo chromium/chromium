@@ -43,9 +43,28 @@ class PasswordImportController : public PasswordImportControllerInterface,
       std::unique_ptr<password_manager::PasswordImporter> importer);
 
  private:
+  enum class State {
+    // No import is active, or the previous import finished with errors and
+    // reset `importer_` back to `kNotStarted`.
+    kIdle,
+    // The file selection dialog is open (`select_file_dialog_` is non-null).
+    kSelectingFile,
+    // `importer_` is reading, parsing, or writing credentials to the store.
+    kInProgress,
+    // `importer_` paused on conflicting credentials and is waiting for the
+    // user to choose which passwords to replace (`ContinueImport`) or cancel.
+    kConflicts,
+    // Import succeeded with no errors and `importer_` is waiting for the user
+    // to close the summary dialog (`ResetImporter`, optionally deleting the
+    // file).
+    kFinished,
+  };
+
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
+
+  State GetState() const;
 
   // Show the platform file selection dialog for importing.
   void PresentImportFileSelector(content::WebContents* web_contents);

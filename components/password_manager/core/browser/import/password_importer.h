@@ -127,6 +127,7 @@ class PasswordImporter {
   void DeleteFile(base::OnceClosure completion = base::DoNothing());
 
   bool IsState(PasswordImporter::State state) const { return state_ == state; }
+  State GetState() const { return state_; }
 
   // Returns the file extensions corresponding to supported formats.
   static std::vector<std::vector<base::FilePath::StringType>>
