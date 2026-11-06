@@ -170,11 +170,10 @@ struct Manifest {
       icons_localized;
   // LINT.ThenChange(
   //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
-  //   //third_party/blink/public/common/manifest/manifest.h:ManifestBuilderFields,
   //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild,
-  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
+  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead,
+  //   //third_party/blink/common/manifest/manifest_unittest.cc:ManifestEqualityTest,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits_unittest.cc:ManifestMojomRoundTripFields
   // )
 };
 

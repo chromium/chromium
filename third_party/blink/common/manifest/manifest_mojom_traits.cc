@@ -463,137 +463,140 @@ base::expected<void, mojo::DeserializationError>
 StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
     blink::mojom::ManifestDataView data,
     ::blink::Manifest* out) {
+  auto manifest_data = base::MakeRefCounted<::blink::Manifest::Data>();
   // LINT.IfChange(ManifestStructTraitsRead)
-  if (!data.ReadManifestUrl(&out->manifest_url_)) {
+  if (!data.ReadManifestUrl(&manifest_data->manifest_url)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadDir(&out->dir_)) {
+  if (!data.ReadDir(&manifest_data->dir)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadName(&out->name_)) {
+  if (!data.ReadName(&manifest_data->name)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadShortName(&out->short_name_)) {
+  if (!data.ReadShortName(&manifest_data->short_name)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadDescription(&out->description_)) {
+  if (!data.ReadDescription(&manifest_data->description)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadId(&out->id_)) {
+  if (!data.ReadId(&manifest_data->id)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  out->has_custom_id_ = data.has_custom_id();
-  if (!data.ReadStartUrl(&out->start_url_)) {
+  manifest_data->has_custom_id = data.has_custom_id();
+  if (!data.ReadStartUrl(&manifest_data->start_url)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  out->has_valid_specified_start_url_ = data.has_valid_specified_start_url();
-  if (!data.ReadDisplay(&out->display_)) {
+  manifest_data->has_valid_specified_start_url =
+      data.has_valid_specified_start_url();
+  if (!data.ReadDisplay(&manifest_data->display)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadDisplayOverride(&out->display_override_)) {
+  if (!data.ReadDisplayOverride(&manifest_data->display_override)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadOrientation(&out->orientation_)) {
+  if (!data.ReadOrientation(&manifest_data->orientation)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadIcons(&out->icons_)) {
+  if (!data.ReadIcons(&manifest_data->icons)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadScreenshots(&out->screenshots_)) {
+  if (!data.ReadScreenshots(&manifest_data->screenshots)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadShortcuts(&out->shortcuts_)) {
+  if (!data.ReadShortcuts(&manifest_data->shortcuts)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadShareTarget(&out->share_target_)) {
+  if (!data.ReadShareTarget(&manifest_data->share_target)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadFileHandlers(&out->file_handlers_)) {
+  if (!data.ReadFileHandlers(&manifest_data->file_handlers)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadProtocolHandlers(&out->protocol_handlers_)) {
+  if (!data.ReadProtocolHandlers(&manifest_data->protocol_handlers)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadScopeExtensions(&out->scope_extensions_)) {
+  if (!data.ReadScopeExtensions(&manifest_data->scope_extensions)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadLockScreen(&out->lock_screen_)) {
+  if (!data.ReadLockScreen(&manifest_data->lock_screen)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadNoteTaking(&out->note_taking_)) {
+  if (!data.ReadNoteTaking(&manifest_data->note_taking)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadRelatedApplications(&out->related_applications_)) {
+  if (!data.ReadRelatedApplications(&manifest_data->related_applications)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  out->prefer_related_applications_ = data.prefer_related_applications();
-  if (!data.ReadMigrateFrom(&out->migrate_from_)) {
+  manifest_data->prefer_related_applications =
+      data.prefer_related_applications();
+  if (!data.ReadMigrateFrom(&manifest_data->migrate_from)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadMigrateTo(&out->migrate_to_)) {
+  if (!data.ReadMigrateTo(&manifest_data->migrate_to)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadThemeColor(&out->theme_color_)) {
+  if (!data.ReadThemeColor(&manifest_data->theme_color)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadBackgroundColor(&out->background_color_)) {
+  if (!data.ReadBackgroundColor(&manifest_data->background_color)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadGcmSenderId(&out->gcm_sender_id_)) {
+  if (!data.ReadGcmSenderId(&manifest_data->gcm_sender_id)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadScope(&out->scope_)) {
+  if (!data.ReadScope(&manifest_data->scope)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadUpdateManifestUrl(&out->update_manifest_url_)) {
+  if (!data.ReadUpdateManifestUrl(&manifest_data->update_manifest_url)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadLaunchHandler(&out->launch_handler_)) {
+  if (!data.ReadLaunchHandler(&manifest_data->launch_handler)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadTranslations(&out->translations_)) {
+  if (!data.ReadTranslations(&manifest_data->translations)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadDarkThemeColor(&out->dark_theme_color_)) {
+  if (!data.ReadDarkThemeColor(&manifest_data->dark_theme_color)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadDarkBackgroundColor(&out->dark_background_color_)) {
+  if (!data.ReadDarkBackgroundColor(&manifest_data->dark_background_color)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadTabStrip(&out->tab_strip_)) {
+  if (!data.ReadTabStrip(&manifest_data->tab_strip)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadVersion(&out->version_)) {
+  if (!data.ReadVersion(&manifest_data->version)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadNameLocalized(&out->name_localized_)) {
+  if (!data.ReadNameLocalized(&manifest_data->name_localized)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadShortNameLocalized(&out->short_name_localized_)) {
+  if (!data.ReadShortNameLocalized(&manifest_data->short_name_localized)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadDescriptionLocalized(&out->description_localized_)) {
+  if (!data.ReadDescriptionLocalized(&manifest_data->description_localized)) {
     return base::unexpected(mojo::DeserializationError());
   }
-  if (!data.ReadIconsLocalized(&out->icons_localized_)) {
+  if (!data.ReadIconsLocalized(&manifest_data->icons_localized)) {
     return base::unexpected(mojo::DeserializationError());
   }
   // LINT.ThenChange(
-  //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
   //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
-  //   //third_party/blink/public/common/manifest/manifest.h:ManifestBuilderFields,
+  //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
   //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild
+  //   //third_party/blink/common/manifest/manifest_unittest.cc:ManifestEqualityTest,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits_unittest.cc:ManifestMojomRoundTripFields
   // )
 
-  if (auto error = out->ValidateInvariants()) {
+  ::blink::Manifest candidate(std::move(manifest_data));
+  if (auto error = candidate.ValidateInvariants()) {
     base::UmaHistogramEnumeration("WebApp.Manifest.InvariantViolation", *error);
     return base::unexpected(
         mojo::DeserializationError::CustomCode(static_cast<int>(*error)));
   }
 
-  out->origin_ = url::Origin::Create(out->start_url_);
+  *out = std::move(candidate);
   return base::ok();
 }
 

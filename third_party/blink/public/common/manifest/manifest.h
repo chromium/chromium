@@ -14,8 +14,12 @@
 #include <variant>
 #include <vector>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/i18n/language_tag.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -373,8 +377,9 @@ class BLINK_COMMON_EXPORT Manifest {
   // `KURL::BaseAsString()` semantics.
   static GURL GetDefaultScope(const GURL& document_url);
 
-  // For Mojo deserialization only; `StructTraits::Read` populates and
-  // validates all invariants before returning the instance.
+  // For Mojo deserialization only. Leaves `data_` null until
+  // `StructTraits::Read` assigns a validated instance; all accessors `CHECK`
+  // while null.
   explicit Manifest(mojo::DefaultConstruct::Tag);
   Manifest(const Manifest&);
   Manifest& operator=(const Manifest&);
@@ -387,102 +392,235 @@ class BLINK_COMMON_EXPORT Manifest {
   // Starts a Builder initialized with all fields of this manifest.
   Builder ToBuilder() const;
 
-  // The origin of this manifest (url::Origin::Create(start_url_)).
+  // The origin of this manifest (url::Origin::Create(start_url())).
   // Guaranteed never to be opaque.
-  const url::Origin& GetOrigin() const { return origin_; }
+  const url::Origin& GetOrigin() const LIFETIME_BOUND { return data().origin; }
 
   // Const accessors for all 40 fields of blink.mojom.Manifest.
-  const GURL& manifest_url() const { return manifest_url_; }
-  mojom::Manifest_TextDirection dir() const { return dir_; }
-  const std::optional<std::u16string>& name() const { return name_; }
-  const std::optional<std::u16string>& short_name() const {
-    return short_name_;
+  const GURL& manifest_url() const LIFETIME_BOUND {
+    return data().manifest_url;
   }
-  const std::optional<std::u16string>& description() const {
-    return description_;
+  mojom::Manifest_TextDirection dir() const { return data().dir; }
+  const std::optional<std::u16string>& name() const LIFETIME_BOUND {
+    return data().name;
   }
-  const GURL& id() const { return id_; }
-  bool has_custom_id() const { return has_custom_id_; }
-  const GURL& start_url() const { return start_url_; }
+  const std::optional<std::u16string>& short_name() const LIFETIME_BOUND {
+    return data().short_name;
+  }
+  const std::optional<std::u16string>& description() const LIFETIME_BOUND {
+    return data().description;
+  }
+  const GURL& id() const LIFETIME_BOUND { return data().id; }
+  bool has_custom_id() const { return data().has_custom_id; }
+  const GURL& start_url() const LIFETIME_BOUND { return data().start_url; }
   bool has_valid_specified_start_url() const {
-    return has_valid_specified_start_url_;
+    return data().has_valid_specified_start_url;
   }
-  mojom::DisplayMode display() const { return display_; }
-  const std::vector<DisplayOverride>& display_override() const {
-    return display_override_;
+  mojom::DisplayMode display() const { return data().display; }
+  const std::vector<DisplayOverride>& display_override() const LIFETIME_BOUND {
+    return data().display_override;
   }
   device::mojom::ScreenOrientationLockType orientation() const {
-    return orientation_;
+    return data().orientation;
   }
-  const std::vector<ImageResource>& icons() const { return icons_; }
-  const std::vector<Screenshot>& screenshots() const { return screenshots_; }
-  const std::vector<ShortcutItem>& shortcuts() const { return shortcuts_; }
-  const std::optional<ShareTarget>& share_target() const {
-    return share_target_;
+  const std::vector<ImageResource>& icons() const LIFETIME_BOUND {
+    return data().icons;
   }
-  const std::vector<FileHandler>& file_handlers() const {
-    return file_handlers_;
+  const std::vector<Screenshot>& screenshots() const LIFETIME_BOUND {
+    return data().screenshots;
   }
-  const std::vector<ProtocolHandler>& protocol_handlers() const {
-    return protocol_handlers_;
+  const std::vector<ShortcutItem>& shortcuts() const LIFETIME_BOUND {
+    return data().shortcuts;
   }
-  const std::vector<ScopeExtension>& scope_extensions() const {
-    return scope_extensions_;
+  const std::optional<ShareTarget>& share_target() const LIFETIME_BOUND {
+    return data().share_target;
   }
-  const std::optional<LockScreen>& lock_screen() const { return lock_screen_; }
-  const std::optional<NoteTaking>& note_taking() const { return note_taking_; }
-  const std::vector<RelatedApplication>& related_applications() const {
-    return related_applications_;
+  const std::vector<FileHandler>& file_handlers() const LIFETIME_BOUND {
+    return data().file_handlers;
+  }
+  const std::vector<ProtocolHandler>& protocol_handlers() const LIFETIME_BOUND {
+    return data().protocol_handlers;
+  }
+  const std::vector<ScopeExtension>& scope_extensions() const LIFETIME_BOUND {
+    return data().scope_extensions;
+  }
+  const std::optional<LockScreen>& lock_screen() const LIFETIME_BOUND {
+    return data().lock_screen;
+  }
+  const std::optional<NoteTaking>& note_taking() const LIFETIME_BOUND {
+    return data().note_taking;
+  }
+  const std::vector<RelatedApplication>& related_applications() const
+      LIFETIME_BOUND {
+    return data().related_applications;
   }
   bool prefer_related_applications() const {
-    return prefer_related_applications_;
+    return data().prefer_related_applications;
   }
-  const std::vector<MigrateFrom>& migrate_from() const { return migrate_from_; }
-  const std::optional<MigrateTo>& migrate_to() const { return migrate_to_; }
-  std::optional<SkColor> theme_color() const { return theme_color_; }
-  std::optional<SkColor> background_color() const { return background_color_; }
-  const std::optional<std::u16string>& gcm_sender_id() const {
-    return gcm_sender_id_;
+  const std::vector<MigrateFrom>& migrate_from() const LIFETIME_BOUND {
+    return data().migrate_from;
   }
-  const GURL& scope() const { return scope_; }
-  const std::optional<GURL>& update_manifest_url() const {
-    return update_manifest_url_;
+  const std::optional<MigrateTo>& migrate_to() const LIFETIME_BOUND {
+    return data().migrate_to;
   }
-  const std::optional<LaunchHandler>& launch_handler() const {
-    return launch_handler_;
+  std::optional<SkColor> theme_color() const { return data().theme_color; }
+  std::optional<SkColor> background_color() const {
+    return data().background_color;
   }
-  const base::flat_map<std::u16string, TranslationItem>& translations() const {
-    return translations_;
+  const std::optional<std::u16string>& gcm_sender_id() const LIFETIME_BOUND {
+    return data().gcm_sender_id;
   }
-  std::optional<SkColor> dark_theme_color() const { return dark_theme_color_; }
+  const GURL& scope() const LIFETIME_BOUND { return data().scope; }
+  const std::optional<GURL>& update_manifest_url() const LIFETIME_BOUND {
+    return data().update_manifest_url;
+  }
+  const std::optional<LaunchHandler>& launch_handler() const LIFETIME_BOUND {
+    return data().launch_handler;
+  }
+  const base::flat_map<std::u16string, TranslationItem>& translations() const
+      LIFETIME_BOUND {
+    return data().translations;
+  }
+  std::optional<SkColor> dark_theme_color() const {
+    return data().dark_theme_color;
+  }
   std::optional<SkColor> dark_background_color() const {
-    return dark_background_color_;
+    return data().dark_background_color;
   }
-  const std::optional<TabStrip>& tab_strip() const { return tab_strip_; }
-  const std::optional<std::u16string>& version() const { return version_; }
-  const std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
-                                          ManifestLocalizedTextObject>>&
-  name_localized() const {
-    return name_localized_;
+  const std::optional<TabStrip>& tab_strip() const LIFETIME_BOUND {
+    return data().tab_strip;
   }
-  const std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
-                                          ManifestLocalizedTextObject>>&
-  short_name_localized() const {
-    return short_name_localized_;
+  const std::optional<std::u16string>& version() const LIFETIME_BOUND {
+    return data().version;
   }
   const std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
                                           ManifestLocalizedTextObject>>&
-  description_localized() const {
-    return description_localized_;
+  name_localized() const LIFETIME_BOUND {
+    return data().name_localized;
+  }
+  const std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
+                                          ManifestLocalizedTextObject>>&
+  short_name_localized() const LIFETIME_BOUND {
+    return data().short_name_localized;
+  }
+  const std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
+                                          ManifestLocalizedTextObject>>&
+  description_localized() const LIFETIME_BOUND {
+    return data().description_localized;
   }
   const std::optional<
       absl::flat_hash_map<base::i18n::LanguageTag, std::vector<ImageResource>>>&
-  icons_localized() const {
-    return icons_localized_;
+  icons_localized() const LIFETIME_BOUND {
+    return data().icons_localized;
   }
 
  private:
-  Manifest();
+  struct Data;
+
+  // Uses `RefCountedThreadSafe` because `Manifest` instances are shared across
+  // sequences/threads (e.g., background installability/icon tasks and UI
+  // callbacks). Initializes a fresh reference count when `Data::Clone()`
+  // invokes the private `Data::Data(const Data&) = default` to memberwise-copy
+  // all fields.
+  struct RefCountedDataBase : public base::RefCountedThreadSafe<Data> {
+    RefCountedDataBase() = default;
+
+   protected:
+    RefCountedDataBase(const RefCountedDataBase&)
+        : base::RefCountedThreadSafe<Data>() {}
+    ~RefCountedDataBase() = default;
+  };
+
+  struct Data : public RefCountedDataBase {
+    Data();
+    Data(Data&&) = delete;
+    Data& operator=(const Data&) = delete;
+    Data& operator=(Data&&) = delete;
+
+    // Deep-copies all fields into a newly allocated Data with a fresh refcount.
+    scoped_refptr<Data> Clone() const;
+
+    // LINT.IfChange(ManifestFields)
+    GURL manifest_url;
+    mojom::Manifest_TextDirection dir = mojom::Manifest_TextDirection::kAuto;
+    std::optional<std::u16string> name;
+    std::optional<std::u16string> short_name;
+    std::optional<std::u16string> description;
+    GURL id;
+    bool has_custom_id = false;
+    GURL start_url;
+    bool has_valid_specified_start_url = false;
+    mojom::DisplayMode display = mojom::DisplayMode::kUndefined;
+    std::vector<DisplayOverride> display_override;
+    device::mojom::ScreenOrientationLockType orientation =
+        device::mojom::ScreenOrientationLockType::DEFAULT;
+    std::vector<ImageResource> icons;
+    std::vector<Screenshot> screenshots;
+    std::vector<ShortcutItem> shortcuts;
+    std::optional<ShareTarget> share_target;
+    std::vector<FileHandler> file_handlers;
+    std::vector<ProtocolHandler> protocol_handlers;
+    std::vector<ScopeExtension> scope_extensions;
+    std::optional<LockScreen> lock_screen;
+    std::optional<NoteTaking> note_taking;
+    std::vector<RelatedApplication> related_applications;
+    bool prefer_related_applications = false;
+    std::vector<MigrateFrom> migrate_from;
+    std::optional<MigrateTo> migrate_to;
+    std::optional<SkColor> theme_color;
+    std::optional<SkColor> background_color;
+    std::optional<std::u16string> gcm_sender_id;
+    GURL scope;
+    std::optional<GURL> update_manifest_url;
+    std::optional<LaunchHandler> launch_handler;
+    base::flat_map<std::u16string, TranslationItem> translations;
+    std::optional<SkColor> dark_theme_color;
+    std::optional<SkColor> dark_background_color;
+    std::optional<TabStrip> tab_strip;
+    std::optional<std::u16string> version;
+    std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
+                                      ManifestLocalizedTextObject>>
+        name_localized;
+    std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
+                                      ManifestLocalizedTextObject>>
+        short_name_localized;
+    std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
+                                      ManifestLocalizedTextObject>>
+        description_localized;
+    std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
+                                      std::vector<ImageResource>>>
+        icons_localized;
+    // LINT.ThenChange(
+    //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
+    //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
+    //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead,
+    //   //third_party/blink/common/manifest/manifest_unittest.cc:ManifestEqualityTest,
+    //   //third_party/blink/common/manifest/manifest_mojom_traits_unittest.cc:ManifestMojomRoundTripFields
+    // )
+
+    // Cached origin created from `start_url`. Excluded from `operator==`.
+    url::Origin origin;
+
+   private:
+    friend class base::RefCountedThreadSafe<Data>;
+    Data(const Data&);
+    ~Data();
+  };
+
+  // Enforces `HasOneRef()`, computes `origin` from `start_url`, and freezes
+  // storage as `const Data`.
+  explicit Manifest(scoped_refptr<Data> data);
+
+  // `data_` is non-null on all valid `Manifest`s; it is null only on a
+  // moved-from `Manifest` or an unpopulated `mojo::DefaultConstruct::Tag` shell
+  // prior to `StructTraits::Read`. Routing all field access through `data()`
+  // guarantees a release-mode `CHECK` crash (rather than `scoped_refptr`'s
+  // `DCHECK`-only null dereference) if accessed in those states.
+  const Data& data() const LIFETIME_BOUND {
+    CHECK(data_);
+    return *data_;
+  }
+
   friend struct mojo::StructTraits<mojom::ManifestDataView, Manifest>;
   friend class Builder;
 
@@ -490,71 +628,16 @@ class BLINK_COMMON_EXPORT Manifest {
   // encountered if any.
   std::optional<ManifestInvariantError> ValidateInvariants() const;
 
-  // LINT.IfChange(ManifestFields)
-  GURL manifest_url_;
-  mojom::Manifest_TextDirection dir_ = mojom::Manifest_TextDirection::kAuto;
-  std::optional<std::u16string> name_;
-  std::optional<std::u16string> short_name_;
-  std::optional<std::u16string> description_;
-  GURL id_;
-  bool has_custom_id_ = false;
-  GURL start_url_;
-  bool has_valid_specified_start_url_ = false;
-  mojom::DisplayMode display_ = mojom::DisplayMode::kUndefined;
-  std::vector<DisplayOverride> display_override_;
-  device::mojom::ScreenOrientationLockType orientation_ =
-      device::mojom::ScreenOrientationLockType::DEFAULT;
-  std::vector<ImageResource> icons_;
-  std::vector<Screenshot> screenshots_;
-  std::vector<ShortcutItem> shortcuts_;
-  std::optional<ShareTarget> share_target_;
-  std::vector<FileHandler> file_handlers_;
-  std::vector<ProtocolHandler> protocol_handlers_;
-  std::vector<ScopeExtension> scope_extensions_;
-  std::optional<LockScreen> lock_screen_;
-  std::optional<NoteTaking> note_taking_;
-  std::vector<RelatedApplication> related_applications_;
-  bool prefer_related_applications_ = false;
-  std::vector<MigrateFrom> migrate_from_;
-  std::optional<MigrateTo> migrate_to_;
-  std::optional<SkColor> theme_color_;
-  std::optional<SkColor> background_color_;
-  std::optional<std::u16string> gcm_sender_id_;
-  GURL scope_;
-  std::optional<GURL> update_manifest_url_;
-  std::optional<LaunchHandler> launch_handler_;
-  base::flat_map<std::u16string, TranslationItem> translations_;
-  std::optional<SkColor> dark_theme_color_;
-  std::optional<SkColor> dark_background_color_;
-  std::optional<TabStrip> tab_strip_;
-  std::optional<std::u16string> version_;
-  std::optional<
-      absl::flat_hash_map<base::i18n::LanguageTag, ManifestLocalizedTextObject>>
-      name_localized_;
-  std::optional<
-      absl::flat_hash_map<base::i18n::LanguageTag, ManifestLocalizedTextObject>>
-      short_name_localized_;
-  std::optional<
-      absl::flat_hash_map<base::i18n::LanguageTag, ManifestLocalizedTextObject>>
-      description_localized_;
-  std::optional<
-      absl::flat_hash_map<base::i18n::LanguageTag, std::vector<ImageResource>>>
-      icons_localized_;
-  // LINT.ThenChange(
-  //   :ManifestBuilderFields,
-  //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild,
-  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
-  // )
-
-  // Cached origin created from `start_url_`. Excluded from `operator==`.
-  url::Origin origin_;
+  // Pointee `const Data` is deeply immutable and never shared with a `Builder`.
+  // The `scoped_refptr` itself is non-`const` to support copy and move
+  // assignment (e.g., Mojo deserialization into `*out`).
+  scoped_refptr<const Data> data_;
 };
 
 // Fluent builder that validates intrinsic invariants on `Build()` /
-// `BuildChecked()`. Consumes the builder's fields when building.
+// `BuildChecked()`. Built (`Build()` / `BuildChecked()`) or moved-from
+// `Builder`s must not be used (further calls `CHECK`), while copying an unbuilt
+// `Builder` deep-copies its fields.
 class BLINK_COMMON_EXPORT Manifest::Builder {
  public:
   Builder(GURL start_url, GURL id, GURL scope);
@@ -630,64 +713,22 @@ class BLINK_COMMON_EXPORT Manifest::Builder {
   Manifest BuildChecked();
 
  private:
-  // LINT.IfChange(ManifestBuilderFields)
-  GURL manifest_url_;
-  mojom::Manifest_TextDirection dir_ = mojom::Manifest_TextDirection::kAuto;
-  std::optional<std::u16string> name_;
-  std::optional<std::u16string> short_name_;
-  std::optional<std::u16string> description_;
-  GURL id_;
-  bool has_custom_id_ = false;
-  GURL start_url_;
-  bool has_valid_specified_start_url_ = false;
-  mojom::DisplayMode display_ = mojom::DisplayMode::kUndefined;
-  std::vector<DisplayOverride> display_override_;
-  device::mojom::ScreenOrientationLockType orientation_ =
-      device::mojom::ScreenOrientationLockType::DEFAULT;
-  std::vector<ImageResource> icons_;
-  std::vector<Screenshot> screenshots_;
-  std::vector<ShortcutItem> shortcuts_;
-  std::optional<ShareTarget> share_target_;
-  std::vector<FileHandler> file_handlers_;
-  std::vector<ProtocolHandler> protocol_handlers_;
-  std::vector<ScopeExtension> scope_extensions_;
-  std::optional<LockScreen> lock_screen_;
-  std::optional<NoteTaking> note_taking_;
-  std::vector<RelatedApplication> related_applications_;
-  bool prefer_related_applications_ = false;
-  std::vector<MigrateFrom> migrate_from_;
-  std::optional<MigrateTo> migrate_to_;
-  std::optional<SkColor> theme_color_;
-  std::optional<SkColor> background_color_;
-  std::optional<std::u16string> gcm_sender_id_;
-  GURL scope_;
-  std::optional<GURL> update_manifest_url_;
-  std::optional<LaunchHandler> launch_handler_;
-  base::flat_map<std::u16string, TranslationItem> translations_;
-  std::optional<SkColor> dark_theme_color_;
-  std::optional<SkColor> dark_background_color_;
-  std::optional<TabStrip> tab_strip_;
-  std::optional<std::u16string> version_;
-  std::optional<
-      absl::flat_hash_map<base::i18n::LanguageTag, ManifestLocalizedTextObject>>
-      name_localized_;
-  std::optional<
-      absl::flat_hash_map<base::i18n::LanguageTag, ManifestLocalizedTextObject>>
-      short_name_localized_;
-  std::optional<
-      absl::flat_hash_map<base::i18n::LanguageTag, ManifestLocalizedTextObject>>
-      description_localized_;
-  std::optional<
-      absl::flat_hash_map<base::i18n::LanguageTag, std::vector<ImageResource>>>
-      icons_localized_;
-  // LINT.ThenChange(
-  //   :ManifestFields,
-  //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
-  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild,
-  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
-  // )
+  friend class Manifest;
+
+  explicit Builder(scoped_refptr<Data> data);
+  Data& data() LIFETIME_BOUND {
+    CHECK(data_);
+    CHECK(data_->HasOneRef());
+    return *data_;
+  }
+  const Data& data() const LIFETIME_BOUND {
+    CHECK(data_);
+    CHECK(data_->HasOneRef());
+    return *data_;
+  }
+
+  // Exclusively owned (`HasOneRef()`) until moved into `Manifest` by `Build()`.
+  scoped_refptr<Data> data_;
 };
 
 }  // namespace blink

@@ -33,9 +33,13 @@ Manifest::Builder CreateValidBuilder() {
 }
 
 Manifest CreateFullManifest() {
+  // Use `"https://example.com/"` for `scope` so it differs from
+  // `Manifest::GetDefaultScope(start_url)` (`"https://example.com/app/"`) in
+  // `ManifestTest.Equality`, while keeping `start_url` and `shortcuts`
+  // in-scope.
   Manifest::Builder builder(GURL("https://example.com/app/index.html"),
                             GURL("https://example.com/app/id"),
-                            GURL("https://example.com/app/"));
+                            GURL("https://example.com/"));
 
   builder.SetManifestUrl(GURL("https://example.com/app/manifest.json"));
   builder.SetDir(mojom::Manifest_TextDirection::kLTR);
@@ -789,6 +793,128 @@ TEST(ManifestTest, ToBuilderRoundTrip) {
   Manifest original = CreateFullManifest();
   Manifest round_tripped = original.ToBuilder().BuildChecked();
   EXPECT_EQ(original, round_tripped);
+}
+
+TEST(ManifestTest, SharedDataCopyAndBuilderIsolation) {
+  Manifest original = CreateFullManifest();
+  Manifest copy = original;
+  EXPECT_EQ(original, copy);
+  EXPECT_EQ(&original.start_url(), &copy.start_url());
+  EXPECT_EQ(&original.name(), &copy.name());
+
+  Manifest::Builder builder = original.ToBuilder();
+  Manifest::Builder builder_copy = builder;
+  Manifest::Builder builder_assigned(GURL("https://other.example/"));
+  builder_assigned = builder;
+  builder.SetName(u"Modified App Name");
+  builder_copy.SetName(u"Second Modified Name");
+  builder_assigned.SetName(u"Third Modified Name");
+
+  Manifest modified = std::move(builder).BuildChecked();
+  Manifest second_modified = std::move(builder_copy).BuildChecked();
+  Manifest third_modified = std::move(builder_assigned).BuildChecked();
+
+  EXPECT_EQ(original.name(), u"Test App Name");
+  EXPECT_EQ(copy.name(), u"Test App Name");
+  EXPECT_EQ(modified.name(), u"Modified App Name");
+  EXPECT_EQ(second_modified.name(), u"Second Modified Name");
+  EXPECT_EQ(third_modified.name(), u"Third Modified Name");
+  EXPECT_EQ(third_modified.GetOrigin(), original.GetOrigin());
+  EXPECT_NE(&original.start_url(), &modified.start_url());
+  EXPECT_NE(&modified.start_url(), &second_modified.start_url());
+  EXPECT_NE(&modified.start_url(), &third_modified.start_url());
+  EXPECT_NE(&second_modified.start_url(), &third_modified.start_url());
+}
+
+TEST(ManifestTest, Equality) {
+  const Manifest full = CreateFullManifest();
+  Manifest shared_copy = full;
+  EXPECT_EQ(full, full);
+  EXPECT_EQ(full, shared_copy);
+
+  Manifest deep_copy = full.ToBuilder().BuildChecked();
+  EXPECT_NE(&full.start_url(), &deep_copy.start_url());
+  EXPECT_EQ(full, deep_copy);
+
+  // Verify that mutating each of the 40 fields produces an unequal Manifest,
+  // and that CreateFullManifest() populated a non-default value for each field.
+  // LINT.IfChange(ManifestEqualityTest)
+  EXPECT_NE(full, full.ToBuilder().SetManifestUrl(GURL()).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder()
+                      .SetDir(mojom::Manifest_TextDirection::kAuto)
+                      .BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetName(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetShortName(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetDescription(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder()
+                      .SetId(GURL("https://example.com/app/other_id"))
+                      .BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetHasCustomId(false).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder()
+                      .SetStartUrl(GURL("https://example.com/app/other.html"))
+                      .BuildChecked());
+  EXPECT_NE(
+      full,
+      full.ToBuilder().SetHasValidSpecifiedStartUrl(false).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder()
+                      .SetDisplay(mojom::DisplayMode::kUndefined)
+                      .BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetDisplayOverride({}).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder()
+                      .SetOrientation(
+                          device::mojom::ScreenOrientationLockType::DEFAULT)
+                      .BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetIcons({}).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetScreenshots({}).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetShortcuts({}).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetShareTarget(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetFileHandlers({}).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetProtocolHandlers({}).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetScopeExtensions({}).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetLockScreen(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetNoteTaking(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetRelatedApplications({}).BuildChecked());
+  EXPECT_NE(
+      full,
+      full.ToBuilder().SetPreferRelatedApplications(false).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetMigrateFrom({}).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetMigrateTo(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetThemeColor(std::nullopt).BuildChecked());
+  EXPECT_NE(full,
+            full.ToBuilder().SetBackgroundColor(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetGcmSenderId(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder()
+                      .SetScope(Manifest::GetDefaultScope(full.start_url()))
+                      .BuildChecked());
+  EXPECT_NE(full,
+            full.ToBuilder().SetUpdateManifestUrl(std::nullopt).BuildChecked());
+  EXPECT_NE(full,
+            full.ToBuilder().SetLaunchHandler(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetTranslations({}).BuildChecked());
+  EXPECT_NE(full,
+            full.ToBuilder().SetDarkThemeColor(std::nullopt).BuildChecked());
+  EXPECT_NE(
+      full,
+      full.ToBuilder().SetDarkBackgroundColor(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetTabStrip(std::nullopt).BuildChecked());
+  EXPECT_NE(full, full.ToBuilder().SetVersion(std::nullopt).BuildChecked());
+  EXPECT_NE(full,
+            full.ToBuilder().SetNameLocalized(std::nullopt).BuildChecked());
+  EXPECT_NE(
+      full,
+      full.ToBuilder().SetShortNameLocalized(std::nullopt).BuildChecked());
+  EXPECT_NE(
+      full,
+      full.ToBuilder().SetDescriptionLocalized(std::nullopt).BuildChecked());
+  EXPECT_NE(full,
+            full.ToBuilder().SetIconsLocalized(std::nullopt).BuildChecked());
+  // LINT.ThenChange(
+  //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
+  //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits_unittest.cc:ManifestMojomRoundTripFields
+  // )
 }
 
 }  // namespace blink

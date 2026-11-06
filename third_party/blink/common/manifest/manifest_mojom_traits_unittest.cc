@@ -26,6 +26,7 @@ namespace blink {
 namespace {
 
 Manifest CreateFullManifest() {
+  // LINT.IfChange(ManifestMojomRoundTripFields)
   Manifest::Builder builder(GURL("https://example.com/app/index.html"),
                             GURL("https://example.com/app/id"),
                             GURL("https://example.com/"));
@@ -228,6 +229,13 @@ Manifest CreateFullManifest() {
   icons_localized.emplace(base::i18n::GetKnownLanguageTag("en"),
                           std::move(en_icons));
   builder.SetIconsLocalized(std::move(icons_localized));
+  // LINT.ThenChange(
+  //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
+  //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead,
+  //   //third_party/blink/common/manifest/manifest_unittest.cc:ManifestEqualityTest
+  // )
 
   return std::move(builder).BuildChecked();
 }
@@ -476,6 +484,7 @@ TEST_F(ManifestMojomTraitsTest, NestedStructTraitsRoundTrip) {
 TEST_F(ManifestMojomTraitsTest, FullManifestRoundTrip) {
   Manifest original = CreateFullManifest();
   Manifest round_tripped = CreateEmptyValidManifest();
+  EXPECT_NE(original, round_tripped);
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Manifest>(
       original, round_tripped));
   EXPECT_EQ(original, round_tripped);

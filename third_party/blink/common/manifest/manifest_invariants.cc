@@ -107,37 +107,37 @@ std::string_view ManifestInvariantErrorToString(ManifestInvariantError error) {
 
 std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
   // `start_url`, `id`, and `scope` must be valid.
-  if (!start_url_.is_valid()) {
+  if (!start_url().is_valid()) {
     return ManifestInvariantError::kStartUrlInvalid;
   }
-  if (!id_.is_valid()) {
+  if (!id().is_valid()) {
     return ManifestInvariantError::kIdInvalid;
   }
-  if (!scope_.is_valid()) {
+  if (!scope().is_valid()) {
     return ManifestInvariantError::kScopeInvalid;
   }
 
   // Origin of `start_url` must be non-opaque.
-  url::Origin origin = url::Origin::Create(start_url_);
+  const url::Origin& origin = GetOrigin();
   if (origin.opaque()) {
     return ManifestInvariantError::kOriginOpaque;
   }
 
   // `id` and `scope` must be same-origin with `start_url`.
-  if (!origin.IsSameOriginWith(id_)) {
+  if (!origin.IsSameOriginWith(id())) {
     return ManifestInvariantError::kIdCrossOrigin;
   }
-  if (!origin.IsSameOriginWith(scope_)) {
+  if (!origin.IsSameOriginWith(scope())) {
     return ManifestInvariantError::kScopeCrossOrigin;
   }
 
   // `share_target.action` must be same-origin with `start_url`.
-  if (share_target_ && !origin.IsSameOriginWith(share_target_->action)) {
+  if (share_target() && !origin.IsSameOriginWith(share_target()->action)) {
     return ManifestInvariantError::kShareTargetActionCrossOrigin;
   }
 
   // File handlers validation.
-  for (const auto& file_handler : file_handlers_) {
+  for (const auto& file_handler : file_handlers()) {
     if (!origin.IsSameOriginWith(file_handler.action)) {
       return ManifestInvariantError::kFileHandlerActionCrossOrigin;
     }
@@ -170,7 +170,7 @@ std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
   }
 
   // Protocol handlers validation.
-  for (const auto& protocol_handler : protocol_handlers_) {
+  for (const auto& protocol_handler : protocol_handlers()) {
     if (!origin.IsSameOriginWith(protocol_handler.url)) {
       return ManifestInvariantError::kProtocolHandlerUrlCrossOrigin;
     }
@@ -185,20 +185,20 @@ std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
   }
 
   // Note taking validation (if new_note_url is valid, must be same-origin).
-  if (note_taking_ && note_taking_->new_note_url.is_valid() &&
-      !origin.IsSameOriginWith(note_taking_->new_note_url)) {
+  if (note_taking() && note_taking()->new_note_url.is_valid() &&
+      !origin.IsSameOriginWith(note_taking()->new_note_url)) {
     return ManifestInvariantError::kNoteTakingUrlCrossOrigin;
   }
 
   // Lock screen validation (if start_url is valid, must be same-origin).
-  if (lock_screen_ && lock_screen_->start_url.is_valid() &&
-      !origin.IsSameOriginWith(lock_screen_->start_url)) {
+  if (lock_screen() && lock_screen()->start_url.is_valid() &&
+      !origin.IsSameOriginWith(lock_screen()->start_url)) {
     return ManifestInvariantError::kLockScreenStartUrlCrossOrigin;
   }
 
   // migrate-from validation.
   net::SchemefulSite site(origin);
-  for (const auto& migrate_from_item : migrate_from_) {
+  for (const auto& migrate_from_item : migrate_from()) {
     if (!migrate_from_item.id.is_valid()) {
       return ManifestInvariantError::kMigrateFromIdInvalid;
     }
@@ -220,38 +220,38 @@ std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
   }
 
   // migrate-to validation.
-  if (migrate_to_) {
-    if (!migrate_to_->id.is_valid()) {
+  if (migrate_to()) {
+    if (!migrate_to()->id.is_valid()) {
       return ManifestInvariantError::kMigrateToIdInvalid;
     }
-    if (!site.IsSameSiteWith(migrate_to_->id)) {
+    if (!site.IsSameSiteWith(migrate_to()->id)) {
       return ManifestInvariantError::kMigrateToIdCrossSite;
     }
-    if (!migrate_to_->install_url.is_valid()) {
+    if (!migrate_to()->install_url.is_valid()) {
       return ManifestInvariantError::kMigrateToInstallUrlInvalid;
     }
-    if (!site.IsSameSiteWith(migrate_to_->install_url)) {
+    if (!site.IsSameSiteWith(migrate_to()->install_url)) {
       return ManifestInvariantError::kMigrateToInstallUrlCrossSite;
     }
-    if (!url::IsSameOriginWith(migrate_to_->id, migrate_to_->install_url)) {
+    if (!url::IsSameOriginWith(migrate_to()->id, migrate_to()->install_url)) {
       return ManifestInvariantError::kMigrateToInstallUrlCrossOriginWithId;
     }
   }
 
   // Shortcuts validation.
-  for (const auto& shortcut : shortcuts_) {
+  for (const auto& shortcut : shortcuts()) {
     if (!shortcut.url.is_valid()) {
       return ManifestInvariantError::kShortcutUrlInvalid;
     }
-    if (!(url::IsSameOriginWith(scope_, shortcut.url) &&
-          base::StartsWith(shortcut.url.path(), scope_.path(),
+    if (!(url::IsSameOriginWith(scope(), shortcut.url) &&
+          base::StartsWith(shortcut.url.path(), scope().path(),
                            base::CompareCase::SENSITIVE))) {
       return ManifestInvariantError::kShortcutUrlOutOfScope;
     }
   }
 
   // Scope extensions validation.
-  for (const auto& scope_extension : scope_extensions_) {
+  for (const auto& scope_extension : scope_extensions()) {
     if (scope_extension.origin.opaque()) {
       return ManifestInvariantError::kScopeExtensionOriginOpaque;
     }
@@ -261,7 +261,7 @@ std::optional<ManifestInvariantError> Manifest::ValidateInvariants() const {
   }
 
   // Icons validation.
-  for (const auto& icon : icons_) {
+  for (const auto& icon : icons()) {
     if (!icon.src.is_valid()) {
       return ManifestInvariantError::kIconSrcInvalid;
     }

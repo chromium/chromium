@@ -4,17 +4,18 @@
 
 #include "third_party/blink/public/common/manifest/manifest.h"
 
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/common/manifest/manifest_invariants.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace blink {
@@ -209,8 +210,24 @@ bool Manifest::DisplayOverride::operator==(const DisplayOverride& other) const =
 
 // Manifest implementation
 
-Manifest::Manifest() = default;
+static_assert(sizeof(Manifest) == sizeof(void*));
+static_assert(sizeof(Manifest::Builder) == sizeof(void*));
+
+Manifest::Data::Data() = default;
+Manifest::Data::Data(const Data&) = default;
+Manifest::Data::~Data() = default;
+
+scoped_refptr<Manifest::Data> Manifest::Data::Clone() const {
+  return base::WrapRefCounted(new Data(*this));
+}
+
 Manifest::Manifest(mojo::DefaultConstruct::Tag) {}
+Manifest::Manifest(scoped_refptr<Data> data) {
+  CHECK(data);
+  CHECK(data->HasOneRef());
+  data->origin = url::Origin::Create(data->start_url);
+  data_ = std::move(data);
+}
 
 Manifest::Manifest(const Manifest&) = default;
 Manifest& Manifest::operator=(const Manifest&) = default;
@@ -219,47 +236,33 @@ Manifest& Manifest::operator=(Manifest&&) noexcept = default;
 Manifest::~Manifest() = default;
 
 bool Manifest::operator==(const Manifest& other) const {
+  const Data& lhs = data();
+  const Data& rhs = other.data();
+  if (&lhs == &rhs) {
+    return true;
+  }
   // LINT.IfChange(ManifestEquality)
-  return manifest_url_ == other.manifest_url_ && dir_ == other.dir_ &&
-         name_ == other.name_ && short_name_ == other.short_name_ &&
-         description_ == other.description_ && id_ == other.id_ &&
-         has_custom_id_ == other.has_custom_id_ &&
-         start_url_ == other.start_url_ &&
-         has_valid_specified_start_url_ ==
-             other.has_valid_specified_start_url_ &&
-         display_ == other.display_ &&
-         display_override_ == other.display_override_ &&
-         orientation_ == other.orientation_ && icons_ == other.icons_ &&
-         screenshots_ == other.screenshots_ && shortcuts_ == other.shortcuts_ &&
-         share_target_ == other.share_target_ &&
-         file_handlers_ == other.file_handlers_ &&
-         protocol_handlers_ == other.protocol_handlers_ &&
-         scope_extensions_ == other.scope_extensions_ &&
-         lock_screen_ == other.lock_screen_ &&
-         note_taking_ == other.note_taking_ &&
-         related_applications_ == other.related_applications_ &&
-         prefer_related_applications_ == other.prefer_related_applications_ &&
-         migrate_from_ == other.migrate_from_ &&
-         migrate_to_ == other.migrate_to_ &&
-         theme_color_ == other.theme_color_ &&
-         background_color_ == other.background_color_ &&
-         gcm_sender_id_ == other.gcm_sender_id_ && scope_ == other.scope_ &&
-         update_manifest_url_ == other.update_manifest_url_ &&
-         launch_handler_ == other.launch_handler_ &&
-         translations_ == other.translations_ &&
-         dark_theme_color_ == other.dark_theme_color_ &&
-         dark_background_color_ == other.dark_background_color_ &&
-         tab_strip_ == other.tab_strip_ && version_ == other.version_ &&
-         name_localized_ == other.name_localized_ &&
-         short_name_localized_ == other.short_name_localized_ &&
-         description_localized_ == other.description_localized_ &&
-         icons_localized_ == other.icons_localized_;
+  auto AsTuple = [](const Data& d) {
+    return std::tie(
+        d.manifest_url, d.dir, d.name, d.short_name, d.description, d.id,
+        d.has_custom_id, d.start_url, d.has_valid_specified_start_url,
+        d.display, d.display_override, d.orientation, d.icons, d.screenshots,
+        d.shortcuts, d.share_target, d.file_handlers, d.protocol_handlers,
+        d.scope_extensions, d.lock_screen, d.note_taking,
+        d.related_applications, d.prefer_related_applications, d.migrate_from,
+        d.migrate_to, d.theme_color, d.background_color, d.gcm_sender_id,
+        d.scope, d.update_manifest_url, d.launch_handler, d.translations,
+        d.dark_theme_color, d.dark_background_color, d.tab_strip, d.version,
+        d.name_localized, d.short_name_localized, d.description_localized,
+        d.icons_localized);
+  };
+  return AsTuple(lhs) == AsTuple(rhs);
   // LINT.ThenChange(
-  //   :ManifestToBuilder,
-  //   :ManifestBuilderBuild,
   //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
-  //   //third_party/blink/public/common/manifest/manifest.h:ManifestBuilderFields,
-  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
+  //   //third_party/blink/public/mojom/manifest/manifest.mojom:ManifestFields,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead,
+  //   //third_party/blink/common/manifest/manifest_unittest.cc:ManifestEqualityTest,
+  //   //third_party/blink/common/manifest/manifest_mojom_traits_unittest.cc:ManifestMojomRoundTripFields
   // )
 }
 
@@ -304,280 +307,253 @@ std::optional<Manifest> Manifest::CreateDefault(const GURL& document_url) {
 }
 
 Manifest::Builder Manifest::ToBuilder() const {
-  // LINT.IfChange(ManifestToBuilder)
-  Builder builder(start_url_, id_, scope_);
-  builder.SetManifestUrl(manifest_url_);
-  builder.SetDir(dir_);
-  builder.SetName(name_);
-  builder.SetShortName(short_name_);
-  builder.SetDescription(description_);
-  builder.SetHasCustomId(has_custom_id_);
-  builder.SetHasValidSpecifiedStartUrl(has_valid_specified_start_url_);
-  builder.SetDisplay(display_);
-  builder.SetDisplayOverride(display_override_);
-  builder.SetOrientation(orientation_);
-  builder.SetIcons(icons_);
-  builder.SetScreenshots(screenshots_);
-  builder.SetShortcuts(shortcuts_);
-  builder.SetShareTarget(share_target_);
-  builder.SetFileHandlers(file_handlers_);
-  builder.SetProtocolHandlers(protocol_handlers_);
-  builder.SetScopeExtensions(scope_extensions_);
-  builder.SetLockScreen(lock_screen_);
-  builder.SetNoteTaking(note_taking_);
-  builder.SetRelatedApplications(related_applications_);
-  builder.SetPreferRelatedApplications(prefer_related_applications_);
-  builder.SetMigrateFrom(migrate_from_);
-  builder.SetMigrateTo(migrate_to_);
-  builder.SetThemeColor(theme_color_);
-  builder.SetBackgroundColor(background_color_);
-  builder.SetGcmSenderId(gcm_sender_id_);
-  builder.SetUpdateManifestUrl(update_manifest_url_);
-  builder.SetLaunchHandler(launch_handler_);
-  builder.SetTranslations(translations_);
-  builder.SetDarkThemeColor(dark_theme_color_);
-  builder.SetDarkBackgroundColor(dark_background_color_);
-  builder.SetTabStrip(tab_strip_);
-  builder.SetVersion(version_);
-  builder.SetNameLocalized(name_localized_);
-  builder.SetShortNameLocalized(short_name_localized_);
-  builder.SetDescriptionLocalized(description_localized_);
-  builder.SetIconsLocalized(icons_localized_);
-  // LINT.ThenChange(
-  //   :ManifestEquality,
-  //   :ManifestBuilderBuild,
-  //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
-  //   //third_party/blink/public/common/manifest/manifest.h:ManifestBuilderFields,
-  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
-  // )
-  return builder;
+  return Builder(data().Clone());
 }
 
 // Manifest::Builder implementation
 
 Manifest::Builder::Builder(GURL start_url, GURL id, GURL scope)
-    : id_(std::move(id)),
-      start_url_(std::move(start_url)),
-      scope_(std::move(scope)) {}
+    : data_(base::MakeRefCounted<Data>()) {
+  data_->id = std::move(id);
+  data_->start_url = std::move(start_url);
+  data_->scope = std::move(scope);
+}
 
 Manifest::Builder::Builder(GURL start_url)
-    : id_(start_url.GetWithoutRef()),
-      start_url_(std::move(start_url)),
-      scope_(Manifest::GetDefaultScope(start_url_)) {}
+    : data_(base::MakeRefCounted<Data>()) {
+  data_->id = start_url.GetWithoutRef();
+  data_->start_url = std::move(start_url);
+  data_->scope = Manifest::GetDefaultScope(data_->start_url);
+}
+
+Manifest::Builder::Builder(scoped_refptr<Data> data) : data_(std::move(data)) {
+  CHECK(data_);
+  CHECK(data_->HasOneRef());
+}
 
 Manifest::Builder::~Builder() = default;
-Manifest::Builder::Builder(const Builder&) = default;
+
+Manifest::Builder::Builder(const Builder& other)
+    : data_(other.data().Clone()) {}
+
 Manifest::Builder::Builder(Builder&&) noexcept = default;
-Manifest::Builder& Manifest::Builder::operator=(const Builder&) = default;
+
+Manifest::Builder& Manifest::Builder::operator=(const Builder& other) {
+  if (this != &other) {
+    data_ = other.data().Clone();
+  }
+  return *this;
+}
+
 Manifest::Builder& Manifest::Builder::operator=(Builder&&) noexcept = default;
 
 Manifest::Builder& Manifest::Builder::SetManifestUrl(GURL manifest_url) {
-  manifest_url_ = std::move(manifest_url);
+  data().manifest_url = std::move(manifest_url);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetDir(
     mojom::Manifest_TextDirection dir) {
-  dir_ = dir;
+  data().dir = dir;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetName(
     std::optional<std::u16string> name) {
-  name_ = std::move(name);
+  data().name = std::move(name);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetShortName(
     std::optional<std::u16string> short_name) {
-  short_name_ = std::move(short_name);
+  data().short_name = std::move(short_name);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetDescription(
     std::optional<std::u16string> description) {
-  description_ = std::move(description);
+  data().description = std::move(description);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetId(GURL id) {
-  id_ = std::move(id);
+  data().id = std::move(id);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetHasCustomId(bool has_custom_id) {
-  has_custom_id_ = has_custom_id;
+  data().has_custom_id = has_custom_id;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetStartUrl(GURL start_url) {
-  start_url_ = std::move(start_url);
+  data().start_url = std::move(start_url);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetHasValidSpecifiedStartUrl(
     bool has_valid_specified_start_url) {
-  has_valid_specified_start_url_ = has_valid_specified_start_url;
+  data().has_valid_specified_start_url = has_valid_specified_start_url;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetDisplay(mojom::DisplayMode display) {
-  display_ = display;
+  data().display = display;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetDisplayOverride(
     std::vector<DisplayOverride> display_override) {
-  display_override_ = std::move(display_override);
+  data().display_override = std::move(display_override);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetOrientation(
     device::mojom::ScreenOrientationLockType orientation) {
-  orientation_ = orientation;
+  data().orientation = orientation;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetIcons(
     std::vector<ImageResource> icons) {
-  icons_ = std::move(icons);
+  data().icons = std::move(icons);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetScreenshots(
     std::vector<Screenshot> screenshots) {
-  screenshots_ = std::move(screenshots);
+  data().screenshots = std::move(screenshots);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetShortcuts(
     std::vector<ShortcutItem> shortcuts) {
-  shortcuts_ = std::move(shortcuts);
+  data().shortcuts = std::move(shortcuts);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetShareTarget(
     std::optional<ShareTarget> share_target) {
-  share_target_ = std::move(share_target);
+  data().share_target = std::move(share_target);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetFileHandlers(
     std::vector<FileHandler> file_handlers) {
-  file_handlers_ = std::move(file_handlers);
+  data().file_handlers = std::move(file_handlers);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetProtocolHandlers(
     std::vector<ProtocolHandler> protocol_handlers) {
-  protocol_handlers_ = std::move(protocol_handlers);
+  data().protocol_handlers = std::move(protocol_handlers);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetScopeExtensions(
     std::vector<ScopeExtension> scope_extensions) {
-  scope_extensions_ = std::move(scope_extensions);
+  data().scope_extensions = std::move(scope_extensions);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetLockScreen(
     std::optional<LockScreen> lock_screen) {
-  lock_screen_ = std::move(lock_screen);
+  data().lock_screen = std::move(lock_screen);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetNoteTaking(
     std::optional<NoteTaking> note_taking) {
-  note_taking_ = std::move(note_taking);
+  data().note_taking = std::move(note_taking);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetRelatedApplications(
     std::vector<RelatedApplication> related_applications) {
-  related_applications_ = std::move(related_applications);
+  data().related_applications = std::move(related_applications);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetPreferRelatedApplications(
     bool prefer_related_applications) {
-  prefer_related_applications_ = prefer_related_applications;
+  data().prefer_related_applications = prefer_related_applications;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetMigrateFrom(
     std::vector<MigrateFrom> migrate_from) {
-  migrate_from_ = std::move(migrate_from);
+  data().migrate_from = std::move(migrate_from);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetMigrateTo(
     std::optional<MigrateTo> migrate_to) {
-  migrate_to_ = std::move(migrate_to);
+  data().migrate_to = std::move(migrate_to);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetThemeColor(
     std::optional<SkColor> theme_color) {
-  theme_color_ = theme_color;
+  data().theme_color = theme_color;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetBackgroundColor(
     std::optional<SkColor> background_color) {
-  background_color_ = background_color;
+  data().background_color = background_color;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetGcmSenderId(
     std::optional<std::u16string> gcm_sender_id) {
-  gcm_sender_id_ = std::move(gcm_sender_id);
+  data().gcm_sender_id = std::move(gcm_sender_id);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetScope(GURL scope) {
-  scope_ = std::move(scope);
+  data().scope = std::move(scope);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetUpdateManifestUrl(
     std::optional<GURL> update_manifest_url) {
-  update_manifest_url_ = std::move(update_manifest_url);
+  data().update_manifest_url = std::move(update_manifest_url);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetLaunchHandler(
     std::optional<LaunchHandler> launch_handler) {
-  launch_handler_ = std::move(launch_handler);
+  data().launch_handler = std::move(launch_handler);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetTranslations(
     base::flat_map<std::u16string, TranslationItem> translations) {
-  translations_ = std::move(translations);
+  data().translations = std::move(translations);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetDarkThemeColor(
     std::optional<SkColor> dark_theme_color) {
-  dark_theme_color_ = dark_theme_color;
+  data().dark_theme_color = dark_theme_color;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetDarkBackgroundColor(
     std::optional<SkColor> dark_background_color) {
-  dark_background_color_ = dark_background_color;
+  data().dark_background_color = dark_background_color;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetTabStrip(
     std::optional<TabStrip> tab_strip) {
-  tab_strip_ = std::move(tab_strip);
+  data().tab_strip = std::move(tab_strip);
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetVersion(
     std::optional<std::u16string> version) {
-  version_ = std::move(version);
+  data().version = std::move(version);
   return *this;
 }
 
@@ -585,7 +561,7 @@ Manifest::Builder& Manifest::Builder::SetNameLocalized(
     std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
                                       ManifestLocalizedTextObject>>
         name_localized) {
-  name_localized_ = std::move(name_localized);
+  data().name_localized = std::move(name_localized);
   return *this;
 }
 
@@ -593,7 +569,7 @@ Manifest::Builder& Manifest::Builder::SetShortNameLocalized(
     std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
                                       ManifestLocalizedTextObject>>
         short_name_localized) {
-  short_name_localized_ = std::move(short_name_localized);
+  data().short_name_localized = std::move(short_name_localized);
   return *this;
 }
 
@@ -601,7 +577,7 @@ Manifest::Builder& Manifest::Builder::SetDescriptionLocalized(
     std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
                                       ManifestLocalizedTextObject>>
         description_localized) {
-  description_localized_ = std::move(description_localized);
+  data().description_localized = std::move(description_localized);
   return *this;
 }
 
@@ -609,66 +585,15 @@ Manifest::Builder& Manifest::Builder::SetIconsLocalized(
     std::optional<absl::flat_hash_map<base::i18n::LanguageTag,
                                       std::vector<ImageResource>>>
         icons_localized) {
-  icons_localized_ = std::move(icons_localized);
+  data().icons_localized = std::move(icons_localized);
   return *this;
 }
 
 base::expected<Manifest, ManifestInvariantError> Manifest::Builder::Build() {
-  Manifest manifest;
-  // LINT.IfChange(ManifestBuilderBuild)
-  manifest.manifest_url_ = std::move(manifest_url_);
-  manifest.dir_ = dir_;
-  manifest.name_ = std::move(name_);
-  manifest.short_name_ = std::move(short_name_);
-  manifest.description_ = std::move(description_);
-  manifest.id_ = std::move(id_);
-  manifest.has_custom_id_ = has_custom_id_;
-  manifest.start_url_ = std::move(start_url_);
-  manifest.has_valid_specified_start_url_ = has_valid_specified_start_url_;
-  manifest.display_ = display_;
-  manifest.display_override_ = std::move(display_override_);
-  manifest.orientation_ = orientation_;
-  manifest.icons_ = std::move(icons_);
-  manifest.screenshots_ = std::move(screenshots_);
-  manifest.shortcuts_ = std::move(shortcuts_);
-  manifest.share_target_ = std::move(share_target_);
-  manifest.file_handlers_ = std::move(file_handlers_);
-  manifest.protocol_handlers_ = std::move(protocol_handlers_);
-  manifest.scope_extensions_ = std::move(scope_extensions_);
-  manifest.lock_screen_ = std::move(lock_screen_);
-  manifest.note_taking_ = std::move(note_taking_);
-  manifest.related_applications_ = std::move(related_applications_);
-  manifest.prefer_related_applications_ = prefer_related_applications_;
-  manifest.migrate_from_ = std::move(migrate_from_);
-  manifest.migrate_to_ = std::move(migrate_to_);
-  manifest.theme_color_ = theme_color_;
-  manifest.background_color_ = background_color_;
-  manifest.gcm_sender_id_ = std::move(gcm_sender_id_);
-  manifest.scope_ = std::move(scope_);
-  manifest.update_manifest_url_ = std::move(update_manifest_url_);
-  manifest.launch_handler_ = std::move(launch_handler_);
-  manifest.translations_ = std::move(translations_);
-  manifest.dark_theme_color_ = dark_theme_color_;
-  manifest.dark_background_color_ = dark_background_color_;
-  manifest.tab_strip_ = std::move(tab_strip_);
-  manifest.version_ = std::move(version_);
-  manifest.name_localized_ = std::move(name_localized_);
-  manifest.short_name_localized_ = std::move(short_name_localized_);
-  manifest.description_localized_ = std::move(description_localized_);
-  manifest.icons_localized_ = std::move(icons_localized_);
-  // LINT.ThenChange(
-  //   :ManifestEquality,
-  //   :ManifestToBuilder,
-  //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
-  //   //third_party/blink/public/common/manifest/manifest.h:ManifestBuilderFields,
-  //   //third_party/blink/common/manifest/manifest_mojom_traits.cc:ManifestStructTraitsRead
-  // )
-
+  Manifest manifest(std::move(data_));
   if (auto error = manifest.ValidateInvariants()) {
     return base::unexpected(*error);
   }
-
-  manifest.origin_ = url::Origin::Create(manifest.start_url_);
   return manifest;
 }
 
