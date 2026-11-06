@@ -84,6 +84,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/actions/action_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -107,6 +108,15 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+
+// Returns the per-action pinned toolbar button activation user action recorded
+// for the Contextual Tasks button.
+std::string GetContextualTasksPinnedActivationActionName() {
+  return base::StrCat({"Actions.PinnedToolbarButtonActivation.",
+                       actions::ActionIdMap::ActionIdToString(
+                           kActionSidePanelShowContextualTasks)
+                           .value()});
+}
 
 class TestingAimEligibilityService : public ChromeAimEligibilityService {
  public:
@@ -4258,6 +4268,11 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.PermanentToolbarButton.UserAction."
                          "OpenSidePanel"));
+        // Ephemeral presses must not count as pinned toolbar activations.
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "Actions.PinnedToolbarButtonActivation"));
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         GetContextualTasksPinnedActivationActionName()));
       }),
       CheckViewProperty(
           kPinnedToolbarActionShowSidePanelContextualTasksElementId,
@@ -4408,6 +4423,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralPinButtonRefactorInteractiveTest,
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "OpenContextMenu"));
+      }),
+      // Presses on the now permanently pinned button still count as pinned
+      // toolbar button activations.
+      SelectMenuItem(kPinnedActionToolbarCustomizeElementId),
+      WaitForHide(kPinnedActionToolbarUnpinElementId),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "Actions.PinnedToolbarButtonActivation"));
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         GetContextualTasksPinnedActivationActionName()));
       }));
 }
 

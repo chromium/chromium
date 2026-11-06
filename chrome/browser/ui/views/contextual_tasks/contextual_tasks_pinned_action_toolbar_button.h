@@ -20,12 +20,17 @@ namespace ui {
 class MenuModel;
 }  // namespace ui
 
+namespace views {
+class ActionViewInterface;
+}  // namespace views
+
 // The Contextual Tasks toolbar button created by the pinned toolbar actions
 // container under the ephemeral pin button refactor. While unpinned, it is the
 // ephemeral Contextual Tasks button, so its context menu also records the
 // Contextual Tasks ephemeral button metrics recorded by the legacy
-// `ContextualTasksEphemeralButtonMenuModel`. Once pinned, it behaves like any
-// other `PinnedActionToolbarButton`.
+// `ContextualTasksEphemeralButtonMenuModel`, and its presses are not counted as
+// pinned toolbar button activations. Once pinned, it behaves like any other
+// `PinnedActionToolbarButton`.
 class ContextualTasksPinnedActionToolbarButton
     : public PinnedActionToolbarButton {
   METADATA_HEADER(ContextualTasksPinnedActionToolbarButton,
@@ -49,6 +54,9 @@ class ContextualTasksPinnedActionToolbarButton
       BrowserWindowInterface* browser,
       actions::ActionId action_id,
       base::WeakPtr<PinnedToolbarActionsContainer> container);
+
+  // PinnedActionToolbarButton:
+  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
  protected:
   // ToolbarButton:

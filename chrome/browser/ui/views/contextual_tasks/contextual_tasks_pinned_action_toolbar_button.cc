@@ -7,11 +7,16 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
+#include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -116,6 +121,40 @@ class EphemeralButtonMenuModel : public ui::MenuModel {
   base::WeakPtrFactory<EphemeralButtonMenuModel> weak_ptr_factory_{this};
 };
 
+// Invokes the action like `PinnedActionToolbarButtonActionViewInterface`, but
+// while the button is unpinned, does not record
+// `Actions.PinnedToolbarButtonActivation*`: the user never pinned the ephemeral
+// button, and its presses are already recorded as
+// `ContextualTasks.EphemeralToolbarButton.UserAction.*` by the action.
+class EphemeralButtonActionViewInterface
+    : public PinnedActionToolbarButtonActionViewInterface {
+ public:
+  explicit EphemeralButtonActionViewInterface(
+      PinnedActionToolbarButton* action_view)
+      : PinnedActionToolbarButtonActionViewInterface(action_view),
+        action_view_(action_view) {}
+  ~EphemeralButtonActionViewInterface() override = default;
+
+  // PinnedActionToolbarButtonActionViewInterface:
+  void InvokeActionImpl(actions::ActionItem* action_item) override {
+    if (action_view_->IsPinned()) {
+      PinnedActionToolbarButtonActionViewInterface::InvokeActionImpl(
+          action_item);
+      return;
+    }
+    base::AutoReset<bool> needs_delayed_destruction =
+        action_view_->SetNeedsDelayedDestruction(true);
+    action_item->InvokeAction(
+        actions::ActionInvocationContext::Builder()
+            .SetProperty(kSidePanelOpenTriggerKey,
+                         SidePanelOpenTrigger::kPinnedEntryToolbarButton)
+            .Build());
+  }
+
+ private:
+  const raw_ptr<PinnedActionToolbarButton> action_view_;
+};
+
 }  // namespace
 
 ContextualTasksPinnedActionToolbarButton::
@@ -138,6 +177,11 @@ ContextualTasksPinnedActionToolbarButton::Create(
     base::WeakPtr<PinnedToolbarActionsContainer> container) {
   return std::make_unique<ContextualTasksPinnedActionToolbarButton>(
       browser, action_id, std::move(container));
+}
+
+std::unique_ptr<views::ActionViewInterface>
+ContextualTasksPinnedActionToolbarButton::GetActionViewInterface() {
+  return std::make_unique<EphemeralButtonActionViewInterface>(this);
 }
 
 void ContextualTasksPinnedActionToolbarButton::ShowDropDownMenu(
