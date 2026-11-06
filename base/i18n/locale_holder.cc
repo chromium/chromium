@@ -4,6 +4,8 @@
 
 #include "base/i18n/locale_holder.h"
 
+#include <utility>
+
 #include "base/i18n/language_tag.h"
 
 namespace base::i18n {
@@ -13,6 +15,8 @@ using ::base::i18n::LanguageTag;
 ThreadSafeLocaleHolder::ThreadSafeLocaleHolder(LanguageTag initial_locale)
     : locale_(initial_locale) {}
 
+ThreadSafeLocaleHolder::~ThreadSafeLocaleHolder() = default;
+
 LanguageTag ThreadSafeLocaleHolder::GetLocale() const {
   base::AutoLock lock(lock_);
   return locale_;
@@ -21,6 +25,14 @@ LanguageTag ThreadSafeLocaleHolder::GetLocale() const {
 void ThreadSafeLocaleHolder::SetLocale(const LanguageTag& locale) {
   base::AutoLock lock(lock_);
   locale_ = locale;
+  on_locale_changed_callbacks_.Notify(locale_);
+}
+
+base::CallbackListSubscription
+ThreadSafeLocaleHolder::RegisterOnLocaleChangedCallback(
+    OnLocaleChangedCallbackList::CallbackType callback) {
+  base::AutoLock lock(lock_);
+  return on_locale_changed_callbacks_.Add(std::move(callback));
 }
 
 SequenceCheckedLocaleHolder::SequenceCheckedLocaleHolder(

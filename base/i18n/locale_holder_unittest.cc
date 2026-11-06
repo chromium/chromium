@@ -6,10 +6,12 @@
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
@@ -29,6 +31,29 @@ TEST(ThreadSafeLocaleHolderTest, GetAndSet) {
   LanguageTag new_locale = GetKnownLanguageTag("fr-FR");
   holder.SetLocale(new_locale);
   EXPECT_EQ(holder.GetLocale(), new_locale);
+}
+
+TEST(ThreadSafeLocaleHolderTest, OnLocaleChangedCallback) {
+  ThreadSafeLocaleHolder holder(GetKnownLanguageTag("en-US"));
+  std::vector<LanguageTag> notifications;
+
+  {
+    CallbackListSubscription subscription =
+        holder.RegisterOnLocaleChangedCallback(
+            base::BindLambdaForTesting([&](const LanguageTag& locale) {
+              notifications.push_back(locale);
+            }));
+
+    holder.SetLocale(GetKnownLanguageTag("fr-FR"));
+    holder.SetLocale(GetKnownLanguageTag("ar"));
+    ASSERT_EQ(notifications.size(), 2u);
+    EXPECT_EQ(notifications[0], GetKnownLanguageTag("fr-FR"));
+    EXPECT_EQ(notifications[1], GetKnownLanguageTag("ar"));
+  }
+
+  // Destroying the subscription stops further notifications.
+  holder.SetLocale(GetKnownLanguageTag("de-DE"));
+  EXPECT_EQ(notifications.size(), 2u);
 }
 
 TEST(ThreadSafeLocaleHolderTest, NoOpSet) {

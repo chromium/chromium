@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/language_tag.h"
@@ -16,9 +17,18 @@ namespace base::i18n {
 
 class BASE_I18N_EXPORT DefaultIcuLocaleSetterKey;
 
+using OnDefaultLocaleUpdatedCallbackList =
+    base::RepeatingCallbackList<void(const LanguageTag&)>;
+
 // Returns the current system/library-wide default ICU locale as a
 // `LanguageTag`. Safe to call concurrently from any thread.
 BASE_I18N_EXPORT LanguageTag GetDefaultIcuLocale();
+
+// Registers a callback to be notified whenever `SetDefaultIcuLocale` updates
+// the global default ICU locale. Safe to call concurrently from any thread.
+BASE_I18N_EXPORT base::CallbackListSubscription
+RegisterOnDefaultLocaleUpdatedCallback(
+    OnDefaultLocaleUpdatedCallbackList::CallbackType callback);
 
 // Updates the global default ICU locale.
 //

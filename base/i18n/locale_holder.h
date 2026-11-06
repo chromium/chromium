@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/i18n/language_tag.h"
 #include "base/no_destructor.h"
@@ -21,9 +22,12 @@ namespace base::i18n {
 // concurrently under an internal lock. This class is final and non-virtual.
 class COMPONENT_EXPORT(LANGUAGE_TAG) ThreadSafeLocaleHolder final {
  public:
+  using OnLocaleChangedCallbackList =
+      base::RepeatingCallbackList<void(const LanguageTag&)>;
+
   // Constructs a holder initialized with the specified `initial_locale`.
   explicit ThreadSafeLocaleHolder(LanguageTag initial_locale);
-  ~ThreadSafeLocaleHolder() = default;
+  ~ThreadSafeLocaleHolder();
 
   // Returns the current LanguageTag. Safe to call concurrently from any thread.
   LanguageTag GetLocale() const;
@@ -32,12 +36,23 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) ThreadSafeLocaleHolder final {
   // call concurrently from any thread.
   void SetLocale(const LanguageTag& locale);
 
+  // Registers `callback` to be run with the new locale whenever SetLocale() is
+  // called. Safe to call concurrently from any thread. `callback` runs
+  // synchronously on the thread calling SetLocale() while the internal lock is
+  // held, so it must be cheap and must not call back into this holder.
+  // Destroying the returned subscription is not synchronized with SetLocale(),
+  // so it must outlive any concurrent SetLocale() call.
+  base::CallbackListSubscription RegisterOnLocaleChangedCallback(
+      OnLocaleChangedCallbackList::CallbackType callback);
+
  private:
-  // Mutex protecting access to the underlying `locale_` member.
+  // Mutex protecting access to `locale_` and `on_locale_changed_callbacks_`.
   mutable base::Lock lock_;
 
   // The active locale value.
   LanguageTag locale_ GUARDED_BY(lock_);
+
+  OnLocaleChangedCallbackList on_locale_changed_callbacks_ GUARDED_BY(lock_);
 };
 
 // SequenceCheckedLocaleHolder is a locale container that restricts write

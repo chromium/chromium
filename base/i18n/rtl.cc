@@ -8,16 +8,21 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
+#include <atomic>
+#include <optional>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -98,19 +103,66 @@ TextDirection GetCharacterDirection(UChar32 character) {
   return UNKNOWN_DIRECTION;
 }
 
-TextDirection GetTextDirectionInternal() {
-  TextDirection forced_direction = GetForcedTextDirection();
-  if (forced_direction != UNKNOWN_DIRECTION) {
-    return forced_direction;
-  }
+// Value of `g_cached_text_direction` when no direction is cached.
+constexpr int kTextDirectionNotCached = -1;
 
+// Cached result of GetTextDirectionInternal(), or `kTextDirectionNotCached`.
+// Reset whenever the default ICU locale is updated.
+constinit std::atomic<int> g_cached_text_direction{kTextDirectionNotCached};
+
+TextDirection GetDirectionForLanguageTag(const LanguageTag& language_tag) {
   static constexpr auto kRtlLanguageTags =
       std::to_array<std::string_view>({"ar", "fa", "he", "ur"});
-  if (std::ranges::contains(kRtlLanguageTags,
-                            GetDefaultIcuLocale().language_subtag())) {
+  if (std::ranges::contains(kRtlLanguageTags, language_tag.language_subtag())) {
     return RIGHT_TO_LEFT;
   }
   return LEFT_TO_RIGHT;
+}
+
+void OnDefaultLocaleUpdated(const LanguageTag&) {
+  g_cached_text_direction.store(kTextDirectionNotCached,
+                                std::memory_order_relaxed);
+}
+
+// Subscribes to default ICU locale updates on the first call; later calls do
+// nothing.
+void EnsureObservingDefaultLocale() {
+  // A function-local static gives thread-safe one-time registration without a
+  // static initializer, and keeps the subscription alive for the life of the
+  // process.
+  static base::NoDestructor<base::CallbackListSubscription> subscription(
+      RegisterOnDefaultLocaleUpdatedCallback(
+          base::BindRepeating(&OnDefaultLocaleUpdated)));
+}
+
+// Returns the cached text direction, or std::nullopt if none is cached.
+std::optional<TextDirection> GetCachedTextDirection() {
+  const int direction = g_cached_text_direction.load(std::memory_order_relaxed);
+  if (direction == kTextDirectionNotCached) {
+    return std::nullopt;
+  }
+  return static_cast<TextDirection>(direction);
+}
+
+TextDirection GetTextDirectionInternal() {
+  EnsureObservingDefaultLocale();
+  if (std::optional<TextDirection> direction = GetCachedTextDirection()) {
+    return *direction;
+  }
+
+  const LanguageTag locale = GetDefaultIcuLocale();
+  TextDirection direction = GetForcedTextDirection();
+  if (direction == UNKNOWN_DIRECTION) {
+    direction = GetDirectionForLanguageTag(locale);
+  }
+  g_cached_text_direction.store(direction, std::memory_order_relaxed);
+  // If another thread updated the default locale after `locale` was read, its
+  // reset may have run before the store above. Drop the stale value then.
+  if (GetDefaultIcuLocale() != locale) {
+    g_cached_text_direction.store(kTextDirectionNotCached,
+                                  std::memory_order_relaxed);
+  }
+  return direction;
 }
 
 }  // namespace

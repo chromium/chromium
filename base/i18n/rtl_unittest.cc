@@ -8,13 +8,18 @@
 
 #include <algorithm>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/i18n/base_i18n_switches.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -544,6 +549,50 @@ TEST_F(RTLTest, SanitizeUserSuppliedString) {
         prefix + WideToUTF16(i.formatted_text) + suffix;
     SanitizeUserSuppliedString(&unsanitized_text);
     EXPECT_EQ(sanitized_text, unsanitized_text);
+  }
+}
+
+TEST_F(RTLTest, IsRTLFollowsDefaultLocaleAndForcedDirection) {
+  test::ScopedCommandLine scoped_command_line;
+  CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->RemoveSwitch(switches::kForceUIDirection);
+
+  {
+    ScopedDefaultIcuLocale override_en(GetKnownLanguageTag("en-US"));
+    EXPECT_FALSE(IsRTL());
+    for (const LanguageTag& rtl_tag :
+         {GetKnownLanguageTag("ar"), GetKnownLanguageTag("fa"),
+          GetKnownLanguageTag("he"), GetKnownLanguageTag("ur")}) {
+      ScopedDefaultIcuLocale override_rtl(rtl_tag);
+      EXPECT_TRUE(IsRTL()) << rtl_tag;
+    }
+    EXPECT_FALSE(IsRTL());
+  }
+
+  // --force-ui-direction is read again after the next default locale update.
+  command_line->AppendSwitchASCII(switches::kForceUIDirection,
+                                  switches::kForceDirectionRTL);
+  {
+    ScopedDefaultIcuLocale override_en(GetKnownLanguageTag("en-US"));
+    EXPECT_EQ(RIGHT_TO_LEFT, GetForcedTextDirection());
+    EXPECT_TRUE(IsRTL());
+  }
+
+  // Forced LTR overrides an RTL default locale.
+  command_line->AppendSwitchASCII(switches::kForceUIDirection,
+                                  switches::kForceDirectionLTR);
+  {
+    ScopedDefaultIcuLocale override_ar(GetKnownLanguageTag("ar"));
+    EXPECT_EQ(LEFT_TO_RIGHT, GetForcedTextDirection());
+    EXPECT_FALSE(IsRTL());
+  }
+
+  // Without the switch, the default locale determines the direction again.
+  command_line->RemoveSwitch(switches::kForceUIDirection);
+  {
+    ScopedDefaultIcuLocale override_ar(GetKnownLanguageTag("ar"));
+    EXPECT_EQ(UNKNOWN_DIRECTION, GetForcedTextDirection());
+    EXPECT_TRUE(IsRTL());
   }
 }
 

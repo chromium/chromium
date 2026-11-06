@@ -4,6 +4,9 @@
 
 #include "base/i18n/icubridge/default_icu_locale.h"
 
+#include <utility>
+
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/i18n/icu4c_tag_converter.h"  // nogncheck
 #include "base/i18n/language_tag.h"
@@ -40,6 +43,11 @@ ThreadSafeLocaleHolder& GetLocaleHolder() {
 
 LanguageTag GetDefaultIcuLocale() {
   return GetLocaleHolder().GetLocale();
+}
+
+base::CallbackListSubscription RegisterOnDefaultLocaleUpdatedCallback(
+    OnDefaultLocaleUpdatedCallbackList::CallbackType callback) {
+  return GetLocaleHolder().RegisterOnLocaleChangedCallback(std::move(callback));
 }
 
 void SetDefaultIcuLocale(DefaultIcuLocaleSetterKey key,
