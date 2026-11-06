@@ -22,6 +22,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/host/gpu_host_impl.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
@@ -35,10 +36,6 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
-#endif
 
 namespace content {
 
@@ -149,12 +146,7 @@ BrowserGpuChannelHostFactory::EstablishRequest::EstablishRequest(
       gpu_client_id_(gpu_client_id),
       gpu_client_tracing_id_(gpu_client_tracing_id),
       finished_(false),
-#if BUILDFLAG(IS_MAC)
-      main_task_runner_(ui::WindowResizeHelperMac::Get()->task_runner())
-#else
-      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault())
-#endif
-{
+      main_task_runner_(BrowserMainLoop::GetInstance()->GetResizeTaskRunner()) {
 }
 
 void BrowserGpuChannelHostFactory::EstablishRequest::RestartTimeout() {
