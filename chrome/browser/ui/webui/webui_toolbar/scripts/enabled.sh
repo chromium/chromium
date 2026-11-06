@@ -50,10 +50,13 @@ join , \
   InitialWebUIWithoutSpellCheckForNtp \
   InitialWebUIWithoutTranslateForNtp \
   LazyKeyedServiceInstantiation \
+  OmniboxAimPopupDeferCreation \
+  OmniboxWebUIPopupDeferCreation \
   PerDependencyDeadlines \
   PrioritizeResizeTaskRunnerOnStartup \
   SendGPUChannelEarly \
   SkipIPCChannelPausingForNonGuests \
+  TopChromeWebUISharedRenderer \
   WebUIBackForwardButton \
   WebUIBundledCodeCache \
   WebUIBypassMojoConnections \
