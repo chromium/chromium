@@ -10,14 +10,14 @@ emulator_package {
 }
 
 system_image_package {
-  package_name: "chromium/third_party/android_sdk/public/system-images/android-37.0/google_apis_ps16k/x86_64"
-  version: "GtrQ_IAAMD_CvnJc1JTz7JYx8ypCgqa4R2NF6vP-sEYC"  # r7, CE2A.260420.050
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-37.2/google_apis_ps16k/x86_64"
+  version: "zFUkg7QFoqKulhiuIpk-Z3JlRw4FIAHszmenSVr18PMC"  # r7, CP41.260831.015
 }
-system_image_name: "system-images;android-37.0;google_apis_ps16k;x86_64"
+system_image_name: "system-images;android-37.2;google_apis_ps16k;x86_64"
 
 avd_package {
-  package_name: "chromium/third_party/android_sdk/public/avds/android-37.0/google_apis_ps16k/x86_64"
-  version: "ygWjGbSDFS1f7-kLuGRsZGiQXJW_owwE5ErR-GpkcrkC"
+  package_name: "chromium/third_party/android_sdk/public/avds/android-37.2/google_apis_ps16k/x86_64"
+  version: "qY3a_rH4Jqez6QanU92hC4NH0r_2iN73cebTSO-vdSYC"
 }
 avd_name: "android_37_google_apis_ps16k_x64"
 
