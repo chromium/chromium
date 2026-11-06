@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -392,15 +391,7 @@ TEST_F(MediaStreamTrackProcessorTest, VideoCloseOnTrackEnd) {
   EXPECT_TRUE(readable->IsClosed());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(https://crbug.com/1234343): Test seems flaky on Fuchsia, enable once
-// flakiness has been investigated.
-#define MAYBE_VideoNoCloseOnTrackDisable DISABLED_VideoNoCloseOnTrackDisable
-#else
-#define MAYBE_VideoNoCloseOnTrackDisable VideoNoCloseOnTrackDisable
-#endif
-
-TEST_F(MediaStreamTrackProcessorTest, MAYBE_VideoNoCloseOnTrackDisable) {
+TEST_F(MediaStreamTrackProcessorTest, VideoNoCloseOnTrackDisable) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
