@@ -346,7 +346,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetBrowserAccessibilityRoot()
 
 BrowserAccessibility* BrowserAccessibilityManager::GetFromAXNode(
     const AXNode* node) const {
-  // TODO(benjamin.beaudry): Consider moving `GetFromId` to
+  // TODO(crbug.com/581462583): Consider moving `GetFromId` to
   // `AXPlatformTreeManager`.
   if (!node)
     return nullptr;

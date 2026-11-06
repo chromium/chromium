@@ -1099,8 +1099,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_RTL) {
   // TODO(accessibility): The initial x offset should be the result of an
   // operation that takes into account the left insets, but because of
   // https://crbug.com/1508209, it happens to be consistently 11 on all try
-  // bots. If this test starts failings, please reach out to
-  // benjamin.beaudry@microsoft.com.
+  // bots.
   //
   // 11 comes from 10 for the horizontal insets + 1 for the cursor width.
   int initial_x = widget_->GetWindowBoundsInScreen().width() - 11;

@@ -3216,7 +3216,6 @@ recorded in the same way, even if they fit the naming pattern. -->
   <owner>lucasradaelli@google.com</owner>
   <owner>javiercon@microsoft.com</owner>
   <owner>janewman@microsoft.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The time to execute a call to the UMA_API_ELEMENT_PROVIDER_FROM_POINT method
@@ -4692,7 +4691,6 @@ recorded in the same way, even if they fit the naming pattern. -->
 <histogram name="Accessibility.Win.ActiveClientApis" enum="ActiveClientApi"
     expires_after="2027-04-17">
   <owner>lucasradaelli@google.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <summary>
@@ -4707,7 +4705,6 @@ recorded in the same way, even if they fit the naming pattern. -->
 <histogram name="Accessibility.Win.RequestedClientApis" enum="ActiveClientApi"
     expires_after="2027-04-17">
   <owner>lucasradaelli@google.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <summary>
@@ -4742,7 +4739,6 @@ recorded in the same way, even if they fit the naming pattern. -->
     expires_after="2026-12-06">
   <owner>lucasradaelli@google.com</owner>
   <owner>almaher@microsoft.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>javiercon@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -4765,7 +4761,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>lucasradaelli@google.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks if the JAWS version predates the fix for Chrome’s UIA support. True
@@ -4779,7 +4775,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>lucasradaelli@google.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks the major version of JAWS detected. Recorded when the AXMode in the
@@ -4793,7 +4789,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>lucasradaelli@google.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks the major version of NVDA detected. Recorded when the AXMode in the
@@ -4817,7 +4813,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 <histogram name="Accessibility.WinUIA.ClientDisconnected"
     enum="UiaClientProcess" expires_after="2027-04-28">
   <owner>lucasradaelli@google.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the base::PersistentHash of the lowercased process name of a UIA
@@ -4831,7 +4827,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 <histogram name="Accessibility.WinUIA.ClientProcess.{AXModeFlag}"
     enum="UiaClientProcess" expires_after="2027-04-28">
   <owner>lucasradaelli@google.com</owner>
-  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the base::PersistentHash of each distinct lowercased UIA client

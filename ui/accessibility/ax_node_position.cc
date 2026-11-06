@@ -95,7 +95,7 @@ bool AXNodePosition::IsTextPositionAnchor(const AXNode& node) {
     return true;
 
   if (node.GetRole() == ax::mojom::Role::kSpinButton) {
-    // TODO(benjamin.beaudry) Please look into whether this code needs to
+    // TODO(crbug.com/581458342) Please look into whether this code needs to
     // remain, or can be simplified.
     return true;
   }

@@ -735,8 +735,7 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
 
   AXPlatformNodeBase::NotifyAccessibilityEvent(event_type);
 
-  // TODO(benjamin.beaudry): Uncomment DCHECK once https://crbug.com/331840469
-  // is fixed.
+  // TODO(crbug.com/331840469): Uncomment DCHECK once this bug is fixed.
   // DCHECK(event_type != ax::mojom::Event::kLiveRegionChanged ||
   //        IsWebContent() || IsUIAControl())
   //     << "For views, the LiveRegionChanged event should only be fired on
