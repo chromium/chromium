@@ -85,13 +85,14 @@ bool IsDeviceSha256Matched(const nearby::fastpair::FastPairDevice& device,
 namespace ash {
 namespace quick_pair {
 
-FastPairRepositoryImpl::FastPairRepositoryImpl()
+FastPairRepositoryImpl::FastPairRepositoryImpl(PrefService* local_state)
     : device_metadata_fetcher_(std::make_unique<DeviceMetadataFetcher>()),
       footprints_fetcher_(std::make_unique<FootprintsFetcherImpl>()),
       image_decoder_(std::make_unique<FastPairImageDecoderImpl>()),
-      device_address_map_(std::make_unique<DeviceAddressMap>()),
+      device_address_map_(std::make_unique<DeviceAddressMap>(local_state)),
       device_image_store_(
-          std::make_unique<DeviceImageStore>(image_decoder_.get())),
+          std::make_unique<DeviceImageStore>(image_decoder_.get(),
+                                             local_state)),
       footprints_last_updated_(base::Time::UnixEpoch()) {
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &FastPairRepositoryImpl::OnGetAdapter, weak_ptr_factory_.GetWeakPtr()));

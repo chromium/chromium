@@ -11,10 +11,12 @@
 #include "ash/quick_pair/common/device.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash::quick_pair {
 
@@ -30,7 +32,8 @@ class DeviceAddressMap {
   // Registers preferences used by this class in the provided |registry|.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  DeviceAddressMap();
+  // `local_state` must be non-null and outlive this instance.
+  explicit DeviceAddressMap(PrefService* local_state);
   DeviceAddressMap(const DeviceAddressMap&) = delete;
   DeviceAddressMap& operator=(const DeviceAddressMap&) = delete;
   ~DeviceAddressMap();
@@ -79,6 +82,7 @@ class DeviceAddressMap {
 
   // Used to lazily load saved records from prefs.
   bool loaded_records_from_prefs_ = false;
+  const raw_ref<PrefService> local_state_;
   base::flat_map<std::string, std::string> mac_address_to_model_id_;
   base::WeakPtrFactory<DeviceAddressMap> weak_ptr_factory_{this};
 };

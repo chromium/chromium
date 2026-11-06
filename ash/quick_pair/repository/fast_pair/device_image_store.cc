@@ -7,13 +7,14 @@
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
-#include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
@@ -30,8 +31,9 @@ void DeviceImageStore::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDeviceImageStorePref);
 }
 
-DeviceImageStore::DeviceImageStore(FastPairImageDecoder* image_decoder)
-    : image_decoder_(image_decoder) {}
+DeviceImageStore::DeviceImageStore(FastPairImageDecoder* image_decoder,
+                                   PrefService* local_state)
+    : image_decoder_(image_decoder), local_state_(CHECK_DEREF(local_state)) {}
 
 DeviceImageStore::~DeviceImageStore() = default;
 
@@ -90,13 +92,8 @@ bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
                model_id;
     return false;
   }
-  PrefService* local_state = Shell::Get()->local_state();
-  if (!local_state) {
-    CD_LOG(WARNING, Feature::FP)
-        << __func__ << ": No shell local state available.";
-    return false;
-  }
-  ScopedDictPrefUpdate device_image_store(local_state, kDeviceImageStorePref);
+  ScopedDictPrefUpdate device_image_store(&local_state_.get(),
+                                          kDeviceImageStorePref);
   // TODO(dclasson): Once we add TrueWireless support, need to modify this to
   // merge new & persisted images objects.
   if (!device_image_store->Set(model_id, images.ToDictionaryValue())) {
@@ -109,13 +106,8 @@ bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
 }
 
 bool DeviceImageStore::EvictDeviceImages(const std::string& model_id) {
-  PrefService* local_state = Shell::Get()->local_state();
-  if (!local_state) {
-    CD_LOG(WARNING, Feature::FP)
-        << __func__ << ": No shell local state available.";
-    return false;
-  }
-  ScopedDictPrefUpdate device_image_store(local_state, kDeviceImageStorePref);
+  ScopedDictPrefUpdate device_image_store(&local_state_.get(),
+                                          kDeviceImageStorePref);
   if (!device_image_store->Remove(model_id)) {
     CD_LOG(WARNING, Feature::FP)
         << __func__
@@ -142,14 +134,8 @@ std::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
 }
 
 void DeviceImageStore::LoadPersistedImagesFromPrefs() {
-  PrefService* local_state = Shell::Get()->local_state();
-  if (!local_state) {
-    CD_LOG(WARNING, Feature::FP)
-        << __func__ << ": No shell local state available.";
-    return;
-  }
   const base::DictValue& device_image_store =
-      local_state->GetDict(kDeviceImageStorePref);
+      local_state_->GetDict(kDeviceImageStorePref);
   for (auto [model_id, image_dict] : device_image_store) {
     std::optional<DeviceImageInfo> images;
     if (image_dict.is_dict()) {

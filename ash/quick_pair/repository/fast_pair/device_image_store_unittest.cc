@@ -10,7 +10,6 @@
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair/mock_fast_pair_image_decoder.h"
-#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
@@ -61,7 +60,7 @@ class DeviceImageStoreTest : public AshTestBase {
         .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(test_image_));
 
     device_image_store_ =
-        std::make_unique<DeviceImageStore>(mock_decoder_.get());
+        std::make_unique<DeviceImageStore>(mock_decoder_.get(), local_state());
   }
 
  protected:
@@ -197,9 +196,8 @@ TEST_F(DeviceImageStoreTest, PersistDeviceImagesValid) {
   EXPECT_TRUE(device_image_store_->PersistDeviceImages(kTestModelId));
 
   // Validate that the images are persisted to prefs.
-  PrefService* local_state = Shell::Get()->local_state();
   const base::DictValue& device_image_store_dict =
-      local_state->GetDict(DeviceImageStore::kDeviceImageStorePref);
+      local_state()->GetDict(DeviceImageStore::kDeviceImageStorePref);
   const base::DictValue* images_dict =
       device_image_store_dict.FindDict(kTestModelId);
   EXPECT_TRUE(images_dict);
@@ -222,9 +220,8 @@ TEST_F(DeviceImageStoreTest, EvictDeviceImagesValid) {
   EXPECT_TRUE(device_image_store_->EvictDeviceImages(kTestModelId));
 
   // Validate that the images are evicted from prefs.
-  PrefService* local_state = Shell::Get()->local_state();
   const base::DictValue& device_image_store_dict =
-      local_state->GetDict(DeviceImageStore::kDeviceImageStorePref);
+      local_state()->GetDict(DeviceImageStore::kDeviceImageStorePref);
   const base::Value* images_dict = device_image_store_dict.Find(kTestModelId);
   EXPECT_FALSE(images_dict);
 }
@@ -294,7 +291,7 @@ TEST_F(DeviceImageStoreTest, LoadPersistedImagesFromPrefs) {
 
   // A new/restarted DeviceImageStore instance should load persisted images
   // from prefs.
-  DeviceImageStore new_device_image_store(mock_decoder_.get());
+  DeviceImageStore new_device_image_store(mock_decoder_.get(), local_state());
   std::optional<DeviceImageInfo> images =
       new_device_image_store.GetImagesForDeviceModel(kTestModelId);
   EXPECT_TRUE(images);

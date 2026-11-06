@@ -27,7 +27,7 @@ void CreateShell(PrefService& local_state) {
   shell_init_params.keyboard_ui_factory =
       std::make_unique<ChromeKeyboardUIFactory>();
   shell_init_params.quick_pair_mediator_factory =
-      std::make_unique<ash::quick_pair::Mediator::FactoryImpl>();
+      std::make_unique<ash::quick_pair::Mediator::FactoryImpl>(&local_state);
   shell_init_params.dbus_bus = ash::DBusThreadManager::Get()->GetSystemBus();
 
   ash::Shell::CreateInstance(std::move(shell_init_params));

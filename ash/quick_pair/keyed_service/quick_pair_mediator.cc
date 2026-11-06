@@ -32,12 +32,14 @@
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/ui_broker_impl.h"
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 namespace quick_pair {
@@ -64,6 +66,11 @@ std::pair<std::string, Protocol> GetDiscoveryBanListKey(
 
 }  // namespace
 
+Mediator::FactoryImpl::FactoryImpl(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
+
+Mediator::FactoryImpl::~FactoryImpl() = default;
+
 std::unique_ptr<Mediator> Mediator::FactoryImpl::BuildInstance() {
   auto process_manager = std::make_unique<QuickPairProcessManagerImpl>();
   auto pairer_broker = std::make_unique<PairerBrokerImpl>();
@@ -77,7 +84,8 @@ std::unique_ptr<Mediator> Mediator::FactoryImpl::BuildInstance() {
       std::move(message_stream_lookup), std::move(pairer_broker),
       std::make_unique<UIBrokerImpl>(),
       std::make_unique<CompanionAppBrokerImpl>(),
-      std::make_unique<FastPairRepositoryImpl>(), std::move(process_manager));
+      std::make_unique<FastPairRepositoryImpl>(&local_state_.get()),
+      std::move(process_manager));
 }
 
 Mediator::Mediator(

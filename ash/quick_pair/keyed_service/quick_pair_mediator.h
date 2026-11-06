@@ -14,6 +14,7 @@
 #include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/ui_broker.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -60,9 +62,16 @@ class Mediator final
   };
 
   class FactoryImpl : public Factory {
+   public:
+    // `local_state` must be non-null and outlive this instance.
+    explicit FactoryImpl(PrefService* local_state);
+    ~FactoryImpl() override;
+
    private:
     // Mediator::Factory:
     std::unique_ptr<Mediator> BuildInstance() override;
+
+    const raw_ref<PrefService> local_state_;
   };
 
   Mediator(

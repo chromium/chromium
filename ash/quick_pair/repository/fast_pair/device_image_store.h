@@ -13,11 +13,13 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "ui/gfx/image/image.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 namespace quick_pair {
@@ -64,7 +66,9 @@ class DeviceImageStore {
   // Registers preferences used by this class in the provided |registry|.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  explicit DeviceImageStore(FastPairImageDecoder* image_decoder);
+  // `local_state` must be non-null and outlive this instance.
+  DeviceImageStore(FastPairImageDecoder* image_decoder,
+                   PrefService* local_state);
   DeviceImageStore(const DeviceImageStore&) = delete;
   DeviceImageStore& operator=(const DeviceImageStore&) = delete;
   ~DeviceImageStore();
@@ -130,6 +134,7 @@ class DeviceImageStore {
   // Used to lazily load images from prefs.
   bool loaded_images_from_prefs_ = false;
   raw_ptr<FastPairImageDecoder> image_decoder_;
+  const raw_ref<PrefService> local_state_;
   base::WeakPtrFactory<DeviceImageStore> weak_ptr_factory_{this};
 };
 

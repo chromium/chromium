@@ -23,7 +23,6 @@
 #include "ash/quick_pair/repository/fast_pair/proto_conversions.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
-#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
@@ -184,11 +183,11 @@ class FastPairRepositoryImplTest : public AshTestBase {
     ON_CALL(*image_decoder_, DecodeImage(_, _, _))
         .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(test_image_));
 
-    auto device_address_map = std::make_unique<DeviceAddressMap>();
+    auto device_address_map = std::make_unique<DeviceAddressMap>(local_state());
     device_address_map_ = device_address_map.get();
 
     auto device_image_store =
-        std::make_unique<DeviceImageStore>(image_decoder_);
+        std::make_unique<DeviceImageStore>(image_decoder_, local_state());
     device_image_store_ = device_image_store.get();
 
     auto pending_write_store = std::make_unique<PendingWriteStore>();

@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
+class PrefService;
+
 namespace chromeos {
 namespace bluetooth_config {
 class DeviceImageInfo;
@@ -48,7 +50,8 @@ class SavedDeviceRegistry;
 class FastPairRepositoryImpl : public FastPairRepository,
                                public NetworkStateHandlerObserver {
  public:
-  FastPairRepositoryImpl();
+  // `local_state` must be non-null and outlive this instance.
+  explicit FastPairRepositoryImpl(PrefService* local_state);
   FastPairRepositoryImpl(
       scoped_refptr<device::BluetoothAdapter> adapter,
       std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher,
