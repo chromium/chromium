@@ -7,9 +7,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include <string>
+
+#include "base/memory/scoped_refptr.h"
+#endif
 
 class BrowserWindowInterface;
 class GURL;
@@ -18,6 +25,12 @@ class Profile;
 namespace base {
 class FilePath;
 }
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+namespace dbus {
+class Bus;
+}
+#endif
 
 namespace platform_util {
 
@@ -130,6 +143,20 @@ gfx::NativeWindow GetActiveWindow();
 // TODO(crbug.com/365146870): Deprecate in favor of LockedStateController and
 // BrowserDelegate::IsOnTaskState.
 bool IsBrowserLockedFullscreen(const BrowserWindowInterface* browser);
+#endif
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+using RunCommandCallbackForTesting =
+    base::RepeatingCallback<void(const std::string& command,
+                                 const base::FilePath& working_directory,
+                                 const std::string& arg)>;
+
+// Overrides the D-Bus session bus and the external command runner for unit
+// tests, and resets cached portal state. Pass `nullptr` for `bus_override` and
+// a null callback to restore defaults.
+void SetPortalHooksForTesting(
+    scoped_refptr<dbus::Bus> bus_override,
+    RunCommandCallbackForTesting run_command_callback);
 #endif
 
 }  // namespace platform_util

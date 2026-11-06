@@ -6,8 +6,11 @@
 #define DBUS_MOCK_BUS_H_
 
 #include <stdint.h>
-#include <string>
 
+#include <string>
+#include <string_view>
+
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -29,6 +32,19 @@ class MockBus : public Bus {
                ObjectProxy*(std::string_view service_name,
                             const ObjectPath& object_path,
                             int options));
+  MOCK_METHOD(bool,
+              RemoveObjectProxy,
+              (std::string_view service_name,
+               const ObjectPath& object_path,
+               base::OnceClosure callback),
+              (override));
+  MOCK_METHOD(bool,
+              RemoveObjectProxyWithOptions,
+              (std::string_view service_name,
+               const ObjectPath& object_path,
+               int options,
+               base::OnceClosure callback),
+              (override));
   MOCK_METHOD1(GetExportedObject, ExportedObject*(
       const ObjectPath& object_path));
   MOCK_METHOD2(GetObjectManager, ObjectManager*(const std::string&,

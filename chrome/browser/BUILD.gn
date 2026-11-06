@@ -4659,6 +4659,7 @@ source_set("primitives") {
   ]
   public_deps = [
     "//base",
+    "//build/config/linux/dbus:buildflags",
     "//chrome/common:buildflags",
     "//ui/actions:actions_headers",
     "//ui/base",
@@ -5176,7 +5177,10 @@ source_set("core_unit_tests") {
     ]
 
     if (use_dbus) {
-      sources += [ "dbus_memory_pressure_evaluator_linux_unittest.cc" ]
+      sources += [
+        "dbus_memory_pressure_evaluator_linux_unittest.cc",
+        "platform_util_linux_unittest.cc",
+      ]
       deps += [
         ":core",
         "//components/dbus",

@@ -10,6 +10,7 @@
 #include <optional>
 #include <queue>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -91,10 +92,19 @@ void OnLaunchOptionsCreated(const std::string& command,
   }
 }
 
+RunCommandCallbackForTesting& GetRunCommandCallback() {
+  static base::NoDestructor<RunCommandCallbackForTesting> callback;
+  return *callback;
+}
+
 void RunCommand(const std::string& command,
                 const base::FilePath& working_directory,
                 const std::string& arg) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
+  if (auto& callback = GetRunCommandCallback()) {
+    callback.Run(command, working_directory, arg);
+    return;
+  }
   base::nix::CreateLaunchOptionsWithXdgActivation(
       base::BindOnce(&OnLaunchOptionsCreated, command, working_directory, arg));
 }
@@ -143,6 +153,14 @@ class PortalHelper {
     if (!internal::AreShellOperationsAllowed()) {
       return;
     }
+    // Only use the portal when sandboxed. xdg-desktop-portal resolves URI
+    // schemes exclusively through .desktop file associations, so on host
+    // installs it can't open schemes that are only handled by a custom
+    // xdg-open, $BROWSER or mailcap entry.
+    if (base::nix::GetAppSandbox() == base::nix::AppSandbox::kNone) {
+      OpenExternalFallback(url);
+      return;
+    }
     if (!bus_) {
       bus_ = dbus_thread_linux::GetSharedSessionBus();
     }
@@ -157,6 +175,15 @@ class PortalHelper {
     if (!api_availability_check_in_progress) {
       CheckPortalAvailability();
     }
+  }
+
+  void ResetForTesting(scoped_refptr<dbus::Bus> bus_override) {
+    requests_.clear();
+    pending_requests_ = {};
+    api_type_.reset();
+    portal_object_proxy_ = nullptr;
+    file_manager_object_proxy_ = nullptr;
+    bus_ = std::move(bus_override);
   }
 
  private:
@@ -475,6 +502,14 @@ class PortalHelper {
 };
 
 }  // namespace
+
+void SetPortalHooksForTesting(
+    scoped_refptr<dbus::Bus> bus_override,
+    RunCommandCallbackForTesting run_command_callback) {
+  GetRunCommandCallback() = std::move(run_command_callback);
+  PortalHelper::GetInstance().ResetForTesting(  // IN-TEST
+      std::move(bus_override));
+}
 
 namespace internal {
 
