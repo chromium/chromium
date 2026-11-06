@@ -537,8 +537,8 @@ TEST_F(AuthenticationFlowTest,
 }
 
 // Tests that when the browser is already managed at the machine level, the
-// management confirmation dialog is only shown without multiprofile. In all
-// cases, the user policies should still be fetched.
+// management confirmation dialog is still shown and the user policies are
+// fetched.
 TEST_F(AuthenticationFlowTest,
        TestSkipManagedConfirmationWhenAlreadyManagedAtMachineLevel) {
   // Set a machine level policy.
@@ -556,7 +556,7 @@ TEST_F(AuthenticationFlowTest,
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountType.SigninConsent",
       signin_metrics::SigninAccountType::kManaged, 1);
-  // Iff the signin involved a profile switch, the management confirmation
+  // Since the signin involves a profile switch, the management confirmation
   // dialog should still be shown.
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 }

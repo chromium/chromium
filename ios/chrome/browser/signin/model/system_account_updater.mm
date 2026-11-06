@@ -277,7 +277,6 @@ void SystemAccountUpdater::UpdateLoadedAccounts() {
 }
 
 void SystemAccountUpdater::HandleMigrationIfNeeded() {
-  // Perform migration only if the flag is enabled.
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 
   if (!local_state) {

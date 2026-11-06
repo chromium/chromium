@@ -172,9 +172,8 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
 void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
   bool backup_allowed = browser_->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kAllowChromeDataInBackups);
-  // TODO(crbug.com/40826035): If multiple profiles are supported on iOS, update
-  // this logic to work with multiple profiles having possibly conflicting
-  // preference values.
+  // TODO(crbug.com/40826035): Update this logic to work with multiple profiles
+  // having possibly conflicting preference values.
   std::optional<std::vector<base::FilePath>> test_app_group_paths;
   if (g_app_group_paths_for_testing) {
     test_app_group_paths = *g_app_group_paths_for_testing;
