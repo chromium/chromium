@@ -700,12 +700,14 @@ std::unique_ptr<ToolRequest> MakeTypeRequest(TabInterface& tab,
       ActorSurfaceHandle::From(tab.GetHandle()), MakeTarget(type_point), text,
       follow_by_enter, TypeToolRequest::Mode::kReplace);
 }
-std::unique_ptr<ToolRequest> MakeSelectRequest(content::RenderFrameHost& rfh,
-                                               int content_node_id,
-                                               std::string_view value) {
+std::unique_ptr<ToolRequest> MakeSelectRequest(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    std::string_view value,
+    mojom::SelectAction::OptionMatchMode match_mode) {
   return std::make_unique<SelectToolRequest>(GetActorSurfaceHandleForFrame(rfh),
                                              MakeTarget(rfh, content_node_id),
-                                             value);
+                                             value, match_mode);
 }
 
 std::unique_ptr<ToolRequest> MakeScrollRequest(

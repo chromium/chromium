@@ -192,7 +192,9 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 }
 
 // Test that attempting to select with an empty match_text fails with
-// kArgumentsInvalid and does not change the current selection.
+// kArgumentsInvalid and does not change the current selection. This only
+// applies in kText; kValue can target options without a `value` attribute
+// using an empty string to preserve existing behavior.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
                        SelectTool_EmptyMatchTextFails) {
   const GURL url = embedded_https_test_server().GetURL(
@@ -208,7 +210,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
   ASSERT_EQ(initial_value, "alpha");
 
   std::unique_ptr<ToolRequest> action =
-      MakeSelectRequest(*main_frame(), plain_select_dom_node_id, "");
+      MakeSelectRequest(*main_frame(), plain_select_dom_node_id, "",
+                        mojom::SelectAction::OptionMatchMode::kText);
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);

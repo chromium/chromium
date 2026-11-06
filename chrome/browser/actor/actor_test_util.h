@@ -252,9 +252,12 @@ std::unique_ptr<ToolRequest> MakeTypeRequest(tabs::TabInterface& tab,
                                              const gfx::Point& type_point,
                                              std::string_view text,
                                              bool follow_by_enter);
-std::unique_ptr<ToolRequest> MakeSelectRequest(content::RenderFrameHost& rfh,
-                                               int content_node_id,
-                                               std::string_view value);
+std::unique_ptr<ToolRequest> MakeSelectRequest(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    std::string_view value,
+    mojom::SelectAction::OptionMatchMode match_mode =
+        mojom::SelectAction::OptionMatchMode::kValue);
 std::unique_ptr<ToolRequest> MakeScrollRequest(
     content::RenderFrameHost& rfh,
     std::optional<int> content_node_id,

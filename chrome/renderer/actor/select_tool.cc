@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/to_string.h"
@@ -27,15 +26,6 @@
 #include "third_party/blink/public/web/web_view.h"
 
 namespace actor {
-
-namespace {
-
-// When this flag is enabled, return ArgumentsInvalid if the match_text is
-// empty. This is a kill-switch to a change to previous behavior.
-BASE_FEATURE(kActorSelectToolAllowEmptyTextMatch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 using blink::WebElement;
 using blink::WebNode;
@@ -93,8 +83,7 @@ ValidationResult SelectTool::Validate() {
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
   if (action_->match_text.empty() &&
-      (action_->match_mode == mojom::SelectAction::OptionMatchMode::kValue ||
-       base::FeatureList::IsEnabled(kActorSelectToolAllowEmptyTextMatch))) {
+      action_->match_mode == mojom::SelectAction::OptionMatchMode::kText) {
     return ValidationResult(
         MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
                    /*requires_page_stabilization=*/false, "Empty match_text"));
