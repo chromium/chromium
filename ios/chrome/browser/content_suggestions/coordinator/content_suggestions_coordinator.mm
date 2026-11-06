@@ -916,6 +916,9 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didSelectNTPThemePhotoPicker {
+  base::UmaHistogramEnumeration(
+      kTipsNTPThemeActionHistogram,
+      IOSTipsNTPThemeActionableAction::kPhotoPickerOpened);
   [self recordTipInteractionIfNeeded:TipIdentifier::kNTPTheme];
   [self.delegate openNTPBackgroundPhotoPicker];
 }
@@ -929,6 +932,7 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didToggleTipsNotificationsSwitch:(BOOL)enabled {
+  base::UmaHistogramBoolean(kTipsNotificationsActionHistogram, enabled);
   [self recordTipInteractionIfNeeded:TipIdentifier::kTipsNotifications];
   if (enabled) {
     [self enableNotifications:ContentSuggestionsModuleType::kTips
@@ -1026,6 +1030,9 @@ using segmentation_platform::TipIdentifier;
       break;
     }
     case ContentSuggestionsModuleType::kTipsNTPThemeActionable:
+      base::UmaHistogramEnumeration(
+          kTipsNTPThemeActionHistogram,
+          IOSTipsNTPThemeActionableAction::kSeeMoreTapped);
       [_tipsMediator logEngagementIfNeededForType:ContentSuggestionsModuleType::
                                                       kTipsNTPThemeActionable];
       [self didSelectTip:segmentation_platform::TipIdentifier::kNTPTheme];

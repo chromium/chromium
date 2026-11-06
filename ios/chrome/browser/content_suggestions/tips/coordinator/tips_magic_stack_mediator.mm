@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -24,6 +25,7 @@
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/ntp_theme_actionable_tip_config.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
@@ -305,10 +307,16 @@ using segmentation_platform::TipIdentifier;
 
   if (index == 0) {
     _backgroundCustomizationService->ClearCurrentBackground();
+    base::UmaHistogramEnumeration(
+        kTipsNTPThemeActionHistogram,
+        IOSTipsNTPThemeActionableAction::kDefaultSelected);
   } else if (index == 1) {
     const SeedColor& seedColor = kSeedColors[kVioletSeedColorIndex];
     _backgroundCustomizationService->SetBackgroundColor(
         seedColor.color, SchemeVariantToProtoEnum(seedColor.variant));
+    base::UmaHistogramEnumeration(
+        kTipsNTPThemeActionHistogram,
+        IOSTipsNTPThemeActionableAction::kColorSelected);
   } else if (index >= 2 &&
              static_cast<size_t>(index - 2) < _presetBackgrounds.size()) {
     const sync_pb::NtpCustomBackground& background =
@@ -320,6 +328,9 @@ using segmentation_platform::TipIdentifier;
         GURL(background.url()), thumbnailURL, background.attribution_line_1(),
         background.attribution_line_2(),
         GURL(background.attribution_action_url()), background.collection_id());
+    base::UmaHistogramEnumeration(
+        kTipsNTPThemeActionHistogram,
+        IOSTipsNTPThemeActionableAction::kPresetImageSelected);
   }
   [self logEngagementIfNeededForType:self.activeConfig.type];
   [self.presentationAudience didSelectNTPThemeOption];

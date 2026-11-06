@@ -15,6 +15,12 @@ extern const char kTipsMagicStackModuleTappedTypeHistogram[];
 // Logged when the user interacts with the actionable NTP Customization promo
 // sheet or its Undo snackbar.
 extern const char kTipsNTPCustomizationPromoActionHistogram[];
+// Logged when the user performs an inline action on the actionable NTP Theme
+// tip in the Magic Stack.
+extern const char kTipsNTPThemeActionHistogram[];
+// Logged when the user toggles the inline switch on the actionable Tips
+// Notifications tip in the Magic Stack.
+extern const char kTipsNotificationsActionHistogram[];
 
 // Enum for the IOS.TipsMagicStack.NTPCustomizationPromo.Action histogram.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -27,6 +33,20 @@ enum class IOSTipsNTPCustomizationPromoAction {
   kMaxValue = kUndone,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSTipsNTPCustomizationPromoAction)
+
+// Enum for the IOS.TipsMagicStack.NTPThemeTip.Action histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+//
+// LINT.IfChange(IOSTipsNTPThemeActionableAction)
+enum class IOSTipsNTPThemeActionableAction {
+  kDefaultSelected = 0,
+  kColorSelected = 1,
+  kPresetImageSelected = 2,
+  kPhotoPickerOpened = 3,
+  kSeeMoreTapped = 4,
+  kMaxValue = kSeeMoreTapped,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSTipsNTPThemeActionableAction)
 
 // User action names.
 // Logged when the Save Passwords promo is dismissed.

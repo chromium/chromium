@@ -281,6 +281,9 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   histogram_tester.ExpectUniqueSample(
       kTipsMagicStackModuleTappedTypeHistogram,
       segmentation_platform::TipIdentifier::kNTPTheme, 1);
+  histogram_tester.ExpectUniqueSample(
+      kTipsNTPThemeActionHistogram,
+      IOSTipsNTPThemeActionableAction::kPhotoPickerOpened, 1);
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       "ephemeral_pref_interacted.ntp_theme_ephemeral_module_interacted"));
 
@@ -306,8 +309,9 @@ TEST_F(ContentSuggestionsCoordinatorTest,
 }
 
 // Tests that tapping "See More" on `kTipsNTPThemeActionable` logs Magic Stack
-// engagement for `kTipsNTPThemeActionable` and `kNTPTheme` in
-// `kTipsMagicStackModuleTappedTypeHistogram`.
+// engagement for `kTipsNTPThemeActionable`, `kNTPTheme` in
+// `kTipsMagicStackModuleTappedTypeHistogram`, and `kSeeMoreTapped` in
+// `kTipsNTPThemeActionHistogram`.
 TEST_F(ContentSuggestionsCoordinatorTest,
        TestSeeMoreForNTPThemeActionableLogsEngagement) {
   base::HistogramTester histogram_tester;
@@ -320,19 +324,29 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   histogram_tester.ExpectUniqueSample(
       kTipsMagicStackModuleTappedTypeHistogram,
       segmentation_platform::TipIdentifier::kNTPTheme, 1);
+  histogram_tester.ExpectUniqueSample(
+      kTipsNTPThemeActionHistogram,
+      IOSTipsNTPThemeActionableAction::kSeeMoreTapped, 1);
   EXPECT_OCMOCK_VERIFY((id)coordinator_.NTPActionsDelegate);
 }
 
 // Tests that toggling the inline Tips Notifications switch logs
-// `kTipsMagicStackModuleTappedTypeHistogram` at most once per impression.
+// `kTipsMagicStackModuleTappedTypeHistogram` at most once per impression while
+// logging every toggle to `kTipsNotificationsActionHistogram`.
 TEST_F(ContentSuggestionsCoordinatorTest,
        TestTipsNotificationsSwitchLogsMetrics) {
   base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kTipsNotificationsActionHistogram, 0);
+
   OCMExpect([coordinator_.NTPActionsDelegate tipsOpened]);
   [coordinator_ didToggleTipsNotificationsSwitch:NO];
   histogram_tester.ExpectUniqueSample(
       kTipsMagicStackModuleTappedTypeHistogram,
       segmentation_platform::TipIdentifier::kTipsNotifications, 1);
+  histogram_tester.ExpectBucketCount(kTipsNotificationsActionHistogram, false,
+                                     1);
+  histogram_tester.ExpectBucketCount(kTipsNotificationsActionHistogram, true,
+                                     0);
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       "ephemeral_pref_interacted."
       "tips_notifications_ephemeral_module_interacted"));
@@ -343,6 +357,19 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   histogram_tester.ExpectUniqueSample(
       kTipsMagicStackModuleTappedTypeHistogram,
       segmentation_platform::TipIdentifier::kTipsNotifications, 1);
+  histogram_tester.ExpectBucketCount(kTipsNotificationsActionHistogram, false,
+                                     2);
+  histogram_tester.ExpectBucketCount(kTipsNotificationsActionHistogram, true,
+                                     0);
+
+  [coordinator_ didToggleTipsNotificationsSwitch:YES];
+  histogram_tester.ExpectUniqueSample(
+      kTipsMagicStackModuleTappedTypeHistogram,
+      segmentation_platform::TipIdentifier::kTipsNotifications, 1);
+  histogram_tester.ExpectBucketCount(kTipsNotificationsActionHistogram, false,
+                                     2);
+  histogram_tester.ExpectBucketCount(kTipsNotificationsActionHistogram, true,
+                                     1);
   EXPECT_OCMOCK_VERIFY((id)coordinator_.NTPActionsDelegate);
 }
 

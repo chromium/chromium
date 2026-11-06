@@ -9262,6 +9262,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TipsMagicStack.NTPThemeTip.Action"
+    enum="IOSTipsNTPThemeActionableAction" expires_after="2027-04-22">
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logged on every inline interaction with the actionable NTP Theme tip module
+    in the Magic Stack (selecting a swatch, opening the photo picker, or tapping
+    See More).
+  </summary>
+</histogram>
+
+<histogram name="IOS.TipsMagicStack.TipsNotificationsTip.Action"
+    enum="BooleanEnabled" expires_after="2027-04-22">
+  <owner>erahmaoui@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the new switch state each time the user toggles the inline switch on or
+    off in the actionable Tips Notifications tip module in the Magic Stack
+    (where the switch is initially off when the card is shown).
+  </summary>
+</histogram>
+
 <histogram name="IOS.TipsNotification.{PromoType}.PromoAction"
     enum="IOSTipsNotificationPromoAction" expires_after="2027-03-17">
   <owner>bmcclure@google.com</owner>
