@@ -317,10 +317,12 @@ class OmniboxEverywhereUIManager
   void OnStartMenuShortcutChecked(bool shortcut_exists);
 #endif
   void OnMostVisitedPrefChanged();
+  OmniboxEverywhereService* GetOmniboxEverywhereService();
   void MaybeRecordFreImpression();
   void MaybeShowLensPromo();
   void EndLensPromo();
   static gfx::Rect CalculateWidgetBounds(int height);
+  void ApplyPendingAutoResize();
   void AdjustWidgetBoundsToWorkArea();
 
   // Try and acquire process and profile keep alives. If unsuccessful, releases
