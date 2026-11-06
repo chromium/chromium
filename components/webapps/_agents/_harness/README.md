@@ -51,6 +51,7 @@ _harness/
 │   └── chromium_design_reviewer.md # Skeptical Architect reviewer
 ├── skills.json               # Manifest registering harness skills
 ├── skills/                   # Reusable harness skills
+│   ├── general-code-review/  # Owners code review workflow (used by reviewer)
 │   ├── harness-bootstrap/    # Project harness skeleton scaffolder
 │   ├── harness-doc-writer/   # Design/Plan authoring & review loop
 │   └── harness-updater/      # Link audit & freshness maintenance

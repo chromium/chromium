@@ -1,6 +1,9 @@
 {
   "entries": [
     {
+      "path": "components/webapps/_agents/_harness/skills/general-code-review"
+    },
+    {
       "path": "components/webapps/_agents/_harness/skills/harness-doc-writer"
     },
     {
