@@ -66,6 +66,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
+#include "chrome/browser/ui/web_applications/web_app_notification_recovery_controller_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
@@ -1463,7 +1464,7 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
         PageSpecificContentSettings::GetForFrame(
             web_contents->GetPrimaryMainFrame());
 
-    const bool is_allowed =
+    const bool are_notifications_allowed =
         content_settings &&
         content_settings->IsContentAllowed(ContentSettingsType::NOTIFICATIONS);
     const bool was_denied_because_of_system_permission =
@@ -1475,18 +1476,32 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
         system_permission_status =
             AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(
                 *app_id);
+    const bool is_unintentional_os_block =
+        system_permission_status ==
+            AppShimRegistry::NotificationPermissionStatus::kPromptPending ||
+        system_permission_status ==
+            AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied;
+    const bool is_explicit_os_denial =
+        system_permission_status ==
+        AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied;
 
-    // If the system level permission for this app is currently "denied", and
-    // either the chrome level permission was granted (and notifications have
-    // been attempted to be used in this page) or the page was explicitly
-    // marked as having notifications blocked by the system level permission,
-    // show the indicator icon.
-    if ((was_denied_because_of_system_permission || is_allowed) &&
-        (system_permission_status ==
-             AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied ||
-         system_permission_status ==
-             AppShimRegistry::NotificationPermissionStatus::
-                 kExplicitlyDenied)) {
+    // `are_notifications_allowed` is only set once the current page accesses
+    // notifications (which is when `kExplicitlyDenied` should show a quiet
+    // icon). For `is_unintentional_os_block`, also check Chrome's origin-level
+    // permission directly so the indicator is shown before any API
+    // call—including in inactive windows and during cross-document commits
+    // before `PageSpecificContentSettings` is populated (avoiding resetting
+    // per-tab `ContentSettingImageModelStates`).
+    const bool is_chrome_permission_granted =
+        is_unintentional_os_block &&
+        web_app::WebAppNotificationRecoveryController::
+            HasChromeNotificationPermissionForOrigin(web_contents);
+
+    if ((is_unintentional_os_block &&
+         (was_denied_because_of_system_permission ||
+          are_notifications_allowed || is_chrome_permission_granted)) ||
+        (is_explicit_os_denial && (was_denied_because_of_system_permission ||
+                                   are_notifications_allowed))) {
       SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/true);
       // UpdateAndGetVisibility() runs on every location bar refresh, and for
       // multiple models sharing the same tab, so only record once per time
@@ -1500,17 +1515,18 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
       }
       set_blocked_on_system_level(true);
       // If the user explicitly turned off notifications for this app at the
-      // system level, only show the icon without drawing further attention to
-      // it.
+      // system level (from the system permission prompt or from macOS System
+      // Settings), only show the icon without drawing further attention to it.
       if (system_permission_status ==
           AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied) {
         return true;
       }
-      // Otherwise show the explanatory label, and keep it expanded until the
+      // Otherwise (kPromptPending or kImplicitlyDenied, i.e. an unintentional
+      // OS block) show the explanatory label, and keep it expanded until the
       // user has seen the bubble.
-      // TODO(crbug.com/575482442): Only keep the label expanded a limited
-      // number of times per web app, and fall back to a less aggressive
-      // indicator afterwards.
+      // TODO(crbug.com/581969756): Only keep the label expanded and auto-open
+      // the recovery bubble a limited number of times per web app, falling back
+      // to a less aggressive indicator afterwards.
       set_explanatory_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
       set_should_keep_label_expanded(true);
       // If the page was explicitly marked as having notifications blocked by

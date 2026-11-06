@@ -226,6 +226,10 @@
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_controller.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/web_applications/web_app_notification_recovery_controller_mac.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/frame/windows_taskbar_icon_updater.h"
 #endif
@@ -958,6 +962,14 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
     user_education_->Init(browser_view);
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (browser_view) {
+    web_app_notification_recovery_controller_ =
+        web_app::WebAppNotificationRecoveryController::MaybeCreate(
+            *browser_, browser_view->GetWidget());
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
   if (browser_view) {
     windows_taskbar_icon_updater_ =
@@ -1191,6 +1203,9 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   zoom_bubble_manager_.reset();
 #if BUILDFLAG(IS_WIN)
   windows_taskbar_icon_updater_.reset();
+#endif
+#if BUILDFLAG(IS_MAC)
+  web_app_notification_recovery_controller_.reset();
 #endif
   if (user_education_) {
     user_education_->TearDown();

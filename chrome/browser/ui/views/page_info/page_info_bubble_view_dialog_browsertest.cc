@@ -926,6 +926,11 @@ class PageInfoBubbleViewWebAppBrowserTest
           apps::AppShimManager::Get()->FindOrCreateHostForTesting(
               browser()->GetProfile(), app_id_);
       ASSERT_TRUE(app_shim_host);
+      // Simulate an explicit OS denial (denial after a prior grant) so
+      // navigating to the app does not also auto-open the location bar
+      // notification recovery bubble alongside Page Info.
+      app_shim_host->SetNotificationPermissionStatusForTesting(
+          mac_notifications::mojom::PermissionStatus::kGranted);
       app_shim_host->SetNotificationPermissionStatusForTesting(
           mac_notifications::mojom::PermissionStatus::kDenied);
 

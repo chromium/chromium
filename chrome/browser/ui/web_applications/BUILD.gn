@@ -27,6 +27,14 @@ source_set("web_applications") {
         [ "//chromeos/ash/components/system_web_apps:system_web_app_type" ]
   }
 
+  if (is_mac) {
+    sources += [ "web_app_notification_recovery_controller_mac.h" ]
+    public_deps += [
+      "//content/public/browser",
+      "//ui/views",
+    ]
+  }
+
   if (toolkit_views) {
     sources += [ "pwa_install_page_action.h" ]
     public_deps += [
@@ -150,6 +158,17 @@ source_set("impl") {
       "//chromeos/strings:strings_grit",
       "//components/user_manager",
       "//ui/message_center",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "web_app_notification_recovery_controller_mac.cc" ]
+    deps += [
+      "//components/content_settings/browser",
+      "//third_party/blink/public/common",
+      "//third_party/blink/public/mojom:mojom_platform",
+      "//ui/views",
+      "//url",
     ]
   }
 
@@ -380,6 +399,41 @@ source_set("browser_tests") {
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/window_feature_controller",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "web_app_notification_recovery_controller_mac_browsertest.cc" ]
+    deps += [
+      "//base/test:test_support",
+      "//chrome/browser/apps/app_shim",
+      "//chrome/browser/content_settings",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/content_settings",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/permissions/chip",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_content_settings_container",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container",
+      "//chrome/browser/web_applications",
+      "//chrome/common:chrome_features",
+      "//chrome/services/mac_notifications/public/mojom",
+      "//components/content_settings/browser",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/permissions",
+      "//components/permissions:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//ui/gfx/animation",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//ui/views:test_support",
+      "//url",
     ]
   }
 }

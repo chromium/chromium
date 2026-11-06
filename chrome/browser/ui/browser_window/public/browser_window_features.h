@@ -258,6 +258,9 @@ class EntrypointController;
 
 namespace web_app {
 class AppBrowserController;
+#if BUILDFLAG(IS_MAC)
+class WebAppNotificationRecoveryController;
+#endif
 }  // namespace web_app
 
 // This class owns the core controllers for features that are scoped to a given
@@ -510,6 +513,11 @@ class BrowserWindowFeatures {
   std::unique_ptr<WebUIBrowserSidePanelUI> webui_browser_side_panel_ui_;
 
   // Platform-specific members.
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<web_app::WebAppNotificationRecoveryController>
+      web_app_notification_recovery_controller_;
+#endif
+
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<WindowsTaskbarIconUpdater> windows_taskbar_icon_updater_;
 #endif

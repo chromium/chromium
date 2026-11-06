@@ -44,6 +44,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/permission_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -113,6 +114,8 @@ class ContentSettingImageModelTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    profile()->SetPermissionControllerDelegate(
+        permissions::GetPermissionControllerDelegate(profile()));
 #if BUILDFLAG(IS_MAC)
     AppShimRegistry::Get()->SetPrefServiceAndUserDataDirForTesting(
         TestingBrowserProcess::GetGlobal()->local_state(),
@@ -732,23 +735,26 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
   EXPECT_FALSE(content_setting_image_model->blocked_on_system_level());
 
-  // If notification permission is allowed at the chrome level, the indicator
-  // should show. Since the system permission was explicitly denied, the label
-  // should not be shown.
+  // When notification permission is allowed at the chrome level and the system
+  // level permission is kPromptPending or kImplicitlyDenied (an unintentional
+  // OS block), the indicator should show as blocked, with the label kept
+  // expanded, without auto-opening the bubble unless triggered via
+  // SetNotificationsWasDeniedBecauseOfSystemPermission().
   HostContentSettingsMapFactory::GetForProfile(profile())
       ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::NOTIFICATIONS);
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kPromptPending);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->is_blocked());
-  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
+            IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
-  EXPECT_FALSE(content_setting_image_model->should_keep_label_expanded());
+  EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
 
-  // If the system permission was implicitly denied, the label should be shown
-  // and kept expanded.
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
       app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
   content_setting_image_model->Update(web_contents());
@@ -762,6 +768,19 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   // The quiet notification promo is not shown for system level blocks.
   EXPECT_FALSE(content_setting_image_model->TakePromoParams(web_contents()));
 
+  // When the system permission prompt was explicitly denied
+  // (kExplicitlyDenied), the indicator should show as a quiet blocked icon
+  // without the label or auto-opening.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_FALSE(content_setting_image_model->should_keep_label_expanded());
+  EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+
   // Granting system permission should remove the indicator.
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
       app_id, AppShimRegistry::NotificationPermissionStatus::kGranted);
@@ -770,6 +789,71 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
   EXPECT_FALSE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_FALSE(content_setting_image_model->blocked_on_system_level());
+
+  // When notifications are revoked in macOS System Settings after a previous
+  // grant (kExplicitlyDenied), the indicator should show as a quiet blocked
+  // icon without auto-opening.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+}
+
+TEST_F(
+    ContentSettingImageModelTest,
+    NotificationsIconSystemPermission_VisibleBeforePageSpecificContentSettings) {
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_browser_window;
+  ON_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+  ON_CALL(mock_browser_window, GetProfile())
+      .WillByDefault(testing::Return(profile()));
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  const GURL app_url("https://www.google.com/");
+  const webapps::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), "Web App Title", app_url);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                   profile()->GetPath());
+  PageSpecificContentSettings::DeleteForWebContentsForTest(web_contents());
+  web_app::WebAppTabHelper::Create(&mock_tab, web_contents());
+  NavigateAndCommit(app_url);
+  web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
+                                 CONTENT_SETTING_ALLOW);
+
+  // Even without `PageSpecificContentSettings` (such as during
+  // `NotifyNavigationEntryCommitted` before `DidFinishNavigation` runs),
+  // unintentional OS blocks (`kPromptPending` / `kImplicitlyDenied`) should
+  // keep the indicator continuously visible without auto-opening the bubble,
+  // while `kExplicitlyDenied` stays hidden unless the page attempts to use
+  // notifications.
+  ASSERT_FALSE(PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame()));
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::kNotifications);
+
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
+            IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+  EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
+
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_FALSE(content_setting_image_model->is_visible());
 }
 
 TEST_F(ContentSettingImageModelTest,
@@ -802,11 +886,12 @@ TEST_F(ContentSettingImageModelTest,
 
   web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
 
-  // If the app requests notification permission while the system permission was
-  // denied, the notification should show and the bubble should auto open.
+  // If the page is marked as having notifications blocked by the system
+  // permission while kPromptPending or kImplicitlyDenied, the notification icon
+  // should show and the bubble should auto-open.
   base::UserActionTester user_action_tester;
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+      app_id, AppShimRegistry::NotificationPermissionStatus::kPromptPending);
   content_settings->SetNotificationsWasDeniedBecauseOfSystemPermission();
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
@@ -818,10 +903,25 @@ TEST_F(ContentSettingImageModelTest,
       content_setting_image_model->ShouldAutoOpenBubble(web_contents()));
   EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
+            IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+  EXPECT_TRUE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
+  EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
   // The quiet notification promo is not shown for system level blocks.
   EXPECT_FALSE(content_setting_image_model->TakePromoParams(web_contents()));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "ContentSettings.Notifications.SystemPermissionIconShown"));
+
+  content_setting_image_model->SetBubbleWasAutoOpened(web_contents());
+  EXPECT_FALSE(
+      content_setting_image_model->ShouldAutoOpenBubble(web_contents()));
 
   // Subsequent updates while the icon stays visible should not record the
   // action or auto-open the bubble again.
