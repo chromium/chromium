@@ -7,10 +7,11 @@ import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import type {SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/lazy_load.js';
 import type {CrLinkRowElement, Keyboard, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, MetaKey, PluralStringProxyImpl, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 const KEYBOARD_FUNCTION_KEYS_SETTING_ID = 411;
@@ -19,8 +20,12 @@ const KEYBOARD_SWITCH_TOP_ROW_KEYS_SETTING_ID = 441;
 suite('<settings-per-device-keyboard-subsection>', () => {
   let subsection: SettingsPerDeviceKeyboardSubsectionElement;
   let provider: FakeInputDeviceSettingsProvider;
+  let pluralStringProxy: TestPluralStringProxy;
 
   setup(async () => {
+    // Answers right away instead of waiting on the browser process.
+    pluralStringProxy = new TestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralStringProxy);
     await initializePerDeviceKeyboardSubsection(
         fakeKeyboards, /*rgbKeyboardSupported=*/ true,
         /*hasKeyboardBacklight=*/ true,
@@ -65,6 +70,13 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     };
     subsection.set('keyboard', keyboard);
     return flushTasks();
+  }
+
+  // Checks the count the remap keys sub-label was last requested with.
+  function assertRemapKeysSubLabelCount(count: number): void {
+    const lastCall = pluralStringProxy.getArgs('getPluralString').at(-1);
+    assertEquals('remapKeyboardKeysRowSubLabel', lastCall?.messageName);
+    assertEquals(count, lastCall?.itemCount);
   }
 
   /**
@@ -198,8 +210,8 @@ suite('<settings-per-device-keyboard-subsection>', () => {
   });
 
   /**
-   * Verify the Keyboard remap keys row label is loaded, and sub-label is
-   * correctly displayed when the keyboard has 2, 1 or 0 remapped keys.
+   * Verify the Keyboard remap keys row label is loaded, and the sub-label is
+   * requested with the right number of remapped keys.
    */
   test('remap keys sub-label displayed correctly', async () => {
     const remapKeysRow =
@@ -209,14 +221,11 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         'Customize keyboard keys',
         remapKeysRow.shadowRoot!.querySelector('#label')!.textContent.trim());
 
-    const remapKeysSubLabel =
-        remapKeysRow.shadowRoot!.querySelector('#subLabel');
-    assert(remapKeysSubLabel);
     assertEquals(
         2,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('2 customized keys', remapKeysSubLabel.textContent.trim());
+    assertRemapKeysSubLabelCount(2);
 
     subsection.set('keyboard', fakeKeyboards[2]);
     await flushTasks();
@@ -224,7 +233,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         1,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('1 customized key', remapKeysSubLabel.textContent.trim());
+    assertRemapKeysSubLabelCount(1);
 
     subsection.set('keyboard', fakeKeyboards[1]);
     await flushTasks();
@@ -232,11 +241,12 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         0,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('No keys customized', remapKeysSubLabel.textContent.trim());
+    assertRemapKeysSubLabelCount(0);
+
     subsection.set('keyboard', fakeKeyboards[3]);
     await flushTasks();
-    // Expect 3 remapped six pack key shortcuts and 2 remapped modifier keys.
-    assertEquals('5 customized keys', remapKeysSubLabel.textContent.trim());
+    // 2 remapped modifier keys plus 3 remapped six pack keys.
+    assertRemapKeysSubLabelCount(5);
   });
 
   /**

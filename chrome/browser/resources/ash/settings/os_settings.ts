@@ -65,6 +65,7 @@ export {browserProxyFactory as appManagementBrowserProxyFactory} from 'chrome://
 export {MetricsBrowserProxy} from 'chrome://resources/cr_components/app_management/metrics_browser_proxy.js';
 export type {OpenWindowProxy} from 'chrome://resources/js/open_window_proxy.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+export {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 export type {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
