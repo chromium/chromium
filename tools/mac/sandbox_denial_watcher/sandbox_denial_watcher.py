@@ -161,7 +161,7 @@ _KNOWN_TARGET_DENIALS: dict[str, frozenset[RuleType]] = {
             "machdep.cpu.brand_string",
             "net.inet.ip.portrange.first",
             ("security.mac.amfi.qa_root_certs_allowed", "gpu.sb"),
-            ("sysctl.proc_translated", "audio.sb"),
+            "sysctl.proc_translated",
         )
     ),
     "file-issue-extension": frozenset(
@@ -191,7 +191,9 @@ _KNOWN_TARGET_DENIALS: dict[str, frozenset[RuleType]] = {
         (
             "com.apple.CoreServices.coreservicesd",
             "com.apple.DiskArbitration.diskarbitrationd",
+            "com.apple.UsageTrackingAgent",
             "com.apple.analyticsd",
+            ("com.apple.audio.SandboxHelper", "gpu.sb"),
             ("com.apple.audioanalyticsd", "audio.sb"),
             "com.apple.backupd.sandbox.xpc",
             "com.apple.bsd.dirhelper",
