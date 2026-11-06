@@ -10,10 +10,16 @@
 #include <string_view>
 
 #include "content/public/common/child_process_id.h"
+#include "extensions/common/extension_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/template_expressions.h"
 
 class GURL;
+
+namespace content {
+class BrowserContext;
+}
 
 namespace network {
 struct ResourceRequest;
@@ -55,6 +61,25 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
                                           std::string_view resource_path,
                                           ui::PageTransition page_transition,
                                           bool* allowed);
+
+// Returns the `$i18n{key}` template replacements registered for `extension_id`
+// in `browser_context`, or nullptr if none are registered.
+const ui::TemplateReplacements* GetTemplateReplacementsForExtension(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context);
+
+// Returns true if `mime_type` supports `$i18n{key}` template replacement
+// (`text/html`, `text/css`, `text/javascript`, or `application/javascript`).
+bool SupportsTemplateReplacement(std::string_view mime_type);
+
+// Applies `replacements` to `resource_bytes` according to `mime_type`. Returns
+// `std::nullopt` if `mime_type` does not support template replacement, if any
+// `$i18n{...}` key is missing from `replacements`, or if JS template
+// replacement fails.
+std::optional<std::string> ReplaceTemplateExpressionsForResource(
+    std::string_view resource_bytes,
+    std::string_view mime_type,
+    const ui::TemplateReplacements& replacements);
 
 }  // namespace url_request_util
 }  // namespace extensions

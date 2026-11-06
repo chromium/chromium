@@ -22,6 +22,7 @@ class AimEligibilityExtensionConfigProvider
   AimEligibilityExtensionConfigProvider();
   ~AimEligibilityExtensionConfigProvider() override;
 
+  bool ShouldReplaceI18nTemplates() const override;
   base::DictValue GetLoadTimeData(content::BrowserContext& context) override;
   std::string_view GetChromeURLHost() const override;
   bool IsJsErrorReportingEnabled() const override;

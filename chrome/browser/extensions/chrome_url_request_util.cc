@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/chrome_url_request_util.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -70,16 +71,6 @@ void DetermineCharset(const std::string& mime_type,
   }
 }
 
-bool IsHtmlMimeType(std::string_view mime_type) {
-  return base::EqualsCaseInsensitiveASCII(mime_type, "text/html") ||
-         base::EqualsCaseInsensitiveASCII(mime_type, "text/css");
-}
-
-bool IsJavaScriptMimeType(std::string_view mime_type) {
-  return base::EqualsCaseInsensitiveASCII(mime_type, "text/javascript") ||
-         base::EqualsCaseInsensitiveASCII(mime_type, "application/javascript");
-}
-
 scoped_refptr<base::RefCountedMemory> GetResource(
     int resource_id,
     const extensions::ExtensionId& extension_id,
@@ -94,27 +85,19 @@ scoped_refptr<base::RefCountedMemory> GetResource(
     return base::MakeRefCounted<base::RefCountedBytes>();
   }
 
-  auto* replacements =
-      ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager()
-          ? ExtensionsBrowserClient::Get()
-                ->GetComponentExtensionResourceManager()
-                ->GetTemplateReplacementsForExtension(extension_id,
-                                                      browser_context)
-          : nullptr;
-
-  std::string temp_str;
-  if (replacements && IsHtmlMimeType(mime_type)) {
-    temp_str = ui::ReplaceTemplateExpressions(base::as_string_view(*bytes),
-                                              *replacements);
-    CHECK(!temp_str.empty(), base::NotFatalUntil::M161);
-    return base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
-  } else if (replacements && IsJavaScriptMimeType(mime_type)) {
-    CHECK(ui::ReplaceTemplateExpressionsInJS(base::as_string_view(*bytes),
-                                             *replacements, &temp_str));
-    return base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
-  } else {
-    return bytes;
+  const ui::TemplateReplacements* replacements =
+      extensions::url_request_util::GetTemplateReplacementsForExtension(
+          extension_id, browser_context);
+  if (replacements &&
+      extensions::url_request_util::SupportsTemplateReplacement(mime_type)) {
+    std::optional<std::string> temp_str =
+        extensions::url_request_util::ReplaceTemplateExpressionsForResource(
+            base::as_string_view(*bytes), mime_type, *replacements);
+    CHECK(temp_str.has_value());
+    CHECK(!temp_str->empty(), base::NotFatalUntil::M161);
+    return base::MakeRefCounted<base::RefCountedString>(std::move(*temp_str));
   }
+  return bytes;
 }
 
 // Loads an extension resource in a Chrome .pak file. These are used by

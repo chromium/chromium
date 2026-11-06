@@ -254,6 +254,11 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
     content::BrowserContext* context) const {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
+  if (auto* provider = GetConfigProvider(extension_id, context)) {
+    CHECK(context);
+    return provider->GetTemplateReplacements(*context);
+  }
+
   LazyInitData();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -267,11 +272,6 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
     }
   }
 #endif
-
-  if (auto* provider = GetConfigProvider(extension_id, context)) {
-    CHECK(context);
-    return provider->GetTemplateReplacements(*context);
-  }
 
   auto it = data_->template_replacements().find(extension_id);
   return it != data_->template_replacements().end() ? &it->second : nullptr;

@@ -32,6 +32,10 @@ NewTabPageExtensionConfigProvider::NewTabPageExtensionConfigProvider()
 NewTabPageExtensionConfigProvider::~NewTabPageExtensionConfigProvider() =
     default;
 
+bool NewTabPageExtensionConfigProvider::ShouldReplaceI18nTemplates() const {
+  return true;
+}
+
 base::DictValue NewTabPageExtensionConfigProvider::GetLoadTimeData(
     content::BrowserContext& context) {
   Profile* profile = Profile::FromBrowserContext(&context);

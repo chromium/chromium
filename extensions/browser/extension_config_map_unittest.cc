@@ -96,6 +96,8 @@ TEST_F(ExtensionConfigMapTest, GetConfigProvider) {
   ASSERT_NE(nullptr, provider);
   EXPECT_TRUE(provider->IsJsErrorReportingEnabled());
   EXPECT_TRUE(provider->ShouldCrashOnJsErrorInDevelopmentBuild());
+  EXPECT_FALSE(provider->ShouldReplaceI18nTemplates());
+  EXPECT_EQ(nullptr, provider->GetTemplateReplacements(*browser_context()));
   EXPECT_EQ(expected_dict, provider->GetLoadTimeData(*browser_context()));
   EXPECT_TRUE(provider->IsDynamicResource("/strings.m.js"));
   EXPECT_FALSE(provider->IsDynamicResource("/other.js"));
@@ -173,6 +175,38 @@ TEST_F(ExtensionConfigMapTest, IsUnboundedElementAllowed) {
           component_extension->id()));
   EXPECT_TRUE(
       config_map()->IsUnboundedElementAllowed(component_extension->id()));
+}
+
+TEST_F(ExtensionConfigMapTest, ShouldReplaceI18nTemplatesOptIn) {
+  scoped_refptr<const Extension> component_extension =
+      ExtensionBuilder("Component Extension")
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .Build();
+
+  class TemplateOptInConfigProvider : public ExtensionConfigProvider {
+   public:
+    explicit TemplateOptInConfigProvider(ExtensionId id)
+        : ExtensionConfigProvider(std::move(id)) {}
+    bool ShouldReplaceI18nTemplates() const override { return true; }
+    base::DictValue GetLoadTimeData(content::BrowserContext& context) override {
+      base::DictValue dict;
+      dict.Set("greeting", "Hello");
+      return dict;
+    }
+  };
+
+  config_map()->RegisterConfigProvider(
+      std::make_unique<TemplateOptInConfigProvider>(component_extension->id()));
+  ExtensionConfigProvider* provider =
+      config_map()->GetConfigProvider(*component_extension);
+  ASSERT_NE(nullptr, provider);
+  EXPECT_TRUE(provider->ShouldReplaceI18nTemplates());
+  const ui::TemplateReplacements* replacements =
+      provider->GetTemplateReplacements(*browser_context());
+  ASSERT_NE(nullptr, replacements);
+  auto it = replacements->find("greeting");
+  ASSERT_NE(replacements->end(), it);
+  EXPECT_EQ("Hello", it->second);
 }
 
 TEST_F(ExtensionConfigMapTest, HandleChromeURLAndReverse) {

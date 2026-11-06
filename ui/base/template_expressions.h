@@ -9,6 +9,7 @@
 #define UI_BASE_TEMPLATE_EXPRESSIONS_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -29,10 +30,17 @@ void TemplateReplacementsFromDictionaryValue(
     TemplateReplacements* replacements);
 
 // Replace $i18n*{foo} in the format string with the value for the foo key in
-// |replacements|.  If the key is not found in the |replacements| that item will
-// be unaltered.
+// `replacements`. Crashes with a CHECK if a key is not found in `replacements`.
 COMPONENT_EXPORT(UI_BASE)
 std::string ReplaceTemplateExpressions(
+    std::string_view source,
+    const TemplateReplacements& replacements,
+    bool skip_unexpected_placeholder_check = false);
+
+// Same as `ReplaceTemplateExpressions()`, but returns `std::nullopt` instead of
+// crashing if a key in `source` is not found in `replacements`.
+COMPONENT_EXPORT(UI_BASE)
+std::optional<std::string> TryReplaceTemplateExpressions(
     std::string_view source,
     const TemplateReplacements& replacements,
     bool skip_unexpected_placeholder_check = false);

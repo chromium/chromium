@@ -32,6 +32,10 @@ AimEligibilityExtensionConfigProvider::AimEligibilityExtensionConfigProvider()
 AimEligibilityExtensionConfigProvider::
     ~AimEligibilityExtensionConfigProvider() = default;
 
+bool AimEligibilityExtensionConfigProvider::ShouldReplaceI18nTemplates() const {
+  return true;
+}
+
 base::DictValue AimEligibilityExtensionConfigProvider::GetLoadTimeData(
     content::BrowserContext& context) {
   return OmniboxInternalsUI::GetAimEligibilityLoadTimeData(

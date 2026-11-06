@@ -559,6 +559,132 @@ TEST_F(ExtensionProtocolsTest, ComponentDynamicResourceRequest) {
   EXPECT_EQ(expected_js, get_result.body());
 }
 
+// Tests that i18n template replacements ($i18n{...}) are applied when loading
+// HTML, CSS, and JS resources from disk for extensions with registered
+// template replacements (e.g., component extensions updated via Component
+// Updater or sideloaded from disk).
+TEST_F(ExtensionProtocolsTest, TemplateReplacementsAppliedForDiskResources) {
+  TestExtensionDir test_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "Disk Component Ext",
+        "manifest_version": 3,
+        "version": "1.0",
+        "web_accessible_resources": [{
+          "resources": [ "*" ],
+          "matches": [ "*://*/*" ]
+        }]
+      })";
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
+                     "<html dir=\"$i18n{textdirection}\">"
+                     "<title>$i18n{pageTitle}</title></html>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("style.css"),
+                     R"(body { content: "$i18n{pageTitle}"; })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("app.js"),
+                     "const tmpl = `<!--_html_template_start_-->"
+                     "<h1>$i18n{pageTitle}</h1><!--_html_template_end_-->`;");
+  test_dir.WriteFile(FILE_PATH_LITERAL("unknown_key.html"),
+                     "<div>$i18n{unknownKey}</div>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("unknown_key.js"),
+                     "const tmpl = `<!--_html_template_start_-->"
+                     "<h1>$i18n{unknownKey}</h1><!--_html_template_end_-->`;");
+
+  base::DictValue manifest = base::test::ParseJsonDict(kManifest);
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetPath(test_dir.UnpackedPath())
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .Build();
+  ASSERT_TRUE(extension);
+  AddExtension(extension, /*incognito_enabled=*/false,
+               /*notifications_disabled=*/false);
+
+  class TestConfigProvider : public ExtensionConfigProvider {
+   public:
+    TestConfigProvider(const ExtensionId& extension_id,
+                       bool should_replace_i18n_templates)
+        : ExtensionConfigProvider(extension_id),
+          should_replace_i18n_templates_(should_replace_i18n_templates) {}
+    bool ShouldReplaceI18nTemplates() const override {
+      return should_replace_i18n_templates_;
+    }
+    base::DictValue GetLoadTimeData(content::BrowserContext& context) override {
+      base::DictValue dict;
+      dict.Set("textdirection", "ltr");
+      dict.Set("pageTitle", "Localized Title");
+      return dict;
+    }
+
+   private:
+    const bool should_replace_i18n_templates_;
+  };
+
+  auto* config_map = ExtensionConfigMapFactory::GetOrCreateForBrowserContext(
+      browser_context());
+
+  // When `ShouldReplaceI18nTemplates()` is false (the default), disk resources
+  // are served unmodified without template replacement overhead.
+  config_map->RegisterConfigProvider(std::make_unique<TestConfigProvider>(
+      extension->id(), /*should_replace_i18n_templates=*/false));
+  {
+    auto html_result =
+        RequestOrLoad(extension->GetResourceURL("page.html"),
+                      network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::OK, html_result.result());
+    EXPECT_EQ(
+        "<html dir=\"$i18n{textdirection}\">"
+        "<title>$i18n{pageTitle}</title></html>",
+        html_result.body());
+  }
+
+  // When `ShouldReplaceI18nTemplates()` is true, HTML, CSS, and JS resources
+  // served from disk have $i18n{...} placeholders replaced.
+  config_map->ClearProvidersForTesting();
+  config_map->RegisterConfigProvider(std::make_unique<TestConfigProvider>(
+      extension->id(), /*should_replace_i18n_templates=*/true));
+
+  auto html_result =
+      RequestOrLoad(extension->GetResourceURL("page.html"),
+                    network::mojom::RequestDestination::kDocument);
+  EXPECT_EQ(net::OK, html_result.result());
+  EXPECT_EQ(R"(<html dir="ltr"><title>Localized Title</title></html>)",
+            html_result.body());
+
+  auto css_result = RequestOrLoad(extension->GetResourceURL("style.css"),
+                                  network::mojom::RequestDestination::kStyle);
+  EXPECT_EQ(net::OK, css_result.result());
+  EXPECT_EQ(R"(body { content: "Localized Title"; })", css_result.body());
+
+  auto js_result = RequestOrLoad(extension->GetResourceURL("app.js"),
+                                 network::mojom::RequestDestination::kScript);
+  EXPECT_EQ(net::OK, js_result.result());
+  EXPECT_EQ(
+      "const tmpl = `<!--_html_template_start_-->"
+      "<h1>Localized Title</h1><!--_html_template_end_-->`;",
+      js_result.body());
+
+  // If a disk resource references an unknown `$i18n{...}` key (e.g., when a
+  // newer extension version is delivered via Component Updater to an older
+  // browser binary), it should soft-fail and serve the file unchanged rather
+  // than hitting a CHECK.
+  auto unknown_html_result =
+      RequestOrLoad(extension->GetResourceURL("unknown_key.html"),
+                    network::mojom::RequestDestination::kDocument);
+  EXPECT_EQ(net::OK, unknown_html_result.result());
+  EXPECT_EQ("<div>$i18n{unknownKey}</div>", unknown_html_result.body());
+
+  auto unknown_js_result =
+      RequestOrLoad(extension->GetResourceURL("unknown_key.js"),
+                    network::mojom::RequestDestination::kScript);
+  EXPECT_EQ(net::OK, unknown_js_result.result());
+  EXPECT_EQ(
+      "const tmpl = `<!--_html_template_start_-->"
+      "<h1>$i18n{unknownKey}</h1><!--_html_template_end_-->`;",
+      unknown_js_result.body());
+}
+
 // Tests that a URL request for resource from an extension returns a few
 // expected response headers.
 TEST_F(ExtensionProtocolsTest, ResourceRequestResponseHeaders) {

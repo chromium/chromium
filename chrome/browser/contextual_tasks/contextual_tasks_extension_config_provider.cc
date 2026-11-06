@@ -30,6 +30,11 @@ ContextualTasksExtensionConfigProvider::ContextualTasksExtensionConfigProvider()
 ContextualTasksExtensionConfigProvider::
     ~ContextualTasksExtensionConfigProvider() = default;
 
+bool ContextualTasksExtensionConfigProvider::ShouldReplaceI18nTemplates()
+    const {
+  return true;
+}
+
 base::DictValue ContextualTasksExtensionConfigProvider::GetLoadTimeData(
     content::BrowserContext& context) {
   return ContextualTasksUI::GetContextualTasksLoadTimeData(

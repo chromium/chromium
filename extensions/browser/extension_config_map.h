@@ -41,13 +41,25 @@ class ExtensionConfigProvider {
   const ExtensionId& extension_id() const { return extension_id_; }
 
   // Returns the `$i18n{key}` template replacements for this component
-  // extension.
+  // extension if `ShouldReplaceI18nTemplates()` is true, or nullptr otherwise.
   const ui::TemplateReplacements* GetTemplateReplacements(
       content::BrowserContext& context);
 
-  // Returns dictionary data for this component extension to supply `$i18n{key}`
-  // template replacements and `loadTimeData` in dynamic ES modules (e.g.,
-  // `strings.m.js`).
+  // Returns true if static HTML, CSS, and JS resources served for this
+  // extension should undergo `$i18n{key}` template replacement using
+  // `GetLoadTimeData()`.
+  //
+  // Prefer returning false (the default) and using `loadTimeData` (via
+  // `/strings.m.js`) and `I18nMixin` (`this.i18n()`) instead of `$i18n{}`
+  // placeholders, as template replacement requires buffering and scanning
+  // every HTML, CSS, and JS resource on load. Only override to return true
+  // when reusing shared WebUI HTML/Lit templates that contain `$i18n{}`.
+  virtual bool ShouldReplaceI18nTemplates() const;
+
+  // Returns dictionary data for this component extension to populate
+  // `loadTimeData` in dynamic ES modules (e.g., `/strings.m.js`), and to
+  // supply `$i18n{key}` template replacements when
+  // `ShouldReplaceI18nTemplates()` is true.
   virtual base::DictValue GetLoadTimeData(content::BrowserContext& context);
 
   // Returns true if `path` is a dynamically generated resource (e.g.

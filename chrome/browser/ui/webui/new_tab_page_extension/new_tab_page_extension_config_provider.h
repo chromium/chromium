@@ -23,6 +23,7 @@ class NewTabPageExtensionConfigProvider
   ~NewTabPageExtensionConfigProvider() override;
 
   // extensions::ExtensionConfigProvider:
+  bool ShouldReplaceI18nTemplates() const override;
   base::DictValue GetLoadTimeData(content::BrowserContext& context) override;
   bool IsJsErrorReportingEnabled() const override;
 };

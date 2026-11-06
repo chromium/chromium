@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -106,6 +107,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "ui/base/template_expressions.h"
 #include "url/origin.h"
 #include "url/url_util.h"
 
@@ -127,18 +129,22 @@ namespace {
 ExtensionProtocolTestHandler* g_test_handler = nullptr;
 
 // Stores relevant info about an ExtensionResource, namely: its file path, last
-// modified time and file size.
+// modified time, file size, and optional file contents when template
+// replacements apply.
 struct ResourceInfo {
   ResourceInfo(base::FilePath file_path,
                base::Time last_modified_time,
-               int64_t size)
+               int64_t size,
+               std::optional<std::string> contents = std::nullopt)
       : file_path(std::move(file_path)),
         last_modified_time(last_modified_time),
-        size(size) {}
+        size(size),
+        contents(std::move(contents)) {}
 
   base::FilePath file_path;
   base::Time last_modified_time;
   int64_t size = 0;
+  std::optional<std::string> contents;
 };
 
 void GenerateBackgroundPageContents(const Extension* extension,
@@ -157,22 +163,31 @@ void GenerateBackgroundPageContents(const Extension* extension,
 }
 
 ResourceInfo ReadResourceInfo(const extensions::ExtensionResource& resource,
-                              const base::FilePath& directory) {
+                              const base::FilePath& directory,
+                              bool read_contents_for_template_replacements) {
   // NOTE: ExtensionResource::GetFilePath() must be called on a sequence which
   // tolerates blocking operations.
   base::FilePath file_path = resource.GetFilePath();
 
   base::Time last_modified_time;
   int64_t size = 0;
+  std::optional<std::string> contents;
   if (base::PathExists(file_path)) {
     base::File::Info info;
     if (base::GetFileInfo(file_path, &info)) {
       last_modified_time = info.last_modified;
       size = info.size;
     }
+    if (read_contents_for_template_replacements) {
+      std::string file_contents;
+      if (base::ReadFileToString(file_path, &file_contents)) {
+        contents = std::move(file_contents);
+      }
+    }
   }
 
-  return ResourceInfo(file_path, last_modified_time, size);
+  return ResourceInfo(std::move(file_path), last_modified_time, size,
+                      std::move(contents));
 }
 
 bool ExtensionCanLoadInIncognito(bool is_main_frame,
@@ -494,15 +509,16 @@ void AddCacheHeaders(net::HttpResponseHeaders& headers,
   headers.SetHeader("cache-control", "no-cache");
 }
 
-void AddMimeTypeHeaders(net::HttpResponseHeaders& headers,
-                        const base::FilePath& file_path) {
+std::string AddMimeTypeHeaders(net::HttpResponseHeaders& headers,
+                               const base::FilePath& file_path) {
   std::string mime_type;
   if (net::GetWellKnownMimeTypeFromFile(file_path, &mime_type)) {
     headers.SetHeader(net::HttpRequestHeaders::kContentType, mime_type);
   } else {
-    headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                      "application/octet-stream");
+    mime_type = "application/octet-stream";
+    headers.SetHeader(net::HttpRequestHeaders::kContentType, mime_type);
   }
+  return mime_type;
 }
 
 class FileLoaderObserver : public content::FileURLLoaderObserver {
@@ -748,7 +764,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     request_.url = net::FilePathToFileURL(read_file_path);
 
     AddCacheHeaders(*headers, last_modified_time);
-    AddMimeTypeHeaders(*headers, read_file_path);
+    std::string mime_type = AddMimeTypeHeaders(*headers, read_file_path);
 
     // TODO(crbug.com/416484593): If the file is missing, we might want to check
     // if the extension has moved to a new directory (e.g. _N suffix) with the
@@ -764,6 +780,31 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       verify_job = ContentVerifier::CreateAndStartJobFor(
           resource.extension_id(), resource.extension_root(), extension_version,
           resource.relative_path(), content_verifier);
+    }
+
+    const ui::TemplateReplacements* replacements =
+        resource_info.contents.has_value()
+            ? url_request_util::GetTemplateReplacementsForExtension(
+                  resource.extension_id(), browser_context_)
+            : nullptr;
+    if (replacements) {
+      if (std::optional<std::string> replaced =
+              url_request_util::ReplaceTemplateExpressionsForResource(
+                  *resource_info.contents, mime_type, *replacements)) {
+        if (verify_job) {
+          verify_job->BytesRead(*resource_info.contents, MOJO_RESULT_OK);
+          verify_job->DoneReading();
+        }
+        auto head = network::mojom::URLResponseHead::New();
+        head->headers = std::move(headers);
+        head->mime_type = std::move(mime_type);
+        head->charset = "utf-8";
+        head->content_length = replaced->size();
+        head->headers->SetHeader(net::HttpRequestHeaders::kContentLength,
+                                 base::NumberToString(head->content_length));
+        WriteData(std::move(head), base::as_byte_span(*replaced));
+        return;
+      }
     }
 
     content::CreateFileURLLoaderBypassingSecurityChecks(
@@ -996,9 +1037,18 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     scoped_refptr<ContentVerifier> content_verifier =
         extensions::ExtensionSystem::Get(browser_context_)->content_verifier();
 
+    std::string mime_type;
+    const bool read_contents_for_template_replacements =
+        !request_.headers.HasHeader(net::HttpRequestHeaders::kRange) &&
+        net::GetWellKnownMimeTypeFromFile(relative_path, &mime_type) &&
+        url_request_util::SupportsTemplateReplacement(mime_type) &&
+        url_request_util::GetTemplateReplacementsForExtension(
+            extension_id, browser_context_) != nullptr;
+
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&ReadResourceInfo, resource, directory_path),
+        base::BindOnce(&ReadResourceInfo, resource, directory_path,
+                       read_contents_for_template_replacements),
         base::BindOnce(&ExtensionURLLoader::OnResourceInfoRead,
                        weak_ptr_factory_.GetWeakPtr(), resource,
                        extension->version(), std::move(headers),

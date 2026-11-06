@@ -138,7 +138,8 @@ bool ReplaceTemplateExpressionsInternal(
     const ui::TemplateReplacements& replacements,
     bool is_javascript,
     std::string* formatted,
-    bool skip_unexpected_placeholder_check = false) {
+    bool skip_unexpected_placeholder_check = false,
+    bool allow_missing_keys = true) {
   const size_t kValueLengthGuess = 16;
   formatted->reserve(source.length() + replacements.size() * kValueLengthGuess);
   // Two position markers are used as cursors through the |source|.
@@ -167,8 +168,11 @@ bool ReplaceTemplateExpressionsInternal(
     CHECK(!key.empty());
 
     auto value = replacements.find(key);
-    CHECK(value != replacements.end()) << "$i18n replacement key \"" << key
-                                       << "\" not found";
+    if (allow_missing_keys && value == replacements.end()) {
+      return false;
+    }
+    CHECK(value != replacements.end())
+        << "$i18n replacement key \"" << key << "\" not found";
 
     std::string replacement = value->second;
     if (is_javascript) {
@@ -272,8 +276,22 @@ std::string ReplaceTemplateExpressions(std::string_view source,
                                        const TemplateReplacements& replacements,
                                        bool skip_unexpected_placeholder_check) {
   std::string formatted;
-  ReplaceTemplateExpressionsInternal(source, replacements, false, &formatted,
-                                     skip_unexpected_placeholder_check);
+  ReplaceTemplateExpressionsInternal(
+      source, replacements, /*is_javascript=*/false, &formatted,
+      skip_unexpected_placeholder_check, /*allow_missing_keys=*/false);
+  return formatted;
+}
+
+std::optional<std::string> TryReplaceTemplateExpressions(
+    std::string_view source,
+    const TemplateReplacements& replacements,
+    bool skip_unexpected_placeholder_check) {
+  std::string formatted;
+  if (!ReplaceTemplateExpressionsInternal(source, replacements, false,
+                                          &formatted,
+                                          skip_unexpected_placeholder_check)) {
+    return std::nullopt;
+  }
   return formatted;
 }
 }  // namespace ui

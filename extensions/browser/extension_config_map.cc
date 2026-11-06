@@ -33,9 +33,16 @@ base::DictValue ExtensionConfigProvider::GetLoadTimeData(
   return base::DictValue();
 }
 
+bool ExtensionConfigProvider::ShouldReplaceI18nTemplates() const {
+  return false;
+}
+
 const ui::TemplateReplacements*
 ExtensionConfigProvider::GetTemplateReplacements(
     content::BrowserContext& context) {
+  if (!ShouldReplaceI18nTemplates()) {
+    return nullptr;
+  }
   if (!template_replacements_.has_value()) {
     base::DictValue dict = GetLoadTimeData(context);
     ui::TemplateReplacements replacements;
