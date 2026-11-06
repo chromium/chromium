@@ -39,16 +39,6 @@ import {ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 
-const DEBOUNCE_TIMEOUT_MS: number = 20;
-
-function debounce(context: Object, func: () => void, delay: number) {
-  let timeout: number;
-  return function(...args: []) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
-}
-
 export interface ComposeboxElement {
   $: {
     composeboxInput: ComposeboxInputElement,
@@ -103,9 +93,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       },
       entrypointName: {type: String, reflect: true},
       disableComposeboxAnimation: {type: Boolean},
-      // Embedders can opt out of public composebox resize events when they do
-      // not use them.
-      observeResize: {type: Boolean},
       isOmniboxInCompactMode_: {
         type: Boolean,
         reflect: true,
@@ -120,7 +107,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   accessor disableComposeboxAnimation: boolean = false;
-  accessor observeResize: boolean = true;
   accessor lensButtonTriggersOverlay: boolean = false;
   accessor showLensButton: boolean = true;
   accessor ntpRealboxNextEnabled: boolean = false;
@@ -141,7 +127,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
-  private resizeObservers_: ResizeObserver[] = [];
 
   override shouldShowDivider(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
@@ -218,46 +203,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
                                                GlowAnimationState.EXPANDING;
 
     this.focusInput();
-
-    this.syncResizeObservers_();
-  }
-
-  private setupResizeObservers_() {
-    const composeboxResizeObserver = new ResizeObserver(debounce(this, () => {
-      this.fire('composebox-resize', {height: this.offsetHeight});
-    }, DEBOUNCE_TIMEOUT_MS));
-    this.resizeObservers_.push(composeboxResizeObserver);
-    composeboxResizeObserver.observe(this);
-
-    const composeboxDropdownResizeObserver =
-        new ResizeObserver(debounce(this, () => {
-          this.fire(
-              'composebox-resize',
-              {dropdownHeight: this.$.matches.offsetHeight});
-        }, DEBOUNCE_TIMEOUT_MS));
-    this.resizeObservers_.push(composeboxDropdownResizeObserver);
-    composeboxDropdownResizeObserver.observe(this.$.matches);
-  }
-
-  private tearDownResizeObservers_() {
-    for (const observer of this.resizeObservers_) {
-      observer.disconnect();
-    }
-    this.resizeObservers_ = [];
-  }
-
-  private syncResizeObservers_() {
-    this.tearDownResizeObservers_();
-    if (!this.isConnected || !this.observeResize) {
-      return;
-    }
-    this.setupResizeObservers_();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
-    this.tearDownResizeObservers_();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -282,13 +227,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (!this.hasUpdated || changedProperties.has('entrypointName')) {
       this.voiceSearchCoherenceEnabled =
           this.computeVoiceSearchCoherenceEnabled();
-    }
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    if (changedProperties.has('observeResize')) {
-      this.syncResizeObservers_();
     }
   }
 
