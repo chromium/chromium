@@ -32,7 +32,8 @@ enum class PersonalContextNonEligibilityReason {
   kFindAndFillWithGeminiSettingsDisabled = 9,
   kNotG1SubscriberOrAndroidPremiumDevice = 10,
   kEligible = 11,
-  kMaxValue = kEligible
+  kUnsupportedGlicProvider = 12,
+  kMaxValue = kUnsupportedGlicProvider
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:PersonalContextNonEligibilityReason)
 

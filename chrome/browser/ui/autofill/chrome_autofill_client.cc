@@ -59,9 +59,11 @@
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
@@ -1958,11 +1960,15 @@ void ChromeAutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {
 }
 
 bool ChromeAutofillClient::IsGlicEnabled() const {
-  return glic::GlicEnabling::IsEnabledForProfile(GetProfile());
+  return glic::GlicEnabling::IsEnabledForProfile(GetProfile()) &&
+         glic::GetGlicProviderSpec(GetProfile())
+             .SupportsFeature(glic::GlicFeature::kAutofill);
 }
 
 bool ChromeAutofillClient::IsGlicConsented() const {
-  return glic::GlicEnabling::HasConsentedForProfile(GetProfile());
+  return glic::GlicEnabling::HasConsentedForProfile(GetProfile()) &&
+         glic::GetGlicProviderSpec(GetProfile())
+             .SupportsFeature(glic::GlicFeature::kAutofill);
 }
 
 }  // namespace autofill

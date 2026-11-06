@@ -766,19 +766,23 @@ TEST_F(GuestUtilTest, PopulateGlobalClientInitialState_OnboardingArm2) {
 TEST_F(GuestUtilMultiInstanceTest,
        PopulateGlobalClientInitialState_ConsumerOnlyCapabilitiesForGemini) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicCaptureRegion);
+  feature_list.InitWithFeatures(
+      {features::kGlicCaptureRegion, features::kGlicDynamicChromeTools}, {});
 
   auto state = mojom::WebClientInitialState::New();
   PopulateGlobalClientInitialState(state.get(), CreateTestingProfile());
 
   EXPECT_TRUE(state->enable_capture_region);
+  EXPECT_THAT(state->host_capabilities,
+              Contains(mojom::HostCapability::kChromeTools));
 }
 
-// The capture region (selection overlay) is consumer-only.
+// The capture region (selection overlay) and Chrome tools are consumer-only.
 TEST_F(GuestUtilMultiInstanceTest,
        PopulateGlobalClientInitialState_NoConsumerOnlyCapabilitiesForGeic) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kGeic, features::kGlicCaptureRegion},
+  feature_list.InitWithFeatures({features::kGeic, features::kGlicCaptureRegion,
+                                 features::kGlicDynamicChromeTools},
                                 {});
   TestingProfile* profile = CreateTestingProfileWithGeicPolicyUrl(
       "https://business.gemini.google/home/cid/abc123");
@@ -789,6 +793,8 @@ TEST_F(GuestUtilMultiInstanceTest,
   PopulateGlobalClientInitialState(state.get(), profile);
 
   EXPECT_FALSE(state->enable_capture_region);
+  EXPECT_THAT(state->host_capabilities,
+              Not(Contains(mojom::HostCapability::kChromeTools)));
 }
 
 }  // namespace

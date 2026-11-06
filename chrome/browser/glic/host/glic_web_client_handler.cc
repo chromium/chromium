@@ -59,6 +59,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -1066,6 +1067,11 @@ class GlicWebClientHandler
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver)
       override {
 #if !BUILDFLAG(IS_ANDROID)
+    if (!GetGlicProviderSpec(profile_).SupportsFeature(
+            GlicFeature::kDynamicChromeTools)) {
+      // Dropping `receiver` disconnects the client's remote.
+      return;
+    }
     ai_overlay_tools_ =
         CreateAiOverlayToolsForGlic(profile_, std::move(receiver));
 #endif

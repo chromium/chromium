@@ -216,6 +216,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kZeroStateSuggestions:
       case GlicFeature::kGooglePageInvocation:
       case GlicFeature::kWebContinuity:
+      case GlicFeature::kAutofill:
+      case GlicFeature::kAiOverlay:
+      case GlicFeature::kPersonalContext:
         return true;
       case GlicFeature::kSkills:
         return base::FeatureList::IsEnabled(::features::kSkillsEnabled);
@@ -223,6 +226,8 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
         return base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen);
       case GlicFeature::kIndigoOpenGlic:
         return base::FeatureList::IsEnabled(features::kIndigoOpenGlic);
+      case GlicFeature::kDynamicChromeTools:
+        return base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools);
     }
     NOTREACHED();
   }
@@ -324,6 +329,10 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kMarketingAutoOpen:
       case GlicFeature::kWebContinuity:
       case GlicFeature::kIndigoOpenGlic:
+      case GlicFeature::kAutofill:
+      case GlicFeature::kAiOverlay:
+      case GlicFeature::kDynamicChromeTools:
+      case GlicFeature::kPersonalContext:
         return false;
     }
     NOTREACHED();

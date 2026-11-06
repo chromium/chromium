@@ -48,8 +48,17 @@ enum class GlicFeature {
   kWebContinuity,
   // Opening Glic from the Indigo page action (chrome/browser/indigo).
   kIndigoOpenGlic,
+  // Autofill entry points that open Glic.
+  kAutofill,
+  // The AI overlay dialog.
+  kAiOverlay,
+  // Dynamic Chrome tools offered to the web client (the AI overlay tools).
+  kDynamicChromeTools,
+  // Personal Context eligibility (Ambient Autofill, @memory and their notices).
+  // Read by `PersonalContextEligibilityServiceFactory`.
+  kPersonalContext,
 
-  kMaxValue = kIndigoOpenGlic,
+  kMaxValue = kPersonalContext,
 };
 
 }  // namespace glic

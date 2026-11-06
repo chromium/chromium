@@ -129,7 +129,10 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"  // nogncheck
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"  // nogncheck
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -797,6 +800,40 @@ TEST_F(ChromeAutofillClientTestWithMockWindow, OpenGeminiInSidebar) {
       .WillOnce(testing::Return(base::WeakPtr<glic::GlicInstance>()));
 
   client()->OpenGeminiInSidebar(u"test prompt");
+}
+
+// Like `ChromeAutofillClientTestWithMockWindow`, but the profile is latched to
+// Gemini Enterprise.
+class ChromeAutofillClientGeminiEnterpriseTest
+    : public ChromeAutofillClientTestWithMockWindow {
+ private:
+  glic::ScopedGlicProviderOverride provider_override_{
+      glic::GlicProvider::kGeminiEnterprise};
+};
+
+// Autofill doesn't open Gemini Enterprise.
+TEST_F(ChromeAutofillClientGeminiEnterpriseTest, GlicEntryPointsDisabled) {
+  glic::MockGlicKeyedService* mock_glic_service = SetUpMockGlicKeyedService();
+  ASSERT_TRUE(mock_glic_service);
+  ASSERT_TRUE(glic::GlicEnabling::IsEnabledForProfile(profile()));
+  ASSERT_EQ(glic::GetGlicProviderSpec(profile()).GetSettingsSectionId(),
+            glic::kGeminiEnterpriseSettingsSectionId);
+
+  EXPECT_FALSE(client()->IsGlicEnabled());
+  EXPECT_CALL(*mock_glic_service, Invoke).Times(0);
+  client()->OpenGeminiInSidebar(u"test prompt");
+}
+
+// Gemini Enterprise consent isn't reported to Autofill as Gemini in Chrome
+// consent.
+TEST_F(ChromeAutofillClientGeminiEnterpriseTest, GlicConsentNotReported) {
+  glic::MockGlicKeyedService* mock_glic_service = SetUpMockGlicKeyedService();
+  ASSERT_TRUE(mock_glic_service);
+  mock_glic_service->enabling().SetCompletedFre(
+      glic::prefs::FreStatus::kCompleted);
+  ASSERT_TRUE(glic::GlicEnabling::HasConsentedForProfile(profile()));
+
+  EXPECT_FALSE(client()->IsGlicConsented());
 }
 
 // Tests that `OnActorTaskStateChange` calls `TriggerFormExtractionInAllFrames`

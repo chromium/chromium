@@ -419,6 +419,16 @@ bool MayPerformAtMemoryActionBase(
     std::string* debug_message) {
   if (base::FeatureList::IsEnabled(
           features::debug::kAtMemorySkipEnablementChecks)) {
+    // The debug override doesn't enable @memory for profiles whose Glic
+    // provider doesn't support Personal Context (e.g. Gemini Enterprise).
+    if (personal_context_service &&
+        personal_context_service->GetNonEligibilityReason() ==
+            personal_context::PersonalContextNonEligibilityReason::
+                kUnsupportedGlicProvider) {
+      MaybeOutputReason(debug_message,
+                        "Unsupported Glic provider doesn't support @memory.");
+      return false;
+    }
     return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
   }
 

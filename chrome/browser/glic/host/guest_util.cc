@@ -956,7 +956,8 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
     state->host_capabilities.push_back(
         mojom::HostCapability::kAttemptOtpFilling);
   }
-  if (base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools)) {
+  if (GetGlicProviderSpec(profile).SupportsFeature(
+          GlicFeature::kDynamicChromeTools)) {
     state->host_capabilities.push_back(mojom::HostCapability::kChromeTools);
   }
   if (base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)) {

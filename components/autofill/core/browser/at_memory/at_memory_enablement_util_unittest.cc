@@ -338,6 +338,30 @@ TEST_F(AtMemoryEnablementUtilsTest,
       autofill_client().GetLastCommittedPrimaryMainFrameURL()));
 }
 
+// Tests that `kAtMemorySkipEnablementChecks` doesn't enable AtMemory for a
+// profile whose Glic provider doesn't support Personal Context.
+TEST_F(AtMemoryEnablementUtilsTest,
+       MayPerformAtMemoryAction_SkipEnablementChecksUnsupportedGlicProvider) {
+  base::test::ScopedFeatureList debug_features(
+      features::debug::kAtMemorySkipEnablementChecks);
+
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
+      .WillRepeatedly(Return(personal_context::PersonalContextEligibilityState::
+                                 kDisabledNotEligible));
+  EXPECT_CALL(personal_context_service_, GetNonEligibilityReason)
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextNonEligibilityReason::
+                     kUnsupportedGlicProvider));
+
+  std::string debug_message;
+  EXPECT_FALSE(MayPerformAtMemoryAction(
+      AtMemoryAction::kTriggerSearchUI, autofill_client(),
+      autofill_client().GetLastCommittedPrimaryMainFrameURL(),
+      /*retrieve_params=*/std::nullopt, &debug_message));
+  EXPECT_EQ(debug_message,
+            "Unsupported Glic provider doesn't support @memory.");
+}
+
 // Tests that a user is eligible for AtMemory if their subscription tier is in
 // the list of eligible tiers configured by the feature parameters.
 TEST_F(AtMemoryEnablementUtilsTest,

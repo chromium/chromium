@@ -23,6 +23,7 @@ source_set("ai_overlay_dialog") {
   deps = [
     "//chrome/browser:primitives",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/glic",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile",

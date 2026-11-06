@@ -5993,6 +5993,7 @@ Called by update_autofill_enums.py.-->
   <int value="9" label="Find and Fill with Gemini settings disabled"/>
   <int value="10" label="Not G1 subscriber or Android premium device"/>
   <int value="11" label="Eligible"/>
+  <int value="12" label="Unsupported Glic provider"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/personal_context/core/personal_context_types.h:PersonalContextNonEligibilityReason) -->

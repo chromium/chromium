@@ -83,11 +83,12 @@ class PersonalContextEligibilityServiceImplTest : public testing::Test {
   }
 
   void CreateService(const std::string& country_code,
-                     const std::string& locale = "en-US") {
+                     const std::string& locale = "en-US",
+                     bool is_supported_glic_provider = true) {
     service_ = std::make_unique<PersonalContextEligibilityServiceImpl>(
         &mock_account_settings_service_, identity_test_env_.identity_manager(),
         &pref_service_, GeoIpCountryCode(base::ToUpperASCII(country_code)),
-        locale);
+        locale, is_supported_glic_provider);
   }
 
   void SetPrefs() {
@@ -439,6 +440,75 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
   service().RemoveObserver(&observer);
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+// Verifies that a profile whose Gemini in Chrome provider doesn't support
+// Personal Context (e.g. Gemini Enterprise) is ineligible, even though every
+// other requirement is met, including the consumer Glic FRE (set up in the test
+// fixture).
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       DisabledForUnsupportedGlicProvider) {
+#if !BUILDFLAG(IS_IOS)
+  ASSERT_EQ(pref_service_.GetInteger(::glic::prefs::kGlicCompletedFre),
+            std::to_underlying(::glic::prefs::FreStatus::kCompleted));
+#endif
+  CreateService("us", "en-US", /*is_supported_glic_provider=*/false);
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
+  EXPECT_EQ(service().GetNonEligibilityReason(),
+            PersonalContextNonEligibilityReason::kUnsupportedGlicProvider);
+  EXPECT_FALSE(service().IsEligibleForEncryption());
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kUnsupportedGlicProvider, 1);
+}
+
+// Verifies that the debug overrides don't make a profile with an unsupported
+// Glic provider eligible.
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       DebugOverridesDontEnableUnsupportedGlicProvider) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::debug::kPersonalContextForceEnablementState,
+        {{"state", "2"}}},
+       {features::debug::kAutofillAmbientAutofillSkipEligibilityChecks, {}}},
+      {});
+  CreateService("us", "en-US", /*is_supported_glic_provider=*/false);
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
+  EXPECT_EQ(service().GetNonEligibilityReason(),
+            PersonalContextNonEligibilityReason::kUnsupportedGlicProvider);
+}
+
+// Verifies that a profile with an unsupported Glic provider stays ineligible
+// when the requirements it would otherwise depend on change.
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       UnsupportedGlicProviderStaysIneligible) {
+  CreateService("us", "en-US", /*is_supported_glic_provider=*/false);
+  MockPersonalContextEligibilityServiceObserver observer;
+  base::ScopedObservation<PersonalContextEligibilityService,
+                          PersonalContextEligibilityService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&service());
+  EXPECT_CALL(observer, OnEligibilityStateChanged).Times(0);
+
+  SignIn("other@gmail.com");
+  service().OnAccountSettingsLoaded();
+#if !BUILDFLAG(IS_IOS)
+  pref_service_.SetInteger(
+      ::glic::prefs::kGlicCompletedFre,
+      std::to_underlying(::glic::prefs::FreStatus::kNotStarted));
+  pref_service_.SetInteger(
+      ::glic::prefs::kGlicCompletedFre,
+      std::to_underlying(::glic::prefs::FreStatus::kCompleted));
+#endif
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
+  EXPECT_EQ(service().GetNonEligibilityReason(),
+            PersonalContextNonEligibilityReason::kUnsupportedGlicProvider);
+}
 
 // Tests that `PersonalContextEligibilityService` returns `kDisabledNotEligible`
 // when the `FindAndFillWithGeminiSettings` policy is disabled.

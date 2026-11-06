@@ -12,6 +12,9 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller_views.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -438,6 +441,41 @@ TEST_F(AiOverlayDialogPageHandlerTest, IsEnabledForProfileWithGoogleGroups) {
   }
 
   EXPECT_TRUE(AiOverlayDialogController::IsEnabledForProfile(profile()));
+}
+
+// The AI overlay is consumer-only, so it stays off for profiles latched to
+// Gemini Enterprise even when the feature is enabled for them.
+class AiOverlayDialogPageHandlerGeminiEnterpriseTest
+    : public AiOverlayDialogPageHandlerTest {
+ private:
+  glic::ScopedGlicProviderOverride provider_override_{
+      glic::GlicProvider::kGeminiEnterprise};
+};
+
+TEST_F(AiOverlayDialogPageHandlerGeminiEnterpriseTest,
+       IsEnabledForProfileFalseForGeminiEnterprise) {
+  ASSERT_EQ(glic::GetGlicProviderSpec(profile()).GetSettingsSectionId(),
+            glic::kGeminiEnterpriseSettingsSectionId);
+  constexpr char kTargetGroupId[] = "123456789";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAiOverlayDialog,
+        {{variations::internal::kGoogleGroupFeatureParamName,
+          kTargetGroupId}}}},
+      {});
+  {
+    ScopedListPrefUpdate update(profile()->GetPrefs(),
+#if BUILDFLAG(IS_CHROMEOS)
+                                variations::kOsDogfoodGroupsSyncPrefName
+#else
+                                variations::kDogfoodGroupsSyncPrefName
+#endif
+    );
+    update->Append(base::DictValue().Set(
+        variations::kDogfoodGroupsSyncPrefGaiaIdKey, kTargetGroupId));
+  }
+
+  EXPECT_FALSE(AiOverlayDialogController::IsEnabledForProfile(profile()));
 }
 
 }  // namespace

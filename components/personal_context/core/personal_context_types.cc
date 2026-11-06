@@ -37,6 +37,8 @@ std::string_view PersonalContextNonEligibilityReasonToString(
       return "Not G1 subscriber or Android premium device";
     case PersonalContextNonEligibilityReason::kEligible:
       return "Eligible";
+    case PersonalContextNonEligibilityReason::kUnsupportedGlicProvider:
+      return "Unsupported Glic provider";
   }
   NOTREACHED();
 }

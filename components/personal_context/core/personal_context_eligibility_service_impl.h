@@ -25,12 +25,17 @@ class PersonalContextEligibilityServiceImpl
       public signin::IdentityManager::Observer,
       public account_settings::AccountSettingService::Observer {
  public:
-  explicit PersonalContextEligibilityServiceImpl(
+  // `is_supported_glic_provider` is true if the profile's Gemini in Chrome
+  // provider supports Personal Context (false for Gemini Enterprise). When
+  // false, the profile is ineligible (`kUnsupportedGlicProvider`). The provider
+  // is fixed for the lifetime of the profile.
+  PersonalContextEligibilityServiceImpl(
       account_settings::AccountSettingService* account_settings_service,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
       GeoIpCountryCode country_code,
-      std::string locale);
+      std::string locale,
+      bool is_supported_glic_provider = true);
   PersonalContextEligibilityServiceImpl(
       const PersonalContextEligibilityServiceImpl&) = delete;
   PersonalContextEligibilityServiceImpl& operator=(
@@ -78,6 +83,7 @@ class PersonalContextEligibilityServiceImpl
   const raw_ptr<PrefService> pref_service_;
   const GeoIpCountryCode country_code_;
   const std::string locale_;
+  const bool is_supported_glic_provider_;
   base::ObserverList<PersonalContextEligibilityService::Observer> observers_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
