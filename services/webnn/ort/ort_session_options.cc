@@ -358,6 +358,14 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
         session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
   }
 
+  // This in-GPU-process session may run CPU EP kernels on page-supplied
+  // constants. ORT shares their prepacked weights by a content-hash key
+  // without checking buffer count, size or shape, so crafted constants can
+  // make a kernel adopt a mismatched buffer. Disable prepacking; remove this
+  // together with the in-GPU-process path.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options.get(), kOrtSessionOptionsConfigDisablePrepacking, "1"));
+
   // Apply the testing entries after WebNN and EP defaults. Existing entries
   // cannot be replaced and fail fast with the conflicting key and value.
   ApplySessionConfigEntriesFromCommandLine(
