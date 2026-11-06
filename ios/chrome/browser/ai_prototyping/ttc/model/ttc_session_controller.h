@@ -187,6 +187,9 @@ class TtcSessionController : public TtcConversation::Delegate,
   // page context tracking.
   bool is_stopped_ = false;
 
+  // Last microphone mute state broadcast to `observers_` once `kLive`.
+  bool notified_mic_muted_ = false;
+
   // Whether a fatal error has already been reported during this session.
   bool fatal_error_reported_ = false;
 

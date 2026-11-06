@@ -628,7 +628,7 @@ TEST_F(TtcConversationTest,
 }
 
 // Tests that muting microphone capture absorbs synchronous stop capture
-// callbacks without re-entrant mute notifications.
+// callbacks without duplicate mute notifications.
 TEST_F(TtcConversationTest,
        SetMicMutedAbsorbsSynchronousStopCaptureWithoutRecursion) {
   conversation_->Start();
@@ -639,7 +639,7 @@ TEST_F(TtcConversationTest,
   [fake_audio_controller_.delegate
       audioControllerDidStopCapture:fake_audio_controller_];
 
-  EXPECT_EQ(delegate_.mic_muted_change_count(), 0);
+  EXPECT_EQ(delegate_.mic_muted_change_count(), 1);
 }
 
 // Tests that unmuting microphone capture restarts audio capture on the
@@ -677,4 +677,24 @@ TEST_F(TtcConversationTest,
                               didUpdateInputEnergy:0.8f];
 
   EXPECT_FLOAT_EQ(delegate_.last_energy(), 0.0f);
+}
+
+// Tests that a capture start failure during `SetMicMuted(false)` rolls the
+// conversation back to muted instead of reporting a fatal error.
+TEST_F(TtcConversationTest,
+       SetMicMutedFalseFailureKeepsConversationMutedWithoutError) {
+  conversation_->Start();
+  mock_backend_->observer()->OnBackendInitialized();
+  conversation_->SetMicMuted(true);
+  NSError* start_error = CreateTTCError(ttc::ErrorCode::kAudioUnknownError);
+  fake_audio_controller_.startCaptureBlock =
+      ^(void (^completion)(BOOL, NSError*)) {
+        completion(NO, start_error);
+      };
+
+  conversation_->SetMicMuted(false);
+
+  EXPECT_TRUE(conversation_->IsMicMuted());
+  EXPECT_EQ(delegate_.last_mic_muted(), true);
+  EXPECT_FALSE(delegate_.last_error().has_value());
 }

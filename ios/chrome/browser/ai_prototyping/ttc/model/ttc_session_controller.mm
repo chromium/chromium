@@ -118,9 +118,11 @@ void TtcSessionController::OnConversationClosed() {
 
 void TtcSessionController::OnConversationMicMutedChanged(bool muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lifecycle_ != TTCSessionLifecycle::kLive) {
+  if (lifecycle_ != TTCSessionLifecycle::kLive ||
+      notified_mic_muted_ == muted) {
     return;
   }
+  notified_mic_muted_ = muted;
   LogMicMuted(muted);
   for (TtcSessionControllerObserver& observer : observers_) {
     observer.OnMicMutedChanged(this, muted);
@@ -329,17 +331,11 @@ bool TtcSessionController::SetMicMuted(bool muted) {
       conversation_->IsMicMuted() == muted) {
     return false;
   }
-  LogMicMuted(muted);
   base::WeakPtr<TtcSessionController> weak_this =
       weak_ptr_factory_.GetWeakPtr();
   conversation_->SetMicMuted(muted);
-  if (!weak_this || lifecycle_ != TTCSessionLifecycle::kLive) {
-    return false;
-  }
-  for (TtcSessionControllerObserver& observer : observers_) {
-    observer.OnMicMutedChanged(this, muted);
-  }
-  return true;
+  return weak_this && lifecycle_ == TTCSessionLifecycle::kLive &&
+         conversation_->IsMicMuted() == muted;
 }
 
 bool TtcSessionController::IsMicMuted() const {

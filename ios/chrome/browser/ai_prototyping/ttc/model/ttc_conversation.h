@@ -158,6 +158,13 @@ class TtcConversation : public ttc::TtcBackend::Observer {
                                 NSError* error,
                                 uint64_t generation);
 
+  // Handles completion of a capture resume request triggered by
+  // `SetMicMuted(false)`, rolling back to muted on failure instead of reporting
+  // a fatal session error.
+  void HandleResumeCaptureResult(uint64_t generation,
+                                 BOOL success,
+                                 NSError* error);
+
   // Notifies `delegate_` of a conversation error.
   void HandleError(ttc::ErrorCode error);
 

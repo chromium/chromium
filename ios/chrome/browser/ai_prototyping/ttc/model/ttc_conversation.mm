@@ -18,6 +18,8 @@
 #import "base/byte_size.h"
 #import "base/check.h"
 #import "base/containers/span.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
@@ -200,15 +202,18 @@ void TtcConversation::SetMicMuted(bool muted) {
     if (delegate_) {
       delegate_->OnAudioEnergyUpdated(0.0f);
     }
-    return;
+  } else {
+    [audio_controller_
+        startCaptureWithCompletion:
+            base::CallbackToBlock(base::BindOnce(
+                &TtcConversation::HandleResumeCaptureResult,
+                weak_ptr_factory_.GetWeakPtr(), current_generation))];
   }
-  base::WeakPtr<TtcConversation> weak_this = weak_ptr_factory_.GetWeakPtr();
-  [audio_controller_ startCaptureWithCompletion:^(BOOL success,
-                                                  NSError* error) {
-    if (weak_this) {
-      weak_this->HandleStartCaptureResult(success, error, current_generation);
-    }
-  }];
+  // Skip notifying if `startCaptureWithCompletion:` synchronously failed and
+  // rolled `is_mic_muted_` back via `SetMicMuted(true)`.
+  if (is_mic_muted_ == muted && delegate_) {
+    delegate_->OnConversationMicMutedChanged(muted);
+  }
 }
 
 bool TtcConversation::IsMicMuted() const {
@@ -321,15 +326,9 @@ void TtcConversation::OnAudioControllerError(NSError* error) {
 
 void TtcConversation::OnAudioControllerStoppedCapture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_stopping_ || is_mic_muted_) {
-    return;
-  }
   // OS or hardware audio interruptions mute microphone capture rather than
   // severing the backend transport connection.
   SetMicMuted(true);
-  if (delegate_) {
-    delegate_->OnConversationMicMutedChanged(true);
-  }
 }
 
 #pragma mark - Backend Observer Callbacks
@@ -440,6 +439,15 @@ void TtcConversation::HandleStartCaptureResult(bool success,
 
   if (!success) {
     HandleError(ExtractTTCErrorCode(error));
+  }
+}
+
+void TtcConversation::HandleResumeCaptureResult(uint64_t generation,
+                                                BOOL success,
+                                                NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (session_generation_ == generation && !success) {
+    SetMicMuted(true);
   }
 }
 

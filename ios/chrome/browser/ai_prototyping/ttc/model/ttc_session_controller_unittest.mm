@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_page_context_monitor.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_voice_focused_web_state_tracker.h"
@@ -67,6 +68,7 @@ using ::testing::Not;
 @property(nonatomic, assign) TTCJournal* journal;
 @property(nonatomic, assign) BOOL didStopCapture;
 @property(nonatomic, assign) BOOL didStopPlayback;
+@property(nonatomic, assign) BOOL shouldFailStartCapture;
 
 @end
 
@@ -74,6 +76,13 @@ using ::testing::Not;
 
 - (void)startCaptureWithCompletion:(void (^)(BOOL success,
                                              NSError* error))completion {
+  if (self.shouldFailStartCapture) {
+    self.capturing = NO;
+    if (completion) {
+      completion(NO, CreateTTCError(ttc::ErrorCode::kAudioUnknownError));
+    }
+    return;
+  }
   self.capturing = YES;
   if (completion) {
     completion(YES, nil);
@@ -1020,6 +1029,31 @@ TEST_F(TtcSessionControllerTest,
   EXPECT_TRUE(controller.IsMicMuted());
   EXPECT_EQ(observer.mic_muted_change_count(), 1);
   EXPECT_TRUE(observer.last_mic_muted());
+  controller.Disconnect();
+}
+
+// Tests that a synchronous capture start failure during `SetMicMuted(false)`
+// returns `false` without notifying observers or stopping the session.
+TEST_F(TtcSessionControllerTest,
+       SetMicMutedFalseFailureReturnsFalseWithoutNotifyingObserver) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TtcSessionController controller(
+      std::make_unique<TtcConversation>(fake_audio, nullptr), nullptr);
+  FakeTtcSessionControllerObserver observer;
+  controller.AddObserver(&observer);
+  controller.StartSession();
+  controller.OnConversationInitialized();
+  ASSERT_TRUE(controller.SetMicMuted(true));
+  ASSERT_EQ(observer.mic_muted_change_count(), 1);
+  fake_audio.shouldFailStartCapture = YES;
+
+  bool did_unmute = controller.SetMicMuted(false);
+
+  EXPECT_FALSE(did_unmute);
+  EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
+  EXPECT_TRUE(controller.IsMicMuted());
+  EXPECT_EQ(observer.mic_muted_change_count(), 1);
   controller.Disconnect();
 }
 
