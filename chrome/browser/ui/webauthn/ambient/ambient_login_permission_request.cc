@@ -22,7 +22,6 @@ namespace ambient_signin {
 
 AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
     const GURL& requesting_origin,
-    const GURL& embedding_origin,
     std::vector<PasskeyOrPasswordCredential> credentials,
     PasskeyOrPasswordSelectedCallback credential_selected_callback,
     std::vector<FederatedCredential> federated_credentials,
@@ -32,8 +31,7 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
           std::make_unique<permissions::PermissionRequestData>(
               permissions::RequestType::kAmbientLogin,
               /*user_gesture=*/false,
-              requesting_origin,
-              embedding_origin),
+              requesting_origin),
           base::BindRepeating(
               &AmbientLoginPermissionRequest::OnPermissionDecided,
               base::Unretained(this)),
@@ -51,13 +49,11 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
 
 AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
     const GURL& requesting_origin,
-    const GURL& embedding_origin,
     std::vector<PasskeyOrPasswordCredential> credentials,
     PasskeyOrPasswordSelectedCallback credential_selected_callback,
     Options options)
     : AmbientLoginPermissionRequest(
           requesting_origin,
-          embedding_origin,
           std::move(credentials),
           std::move(credential_selected_callback),
           /*federated_credentials=*/{},

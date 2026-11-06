@@ -104,7 +104,6 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   // federated credentials.
   AmbientLoginPermissionRequest(
       const GURL& requesting_origin,
-      const GURL& embedding_origin,
       std::vector<PasskeyOrPasswordCredential> credentials,
       PasskeyOrPasswordSelectedCallback credential_selected_callback,
       std::vector<FederatedCredential> federated_credentials,
@@ -114,7 +113,6 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   // Convenience constructor for passkey/password-only requests.
   AmbientLoginPermissionRequest(
       const GURL& requesting_origin,
-      const GURL& embedding_origin,
       std::vector<PasskeyOrPasswordCredential> credentials,
       PasskeyOrPasswordSelectedCallback credential_selected_callback,
       Options options);

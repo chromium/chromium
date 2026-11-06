@@ -1816,8 +1816,7 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
       });
   auto request =
       std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
-          origin, origin,
-          std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
+          origin, std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
           /*credential_selected_callback=*/base::NullCallback(),
           std::move(federated_credentials),
           base::BindOnce(

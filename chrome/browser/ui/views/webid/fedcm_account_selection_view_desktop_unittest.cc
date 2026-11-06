@@ -3876,7 +3876,7 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
       ->RequestPermission(
           main_frame,
           std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
-              GURL("https://rp.example"), GURL("https://rp.example"),
+              GURL("https://rp.example"),
               std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
               /*credential_selected_callback=*/base::DoNothing(),
               ambient_signin::AmbientLoginPermissionRequest::Options{}));

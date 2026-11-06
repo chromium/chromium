@@ -62,8 +62,10 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -346,7 +348,15 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
   set_title_margins(
       gfx::Insets::TLBR(12, kHorizontalPadding, 8, kHorizontalPadding));
 
-  SetTitle(l10n_util::GetStringUTF16(IDS_AMBIENT_LOGIN_TITLE));
+  CHECK(delegate);
+  if (url::Origin::Create(delegate->GetRequestingOrigin())
+          .IsSameOriginWith(delegate->GetEmbeddingOrigin())) {
+    SetTitle(l10n_util::GetStringUTF16(IDS_AMBIENT_LOGIN_TITLE));
+  } else {
+    SetTitle(
+        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE,
+                                   GetUrlIdentityObject().name));
+  }
 
   std::u16string username;
   std::u16string provider;
@@ -465,13 +475,10 @@ void AmbientLoginPermissionBubbleView::Show() {
 void AmbientLoginPermissionBubbleView::AddedToWidget() {
   PermissionPromptBubbleBaseView::AddedToWidget();
 
-  auto title_label = std::make_unique<views::Label>(
-      GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_BODY_3_MEDIUM);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
-  title_label->GetViewAccessibility().SetHierarchicalLevel(1);
-  GetBubbleFrameView()->SetTitleView(std::move(title_label));
+  if (auto* title_label =
+          views::AsViewClass<views::Label>(GetBubbleFrameView()->title())) {
+    title_label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+  }
 }
 
 ambient_signin::AmbientLoginPermissionRequest*
