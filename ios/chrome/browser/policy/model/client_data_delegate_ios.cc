@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/policy/model/client_data_delegate_ios.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -31,6 +32,8 @@ void ClientDataDelegateIos::FillRegisterBrowserRequest(
     base::OnceClosure callback) const {
   request->set_os_platform(GetOSPlatform());
   request->set_os_version(GetOSVersion());
+  request->set_allocated_browser_device_identifier(
+      GetBrowserDeviceIdentifier().release());
 
   base::SysInfo::GetHardwareInfo(
       base::BindOnce(&SetHardwareInfo, request, std::move(callback)));

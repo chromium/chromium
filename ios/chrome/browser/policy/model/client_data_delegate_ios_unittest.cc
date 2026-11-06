@@ -30,14 +30,20 @@ TEST(ClientDataDelegateIosTest, FillRegisterBrowserRequest) {
       &hardware_info));
   task_environment.RunUntilIdle();
 
+  EXPECT_EQ(request.os_platform(), GetOSPlatform());
+  EXPECT_EQ(request.os_version(), GetOSVersion());
   EXPECT_FALSE(request.device_model().empty());
   EXPECT_EQ(request.device_model(), hardware_info.model);
   EXPECT_FALSE(request.brand_name().empty());
   EXPECT_EQ(request.brand_name(), hardware_info.manufacturer);
+  ASSERT_TRUE(request.has_browser_device_identifier());
+  EXPECT_FALSE(request.browser_device_identifier().computer_name().empty());
+  EXPECT_EQ(request.browser_device_identifier().computer_name(),
+            GetMachineName());
 
-  // Fields that shouldn't be filled on iOS due to Privacy concerns.
+  // `machine_name` is deprecated in favor of `browser_device_identifier`, and
+  // the device serial number isn't collected on iOS.
   EXPECT_TRUE(request.machine_name().empty());
-  EXPECT_TRUE(request.browser_device_identifier().computer_name().empty());
   EXPECT_TRUE(request.browser_device_identifier().serial_number().empty());
 }
 
