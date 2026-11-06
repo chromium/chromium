@@ -5558,6 +5558,29 @@
             ]
         }
     ],
+    "ContextualTasksUpdatedEntryPoints": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSidePanelRouting",
+                    "params": {
+                        "ContextualTasksContextMenuRouteAskGoogleToOmnibox": "false",
+                        "ContextualTasksContextMenuShowAskGoogle": "true",
+                        "ContextualTasksContextMenuSubmenu": "false"
+                    },
+                    "enable_features": [
+                        "ContextualTasksUpdatedEntryPoints"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualTasksUploadChunking": [
         {
             "platforms": [
