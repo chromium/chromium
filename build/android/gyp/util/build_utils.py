@@ -110,22 +110,6 @@ def CheckOptions(options, parser, required=None):
             parser.error('--%s is required' % option_name.replace('_', '-'))
 
 
-def WriteJson(obj, path, only_if_changed=False):
-    old_dump = None
-    if only_if_changed:
-        try:
-            with open(path, 'r', encoding='utf-8') as oldfile:
-                old_dump = oldfile.read()
-        except FileNotFoundError:
-            pass
-
-    new_dump = json.dumps(obj, sort_keys=True, indent=2, separators=(',', ': '))
-
-    if not only_if_changed or old_dump != new_dump:
-        with open(path, 'w', encoding='utf-8') as outfile:
-            outfile.write(new_dump)
-
-
 class CalledProcessError(Exception):
     """This exception is raised when the process run by CheckOutput
     exits with a non-zero exit code."""

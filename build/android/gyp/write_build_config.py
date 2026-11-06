@@ -15,12 +15,16 @@ See //build/android/docs/build_config.md for more information.
 import argparse
 import gc
 import itertools
+import json
 import os
 import sys
 
-from util import build_utils
 from util import params_json_util
-import action_helpers
+
+# Not using build_utils since it is slow to import, and this script runs for
+# every java target.
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+import action_helpers  # noqa: E402
 
 
 class OrderedSet(dict):
@@ -686,6 +690,22 @@ def _CreateLintConfig(params, javac_config, manifest_config):
     return config
 
 
+def _WriteJsonIfChanged(obj, path):
+    """Writes |obj| as JSON to |path| if its contents changed."""
+    new_dump = json.dumps(
+        obj, sort_keys=True, indent=2, separators=(',', ': ')
+    ).encode('utf-8')
+    # Binary I/O avoids decoding the old file just to compare it.
+    try:
+        with open(path, 'rb', buffering=0) as f:
+            if f.readall() == new_dump:
+                return
+    except FileNotFoundError:
+        pass
+    with open(path, 'wb') as f:
+        f.write(new_dump)
+
+
 def main():
     # Short-lived process that creates many objects but little cyclic garbage,
     # so GC passes are wasted work.
@@ -1078,7 +1098,7 @@ def main():
         if config:
             path = build_config_path.replace('.build_config.json', extension)
             first_output = first_output or path
-            build_utils.WriteJson(config, path, only_if_changed=True)
+            _WriteJsonIfChanged(config, path)
 
     if options.depfile:
         all_inputs = params_json_util.all_read_file_paths()
