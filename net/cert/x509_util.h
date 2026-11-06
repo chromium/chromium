@@ -184,6 +184,22 @@ enum class SerialNumberType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NetCertificateSerialNumberType)
 
+// Values for the Net.Certificate.RdnAttributeOrder.* histograms. These values
+// are persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+// LINT.IfChange(RdnAttributeOrder)
+enum class RdnAttributeOrder {
+  // Every RDN contains exactly one attribute.
+  kAllSingleValued = 0,
+  // At least one RDN contains multiple attributes, and all such RDNs are
+  // sorted in DER SET OF order.
+  kMultiValuedSorted = 1,
+  // At least one RDN is not sorted in DER SET OF order.
+  kMultiValuedUnsorted = 2,
+  kMaxValue = kMultiValuedUnsorted,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NetCertificateRdnAttributeOrder)
+
 // Parses a certificate from `cert_buffer` with
 // `DefaultParseCertificateOptions()` and records histograms on the certificate.
 NET_EXPORT std::shared_ptr<const bssl::ParsedCertificate>

@@ -48,6 +48,7 @@
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
 #include "third_party/boringssl/src/pki/parse_values.h"
+#include "third_party/boringssl/src/pki/parser.h"
 #include "third_party/boringssl/src/pki/signature_algorithm.h"
 
 namespace net::x509_util {
@@ -544,6 +545,48 @@ bssl::ParseCertificateOptions DefaultParseCertificateOptions() {
   return options;
 }
 
+namespace {
+
+// Classifies the attribute order of the RDNs in `name_tlv`, or returns
+// `std::nullopt` if `name_tlv` is not a valid Name. This is used for metrics.
+//
+// TODO(crbug.com/506186107): If metrics show it is safe, require sorted RDNs in
+// `bssl::ParseNameValue` and `bssl::ReadRdn`, and remove this.
+std::optional<RdnAttributeOrder> GetRdnAttributeOrder(
+    bssl::der::Input name_tlv) {
+  bssl::der::Parser name_parser(name_tlv);
+  bssl::der::Parser rdn_sequence_parser;
+  if (!name_parser.ReadSequence(&rdn_sequence_parser) ||
+      name_parser.HasMore()) {
+    return std::nullopt;
+  }
+
+  RdnAttributeOrder order = RdnAttributeOrder::kAllSingleValued;
+  while (rdn_sequence_parser.HasMore()) {
+    bssl::der::Input rdn;
+    if (!rdn_sequence_parser.ReadTag(CBS_ASN1_SET, &rdn)) {
+      return std::nullopt;
+    }
+    CBS rdn_cbs;
+    CBS_init(&rdn_cbs, rdn.data(), rdn.size());
+    if (!CBS_is_valid_asn1_set_of(&rdn_cbs)) {
+      return RdnAttributeOrder::kMultiValuedUnsorted;
+    }
+
+    bssl::der::Parser rdn_parser(rdn);
+    bssl::der::Input attribute;
+    if (!rdn_parser.ReadRawTLV(&attribute)) {
+      return std::nullopt;
+    }
+    if (rdn_parser.HasMore()) {
+      order = RdnAttributeOrder::kMultiValuedSorted;
+    }
+  }
+  return order;
+}
+
+}  // namespace
+
 std::shared_ptr<const bssl::ParsedCertificate> CreateParsedCertificate(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
     bssl::CertErrors* errors) {
@@ -571,6 +614,18 @@ std::shared_ptr<const bssl::ParsedCertificate> CreateParsedCertificate(
     type = SerialNumberType::kPositive;
   }
   base::UmaHistogramEnumeration("Net.Certificate.SerialNumberType", type);
+
+  // `bssl::ParsedCertificate::Create` already checked that both names parse.
+  if (std::optional<RdnAttributeOrder> order =
+          GetRdnAttributeOrder(cert->tbs().subject_tlv)) {
+    base::UmaHistogramEnumeration("Net.Certificate.RdnAttributeOrder.Subject",
+                                  *order);
+  }
+  if (std::optional<RdnAttributeOrder> order =
+          GetRdnAttributeOrder(cert->tbs().issuer_tlv)) {
+    base::UmaHistogramEnumeration("Net.Certificate.RdnAttributeOrder.Issuer",
+                                  *order);
+  }
 
   return cert;
 }

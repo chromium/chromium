@@ -1511,6 +1511,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.Certificate.RdnAttributeOrder.{Name}"
+    enum="NetCertificateRdnAttributeOrder" expires_after="2027-05-05">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    Whether the attributes in each RelativeDistinguishedName of a parsed X.509
+    certificate's {Name} are sorted in DER SET OF order: whether every RDN has a
+    single attribute, whether all multi-valued RDNs are sorted, or whether some
+    RDN is unsorted. Recorded each time a certificate is parsed with default
+    options via net::x509_util::CreateParsedCertificate. See
+    https://crbug.com/506186107.
+  </summary>
+  <token key="Name">
+    <variant name="Issuer" summary="issuer"/>
+    <variant name="Subject" summary="subject"/>
+  </token>
+</histogram>
+
 <histogram name="Net.Certificate.SerialNumberLength" units="bytes"
     expires_after="2027-03-28">
   <owner>davidben@chromium.org</owner>

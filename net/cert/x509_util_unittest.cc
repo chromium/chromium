@@ -6,13 +6,18 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "crypto/keypair.h"
+#include "crypto/openssl_util.h"
 #include "crypto/sign.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_builder.h"
@@ -20,8 +25,10 @@
 #include "net/test/key_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
+#include "third_party/boringssl/src/pki/parse_name.h"
 
 namespace net::x509_util {
 
@@ -1055,6 +1062,86 @@ TEST(X509UtilTest, CreateParsedCertificateHistograms) {
       CreateParsedCertificate(CreateCryptoBuffer(kInvalidCert), nullptr));
   histogram_tester.ExpectTotalCount("Net.Certificate.SerialNumberLength", 0);
   histogram_tester.ExpectTotalCount("Net.Certificate.SerialNumberType", 0);
+  histogram_tester.ExpectTotalCount("Net.Certificate.RdnAttributeOrder.Subject",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.Certificate.RdnAttributeOrder.Issuer",
+                                    0);
+}
+
+// Builds a Name with one RDN per element of `rdns`. Each RDN contains a
+// commonName attribute for each string, encoded in the order given, which may
+// not be DER SET OF order.
+std::vector<uint8_t> BuildName(
+    const std::vector<std::vector<std::string_view>>& rdns) {
+  // A parent CBB points to its child until the parent is next flushed, so the
+  // children are declared outside the loops to keep them alive.
+  bssl::ScopedCBB cbb;
+  CBB name, rdn, attribute;
+  CHECK(CBB_init(cbb.get(), 64));
+  CHECK(CBB_add_asn1(cbb.get(), &name, CBS_ASN1_SEQUENCE));
+  for (const auto& common_names : rdns) {
+    CHECK(CBB_add_asn1(&name, &rdn, CBS_ASN1_SET));
+    for (std::string_view common_name : common_names) {
+      CHECK(CBB_add_asn1(&rdn, &attribute, CBS_ASN1_SEQUENCE));
+      CHECK(CBB_add_asn1_element(&attribute, CBS_ASN1_OBJECT,
+                                 bssl::kTypeCommonNameOid,
+                                 sizeof(bssl::kTypeCommonNameOid)));
+      auto value_bytes = base::as_byte_span(common_name);
+      CHECK(CBB_add_asn1_element(&attribute, CBS_ASN1_UTF8STRING,
+                                 value_bytes.data(), value_bytes.size()));
+    }
+  }
+  CHECK(CBB_flush(cbb.get()));
+  return base::ToVector(crypto::CbbAsSpan(cbb.get()));
+}
+
+TEST(X509UtilTest, CreateParsedCertificateRdnAttributeOrderHistogram) {
+  // DER sorts SET OF elements by encoding. These all have the same length, so
+  // this is the order of the values.
+  const std::vector<uint8_t> kSingleValued = BuildName({{"a"}, {"b"}});
+  const struct {
+    std::vector<uint8_t> name;
+    RdnAttributeOrder expected;
+  } kTests[] = {
+      {kSingleValued, RdnAttributeOrder::kAllSingleValued},
+      {BuildName({{"a"}}), RdnAttributeOrder::kAllSingleValued},
+      {BuildName({{"a", "b"}}), RdnAttributeOrder::kMultiValuedSorted},
+      {BuildName({{"a"}, {"b", "c"}}), RdnAttributeOrder::kMultiValuedSorted},
+      // Duplicates are allowed in DER SET OF.
+      {BuildName({{"b", "b"}}), RdnAttributeOrder::kMultiValuedSorted},
+      {BuildName({{"b", "a"}}), RdnAttributeOrder::kMultiValuedUnsorted},
+      {BuildName({{"c", "b"}, {"a"}}), RdnAttributeOrder::kMultiValuedUnsorted},
+      {BuildName({{"a", "b"}, {"c", "a", "b"}}),
+       RdnAttributeOrder::kMultiValuedUnsorted},
+  };
+
+  std::unique_ptr<CertBuilder> builder =
+      std::move(CertBuilder::CreateSimpleChain(1)[0]);
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(base::HexEncode(test.name));
+    {
+      base::HistogramTester histogram_tester;
+      builder->SetSubjectTLV(test.name);
+      builder->SetIssuerTLV(kSingleValued);
+      ASSERT_TRUE(CreateParsedCertificate(builder->DupCertBuffer(), nullptr));
+      histogram_tester.ExpectUniqueSample(
+          "Net.Certificate.RdnAttributeOrder.Subject", test.expected, 1);
+      histogram_tester.ExpectUniqueSample(
+          "Net.Certificate.RdnAttributeOrder.Issuer",
+          RdnAttributeOrder::kAllSingleValued, 1);
+    }
+    {
+      base::HistogramTester histogram_tester;
+      builder->SetSubjectTLV(kSingleValued);
+      builder->SetIssuerTLV(test.name);
+      ASSERT_TRUE(CreateParsedCertificate(builder->DupCertBuffer(), nullptr));
+      histogram_tester.ExpectUniqueSample(
+          "Net.Certificate.RdnAttributeOrder.Subject",
+          RdnAttributeOrder::kAllSingleValued, 1);
+      histogram_tester.ExpectUniqueSample(
+          "Net.Certificate.RdnAttributeOrder.Issuer", test.expected, 1);
+    }
+  }
 }
 
 }  // namespace net::x509_util
