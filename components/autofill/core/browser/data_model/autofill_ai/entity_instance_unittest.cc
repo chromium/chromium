@@ -1089,5 +1089,44 @@ INSTANTIATE_TEST_SUITE_P(
                 "ppid=123-456%3A789&utm_source=chrome&utm_medium=settings&"
                 "utm_campaign=enhanced_autofill"}));
 
+TEST_F(AutofillEntityInstanceTest, DoesEntityTypeSupportAffiliations) {
+  using enum EntityTypeName;
+  EXPECT_TRUE(DoesEntityTypeSupportAffiliations(EntityType(kOrder)));
+  EXPECT_TRUE(DoesEntityTypeSupportAffiliations(EntityType(kShipment)));
+  for (EntityTypeName name :
+       {kPassport, kDriversLicense, kVehicle, kNationalIdCard,
+        kKnownTravelerNumber, kRedressNumber, kFlightReservation}) {
+    EXPECT_FALSE(DoesEntityTypeSupportAffiliations(EntityType(name)));
+  }
+}
+
+TEST_F(AutofillEntityInstanceTest, IsAffiliatedWithUrl) {
+  const EntityInstance order =
+      test::GetOrderEntityInstance({.merchant_domain = u"amazon.com"});
+  EXPECT_TRUE(order.IsAffiliatedWithUrl(GURL("https://amazon.com/orders")));
+  EXPECT_TRUE(
+      order.IsAffiliatedWithUrl(GURL("https://shop.amazon.com/checkout")));
+  EXPECT_FALSE(order.IsAffiliatedWithUrl(GURL("https://bestbuy.com")));
+  EXPECT_FALSE(order.IsAffiliatedWithUrl(GURL()));
+
+  const EntityInstance order_with_scheme =
+      test::GetOrderEntityInstance({.merchant_domain = u"https://amazon.com"});
+  EXPECT_TRUE(
+      order_with_scheme.IsAffiliatedWithUrl(GURL("https://amazon.com")));
+
+  const EntityInstance order_empty_domain =
+      test::GetOrderEntityInstance({.merchant_domain = u""});
+  EXPECT_FALSE(
+      order_empty_domain.IsAffiliatedWithUrl(GURL("https://amazon.com")));
+
+  const EntityInstance shipment =
+      test::GetShipmentEntityInstance({.carrier_domain = u"ups.com"});
+  EXPECT_TRUE(shipment.IsAffiliatedWithUrl(GURL("https://www.ups.com/track")));
+  EXPECT_FALSE(shipment.IsAffiliatedWithUrl(GURL("https://fedex.com/track")));
+
+  const EntityInstance passport = test::GetPassportEntityInstance();
+  EXPECT_FALSE(passport.IsAffiliatedWithUrl(GURL("https://example.com")));
+}
+
 }  // namespace
 }  // namespace autofill

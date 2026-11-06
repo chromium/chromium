@@ -25,12 +25,14 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -48,6 +50,7 @@
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace autofill {
 
@@ -67,6 +70,39 @@ constexpr char kWalletPrivatePassPageURL[] =
 
 constexpr char kWalletTransactionsPageURL[] =
     "https://wallet.google.com/wallet/transactions";
+
+// Returns a valid `GURL` parsed from a domain string. If no scheme is present
+// in `domain`, prepends "https://" to allow `GURL` to parse it and retrieve a
+// host.
+GURL GetGURLFromDomain(std::u16string_view domain) {
+  const std::string domain_str = base::UTF16ToUTF8(domain);
+  if (!domain_str.contains("://")) {
+    return GURL(base::StrCat(
+        {url::kHttpsScheme, url::kStandardSchemeSeparator, domain_str}));
+  }
+  return GURL(domain_str);
+}
+
+// Returns the `AttributeType` that defines the domain association for
+// domain-constrained entity types (e.g., `kOrder`, `kShipment`), or
+// `std::nullopt` if the entity type is not domain-constrained.
+constexpr std::optional<AttributeType> GetDomainAttributeType(EntityType type) {
+  switch (type.name()) {
+    case EntityTypeName::kOrder:
+      return AttributeType(AttributeTypeName::kOrderMerchantDomain);
+    case EntityTypeName::kShipment:
+      return AttributeType(AttributeTypeName::kShipmentCarrierDomain);
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kFlightReservation:
+      return std::nullopt;
+  }
+  return std::nullopt;
+}
 
 // Returns the normalized value of the `attribute`. If `suffix_length` is
 // provided, only the suffix of that length is returned.
@@ -769,6 +805,25 @@ bool EntityInstance::IsUnmaskedEntity() const {
              });
 }
 
+bool EntityInstance::IsAffiliatedWithUrl(const GURL& url) const {
+  std::optional<AttributeType> domain_attr_type =
+      GetDomainAttributeType(type());
+  if (!domain_attr_type) {
+    return false;
+  }
+  base::optional_ref<const AttributeInstance> domain_attr =
+      attribute(*domain_attr_type);
+  if (!domain_attr) {
+    return false;
+  }
+  const std::u16string domain_val = domain_attr->GetCompleteRawInfo();
+  if (domain_val.empty()) {
+    return false;
+  }
+  return affiliations::IsExtendedPublicSuffixDomainMatch(
+      GetGURLFromDomain(domain_val), url, {});
+}
+
 EntityInstance EntityInstance::CopyWithNewEntityId(EntityId id) const {
   EntityInstance new_instance = *this;
   new_instance.metadata_.guid = std::move(id);
@@ -890,6 +945,10 @@ bool EntityInstance::FrecencyOrder::operator()(
 
   return std::tuple(get_ranking_score(lhs), lhs.use_date()) >
          std::tuple(get_ranking_score(rhs), rhs.use_date());
+}
+
+bool DoesEntityTypeSupportAffiliations(EntityType type) {
+  return GetDomainAttributeType(type).has_value();
 }
 
 }  // namespace autofill

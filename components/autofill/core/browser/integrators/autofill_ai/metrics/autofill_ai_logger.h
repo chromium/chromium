@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -129,11 +130,19 @@ class AutofillAiLogger {
 
   // Records the key metrics for a single `funnel_state`. `entity_type` and
   // `record_type` can be `std::nullopt`, denoting that the metrics to be
-  // emitted should not be split by this information.
+  // emitted should not be split by this information. `suffix` is an optional
+  // suffix appended to the histogram name (e.g., ".Affiliated").
   void RecordKeyMetricsForState(
       FunnelState funnel_state,
       std::optional<EntityType> entity_type,
-      std::optional<EntityInstance::RecordType> record_type) const;
+      std::optional<EntityInstance::RecordType> record_type,
+      std::string_view suffix = "") const;
+
+  // Records the Autofill.Ai.KeyMetrics.*.*.Affiliated metrics of a submitted
+  // form for domain-constrained entity types, both per record type and
+  // aggregated across all record types.
+  void RecordAffiliatedKeyMetrics(
+      const FormFunnelStateMap& funnel_states) const;
 
   // Records FillingAcceptance for each record type in `funnel_states` whose
   // suggestions were shown, split by whether suggestions of only that record
@@ -184,10 +193,21 @@ class AutofillAiLogger {
                          &std::pair<const Key, FunnelState>::second);
   }
 
+  // Metadata about the entity that last filled a given field, used to attribute
+  // subsequent manual field edits to that entity.
+  struct FilledEntityInfo {
+    EntityType entity_type;
+    EntityInstance::RecordType record_type;
+    bool is_affiliated = false;
+  };
+
   // Records the funnel state for each form and entity type and record type
   // separately. See the documentation of `FunnelState` for more information
   // about what is recorded.
   std::map<FormGlobalId, FormFunnelStateMap> form_states_;
+
+  // Like `form_states_`, but restricted to URL-affiliated entities.
+  std::map<FormGlobalId, FormFunnelStateMap> affiliated_form_states_;
 
   // Records the personal context entities which were shown as suggestions for
   // each form. Used for entity suppression metrics.
@@ -200,14 +220,17 @@ class AutofillAiLogger {
   // this object.
   std::set<FormGlobalId> submitted_forms_;
 
-  // Records the last filled entity type and record type for each field. This
+  // Records metadata about the last filled entity for each field. This
   // information is currently unavailable in `AutofillField`, because
   // `AutofillField::filling_product_` isn't accurate enough when it comes to
   // AutofillAi entities, which are all aggregated into
   // `FillingProduct::kAutofillAi`.
   // TODO(crbug.com/432650464): Update this state on Undo operations.
-  std::map<FieldGlobalId, std::pair<EntityType, EntityInstance::RecordType>>
-      last_filled_entity_;
+  std::map<FieldGlobalId, FilledEntityInfo> last_filled_entity_;
+
+  // A raw reference to the client, which indirectly owns `this` (via
+  // `AutofillAiManager`) and therefore outlives it.
+  const raw_ref<const AutofillClient> client_;
 
   AutofillAiUkmLogger ukm_logger_;
   // This instance will outlive the object as it is a keyed service attached to

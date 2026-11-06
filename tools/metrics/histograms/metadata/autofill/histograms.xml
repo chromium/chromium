@@ -2159,6 +2159,50 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
+<histogram
+    name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityType}{EntityRecordType}.Affiliated{Profile}"
+    enum="Boolean" expires_after="2027-09-01">
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Similar to Autofill.Ai.KeyMetrics.*, but restricted to URL-affiliated
+    entities (e.g., orders whose merchant domain or shipments whose carrier
+    domain matches the primary main frame URL). Emitted at form submission for
+    eligible users.
+
+    {KeyMetric}
+
+    {EntityType}
+
+    {EntityRecordType}
+
+    {Profile}
+  </summary>
+  <token key="KeyMetric">
+    <variant name=".FillingAcceptance"
+        summary="Records, at form submission, and given that the user saw an
+                 affiliated Autofill AI suggestion, whether the user used an
+                 affiliated Autofill AI suggestion to fill the form or not."/>
+    <variant name=".FillingAssistance"
+        summary="Records, at form submission, whether the user used an
+                 affiliated Autofill AI suggestion to fill the form or not."/>
+    <variant name=".FillingCorrectness"
+        summary="Records, at form submission, and given that the user filled
+                 an affiliated Autofill AI suggestion, whether the user
+                 submitted the form without manually editing any field filled
+                 by an affiliated Autofill AI suggestion."/>
+    <variant name=".FillingReadiness"
+        summary="Records, at form submission, whether the user had an
+                 affiliated Autofill AI entity available to fill the form or
+                 not."/>
+  </token>
+  <token key="EntityType" variants="Autofill.Ai.EntityType"/>
+  <token key="EntityRecordType" variants="Autofill.Ai.EntityRecordType">
+    <variant name="" summary="Aggregated across all entity record types."/>
+  </token>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
 <histogram name="Autofill.Ai.ModelExecution.PiShadowPrediction"
     enum="AutofillAiModelExecutionPiShadowPrediction"
     expires_after="2027-05-02">

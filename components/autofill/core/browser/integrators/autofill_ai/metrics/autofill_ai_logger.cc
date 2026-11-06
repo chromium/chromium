@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
@@ -42,6 +43,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -117,7 +119,8 @@ bool IsMergeConstraintField(EntityType entity_type,
 }  // namespace
 
 AutofillAiLogger::AutofillAiLogger(AutofillClient* client)
-    : ukm_logger_(client),
+    : client_(CHECK_DEREF(client)),
+      ukm_logger_(client),
       profile_metrics_service_(CHECK_DEREF(client->GetProfileMetricsService())),
       entity_metadata_manager_(
           client->GetPersonalContextEntityMetadataManager()) {}
@@ -138,16 +141,29 @@ void AutofillAiLogger::OnFormHasDataToFill(
     FormGlobalId form_id,
     DenseSet<EntityType> form_relevant_entity_types,
     base::span<const EntityInstance> stored_entities) {
+  const GURL& main_frame_url = client_->GetLastCommittedPrimaryMainFrameURL();
   std::map<EntityInstance::RecordType, DenseSet<EntityType>>
       entity_types_by_record_type;
+  std::map<EntityInstance::RecordType, DenseSet<EntityType>>
+      affiliated_entity_types_by_record_type;
   for (const EntityInstance& entity : stored_entities) {
     entity_types_by_record_type[entity.record_type()].insert(entity.type());
+    if (entity.IsAffiliatedWithUrl(main_frame_url)) {
+      affiliated_entity_types_by_record_type[entity.record_type()].insert(
+          entity.type());
+    }
   }
   for (EntityType entity_type : form_relevant_entity_types) {
     for (EntityInstance::RecordType record_type :
          DenseSet<EntityInstance::RecordType>::all()) {
       form_states_[form_id][entity_type][record_type].has_data_to_fill =
           entity_types_by_record_type[record_type].contains(entity_type);
+      if (DoesEntityTypeSupportAffiliations(entity_type)) {
+        affiliated_form_states_[form_id][entity_type][record_type]
+            .has_data_to_fill =
+            affiliated_entity_types_by_record_type[record_type].contains(
+                entity_type);
+      }
     }
   }
 }
@@ -170,7 +186,13 @@ void AutofillAiLogger::OnSuggestionsShown(
                               record_type,
                               AutofillAiUkmLogger::EventType::kSuggestionShown);
   }
+  const GURL& main_frame_url = client_->GetLastCommittedPrimaryMainFrameURL();
   for (const EntityInstance* const entity : entities_suggested) {
+    if (entity->IsAffiliatedWithUrl(main_frame_url)) {
+      affiliated_form_states_[form.global_id()][entity->type()]
+                             [entity->record_type()]
+                                 .suggestions_shown = true;
+    }
     if (entity->record_type() == EntityInstance::RecordType::kPersonalContext) {
       personal_context_entities_shown_[form.global_id()].insert(*entity);
     }
@@ -184,6 +206,12 @@ void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
   form_states_[form.global_id()][entity_filled.type()]
               [entity_filled.record_type()]
                   .did_fill_suggestions = true;
+  if (entity_filled.IsAffiliatedWithUrl(
+          client_->GetLastCommittedPrimaryMainFrameURL())) {
+    affiliated_form_states_[form.global_id()][entity_filled.type()]
+                           [entity_filled.record_type()]
+                               .did_fill_suggestions = true;
+  }
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_filled.type(),
                             entity_filled.record_type(),
                             AutofillAiUkmLogger::EventType::kSuggestionFilled);
@@ -192,17 +220,22 @@ void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
 void AutofillAiLogger::OnEditedAutofilledField(const FormStructure& form,
                                                const AutofillField& field,
                                                ukm::SourceId ukm_source_id) {
-  const std::pair<EntityType, EntityInstance::RecordType>* last_filled_entity =
+  const FilledEntityInfo* last_filled_entity =
       base::FindOrNull(last_filled_entity_, field.global_id());
   if (!last_filled_entity) {
     return;
   }
-  const auto& [entity_type, entity_record_type] = *last_filled_entity;
+  const auto& [entity_type, entity_record_type, is_affiliated] =
+      *last_filled_entity;
   FunnelState& state =
       form_states_[form.global_id()][entity_type][entity_record_type];
   state.edited_autofilled_field = true;
   if (IsMergeConstraintField(entity_type, field)) {
     state.edited_merge_constraint_field = true;
+  }
+  if (is_affiliated) {
+    affiliated_form_states_[form.global_id()][entity_type][entity_record_type]
+        .edited_autofilled_field = true;
   }
   ukm_logger_.LogFieldEvent(
       ukm_source_id, form, field, entity_type, entity_record_type,
@@ -215,7 +248,10 @@ void AutofillAiLogger::OnDidFillField(const FormStructure& form,
                                       ukm::SourceId ukm_source_id) {
   last_filled_entity_.insert_or_assign(
       field.global_id(),
-      std::pair(entity_filled.type(), entity_filled.record_type()));
+      FilledEntityInfo{.entity_type = entity_filled.type(),
+                       .record_type = entity_filled.record_type(),
+                       .is_affiliated = entity_filled.IsAffiliatedWithUrl(
+                           client_->GetLastCommittedPrimaryMainFrameURL())});
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_filled.type(),
                             entity_filled.record_type(),
                             AutofillAiUkmLogger::EventType::kFieldFilled);
@@ -274,6 +310,7 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
     }
     if (opt_in_status || IsAutofillAiDefaultAvailabilityEnabled()) {
       RecordKeyMetrics(funnel_states);
+      RecordAffiliatedKeyMetrics(affiliated_form_states_[form.global_id()]);
     }
   }
   RecordFunnelMetrics(funnel_states, submission_state);
@@ -392,22 +429,40 @@ void AutofillAiLogger::RecordFillingAcceptanceBySuggestionMix(
 void AutofillAiLogger::RecordKeyMetricsForState(
     FunnelState funnel_state,
     std::optional<EntityType> entity_type,
-    std::optional<EntityInstance::RecordType> record_type) const {
+    std::optional<EntityInstance::RecordType> record_type,
+    std::string_view suffix) const {
   LogKeyMetric("FillingReadiness", entity_type, record_type,
-               funnel_state.has_data_to_fill, *profile_metrics_service_);
+               funnel_state.has_data_to_fill, *profile_metrics_service_,
+               suffix);
   LogKeyMetric("FillingAssistance", entity_type, record_type,
-               funnel_state.did_fill_suggestions, *profile_metrics_service_);
+               funnel_state.did_fill_suggestions, *profile_metrics_service_,
+               suffix);
   if (funnel_state.suggestions_shown) {
     LogKeyMetric("FillingAcceptance", entity_type, record_type,
-                 funnel_state.did_fill_suggestions, *profile_metrics_service_);
+                 funnel_state.did_fill_suggestions, *profile_metrics_service_,
+                 suffix);
   }
   if (funnel_state.did_fill_suggestions) {
     LogKeyMetric("FillingCorrectness", entity_type, record_type,
                  !funnel_state.edited_autofilled_field,
-                 *profile_metrics_service_);
-    if (record_type == EntityInstance::RecordType::kPersonalContext) {
+                 *profile_metrics_service_, suffix);
+    if (suffix.empty() &&
+        record_type == EntityInstance::RecordType::kPersonalContext) {
       LogPersonalContextFillingCorrectnessMergeConstraints(
           entity_type, !funnel_state.edited_merge_constraint_field);
+    }
+  }
+}
+
+void AutofillAiLogger::RecordAffiliatedKeyMetrics(
+    const FormFunnelStateMap& funnel_states) const {
+  for (const auto& [entity_type, states] : funnel_states) {
+    RecordKeyMetricsForState(CombineStates(states), entity_type,
+                             /*record_type=*/std::nullopt,
+                             /*suffix=*/".Affiliated");
+    for (const auto& [record_type, state] : states) {
+      RecordKeyMetricsForState(state, entity_type, record_type,
+                               /*suffix=*/".Affiliated");
     }
   }
 }

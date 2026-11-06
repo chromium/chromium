@@ -589,6 +589,12 @@ class EntityInstance final {
   // must never be persisted to disk.
   bool IsUnmaskedEntity() const;
 
+  // Returns whether the entity's domain attribute (e.g., merchant domain for
+  // orders or carrier domain for shipments) matches `url` via extended public
+  // suffix domain matching. Returns `false` if the entity type is not
+  // domain-constrained or if the domain attribute is missing or empty.
+  bool IsAffiliatedWithUrl(const GURL& url) const;
+
   // Returns a copy of `this` with a new `id`.
   EntityInstance CopyWithNewEntityId(EntityId id) const;
 
@@ -697,6 +703,10 @@ constexpr EntityInstance::PersonalContextSpiiType GetPersonalContextSpiiType(
 
   return EntityInstance::PersonalContextSpiiType::kUnsupported;
 }
+
+// Returns whether `type` supports URL affiliations (e.g., `kOrder`,
+// `kShipment`).
+bool DoesEntityTypeSupportAffiliations(EntityType type);
 
 }  // namespace autofill
 

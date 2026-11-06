@@ -42,7 +42,6 @@
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
@@ -78,7 +77,6 @@
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#include "url/url_constants.h"
 
 namespace autofill {
 namespace {
@@ -921,38 +919,6 @@ std::vector<const EntityInstance*> OrderedEntitiesForSuggestion(
   return entities;
 }
 
-// Returns a valid GURL parsed from a domain string. If no scheme is present in
-// `domain`, prepends "https://" to allow GURL to parse it and retrieve a host.
-GURL GetGURLFromDomain(std::u16string_view domain) {
-  const std::string domain_str = base::UTF16ToUTF8(domain);
-  if (!domain_str.contains("://")) {
-    return GURL(base::StrCat(
-        {url::kHttpsScheme, url::kStandardSchemeSeparator, domain_str}));
-  }
-  return GURL(domain_str);
-}
-
-// Returns the domain-specific AttributeType for domain-constrained entity types
-// (e.g., kOrder, kShipment), or std::nullopt if the entity type is not
-// domain-constrained.
-std::optional<AttributeType> GetDomainFilterAttributeType(
-    const EntityType& type) {
-  switch (type.name()) {
-    case EntityTypeName::kOrder:
-      return AttributeType(AttributeTypeName::kOrderMerchantDomain);
-    case EntityTypeName::kShipment:
-      return AttributeType(AttributeTypeName::kShipmentCarrierDomain);
-    case EntityTypeName::kPassport:
-    case EntityTypeName::kDriversLicense:
-    case EntityTypeName::kVehicle:
-    case EntityTypeName::kNationalIdCard:
-    case EntityTypeName::kKnownTravelerNumber:
-    case EntityTypeName::kRedressNumber:
-    case EntityTypeName::kFlightReservation:
-      return std::nullopt;
-  }
-}
-
 // Returns whether the `entity` is allowed to be suggested as a primary
 // suggestion for `trigger_field_origin` on `client`.
 // For domain-constrained entity types (such as `kOrder` or `kShipment`), this
@@ -962,26 +928,14 @@ std::optional<AttributeType> GetDomainFilterAttributeType(
 bool IsAllowedForPageUrl(const EntityInstance& entity,
                          const AutofillClient& client,
                          const url::Origin& trigger_field_origin) {
-  std::optional<AttributeType> domain_attr_type =
-      GetDomainFilterAttributeType(entity.type());
-  if (!domain_attr_type) {
+  if (!DoesEntityTypeSupportAffiliations(entity.type())) {
     return true;
   }
   if (client.GetLastCommittedPrimaryMainFrameOrigin() != trigger_field_origin) {
     return false;
   }
-  base::optional_ref<const AttributeInstance> domain_attr =
-      entity.attribute(*domain_attr_type);
-  if (!domain_attr) {
-    return false;
-  }
-  const std::u16string domain_val = domain_attr->GetCompleteRawInfo();
-  if (domain_val.empty()) {
-    return false;
-  }
-  return affiliations::IsExtendedPublicSuffixDomainMatch(
-      GetGURLFromDomain(domain_val),
-      client.GetLastCommittedPrimaryMainFrameURL(), {});
+  return entity.IsAffiliatedWithUrl(
+      client.GetLastCommittedPrimaryMainFrameURL());
 }
 
 std::vector<const EntityInstance*> GetEntitiesForSuggestion(
