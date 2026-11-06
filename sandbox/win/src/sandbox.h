@@ -72,6 +72,11 @@ class [[clang::lto_visibility_public]] BrokerServices {
       std::unique_ptr<BrokerServicesDelegate> delegate,
       std::unique_ptr<BrokerServicesTargetTracker> target_tracker) = 0;
 
+  // Stops accepting launches and cancels pending launch callbacks without
+  // waiting for process creation. Must run once on the SpawnTargetAsync()
+  // calling sequence before the broker is destroyed.
+  virtual void Shutdown() = 0;
+
   // Pre-creates an alternate desktop. Must be called before a non-default
   // desktop is used by any process.
   [[nodiscard]] virtual ResultCode CreateAlternateDesktop(Desktop desktop) = 0;
@@ -123,7 +128,11 @@ class [[clang::lto_visibility_public]] BrokerServices {
   //     process handle and PID just as if CreateProcess() had been called. The
   //     caller is responsible for closing the handles returned in this
   //     structure.
-  // Target creation happens on the thread pool.
+  // Target creation happens on the thread pool. Callbacks run on the calling
+  // sequence. Multiple launches may be in flight, and callbacks are not
+  // guaranteed to run in submission order.
+  // Calls after Shutdown() fail with SBOX_ERROR_UNEXPECTED_CALL and
+  // ERROR_SHUTDOWN_IN_PROGRESS.
   virtual void SpawnTargetAsync(const base::CommandLine& command_line,
                                 std::unique_ptr<TargetPolicy> policy,
                                 SpawnTargetCallback result_callback) = 0;
@@ -265,15 +274,12 @@ struct [[clang::lto_visibility_public]] CreateTargetResult {
 class [[clang::lto_visibility_public]] BrokerServicesDelegate {
  public:
   // This method runs `task` on the thread pool, then runs `reply` on the
-  // calling sequence with the returned CreateTargetResult.
+  // calling sequence with the returned CreateTargetResult. The task must own
+  // its inputs and may outlive the broker; Shutdown() may cancel the reply.
   virtual void ParallelLaunchPostTaskAndReplyWithResult(
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,
-      base::OnceCallback<void(CreateTargetResult)> reply) = 0;
-  // Called before a target process is created. This will be called on the
-  // thread pool.
-  virtual void BeforeTargetProcessCreateOnCreationThread() = 0;
-
+      base::OnceCallback<void(CreateTargetResult)> reply);
   // Record error histograms when CreateThreadAction IPC failed to create a
   // thread in the target process.
   virtual void OnCreateThreadActionCreateFailure(DWORD last_error) = 0;

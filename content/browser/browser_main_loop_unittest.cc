@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/execution_fence.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
@@ -111,6 +112,9 @@ class BrowserMainLoopTest : public testing::Test {
   }
 
  private:
+  // Reset cached runners after the ThreadPool has been destroyed.
+  base::internal::ScopedLazyTaskRunnerListForTesting
+      scoped_lazy_task_runner_list_;
   base::test::ScopedCommandLine scoped_command_line_;
 };  // namespace content
 

@@ -24,7 +24,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -152,23 +151,9 @@ std::wstring MakePathToSys(std::wstring_view name, bool is_obj_man_path) {
              : MakePathToSys32(name, is_obj_man_path);
 }
 
-// This delegate is required for initializing BrokerServices and configures it
-// to use synchronous launching.
+// This delegate is required for initializing BrokerServices.
 class TestBrokerServicesDelegateImpl : public BrokerServicesDelegate {
  public:
-  void ParallelLaunchPostTaskAndReplyWithResult(
-      const base::Location& from_here,
-      base::OnceCallback<CreateTargetResult()> task,
-      base::OnceCallback<void(CreateTargetResult)> reply) override {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        from_here,
-        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-        std::move(task), std::move(reply));
-  }
-
-  void BeforeTargetProcessCreateOnCreationThread() override {}
-
   void OnCreateThreadActionCreateFailure(DWORD last_error) override {}
   void OnCreateThreadActionDuplicateFailure(DWORD last_error) override {}
 };

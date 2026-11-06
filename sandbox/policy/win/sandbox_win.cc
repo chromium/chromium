@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -42,7 +43,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
@@ -847,19 +847,6 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
 
 class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
  public:
-  void ParallelLaunchPostTaskAndReplyWithResult(
-      const base::Location& from_here,
-      base::OnceCallback<CreateTargetResult()> task,
-      base::OnceCallback<void(CreateTargetResult)> reply) override {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        from_here,
-        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-        std::move(task), std::move(reply));
-  }
-
-  void BeforeTargetProcessCreateOnCreationThread() override {}
-
   void OnCreateThreadActionCreateFailure(DWORD last_error) override {
     UMA_HISTOGRAM_SPARSE(
         "Process.Sandbox.IPC.ThreadCreateRemoteThreadErrorCode", last_error);
@@ -908,6 +895,16 @@ bool SandboxWin::InitBrokerServices(BrokerServices* broker_services) {
 #endif
 
   return SBOX_ALL_OK == init_result;
+}
+
+// static
+void SandboxWin::ShutdownBrokerServices() {
+  if (!g_broker_services) {
+    // BrowserMainLoop unit tests can shut down without initializing a broker.
+    CHECK_IS_TEST();
+    return;
+  }
+  g_broker_services->Shutdown();
 }
 
 // static

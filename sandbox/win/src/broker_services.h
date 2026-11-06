@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -55,6 +56,7 @@ class BrokerServicesBase final : public BrokerServices,
   ResultCode InitForTesting(
       std::unique_ptr<BrokerServicesDelegate> delegate,
       std::unique_ptr<BrokerServicesTargetTracker> target_tracker) override;
+  void Shutdown() override;
   ResultCode CreateAlternateDesktop(Desktop desktop) override;
   void DestroyDesktops() override;
   std::unique_ptr<TargetPolicy> CreatePolicy() override;
@@ -91,9 +93,10 @@ class BrokerServicesBase final : public BrokerServices,
       std::pair<std::unique_ptr<StartupInformationHelper>, TargetTokens>;
 
   // Creates the suspended target process and returns the new process handle in
-  // the result.
-  CreateTargetResult CreateTarget(base::CommandLine cmd_line,
-                                  CreateTargetInfo target_info);
+  // the result. Must not access broker state: this task can outlive the broker
+  // during shutdown.
+  static CreateTargetResult CreateTarget(base::CommandLine cmd_line,
+                                         CreateTargetInfo target_info);
 
   // Helper for initializing the CreateTargetInfo for CreateTarget.
   base::expected<CreateTargetInfo, ResultCode> PreSpawnTarget(
@@ -105,9 +108,7 @@ class BrokerServicesBase final : public BrokerServices,
                             std::unique_ptr<PolicyBase> policy_base,
                             SpawnTargetCallback result_callback);
 
-  // This function is a wrapper for FinishSpawnTargetImpl and gets called after
-  // the target process is created. This function is responsible for running
-  // `result_callback` to return the process information.
+  // Finishes target setup and invokes the result callback.
   void FinishSpawnTarget(std::unique_ptr<PolicyBase> policy_base,
                          SpawnTargetCallback result_callback,
                          CreateTargetResult target_result);
@@ -141,6 +142,13 @@ class BrokerServicesBase final : public BrokerServices,
 
   // Provides configuration for using parallel or synchronous process launching.
   std::unique_ptr<BrokerServicesDelegate> broker_services_delegate_;
+
+  // Accessed only on the SpawnTargetAsync() calling sequence.
+  bool is_shutdown_ = false;
+
+  // Shutdown() dooms the factory on the launch sequence before CRT teardown
+  // destroys the broker, potentially on a different thread.
+  base::WeakPtrFactory<BrokerServicesBase> weak_factory_{this};
 };
 
 }  // namespace sandbox

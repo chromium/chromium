@@ -218,7 +218,9 @@
 #include <commctrl.h>
 #include <shellapi.h>
 
+#include "content/public/browser/child_process_launcher_utils.h"
 #include "net/base/winsock_init.h"
+#include "sandbox/policy/win/sandbox_win.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1365,6 +1367,15 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
   }
 
   GetContentClient()->browser()->ThreadPoolWillTerminate();
+#if BUILDFLAG(IS_WIN)
+  // Cancel launch replies on their origin sequence before broker teardown.
+  // Process creation runs on a separate worker, so cancellation does not wait
+  // for it or unblock a stalled launcher task. The launcher runner still blocks
+  // ThreadPool shutdown, ordering cancellation before CRT teardown.
+  CHECK(GetProcessLauncherTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&sandbox::policy::SandboxWin::ShutdownBrokerServices)));
+#endif
   {
     TRACE_EVENT0("shutdown", "BrowserMainLoop::Subsystem:ThreadPool");
     base::ThreadPoolInstance::Get()->Shutdown();

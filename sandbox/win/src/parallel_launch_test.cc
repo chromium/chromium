@@ -7,14 +7,29 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
+#include "base/process/process.h"
 #include "base/process/process_info.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/scoped_process_information.h"
 #include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -29,15 +44,24 @@ class TestBrokerServicesDelegateBase : public BrokerServicesDelegate {
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,
       base::OnceCallback<void(CreateTargetResult)> reply) override {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        from_here,
-        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-        std::move(task), std::move(reply));
+    BrokerServicesDelegate::ParallelLaunchPostTaskAndReplyWithResult(
+        from_here, WrapCreationTask(std::move(task)), std::move(reply));
   }
 
   void OnCreateThreadActionCreateFailure(DWORD last_error) override {}
   void OnCreateThreadActionDuplicateFailure(DWORD last_error) override {}
+
+  virtual void BeforeTargetProcessCreateOnCreationThread() {}
+
+ protected:
+  virtual base::OnceCallback<CreateTargetResult()> WrapCreationTask(
+      base::OnceCallback<CreateTargetResult()> task) {
+    // Existing launch tests keep their delegate alive until the reply runs.
+    return base::BindOnce(&TestBrokerServicesDelegateBase::
+                              BeforeTargetProcessCreateOnCreationThread,
+                          base::Unretained(this))
+        .Then(std::move(task));
+  }
 };
 
 class ParallelLaunchTest : public testing::Test {
@@ -226,6 +250,109 @@ TEST_F(ParallelLaunchTest, ParallelLaunch) {
   ::WaitForMultipleObjects(2, handles, /*bWaitAll=*/TRUE, INFINITE);
 }
 
+namespace {
+
+struct ShutdownLaunchState {
+  base::WaitableEvent creation_started;
+  base::WaitableEvent release_creation;
+  base::WaitableEvent creation_completed;
+  base::WaitableEvent reply_called;
+  base::win::ScopedProcessInformation target;
+  base::WaitableEvent broker_destroyed;
+};
+
+using RefCountedShutdownLaunchState = base::RefCountedData<ShutdownLaunchState>;
+
+class ShutdownLaunchBrokerServicesDelegate
+    : public TestBrokerServicesDelegateBase {
+ public:
+  explicit ShutdownLaunchBrokerServicesDelegate(
+      scoped_refptr<RefCountedShutdownLaunchState> state)
+      : state_(std::move(state)) {}
+
+ protected:
+  base::OnceCallback<CreateTargetResult()> WrapCreationTask(
+      base::OnceCallback<CreateTargetResult()> task) override {
+    // The delegate and broker will be destroyed while this callback is blocked.
+    // Neither the blocking state nor the wrapper may depend on their lifetime.
+    return base::BindOnce(
+        [](scoped_refptr<RefCountedShutdownLaunchState> state,
+           base::OnceCallback<CreateTargetResult()> task) {
+          base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+          state->data.creation_started.Signal();
+          CHECK(state->data.release_creation.TimedWait(
+              TestTimeouts::action_max_timeout()));
+
+          CreateTargetResult result = std::move(task).Run();
+          CHECK_EQ(SBOX_ALL_OK, result.result_code);
+          CHECK(result.process_info.IsValid());
+          CHECK(state->data.target.DuplicateFrom(result.process_info));
+          state->data.creation_completed.Signal();
+          return result;
+        },
+        state_, std::move(task));
+  }
+
+ private:
+  scoped_refptr<RefCountedShutdownLaunchState> state_;
+};
+
+}  // namespace
+
+TEST_F(ParallelLaunchTest, ShutdownCancelsReplyOnLiveOrigin) {
+  auto state = base::MakeRefCounted<RefCountedShutdownLaunchState>();
+  auto broker = std::make_unique<BrokerServicesBase>();
+  ASSERT_EQ(SBOX_ALL_OK,
+            broker->Init(
+                std::make_unique<ShutdownLaunchBrokerServicesDelegate>(state)));
+  base::Thread teardown_thread("SandboxBrokerTeardown");
+  ASSERT_TRUE(teardown_thread.Start());
+  base::ScopedClosureRunner release_creation(base::BindOnce(
+      [](scoped_refptr<RefCountedShutdownLaunchState> state) {
+        state->data.release_creation.Signal();
+      },
+      state));
+
+  auto policy = broker->CreatePolicy("shutdown-test");
+  ASSERT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
+                                                            USER_LOCKDOWN));
+  base::test::TestFuture<void> reply_destroyed;
+  broker->SpawnTargetAsync(
+      WaitCommandTestRunner::CreateCommandLineForTesting(), std::move(policy),
+      base::BindOnce(
+          [](scoped_refptr<RefCountedShutdownLaunchState> state,
+             base::ScopedClosureRunner signal_reply_destroyed,
+             base::win::ScopedProcessInformation target, DWORD last_error,
+             ResultCode result) { state->data.reply_called.Signal(); },
+          state, base::ScopedClosureRunner(reply_destroyed.GetCallback())));
+  ASSERT_TRUE(
+      state->data.creation_started.TimedWait(TestTimeouts::action_timeout()));
+  broker->Shutdown();
+  ASSERT_TRUE(teardown_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::unique_ptr<BrokerServicesBase> broker,
+                        scoped_refptr<RefCountedShutdownLaunchState> state) {
+                       broker.reset();
+                       state->data.broker_destroyed.Signal();
+                     },
+                     std::move(broker), state)));
+  ASSERT_TRUE(
+      state->data.broker_destroyed.TimedWait(TestTimeouts::action_timeout()));
+
+  release_creation.RunAndReset();
+  ASSERT_TRUE(
+      state->data.creation_completed.TimedWait(TestTimeouts::action_timeout()));
+  ASSERT_TRUE(reply_destroyed.Wait());
+  EXPECT_FALSE(state->data.reply_called.IsSignaled());
+
+  base::Process target(state->data.target.TakeProcessHandle());
+  ASSERT_TRUE(target.IsValid());
+  if (!target.WaitForExitWithTimeout(TestTimeouts::action_timeout(), nullptr)) {
+    EXPECT_TRUE(target.Terminate(1, /*wait=*/true));
+    FAIL() << "Cancelled reply did not release the target's job";
+  }
+}
+
 TEST_F(ParallelLaunchTest, SharedConfigOutlivesBroker) {
   std::optional<BrokerServicesBase> broker(std::in_place);
   auto first_policy = broker->CreatePolicy("shared-config-test");
@@ -235,12 +362,69 @@ TEST_F(ParallelLaunchTest, SharedConfigOutlivesBroker) {
   auto second_policy = broker->CreatePolicy("shared-config-test");
   ASSERT_EQ(first_policy->GetConfig(), second_policy->GetConfig());
 
+  broker->Shutdown();
   broker.reset();
   first_policy.reset();
 
   EXPECT_TRUE(second_policy->GetConfig()->IsConfigured());
   EXPECT_TRUE(
       static_cast<PolicyBase*>(second_policy.get())->MakeTokens().has_value());
+}
+
+TEST(ParallelLaunchDeathTest, ShutdownCalledTwice) {
+  BrokerServicesBase broker;
+  broker.Shutdown();
+  EXPECT_CHECK_DEATH_WITH(broker.Shutdown(), "!is_shutdown_");
+}
+
+TEST_F(ParallelLaunchTest, ShutdownRejectsNewLaunches) {
+  BrokerServicesBase broker;
+  ASSERT_EQ(SBOX_ALL_OK,
+            broker.Init(std::make_unique<TestBrokerServicesDelegateBase>()));
+  broker.Shutdown();
+  base::test::TestFuture<base::win::ScopedProcessInformation, DWORD, ResultCode>
+      result;
+  broker.SpawnTargetAsync(WaitCommandTestRunner::CreateCommandLineForTesting(),
+                          broker.CreatePolicy(), result.GetCallback());
+  ASSERT_TRUE(result.IsReady());
+  auto [process_info, last_error, result_code] = result.Take();
+  EXPECT_FALSE(process_info.IsValid());
+  EXPECT_EQ(static_cast<DWORD>(ERROR_SHUTDOWN_IN_PROGRESS), last_error);
+  EXPECT_EQ(SBOX_ERROR_UNEXPECTED_CALL, result_code);
+}
+
+TEST_F(ParallelLaunchTest, ShutdownCancelsQueuedReply) {
+  auto state = base::MakeRefCounted<RefCountedShutdownLaunchState>();
+  BrokerServicesBase broker;
+  ASSERT_EQ(SBOX_ALL_OK,
+            broker.Init(
+                std::make_unique<ShutdownLaunchBrokerServicesDelegate>(state)));
+  auto policy = broker.CreatePolicy("queued-shutdown-test");
+  ASSERT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
+                                                            USER_LOCKDOWN));
+  base::test::TestFuture<void> reply_destroyed;
+  broker.SpawnTargetAsync(
+      WaitCommandTestRunner::CreateCommandLineForTesting(), std::move(policy),
+      base::BindOnce(
+          [](scoped_refptr<RefCountedShutdownLaunchState> state,
+             base::ScopedClosureRunner signal_reply_destroyed,
+             base::win::ScopedProcessInformation target, DWORD last_error,
+             ResultCode result) { state->data.reply_called.Signal(); },
+          state, base::ScopedClosureRunner(reply_destroyed.GetCallback())));
+  state->data.release_creation.Signal();
+  // The worker has posted the reply, but the origin has not dispatched it.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  ASSERT_TRUE(state->data.creation_completed.IsSignaled());
+  broker.Shutdown();
+  ASSERT_TRUE(reply_destroyed.Wait());
+  EXPECT_FALSE(state->data.reply_called.IsSignaled());
+
+  base::Process target(state->data.target.TakeProcessHandle());
+  ASSERT_TRUE(target.IsValid());
+  if (!target.WaitForExitWithTimeout(TestTimeouts::action_timeout(), nullptr)) {
+    EXPECT_TRUE(target.Terminate(1, /*wait=*/true));
+    FAIL() << "Cancelled reply did not release the target's job";
+  }
 }
 
 }  // namespace sandbox

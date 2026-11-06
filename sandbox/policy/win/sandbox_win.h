@@ -90,8 +90,8 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
   // sandbox policy.
   //
   // If SBOX_ALL_OK is returned, then `result_callback` will be called with the
-  // process creation result. Otherwise, returns one of sandbox::ResultCode for
-  // any other error.
+  // process creation result unless ShutdownBrokerServices() cancels the launch.
+  // Otherwise, returns one of sandbox::ResultCode for any other error.
   static ResultCode StartSandboxedProcess(
       const base::CommandLine& cmd_line,
       const base::HandlesToInheritVector& handles_to_inherit,
@@ -144,6 +144,10 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
       sandbox::mojom::Sandbox sandbox_type);
 
   static bool InitBrokerServices(BrokerServices* broker_services);
+  // Cancels pending sandbox launch callbacks without waiting for creation.
+  // Must run once on the StartSandboxedProcess() calling sequence before
+  // teardown.
+  static void ShutdownBrokerServices();
   static bool InitTargetServices(TargetServices* target_services);
 
   // Report diagnostic information about policies applied to sandboxed
