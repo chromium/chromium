@@ -1145,6 +1145,49 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionAriaAction) {
   g_object_unref(root_obj);
 }
 
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionAriaActionMissingTarget) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kActionsIds, {3});
+
+  Init(root);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  ASSERT_TRUE(ATK_IS_ACTION(root_obj));
+  g_object_ref(root_obj);
+
+  EXPECT_EQ(3, atk_action_get_n_actions(ATK_ACTION(root_obj)));
+  EXPECT_FALSE(atk_action_do_action(ATK_ACTION(root_obj), 2));
+  EXPECT_EQ(nullptr, atk_action_get_name(ATK_ACTION(root_obj), 2));
+  EXPECT_EQ(nullptr, atk_action_get_localized_name(ATK_ACTION(root_obj), 2));
+
+  g_object_unref(root_obj);
+}
+
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionNegativeIndex) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kSlider;
+  root.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+  root.AddAction(ax::mojom::Action::kDecrement);
+  root.AddAction(ax::mojom::Action::kIncrement);
+  Init(root);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  ASSERT_TRUE(ATK_IS_ACTION(root_obj));
+  g_object_ref(root_obj);
+
+  EXPECT_EQ(nullptr, atk_action_get_name(ATK_ACTION(root_obj), -1));
+  EXPECT_EQ(nullptr, atk_action_get_localized_name(ATK_ACTION(root_obj), -1));
+  EXPECT_EQ(nullptr, atk_action_get_description(ATK_ACTION(root_obj), -1));
+  EXPECT_EQ(nullptr, atk_action_get_keybinding(ATK_ACTION(root_obj), -1));
+
+  g_object_unref(root_obj);
+}
+
 //
 // AtkValue tests
 //

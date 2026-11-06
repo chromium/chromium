@@ -612,13 +612,14 @@ gint GetNActions(AtkAction* atk_action) {
 }
 
 const gchar* GetDescription(AtkAction*, gint) {
-  // Not implemented. Right now Orca does not provide this and
-  // Chromium is not providing a string for the action description.
+  // Not implemented. Orca presents action descriptions when they are
+  // available, but Chromium does not have descriptions for actions.
   return nullptr;
 }
 
 const gchar* GetLocalizedName(AtkAction* atk_action, gint index) {
   g_return_val_if_fail(ATK_IS_ACTION(atk_action), nullptr);
+  g_return_val_if_fail(index >= 0, nullptr);
 
   AtkObject* atk_object = ATK_OBJECT(atk_action);
   AXPlatformNodeAuraLinux* obj =
@@ -633,7 +634,7 @@ const gchar* GetLocalizedName(AtkAction* atk_action, gint index) {
       obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   g_return_val_if_fail(
-      index < static_cast<gint>(actions.size() + aria_actions.size()), FALSE);
+      index < static_cast<gint>(actions.size() + aria_actions.size()), nullptr);
 
   // Localized name is only specified for aria-actions, not for Blink actions.
   if (index < static_cast<gint>(actions.size())) {
@@ -645,6 +646,9 @@ const gchar* GetLocalizedName(AtkAction* atk_action, gint index) {
   // subtract the number of Blink actions.
   int32_t aria_action_id = aria_actions[index - actions.size()];
   AXPlatformNodeAuraLinux* aria_action_obj = obj->GetFromNodeID(aria_action_id);
+  if (!aria_action_obj) {
+    return nullptr;
+  }
 
   aria_action_obj->accessible_name_ = aria_action_obj->GetName();
   return aria_action_obj->accessible_name_.c_str();
@@ -652,6 +656,7 @@ const gchar* GetLocalizedName(AtkAction* atk_action, gint index) {
 
 const gchar* GetName(AtkAction* atk_action, gint index) {
   g_return_val_if_fail(ATK_IS_ACTION(atk_action), nullptr);
+  g_return_val_if_fail(index >= 0, nullptr);
 
   AtkObject* atk_object = ATK_OBJECT(atk_action);
   AXPlatformNodeAuraLinux* obj =
@@ -665,7 +670,7 @@ const gchar* GetName(AtkAction* atk_action, gint index) {
       obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   g_return_val_if_fail(
-      index < static_cast<gint>(actions.size() + aria_actions.size()), FALSE);
+      index < static_cast<gint>(actions.size() + aria_actions.size()), nullptr);
 
   if (index == 0 && obj->GetDelegate()->HasDefaultActionVerb()) {
     // If there is a default action, it will always be at index 0.
@@ -682,6 +687,9 @@ const gchar* GetName(AtkAction* atk_action, gint index) {
   // subtract the number of Blink actions.
   int32_t aria_action_id = aria_actions[index - actions.size()];
   AXPlatformNodeAuraLinux* aria_action_obj = obj->GetFromNodeID(aria_action_id);
+  if (!aria_action_obj) {
+    return nullptr;
+  }
   std::string html_id =
       aria_action_obj->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
   if (html_id.empty()) {
