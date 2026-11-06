@@ -179,9 +179,8 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
 
     bool fingerprint_available = time_change < expiration_time;
 
-    LockScreen::TestApi lock_screen_test(LockScreen::Get());
     LockContentsViewTestApi lock_contents_test(
-        lock_screen_test.contents_view());
+        LockScreen::TestApi(LockScreen::Get()).contents_view());
     // Allow lock screen timer to be executed.
     base::RunLoop().RunUntilIdle();
 
@@ -277,8 +276,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, BiodFailsBeforeLockScreenReady) {
   ScreenLockerTester tester;
   tester.Lock();
 
-  LockScreen::TestApi lock_screen_test(LockScreen::Get());
-  LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
+  LockContentsViewTestApi lock_contents_test(
+      LockScreen::TestApi(LockScreen::Get()).contents_view());
 
   base::RunLoop().RunUntilIdle();
 

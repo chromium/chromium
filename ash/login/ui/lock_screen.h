@@ -37,7 +37,7 @@ class ASH_EXPORT LockScreen : public SessionObserver {
     void AddOnShownCallback(base::OnceClosure on_shown);
 
    private:
-    const raw_ptr<LockScreen, DanglingUntriaged> lock_screen_;
+    const raw_ptr<LockScreen> lock_screen_;
   };
 
   // The UI that this instance is displaying.
