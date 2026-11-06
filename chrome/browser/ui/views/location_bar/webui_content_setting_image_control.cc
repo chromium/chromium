@@ -187,6 +187,8 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
       }
 
       state.push_back(std::move(image_state));
+    } else if (last_tracked_bubble_type_ == model->image_type()) {
+      bubble_reopen_suppressor_.Close();
     }
   }
 

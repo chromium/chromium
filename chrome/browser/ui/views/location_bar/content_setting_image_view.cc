@@ -149,6 +149,9 @@ void ContentSettingImageView::Update() {
     ResetSlideAnimation(false);
     SetVisible(false);
     GetViewAccessibility().SetIsIgnored(true);
+    if (bubble_view_) {
+      bubble_view_->GetWidget()->Close();
+    }
     return;
   }
   CHECK(web_contents, base::NotFatalUntil::M162);

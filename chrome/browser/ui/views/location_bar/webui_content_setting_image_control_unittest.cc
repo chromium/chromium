@@ -15,12 +15,17 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/public/browser/page.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -94,14 +99,15 @@ class MockContentSettingImageModel : public FakeContentSettingImageModel {
 
 }  // namespace
 
-class WebUIContentSettingImageControlTest
-    : public ChromeRenderViewHostTestHarness {
+class WebUIContentSettingImageControlTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    ChromeViewsTestBase::SetUp();
 
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     delegate_ = std::make_unique<TestDelegate>();
-    delegate_->SetWebContents(web_contents());
+    delegate_->SetWebContents(web_contents_.get());
     control_ =
         std::make_unique<WebUIContentSettingImageControl>(delegate_.get());
   }
@@ -109,15 +115,25 @@ class WebUIContentSettingImageControlTest
   void TearDown() override {
     control_.reset();
     delegate_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    web_contents_.reset();
+    ChromeViewsTestBase::TearDown();
   }
 
+  content::WebContents* web_contents() { return web_contents_.get(); }
+
   void CloseBubble() { control_->bubble_reopen_suppressor_.CloseForTesting(); }
+  void ObserveBubbleWidget(views::Widget* widget, ImageType type) {
+    control_->bubble_reopen_suppressor_.Observe(widget);
+    control_->last_tracked_bubble_type_ = type;
+  }
   void SetCurrentBubbleType(std::optional<ImageType> type) {
     control_->last_tracked_bubble_type_ = type;
   }
 
  protected:
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  TestingProfile profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<TestDelegate> delegate_;
   std::unique_ptr<WebUIContentSettingImageControl> control_;
 };
@@ -569,4 +585,46 @@ TEST_F(WebUIContentSettingImageControlTest, IsContentSettingImageVisible) {
   delegate_->set_should_hide(true);
   control_->ProcessContentSettingState(web_contents());
   EXPECT_FALSE(control_->IsContentSettingImageVisible(0));
+}
+
+TEST_F(WebUIContentSettingImageControlTest, AutoCloseBubbleWhenHidden) {
+  std::vector<std::unique_ptr<ContentSettingImageModel>> models;
+  auto cookies_model_ptr = std::make_unique<FakeContentSettingImageModel>(
+      ImageType::kCookies, ContentSettingsType::COOKIES);
+  auto* cookies_model = cookies_model_ptr.get();
+  cookies_model->set_visible(true);
+  models.push_back(std::move(cookies_model_ptr));
+
+  auto notifications_model_ptr = std::make_unique<FakeContentSettingImageModel>(
+      ImageType::kNotifications, ContentSettingsType::NOTIFICATIONS);
+  auto* notifications_model = notifications_model_ptr.get();
+  notifications_model->set_visible(true);
+  models.push_back(std::move(notifications_model_ptr));
+
+  control_->InitForTesting(std::move(models));
+  control_->ProcessContentSettingState(web_contents());
+
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+
+  // Hiding one model does not close a different model's bubble.
+  ObserveBubbleWidget(widget.get(), ImageType::kCookies);
+  ASSERT_TRUE(control_->IsBubbleShowing(0));
+  notifications_model->set_visible(false);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_TRUE(control_->IsBubbleShowing(0));
+
+  // Hiding the model whose bubble is open closes that bubble.
+  notifications_model->set_visible(true);
+  control_->ProcessContentSettingState(web_contents());
+  ObserveBubbleWidget(widget.get(), ImageType::kNotifications);
+  ASSERT_TRUE(control_->IsBubbleShowing(1));
+
+  views::test::WidgetDestroyedWaiter bubble_destroyed_waiter(widget.get());
+  notifications_model->set_visible(false);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_TRUE(widget->IsClosed());
+  bubble_destroyed_waiter.Wait();
+  EXPECT_FALSE(control_->IsBubbleShowing(1));
 }

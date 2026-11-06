@@ -35,6 +35,7 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -70,6 +71,12 @@ class TestDelegate : public IconLabelBubbleView::Delegate,
   raw_ptr<content::WebContents> web_contents_;
 };
 
+class FakeBubbleModel : public ContentSettingBubbleModel {
+ public:
+  FakeBubbleModel(Delegate* delegate, content::Page& page)
+      : ContentSettingBubbleModel(delegate, page) {}
+};
+
 class FakeContentSettingImageModel : public ContentSettingSimpleImageModel {
  public:
   FakeContentSettingImageModel()
@@ -99,6 +106,12 @@ class FakeContentSettingImageModel : public ContentSettingSimpleImageModel {
           feature_engagement::kIPHPwaQuietNotificationFeature, *promo_key_));
     }
     return true;
+  }
+
+  std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
+      ContentSettingBubbleModel::Delegate* delegate,
+      content::Page& page) override {
+    return std::make_unique<FakeBubbleModel>(delegate, page);
   }
 
  private:
@@ -277,6 +290,21 @@ TEST_F(ContentSettingImageViewTest, SetIconColorWithColorVariantPreWidget) {
       unparented_view.GetImageModel(views::Button::STATE_NORMAL);
   ASSERT_TRUE(image_model.has_value());
   EXPECT_FALSE(image_model->IsEmpty());
+}
+
+TEST_F(ContentSettingImageViewTest, AutoCloseBubbleWhenHidden) {
+  auto [view, model] = AddContentSettingImageView();
+  model->set_visible(true);
+  view->Update();
+  ASSERT_TRUE(view->ShowBubbleImpl());
+  ASSERT_TRUE(view->IsBubbleShowing());
+
+  views::test::WidgetDestroyedWaiter bubble_destroyed_waiter(
+      view->GetBubbleWidget());
+  model->set_visible(false);
+  view->Update();
+  bubble_destroyed_waiter.Wait();
+  EXPECT_FALSE(view->IsBubbleShowing());
 }
 
 }  // namespace
