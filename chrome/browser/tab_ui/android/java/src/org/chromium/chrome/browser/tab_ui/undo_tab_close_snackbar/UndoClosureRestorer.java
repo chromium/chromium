@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.undo_tab_close_snackbar;
+package org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar;
 
 import android.content.Context;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.R;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;

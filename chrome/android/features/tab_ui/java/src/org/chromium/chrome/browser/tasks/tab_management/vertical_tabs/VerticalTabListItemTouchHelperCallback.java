@@ -33,6 +33,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.NestedTabReorderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListItemTouchHelperCa
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabMultiSelectHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.base.ViewUtils;

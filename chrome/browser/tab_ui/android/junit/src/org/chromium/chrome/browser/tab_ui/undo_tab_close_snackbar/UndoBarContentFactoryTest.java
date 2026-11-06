@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.undo_tab_close_snackbar;
+package org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -22,10 +22,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tab_ui.R;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
@@ -175,10 +176,7 @@ public class UndoBarContentFactoryTest {
                         mContext, snapshot, getRemaining(snapshot), Collections.emptySet());
         assertEquals(
                 mContext.getString(R.string.undo_bar_tab_group_deleted_message), content.template);
-        assertEquals(
-                mContext.getResources()
-                        .getQuantityString(R.plurals.bottom_tab_grid_title_placeholder, 2, 2),
-                content.content);
+        assertEquals(TabGroupTitleUtils.getDefaultTitle(mContext, 2), content.content);
     }
 
     @Test
@@ -200,10 +198,7 @@ public class UndoBarContentFactoryTest {
                         mContext, snapshot, getRemaining(snapshot), Collections.emptySet());
         assertEquals(
                 mContext.getString(R.string.undo_bar_tab_group_deleted_message), content.template);
-        assertEquals(
-                mContext.getResources()
-                        .getQuantityString(R.plurals.bottom_tab_grid_title_placeholder, 2, 2),
-                content.content);
+        assertEquals(TabGroupTitleUtils.getDefaultTitle(mContext, 2), content.content);
         assertEquals(Snackbar.UMA_TAB_GROUP_DELETE_UNDO, content.umaType);
     }
 
@@ -406,10 +401,7 @@ public class UndoBarContentFactoryTest {
                         mContext, snapshot, getRemaining(snapshot), Collections.emptySet());
         assertEquals(
                 mContext.getString(R.string.undo_bar_tab_group_closed_message), content.template);
-        assertEquals(
-                mContext.getResources()
-                        .getQuantityString(R.plurals.bottom_tab_grid_title_placeholder, 3, 3),
-                content.content);
+        assertEquals(TabGroupTitleUtils.getDefaultTitle(mContext, 3), content.content);
         assertEquals(Snackbar.UMA_TAB_GROUP_DELETE_UNDO, content.umaType);
     }
 

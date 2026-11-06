@@ -1,6 +1,9 @@
+# TODO(crbug.com/565320394): Test-only dependencies
 specific_include_rules = {
   "CloseAllTabsDialogTest\\.java": [
     "+chrome/browser/ui/android/appmenu/test",
-    "+chrome/browser/ui/messages/android",
+  ],
+  "UndoBarControllerTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
 }

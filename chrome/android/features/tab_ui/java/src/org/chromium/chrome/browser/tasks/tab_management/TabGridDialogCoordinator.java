@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
+import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.AnimationSourceViewProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
@@ -64,7 +65,6 @@ import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupCol
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerType;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabLabeller;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;

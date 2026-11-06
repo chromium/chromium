@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.undo_tab_close_snackbar;
+package org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1551,10 +1551,7 @@ public class UndoBarControllerTest {
             String actualEnd = actual.substring(index + 1);
             // End of the expected text should be present.
             String expectedEnd = expected.substring(expected.length() - actualEnd.length());
-            assertEquals(
-                    "Last part of truncated snackbar text mismatched",
-                    expectedEnd,
-                    actualEnd);
+            assertEquals("Last part of truncated snackbar text mismatched", expectedEnd, actualEnd);
         } else {
             assertEquals("Incorrect snackbar text", expected, actual);
         }

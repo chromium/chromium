@@ -55,9 +55,11 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
+import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.SavedTabGroupUndoBarController;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsIphMessageCardViewModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties;
@@ -91,7 +93,6 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.SavedTabGroupUndoBarController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
@@ -566,13 +567,16 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mDesktopWindowStateManager = desktopWindowStateManager;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
-        mArchivedTabModel =
-                assumeNonNull(mArchivedTabModelOrchestrator.getTabModelSelector())
-                        .getModel(/* incognito= */ false);
+        TabModelSelector archivedTabModelSelector =
+                assumeNonNull(mArchivedTabModelOrchestrator.getTabModelSelector());
+        mArchivedTabModel = archivedTabModelSelector.getModel(/* incognito= */ false);
         mUndoBarController =
                 new SavedTabGroupUndoBarController(
                         mActivity,
-                        mArchivedTabModelOrchestrator,
+                        archivedTabModelSelector,
+                        () ->
+                                mArchivedTabModelOrchestrator.acquireLease(
+                                        LeaseReason.ARCHIVED_TABS_DIALOG),
                         /* snackbarManageable= */ this,
                         tabGroupSyncService);
         mTabSwitcherView = tabSwitcherView;
@@ -622,7 +626,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             mTabListEditorCoordinator.getController().hide();
             tearDownTabListEditorCoordinator();
         }
-        mSnackbarManager.dismissSnackbars(mUndoBarController);
         mUndoBarController.destroy();
         hideInternal();
 

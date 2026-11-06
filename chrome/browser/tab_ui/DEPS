@@ -13,10 +13,12 @@ include_rules = [
   "+chrome/browser/sync/android",
   "+chrome/browser/tab",
   "+chrome/browser/tab_group_suggestion",
+  "+chrome/browser/tab_group_sync",
   "+chrome/browser/tabmodel",
   "+chrome/browser/tabwindow",
   "+chrome/browser/ui/android/favicon",
   "+chrome/browser/ui/android/layouts",
   "+chrome/browser/ui/android/native_page",
+  "+chrome/browser/ui/messages/android",
   "+chrome/browser/ui/vertical_tabs",
 ]

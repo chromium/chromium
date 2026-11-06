@@ -300,6 +300,8 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tab_ui.close_all_tabs.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tab_ui.close_all_tabs.CloseAllTabsHelper;
+import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.TabUndoBarController;
+import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
@@ -378,8 +380,6 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutSwitchEntryPoint;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.TabUndoBarController;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;

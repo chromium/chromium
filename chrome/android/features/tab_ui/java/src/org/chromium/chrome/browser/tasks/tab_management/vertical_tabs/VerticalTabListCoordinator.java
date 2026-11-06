@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.tab_ui.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
+import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.browser.tabmodel.NextTabSelectionUtil;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
@@ -111,7 +112,6 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;

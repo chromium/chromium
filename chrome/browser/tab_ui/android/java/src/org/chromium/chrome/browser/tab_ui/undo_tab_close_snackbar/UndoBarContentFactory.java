@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.undo_tab_close_snackbar;
+package org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -10,8 +10,9 @@ import android.text.TextUtils;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab_ui.R;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind;
@@ -149,12 +150,7 @@ final class UndoBarContentFactory {
                 String tabGroupTitle =
                         groupData != null && groupData.title != null ? groupData.title : "";
                 if (TextUtils.isEmpty(tabGroupTitle)) {
-                    tabGroupTitle =
-                            context.getResources()
-                                    .getQuantityString(
-                                            R.plurals.bottom_tab_grid_title_placeholder,
-                                            totalTabsCount,
-                                            totalTabsCount);
+                    tabGroupTitle = TabGroupTitleUtils.getDefaultTitle(context, totalTabsCount);
                 }
                 int templateRes;
                 if (isDeletingTabGroups) {
@@ -222,11 +218,8 @@ final class UndoBarContentFactory {
             if (tabGroupTitle != null) {
                 if (tabGroupTitle.isEmpty()) {
                     tabGroupTitle =
-                            context.getResources()
-                                    .getQuantityString(
-                                            R.plurals.bottom_tab_grid_title_placeholder,
-                                            snapshot.savedGroupTabCount,
-                                            snapshot.savedGroupTabCount);
+                            TabGroupTitleUtils.getDefaultTitle(
+                                    context, snapshot.savedGroupTabCount);
                 }
                 return new UndoBarContent(
                         snapshot,
