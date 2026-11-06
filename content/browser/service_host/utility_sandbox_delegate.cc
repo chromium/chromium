@@ -30,10 +30,21 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
+#include "base/feature_list.h"
 #include "base/mac/process_requirement.h"
+#include "base/process/process_info.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
+
+namespace {
+
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kMacDisclaimCdmTccResponsibility,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+}  // namespace
 
 UtilitySandboxedProcessLauncherDelegate::
     UtilitySandboxedProcessLauncherDelegate(
@@ -194,6 +205,14 @@ void UtilitySandboxedProcessLauncherDelegate::SetZygote(
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_MAC)
+bool UtilitySandboxedProcessLauncherDelegate::DisclaimResponsibility() {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kCdm) {
+    return base::FeatureList::IsEnabled(kMacDisclaimCdmTccResponsibility) &&
+           !base::IsCurrentProcessSelfResponsible();
+  }
+  return false;
+}
+
 std::optional<base::mac::ProcessRequirement>
 UtilitySandboxedProcessLauncherDelegate::GetProcessRequirement() {
   if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork &&

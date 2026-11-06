@@ -73,6 +73,7 @@ class CONTENT_EXPORT UtilitySandboxedProcessLauncherDelegate
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
 #if BUILDFLAG(IS_MAC)
+  bool DisclaimResponsibility() override;
   std::optional<base::mac::ProcessRequirement> GetProcessRequirement() override;
 #endif  // BUILDFLAG(IS_MAC)
 
