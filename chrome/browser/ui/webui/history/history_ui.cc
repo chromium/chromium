@@ -137,6 +137,9 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   source->AddLocalizedStrings(kHistorySyncStrings);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+  source->AddBoolean("isBrowsingHistoryCollapsibleDayCardsEnabled",
+                     base::FeatureList::IsEnabled(
+                         history::kBrowsingHistoryCollapsibleDayCards));
   source->AddBoolean(
       "isBrowsingHistoryFilterByActorEnabled",
       base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByActor));

@@ -60,6 +60,10 @@
 }
 
 :host([is-card-start]) #date-accessed {
+  display: block;
+}
+
+:host([is-card-start][is-collapsible-day-cards-enabled_]) #date-accessed {
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -73,20 +77,13 @@
 }
 </if>
 
-:host([is-card-collapsed]:not([is-card-start])),
-:host([is-domain-collapsed]) {
+:host([is-card-collapsed]:not([is-card-start])) {
   display: none;
 }
 
 #cardCollapseButton {
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-}
-
-#domainCollapseButton {
-  --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-margin-start: 12px;
-  --cr-icon-button-size: 32px;
 }
 
 #item-container {

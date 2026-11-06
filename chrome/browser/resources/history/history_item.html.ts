@@ -14,20 +14,24 @@ export function getHtml(this: HistoryItemElement) {
     <div id="background"></div>
   </div>
   <div id="date-accessed" class="card-title" role="row"
-      aria-expanded="${!this.isCardCollapsed}"
-      aria-controls="card-collapse"
+      aria-expanded="${this.isCollapsibleDayCardsEnabled_ ?
+          !this.isCardCollapsed : ''}"
+      aria-controls="${this.isCollapsibleDayCardsEnabled_ ?
+          'card-collapse' : ''}"
       @click="${this.onCardHeadingClick_}">
     <div role="rowheader">
       <div role="heading" aria-level="2">
         ${this.cardTitle_()}
       </div>
     </div>
-    <cr-icon-button id="cardCollapseButton"
-        iron-icon="${this.getCardCollapseIcon_()}"
-        title="${this.getCardCollapseTitle_()}"
-        aria-label="${this.getCardCollapseTitle_()}"
-        aria-expanded="${!this.isCardCollapsed}">
-    </cr-icon-button>
+    ${this.isCollapsibleDayCardsEnabled_ ? html`
+      <cr-icon-button id="cardCollapseButton"
+          iron-icon="${this.getCardCollapseIcon_()}"
+          title="${this.getCardCollapseTitle_()}"
+          aria-label="${this.getCardCollapseTitle_()}"
+          aria-expanded="${!this.isCardCollapsed}">
+      </cr-icon-button>
+    ` : ''}
   </div>
   <cr-collapse id="card-collapse" ?opened="${!this.isCardCollapsed}"
       no-animation>
@@ -81,15 +85,6 @@ export function getHtml(this: HistoryItemElement) {
               <cr-icon-button id="bookmark-star" iron-icon="cr:star-filled"
                   @click="${this.onRemoveBookmarkClick_}"
                   title="$i18n{removeBookmark}" aria-hidden="true">
-              </cr-icon-button>
-            ` : ''}
-            ${this.hasDomainGroup_() ? html`
-              <cr-icon-button id="domainCollapseButton"
-                  iron-icon="${this.getDomainCollapseIcon_()}"
-                  title="${this.getDomainCollapseTitle_()}"
-                  aria-label="${this.getDomainCollapseTitle_()}"
-                  aria-expanded="${!this.isDomainGroupCollapsed}"
-                  @click="${this.onDomainCollapseClick_}">
               </cr-icon-button>
             ` : ''}
             ${this.isExpandable_() ? html`

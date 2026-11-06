@@ -34,7 +34,6 @@ import {getHtml} from './history_item.html.js';
 
 export interface HistoryItemElement {
   $: {
-    cardCollapseButton: CrIconButtonElement,
     checkbox: CrCheckboxElement,
     icon: HTMLElement,
     link: HTMLElement,
@@ -84,22 +83,10 @@ export class HistoryItemElement extends HistoryItemElementBase {
         reflect: true,
       },
 
-      isDomainGroupStart: {
+      isCollapsibleDayCardsEnabled_: {
         type: Boolean,
         reflect: true,
       },
-
-      isDomainGroupCollapsed: {
-        type: Boolean,
-        reflect: true,
-      },
-
-      isDomainCollapsed: {
-        type: Boolean,
-        reflect: true,
-      },
-
-      domainGroupSize: {type: Number},
 
       selectionNotAllowed_: {type: Boolean},
 
@@ -127,6 +114,9 @@ export class HistoryItemElement extends HistoryItemElementBase {
   private isShiftKeyDown_: boolean = false;
   protected accessor selectionNotAllowed_: boolean =
       !loadTimeData.getBoolean('allowDeletingHistory');
+  protected accessor isCollapsibleDayCardsEnabled_: boolean =
+      loadTimeData.valueExists('isBrowsingHistoryCollapsibleDayCardsEnabled') &&
+      loadTimeData.getBoolean('isBrowsingHistoryCollapsibleDayCardsEnabled');
   protected accessor isCriticalActionsEnabled_: boolean =
       loadTimeData.getBoolean('isCriticalActionsEnabled');
   private eventTracker_: EventTracker = new EventTracker();
@@ -137,10 +127,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
   accessor isCardStart: boolean = false;
   accessor isCardEnd: boolean = false;
   accessor isCardCollapsed: boolean = false;
-  accessor isDomainGroupStart: boolean = false;
-  accessor isDomainGroupCollapsed: boolean = false;
-  accessor isDomainCollapsed: boolean = false;
-  accessor domainGroupSize: number = 0;
   accessor numberOfItems: number = 0;
   accessor selected: boolean = false;
   accessor isExpanded_: boolean = false;
@@ -298,6 +284,9 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   protected onCardHeadingClick_(e: Event) {
+    if (!this.isCollapsibleDayCardsEnabled_) {
+      return;
+    }
     e.stopPropagation();
     this.fire('toggle-card-collapse', {
       index: this.index,
@@ -313,28 +302,6 @@ export class HistoryItemElement extends HistoryItemElementBase {
     return loadTimeData.getString(
         this.isCardCollapsed ? 'expandSessionButton' :
                                'collapseSessionButton');
-  }
-
-  protected hasDomainGroup_(): boolean {
-    return this.isDomainGroupStart && this.domainGroupSize > 1;
-  }
-
-  protected onDomainCollapseClick_(e: Event) {
-    e.stopPropagation();
-    this.fire('toggle-domain-collapse', {
-      index: this.index,
-    });
-  }
-
-  protected getDomainCollapseIcon_(): string {
-    return this.isDomainGroupCollapsed ? 'cr:keyboard-arrow-down' :
-                                         'cr:keyboard-arrow-up';
-  }
-
-  protected getDomainCollapseTitle_(): string {
-    return loadTimeData.getString(
-        this.isDomainGroupCollapsed ? 'expandSessionButton' :
-                                      'collapseSessionButton');
   }
 
   protected isExpandable_(): boolean {

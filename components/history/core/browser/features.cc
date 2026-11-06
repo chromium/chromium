@@ -110,6 +110,10 @@ constexpr base::FeatureParam<int> kMvtScoringParamDailyVisitCountCap{
 BASE_FEATURE(kRazeOldHistoryDatabase,
              base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables collapsing and expanding day cards in chrome://history.
+BASE_FEATURE(kBrowsingHistoryCollapsibleDayCards,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables improved chrome://history de-duplication logic, this includes
 // grouping entries by hostname and title per day.
 BASE_FEATURE(kBrowsingHistorySimilarVisitsGrouping,
