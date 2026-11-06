@@ -4,13 +4,21 @@
 
 #include "chrome/browser/ui/bookmarks/controllers/android/android_bookmark_bar_action_adapter.h"
 
+#include <limits>
 #include <memory>
+#include <utility>
 
+#include "base/functional/callback.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -22,6 +30,7 @@ namespace {
 using testing::_;
 using testing::AllOf;
 using testing::Field;
+using testing::Return;
 using testing::Truly;
 using ui::mojom::WindowOpenDisposition;
 
@@ -55,17 +64,56 @@ TEST_F(AndroidBookmarkBarActionAdapterTest, OpenBookmarkOpensUrlInBrowser) {
 }
 
 TEST_F(AndroidBookmarkBarActionAdapterTest,
-       OpenBookmarkSkipsJavascriptInNewTab) {
-  const bookmarks::BookmarkNode* js_node = model_->AddURL(
-      model_->bookmark_bar_node(), 0, u"JS", GURL("javascript:alert(1)"));
+       OpenBookmarkIgnoresUnsupportedDispositions) {
+  const bookmarks::BookmarkNode* url = model_->AddURL(
+      model_->bookmark_bar_node(), 0, u"A", GURL("https://a.test"));
 
-  adapter_.OpenBookmark(js_node, WindowOpenDisposition::kNewBackgroundTab);
+  // The StrictMock fails if `OpenURL()` is called.
+  adapter_.OpenBookmark(url, WindowOpenDisposition::kSaveToDisk);
+  adapter_.OpenBookmark(url, WindowOpenDisposition::kNewSplitView);
+}
 
+TEST_F(AndroidBookmarkBarActionAdapterTest,
+       OpenBookmarkSetsBookmarkIdOnNavigation) {
+  const bookmarks::BookmarkNode* url = model_->AddURL(
+      model_->bookmark_bar_node(), 0, u"A", GURL("https://a.test"));
+
+  ChromeNavigationUIData ui_data;
+  testing::NiceMock<content::MockNavigationHandle> handle;
+  ON_CALL(handle, GetNavigationUIData()).WillByDefault(Return(&ui_data));
   EXPECT_CALL(browser_,
-              OpenURL(MatchesOpenUrlParams(GURL("javascript:alert(1)"),
+              OpenURL(MatchesOpenUrlParams(GURL("https://a.test"),
                                            WindowOpenDisposition::kCurrentTab),
-                      _));
-  adapter_.OpenBookmark(js_node, WindowOpenDisposition::kCurrentTab);
+                      _))
+      .WillOnce([&](const content::OpenURLParams&,
+                    base::OnceCallback<void(content::NavigationHandle&)>
+                        navigation_handle_callback) {
+        std::move(navigation_handle_callback).Run(handle);
+        return nullptr;
+      });
+  adapter_.OpenBookmark(url, WindowOpenDisposition::kCurrentTab);
+
+  EXPECT_EQ(ui_data.bookmark_id(), url->id());
+}
+
+// Java records the same histogram, so the bucket layouts must match.
+TEST_F(AndroidBookmarkBarActionAdapterTest,
+       OpenBookmarkRecordsTimeIntervalWithJavaLayout) {
+  const bookmarks::BookmarkNode* url = model_->AddURL(
+      model_->bookmark_bar_node(), 0, u"A", GURL("https://a.test"));
+  base::HistogramTester histograms;
+  EXPECT_CALL(browser_, OpenURL(_, _));
+  adapter_.OpenBookmark(url, WindowOpenDisposition::kCurrentTab);
+
+  histograms.ExpectTotalCount("Bookmarks.OpenBookmarkTimeInterval2.Normal", 1);
+  const base::HistogramBase* histogram =
+      base::StatisticsRecorder::FindHistogram(
+          "Bookmarks.OpenBookmarkTimeInterval2.Normal");
+  ASSERT_TRUE(histogram);
+  // `RecordHistogram.recordCustomTimesHistogram(name, ms, 1, 30 days, 50)`.
+  EXPECT_EQ(histogram->GetHistogramType(), base::HISTOGRAM);
+  EXPECT_TRUE(histogram->HasConstructionArguments(
+      1, std::numeric_limits<int32_t>::max() - 1, 50));
 }
 
 TEST_F(AndroidBookmarkBarActionAdapterTest,

@@ -10,6 +10,8 @@ source_set("android") {
     "android_bookmark_bar_action_adapter.h",
     "android_bookmark_bar_injector.cc",
     "android_bookmark_bar_injector.h",
+    "android_bookmark_bar_model_adapter.cc",
+    "android_bookmark_bar_model_adapter.h",
   ]
 
   public_deps = [
@@ -21,10 +23,15 @@ source_set("android") {
   ]
 
   deps = [
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/bookmarks",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/renderer_host",
+    "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
     "//components/bookmarks/browser",
+    "//components/bookmarks/common/android",
+    "//components/bookmarks/managed",
     "//components/browser_apis/ui_controllers/bookmark_bar:impl",
     "//components/tabs:public",
     "//content/public/browser",
@@ -41,6 +48,7 @@ source_set("unit_tests") {
   deps = [
     ":android",
     "//base/test:test_support",
+    "//chrome/browser/renderer_host",
     "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/test:test_support",
     "//components/bookmarks/browser",

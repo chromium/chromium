@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/bookmarks/controllers/android/android_bookmark_bar_action_adapter.h"
-#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_model_adapter.h"
+#include "chrome/browser/ui/bookmarks/controllers/android/android_bookmark_bar_model_adapter.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_preferences_adapter.h"
 #include "components/browser_apis/ui_controllers/bookmark_bar/adapters/platform_adapters_provider.h"
 
@@ -40,7 +40,7 @@ class AndroidBookmarkBarInjector
  private:
   AndroidBookmarkBarActionAdapter action_adapter_;
   BookmarkBarPreferencesAdapter preferences_adapter_;
-  BookmarkBarModelAdapter model_adapter_;
+  AndroidBookmarkBarModelAdapter model_adapter_;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_ANDROID_ANDROID_BOOKMARK_BAR_INJECTOR_H_

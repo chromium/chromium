@@ -23,6 +23,7 @@
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "url/url_constants.h"
 
 namespace bookmark_bar_api {
 
@@ -121,12 +122,18 @@ BookmarkBarUIControllerImpl::OnBookmarkPressed(int64_t node_id,
                                                int32_t event_flags) {
   const bookmarks::BookmarkNode* const node =
       adapters_->model_adapter().GetNodeById(node_id);
-  if (!node) {
+  if (!node || !node->is_url()) {
     return base::unexpected(
         MakeError(mojo_base::mojom::Code::kNotFound, "Bookmark not found"));
   }
-  adapters_->action_adapter().OpenBookmark(
-      node, ui::DispositionFromEventFlags(event_flags));
+  const ui::mojom::WindowOpenDisposition disposition =
+      ui::DispositionFromEventFlags(event_flags);
+  // A bookmarklet runs on the current page, so it can't open elsewhere.
+  if (node->url().SchemeIs(url::kJavaScriptScheme) &&
+      disposition != ui::mojom::WindowOpenDisposition::kCurrentTab) {
+    return std::monostate();
+  }
+  adapters_->action_adapter().OpenBookmark(node, disposition);
   return std::monostate();
 }
 

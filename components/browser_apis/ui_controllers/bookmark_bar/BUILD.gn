@@ -50,6 +50,7 @@ source_set("impl") {
     "//components/bookmarks/browser",
     "//ui/base",
     "//ui/gfx/geometry",
+    "//url",
   ]
 }
 

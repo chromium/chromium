@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/bookmarks/controllers/android/android_bookmark_bar_injector.h"
 
-#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/browser_apis/ui_controllers/bookmark_bar/bookmark_bar_ui_controller_impl.h"
@@ -21,8 +22,10 @@ AndroidBookmarkBarInjector::AndroidBookmarkBarInjector(
     BrowserWindowInterface* browser)
     : action_adapter_(browser),
       preferences_adapter_(browser->GetProfile()),
-      model_adapter_(BookmarkMergedSurfaceServiceFactory::GetForProfile(
-          browser->GetProfile())) {}
+      model_adapter_(
+          BookmarkModelFactory::GetForBrowserContext(browser->GetProfile()),
+          ManagedBookmarkServiceFactory::GetForProfile(browser->GetProfile())) {
+}
 
 AndroidBookmarkBarInjector::~AndroidBookmarkBarInjector() = default;
 

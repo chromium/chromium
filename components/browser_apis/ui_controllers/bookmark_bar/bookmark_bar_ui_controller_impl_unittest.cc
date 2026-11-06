@@ -271,11 +271,41 @@ TEST_F(BookmarkBarUIControllerImplTest, OnBookmarkPressed) {
   }
 }
 
+TEST_F(BookmarkBarUIControllerImplTest,
+       OnBookmarkPressedOpensJavascriptOnlyInCurrentTab) {
+  auto bookmark_model = bookmarks::TestBookmarkClient::CreateModel();
+  const bookmarks::BookmarkNode* node =
+      bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"JS",
+                             GURL("javascript:void(0)"));
+  ON_CALL(model_adapter_, GetNodeById(42)).WillByDefault(Return(node));
+
+  EXPECT_CALL(action_adapter_, OpenBookmark(_, _)).Times(0);
+  EXPECT_TRUE(controller_->OnBookmarkPressed(42, ui::EF_MIDDLE_MOUSE_BUTTON)
+                  .has_value());
+  EXPECT_TRUE(
+      controller_->OnBookmarkPressed(42, ui::EF_SHIFT_DOWN).has_value());
+  testing::Mock::VerifyAndClearExpectations(&action_adapter_);
+
+  EXPECT_CALL(
+      action_adapter_,
+      OpenBookmark(node, ui::mojom::WindowOpenDisposition::kCurrentTab));
+  EXPECT_TRUE(controller_->OnBookmarkPressed(42, ui::EF_NONE).has_value());
+}
+
 TEST_F(BookmarkBarUIControllerImplTest, OnBookmarkPressedNodeNotFound) {
   EXPECT_CALL(model_adapter_, GetNodeById(42)).WillOnce(Return(nullptr));
   EXPECT_CALL(action_adapter_, OpenBookmark(_, _)).Times(0);
 
   auto result = controller_->OnBookmarkPressed(42, ui::EF_NONE);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
+
+  // Folders aren't bookmarks.
+  auto bookmark_model = bookmarks::TestBookmarkClient::CreateModel();
+  const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(), 0, u"Folder");
+  EXPECT_CALL(model_adapter_, GetNodeById(43)).WillOnce(Return(folder));
+  result = controller_->OnBookmarkPressed(43, ui::EF_NONE);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }
