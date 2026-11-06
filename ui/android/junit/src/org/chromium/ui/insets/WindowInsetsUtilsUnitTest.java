@@ -79,4 +79,15 @@ public class WindowInsetsUtilsUnitTest {
                 WindowInsetsUtils.getBoundingRectsFromInsets(
                         null, WindowInsetsCompat.Type.captionBar()));
     }
+
+    @Test
+    public void getBoundingRectsIgnoringVisibility_NullInsets() {
+        // Query bounding rects ignoring visibility for null window insets.
+        List<Rect> boundingRects =
+                WindowInsetsUtils.getBoundingRectsIgnoringVisibilityFromInsets(
+                        /* windowInsets= */ null, WindowInsetsCompat.Type.captionBar());
+
+        // Verify that an empty list is returned.
+        assertEquals("Bounding rects list is incorrect.", List.of(), boundingRects);
+    }
 }

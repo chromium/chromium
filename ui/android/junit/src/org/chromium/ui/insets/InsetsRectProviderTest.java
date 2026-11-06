@@ -9,6 +9,7 @@ import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
 import static androidx.core.view.WindowInsetsCompat.Type.statusBars;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -72,6 +73,9 @@ public class InsetsRectProviderTest {
                 int insetsType = (int) invocation.getArgument(1);
                 Insets insets = (Insets) invocation.getArgument(2);
                 doReturn(insets).when(newWindowInsetsCompat).getInsets(eq(insetsType));
+                doReturn(insets)
+                        .when(newWindowInsetsCompat)
+                        .getInsetsIgnoringVisibility(eq(insetsType));
                 return newWindowInsetsCompat;
             };
 
@@ -569,6 +573,155 @@ public class InsetsRectProviderTest {
         assertSuppliedValues(captionBarInsets, availableArea, finalBlockedRects);
     }
 
+    @Test
+    public void testCaptionBarInsetsRectProvider_invisibleCaptionBar_consumed() {
+        // Simulate a fullscreen window launch with an invisible caption bar, a visible status bar,
+        // and a consumer that consumes the caption bar insets.
+        Insets captionBarInsets = Insets.of(0, 30, 0, 0);
+        Insets statusBarInsets = Insets.of(0, 10, 0, 0);
+        Insets navigationBarInsets = Insets.of(0, 0, 0, 15);
+        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
+        mInsetsRectProvider =
+                Mockito.spy(
+                        new CaptionBarInsetsRectProvider(
+                                mInsetObserver,
+                                emptyWindowInsets,
+                                InsetConsumerSource.TEST_SOURCE));
+        mInsetsRectProvider.setConsumer(createInsetsRectConsumer(/* consumeRectUpdate= */ true));
+        doAnswer(mBuildNewMockInsets).when(mInsetsRectProvider).buildInsets(any(), anyInt(), any());
+
+        Rect availableArea = new Rect(0, 10, WINDOW_WIDTH - 20, 30);
+        List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30));
+        WindowInsetsCompat newWindowInsets =
+                buildTestWindowInsets(
+                        captionBar(),
+                        captionBarInsets,
+                        availableArea,
+                        INSETS_FRAME_SIZE,
+                        blockingRects);
+        doReturn(Insets.NONE).when(newWindowInsets).getInsets(eq(captionBar()));
+        doReturn(false).when(newWindowInsets).isVisible(eq(captionBar()));
+        doReturn(true).when(newWindowInsets).isVisible(eq(statusBars()));
+        doReturn(statusBarInsets).when(newWindowInsets).getInsets(eq(statusBars()));
+        doReturn(navigationBarInsets).when(newWindowInsets).getInsets(eq(navigationBars()));
+
+        // Apply the window insets to the caption bar rect provider.
+        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
+
+        // Verify that both the caption bar insets and overlapping status bar insets are consumed.
+        assertEquals(
+                "Caption bar insets should be consumed.",
+                Insets.NONE,
+                appliedInsets.getInsets(captionBar()));
+        assertEquals(
+                "Status bar insets should be consumed on the first invisible-caption frame.",
+                Insets.NONE,
+                appliedInsets.getInsets(statusBars()));
+        assertEquals(
+                "Navigation bar insets should be unaffected.",
+                navigationBarInsets,
+                appliedInsets.getInsets(navigationBars()));
+        assertEquals(
+                "Consumer callback should be called once.", 1, mConsumerCallback.getCallCount());
+        var finalBlockedRects =
+                List.of(
+                        new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30),
+                        new Rect(0, 0, WINDOW_WIDTH, 10));
+        assertSuppliedValues(captionBarInsets, availableArea, finalBlockedRects);
+    }
+
+    @Test
+    public void testCaptionBarInsetsRectProvider_invisibleCaptionBar_notConsumed() {
+        // Simulate a fullscreen window launch with an invisible caption bar, a visible status bar,
+        // and a consumer that does not consume the caption bar insets.
+        Insets captionBarInsets = Insets.of(0, 30, 0, 0);
+        Insets statusBarInsets = Insets.of(0, 10, 0, 0);
+        Insets navigationBarInsets = Insets.of(0, 0, 0, 15);
+        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
+        mInsetsRectProvider =
+                Mockito.spy(
+                        new CaptionBarInsetsRectProvider(
+                                mInsetObserver,
+                                emptyWindowInsets,
+                                InsetConsumerSource.TEST_SOURCE));
+        mInsetsRectProvider.setConsumer(createInsetsRectConsumer(/* consumeRectUpdate= */ false));
+        doAnswer(mBuildNewMockInsets).when(mInsetsRectProvider).buildInsets(any(), anyInt(), any());
+
+        Rect availableArea = new Rect(0, 10, WINDOW_WIDTH - 20, 30);
+        List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30));
+        WindowInsetsCompat newWindowInsets =
+                buildTestWindowInsets(
+                        captionBar(),
+                        captionBarInsets,
+                        availableArea,
+                        INSETS_FRAME_SIZE,
+                        blockingRects);
+        doReturn(Insets.NONE).when(newWindowInsets).getInsets(eq(captionBar()));
+        doReturn(false).when(newWindowInsets).isVisible(eq(captionBar()));
+        doReturn(true).when(newWindowInsets).isVisible(eq(statusBars()));
+        doReturn(statusBarInsets).when(newWindowInsets).getInsets(eq(statusBars()));
+        doReturn(navigationBarInsets).when(newWindowInsets).getInsets(eq(navigationBars()));
+
+        // Apply the window insets to the caption bar rect provider.
+        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
+
+        // Verify that the input insets are returned unchanged without consuming status bar insets.
+        assertSame("Input insets should not be consumed.", newWindowInsets, appliedInsets);
+        assertEquals(
+                "Status bar insets should be unaffected.",
+                statusBarInsets,
+                appliedInsets.getInsets(statusBars()));
+        assertEquals(
+                "Navigation bar insets should be unaffected.",
+                navigationBarInsets,
+                appliedInsets.getInsets(navigationBars()));
+        assertEquals(
+                "Consumer callback should be called once.", 1, mConsumerCallback.getCallCount());
+        var finalBlockedRects =
+                List.of(
+                        new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30),
+                        new Rect(0, 0, WINDOW_WIDTH, 10));
+        assertSuppliedValues(captionBarInsets, availableArea, finalBlockedRects);
+    }
+
+    @Test
+    public void testCaptionBarInsetsRectProvider_immersiveFullscreen_notConsumed() {
+        // Simulate entering immersive fullscreen where both the caption bar and status bar are
+        // hidden while ignoring-visibility caption bar insets remain non-zero.
+        Insets captionBarInsets = Insets.of(0, 30, 0, 0);
+        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
+        mInsetsRectProvider =
+                Mockito.spy(
+                        new CaptionBarInsetsRectProvider(
+                                mInsetObserver,
+                                emptyWindowInsets,
+                                InsetConsumerSource.TEST_SOURCE));
+        mInsetsRectProvider.setConsumer(createInsetsRectConsumer(/* consumeRectUpdate= */ false));
+
+        Rect availableArea = new Rect(0, 0, WINDOW_WIDTH - 20, 30);
+        List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30));
+        WindowInsetsCompat newWindowInsets =
+                buildTestWindowInsets(
+                        captionBar(),
+                        captionBarInsets,
+                        availableArea,
+                        INSETS_FRAME_SIZE,
+                        blockingRects);
+        doReturn(Insets.NONE).when(newWindowInsets).getInsets(eq(captionBar()));
+        doReturn(Insets.NONE).when(newWindowInsets).getInsets(eq(statusBars()));
+        doReturn(false).when(newWindowInsets).isVisible(eq(captionBar()));
+        doReturn(false).when(newWindowInsets).isVisible(eq(statusBars()));
+
+        // Apply the window insets to the caption bar rect provider.
+        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
+
+        // Verify that empty visible insets are used and the unoccluded rect is cleared.
+        assertSame("Input insets should not be consumed.", newWindowInsets, appliedInsets);
+        assertEquals(
+                "Consumer callback should be called once.", 1, mConsumerCallback.getCallCount());
+        assertSuppliedValues(Insets.NONE, new Rect(), List.of());
+    }
+
     private WindowInsetsCompat buildTestWindowInsets(
             @InsetsType int type,
             Insets insets,
@@ -578,7 +731,10 @@ public class InsetsRectProviderTest {
         // WindowInsetsCompat.Builder does not work in robolectric (always yield an empty Inset).
         WindowInsetsCompat windowInsetsCompat = Mockito.mock(WindowInsetsCompat.class);
         doReturn(Insets.NONE).when(windowInsetsCompat).getInsets(anyInt());
+        doReturn(Insets.NONE).when(windowInsetsCompat).getInsetsIgnoringVisibility(anyInt());
         doReturn(insets).when(windowInsetsCompat).getInsets(eq(type));
+        doReturn(insets).when(windowInsetsCompat).getInsetsIgnoringVisibility(eq(type));
+        doReturn(true).when(windowInsetsCompat).isVisible(eq(type));
 
         WindowInsetsUtils.setWidestUnoccludedRectForTesting(availableArea);
         WindowInsetsUtils.setFrameForTesting(frameSize);
@@ -601,6 +757,7 @@ public class InsetsRectProviderTest {
 
         WindowInsetsCompat newWindowInsetsCompat = Mockito.mock(WindowInsetsCompat.class);
         doReturn(Insets.NONE).when(newWindowInsetsCompat).getInsets(anyInt());
+        doReturn(Insets.NONE).when(newWindowInsetsCompat).getInsetsIgnoringVisibility(anyInt());
         doReturn(windowInsetsCompat.getInsets(statusBars))
                 .when(newWindowInsetsCompat)
                 .getInsets(eq(statusBars));
@@ -610,6 +767,15 @@ public class InsetsRectProviderTest {
         doReturn(windowInsetsCompat.getInsets(captionBar))
                 .when(newWindowInsetsCompat)
                 .getInsets(eq(captionBar));
+        doReturn(windowInsetsCompat.getInsetsIgnoringVisibility(captionBar))
+                .when(newWindowInsetsCompat)
+                .getInsetsIgnoringVisibility(eq(captionBar));
+        doReturn(windowInsetsCompat.isVisible(captionBar))
+                .when(newWindowInsetsCompat)
+                .isVisible(eq(captionBar));
+        doReturn(windowInsetsCompat.isVisible(statusBars))
+                .when(newWindowInsetsCompat)
+                .isVisible(eq(statusBars));
         return newWindowInsetsCompat;
     }
 

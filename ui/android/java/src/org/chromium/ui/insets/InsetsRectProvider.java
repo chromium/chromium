@@ -131,7 +131,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
      */
     public Insets getCachedInset() {
         if (mCachedInsets == null) return Insets.of(new Rect());
-        return mCachedInsets.getInsets(mInsetType);
+        return getInsets(mCachedInsets);
     }
 
     /** Return the current window Rect. */
@@ -164,6 +164,16 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     }
 
     /**
+     * Gets the {@link Insets} for the current inset type from the given {@link WindowInsetsCompat}.
+     *
+     * @param windowInsetsCompat The {@link WindowInsetsCompat} to extract insets from.
+     * @return The {@link Insets} for the current inset type.
+     */
+    protected Insets getInsets(WindowInsetsCompat windowInsetsCompat) {
+        return windowInsetsCompat.getInsets(mInsetType);
+    }
+
+    /**
      * Gets the system bounding rects for the current inset type.
      *
      * @param windowInsetsCompat The current system {@link WindowInsetsCompat}.
@@ -177,13 +187,19 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     /**
      * Build a new {@link WindowInsetsCompat} object. This is exposed to allow testing to override
      * this method, as the {@link WindowInsetsCompat.Builder} does not work in Robolectric tests.
+     * Sets both the visible and the ignoring-visibility insets of {@code insetType} to {@code
+     * insets}; {@code ime()} has no ignoring-visibility insets and is skipped.
      */
     @VisibleForTesting
     protected WindowInsetsCompat buildInsets(
             WindowInsetsCompat windowInsetsCompat, int insetType, Insets insets) {
-        return new WindowInsetsCompat.Builder(windowInsetsCompat)
-                .setInsets(insetType, insets)
-                .build();
+        var builder =
+                new WindowInsetsCompat.Builder(windowInsetsCompat).setInsets(insetType, insets);
+        int ignoreVisType = insetType & ~WindowInsetsCompat.Type.ime();
+        if (ignoreVisType != 0) {
+            builder.setInsetsIgnoringVisibility(ignoreVisType, insets);
+        }
+        return builder.build();
     }
 
     /**
@@ -225,7 +241,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
      * @param windowInsetsCompat The current system {@link WindowInsetsCompat}.
      */
     private void updateWidestUnoccludedRect(WindowInsetsCompat windowInsetsCompat) {
-        Insets insets = windowInsetsCompat.getInsets(mInsetType);
+        Insets insets = getInsets(windowInsetsCompat);
         Rect insetRectInWindow = WindowInsetsUtils.toRectInWindow(mWindowRect, insets);
         if (!insetRectInWindow.isEmpty()) {
             mBoundingRects = getBoundingRectsFromInsets(windowInsetsCompat);

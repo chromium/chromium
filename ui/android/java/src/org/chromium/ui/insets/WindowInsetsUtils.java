@@ -220,20 +220,41 @@ public final class WindowInsetsUtils {
      * may make modifications to the bounding rects to correct for window inset updates where the
      * bounding rects and window frame are not synchronized.
      */
-    @SuppressWarnings("NewApi")
     public static List<Rect> getBoundingRectsFromInsets(
             @Nullable WindowInsets windowInsets, @InsetsType int insetType) {
+        return getBoundingRectsFromInsets(windowInsets, insetType, /* ignoreVisibility= */ false);
+    }
+
+    /**
+     * See {@link WindowInsets#getBoundingRectsIgnoringVisibility(int)} for details. Note that this
+     * specific method may make modifications to the bounding rects to correct for window inset
+     * updates where the bounding rects and window frame are not synchronized.
+     */
+    public static List<Rect> getBoundingRectsIgnoringVisibilityFromInsets(
+            @Nullable WindowInsets windowInsets, @InsetsType int insetType) {
+        return getBoundingRectsFromInsets(windowInsets, insetType, /* ignoreVisibility= */ true);
+    }
+
+    @SuppressWarnings("NewApi")
+    private static List<Rect> getBoundingRectsFromInsets(
+            @Nullable WindowInsets windowInsets,
+            @InsetsType int insetType,
+            boolean ignoreVisibility) {
         if (sBoundingRectsForTesting != null) return sBoundingRectsForTesting;
 
         // This invocation is wrapped in a try-catch block to allow backporting of the
-        // #getBoundingRects() API on pre-V devices. On pre-V devices not supporting this API, a
-        // default value will be cached on the first failure and returned subsequently.
+        // #getBoundingRects() and #getBoundingRectsIgnoringVisibility() APIs on pre-V devices. On
+        // pre-V devices not supporting these APIs, a default value will be cached on the first
+        // failure and returned subsequently.
         if (sGetBoundingRectsMethodNotFound) return DEFAULT_INSETS_BOUNDING_RECTS;
 
         try {
             if (windowInsets == null) return DEFAULT_INSETS_BOUNDING_RECTS;
-            return maybeCorrectNearEdgeRects(
-                    windowInsets.getBoundingRects(insetType), getFrameFromInsets(windowInsets));
+            List<Rect> boundingRects =
+                    ignoreVisibility
+                            ? windowInsets.getBoundingRectsIgnoringVisibility(insetType)
+                            : windowInsets.getBoundingRects(insetType);
+            return maybeCorrectNearEdgeRects(boundingRects, getFrameFromInsets(windowInsets));
         } catch (NoSuchMethodError e) {
             Log.w(TAG, e.toString());
             sGetBoundingRectsMethodNotFound = true;
