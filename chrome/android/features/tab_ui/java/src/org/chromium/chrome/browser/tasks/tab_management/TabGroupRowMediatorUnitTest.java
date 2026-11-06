@@ -157,6 +157,7 @@ public class TabGroupRowMediatorUnitTest {
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
         when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(any())).thenReturn(true);
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_CURRENT);
+        when(mTabModel.containsTabGroup(any())).thenReturn(true);
         mIsArchived = false;
     }
 
@@ -339,13 +340,17 @@ public class TabGroupRowMediatorUnitTest {
 
     @Test
     public void testOpen_InAnother() {
+        doAnswer(invocationOnMock -> mSyncGroup.localId = new LocalTabGroupId(GROUP_ID1))
+                .when(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1);
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
+        mSyncGroup.localId = null;
 
         propertyModel.get(OPEN_RUNNABLE).run();
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
-        verifyNoInteractions(mPaneManager);
-        verifyNoInteractions(mTabSwitcherPaneBase);
+        verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
     }
 
     @Test
@@ -383,9 +388,7 @@ public class TabGroupRowMediatorUnitTest {
         assertEquals(SYNC_GROUP_ID1, IntentHandler.getBringTabGroupToFrontId(intent));
     }
 
-    @Test
-    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
-    public void testOpen_InAnother_WindowNotFound_FallsBackToOpenLocally() {
+    private void setupOtherWindowGroupNotFound() {
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
         when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1)))
@@ -394,14 +397,84 @@ public class TabGroupRowMediatorUnitTest {
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
         when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
 
+        doAnswer(inv -> mSyncGroup.localId = null)
+                .when(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpen_InAnother_WindowNotFound_FallsBackToOpenLocally() {
+        setupOtherWindowGroupNotFound();
+
+        doAnswer(
+                        inv -> {
+                            mSyncGroup.localId = new LocalTabGroupId(GROUP_ID1);
+                            when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
+                            return null;
+                        })
+                .when(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1);
+
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
 
         propertyModel.get(OPEN_RUNNABLE).run();
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+        verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpen_InAnother_FallbackFails_RecordsHistogram() {
+        setupOtherWindowGroupNotFound();
+
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
+        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.TabGroupSync.WindowStateOnFailedOpen",
+                                GroupWindowState.IN_ANOTHER)
+                        .build();
+
+        propertyModel.get(OPEN_RUNNABLE).run();
+        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
         verifyNoInteractions(mPaneManager);
         verifyNoInteractions(mTabSwitcherPaneBase);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpen_InAnother_FallbackNotInTabModel_RecordsHistogram() {
+        setupOtherWindowGroupNotFound();
+
+        doAnswer(inv -> mSyncGroup.localId = new LocalTabGroupId(GROUP_ID1))
+                .when(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1);
+
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
+        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
+
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.TabGroupSync.WindowStateOnFailedOpen",
+                                GroupWindowState.IN_ANOTHER)
+                        .build();
+
+        propertyModel.get(OPEN_RUNNABLE).run();
+        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verifyNoInteractions(mPaneManager);
+        verifyNoInteractions(mTabSwitcherPaneBase);
+        histograms.assertExpected();
     }
 
     @Test

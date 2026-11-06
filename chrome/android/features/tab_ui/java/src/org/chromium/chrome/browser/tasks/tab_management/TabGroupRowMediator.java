@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils.OpenTabGroupResult;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
@@ -242,42 +243,40 @@ class TabGroupRowMediator {
 
     private void openGroup() {
         @GroupWindowState int state = mFetchGroupState.get();
-        if (state == GroupWindowState.IN_ANOTHER) {
-            String syncId = mGroupInfo.syncId;
-            if (syncId != null) {
-                TabGroupUiUtils.openTabGroup(
-                        mContext,
-                        mTabModel,
-                        mTabGroupSyncService,
-                        mTabGroupUiActionHandler,
-                        syncId);
-            }
-            return;
-        }
-
-        if (state == GroupWindowState.HIDDEN) {
-            RecordUserAction.record("SyncedTabGroup.OpenNewLocal");
-        } else {
-            RecordUserAction.record("SyncedTabGroup.OpenExistingLocal");
-        }
-
         Token localGroupId = mGroupInfo.localId;
-        if (state == GroupWindowState.IN_CURRENT_CLOSING) {
-            cancelPendingTabClosures();
-        } else if (state == GroupWindowState.HIDDEN) {
+        if (state == GroupWindowState.IN_ANOTHER || state == GroupWindowState.HIDDEN) {
             String syncId = mGroupInfo.syncId;
-            assumeNonNull(syncId);
-            TabGroupUiUtils.openTabGroup(
-                    mContext, mTabModel, mTabGroupSyncService, mTabGroupUiActionHandler, syncId);
-            if (mGroupInfo.isArchived) {
+            if (syncId == null) {
+                return;
+            }
+            @OpenTabGroupResult
+            int result =
+                    TabGroupUiUtils.openTabGroup(
+                            mContext,
+                            mTabModel,
+                            mTabGroupSyncService,
+                            mTabGroupUiActionHandler,
+                            syncId);
+            if (result != OpenTabGroupResult.CURRENT_WINDOW) {
+                return;
+            }
+            RecordUserAction.record("SyncedTabGroup.OpenNewLocal");
+            if (state == GroupWindowState.HIDDEN && mGroupInfo.isArchived) {
                 RecordUserAction.record("TabGroups.RestoreFromTabGroupPane");
                 RecordHistogram.recordCount1000Histogram(
                         "TabGroups.RestoreFromTabGroupPane.TabCount", mGroupInfo.tabCount);
             }
             localGroupId = getLocalTabGroupIdForSyncId(syncId);
+        } else {
+            if (state == GroupWindowState.IN_CURRENT_CLOSING) {
+                cancelPendingTabClosures();
+            }
+            RecordUserAction.record("SyncedTabGroup.OpenExistingLocal");
         }
 
-        if (localGroupId == null) {
+        if (localGroupId == null
+                || (state == GroupWindowState.IN_ANOTHER
+                        && !mTabModel.containsTabGroup(localGroupId))) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.TabGroupSync.WindowStateOnFailedOpen", state, GroupWindowState.COUNT);
             return;
