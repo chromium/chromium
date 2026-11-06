@@ -89,7 +89,9 @@ public class FuseboxMetrics {
     /* package */ static final String REANCHOR_VIEWS_DURATION_HISTOGRAM =
             "Android.Omnibox.MobileFusebox.ReanchorViews.Duration";
 
-    private static final String PICKER_OUTCOME_HISTOGRAM = "Omnibox.MobileFusebox.PickerOutcome";
+    @VisibleForTesting
+    static final String PICKER_OUTCOME_HISTOGRAM = "Omnibox.MobileFusebox.PickerOutcome";
+
     private static final String DRIVE_DOCUMENT_TYPE_HISTOGRAM =
             "Omnibox.MobileFusebox.Drive.DocumentType";
     private static final String ATTACHMENT_TYPE_AT_SUBMISSION_HISTOGRAM =
@@ -227,6 +229,19 @@ public class FuseboxMetrics {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:MobileFuseboxPickerOutcome)
+
+    /** Slices for {@code Omnibox.MobileFusebox.PickerOutcome{AttachmentType}} in histograms.xml. */
+    @IntDef({
+        MobileFuseboxPickerAttachmentType.DRIVE,
+        MobileFuseboxPickerAttachmentType.TABS,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    @NullMarked
+    public @interface MobileFuseboxPickerAttachmentType {
+        int DRIVE = 0;
+        int TABS = 1;
+    }
 
     // LINT.IfChange(MobileFuseboxDriveDocumentType)
     @IntDef({
@@ -700,13 +715,38 @@ public class FuseboxMetrics {
                 + getHistogramExtensionForMimeType(fileType);
     }
 
+    private static String getHistogramExtensionForPickerAttachmentType(
+            @MobileFuseboxPickerAttachmentType int type) {
+        return switch (type) {
+            case MobileFuseboxPickerAttachmentType.DRIVE -> "Drive";
+            case MobileFuseboxPickerAttachmentType.TABS -> "Tabs";
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unsupported picker attachment type: " + type);
+        };
+    }
+
+    @VisibleForTesting
+    static String getPickerOutcomeHistogram(@MobileFuseboxPickerAttachmentType int type) {
+        return PICKER_OUTCOME_HISTOGRAM
+                + TOKEN_SEPARATOR
+                + getHistogramExtensionForPickerAttachmentType(type);
+    }
+
     static void recordDrivePickerOutcome(@MobileFuseboxPickerOutcome int outcome) {
+        recordPickerOutcome(MobileFuseboxPickerAttachmentType.DRIVE, outcome);
+    }
+
+    static void recordTabPickerOutcome(@MobileFuseboxPickerOutcome int outcome) {
+        recordPickerOutcome(MobileFuseboxPickerAttachmentType.TABS, outcome);
+    }
+
+    private static void recordPickerOutcome(
+            @MobileFuseboxPickerAttachmentType int type, @MobileFuseboxPickerOutcome int outcome) {
         RecordHistogram.recordEnumeratedHistogram(
                 PICKER_OUTCOME_HISTOGRAM, outcome, MobileFuseboxPickerOutcome.COUNT);
         RecordHistogram.recordEnumeratedHistogram(
-                PICKER_OUTCOME_HISTOGRAM + TOKEN_SEPARATOR + "Drive",
-                outcome,
-                MobileFuseboxPickerOutcome.COUNT);
+                getPickerOutcomeHistogram(type), outcome, MobileFuseboxPickerOutcome.COUNT);
     }
 
     static void recordDriveDocumentType(@Nullable String mimeType, @Nullable String fileName) {

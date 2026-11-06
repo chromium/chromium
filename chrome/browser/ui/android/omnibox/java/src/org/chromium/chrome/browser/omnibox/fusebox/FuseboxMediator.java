@@ -891,7 +891,10 @@ class FuseboxMediator implements BackPressHandler {
         if (!isInInputSession()) return;
 
         Intent intent = ChromeItemPickerUtils.createChromeItemPickerIntent(mContext);
-        if (intent == null) return;
+        if (intent == null) {
+            FuseboxMetrics.recordTabPickerOutcome(MobileFuseboxPickerOutcome.LOCAL_ERROR);
+            return;
+        }
         ProfileIntentUtils.addProfileToIntent(mProfile, intent);
 
         beginPickerInteraction(FuseboxAttachmentButtonType.TAB_PICKER);
@@ -943,12 +946,14 @@ class FuseboxMediator implements BackPressHandler {
         // Explicit error returned by the picker activity.
         if (data != null && data.hasExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR)) {
             onAttachmentUploadFailed();
+            FuseboxMetrics.recordTabPickerOutcome(MobileFuseboxPickerOutcome.LOCAL_ERROR);
             abortTabPicker();
             return;
         }
 
         // Manual user exit (canceled, dismissed, or back-pressed).
         if (resultCode != Activity.RESULT_OK) {
+            FuseboxMetrics.recordTabPickerOutcome(MobileFuseboxPickerOutcome.MANUAL_USER_EXIT);
             abortTabPicker();
             return;
         }
@@ -956,13 +961,17 @@ class FuseboxMediator implements BackPressHandler {
         // Malformed success: RESULT_OK claimed, but tab IDs payload is missing.
         List<Integer> tabIds = ChromeItemPickerUtils.getSelectedTabIdsFromIntent(data);
         if (tabIds == null) {
+            FuseboxMetrics.recordTabPickerOutcome(MobileFuseboxPickerOutcome.LOCAL_ERROR);
             abortTabPicker();
             return;
         }
 
+        Set<Integer> selectedTabIds = new HashSet<>(tabIds);
+        if (!mModelList.getAttachedTabIds().containsAll(selectedTabIds)) {
+            FuseboxMetrics.recordTabPickerOutcome(MobileFuseboxPickerOutcome.ATTACHMENT_ADDED);
+        }
         TrackerFactory.getTrackerForProfile(mProfile)
                 .notifyEvent(EventConstants.FUSEBOX_TAB_PICKER_TAB_ATTACHED);
-        Set<Integer> selectedTabIds = new HashSet<>(tabIds);
         TabLoadingService.getInstance().checkpointLoadDurations(selectedTabIds);
         updateCurrentlyAttachedTabs(selectedTabIds);
         mPopupItemSelected = true;

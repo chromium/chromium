@@ -23,6 +23,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentSizeLimitCheck;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.components.feature_engagement.Tracker;
@@ -40,6 +41,11 @@ import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxMetricsUnitTest {
+    private static final String HISTOGRAM_PICKER_OUTCOME_DRIVE =
+            FuseboxMetrics.getPickerOutcomeHistogram(MobileFuseboxPickerAttachmentType.DRIVE);
+    private static final String HISTOGRAM_PICKER_OUTCOME_TABS =
+            FuseboxMetrics.getPickerOutcomeHistogram(MobileFuseboxPickerAttachmentType.TABS);
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -711,14 +717,30 @@ public class FuseboxMetricsUnitTest {
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                "Omnibox.MobileFusebox.PickerOutcome",
+                                FuseboxMetrics.PICKER_OUTCOME_HISTOGRAM,
                                 MobileFuseboxPickerOutcome.PERMISSION_DENIED)
                         .expectIntRecord(
-                                "Omnibox.MobileFusebox.PickerOutcome.Drive",
+                                HISTOGRAM_PICKER_OUTCOME_DRIVE,
                                 MobileFuseboxPickerOutcome.PERMISSION_DENIED)
                         .build();
 
         FuseboxMetrics.recordDrivePickerOutcome(MobileFuseboxPickerOutcome.PERMISSION_DENIED);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordTabPickerOutcome() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FuseboxMetrics.PICKER_OUTCOME_HISTOGRAM,
+                                MobileFuseboxPickerOutcome.ATTACHMENT_ADDED)
+                        .expectIntRecord(
+                                HISTOGRAM_PICKER_OUTCOME_TABS,
+                                MobileFuseboxPickerOutcome.ATTACHMENT_ADDED)
+                        .build();
+
+        FuseboxMetrics.recordTabPickerOutcome(MobileFuseboxPickerOutcome.ATTACHMENT_ADDED);
         watcher.assertExpected();
     }
 

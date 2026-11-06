@@ -83,6 +83,8 @@ import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerAttachmentType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.SetActiveModelSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
@@ -152,6 +154,9 @@ import java.util.function.Function;
 /** Unit tests for {@link FuseboxMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxMediatorUnitTest {
+    private static final String HISTOGRAM_PICKER_OUTCOME_TABS =
+            FuseboxMetrics.getPickerOutcomeHistogram(MobileFuseboxPickerAttachmentType.TABS);
+    private static final String ITEM_PICKER_ERROR_MESSAGE = "error message";
     private static final Bitmap BITMAP = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
     private static final InputTypeConfig GALLERY_INPUT_TYPE_CONFIG =
@@ -434,6 +439,21 @@ public class FuseboxMediatorUnitTest {
                         mOnInteractionCompletedCallback,
                         mHasAttachmentsSupplier,
                         mUrlTextWrappingSupplier);
+    }
+
+    private static HistogramWatcher expectTabPickerOutcome(
+            @MobileFuseboxPickerOutcome int outcome) {
+        return HistogramWatcher.newBuilder()
+                .expectIntRecord(FuseboxMetrics.PICKER_OUTCOME_HISTOGRAM, outcome)
+                .expectIntRecord(HISTOGRAM_PICKER_OUTCOME_TABS, outcome)
+                .build();
+    }
+
+    private static HistogramWatcher expectNoTabPickerOutcome() {
+        return HistogramWatcher.newBuilder()
+                .expectNoRecords(FuseboxMetrics.PICKER_OUTCOME_HISTOGRAM)
+                .expectNoRecords(HISTOGRAM_PICKER_OUTCOME_TABS)
+                .build();
     }
 
     /* Useful for testing logic in the mediator's constructor. */
@@ -2311,6 +2331,55 @@ public class FuseboxMediatorUnitTest {
     public void testOnTabPickerResult_notifiesTabAttachedEvent() {
         mMediator.onTabPickerResult(Activity.RESULT_OK, createTabPickerResultIntent(List.of(101)));
         verify(mTracker).notifyEvent(EventConstants.FUSEBOX_TAB_PICKER_TAB_ATTACHED);
+    }
+
+    @Test
+    public void testOnTabPickerResult_newTabSelected_recordsAttachmentAdded() {
+        HistogramWatcher watcher =
+                expectTabPickerOutcome(MobileFuseboxPickerOutcome.ATTACHMENT_ADDED);
+        mMediator.onTabPickerResult(Activity.RESULT_OK, createTabPickerResultIntent(List.of(101)));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTabPickerResult_unchangedSelection_recordsNoOutcome() {
+        addTabAttachment(mockTab(101));
+        HistogramWatcher watcher = expectNoTabPickerOutcome();
+        mMediator.onTabPickerResult(Activity.RESULT_OK, createTabPickerResultIntent(List.of(101)));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTabPickerResult_deselectionOnly_recordsNoOutcome() {
+        addTabAttachment(mockTab(101));
+        addTabAttachment(mockTab(102));
+        HistogramWatcher watcher = expectNoTabPickerOutcome();
+        mMediator.onTabPickerResult(Activity.RESULT_OK, createTabPickerResultIntent(List.of(101)));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTabPickerResult_canceled_recordsManualUserExit() {
+        HistogramWatcher watcher =
+                expectTabPickerOutcome(MobileFuseboxPickerOutcome.MANUAL_USER_EXIT);
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, /* data= */ null);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTabPickerResult_errorExtra_recordsLocalError() {
+        Intent intent = new Intent();
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR, ITEM_PICKER_ERROR_MESSAGE);
+        HistogramWatcher watcher = expectTabPickerOutcome(MobileFuseboxPickerOutcome.LOCAL_ERROR);
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, intent);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTabPickerResult_malformedResultOk_recordsLocalError() {
+        HistogramWatcher watcher = expectTabPickerOutcome(MobileFuseboxPickerOutcome.LOCAL_ERROR);
+        mMediator.onTabPickerResult(Activity.RESULT_OK, new Intent());
+        watcher.assertExpected();
     }
 
     @Test
