@@ -19,6 +19,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -40,6 +41,21 @@ static constexpr std::string_view kPermissionRequestUrl =
 static constexpr std::string_view kLocalApprovalButtonAriaLabel = "Approve";
 // Password selector for the parent password field in the PACP dialog.
 static constexpr std::string_view kPacpPasswordInputSelector = "type=password";
+
+// Builds a JS snippet that populates a password input field and dispatches
+// input and change events so Gaia/PACP controllers observe the updated value.
+std::string BuildFillPasswordInputJs(std::string_view password) {
+  return content::JsReplace(
+      R"js(
+        (entry) => {
+          entry.focus();
+          entry.value = $1;
+          entry.dispatchEvent(new Event('input', {bubbles: true}));
+          entry.dispatchEvent(new Event('change', {bubbles: true}));
+        }
+      )js",
+      password);
+}
 
 // All tests in this unit are subject to flakiness because they interact with a
 // system that can be externally modified during execution.
@@ -100,26 +116,39 @@ class UrlFilterUiTest
   }
 
   StateChange SignInButtonsAppeared() {
-    return ElementHasAppeared({"#identifierNext"});
+    return ElementIsReady({"#identifierNext > div > button"});
   }
 
-  StateChange ParentPasswordEntryAppeared() {
-    return ElementHasAppeared({"#password"});
+  StateChange PasswordEntryAppeared() {
+    return ElementIsReady({base::StringPrintf("#password input[%s]",
+                                              kPacpPasswordInputSelector)});
+  }
+
+  StateChange PasswordNextButtonAppeared() {
+    return ElementIsReady({"#passwordNext > div > button"});
   }
 
   StateChange PacpApprovalButtonAppeared() {
-    return ElementHasAppeared({base::StringPrintf(
-        "button[aria-label='%s']", kLocalApprovalButtonAriaLabel)});
+    return ElementIsReady({base::StringPrintf("button[aria-label='%s']",
+                                              kLocalApprovalButtonAriaLabel)});
   }
 
   StateChange PacpPasswordFieldAppeared() {
-    return ElementHasAppeared({"[type='password']"});
+    return ElementIsReady({"[type='password']"});
   }
 
   auto WaitForPacpDialogToAppear(ui::ElementIdentifier kPacpDialogId) {
     return Steps(
         WaitForStateChange(kPacpDialogId, PacpApprovalButtonAppeared()),
         WaitForStateChange(kPacpDialogId, PacpPasswordFieldAppeared()));
+  }
+
+  // Fills the parent password field in the PACP dialog and dispatches input
+  // events so the dialog controller updates its state.
+  auto ParentFillsPacpPassword(ui::ElementIdentifier kPacpDialogId) {
+    return Steps(ExecuteJsAt(
+        kPacpDialogId, {base::StringPrintf("[%s]", kPacpPasswordInputSelector)},
+        BuildFillPasswordInputJs(head_of_household().GetAccountPassword())));
   }
 
   // Clicks the approval request button for a pending request on Family Link.
@@ -181,20 +210,20 @@ class UrlFilterUiTest
         // with the prompt for credentials.
         ExecuteJsAt(kChildSignInElementId, {"#identifierNext > div > button"},
                     R"js( (button) => { button.click(); } )js"),
-        // Confirm the password entry field appears.
-        WaitForStateChange(kChildSignInElementId,
-                           ParentPasswordEntryAppeared()),
+        // Confirm the password entry field and submission button are ready.
+        WaitForStateChange(kChildSignInElementId, PasswordEntryAppeared()),
+        WaitForStateChange(kChildSignInElementId, PasswordNextButtonAppeared()),
         Log("Sign-in page is ready"),
-        // Fill-in the password field.
+        // Fill-in the password field and notify Gaia input listeners.
         ExecuteJsAt(kChildSignInElementId,
                     {base::StringPrintf("#password input[%s]",
                                         kPacpPasswordInputSelector)},
-                    base::StringPrintf(
-                        R"js( (entry) => { entry.value = "%s"; } )js",
-                        std::string(child().GetAccountPassword()).c_str())),
+                    BuildFillPasswordInputJs(child().GetAccountPassword())),
+        WaitForStateChange(kChildSignInElementId, PasswordNextButtonAppeared()),
         // Click the "Next" button which concludes the sign-in.
         ExecuteJsAt(kChildSignInElementId, {"#passwordNext > div > button"},
-                    R"js( (button) => { button.click(); } )js"),
+                    R"js( (button) => { button.click(); } )js",
+                    ExecuteJsMode::kFireAndForget),
         Log("Child fills in password and proceeds"));
   }
 
@@ -241,6 +270,33 @@ class UrlFilterUiTest
     state_change.type = StateChange::Type::kExists;
     state_change.where = element_selector;
     state_change.event = kStateChange;
+    state_change.continue_across_navigation = true;
+    return state_change;
+  }
+
+  // Checks that an interactive element exists, is visible and enabled, is laid
+  // out with non-zero bounds, and is not inside a busy container transition.
+  StateChange ElementIsReady(DeepQuery element_selector) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementReadyStateChange);
+    StateChange state_change;
+    state_change.type = StateChange::Type::kExistsAndConditionTrue;
+    state_change.where = element_selector;
+    state_change.test_function = R"js(
+      (el) => {
+        if (el.disabled || el.getAttribute('aria-disabled') === 'true') {
+          return false;
+        }
+        if (el.closest('[aria-busy="true"]') !== null) {
+          return false;
+        }
+        if (window.getComputedStyle(el).visibility !== 'visible') {
+          return false;
+        }
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }
+    )js";
+    state_change.event = kElementReadyStateChange;
     state_change.continue_across_navigation = true;
     return state_change;
   }
@@ -369,6 +425,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Verifies that a parent can grant local web approval for a blocked site via
+// the desktop PACP dialog.
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DesktopLocalWebApprovalGranted) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPacpViewElementId);
@@ -400,12 +458,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DesktopLocalWebApprovalGranted) {
       WaitForPacpDialogToAppear(kPacpViewElementId),
       Log("When parent approval dialog opens"),
       // The parent provides their password.
-      ExecuteJsAt(
-          kPacpViewElementId,
-          {base::StringPrintf("[%s]", kPacpPasswordInputSelector)},
-          base::StringPrintf(
-              R"js( (entry) => { entry.value = "%s"; } )js",
-              std::string(head_of_household().GetAccountPassword()).c_str())),
+      ParentFillsPacpPassword(kPacpViewElementId),
       // The parent clicks the approval button on the dialog.
       UserClicksPacpApprovalButton(kPacpViewElementId),
       Log("When parent approves the request in the dialog"),
@@ -515,6 +568,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
       Log("Then the dialog is dismissed and a cancellation is recorded"))));
 }
 
+// Verifies that a supervised user in a pending sign-in state can
+// re-authenticate from the blocked site interstitial and request approval.
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ChildInPendingStateCanReauthAndRequestApproval) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
