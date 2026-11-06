@@ -47,6 +47,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -94,11 +96,15 @@ public class WebViewResizingHelperUnitTest {
     private View mView;
     private View mContainerView;
     private WebViewResizingHelper mHelper;
+    private final SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier =
+            ObservableSuppliers.createNonNull(0);
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
         mView = new View(mContext);
+        mView.setFocusable(true);
+        mView.setFocusableInTouchMode(true);
         when(mMockThinWebView.getView()).thenReturn(mView);
         doAnswer(
                         invocation -> {
@@ -114,6 +120,7 @@ public class WebViewResizingHelperUnitTest {
         when(mMockWindowAndroid.getDisplay()).thenReturn(mMockDisplayAndroid);
         when(mMockDisplayAndroid.getDipScale()).thenReturn(1.0f);
         when(mMockWindowAndroid.getInsetObserver()).thenReturn(mMockInsetObserver);
+        when(mMockInsetObserver.getSupplierForKeyboardInset()).thenReturn(mKeyboardInsetSupplier);
         when(mMockWindow.getDecorView()).thenReturn(mMockDecorView);
         when(mMockComponentProvider.createResizingPlaceholderCoordinator(any(), anyInt(), anyInt()))
                 .thenAnswer(
@@ -880,6 +887,90 @@ public class WebViewResizingHelperUnitTest {
     }
 
     @Test
+    public void testKeyboardShowing_FocusedSidePanel_Resizes() {
+        createSidePanelHelperWithKeyboard(/* webContentsHeightPx= */ 400);
+        mView.requestFocus();
+        clearInvocations(mMockThinWebView);
+
+        layoutResizingContainer(300, 200);
+
+        verify(mMockThinWebView).resizeWebContents(300, 200);
+    }
+
+    @Test
+    public void testKeyboardShowing_UnfocusedSidePanel_KeepsNoKeyboardHeight() {
+        View otherView = createSidePanelHelperWithKeyboard(/* webContentsHeightPx= */ 200);
+        otherView.requestFocus();
+        clearInvocations(mMockThinWebView);
+
+        layoutResizingContainer(300, 200);
+
+        verify(mMockThinWebView).resizeWebContents(300, 400);
+    }
+
+    @Test
+    public void testKeyboardShowing_FocusLoss_RestoresHeight() {
+        View otherView = createSidePanelHelperWithKeyboard(/* webContentsHeightPx= */ 200);
+        mView.requestFocus();
+        layoutResizingContainer(300, 200);
+        clearInvocations(mMockThinWebView);
+
+        otherView.requestFocus();
+        mHelper.onFocusChanged();
+
+        verify(mMockThinWebView).resizeWebContents(300, 400);
+    }
+
+    @Test
+    public void testKeyboardShowing_FocusGain_Shrinks() {
+        View otherView = createSidePanelHelperWithKeyboard(/* webContentsHeightPx= */ 400);
+        otherView.requestFocus();
+        layoutResizingContainer(300, 200);
+        clearInvocations(mMockThinWebView);
+
+        mView.requestFocus();
+        mHelper.onFocusChanged();
+
+        verify(mMockThinWebView).resizeWebContents(300, 200);
+    }
+
+    @Test
+    public void testKeyboardShowing_OverlayMode_DoesNotAddKeyboardHeight() {
+        View otherView = createSidePanelHelperWithKeyboard(/* webContentsHeightPx= */ 400);
+        otherView.requestFocus();
+        when(mMockInsetObserver.isKeyboardInOverlayMode()).thenReturn(true);
+        clearInvocations(mMockThinWebView);
+
+        layoutResizingContainer(300, 200);
+
+        verify(mMockThinWebView).resizeWebContents(300, 200);
+    }
+
+    @Test
+    public void testOnFocusChanged_ViewportSizeFixed_DoesNotResize() {
+        createSidePanelHelperWithKeyboard(/* webContentsHeightPx= */ 200);
+        mView.requestFocus();
+        layoutResizingContainer(300, 200);
+        assertNotNull(mHelper.requestResize());
+        clearInvocations(mMockThinWebView);
+
+        mView.clearFocus();
+        mHelper.onFocusChanged();
+
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testOnFocusChanged_BottomSheet_DoesNotResize() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        clearInvocations(mMockThinWebView);
+
+        mHelper.onFocusChanged();
+
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+    }
+
+    @Test
     public void testResizingContainer_LayoutChange_RespectsViewportFixedLimit() {
         mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
@@ -1470,5 +1561,52 @@ public class WebViewResizingHelperUnitTest {
 
         listener.onEnd(anim1);
         verify(mMockThinWebView).resizeWebContents(1080, 1200);
+    }
+
+    /**
+     * Replaces {@link #mHelper} with a side panel helper attached to the activity, with a 200px
+     * keyboard showing and the WebContents at {@code webContentsHeightPx}.
+     *
+     * @return A focusable view outside the side panel.
+     */
+    private View createSidePanelHelperWithKeyboard(int webContentsHeightPx) {
+        mHelper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        mMockBottomSheetController,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        /* isSidePanel= */ true,
+                        mMockComponentProvider);
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        View otherView = new View(mContext);
+        otherView.setFocusable(true);
+        otherView.setFocusableInTouchMode(true);
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            FrameLayout root = new FrameLayout(activity);
+                            root.addView(
+                                    mHelper.getResizingContainer(),
+                                    new FrameLayout.LayoutParams(300, 200));
+                            root.addView(otherView);
+                            activity.setContentView(root);
+                        });
+
+        mKeyboardInsetSupplier.set(200);
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 300));
+        when(mMockWebContents.getHeight())
+                .thenReturn(ViewUtils.pxToDp(mContext, webContentsHeightPx));
+        return otherView;
+    }
+
+    private void layoutResizingContainer(int width, int height) {
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, width, height);
     }
 }

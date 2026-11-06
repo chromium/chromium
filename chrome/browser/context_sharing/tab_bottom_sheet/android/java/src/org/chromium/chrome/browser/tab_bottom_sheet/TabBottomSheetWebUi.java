@@ -172,6 +172,8 @@ public class TabBottomSheetWebUi {
         mContentView = contentView;
 
         setupContentViewAttachListener(contentView);
+        contentView.setOnFocusChangeListener(
+                (v, hasFocus) -> mWebViewResizingHelper.onFocusChanged());
         setupViewAndroidDelegate(contentView);
         setupContextMenuPopulator();
         attachToThinWebView(contentView);

@@ -499,6 +499,16 @@ public class WebViewResizingHelper {
         mAnimationHandler.startAnimation(valueAnimator);
     }
 
+    /**
+     * Called when focus enters or leaves the WebContents' view. In the side panel, the WebContents
+     * only shrinks for the keyboard while it has focus, so the bounds need to be recomputed.
+     */
+    public void onFocusChanged() {
+        if (mIsSidePanel && !mIsViewportSizeFixed) {
+            updateBounds();
+        }
+    }
+
     private boolean updateBounds() {
         return updateBounds(/* ignoreCache= */ false);
     }
@@ -506,6 +516,26 @@ public class WebViewResizingHelper {
     private boolean updateBounds(boolean ignoreCache) {
         if (mPauseInsetUpdates || isActivityInactive(mWindowAndroid)) {
             return false;
+        }
+
+        @Px int resizingContainerWidth = mResizingContainer.getMeasuredWidth();
+        @Px int resizingContainerHeight = mResizingContainer.getMeasuredHeight();
+
+        // TODO(crbug.com/524719583): Make this feature-agnostic.
+        if (mIsSidePanel) {
+            if (resizingContainerWidth == 0) {
+                resizingContainerWidth =
+                        ViewUtils.dpToPx(
+                                mContext, SidePanelContainerCoordinator.WIDE_SIDE_PANEL_WIDTH_DP);
+            }
+            if (resizingContainerHeight == 0) {
+                resizingContainerHeight = getDecorViewHeight();
+            } else if (!hasWebContentsFocus()) {
+                // The keyboard was opened by something else (the page or another app in split
+                // screen). Keep the WebContents at its no-keyboard height and let the container
+                // clip it, rather than pushing the Glic UI up.
+                resizingContainerHeight += getKeyboardInsetPx();
+            }
         }
 
         if (mThinWebView != null) {
@@ -526,20 +556,7 @@ public class WebViewResizingHelper {
             return false;
         }
 
-        @Px int resizingContainerWidth = mResizingContainer.getMeasuredWidth();
-        @Px int resizingContainerHeight = mResizingContainer.getMeasuredHeight();
-
-        // TODO(crbug.com/524719583): Make this feature-agnostic.
-        if (mIsSidePanel) {
-            if (resizingContainerWidth == 0) {
-                resizingContainerWidth =
-                        ViewUtils.dpToPx(
-                                mContext, SidePanelContainerCoordinator.WIDE_SIDE_PANEL_WIDTH_DP);
-            }
-            if (resizingContainerHeight == 0) {
-                resizingContainerHeight = getDecorViewHeight();
-            }
-        } else if (resizingContainerWidth == 0 || resizingContainerHeight == 0) {
+        if (!mIsSidePanel && (resizingContainerWidth == 0 || resizingContainerHeight == 0)) {
             return false;
         }
 
@@ -561,6 +578,28 @@ public class WebViewResizingHelper {
         }
 
         return sizeChanged;
+    }
+
+    private boolean hasWebContentsFocus() {
+        if (mThinWebView != null) {
+            return mThinWebView.getView().hasFocus();
+        }
+        if (mWebContents != null && mWebContents.getViewAndroidDelegate() != null) {
+            View containerView = mWebContents.getViewAndroidDelegate().getContainerView();
+            return containerView != null && containerView.hasFocus();
+        }
+        return false;
+    }
+
+    /**
+     * Returns the keyboard height that shrinks the side panel container. Mirrors {@code
+     * ApplicationViewportInsetTracker#computeInsets()}: in overlay mode the IME inset is consumed
+     * and doesn't shrink the container. The accessory bar isn't included because it only insets the
+     * CompositorViewHolder.
+     */
+    private @Px int getKeyboardInsetPx() {
+        if (mInsetObserver == null || mInsetObserver.isKeyboardInOverlayMode()) return 0;
+        return mInsetObserver.getSupplierForKeyboardInset().get();
     }
 
     private static boolean isApproxEqual(int a, int b, int epsilon) {

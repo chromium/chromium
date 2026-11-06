@@ -277,6 +277,15 @@ public class TabBottomSheetWebUiUnitTest {
     }
 
     @Test
+    public void testSetWebContents_ListensForContentViewFocusChanges() {
+        assertNull(mContentView.getOnFocusChangeListener());
+
+        mWebUi.setWebContents(mWebContents, true);
+
+        assertNotNull(mContentView.getOnFocusChangeListener());
+    }
+
+    @Test
     public void testSetWebContents_Null_ResetsThinWebView() {
         WebContents nonNullWebContents = mock(WebContents.class);
         EventForwarder mockEventForwarder = mock(EventForwarder.class);
