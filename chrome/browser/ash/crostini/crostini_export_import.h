@@ -83,18 +83,15 @@ class CrostiniExportImport : public KeyedService,
         bool in_progress) = 0;
   };
 
-  using OnceTrackerFactory = base::OnceCallback<std::unique_ptr<
-      CrostiniExportImportStatusTracker>(ExportImportType, base::FilePath)>;
-
   struct OperationData {
     OperationData(ExportImportType type,
                   guest_os::GuestId id,
-                  OnceTrackerFactory factory);
+                  std::string notification_id);
     ~OperationData();
 
     ExportImportType type;
     guest_os::GuestId container_id;
-    OnceTrackerFactory tracker_factory;
+    std::string notification_id;
   };
 
   explicit CrostiniExportImport(Profile* profile);
@@ -157,28 +154,6 @@ class CrostiniExportImport : public KeyedService,
       base::FilePath path,
       CrostiniManager::CrostiniResultCallback callback);
 
-  // Export |container_id| showing FileDialog, and using |tracker_factory| for
-  // status tracking.
-  void ExportContainer(guest_os::GuestId container_id,
-                       content::WebContents* web_contents,
-                       OnceTrackerFactory tracker_factory);
-  // Import |container_id| showing FileDialog, and using |tracker_factory| for
-  // status tracking.
-  void ImportContainer(guest_os::GuestId container_id,
-                       content::WebContents* web_contents,
-                       OnceTrackerFactory tracker_factory);
-
-  // Export |container| to |path| and invoke |tracker_factory| to create a
-  // tracker for this operation.
-  void ExportContainer(guest_os::GuestId container_id,
-                       base::FilePath path,
-                       OnceTrackerFactory tracker_factory);
-  // Import |container| from |path| and invoke |tracker_factory| to create a
-  // tracker for this operation.
-  void ImportContainer(guest_os::GuestId container_id,
-                       base::FilePath path,
-                       OnceTrackerFactory tracker_factory);
-
   // Cancel currently running export/import.
   void CancelOperation(ExportImportType type, guest_os::GuestId id);
 
@@ -229,9 +204,6 @@ class CrostiniExportImport : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportDiskImageCancelled);
 
-  void FillOperationData(ExportImportType type,
-                         guest_os::GuestId id,
-                         OnceTrackerFactory cb);
   void FillOperationData(ExportImportType type, guest_os::GuestId id);
   void FillOperationData(ExportImportType type);
 
@@ -318,20 +290,20 @@ class CrostiniExportImport : public KeyedService,
 
   std::string GetUniqueNotificationId();
 
-  using TrackerMap =
+  using NotificationControllerMap =
       std::map<guest_os::GuestId,
-               std::unique_ptr<CrostiniExportImportStatusTracker>>;
+               std::unique_ptr<CrostiniExportImportNotificationController>>;
 
-  std::unique_ptr<CrostiniExportImportStatusTracker> RemoveTracker(
-      TrackerMap::iterator it);
+  std::unique_ptr<CrostiniExportImportNotificationController>
+  RemoveNotificationController(NotificationControllerMap::iterator it);
 
   raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
-  TrackerMap status_trackers_;
+  NotificationControllerMap notification_controllers_;
   std::unique_ptr<OperationData> operation_data_;
-  // Trackers must have unique-per-profile identifiers.
+  // Notifications must have unique-per-profile identifiers.
   // A non-static member on a profile-keyed-service will suffice.
-  int next_status_tracker_id_ = 0;
+  int next_notification_id_ = 0;
   base::ObserverList<Observer> observers_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<CrostiniExportImport> weak_ptr_factory_{this};

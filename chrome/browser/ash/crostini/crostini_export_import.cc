@@ -37,6 +37,8 @@
 
 namespace crostini {
 
+using Status = CrostiniExportImportNotificationController::Status;
+
 CrostiniExportImport::CrostiniExportImport(Profile* profile)
     : profile_(profile) {
   CrostiniManager* manager = CrostiniManager::GetForProfile(profile_);
@@ -62,34 +64,18 @@ void CrostiniExportImport::Shutdown() {
 CrostiniExportImport::OperationData::OperationData(
     ExportImportType type,
     guest_os::GuestId container_id,
-    OnceTrackerFactory tracker_factory)
+    std::string notification_id)
     : type(type),
       container_id(std::move(container_id)),
-      tracker_factory(std::move(tracker_factory)) {}
+      notification_id(std::move(notification_id)) {}
 
 CrostiniExportImport::OperationData::~OperationData() = default;
 
 void CrostiniExportImport::FillOperationData(ExportImportType type,
-                                             guest_os::GuestId container_id,
-                                             OnceTrackerFactory factory) {
+                                             guest_os::GuestId container_id) {
   CHECK(!operation_data_);
   operation_data_ = std::make_unique<OperationData>(
-      type, std::move(container_id), std::move(factory));
-}
-
-void CrostiniExportImport::FillOperationData(ExportImportType type,
-                                             guest_os::GuestId container_id) {
-  OnceTrackerFactory factory = base::BindOnce(
-      [](Profile* profile, guest_os::GuestId container_id,
-         std::string notification_id, ExportImportType type,
-         base::FilePath path)
-          -> std::unique_ptr<CrostiniExportImportStatusTracker> {
-        return std::make_unique<CrostiniExportImportNotificationController>(
-            profile, type, std::move(notification_id), std::move(path),
-            std::move(container_id));
-      },
-      profile_, container_id, GetUniqueNotificationId());
-  FillOperationData(type, std::move(container_id), std::move(factory));
+      type, std::move(container_id), GetUniqueNotificationId());
 }
 
 void CrostiniExportImport::FillOperationData(ExportImportType type) {
@@ -123,22 +109,6 @@ void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
   // Technically this could be ExportImportType::IMPORT_DISK_IMAGE but we won't
   // know for sure until we see the file type chosen.
   FillOperationData(ExportImportType::IMPORT, std::move(container_id));
-  OpenFileDialog(web_contents);
-}
-
-void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
-                                           content::WebContents* web_contents,
-                                           OnceTrackerFactory tracker_factory) {
-  FillOperationData(ExportImportType::EXPORT, std::move(container_id),
-                    std::move(tracker_factory));
-  OpenFileDialog(web_contents);
-}
-
-void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
-                                           content::WebContents* web_contents,
-                                           OnceTrackerFactory tracker_factory) {
-  FillOperationData(ExportImportType::IMPORT, std::move(container_id),
-                    std::move(tracker_factory));
   OpenFileDialog(web_contents);
 }
 
@@ -224,13 +194,13 @@ void CrostiniExportImport::FileSelected(const ui::SelectedFileInfo& file,
 }
 
 void CrostiniExportImport::FileSelectionCanceled() {
-  if (operation_data_->tracker_factory) {
-    // Create the status tracker so we can let it know the operation was
-    // canceled.
-    auto status_tracker = std::move(operation_data_->tracker_factory)
-                              .Run(operation_data_->type, base::FilePath());
-    status_tracker->SetStatusCancelled();
-  }
+  // Create the notification controller so we can let it know the operation was
+  // canceled.
+  auto controller =
+      std::make_unique<CrostiniExportImportNotificationController>(
+          profile_, operation_data_->type, operation_data_->notification_id,
+          base::FilePath(), operation_data_->container_id);
+  controller->SetStatusCancelled();
   operation_data_.reset();
   select_folder_dialog_.reset();
 }
@@ -284,22 +254,6 @@ void CrostiniExportImport::CreateContainerFromImport(
   Start(path, /* create_new_container= */ true, std::move(callback));
 }
 
-void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
-                                           base::FilePath path,
-                                           OnceTrackerFactory tracker_factory) {
-  FillOperationData(ExportImportType::EXPORT, std::move(container_id),
-                    std::move(tracker_factory));
-  Start(path, /* create_new_container= */ false, base::DoNothing());
-}
-
-void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
-                                           base::FilePath path,
-                                           OnceTrackerFactory tracker_factory) {
-  FillOperationData(ExportImportType::IMPORT, std::move(container_id),
-                    std::move(tracker_factory));
-  Start(path, /* create_new_container= */ false, base::DoNothing());
-}
-
 void CrostiniExportImport::Start(
     base::FilePath path,
     bool create_new_container,
@@ -309,21 +263,23 @@ void CrostiniExportImport::Start(
     return std::move(callback).Run(CrostiniResult::NOT_ALLOWED);
   }
 
-  auto status_tracker = std::move(operation_data->tracker_factory)
-                            .Run(operation_data->type, path);
-  status_tracker->SetStatusRunning(0);
+  auto controller =
+      std::make_unique<CrostiniExportImportNotificationController>(
+          profile_, operation_data->type, operation_data->notification_id, path,
+          operation_data->container_id);
+  controller->SetStatusRunning(0);
 
-  auto it = status_trackers_.find(operation_data->container_id);
-  if (it != status_trackers_.end()) {
+  auto it = notification_controllers_.find(operation_data->container_id);
+  if (it != notification_controllers_.end()) {
     // There is already an operation in progress. Ensure the existing
-    // status_tracker is (re)displayed so the user knows why this new concurrent
-    // operation failed, and show a failure status_tracker for the new request.
+    // notification is (re)displayed so the user knows why this new concurrent
+    // operation failed, and show a failure notification for the new request.
     it->second->ForceRedisplay();
-    status_tracker->SetStatusFailedConcurrentOperation(it->second->type());
+    controller->SetStatusFailedConcurrentOperation(it->second->type());
     return;
   } else {
-    status_trackers_.emplace_hint(it, operation_data->container_id,
-                                  std::move(status_tracker));
+    notification_controllers_.emplace_hint(it, operation_data->container_id,
+                                           std::move(controller));
     for (auto& observer : observers_) {
       observer.OnCrostiniExportImportOperationStatusChanged(true);
     }
@@ -447,41 +403,41 @@ void CrostiniExportImport::AfterDiskImageOperation(
     const guest_os::GuestId& container_id,
     CrostiniManager::CrostiniResultCallback callback,
     CrostiniResult result) {
-  auto it = status_trackers_.find(container_id);
-  if (it == status_trackers_.end()) {
-    LOG(WARNING) << container_id << " has no status_tracker to update";
+  auto it = notification_controllers_.find(container_id);
+  if (it == notification_controllers_.end()) {
+    LOG(WARNING) << container_id << " has no notification controller to update";
     std::move(callback).Run(result);
     return;
   }
 
   if (result == CrostiniResult::SUCCESS) {
     switch (it->second->status()) {
-      case CrostiniExportImportStatusTracker::Status::CANCELLING: {
+      case Status::CANCELLING: {
         // If a user requests to cancel, but the export completes before the
         // cancel can happen (|result| == SUCCESS), then removing the exported
         // file is functionally the same as a successful cancel.
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
             base::GetDeleteFileCallback(it->second->path()));
-        RemoveTracker(it)->SetStatusCancelled();
+        RemoveNotificationController(it)->SetStatusCancelled();
         break;
       }
-      case CrostiniExportImportStatusTracker::Status::RUNNING:
-        RemoveTracker(it)->SetStatusDone();
+      case Status::RUNNING:
+        RemoveNotificationController(it)->SetStatusDone();
         break;
       default:
         NOTREACHED();
     }
   } else if (result == CrostiniResult::DISK_IMAGE_CANCELLED) {
     switch (it->second->status()) {
-      case CrostiniExportImportStatusTracker::Status::CANCELLING: {
+      case Status::CANCELLING: {
         // If a user requests to cancel, and the export is cancelled (|result|
         // == DISK_IMAGE_CANCELLED), then the partially exported file needs to
         // be cleaned up.
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
             base::GetDeleteFileCallback(it->second->path()));
-        RemoveTracker(it)->SetStatusCancelled();
+        RemoveNotificationController(it)->SetStatusCancelled();
         break;
       }
       default:
@@ -491,32 +447,27 @@ void CrostiniExportImport::AfterDiskImageOperation(
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::GetDeleteFileCallback(it->second->path()));
-    CHECK(it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::RUNNING ||
-              it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::CANCELLING,
+    CHECK(it->second->status() == Status::RUNNING ||
+              it->second->status() == Status::CANCELLING,
           base::NotFatalUntil::M160);
-    RemoveTracker(it)->SetStatusFailedBadImage();
+    RemoveNotificationController(it)->SetStatusFailedBadImage();
   } else if (result == CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE &&
              (it->second->type() == ExportImportType::IMPORT ||
               it->second->type() == ExportImportType::IMPORT_DISK_IMAGE)) {
-    CHECK(it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::RUNNING ||
-              it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::CANCELLING,
+    CHECK(it->second->status() == Status::RUNNING ||
+              it->second->status() == Status::CANCELLING,
           base::NotFatalUntil::M160);
-    RemoveTracker(it)->SetStatusFailedInsufficientSpaceUnknownAmount();
+    RemoveNotificationController(it)
+        ->SetStatusFailedInsufficientSpaceUnknownAmount();
   } else {
     LOG(ERROR) << "Error exporting " << static_cast<int>(result);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::GetDeleteFileCallback(it->second->path()));
-    CHECK(it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::RUNNING ||
-              it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::CANCELLING,
+    CHECK(it->second->status() == Status::RUNNING ||
+              it->second->status() == Status::CANCELLING,
           base::NotFatalUntil::M160);
-    RemoveTracker(it)->SetStatusFailed();
+    RemoveNotificationController(it)->SetStatusFailed();
   }
 
   std::move(callback).Run(result);
@@ -567,11 +518,12 @@ void CrostiniExportImport::ExportAfterSharing(
     LOG(ERROR) << "Error sharing for export host path=" << path.value()
                << ", container path=" << container_path.value() << ": "
                << failure_reason;
-    auto it = status_trackers_.find(container_id);
-    if (it != status_trackers_.end()) {
-      RemoveTracker(it)->SetStatusFailed();
+    auto it = notification_controllers_.find(container_id);
+    if (it != notification_controllers_.end()) {
+      RemoveNotificationController(it)->SetStatusFailed();
     } else {
-      NOTREACHED() << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id
+                   << " has no notification controller to update";
     }
     return;
   }
@@ -589,25 +541,25 @@ void CrostiniExportImport::OnExportComplete(
     CrostiniResult result,
     uint64_t container_size,
     uint64_t compressed_size) {
-  auto it = status_trackers_.find(container_id);
-  if (it == status_trackers_.end()) {
-    NOTREACHED() << container_id << " has no status_tracker to update";
+  auto it = notification_controllers_.find(container_id);
+  if (it == notification_controllers_.end()) {
+    NOTREACHED() << container_id << " has no notification controller to update";
   }
 
   ExportContainerResult enum_hist_result = ExportContainerResult::kSuccess;
   if (result == CrostiniResult::SUCCESS) {
     switch (it->second->status()) {
-      case CrostiniExportImportStatusTracker::Status::CANCELLING: {
+      case Status::CANCELLING: {
         // If a user requests to cancel, but the export completes before the
         // cancel can happen (|result| == SUCCESS), then removing the exported
         // file is functionally the same as a successful cancel.
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
             base::GetDeleteFileCallback(it->second->path()));
-        RemoveTracker(it)->SetStatusCancelled();
+        RemoveNotificationController(it)->SetStatusCancelled();
         break;
       }
-      case CrostiniExportImportStatusTracker::Status::RUNNING:
+      case Status::RUNNING:
         UMA_HISTOGRAM_LONG_TIMES("Crostini.BackupTimeSuccess",
                                  base::Time::Now() - start);
         // Log backup size statistics.
@@ -622,21 +574,21 @@ void CrostiniExportImport::OnExportComplete(
               "Crostini.BackupSizeRatio",
               std::round(compressed_size * 100.0 / container_size));
         }
-        RemoveTracker(it)->SetStatusDone();
+        RemoveNotificationController(it)->SetStatusDone();
         break;
       default:
         NOTREACHED();
     }
   } else if (result == CrostiniResult::CONTAINER_EXPORT_IMPORT_CANCELLED) {
     switch (it->second->status()) {
-      case CrostiniExportImportStatusTracker::Status::CANCELLING: {
+      case Status::CANCELLING: {
         // If a user requests to cancel, and the export is cancelled (|result|
         // == CONTAINER_EXPORT_IMPORT_CANCELLED), then the partially exported
         // file needs to be cleaned up.
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
             base::GetDeleteFileCallback(it->second->path()));
-        RemoveTracker(it)->SetStatusCancelled();
+        RemoveNotificationController(it)->SetStatusCancelled();
         break;
       }
       default:
@@ -661,12 +613,10 @@ void CrostiniExportImport::OnExportComplete(
     }
     UMA_HISTOGRAM_LONG_TIMES("Crostini.BackupTimeFailed",
                              base::Time::Now() - start);
-    CHECK(it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::RUNNING ||
-              it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::CANCELLING,
+    CHECK(it->second->status() == Status::RUNNING ||
+              it->second->status() == Status::CANCELLING,
           base::NotFatalUntil::M160);
-    RemoveTracker(it)->SetStatusFailed();
+    RemoveNotificationController(it)->SetStatusFailed();
   }
   UMA_HISTOGRAM_ENUMERATION("Crostini.Backup", enum_hist_result);
   std::move(callback).Run(result);
@@ -675,11 +625,11 @@ void CrostiniExportImport::OnExportComplete(
 void CrostiniExportImport::OnExportContainerProgress(
     const guest_os::GuestId& container_id,
     const StreamingExportStatus& status) {
-  auto it = status_trackers_.find(container_id);
-  if (it == status_trackers_.end()) {
+  auto it = notification_controllers_.find(container_id);
+  if (it == notification_controllers_.end()) {
     LOG(WARNING) << container_id
-                 << " has no status_tracker to update, perhaps Chrome crashed "
-                    "while an export was in progress.";
+                 << " has no notification controller to update, perhaps Chrome "
+                    "crashed while an export was in progress.";
     return;
   }
 
@@ -704,11 +654,12 @@ void CrostiniExportImport::ImportAfterSharing(
     LOG(ERROR) << "Error sharing for import path=" << path
                << ", container path=" << container_path.value() << ": "
                << failure_reason;
-    auto it = status_trackers_.find(container_id);
-    if (it != status_trackers_.end()) {
-      RemoveTracker(it)->SetStatusFailed();
+    auto it = notification_controllers_.find(container_id);
+    if (it != notification_controllers_.end()) {
+      RemoveNotificationController(it)->SetStatusFailed();
     } else {
-      NOTREACHED() << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id
+                   << " has no notification controller to update";
     }
     return;
   }
@@ -724,42 +675,44 @@ void CrostiniExportImport::OnImportComplete(
     const guest_os::GuestId& container_id,
     CrostiniManager::CrostiniResultCallback callback,
     CrostiniResult result) {
-  auto it = status_trackers_.find(container_id);
+  auto it = notification_controllers_.find(container_id);
 
   ImportContainerResult enum_hist_result = ImportContainerResult::kSuccess;
   if (result == CrostiniResult::SUCCESS) {
     UMA_HISTOGRAM_LONG_TIMES("Crostini.RestoreTimeSuccess",
                              base::Time::Now() - start);
-    if (it != status_trackers_.end()) {
+    if (it != notification_controllers_.end()) {
       switch (it->second->status()) {
-        case CrostiniExportImportStatusTracker::Status::RUNNING:
+        case Status::RUNNING:
           // If a user requests to cancel, but the import completes before the
           // cancel can happen, then the container will have been imported over
           // and the cancel will have failed. However the period of time in
           // which this can happen is very small (<5s), so it feels quite
           // natural to pretend the cancel did not happen, and instead display
           // success.
-        case CrostiniExportImportStatusTracker::Status::CANCELLING:
-          RemoveTracker(it)->SetStatusDone();
+        case Status::CANCELLING:
+          RemoveNotificationController(it)->SetStatusDone();
           break;
         default:
           NOTREACHED();
       }
     } else {
-      NOTREACHED() << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id
+                   << " has no notification controller to update";
     }
   } else if (result ==
              crostini::CrostiniResult::CONTAINER_EXPORT_IMPORT_CANCELLED) {
-    if (it != status_trackers_.end()) {
+    if (it != notification_controllers_.end()) {
       switch (it->second->status()) {
-        case CrostiniExportImportStatusTracker::Status::CANCELLING:
-          RemoveTracker(it)->SetStatusCancelled();
+        case Status::CANCELLING:
+          RemoveNotificationController(it)->SetStatusCancelled();
           break;
         default:
           NOTREACHED();
       }
     } else {
-      NOTREACHED() << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id
+                   << " has no notification controller to update";
     }
   } else {
     LOG(ERROR) << "Error importing " << int(result);
@@ -782,22 +735,22 @@ void CrostiniExportImport::OnImportComplete(
         enum_hist_result = ImportContainerResult::kFailed;
     }
     // If the operation didn't start successfully or the vm stops during the
-    // import, then the status_tracker status will not have been set in
+    // import, then the controller's status will not have been set in
     // OnImportContainerProgress, so it needs to be updated.
     if (result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED ||
         result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STOPPED ||
         result == CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_VM_STARTED) {
-      if (it != status_trackers_.end()) {
-        CHECK(it->second->status() ==
-                  CrostiniExportImportStatusTracker::Status::RUNNING,
+      if (it != notification_controllers_.end()) {
+        CHECK(it->second->status() == Status::RUNNING,
               base::NotFatalUntil::M160);
-        RemoveTracker(it)->SetStatusFailed();
+        RemoveNotificationController(it)->SetStatusFailed();
       } else {
-        NOTREACHED() << container_id << " has no status_tracker to update";
+        NOTREACHED() << container_id
+                     << " has no notification controller to update";
       }
     } else {
-      DCHECK(it == status_trackers_.end())
-          << container_id << " has unexpected status_tracker";
+      DCHECK(it == notification_controllers_.end())
+          << container_id << " has unexpected notification controller";
     }
     UMA_HISTOGRAM_LONG_TIMES("Crostini.RestoreTimeFailed",
                              base::Time::Now() - start);
@@ -813,11 +766,11 @@ void CrostiniExportImport::OnDiskImageProgress(
     const guest_os::GuestId& container_id,
     DiskImageProgressStatus status,
     int progress) {
-  auto it = status_trackers_.find(container_id);
-  if (it == status_trackers_.end()) {
+  auto it = notification_controllers_.find(container_id);
+  if (it == notification_controllers_.end()) {
     LOG(WARNING) << container_id
-                 << " has no status_tracker to update, perhaps Chrome crashed "
-                    "while a disk image operation was in progress.";
+                 << " has no notification controller to update, perhaps Chrome "
+                    "crashed while a disk image operation was in progress.";
     return;
   }
 
@@ -842,11 +795,11 @@ void CrostiniExportImport::OnImportContainerProgress(
     const std::string& architecture_container,
     uint64_t available_space,
     uint64_t minimum_required_space) {
-  auto it = status_trackers_.find(container_id);
-  if (it == status_trackers_.end()) {
+  auto it = notification_controllers_.find(container_id);
+  if (it == notification_controllers_.end()) {
     LOG(WARNING) << container_id
-                 << " has no status_tracker to update, perhaps Chrome crashed "
-                    "while an import was in progress.";
+                 << " has no notification controller to update, perhaps Chrome "
+                    "crashed while an import was in progress.";
     return;
   }
 
@@ -861,13 +814,13 @@ void CrostiniExportImport::OnImportContainerProgress(
       break;
     // Failure, set error message.
     case ImportContainerProgressStatus::FAILURE_ARCHITECTURE:
-      RemoveTracker(it)->SetStatusFailedArchitectureMismatch(
+      RemoveNotificationController(it)->SetStatusFailedArchitectureMismatch(
           architecture_container, architecture_device);
       break;
     case ImportContainerProgressStatus::FAILURE_SPACE:
       CHECK_GE(minimum_required_space, available_space,
                base::NotFatalUntil::M160);
-      RemoveTracker(it)->SetStatusFailedInsufficientSpace(
+      RemoveNotificationController(it)->SetStatusFailedInsufficientSpace(
           minimum_required_space - available_space);
       break;
     default:
@@ -877,25 +830,26 @@ void CrostiniExportImport::OnImportContainerProgress(
 
 std::string CrostiniExportImport::GetUniqueNotificationId() {
   return base::StringPrintf("crostini_export_import_%d",
-                            next_status_tracker_id_++);
+                            next_notification_id_++);
 }
 
-std::unique_ptr<CrostiniExportImportStatusTracker>
-CrostiniExportImport::RemoveTracker(TrackerMap::iterator it) {
-  CHECK(it != status_trackers_.end(), base::NotFatalUntil::M160);
-  auto status_tracker = std::move(it->second);
-  status_trackers_.erase(it);
+std::unique_ptr<CrostiniExportImportNotificationController>
+CrostiniExportImport::RemoveNotificationController(
+    NotificationControllerMap::iterator it) {
+  CHECK(it != notification_controllers_.end(), base::NotFatalUntil::M160);
+  auto controller = std::move(it->second);
+  notification_controllers_.erase(it);
   for (auto& observer : observers_) {
     observer.OnCrostiniExportImportOperationStatusChanged(false);
   }
-  return status_tracker;
+  return controller;
 }
 
 void CrostiniExportImport::CancelOperation(ExportImportType type,
                                            guest_os::GuestId container_id) {
-  auto it = status_trackers_.find(container_id);
-  if (it == status_trackers_.end()) {
-    NOTREACHED() << container_id << " has no status_tracker to cancel";
+  auto it = notification_controllers_.find(container_id);
+  if (it == notification_controllers_.end()) {
+    NOTREACHED() << container_id << " has no notification controller to cancel";
   }
 
   it->second->SetStatusCancelling();
@@ -919,19 +873,17 @@ void CrostiniExportImport::CancelOperation(ExportImportType type,
 }
 
 bool CrostiniExportImport::GetExportImportOperationStatus() const {
-  return status_trackers_.size() != 0;
+  return notification_controllers_.size() != 0;
 }
 
 base::WeakPtr<CrostiniExportImportNotificationController>
 CrostiniExportImport::GetNotificationControllerForTesting(
     guest_os::GuestId container_id) {
-  auto it = status_trackers_.find(container_id);
-  if (it == status_trackers_.end()) {
+  auto it = notification_controllers_.find(container_id);
+  if (it == notification_controllers_.end()) {
     return nullptr;
   }
-  return static_cast<CrostiniExportImportNotificationController*>(
-             it->second.get())
-      ->GetWeakPtr();
+  return it->second->GetWeakPtr();
 }
 
 }  // namespace crostini

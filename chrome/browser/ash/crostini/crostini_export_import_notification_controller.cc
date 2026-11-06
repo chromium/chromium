@@ -10,7 +10,10 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/byte_size.h"
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/platform_util.h"
@@ -21,6 +24,7 @@
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -55,11 +59,16 @@ CrostiniExportImportNotificationController::
         const std::string& notification_id,
         base::FilePath path,
         guest_os::GuestId container_id)
-    : CrostiniExportImportStatusTracker(type, std::move(path)),
+    : type_(type),
+      path_(std::move(path)),
       profile_(profile),
       container_id_(std::move(container_id)),
       delegate_(
           base::MakeRefCounted<CrostiniExportImportClickCloseDelegate>()) {
+  CHECK(type == ExportImportType::EXPORT || type == ExportImportType::IMPORT ||
+            type == ExportImportType::EXPORT_DISK_IMAGE ||
+            type == ExportImportType::IMPORT_DISK_IMAGE,
+        base::NotFatalUntil::M160);
   delegate_->SetCloseCallback(base::BindRepeating(
       &CrostiniExportImportNotificationController::on_notification_closed,
       weak_ptr_factory_.GetWeakPtr()));
@@ -98,6 +107,120 @@ void CrostiniExportImportNotificationController::ForceRedisplay() {
   notification->set_profile_id(user.GetAccountId().GetUserEmail());
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
+}
+
+void CrostiniExportImportNotificationController::SetStatusRunning(
+    int progress_percent) {
+  CHECK(status_ == Status::NONE || status_ == Status::RUNNING ||
+            status_ == Status::CANCELLING,
+        base::NotFatalUntil::M160);
+  // Progress updates can still be received while the notification is being
+  // cancelled. These should not be displayed, as the operation will eventually
+  // cancel (or fail to cancel).
+  if (status_ == Status::CANCELLING) {
+    return;
+  }
+
+  status_ = Status::RUNNING;
+  SetStatusRunningUI(progress_percent);
+}
+
+void CrostiniExportImportNotificationController::SetStatusCancelling() {
+  CHECK(status_ == Status::RUNNING, base::NotFatalUntil::M160);
+
+  status_ = Status::CANCELLING;
+  SetStatusCancellingUI();
+}
+
+void CrostiniExportImportNotificationController::SetStatusDone() {
+  CHECK(status_ == Status::RUNNING || (type() == ExportImportType::IMPORT &&
+                                       status_ == Status::CANCELLING),
+        base::NotFatalUntil::M160);
+
+  status_ = Status::DONE;
+  SetStatusDoneUI();
+}
+
+void CrostiniExportImportNotificationController::SetStatusCancelled() {
+  CHECK(status_ == Status::NONE || status_ == Status::CANCELLING,
+        base::NotFatalUntil::M160);
+
+  status_ = Status::CANCELLED;
+  SetStatusCancelledUI();
+}
+
+void CrostiniExportImportNotificationController::SetStatusFailed() {
+  SetStatusFailedWithMessage(
+      Status::FAILED_UNKNOWN_REASON,
+      l10n_util::GetStringUTF16(
+          (type() == ExportImportType::EXPORT ||
+           type() == ExportImportType::EXPORT_DISK_IMAGE)
+              ? IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_FAILED
+              : IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED));
+}
+
+void CrostiniExportImportNotificationController::SetStatusFailedBadImage() {
+  CHECK(type() == ExportImportType::IMPORT ||
+            type() == ExportImportType::IMPORT_DISK_IMAGE,
+        base::NotFatalUntil::M160);
+  SetStatusFailedWithMessage(
+      Status::FAILED_BAD_IMAGE,
+      l10n_util::GetStringUTF16(
+          IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_BAD_IMAGE));
+}
+
+void CrostiniExportImportNotificationController::
+    SetStatusFailedArchitectureMismatch(
+        const std::string& architecture_container,
+        const std::string& architecture_device) {
+  CHECK(type() == ExportImportType::IMPORT, base::NotFatalUntil::M160);
+  SetStatusFailedWithMessage(
+      Status::FAILED_ARCHITECTURE_MISMATCH,
+      l10n_util::GetStringFUTF16(
+          IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_ARCHITECTURE,
+          base::ASCIIToUTF16(architecture_container),
+          base::ASCIIToUTF16(architecture_device)));
+}
+
+void CrostiniExportImportNotificationController::
+    SetStatusFailedInsufficientSpace(uint64_t additional_required_space) {
+  CHECK(type() == ExportImportType::IMPORT, base::NotFatalUntil::M160);
+  SetStatusFailedWithMessage(
+      Status::FAILED_INSUFFICIENT_SPACE,
+      l10n_util::GetStringFUTF16(
+          IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE,
+          ui::FormatBytes(base::ByteSize(additional_required_space))));
+}
+
+void CrostiniExportImportNotificationController::
+    SetStatusFailedInsufficientSpaceUnknownAmount() {
+  CHECK(type() == ExportImportType::IMPORT ||
+            type() == ExportImportType::IMPORT_DISK_IMAGE,
+        base::NotFatalUntil::M160);
+  SetStatusFailedWithMessage(
+      Status::FAILED_INSUFFICIENT_SPACE,
+      l10n_util::GetStringUTF16(
+          IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE_UNKNOWN_AMOUNT));
+}
+
+void CrostiniExportImportNotificationController::
+    SetStatusFailedConcurrentOperation(
+        ExportImportType in_progress_operation_type) {
+  SetStatusFailedWithMessage(
+      Status::FAILED_CONCURRENT_OPERATION,
+      l10n_util::GetStringUTF16(
+          in_progress_operation_type == ExportImportType::EXPORT
+              ? IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_FAILED_IN_PROGRESS
+              : IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_IN_PROGRESS));
+}
+
+void CrostiniExportImportNotificationController::SetStatusFailedWithMessage(
+    Status status,
+    const std::u16string& message) {
+  CHECK(status_ == Status::RUNNING || status_ == Status::CANCELLING,
+        base::NotFatalUntil::M160);
+  status_ = status;
+  SetStatusFailedWithMessageUI(status, message);
 }
 
 void CrostiniExportImportNotificationController::SetStatusRunningUI(
