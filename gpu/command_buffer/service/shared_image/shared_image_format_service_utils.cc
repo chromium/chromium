@@ -279,6 +279,21 @@ bool IsSizeForBufferHandleValid(const gfx::Size& size,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+viz::SharedImageFormat GetEffectiveCopyFormat(viz::SharedImageFormat format) {
+  if (!format.PrefersExternalSampler()) {
+    return format;
+  }
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return viz::SinglePlaneFormat::kRGBA_8888;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      return viz::SinglePlaneFormat::kRGBA_1010102;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return viz::SinglePlaneFormat::kRGBA_F16;
+  }
+}
+
 SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
   switch (format.plane_config()) {
     case PlaneConfig::kY_U_V:

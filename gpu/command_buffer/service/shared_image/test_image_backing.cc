@@ -161,25 +161,30 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
   textures_.reserve(num_textures);
   passthrough_textures_.reserve(num_textures);
 
-  const int num_planes = format.NumberOfPlanes();
-  for (int plane = 0; plane < num_planes; ++plane) {
+  for (int plane = 0; plane < num_textures; ++plane) {
     auto* texture = new gles2::Texture(texture_id + plane);
     texture->SetLightweightRef();
-    texture->SetTarget(GL_TEXTURE_2D, 1);
+    GLenum target = format.PrefersExternalSampler() ? GL_TEXTURE_EXTERNAL_OES
+                                                    : GL_TEXTURE_2D;
+    texture->SetTarget(target, 1);
     texture->set_min_filter(GL_LINEAR);
     texture->set_mag_filter(GL_LINEAR);
     texture->set_wrap_t(GL_CLAMP_TO_EDGE);
     texture->set_wrap_s(GL_CLAMP_TO_EDGE);
     GLFormatDesc format_desc =
-        GLFormatCaps().ToGLFormatDesc(format, /*plane_index=*/plane);
-    gfx::Size plane_size = format.GetPlaneSize(plane, si_info.size);
-    texture->SetLevelInfo(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
+        format.PrefersExternalSampler()
+            ? GLFormatCaps().ToGLFormatDescExternalSampler(format)
+            : GLFormatCaps().ToGLFormatDesc(format, /*plane_index=*/plane);
+    gfx::Size plane_size = format.PrefersExternalSampler()
+                               ? si_info.size
+                               : format.GetPlaneSize(plane, si_info.size);
+    texture->SetLevelInfo(target, 0, format_desc.image_internal_format,
                           plane_size.width(), plane_size.height(), 1, 0,
                           format_desc.data_format, format_desc.data_type,
                           gfx::Rect());
     texture->SetImmutable(true, true);
     auto passthrough_texture = base::MakeRefCounted<gles2::TexturePassthrough>(
-        texture_id + plane, GL_TEXTURE_2D);
+        texture_id + plane, target);
     textures_.push_back(texture);
     passthrough_textures_.push_back(std::move(passthrough_texture));
   }
@@ -249,7 +254,9 @@ bool TestImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmap) {
 }
 
 bool TestImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
-  DCHECK_EQ(format().NumberOfPlanes(), static_cast<int>(pixmaps.size()));
+  const int expected_planes =
+      format().PrefersExternalSampler() ? 1 : format().NumberOfPlanes();
+  DCHECK_EQ(expected_planes, static_cast<int>(pixmaps.size()));
   readback_to_memory_called_ = true;
   return true;
 }

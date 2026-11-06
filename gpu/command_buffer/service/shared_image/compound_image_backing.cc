@@ -169,19 +169,6 @@ SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream,
   }
 }
 
-viz::SharedImageFormat GetSinglePlaneRGBAFormatForChannelFormat(
-    viz::SharedImageFormat::ChannelFormat channel_format) {
-  switch (channel_format) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
-      return viz::SinglePlaneFormat::kRGBA_8888;
-    case viz::SharedImageFormat::ChannelFormat::k10:
-      return viz::SinglePlaneFormat::kRGBA_1010102;
-    case viz::SharedImageFormat::ChannelFormat::k16:
-    case viz::SharedImageFormat::ChannelFormat::k16F:
-      return viz::SinglePlaneFormat::kRGBA_F16;
-  }
-}
-
 }  // namespace
 
 // Wrapped representation types are not in the anonymous namespace because they
@@ -2298,11 +2285,7 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
     // backing must also be of RGBA format in order to receive readback data as
     // RGBA. Therefore, map such formats to single-plane RGBA based on channel
     // format for dynamic backing allocation.
-    viz::SharedImageFormat backing_format =
-        format().PrefersExternalSampler()
-            ? GetSinglePlaneRGBAFormatForChannelFormat(
-                  format().channel_format())
-            : format();
+    viz::SharedImageFormat backing_format = GetEffectiveCopyFormat(format());
     SharedImageUsageSet usage = GetUsageFromAccessStream(stream, params);
     std::unique_ptr<SharedImageBacking> new_backing;
     shared_image_factory_->Execute([&](SharedImageFactory* factory) {

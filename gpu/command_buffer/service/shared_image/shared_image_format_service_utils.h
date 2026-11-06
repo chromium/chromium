@@ -62,6 +62,12 @@ struct GLFormatDesc {
 GPU_GLES2_EXPORT bool IsSizeForBufferHandleValid(const gfx::Size& size,
                                                  viz::SharedImageFormat format);
 
+// Returns the single-plane RGBA format used for readback/copy synchronization
+// when `format.PrefersExternalSampler()` is true, or `format` unchanged
+// otherwise.
+GPU_GLES2_EXPORT viz::SharedImageFormat GetEffectiveCopyFormat(
+    viz::SharedImageFormat format);
+
 // Returns SkYUVAInfo::PlaneConfig equivalent of
 // SharedImageFormat::PlaneConfig.
 GPU_GLES2_EXPORT SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(

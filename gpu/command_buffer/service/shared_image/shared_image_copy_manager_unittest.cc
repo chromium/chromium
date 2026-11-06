@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/service/shared_image/dawn_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/dawn_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/dawn_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
@@ -101,6 +102,55 @@ TEST_F(SharedImageCopyManagerTest, CopyUsingSharedMemoryStrategy) {
   EXPECT_TRUE(test_backing->GetReadbackToMemoryCalledAndReset());
   EXPECT_FALSE(test_backing->GetUploadFromMemoryCalledAndReset());
 }
+
+TEST(SharedImageCopyManagerUnitTest, GetEffectiveCopyFormat) {
+  EXPECT_EQ(GetEffectiveCopyFormat(viz::SinglePlaneFormat::kRGBA_8888),
+            viz::SinglePlaneFormat::kRGBA_8888);
+  EXPECT_EQ(GetEffectiveCopyFormat(viz::MultiPlaneFormat::kNV12),
+            viz::MultiPlaneFormat::kNV12);
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
+  viz::SharedImageFormat nv12_external = viz::MultiPlaneFormat::kNV12;
+  nv12_external.SetPrefersExternalSampler();
+  EXPECT_EQ(GetEffectiveCopyFormat(nv12_external),
+            viz::SinglePlaneFormat::kRGBA_8888);
+  viz::SharedImageFormat p010_external = viz::MultiPlaneFormat::kP010;
+  p010_external.SetPrefersExternalSampler();
+  EXPECT_EQ(GetEffectiveCopyFormat(p010_external),
+            viz::SinglePlaneFormat::kRGBA_1010102);
+#endif
+}
+
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
+TEST(SharedImageCopyManagerUnitTest,
+     CpuFallbackStrategySupportsExternalSamplerSourceOnly) {
+  CPUReadbackUploadCopyStrategy strategy;
+  viz::SharedImageFormat nv12_external = viz::MultiPlaneFormat::kNV12;
+  nv12_external.SetPrefersExternalSampler();
+
+  auto ext_src = std::make_unique<TestImageBacking>(
+      Mailbox::Generate(),
+      SharedImageInfo(nv12_external, gfx::Size(64, 64),
+                      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+                      kPremul_SkAlphaType, SHARED_IMAGE_USAGE_DISPLAY_READ,
+                      "ext_src"),
+      1024);
+  auto rgba_dst = std::make_unique<TestImageBacking>(
+      Mailbox::Generate(),
+      SharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(64, 64),
+                      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+                      kPremul_SkAlphaType, SHARED_IMAGE_USAGE_GLES2_READ,
+                      "rgba_dst"),
+      1024);
+
+  EXPECT_TRUE(strategy.CanCopy(ext_src.get(), rgba_dst.get()));
+  EXPECT_FALSE(strategy.CanCopy(rgba_dst.get(), ext_src.get()));
+  EXPECT_FALSE(strategy.CanCopy(ext_src.get(), ext_src.get()));
+
+  EXPECT_TRUE(strategy.Copy(ext_src.get(), rgba_dst.get()));
+  EXPECT_TRUE(ext_src->GetReadbackToMemoryCalledAndReset());
+  EXPECT_TRUE(rgba_dst->GetUploadFromMemoryCalledAndReset());
+}
+#endif  // BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 class SharedImageCopyManagerTestWithGraphiteDawn : public SharedImageTestBase {
