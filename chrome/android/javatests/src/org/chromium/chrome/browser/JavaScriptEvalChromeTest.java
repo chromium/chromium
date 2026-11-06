@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
@@ -64,7 +65,7 @@ public class JavaScriptEvalChromeTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         Tab tab2 = mActivityTestRule.getActivityTab();
         mActivityTestRule.getActivityTestRule().loadUrl(JSTEST_URL);
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), tab1.getId());
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
 
         Assert.assertFalse("Tab didn't open", tab1 == tab2);
 

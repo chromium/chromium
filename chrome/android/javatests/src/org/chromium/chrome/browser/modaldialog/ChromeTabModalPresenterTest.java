@@ -410,8 +410,10 @@ public class ChromeTabModalPresenterTest {
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
 
         // Open a new tab and make sure that the current tab is at index 0.
-        mActivityTestRule.loadUrlInNewTab("about:blank");
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
+        Tab firstTab = mPage.getTab();
+        WebPageStation blankPage = mPage.openNewTabFast().loadAboutBlank();
+        Tab newTab = blankPage.getTab();
+        WebPageStation page = blankPage.selectTabFast(firstTab, WebPageStation::newBuilder);
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
@@ -428,7 +430,7 @@ public class ChromeTabModalPresenterTest {
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Dialog should be dismissed after switching to a different tab.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 1);
+        page.selectTabFast(newTab, WebPageStation::newBuilder);
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
@@ -545,12 +547,14 @@ public class ChromeTabModalPresenterTest {
         int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
 
         // Open a new tab and make sure that the current tab is at index 0.
-        mActivityTestRule.loadUrlInNewTab("about:blank");
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
+        Tab firstTab = mPage.getTab();
+        WebPageStation blankPage = mPage.openNewTabFast().loadAboutBlank();
+        Tab newTab = blankPage.getTab();
+        WebPageStation page = blankPage.selectTabFast(firstTab, WebPageStation::newBuilder);
 
         // Show a tab modal dialog and then switch tab.
         showDialog(mManager, dialog1, ModalDialogType.TAB);
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 1);
+        page.selectTabFast(newTab, WebPageStation::newBuilder);
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;

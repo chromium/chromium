@@ -99,8 +99,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -623,8 +623,7 @@ public class SettingsPageTest {
                 .check(matches(isDisplayed()));
 
         // Switch back to the first settings tab.
-        ChromeTabUtils.switchTabInCurrentTabModel(
-                mActivityTestRule.getActivity(), firstSettingsTab);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), firstSettingsTab);
 
         // Verify the first settings tab: Action bar and SearchEngineSettings detail fragment are
         // restored.
@@ -837,7 +836,7 @@ public class SettingsPageTest {
         mActivityTestRule.loadUrlInNewTab("about:blank");
 
         // Switch back to the Settings tab.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), settingsTab);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), settingsTab);
 
         // Verify the search box is automatically focused on tab switch.
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
@@ -980,8 +979,7 @@ public class SettingsPageTest {
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         // Switch back to the first Settings tab.
-        ChromeTabUtils.switchTabInCurrentTabModel(
-                mActivityTestRule.getActivity(), firstSettingsTab);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), firstSettingsTab);
 
         // Verify the search box is displayed on the first Settings tab.
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
@@ -1115,7 +1113,7 @@ public class SettingsPageTest {
 
         // Open a second tab, then switch back to the Settings tab.
         mActivityTestRule.loadUrlInNewTab("about:blank");
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), settingsTab);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), settingsTab);
         onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
 
         // A single tab switch keeps the settings page alive, rather than freezing and recreating

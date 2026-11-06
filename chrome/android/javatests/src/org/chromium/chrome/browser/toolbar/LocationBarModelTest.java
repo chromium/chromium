@@ -474,8 +474,10 @@ public class LocationBarModelTest {
         mActivityTestRule.loadUrl(urlA);
         // Pre-load the second tab. Switching to a frozen tab dispatches onContentChanged, which
         // resets the flags on its own and would mask the bug this test is guarding against.
-        mActivityTestRule.loadUrlInNewTab(urlB, /* incognito= */ false);
-        ChromeTabUtils.switchTabInCurrentTabModel(activity, 0);
+        Tab tabA = mPage.getTab();
+        WebPageStation pageB = mPage.openNewTabFast().loadWebPageProgrammatically(urlB);
+        Tab tabB = pageB.getTab();
+        WebPageStation pageA = pageB.selectTabFast(tabA, WebPageStation::newBuilder);
 
         assertEquals(
                 urlA,
@@ -492,7 +494,7 @@ public class LocationBarModelTest {
                     locationBarModel.notifySecurityStateChanged();
                 });
 
-        ChromeTabUtils.switchTabInCurrentTabModel(activity, 1);
+        pageA.selectTabFast(tabB, WebPageStation::newBuilder);
 
         CriteriaHelper.pollUiThread(
                 () -> urlB.equals(locationBarModel.getCurrentGurl().getSpec()),

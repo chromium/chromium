@@ -232,32 +232,6 @@ public class ChromeTabUtils {
     }
 
     /**
-     * Switch to the given TabIndex in the current tabModel.
-     *
-     * @deprecated From a page Station, use {@code CtaPageStation#selectTabFast()} instead.
-     */
-    @Deprecated
-    public static void switchTabInCurrentTabModel(
-            final ChromeActivity activity, final int tabIndex) {
-        // Selecting a tab before tabs are restored (e.g. after Activity recreation) does nothing.
-        TabModelSelector selector = activity.getTabModelSelector();
-        Triggers.noopTo()
-                .waitFor(
-                        SimpleConditions.uiThreadCondition(
-                                "Tab state initialized",
-                                () -> whether(selector.isTabStateInitialized())));
-        TabModel tabModel = ThreadUtils.runOnUiThreadBlocking(activity::getCurrentTabModel);
-        // Already selected, nothing to do.
-        if (ThreadUtils.runOnUiThreadBlocking(tabModel::index) == tabIndex) return;
-        TabSelectedCondition tabSelected =
-                new TabSelectedCondition(/* numTabsBeingSelected= */ 1, () -> tabModel);
-        Triggers.runOnUiThreadTo(() -> TabModelUtils.setIndex(tabModel, tabIndex))
-                .waitFor(tabSelected);
-        Tab expected = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(tabIndex));
-        Assert.assertEquals(expected, tabSelected.get());
-    }
-
-    /**
      * Creates a new tab by invoking the 'New Tab' menu item.
      *
      * <p>Returns when the tab has been created and has finished navigating.

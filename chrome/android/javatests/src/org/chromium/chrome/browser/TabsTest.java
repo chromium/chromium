@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -323,7 +324,7 @@ public class TabsTest {
         assertWaitForKeyboardStatus(true);
 
         // Switch to the 1st tab.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 1);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 1);
         assertWaitForKeyboardStatus(false);
 
         // Click node in the 1st tab.

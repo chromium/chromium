@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -486,7 +487,7 @@ public class PermissionClapperQuietTest {
 
         histogramWatcher.assertExpected();
 
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
 
         // The icon should reappear when switching back.
         waitForQuietIcon();

@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
@@ -676,7 +677,7 @@ public class TabStripTest {
                 "Expected incognito strip to be selected",
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
         mActivityTestRule.newIncognitoTabFromMenu();
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
 
         clickIncognitoToggleButton();
 
@@ -789,7 +790,7 @@ public class TabStripTest {
 
         // Select the first tab by setting the index directly. It may not be visible, so don't
         // try to tap on it.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
 
         // Check scrolling tab strip
         checkTabStrips();
@@ -851,7 +852,7 @@ public class TabStripTest {
 
         // Select the sixth tab by setting the index directly. It may not be visible, so don't
         // try to tap on it.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 5);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 5);
 
         // Check scrolling tab strip
         checkTabStrips();
@@ -951,7 +952,7 @@ public class TabStripTest {
                 });
 
         // Select tab 0.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
 
         // Tab should now be visible.
         helper.waitForCallback(0);
@@ -997,7 +998,7 @@ public class TabStripTest {
                 });
 
         // Switch to the first tab and wait until it's visible.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
         visibleHelper.waitForCallback(0);
 
         // Check initial model validity.

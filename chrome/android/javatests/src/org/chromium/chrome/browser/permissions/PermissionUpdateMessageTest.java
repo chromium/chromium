@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -258,7 +259,7 @@ public class PermissionUpdateMessageTest {
                         mActivityTestRule.getActivity(),
                         "about:blank",
                         /* incognito= */ false);
-                ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 1);
+                ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 1);
                 expectMessagesCount(windowAndroid, 1);
             }
 

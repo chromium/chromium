@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -44,13 +45,17 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabSelectedCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -268,8 +273,7 @@ public class FullscreenManagerTest {
         Assert.assertFalse(getPersistentFullscreenMode());
 
         // Put the tab foreground and assert the fullscreen was entered.
-        ChromeTabUtils.switchTabInCurrentTabModel(activity, tab.getId());
-        Assert.assertEquals(tab, mActivityTestRule.getActivityTab());
+        selectTab(activity, tab);
         Assert.assertTrue(getPersistentFullscreenMode());
     }
 
@@ -298,9 +302,25 @@ public class FullscreenManagerTest {
         Assert.assertFalse(getPersistentFullscreenMode());
 
         // Put the tab foreground and assert the fullscreen was entered.
-        ChromeTabUtils.switchTabInCurrentTabModel(activity, tab.getId());
-        Assert.assertEquals(tab, mActivityTestRule.getActivityTab());
+        selectTab(activity, tab);
         Assert.assertTrue(getPersistentFullscreenMode());
+    }
+
+    /**
+     * Selects |tab| and waits for the selection. Doesn't arrive at a page Station, since browser
+     * controls hide when the tab enters fullscreen.
+     */
+    private void selectTab(ChromeTabbedActivity activity, Tab tab) {
+        TabModel tabModel = ThreadUtils.runOnUiThreadBlocking(activity::getCurrentTabModel);
+        Triggers.runOnUiThreadTo(
+                        () ->
+                                TabModelUtils.selectTabById(
+                                        activity.getTabModelSelector(),
+                                        tab.getId(),
+                                        TabSelectionType.FROM_USER))
+                .waitFor(new TabSelectedCondition(/* numTabsBeingSelected= */ 1, () -> tabModel));
+        // TabSelectedCondition is fulfilled by any selected tab.
+        Assert.assertEquals(tab, mActivityTestRule.getActivityTab());
     }
 
     private boolean getPersistentFullscreenMode() {

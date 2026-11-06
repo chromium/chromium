@@ -92,10 +92,10 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -253,7 +253,7 @@ public class TabSwitcherLayoutTest {
     @MediumTest
     public void testRecycling_defaultAspectRatio() {
         prepareTabs(10, 0, mUrl);
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
         enterTabSwitcher(mActivityTestRule.getActivity());
         onView(tabSwitcherViewMatcher()).perform(RecyclerViewActions.scrollToPosition(9));
     }
