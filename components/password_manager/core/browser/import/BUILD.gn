@@ -5,6 +5,9 @@
 if (is_android) {
   import("//build/config/android/config.gni")
 }
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
 
 source_set("importer") {
   sources = [
@@ -86,8 +89,18 @@ source_set("csv_unit_tests") {
     "//third_party/fuzztest",
     "//url",
   ]
+  if (is_ios) {
+    deps += [ ":csv_unit_tests_bundle_data" ]
+  }
   data = [
     "password_csv_reader_corpus/",
     "password_csv_reader_fuzzer.dict",
   ]
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("csv_unit_tests_bundle_data") {
+    testonly = true
+    filelist_name = "csv_unit_tests_bundle_data.filelist"
+  }
 }
