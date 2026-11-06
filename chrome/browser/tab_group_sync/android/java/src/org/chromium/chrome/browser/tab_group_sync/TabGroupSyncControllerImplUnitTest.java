@@ -30,7 +30,10 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabStateStorageService;
+import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -54,6 +57,8 @@ public class TabGroupSyncControllerImplUnitTest {
     private @Mock TabModelSelector mTabModelSelector;
     private @Mock TabCreator mTabCreator;
     private @Mock TabGroupSyncService mTabGroupSyncService;
+    private @Mock TabStateStorageService mStorageService;
+    private @Mock ScopedStorageBatch mStorageBatch;
     private @Mock Profile mProfile;
     private MockTabModel mTabModel;
     private @Mock PrefService mPrefService;
@@ -66,6 +71,8 @@ public class TabGroupSyncControllerImplUnitTest {
 
     @Before
     public void setUp() {
+        when(mStorageService.createBatch()).thenReturn(mStorageBatch);
+        TabStateStorageServiceFactory.setForTesting(mStorageService);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         doReturn(ObservableSuppliers.createMonotonic(mTabModel))

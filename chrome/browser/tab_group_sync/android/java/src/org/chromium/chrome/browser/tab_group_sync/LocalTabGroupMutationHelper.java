@@ -14,8 +14,11 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
@@ -67,6 +70,13 @@ public class LocalTabGroupMutationHelper {
         // least one tab.
         assert !tabGroup.savedTabs.isEmpty();
 
+        try (ScopedStorageBatch batch = createStorageBatch(mTabModel.getProfile())) {
+            createNewTabGroupInternal(tabGroup, openingSource);
+        }
+    }
+
+    private void createNewTabGroupInternal(
+            SavedTabGroup tabGroup, @OpeningSource int openingSource) {
         // For tracking IDs of the tabs to be created.
         Map<String, Integer> tabIdMappings = new HashMap<>();
 
@@ -161,6 +171,14 @@ public class LocalTabGroupMutationHelper {
             return;
         }
 
+        try (ScopedStorageBatch batch = createStorageBatch(mTabModel.getProfile())) {
+            reconcileGroupInternal(tabGroup, tabs, isOnStartup, tabGroupId);
+        }
+    }
+
+    private void reconcileGroupInternal(
+            SavedTabGroup tabGroup, List<Tab> tabs, boolean isOnStartup, Token tabGroupId) {
+        assert tabGroup.localId != null;
         reconcileReplacedTabIds(tabs, tabGroup);
 
         // We want to reconcile the local group with the synced group.
@@ -240,6 +258,11 @@ public class LocalTabGroupMutationHelper {
         mTabModel.mergeListOfTabsToGroup(
                 tabsToMerge, parentTab, /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
         return newTab;
+    }
+
+    private static ScopedStorageBatch createStorageBatch(@Nullable Profile profile) {
+        if (profile == null) return () -> {};
+        return TabStateStorageServiceFactory.createBatch(profile);
     }
 
     /**

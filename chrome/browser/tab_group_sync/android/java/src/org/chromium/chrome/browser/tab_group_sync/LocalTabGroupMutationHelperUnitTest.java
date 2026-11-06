@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -37,11 +38,16 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabStateStorageService;
+import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -77,6 +83,8 @@ public class LocalTabGroupMutationHelperUnitTest {
     @Mock private TabRemover mTabRemover;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupSyncUtilsJni mTabGroupSyncUtilsJni;
+    @Mock private TabStateStorageService mStorageService;
+    @Mock private ScopedStorageBatch mStorageBatch;
 
     @Captor private ArgumentCaptor<EventDetails> mEventDetailsCaptor;
 
@@ -89,6 +97,8 @@ public class LocalTabGroupMutationHelperUnitTest {
     @Before
     public void setUp() {
         TabGroupSyncUtilsJni.setInstanceForTesting(mTabGroupSyncUtilsJni);
+        when(mStorageService.createBatch()).thenReturn(mStorageBatch);
+        TabStateStorageServiceFactory.setForTesting(mStorageService);
         mTabModel = spy(new MockTabModel(mProfile, null));
         mTabModel.setTabRemoverForTesting(mTabRemover);
         mTabCreationDelegate = spy(new TestTabCreationDelegate());
@@ -153,6 +163,43 @@ public class LocalTabGroupMutationHelperUnitTest {
                 .updateLocalTabGroupMapping(any(), any(), eq(OpeningSource.AUTO_OPENED_FROM_SYNC));
         verify(mTabGroupSyncService, times(2)).updateLocalTabId(any(), any(), anyInt());
         verify(mTabGroupSyncService).updateArchivalStatus(savedTabGroup.syncId, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
+    public void testCreateNewTabGroup_batchesStorageUpdates() {
+        SavedTabGroup savedTabGroup = createOneSavedTabGroup(null, new Integer[] {null, null});
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.AUTO_OPENED_FROM_SYNC);
+
+        InOrder inOrder = inOrder(mStorageService, mTabModel, mStorageBatch);
+        inOrder.verify(mStorageService).createBatch();
+        inOrder.verify(mTabModel).mergeListOfTabsToGroup(any(), any(), anyInt());
+        inOrder.verify(mStorageBatch).close();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
+    public void testCreateNewTabGroup_nullProfile() {
+        doReturn(null).when(mTabModel).getProfile();
+        SavedTabGroup savedTabGroup = createOneSavedTabGroup(null, new Integer[] {null, null});
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.AUTO_OPENED_FROM_SYNC);
+
+        verify(mStorageService, never()).createBatch();
+        verify(mStorageBatch, never()).close();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
+    public void testReconcileGroup_batchesStorageUpdates() {
+        addOneTab();
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {null, null});
+        mLocalMutationHelper.updateTabGroup(savedTabGroup);
+
+        InOrder inOrder = inOrder(mStorageService, mTabModel, mStorageBatch);
+        inOrder.verify(mStorageService).createBatch();
+        inOrder.verify(mTabModel).mergeListOfTabsToGroup(any(), any(), anyInt());
+        inOrder.verify(mStorageBatch).close();
     }
 
     @Test
