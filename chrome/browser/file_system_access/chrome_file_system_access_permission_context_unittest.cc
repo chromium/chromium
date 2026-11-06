@@ -1154,6 +1154,17 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 permission_context(), PathInfo(home_dir.AppendASCII(".vim")),
                 HandleType::kDirectory, AccessTrigger::kOpen),
             SensitiveDirectoryResult::kAbort);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(home_dir.AppendASCII(".fontconfig")),
+          HandleType::kDirectory, AccessTrigger::kOpen),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(home_dir.AppendASCII(".fonts")),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAbort);
+#endif
 
   // Unlisted dot-entries under `base::DIR_HOME` are allowed when the feature is
   // disabled.
@@ -2904,6 +2915,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       {base::DIR_HOME, FILE_PATH_LITERAL(".local/share"), true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".fonts.conf"), true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".fonts.conf.d"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".fontconfig"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".fonts"), true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".pki"), true, false},
       {base::DIR_CACHE, nullptr, true, false},
 #endif

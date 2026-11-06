@@ -675,6 +675,13 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       BlockPath::CreateRelative(base::DIR_HOME,
                                 FILE_PATH_LITERAL(".fonts.conf.d"),
                                 BlockType::kBlockAllChildren),
+      // Block the legacy per-user fontconfig cache and font directories. The
+      // current locations are under ~/.cache and ~/.local/share.
+      BlockPath::CreateRelative(base::DIR_HOME,
+                                FILE_PATH_LITERAL(".fontconfig"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".fonts"),
+                                BlockType::kBlockAllChildren),
       // Block the per-user NSS database, see crbug.com/557367241.
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".pki"),
                                 BlockType::kBlockAllChildren),
