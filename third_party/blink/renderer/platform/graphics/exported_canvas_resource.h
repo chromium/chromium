@@ -61,6 +61,7 @@ class PLATFORM_EXPORT ExportedCanvasResource
   }
 
   bool origin_clean_ = true;
+  bool is_lost_ = false;
 
   scoped_refptr<CanvasResource> resource_;
   const base::PlatformThreadRef owning_thread_ref_;

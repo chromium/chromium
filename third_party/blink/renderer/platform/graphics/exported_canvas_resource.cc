@@ -143,6 +143,9 @@ ExportedCanvasResource::~ExportedCanvasResource() {
   // if the thread gets destroyed before, destructor will still run, but we
   // can't tell CanvasResource to recycle.
   if (!is_cross_thread()) {
+    if (is_lost_) {
+      resource_->NotifyResourceLost();
+    }
     CanvasResource::DropRefOnOwningThread(std::move(resource_));
   }
 }
@@ -237,7 +240,7 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
 
           exported_resource->resource_->WaitSyncToken(sync_token);
           if (lost_resource) {
-            exported_resource->resource_->NotifyResourceLost();
+            exported_resource->is_lost_ = true;
           }
         },
         base::WrapRefCounted(this));
@@ -270,7 +273,7 @@ void ExportedCanvasResource::EndDisplayCompositorAccess(
     bool is_lost) {
   resource_->WaitSyncToken(sync_token);
   if (is_lost) {
-    resource_->NotifyResourceLost();
+    is_lost_ = true;
   }
 }
 
