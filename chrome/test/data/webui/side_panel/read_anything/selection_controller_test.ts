@@ -698,8 +698,7 @@ suite('SelectionController', () => {
         assertEquals(expectedFocusOffset, selection.focusOffset);
         assertEquals(
             1, contentBrowserProxy.getCallCount('attemptLogEarlySelection'));
-        assertFalse(
-            contentBrowserProxy.getArgs('attemptLogEarlySelection')[0]);
+        assertFalse(contentBrowserProxy.getArgs('attemptLogEarlySelection')[0]);
       });
 
       test('does nothing when ids are unknown in readability', () => {

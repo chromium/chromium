@@ -26,6 +26,8 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   endNodeId: number = -1;
   endOffset: number = -1;
   hasValidSelectionVal: boolean = true;
+  transientUserActivation: boolean = true;
+  focused: boolean = true;
   readabilityEnabled: boolean = true;
   contentTranslated: boolean = false;
   translationState: number = 0;
@@ -66,6 +68,8 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'getEndNodeId',
       'getEndOffset',
       'hasValidSelection',
+      'hasTransientUserActivation',
+      'hasFocus',
       'isReadabilityEnabled',
       'isContentTranslated',
       'getTranslationState',
@@ -135,6 +139,16 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   hasValidSelection(): boolean {
     this.methodCalled('hasValidSelection');
     return this.hasValidSelectionVal;
+  }
+
+  hasTransientUserActivation(): boolean {
+    this.methodCalled('hasTransientUserActivation');
+    return this.transientUserActivation;
+  }
+
+  hasFocus(): boolean {
+    this.methodCalled('hasFocus');
+    return this.focused;
   }
 
   isReadabilityEnabled(): boolean {

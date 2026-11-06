@@ -295,7 +295,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.contentBrowserProxy_.updateLinks.addListener(
         this.updateLinks_.bind(this));
     this.contentBrowserProxy_.updateSelection.addListener(() => {
-      this.selectionController_.updateSelection(this.getSelection());
+      this.selectionController_.updateSelection(
+          this.getSelection(), this.$.container);
+    });
+    this.contentBrowserProxy_.onTranslationStateChanged.addListener(() => {
+      this.selectionController_.onTranslationStateChanged(
+          this.getSelection(), this.$.container);
     });
     this.contentBrowserProxy_.updateContent.addListener(
         this.updateContent.bind(this));
@@ -474,7 +479,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private onRenderedTextMappingReady_() {
     this.contentController_.onRenderedTextMappingReady();
-    this.selectionController_.updateSelection(this.getSelection());
+    this.selectionController_.updateSelection(
+        this.getSelection(), this.$.container);
   }
 
   private cancelRenderedTextBlocksAnimationFrame_() {

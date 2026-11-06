@@ -420,6 +420,17 @@ class ReadAnythingAppController
  private:
   friend ReadAnythingAppControllerTest;
   friend ReadAnythingAppControllerReadabilityTest;
+
+  // A selection that the side panel asked the main page to set.
+  struct SelectionRequest {
+    ui::AXNodeID anchor_node_id;
+    int anchor_offset;
+    ui::AXNodeID focus_node_id;
+    int focus_offset;
+
+    bool operator==(const SelectionRequest&) const = default;
+  };
+
   // The fallback language code if GetLanguageCodeForSpeech has an error.
   // However, this may be the same value as GetLanguageCodeForSpeech.
   const std::string& GetDefaultLanguageCodeForSpeech() const;
@@ -656,6 +667,15 @@ class ReadAnythingAppController
 
   std::optional<ReadAnythingAppModel::DistillationMethod>
       forced_distillation_method_for_testing_;
+
+  // The last selection that the side panel asked the main page to set, or
+  // nullopt if a collapse was requested since. It may still be in flight only
+  // while the model has unprocessed selections from reading mode, so it's only
+  // compared against then. The count already drops to 0 when pending requests
+  // become stale, e.g. when the active tree changes or the user selects in the
+  // main page, so this isn't reset then. If the browser drops this request
+  // while others are pending, resending it waits for the count to drop to 0.
+  std::optional<SelectionRequest> last_selection_request_;
 
   // As a subclass of RenderFrameObserver, all objects of this class are stored
   // in data structure and should not get deallocated as long as the object is

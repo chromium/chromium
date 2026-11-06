@@ -2616,6 +2616,20 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
     return;
   }
 
+  // Don't resend a selection that may still be in flight, e.g. when a
+  // translated PDF's side panel sends the same blocks on every selection
+  // change while the user drags within them. The main page doesn't report a
+  // selection that doesn't change, so each repeat would leave an unprocessed
+  // selection behind, which stops the next main page selection from being
+  // drawn in the side panel (see PostProcessSelection()).
+  const SelectionRequest request{anchor_node_id, anchor_offset, focus_node_id,
+                                 focus_offset};
+  if (model_.unprocessed_selections_from_reading_mode() > 0 &&
+      last_selection_request_ == request) {
+    return;
+  }
+  last_selection_request_ = request;
+
   model_.increment_selections_from_reading_mode();
   page_handler_->OnSelectionChange(
       model_.active_tree_id(), anchor_node_id, anchor_offset, focus_node_id,
@@ -2639,6 +2653,9 @@ void ReadAnythingAppController::OnCollapseSelection() {
   }
 
   model_.increment_selections_from_reading_mode();
+  // The collapse replaces the last selection request, so selecting it again
+  // sends it again.
+  last_selection_request_.reset();
   auto callback =
       base::BindOnce(&ReadAnythingAppController::OnSelectionRequestHandled,
                      weak_ptr_factory_.GetWeakPtr());

@@ -2591,6 +2591,75 @@ TEST_F(ReadAnythingAppControllerTest,
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_SameSelectionInFlightIsNotResent) {
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+
+  EXPECT_CALL(page_handler_,
+              OnSelectionChange(tree_id_, 2, 0, 3, 1, testing::_))
+      .Times(1);
+  controller().OnSelectionChange(2, 0, 3, 1);
+  controller().OnSelectionChange(2, 0, 3, 1);
+
+  // The main page reports one selection change for the request, so only one
+  // selection is unprocessed.
+  EXPECT_EQ(1, model().unprocessed_selections_from_reading_mode());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_SameSelectionResentAfterUserSelection) {
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+
+  EXPECT_CALL(page_handler_,
+              OnSelectionChange(tree_id_, 2, 0, 3, 1, testing::_))
+      .Times(2);
+  controller().OnSelectionChange(2, 0, 3, 1);
+  // A user selection on the main page supersedes the request.
+  SetMainPageSelection(2, 0, 3, 2, ax::mojom::EventFrom::kUser);
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
+
+  controller().OnSelectionChange(2, 0, 3, 1);
+
+  EXPECT_EQ(1, model().unprocessed_selections_from_reading_mode());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_SameSelectionResentAfterCollapse) {
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+  SetMainPageSelection(2, 0, 3, 2);
+
+  EXPECT_CALL(page_handler_,
+              OnSelectionChange(tree_id_, 2, 0, 3, 1, testing::_))
+      .Times(2);
+  EXPECT_CALL(page_handler_, OnCollapseSelection).Times(1);
+  controller().OnSelectionChange(2, 0, 3, 1);
+  controller().OnCollapseSelection();
+  controller().OnSelectionChange(2, 0, 3, 1);
+
+  EXPECT_EQ(3, model().unprocessed_selections_from_reading_mode());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_SameSelectionResentAfterRejected) {
+  SendUpdateWithNodes(
+      {test::TextNode(/* id= */ 2), test::TextNode(/* id= */ 3)});
+
+  EXPECT_CALL(page_handler_,
+              OnSelectionChange(tree_id_, 2, 0, 3, 1, testing::_))
+      .WillOnce(base::test::RunOnceCallback<5>(false))
+      .WillOnce(base::test::RunOnceCallback<5>(true));
+  controller().OnSelectionChange(2, 0, 3, 1);
+  FlushPageHandlerReplies();
+  ASSERT_EQ(0, model().unprocessed_selections_from_reading_mode());
+
+  controller().OnSelectionChange(2, 0, 3, 1);
+
+  EXPECT_EQ(1, model().unprocessed_selections_from_reading_mode());
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnSelectionChange_ThenPostProcess) {
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
   ui::AXNodeData node2 = test::TextNode(/* id= */ 3);

@@ -135,6 +135,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SelectionController) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, TranslatedSelectionController) {
+  RunSidePanelTest(
+      "side_panel/read_anything/translated_selection_controller_test.js",
+      "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechController) {
   RunSidePanelTest("side_panel/read_anything/speech_controller_test.js",
                    "mocha.run()");
