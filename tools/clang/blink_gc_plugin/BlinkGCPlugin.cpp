@@ -46,6 +46,9 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.enable_extra_padding_check = true;
       } else if (arg == "disable-off-heap-collections-of-gced-check") {
         options_.enable_off_heap_collections_of_gced_check = false;
+      } else if (arg ==
+                 "enable-off-heap-collections-of-stack-allocated-check") {
+        options_.enable_off_heap_collections_of_stack_allocated_check = true;
       } else if (s.consume_front("check-namespace=")) {
         options_.checked_namespaces.insert(s.str());
       } else if (s.consume_front("check-directory=")) {

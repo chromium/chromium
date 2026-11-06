@@ -47,6 +47,10 @@ struct BlinkGCPluginOptions {
   // needed for disabling the check for Pdfium builds.
   bool enable_off_heap_collections_of_gced_check = true;
 
+  // Enables checks for STACK_ALLOCATED() objects in STL collections.
+  // TODO(crbug.com/350256130): Enable by default once rolled out in BUILD.gn.
+  bool enable_off_heap_collections_of_stack_allocated_check = false;
+
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;

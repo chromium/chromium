@@ -127,6 +127,12 @@ class DiagnosticsReporter {
   void CollectionOfMembers(const clang::Expr* expr,
                            const clang::CXXRecordDecl* collection,
                            const clang::CXXRecordDecl* gc_type);
+  void CollectionOfStackAllocated(const clang::Decl* decl,
+                                  const clang::CXXRecordDecl* collection,
+                                  const clang::CXXRecordDecl* stack_allocated);
+  void CollectionOfStackAllocated(const clang::Expr* expr,
+                                  const clang::CXXRecordDecl* collection,
+                                  const clang::CXXRecordDecl* stack_allocated);
   void MemberOnStack(const clang::VarDecl* var);
   void AdditionalPadding(const clang::RecordDecl* var, size_t padding);
   void WeakPtrToGCed(const clang::Decl* decl,
@@ -221,6 +227,7 @@ class DiagnosticsReporter {
   unsigned diag_variant_used_with_gc_;
   unsigned diag_collection_of_gced_;
   unsigned diag_collection_of_members_;
+  unsigned diag_collection_of_stack_allocated_;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_DIAGNOSTICS_REPORTER_H_

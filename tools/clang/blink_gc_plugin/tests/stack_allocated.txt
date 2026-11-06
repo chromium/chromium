@@ -20,10 +20,74 @@ class DerivedHeapObject : public HeapObject, public StackObject {
 ./stack_allocated.h:43:28: warning: [blink-gc] Stack-allocated class 'DerivedHeapObject2' derives class 'HeapObject' which is garbage collected.
 class DerivedHeapObject2 : public HeapObject {
                            ^
+stack_allocated.cpp:21:1: warning: [blink-gc] Class 'HeapObjectWithCollections' contains invalid fields.
+class HeapObjectWithCollections
+^
+stack_allocated.cpp:27:3: note: [blink-gc] Stack-allocated field 'vector_' declared here:
+  std::vector<StackObject> vector_;
+  ^
+stack_allocated.cpp:28:3: note: [blink-gc] Stack-allocated field 'array_' declared here:
+  std::array<StackObject, 4> array_;
+  ^
+In file included from stack_allocated.cpp:5:
 ./stack_allocated.h:24:5: warning: [blink-gc] Class 'StackObject' has untraced or not traceable fields.
     void Trace(Visitor* visitor) const { visitor->Trace(m_obj); }
     ^
 ./stack_allocated.h:27:5: note: [blink-gc] Untraceable field 'm_obj' declared here:
     HeapObject* m_obj; // Does not need tracing.
     ^
-6 warnings generated.
+stack_allocated.cpp:27:3: warning: [blink-gc] Disallowed collection 'vector<blink::StackObject>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::vector<StackObject> vector_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:57:3: warning: [blink-gc] Disallowed collection 'set<blink::StackObject>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::set<StackObject> set_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:58:3: warning: [blink-gc] Disallowed collection 'vector<blink::DerivedStackObject>' found; 'DerivedStackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::vector<DerivedStackObject> vector_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:59:3: warning: [blink-gc] Disallowed collection 'map<blink::StackObject, int>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::map<StackObject, int> map_key_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:60:3: warning: [blink-gc] Disallowed collection 'unordered_map<int, blink::DerivedStackObject>' found; 'DerivedStackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::unordered_map<int, DerivedStackObject> map_value_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:61:3: warning: [blink-gc] Disallowed collection 'unordered_set<blink::StackObject>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::unordered_set<StackObject> unordered_set_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:62:3: warning: [blink-gc] Disallowed collection 'map<const blink::StackObject, int>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::map<const StackObject, int> map_const_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:63:3: warning: [blink-gc] Disallowed collection 'vector<std::pair<blink::StackObject, int>>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::vector<std::pair<StackObject, int>> vector_pair_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:93:3: warning: [blink-gc] Disallowed collection 'vector<blink::StackObject>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  new std::vector<StackObject>;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:76:3: warning: [blink-gc] Disallowed collection 'set<blink::StackObject>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::set<StackObject> set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:78:3: warning: [blink-gc] Disallowed collection 'vector<blink::DerivedStackObject>' found; 'DerivedStackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::vector<DerivedStackObject> vector;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:80:3: warning: [blink-gc] Disallowed collection 'map<blink::StackObject, int>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::map<StackObject, int> map_key;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:82:3: warning: [blink-gc] Disallowed collection 'unordered_map<int, blink::DerivedStackObject>' found; 'DerivedStackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::unordered_map<int, DerivedStackObject> map_value;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:84:3: warning: [blink-gc] Disallowed collection 'unordered_set<blink::StackObject>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::unordered_set<StackObject> unordered_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:86:3: warning: [blink-gc] Disallowed collection 'map<const blink::StackObject, int>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::map<const StackObject, int> map_const;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:88:3: warning: [blink-gc] Disallowed collection 'vector<std::pair<blink::StackObject, int>>' found; 'StackObject' is a stack-allocated type. STL collections cannot hold stack-allocated objects.
+  std::vector<std::pair<StackObject, int>> vector_pair;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+stack_allocated.cpp:90:3: warning: [blink-gc] Disallowed collection 'map<blink::StackObject, blink::HeapObject *>' found; 'HeapObject' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  STACK_ALLOCATED_IGNORE("For testing")
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./heap/stubs.h:32:3: note: expanded from macro 'STACK_ALLOCATED_IGNORE'
+  __attribute__((annotate("stack_allocated_ignore")))
+  ^
+24 warnings generated.

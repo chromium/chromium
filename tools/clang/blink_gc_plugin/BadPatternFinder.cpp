@@ -57,6 +57,21 @@ TypeMatcher TraceableType() {
                hasCanonicalType(arrayType(hasElementType(has_gc_base))));
 }
 
+TypeMatcher StackAllocatedType() {
+  auto has_stack_allocated_marker = hasCanonicalType(
+      hasDeclaration(cxxRecordDecl(isSameOrDerivedFrom(has(typeAliasDecl(
+                                       hasName("IsStackAllocatedTypeMarker")))))
+                         .bind("stack_allocated")));
+  return anyOf(
+      has_stack_allocated_marker,
+      hasCanonicalType(arrayType(hasElementType(has_stack_allocated_marker))));
+}
+
+TypeMatcher StdPairContaining(TypeMatcher matcher) {
+  return hasCanonicalType(hasDeclaration(classTemplateSpecializationDecl(
+      hasName("::std::pair"), hasAnyTemplateArgument(refersToType(matcher)))));
+}
+
 class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {
  public:
   explicit UniquePtrGarbageCollectedMatcher(DiagnosticsReporter& diagnostics)
@@ -232,25 +247,21 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
                                                RecordCache& record_cache)
       : diagnostics_(diagnostics), record_cache_(record_cache) {}
 
-  void Register(MatchFinder& match_finder) {
+  void Register(MatchFinder& match_finder, bool check_stack_allocated) {
     auto gced_ptr_or_ref =
         anyOf(GarbageCollectedType(),
               pointerType(pointee(GarbageCollectedType())).bind("ptr"),
               referenceType(pointee(GarbageCollectedType())).bind("ptr"));
     auto gced_ptr_ref_or_pair =
-        anyOf(gced_ptr_or_ref,
-              hasCanonicalType(hasDeclaration((classTemplateSpecializationDecl(
-                  hasName("::std::pair"),
-                  hasAnyTemplateArgument(refersToType(gced_ptr_or_ref)))))));
+        anyOf(gced_ptr_or_ref, StdPairContaining(gced_ptr_or_ref));
     auto member_ptr_or_ref =
         anyOf(MemberType(), pointerType(pointee(MemberType())),
               referenceType(pointee(MemberType())));
     auto member_ptr_ref_or_pair =
-        anyOf(member_ptr_or_ref,
-              hasCanonicalType(hasDeclaration((classTemplateSpecializationDecl(
-                  hasName("::std::pair"),
-                  hasAnyTemplateArgument(refersToType(member_ptr_or_ref)))))));
+        anyOf(member_ptr_or_ref, StdPairContaining(member_ptr_or_ref));
     auto gced_or_member = anyOf(gced_ptr_ref_or_pair, member_ptr_ref_or_pair);
+    auto stack_allocated_or_pair =
+        anyOf(StackAllocatedType(), StdPairContaining(StackAllocatedType()));
     auto has_wtf_collection_name =
         hasAnyName("::blink::Vector", "::blink::Deque", "::blink::HashSet",
                    "::blink::LinkedHashSet", "::blink::HashCountedSet",
@@ -260,6 +271,7 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
                    "::std::set", "::std::unordered_set", "::std::array");
     auto partition_allocator = hasCanonicalType(
         hasDeclaration(cxxRecordDecl(hasName("::blink::PartitionAllocator"))));
+    // WTF collections already static_assert against stack-allocated types.
     auto wtf_collection_decl =
         classTemplateSpecializationDecl(
             has_wtf_collection_name,
@@ -267,10 +279,17 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
             hasAnyTemplateArgument(refersToType(partition_allocator)))
             .bind("collection");
     auto std_collection_decl =
-        classTemplateSpecializationDecl(
-            has_std_collection_name,
-            hasAnyTemplateArgument(refersToType(gced_or_member)))
-            .bind("collection");
+        check_stack_allocated
+            ? classTemplateSpecializationDecl(
+                  has_std_collection_name,
+                  anyOf(hasAnyTemplateArgument(refersToType(gced_or_member)),
+                        hasAnyTemplateArgument(
+                            refersToType(stack_allocated_or_pair))))
+                  .bind("collection")
+            : classTemplateSpecializationDecl(
+                  has_std_collection_name,
+                  hasAnyTemplateArgument(refersToType(gced_or_member)))
+                  .bind("collection");
     auto any_collection = hasType(hasCanonicalType(
         hasDeclaration(anyOf(wtf_collection_decl, std_collection_decl))));
     auto collection_field = fieldDecl(any_collection).bind("bad_decl");
@@ -287,15 +306,18 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
         result.Nodes.getNodeAs<clang::CXXRecordDecl>("collection");
     auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
     auto* member = result.Nodes.getNodeAs<clang::CXXRecordDecl>("member");
-    assert(gc_type || member);
+    auto* stack_allocated =
+        result.Nodes.getNodeAs<clang::CXXRecordDecl>("stack_allocated");
+    assert(gc_type || member || stack_allocated);
     if (auto* bad_decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl")) {
       if (Config::IsIgnoreAnnotated(bad_decl)) {
         return;
       }
       if (collection->getNameAsString() == "array") {
-        if (member) {
-          // std::array of Members is fine as long as it is traced (which is
-          // enforced by another checker).
+        if (member || stack_allocated) {
+          // std::array of Members or stack-allocated types is fine as long as
+          // tracing/field rules are satisfied (which is enforced by another
+          // checker).
           return;
         }
         if (result.Nodes.getNodeAs<clang::Type>("ptr") &&
@@ -308,18 +330,26 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
       }
       if (gc_type) {
         diagnostics_.CollectionOfGCed(bad_decl, collection, gc_type);
-      } else {
-        assert(member);
+      } else if (member) {
         diagnostics_.CollectionOfMembers(bad_decl, collection, member);
+      } else {
+        assert(stack_allocated);
+        if (!Config::IsStackAllocatedIgnoreAnnotated(bad_decl)) {
+          diagnostics_.CollectionOfStackAllocated(bad_decl, collection,
+                                                  stack_allocated);
+        }
       }
     } else {
       auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
       assert(bad_new);
       if (gc_type) {
         diagnostics_.CollectionOfGCed(bad_new, collection, gc_type);
-      } else {
-        assert(member);
+      } else if (member) {
         diagnostics_.CollectionOfMembers(bad_new, collection, member);
+      } else {
+        assert(stack_allocated);
+        diagnostics_.CollectionOfStackAllocated(bad_new, collection,
+                                                stack_allocated);
       }
     }
   }
@@ -592,7 +622,9 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   CollectionOfGarbageCollectedMatcher collection_of_gc(diagnostics,
                                                        record_cache);
   if (options.enable_off_heap_collections_of_gced_check) {
-    collection_of_gc.Register(match_finder);
+    collection_of_gc.Register(
+        match_finder,
+        options.enable_off_heap_collections_of_stack_allocated_check);
   }
 
   MemberOnStackMatcher member_on_stack(diagnostics);

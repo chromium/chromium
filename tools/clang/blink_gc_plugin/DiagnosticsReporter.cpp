@@ -275,6 +275,11 @@ const char kCollectionOfMembers[] =
     "[blink-gc] Disallowed collection %0 found; %1 is a "
     "Member type. Use heap collections to hold Members.";
 
+const char kCollectionOfStackAllocated[] =
+    "[blink-gc] Disallowed collection %0 found; %1 is a "
+    "stack-allocated type. STL collections cannot hold stack-allocated "
+    "objects.";
+
 } // namespace
 
 DiagnosticBuilder DiagnosticsReporter::ReportDiagnostic(
@@ -431,6 +436,8 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kCollectionOfGced);
   diag_collection_of_members_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kCollectionOfMembers);
+  diag_collection_of_stack_allocated_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kCollectionOfStackAllocated);
 }
 
 bool DiagnosticsReporter::hasErrorOccurred() const
@@ -907,6 +914,22 @@ void DiagnosticsReporter::CollectionOfMembers(
     const clang::CXXRecordDecl* member) {
   ReportDiagnostic(expr->getBeginLoc(), diag_collection_of_members_)
       << collection << member << expr->getSourceRange();
+}
+
+void DiagnosticsReporter::CollectionOfStackAllocated(
+    const clang::Decl* decl,
+    const clang::CXXRecordDecl* collection,
+    const clang::CXXRecordDecl* stack_allocated) {
+  ReportDiagnostic(decl->getBeginLoc(), diag_collection_of_stack_allocated_)
+      << collection << stack_allocated << decl->getSourceRange();
+}
+
+void DiagnosticsReporter::CollectionOfStackAllocated(
+    const clang::Expr* expr,
+    const clang::CXXRecordDecl* collection,
+    const clang::CXXRecordDecl* stack_allocated) {
+  ReportDiagnostic(expr->getBeginLoc(), diag_collection_of_stack_allocated_)
+      << collection << stack_allocated << expr->getSourceRange();
 }
 
 void DiagnosticsReporter::MemberOnStack(const clang::VarDecl* var) {
