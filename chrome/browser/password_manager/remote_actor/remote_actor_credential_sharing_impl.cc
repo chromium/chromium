@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_config.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
@@ -51,6 +53,40 @@ std::unique_ptr<RemoteActorSelectionDialogController> CreateDefaultDialog(
 }
 
 constexpr size_t kMaxArgumentLength = 256;
+
+// Checks if enterprise policy (`GeminiSparkSettings` for `kGemini`,
+// `AIModeSettings` for `kSearch`) permits remote actor credential sharing.
+bool IsAllowedByPolicy(Profile* profile, RemoteActorType actor_type) {
+  CHECK(profile);
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+
+  switch (actor_type) {
+    case RemoteActorType::kGemini: {
+      // Check whether the browser, device, or account is enterprise-managed, or
+      // if the preference is explicitly set by enterprise policy.
+      bool is_managed =
+          glic::GlicEnabling::IsBrowserManaged(profile) ||
+          glic::GlicEnabling::IsDeviceManaged() ||
+          glic::GlicEnabling::IsEnterpriseAccount(profile) ||
+          prefs->IsManagedPreference(glic::prefs::kGlicSparkPolicySettings);
+
+      // Apply policy if managed, unless it's a dogfood client (matching Glic
+      // policy behavior).
+      if (is_managed && !glic::GlicEnabling::IsLikelyDogfoodClient()) {
+        auto policy_state = static_cast<glic::prefs::GlicSparkPolicyState>(
+            prefs->GetInteger(glic::prefs::kGlicSparkPolicySettings));
+        if (policy_state != glic::prefs::GlicSparkPolicyState::kEnabled) {
+          return false;
+        }
+      }
+      return true;
+    }
+    case RemoteActorType::kSearch:
+      return AimEligibilityService::IsAimAllowedByPolicy(prefs);
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 DOCUMENT_USER_DATA_KEY_IMPL(RemoteActorCredentialSharingImpl);
@@ -134,7 +170,7 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
 
-  if (!IsAllowedByPolicy(profile)) {
+  if (!IsAllowedByPolicy(profile, *actor_type)) {
     LogRemoteActorCredentialSharingResult(
         RemoteActorCredentialSharingResult::kBlockedByPolicy, *actor_type);
     RespondWithError(std::move(callback));
@@ -272,34 +308,6 @@ bool RemoteActorCredentialSharingImpl::HasValidUserActivation() {
   }
 
   return false;
-}
-
-bool RemoteActorCredentialSharingImpl::IsAllowedByPolicy(Profile* profile) {
-  CHECK(profile);
-  PrefService* prefs = profile->GetPrefs();
-  CHECK(prefs);
-
-  // TODO(crbug.com/580767241): Check the corresponding enterprise policy for
-  // Search Agent (e.g. AIModeSettings) when actor_type is kSearch.
-  // Check whether the browser, device, or account is enterprise-managed, or if
-  // the preference is explicitly set by enterprise policy.
-  bool is_managed =
-      glic::GlicEnabling::IsBrowserManaged(profile) ||
-      glic::GlicEnabling::IsDeviceManaged() ||
-      glic::GlicEnabling::IsEnterpriseAccount(profile) ||
-      prefs->IsManagedPreference(glic::prefs::kGlicSparkPolicySettings);
-
-  // Apply policy if managed, unless it's a dogfood client (matching Glic
-  // policy behavior).
-  if (is_managed && !glic::GlicEnabling::IsLikelyDogfoodClient()) {
-    auto policy_state = static_cast<glic::prefs::GlicSparkPolicyState>(
-        prefs->GetInteger(glic::prefs::kGlicSparkPolicySettings));
-    if (policy_state != glic::prefs::GlicSparkPolicyState::kEnabled) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 void RemoteActorCredentialSharingImpl::OnDialogResult(

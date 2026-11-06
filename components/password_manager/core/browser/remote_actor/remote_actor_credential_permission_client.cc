@@ -35,8 +35,6 @@ namespace {
 constexpr char kAgenticPermissionServiceUrlBase[] =
     "https://agenticpermission.pa.googleapis.com/";
 
-// TODO(crbug.com/537160937): Consider if any other policy should be
-// considered for this feature.
 constexpr net::NetworkTrafficAnnotationTag kRemotePermissionTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("remote_actor_permission_service",
                                         R"(
@@ -66,17 +64,20 @@ constexpr net::NetworkTrafficAnnotationTag kRemotePermissionTrafficAnnotation =
             email: "anki-team@google.com"
           }
         }
-        last_reviewed: "2026-08-27"
+        last_reviewed: "2026-11-05"
       }
       policy {
         cookies_allowed: NO
         setting:
           "This feature does not have a Chrome setting. It is enabled when the "
-          "user consents to password sharing on Gemini Web and explicitly "
-          "selects a password to share."
+          "user consents to password sharing on Gemini Web or Google Search "
+          "and explicitly selects a password to share."
         chrome_policy {
           GeminiSparkSettings {
             GeminiSparkSettings: 1
+          }
+          AIModeSettings {
+            AIModeSettings: 1
           }
         }
       })");

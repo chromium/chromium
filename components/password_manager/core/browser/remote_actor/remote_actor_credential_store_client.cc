@@ -43,8 +43,6 @@ namespace {
 
 constexpr char kPassboxEndpointUrlBase[] = "https://passbox-pa.googleapis.com/";
 
-// TODO(crbug.com/537160937): Consider if any other policy should be
-// considered for this feature.
 constexpr net::NetworkTrafficAnnotationTag kPassboxTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("remote_actor_passbox_client", R"(
       semantics {
@@ -75,17 +73,20 @@ constexpr net::NetworkTrafficAnnotationTag kPassboxTrafficAnnotation =
             email: "anki-team@google.com"
           }
         }
-        last_reviewed: "2026-07-21"
+        last_reviewed: "2026-11-05"
       }
       policy {
         cookies_allowed: NO
         setting:
           "This feature does not have a Chrome setting. It is enabled when the "
-          "user consents to password sharing on Gemini Web and explicitly "
-          "selects a password to share."
+          "user consents to password sharing on Gemini Web or Google Search "
+          "and explicitly selects a password to share."
         chrome_policy {
           GeminiSparkSettings {
             GeminiSparkSettings: 1
+          }
+          AIModeSettings {
+            AIModeSettings: 1
           }
         }
       })");

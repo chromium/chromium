@@ -21,8 +21,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
-class Profile;
-
 namespace content {
 class RenderFrameHost;
 class WebContents;
@@ -89,10 +87,6 @@ class RemoteActorCredentialSharingImpl
   // on `render_frame_host()` or a one-time fallback for a popup with a
   // same-site opener whose navigation was initiated by a user gesture.
   bool HasValidUserActivation();
-
-  // Checks if enterprise policy (GeminiSparkSettings) permits remote actor
-  // credential sharing.
-  bool IsAllowedByPolicy(Profile* profile);
 
   // RemoteActorCredentialSharingController::Delegate:
   void ShowCredentialSelection(
