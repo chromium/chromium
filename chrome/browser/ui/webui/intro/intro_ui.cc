@@ -36,7 +36,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_branded_strings.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -46,10 +45,6 @@
 
 namespace {
 int GetBackupCardDescriptionId(bool is_first_run_desktop_refresh_enabled) {
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    return IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION;
-  }
-
   return is_first_run_desktop_refresh_enabled
              ? IDS_UNO_FRE_REFRESH_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS
              : IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS;

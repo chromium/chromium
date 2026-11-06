@@ -20,7 +20,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -53,11 +52,7 @@ SigninUIError CanOfferSignin(Profile* profile,
     // re-auth scenario. Make sure the email just signed in corresponds to
     // the one sign in manager expects.
     std::string current_email =
-        identity_manager
-            ->GetPrimaryAccountInfo(
-                syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                    ? signin::ConsentLevel::kSignin
-                    : signin::ConsentLevel::kSync)
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .email;
     // TODO(crbug.com/440302112): Consider checking for the gaia_id equality
     // instead of the email for reauth flow detection.
@@ -97,13 +92,6 @@ SigninUIError CanOfferSignin(Profile* profile,
           // profiles being created (instead of opening a new window).
           if (entry->IsOmitted() || entry->GetPath() == profile->GetPath()) {
             continue;
-          }
-          // If the feature is disabled, the below check on GaiaId equality is
-          // equivalent to checking if the user is signed in.
-          if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-            if (!entry->IsAuthenticated() && !entry->CanBeManaged()) {
-              continue;
-            }
           }
           if (gaia_id == entry->GetGAIAId()) {
             return SigninUIError::AccountAlreadyUsedByAnotherProfile(

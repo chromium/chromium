@@ -40,7 +40,6 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/account_state_fetcher.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -417,8 +416,7 @@ SyncServiceStartupStateObserver::
         base::TimeDelta startup_delay,
         base::OnceClosure callback) {
   if (base::FeatureList::IsEnabled(
-          kEnableAwaitSyncServiceStartupOnHistorySync) &&
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
+          kEnableAwaitSyncServiceStartupOnHistorySync)) {
     return SyncServiceStartupStateObserverImpl::
         MaybeCreateSyncServiceStateObserverForAccountWithClouldPolicies(
             sync_service, profile, account_info, startup_delay,
@@ -551,7 +549,6 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
               &HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow,
               base::Unretained(this)))),
       access_point_(access_point) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   CHECK(delegate);
 }
 

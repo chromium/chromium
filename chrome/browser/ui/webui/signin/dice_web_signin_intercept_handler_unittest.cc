@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
@@ -422,9 +421,7 @@ class DiceWebSigninInterceptHandlerChromeSigninInterceptionTest
     std::string title = l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE);
     std::string subtitle = l10n_util::GetStringUTF8(
-        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-            ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS
-            : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS);
     std::string avatar_badge_alt_text;
     bool has_badge = false;
     if (IsSupervisedUser() == signin::Tribool::kTrue) {

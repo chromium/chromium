@@ -66,7 +66,6 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/subscription_eligibility/ai_subscription_tier_names.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -437,8 +436,7 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
   // need to match the policy filter.
 
   // Reauth attempt.
-  if ((syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-       entry.GetSigninState() != SigninState::kNotSignedIn) ||
+  if (entry.GetSigninState() != SigninState::kNotSignedIn ||
       entry.CanBeManaged()) {
     // Glic version cannot run the reauth steps, show a dialog instead that
     // will redirect the user to the regular version of the picker.

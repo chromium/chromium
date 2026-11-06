@@ -29,9 +29,6 @@ class HistorySyncOptinUIConfig
   HistorySyncOptinUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIHistorySyncOptinHost) {}
-
-  // content::WebUIConfig:
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class HistorySyncOptinUI

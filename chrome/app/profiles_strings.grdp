@@ -562,9 +562,6 @@
   <message name="IDS_PROFILES_DEFAULT_NAME" desc="The name to display for a profile when the user is not signed in.">
     Default
   </message>
-  <message name="IDS_SYNC_LOGIN_NAME_PROHIBITED" desc="The error message shown when the user tries to sign in to sync using a name that is not allowed by the admin policy">
-    Your organization doesn't allow you to turn on sync with this account
-  </message>
    <message name="IDS_SIGN_IN_LOGIN_NAME_PROHIBITED" desc="The error message shown when the user tries to sign in using a name that is not allowed by the admin policy">
     Your organization doesn't allow you to sign in with this account
   </message>
@@ -655,34 +652,10 @@
       other {{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}
       }
     </message>
-    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if no special type exists. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle only mentions the total number of items that are shown. A special type will have its type name shown first instead of 'items' and potentially show 'and other items' if multiple sections exist, in different strings. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
-      {ITEM_COUNT, plural,
-      =1 {1 item is saved only to this device. To use it on your other devices, save it in your Google Account.}
-      other {{ITEM_COUNT} items are saved only to this device. To use them on your other devices, save them in your Google Account.}
-      }
-    </message>
-    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if password type exists with no other types. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of passwords items in the section. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
-      {PASSWORD_COUNT, plural,
-      =1 {1 password is saved only to this device. To use it on your other devices, save it in your Google Account.}
-      other {{PASSWORD_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account.}
-      }
-    </message>
     <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. This subtitle variant is shown if password type is the first type and it is not the only one. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of passwords items in the section as well as 'and other items' to reference the other types. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
       {PASSWORD_COUNT, plural,
       =1 {1 password and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
       other {{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
-      }
-    </message>
-    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved to their device. This subtitle variant is shown if bookmark type exists with no other types. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of bookmarks in the section. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
-      {BOOKMARK_COUNT, plural,
-      =1 {1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account.}
-      other {{BOOKMARK_COUNT} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account.}
-      }
-    </message>
-    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO" desc="Subtitle of the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. This subtitle variant is shown if bookmark type is the first type and it is not the only one. This subtitle precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. This subtitle mentions the number of bookmarks in the section as well as 'and other items' to reference the other types. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
-      {BOOKMARK_COUNT, plural,
-      =1 {1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
-      other {{BOOKMARK_COUNT} bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}
       }
     </message>
     <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="Title of the Passwords section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. The list of items has sections for each applicable data type: Passwords, Bookmarks, and more. This section shows the number of selected items in the section of the dialog, if any.">
@@ -925,9 +898,6 @@
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       Contact your administrator for more information
     </message>
-    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
-      Sign in to get your passwords and more on all your devices
-    </message>
     <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE_WITH_BOOKMARKS" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
       Sign in to get your passwords, bookmarks, and more on all your devices
     </message>
@@ -1165,14 +1135,8 @@
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE" desc="Title of the remove warning message shown for signed in profiles, shown when the user selects remove from the 3 dotted menu">
       Delete this profile?
     </message>
-    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-      This will permanently delete your browsing data from this device. To recover the data, turn on sync as
-    </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_SIGN_IN_AS" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu for users that can only sign back in (not Turning on Sync).">
       This will permanently delete your browsing data from this device. To recover the data, sign in as
-    </message>
-    <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO"
-      desc="Profile picker profile type choice subtitle"> Sign in to get your passwords and more on all your devices
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO_BOOKMARKS"
       desc="Profile picker profile type choice subtitle"> Sign in to get your passwords, bookmarks, and more on all your devices
@@ -1206,10 +1170,6 @@
     <message name="IDS_FRE_BACKUP_CARD_TITLE"
       desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Store your passwords, bookmarks, and more'. The tone should be informative.">
       Back up your stuff
-    </message>
-    <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION"
-      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
-      Save your bookmarks and more with sync
     </message>
     <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS"
       desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">

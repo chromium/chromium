@@ -33,7 +33,6 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -370,9 +369,7 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninSubtitle() {
   }
 
   return l10n_util::GetStringUTF8(
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS
-          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS);
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyTitle() {

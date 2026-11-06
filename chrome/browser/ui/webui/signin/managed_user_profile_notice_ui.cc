@@ -44,7 +44,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -319,9 +318,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
     source->AddString(
         "valuePropSubtitle",
         l10n_util::GetStringUTF16(
-            syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                ? IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE_WITH_BOOKMARKS
-                : IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE));
+            IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE_WITH_BOOKMARKS));
     source->AddString(
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(

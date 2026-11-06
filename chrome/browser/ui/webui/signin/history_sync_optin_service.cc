@@ -24,7 +24,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -172,10 +171,6 @@ void HistorySyncOptinService::OnHistorySyncOptinHelperFlowFinished() {
 
 void HistorySyncOptinService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    return;
-  }
-
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
       signin::PrimaryAccountChangeEvent::Type::kSet) {
     return;

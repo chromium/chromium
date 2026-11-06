@@ -118,7 +118,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/sync/base/features.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -502,10 +501,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       on_device_translation_internals::mojom::PageHandlerFactory,
       OnDeviceTranslationInternalsUI>(map);
 
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        history_sync_optin::mojom::PageHandlerFactory, HistorySyncOptinUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      history_sync_optin::mojom::PageHandlerFactory, HistorySyncOptinUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       intro::mojom::SignInCelebrationPageHandlerFactory, IntroUI>(map);
   RegisterWebUIControllerInterfaceBinder<intro::mojom::IntroPageHandlerFactory,

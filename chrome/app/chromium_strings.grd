@@ -1498,9 +1498,6 @@ Chromium is unable to recover your settings.
         <message name="IDS_ACCOUNT_PREVIEW_SETTINGS_PROMO_SUBTITLE_EXTENSIONS" desc="Subtitle of a sign-in promo in Settings informing the user they can access their extensions on all their devices.">
           To get your extensions and more on all your devices, sign in to Chromium
         </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE" desc="Subtitle of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          To get your passwords and more on all your devices, sign in to Chromium
-        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS" desc="Subtitle of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
           To get your passwords, bookmarks, and more on all your devices, sign in to Chromium
         </message>

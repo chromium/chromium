@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -39,9 +38,7 @@ SigninUIError SigninUIError::UsernameNotAllowedByPatternFromPrefs(
     std::string_view email) {
   return SigninUIError(
       Type::kUsernameNotAllowedByPatternFromPrefs, email,
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? l10n_util::GetStringUTF16(IDS_SIGN_IN_LOGIN_NAME_PROHIBITED)
-          : l10n_util::GetStringUTF16(IDS_SYNC_LOGIN_NAME_PROHIBITED));
+      l10n_util::GetStringUTF16(IDS_SIGN_IN_LOGIN_NAME_PROHIBITED));
 }
 
 // static
@@ -221,9 +218,7 @@ ForceSigninUIError::UiTexts ForceSigninUIError::GetErrorTexts() const {
       CHECK(!email_.empty());
       return {l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE,
                                          base::UTF8ToUTF16(email_)),
-              syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                  ? l10n_util::GetStringUTF16(IDS_SIGN_IN_LOGIN_NAME_PROHIBITED)
-                  : l10n_util::GetStringUTF16(IDS_SYNC_LOGIN_NAME_PROHIBITED)};
+              l10n_util::GetStringUTF16(IDS_SIGN_IN_LOGIN_NAME_PROHIBITED)};
     case Type::kReauthNotSupportedByGlicFlow:
       return {
           l10n_util::GetStringUTF16(

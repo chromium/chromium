@@ -15,7 +15,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,43 +50,6 @@ std::string ComputeBatchUploadSubtitle(syncer::DataType first_type,
                                        size_t first_type_item_count,
                                        size_t number_of_types,
                                        size_t total_item_count) {
-  // Duplication of the code below (with different strings) to simplify cleanup
-  // later.
-  // This section should be removed when cleaning up
-  // `syncer::IsReplaceSyncPromosWithSignInPromosEnabled()`.
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    // Check for the "hero" type availability.
-    if (first_type == syncer::DataType::PASSWORDS) {
-      if (number_of_types > 1) {
-        // Returns "passwords + other items" combo string.
-        return l10n_util::GetPluralStringFUTF8(
-            IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO,
-            first_type_item_count);
-      }
-      // Returns the passwords only string.
-      return l10n_util::GetPluralStringFUTF8(
-          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS,
-          first_type_item_count);
-    }
-
-    if (first_type == syncer::DataType::BOOKMARKS) {
-      if (number_of_types > 1) {
-        // Returns "bookmarks + other items" combo string.
-        return l10n_util::GetPluralStringFUTF8(
-            IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO,
-            first_type_item_count);
-      }
-      // Returns the bookmarks only string.
-      return l10n_util::GetPluralStringFUTF8(
-          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS,
-          first_type_item_count);
-    }
-
-    // Returns the generic items string.
-    return l10n_util::GetPluralStringFUTF8(
-        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS, total_item_count);
-  }
-
   // Check for the "hero" type availability.
   if (first_type == syncer::DataType::PASSWORDS) {
     if (number_of_types > 1) {

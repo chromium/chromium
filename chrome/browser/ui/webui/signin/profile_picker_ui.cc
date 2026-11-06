@@ -42,7 +42,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -184,15 +183,11 @@ void AddStrings(content::WebUIDataSource* html_source,
 
   html_source->AddLocalizedString(
       "profileTypeChoiceSubtitle",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO_BOOKMARKS
-          : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO);
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO_BOOKMARKS);
 
   html_source->AddLocalizedString(
       "removeWarningSignedInProfile",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_SIGN_IN_AS
-          : IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE);
+      IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_SIGN_IN_AS);
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));

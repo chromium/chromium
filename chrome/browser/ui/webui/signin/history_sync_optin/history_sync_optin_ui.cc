@@ -22,7 +22,6 @@
 #include "chrome/grit/signin_resources.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -61,11 +60,6 @@ history_sync_optin::mojom::LaunchContext HistorySyncOptinLaunchContextToMojom(
 }
 
 }  // namespace
-
-bool HistorySyncOptinUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
-}
 
 // static
 GURL HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
