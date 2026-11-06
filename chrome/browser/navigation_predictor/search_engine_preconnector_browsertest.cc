@@ -4,6 +4,9 @@
 
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -27,13 +30,18 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/test/test_network_context.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -682,7 +690,9 @@ class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
         {net::features::kSearchEnginePreconnectInterval,
          {{"preconnect_interval", "0"}}},
         {net::features::kSearchEnginePreconnect2,
-         {{"FallbackInLowPowerMode", "true"}}}};
+         {{"FallbackInLowPowerMode", "true"}}},
+        {net::features::kQuicPreconnectInitialRtt,
+         {{"QuicPreconnectInitialRttParam", "30ms"}}}};
     battery::OverrideIsBatterySaverEnabledForTesting(false);
 
     std::vector<base::test::FeatureRef> disabled_features{
@@ -697,6 +707,10 @@ class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
+  }
+
+  ~SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest() override {
+    battery::ResetIsBatterySaverEnabledForTesting();
   }
 
   void SetUpOnMainThread() override {
@@ -1282,14 +1296,20 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
     CheckConnectionKeepAliveConfig) {
+  absl::Cleanup reset_battery_saver = [] {
+    battery::ResetIsBatterySaverEnabledForTesting();
+  };
+
   auto config = GetSearchEnginePreconnector()->GetConnectionKeepAliveConfig();
   EXPECT_TRUE(config.enable_connection_keep_alive);
+  EXPECT_EQ(config.initial_rtt, base::Milliseconds(30));
 
   battery::OverrideIsBatterySaverEnabledForTesting(true);
 
   config = GetSearchEnginePreconnector()->GetConnectionKeepAliveConfig();
   EXPECT_FALSE(config.enable_connection_keep_alive);
-  EXPECT_EQ(config.idle_timeout_in_seconds, 60);
+  EXPECT_EQ(config.idle_timeout, base::Seconds(60));
+  EXPECT_EQ(config.initial_rtt, base::TimeDelta());
 }
 
 class SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest
@@ -1435,6 +1455,207 @@ IN_PROC_BROWSER_TEST_P(
               GetSearchEnginePreconnector()->CalculateBackoffMultiplier());
   }
 }
+
+namespace {
+
+class KeepAliveCapturingNetworkContext : public network::TestNetworkContext {
+ public:
+  void PreconnectSockets(
+      uint32_t num_streams,
+      const GURL& url,
+      network::mojom::CredentialsMode credentials_mode,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const base::UnguessableToken& network_restrictions_id,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          observer_client) override {
+    last_url_ = url;
+    last_keepalive_config_ = keepalive_config;
+    preconnect_called_ = true;
+  }
+
+  bool preconnect_called() const { return preconnect_called_; }
+  const GURL& last_url() const { return last_url_; }
+  const std::optional<net::ConnectionKeepAliveConfig>& last_keepalive_config()
+      const {
+    return last_keepalive_config_;
+  }
+
+ private:
+  bool preconnect_called_ = false;
+  GURL last_url_;
+  std::optional<net::ConnectionKeepAliveConfig> last_keepalive_config_;
+};
+
+class SearchEnginePreconnectorKeepAliveConfigBrowserTestBase
+    : public SearchEnginePreconnectorBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    SearchEnginePreconnector* preconnector = GetSearchEnginePreconnector();
+    ASSERT_TRUE(preconnector);
+    preconnector->ResetStateForTesting();
+
+    SearchEnginePreconnectorBrowserTest::SetUpOnMainThread();
+    battery::OverrideIsBatterySaverEnabledForTesting(false);
+    ASSERT_NO_FATAL_FAILURE(SetUpFakeHttpsSearchEngine());
+
+    network_context_receiver_.emplace(
+        &capturing_network_context_,
+        network_context_remote_.BindNewPipeAndPassReceiver());
+    preconnector->GetPreconnectManager().SetNetworkContextForTesting(
+        network_context_remote_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    if (SearchEnginePreconnector* preconnector =
+            GetSearchEnginePreconnector()) {
+      preconnector->ResetStateForTesting();
+    }
+    network_context_remote_.reset();
+    network_context_receiver_.reset();
+    battery::ResetIsBatterySaverEnabledForTesting();
+    SearchEnginePreconnectorBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  void SetUpFakeHttpsSearchEngine() {
+    TemplateURLService* model =
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+    ASSERT_TRUE(model);
+    search_test_utils::WaitForTemplateURLServiceToLoad(model);
+    ASSERT_TRUE(model->loaded());
+
+    TemplateURLData data;
+    data.SetShortName(u"https_engine");
+    data.SetKeyword(data.short_name());
+    data.SetURL("https://www.fakesearch.com/search?q={searchTerms}");
+    data.preconnect_to_search_url = true;
+    TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+    ASSERT_TRUE(template_url);
+    model->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  KeepAliveCapturingNetworkContext capturing_network_context_;
+  std::optional<mojo::Receiver<network::mojom::NetworkContext>>
+      network_context_receiver_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
+};
+
+class SearchEnginePreconnectorInitialRttBrowserTest
+    : public SearchEnginePreconnectorKeepAliveConfigBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SearchEnginePreconnectorInitialRttBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {features::kPreconnectToSearch,
+         {{"skip_in_background", "false"}, {"startup_delay_ms", "3600000"}}},
+        {::features::kPreconnectManagerDirectFastPath, {}},
+        {net::features::kQuicPreconnectInitialRtt,
+         {{"QuicPreconnectInitialRttParam", "30ms"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back({net::features::kSearchEnginePreconnect2,
+                                  {{"FallbackInLowPowerMode", "true"}}});
+    } else {
+      disabled_features.emplace_back(net::features::kSearchEnginePreconnect2);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchEnginePreconnectorInitialRttBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorInitialRttBrowserTest,
+                       SetsInitialRtt) {
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+  network_context_remote_.FlushForTesting();
+
+  ASSERT_TRUE(capturing_network_context_.preconnect_called());
+  EXPECT_EQ(capturing_network_context_.last_url(), GURL(kFakeSearch));
+
+  net::ConnectionKeepAliveConfig expected;
+  expected.initial_rtt = base::Milliseconds(30);
+  if (GetParam()) {
+    expected.idle_timeout =
+        base::Seconds(net::features::kIdleTimeoutInSeconds.default_value);
+    expected.ping_interval =
+        base::Seconds(net::features::kPingIntervalInSeconds.default_value);
+    expected.enable_connection_keep_alive = true;
+    expected.quic_connection_options =
+        net::features::kQuicConnectionOptions.default_value;
+  }
+  EXPECT_EQ(capturing_network_context_.last_keepalive_config(), expected);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorInitialRttBrowserTest,
+                       SuppressesPreconnectInLowPowerMode) {
+  battery::OverrideIsBatterySaverEnabledForTesting(true);
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+  network_context_remote_.FlushForTesting();
+
+  EXPECT_FALSE(capturing_network_context_.preconnect_called());
+}
+
+class SearchEnginePreconnectorInvalidKeepAliveTimeoutsBrowserTest
+    : public SearchEnginePreconnectorKeepAliveConfigBrowserTestBase,
+      public ::testing::WithParamInterface<
+          std::pair<const char*, const char*>> {
+ public:
+  SearchEnginePreconnectorInvalidKeepAliveTimeoutsBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPreconnectToSearch,
+          {{"skip_in_background", "false"}, {"startup_delay_ms", "3600000"}}},
+         {::features::kPreconnectManagerDirectFastPath, {}},
+         {net::features::kQuicPreconnectInitialRtt,
+          {{"QuicPreconnectInitialRttParam", "30ms"}}},
+         {net::features::kSearchEnginePreconnect2,
+          {{"IdleTimeoutInSeconds", GetParam().first},
+           {"PingIntervalInSeconds", GetParam().second}}}},
+        {});
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SearchEnginePreconnectorInvalidKeepAliveTimeoutsBrowserTest,
+    ::testing::Values(
+        // `PingIntervalInSeconds=29` equals `IdleTimeoutInSeconds - 1` (`29`),
+        // violating `effective_ping_interval < idle_timeout - 1s`.
+        std::make_pair("30", "29"),
+        // Negative `PingIntervalInSeconds` must fail `IsValid()` and fall back
+        // to `default_value` (`27s`) rather than clamping to `0s`.
+        std::make_pair("30", "-5")));
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorInvalidKeepAliveTimeoutsBrowserTest,
+    FallsBackToDefaultTimeoutsWithoutDisconnectingNetworkContext) {
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+  network_context_remote_.FlushForTesting();
+
+  EXPECT_TRUE(network_context_remote_.is_connected());
+  ASSERT_TRUE(capturing_network_context_.preconnect_called());
+  EXPECT_EQ(capturing_network_context_.last_url(), GURL(kFakeSearch));
+
+  net::ConnectionKeepAliveConfig expected;
+  expected.idle_timeout =
+      base::Seconds(net::features::kIdleTimeoutInSeconds.default_value);
+  expected.ping_interval =
+      base::Seconds(net::features::kPingIntervalInSeconds.default_value);
+  expected.enable_connection_keep_alive = true;
+  expected.initial_rtt = base::Milliseconds(30);
+  expected.quic_connection_options =
+      net::features::kQuicConnectionOptions.default_value;
+  EXPECT_EQ(capturing_network_context_.last_keepalive_config(), expected);
+}
+
+}  // namespace
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 class SearchEnginePreconnectorDeviceBoundSessionBrowserTest

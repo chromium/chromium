@@ -5,10 +5,10 @@
 #ifndef NET_BASE_RECONNECT_NOTIFIER_H_
 #define NET_BASE_RECONNECT_NOTIFIER_H_
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -129,7 +129,8 @@ class NET_EXPORT ConnectionChangeNotifier {
   base::WeakPtrFactory<ConnectionChangeNotifier> weak_factory_{this};
 };
 
-// Keeps track of the relevant information to conduct connection keep-alive.
+// Per-session QUIC keep-alive, handshake initial-RTT, and connection-option
+// tuning passed to `NetworkContext::PreconnectSockets()`.
 struct NET_EXPORT ConnectionKeepAliveConfig {
   ConnectionKeepAliveConfig() = default;
   ~ConnectionKeepAliveConfig() = default;
@@ -141,21 +142,40 @@ struct NET_EXPORT ConnectionKeepAliveConfig {
   ConnectionKeepAliveConfig& operator=(ConnectionKeepAliveConfig&& other) =
       default;
 
-  // Timeout for the session to be closed. Counted from the last successful
-  // PING. This is kept as signed integer since it will be later passed as
-  // a time offset of the underlying time representation such as `QuicTime`.
-  int32_t idle_timeout_in_seconds = 0;
+  bool operator==(const ConnectionKeepAliveConfig& other) const = default;
 
-  // Interval between two pings. Counted from the last ping. This should be
-  // reasonably shorter than `idle_timeout` so that a PING frame can be
-  // exchanged before the idle timeout. This is kept as signed integer since it
-  // will be later passed as a time offset of the underlying time representation
-  // such as `QuicTime`.
-  int32_t ping_interval_in_seconds = 0;
+  // Returns true iff all timeout and RTT fields are non-negative, finite, and
+  // mutually consistent with QUIC's idle-timeout and keep-alive contracts.
+  bool IsValid() const;
+
+  // Timeout for the session to be closed, counted from the last successful
+  // packet/PING. Must be zero or in `(2s, UINT32_MAX s]` so that
+  // `QuicConfig` storage and `QuicTime` deadline arithmetic remain
+  // overflow-safe and `QuicConnection::SetNetworkTimeouts()`'s 1s local client
+  // deduction leaves room for a >= 1s keep-alive interval. If zero, the default
+  // QUIC idle network timeout is preserved (`ping_interval` must also be zero).
+  base::TimeDelta idle_timeout;
+
+  // Interval between keep-alive PINGs, counted from the last ping. Must be zero
+  // or `>= 1s` and finite (`QuicPingManager` schedules keep-alive alarms at 1s
+  // granularity). When `idle_timeout` is positive, the effective ping interval
+  // (`ping_interval` if positive, or QUIC's default `kPingTimeoutSecs` when
+  // zero) must be strictly less than `idle_timeout - 1s` so the ping alarm
+  // fires before the client's local idle detector alarm.
+  base::TimeDelta ping_interval;
 
   // Enables the connection keep alive mechanism to periodically send PING
   // to the server when there are no active requests.
   bool enable_connection_keep_alive = false;
+
+  // Client-side initial RTT to configure locally on the QUIC connection before
+  // any RTT samples are received, used only when no cached SRTT, 2G/3G
+  // estimate, or explicit handshake RTT is already configured (and not sent in
+  // the `IRTT` transport parameter to the server). This controls the client's
+  // initial Probe Timeout (PTO) delay during the QUIC handshake
+  // (`3 * initial_rtt`). Must be non-negative and finite. If zero, the default
+  // initial RTT is used unchanged.
+  base::TimeDelta initial_rtt;
 
   // The QUIC connection options which will be sent to the server in order to
   // enable certain QUIC features. This should be set using `QuicTag`s (32-bit

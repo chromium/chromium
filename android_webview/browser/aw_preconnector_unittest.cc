@@ -5,14 +5,19 @@
 #include "android_webview/browser/aw_preconnector.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
 #include "android_webview/common/aw_features.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -22,7 +27,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/reconnect_notifier.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
@@ -71,6 +78,7 @@ class AwPreconnectorTestNetworkContext
       const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
           observer_client) override {
+    keepalive_configs_[url] = keepalive_config;
     if (observer_client) {
       observers_[url].emplace_back(std::move(observer_client));
     }
@@ -138,8 +146,19 @@ class AwPreconnectorTestNetworkContext
 
   size_t active_receivers_count() const { return receivers_.size(); }
 
+  bool has_preconnect_for_url(const GURL& url) const {
+    return keepalive_configs_.contains(url);
+  }
+
+  const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config(
+      const GURL& url) const {
+    return keepalive_configs_.at(url);
+  }
+
  private:
   std::vector<GURL> preloaded_urls_;
+  base::flat_map<GURL, std::optional<net::ConnectionKeepAliveConfig>>
+      keepalive_configs_;
   std::set<GURL> disconnected_urls_;
   base::flat_map<GURL,
                  std::unique_ptr<mojo::Receiver<
@@ -176,6 +195,15 @@ class AwPreconnectorTestBase : public testing::Test {
   void TearDown() override {
     network_context_receiver_.reset();
     browser_context_.reset();
+    // Flush the network service thread so all pending NetworkContext tasks
+    // finish before `~AwPreconnectorTestBase()` destroys `feature_list_` and
+    // `test_content_client_initializer_`.
+    if (content::GetNetworkTaskRunner()) {
+      base::RunLoop network_run_loop;
+      content::GetNetworkTaskRunner()->PostTaskAndReply(
+          FROM_HERE, base::DoNothing(), network_run_loop.QuitClosure());
+      network_run_loop.Run();
+    }
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
@@ -603,6 +631,71 @@ TEST_F(AwPreconnectorCleanupModeTest,
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
                    "Android.WebView.Preconnect.PrewarmDictionary.Event",
                    AwPrewarmDictionaryEvent::kExpired));
+}
+
+class AwPreconnectorInitialRttTest : public AwPreconnectorTestBase {
+ protected:
+  // Triggers `AwPreconnector::Preconnect(url)` and blocks until `url` reaches
+  // `test_network_context_`. Caller must wrap in `ASSERT_NO_FATAL_FAILURE`.
+  void PreconnectAndWait(const GURL& url) {
+    SetUpNetworkContext();
+    AwPreconnector preconnector(browser_context_.get());
+    ASSERT_TRUE(preconnector.Preconnect(nullptr, url));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return test_network_context_->has_preconnect_for_url(url); }));
+  }
+};
+
+TEST_F(AwPreconnectorInitialRttTest, DisabledByDefault) {
+  feature_list_.InitAndDisableFeature(net::features::kQuicPreconnectInitialRtt);
+
+  const GURL url("https://initial-rtt-disabled.example.com/");
+  ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
+  EXPECT_EQ(test_network_context_->keepalive_config(url), std::nullopt);
+}
+
+TEST_F(AwPreconnectorInitialRttTest, EnabledDefault25ms) {
+  feature_list_.InitAndEnableFeature(net::features::kQuicPreconnectInitialRtt);
+
+  const GURL url("https://initial-rtt-default.example.com/");
+  ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
+
+  net::ConnectionKeepAliveConfig expected;
+  expected.initial_rtt = base::Milliseconds(25);
+  EXPECT_EQ(test_network_context_->keepalive_config(url), expected);
+}
+
+TEST_F(AwPreconnectorInitialRttTest, CustomPositiveParam) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kQuicPreconnectInitialRtt,
+      {{"QuicPreconnectInitialRttParam", "40ms"}});
+
+  const GURL url("https://initial-rtt-custom.example.com/");
+  ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
+
+  net::ConnectionKeepAliveConfig expected;
+  expected.initial_rtt = base::Milliseconds(40);
+  EXPECT_EQ(test_network_context_->keepalive_config(url), expected);
+}
+
+TEST_F(AwPreconnectorInitialRttTest, ZeroParamIgnored) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kQuicPreconnectInitialRtt,
+      {{"QuicPreconnectInitialRttParam", "0ms"}});
+
+  const GURL url("https://initial-rtt-zero.example.com/");
+  ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
+  EXPECT_EQ(test_network_context_->keepalive_config(url), std::nullopt);
+}
+
+TEST_F(AwPreconnectorInitialRttTest, NegativeParamIgnored) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kQuicPreconnectInitialRtt,
+      {{"QuicPreconnectInitialRttParam", "-10ms"}});
+
+  const GURL url("https://initial-rtt-negative.example.com/");
+  ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
+  EXPECT_EQ(test_network_context_->keepalive_config(url), std::nullopt);
 }
 
 }  // namespace

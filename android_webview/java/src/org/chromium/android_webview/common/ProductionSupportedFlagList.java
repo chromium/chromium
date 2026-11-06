@@ -1561,6 +1561,11 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.QUIC_ENABLE_PORT_MIGRATION,
                 "Controls whether QUIC sessions are allowed to migrate to a different port when"
                         + " the current path is degrading."),
+        Flag.baseFeature(
+                NetFeatures.QUIC_PRECONNECT_INITIAL_RTT,
+                "When enabled, Profile#preconnect configures the client-side initial RTT on"
+                        + " uncached QUIC sessions to reduce the initial handshake Probe Timeout"
+                        + " (PTO) delay."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

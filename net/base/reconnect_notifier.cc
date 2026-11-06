@@ -3,11 +3,23 @@
 // found in the LICENSE file.
 #include "net/base/reconnect_notifier.h"
 
+#include <cstdint>
+#include <limits>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/time/time.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 
 namespace net {
+
+namespace {
+
+bool IsValidNonNegativeFiniteTimeDelta(base::TimeDelta delta) {
+  return !delta.is_negative() && !delta.is_inf();
+}
+
+}  // namespace
 
 ConnectionChangeNotifier::Observer::Observer() = default;
 ConnectionChangeNotifier::Observer::~Observer() {
@@ -84,6 +96,36 @@ void ConnectionChangeNotifier::RemoveObserver(const Observer* observer) {
 
 ConnectionChangeNotifier::ConnectionChangeNotifier() = default;
 ConnectionChangeNotifier::~ConnectionChangeNotifier() = default;
+
+bool ConnectionKeepAliveConfig::IsValid() const {
+  if (!IsValidNonNegativeFiniteTimeDelta(idle_timeout) ||
+      !IsValidNonNegativeFiniteTimeDelta(ping_interval) ||
+      !IsValidNonNegativeFiniteTimeDelta(initial_rtt)) {
+    return false;
+  }
+
+  // `QuicPingManager` schedules keep-alive PINGs at >= 1s granularity.
+  if (!ping_interval.is_zero() && ping_interval < base::Seconds(1)) {
+    return false;
+  }
+
+  // `QuicConnection::SetNetworkTimeouts` subtracts 1s from the client's local
+  // idle timeout and `QuicAlarmMultiplexer::FireAlarms` runs the idle alarm
+  // before the ping alarm on equal deadlines; capping at `UINT32_MAX` seconds
+  // keeps `QuicConfig` storage and `QuicTime` deadline arithmetic
+  // overflow-safe.
+  if (idle_timeout.is_zero()) {
+    return ping_interval.is_zero();
+  }
+  if (idle_timeout < base::Seconds(2) ||
+      idle_timeout > base::Seconds(std::numeric_limits<uint32_t>::max())) {
+    return false;
+  }
+  const base::TimeDelta effective_ping_interval =
+      ping_interval.is_zero() ? base::Seconds(quic::kPingTimeoutSecs)
+                              : ping_interval;
+  return effective_ping_interval < idle_timeout - base::Seconds(1);
+}
 
 ConnectionManagementConfig::ConnectionManagementConfig() = default;
 ConnectionManagementConfig::~ConnectionManagementConfig() = default;

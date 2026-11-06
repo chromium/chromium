@@ -69,31 +69,37 @@ interface ConnectionChangeObserverClient {
     OnConnectionFailed();
 };
 
-// Keeps track of the configs to run the connection keep alive.
-// This represents `net::ConnectionKeepAliveConfig`.
-// Passed on `NetworkContext::PreconnectSockets()`.
+// Coupled idle-timeout and keep-alive PING schedule for a preconnected QUIC
+// session.
+struct QuicKeepAliveTimeouts {
+  // Timeout for the session to be closed after the last successful packet/PING.
+  // Must be in `(2s, UINT32_MAX s]`.
+  mojo_base.mojom.TimeDelta idle_timeout;
+
+  // Optional interval between keep-alive PINGs (`>= 1s`). When null, QUIC's
+  // default `kPingTimeoutSecs` (15s) is used. The effective ping interval must
+  // be strictly less than `idle_timeout - 1s`.
+  mojo_base.mojom.TimeDelta? ping_interval;
+};
+
+// Per-session QUIC keep-alive, handshake initial-RTT, and connection-option
+// tuning passed to `NetworkContext::PreconnectSockets()`.
+// Typemapped to `net::ConnectionKeepAliveConfig`.
 struct ConnectionKeepAliveConfig {
-  // Timeout for the session to be closed in seconds. Counted from the last
-  // successful PING. 32-bits is enough to hold a reasonable number of seconds
-  // for a connection to stay alive.
-  int32 idle_timeout_in_seconds = 0;
+  // Optional keep-alive and idle timeouts. When null, QUIC's default idle
+  // network timeout and ping timeout are preserved unchanged.
+  QuicKeepAliveTimeouts? keep_alive_timeouts;
 
-  // Interval between two pings. Counted from the last ping. This should be
-  // reasonably shorter than `idle_timeout_sec` so that a PING frame can be
-  // exchanged before the idle timeout. We choose a reasonable time in seconds
-  // within the uint32 bounds.
-  int32 ping_interval_in_seconds = 0;
-
-  // Enables the connection keep alive mechanism to periodically send PING
-  // to the server.
+  // Enables periodic keep-alive PING frames while no requests are active.
   bool enable_connection_keep_alive = false;
 
-  // The QUIC connection options which will be sent to the server in order to
-  // enable certain QUIC features. This should be set using `QuicTag`s (32-bit
-  // value represented in ASCII equivalent e.g. EXMP). If we want to set
-  // multiple features, then the values should be separated with a comma
-  // (e.g. "ABCD,EFGH"). Note that this is parsed inside the network layer later
-  // on, hence we intentionally send the raw string that is received from Finch
-  // as is.
+  // Optional positive client-side initial RTT (`> 0`, finite) configured
+  // locally before any RTT samples arrive when no cached SRTT, 2G/3G estimate,
+  // or explicit handshake RTT exists (never sent in the `IRTT` transport
+  // parameter).
+  mojo_base.mojom.TimeDelta? initial_rtt;
+
+  // Comma-separated ASCII `QuicTag` connection options sent to the server
+  // (e.g. "ABCD,EFGH"), parsed inside the network layer.
   string quic_connection_options = "";
 };

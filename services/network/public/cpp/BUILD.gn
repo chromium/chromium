@@ -787,6 +787,7 @@ source_set("tests") {
     "basic_data_buffer_factory_unittest.cc",
     "client_hints_unittest.cc",
     "connection_allowlist_unittest.cc",
+    "connection_change_observer_client_mojom_traits_unittest.cc",
     "content_decoding_interceptor_unittest.cc",
     "content_decoding_util_unittest.cc",
     "content_language_parser_unittest.cc",

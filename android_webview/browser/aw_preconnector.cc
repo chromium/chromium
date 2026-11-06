@@ -20,6 +20,7 @@
 #include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/socket/next_proto.h"
 #include "services/network/public/cpp/constants.h"
@@ -135,6 +136,11 @@ bool AwPreconnector::Preconnect(JNIEnv* env, const GURL& url) {
                  std::move(context));
 
   std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
+  if (std::optional<base::TimeDelta> initial_rtt =
+          net::features::GetQuicPreconnectInitialRtt()) {
+    keepalive_config.emplace();
+    keepalive_config->initial_rtt = *initial_rtt;
+  }
 
   bool was_blocked = !browser_context_->GetDefaultStoragePartition()
                           ->IsNetworkContextInitialized();
