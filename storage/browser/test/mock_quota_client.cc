@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/singleton.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -50,8 +49,7 @@ void MockQuotaClient::ModifyBucketAndNotify(const BucketLocator& bucket,
   it->second += delta;
   DCHECK_GE(it->second, 0);
   quota_manager_proxy_->NotifyBucketModified(
-      client_type_, bucket, delta, IncrementMockTime(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+      client_type_, bucket, delta, IncrementMockTime(), base::DoNothing());
 }
 
 void MockQuotaClient::AddBucketToErrorSet(const BucketLocator& bucket) {
@@ -129,8 +127,7 @@ void MockQuotaClient::RunDeleteBucketData(const BucketLocator& bucket,
 
   int64_t delta = it->second;
   quota_manager_proxy_->NotifyBucketModified(
-      client_type_, bucket, -delta, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+      client_type_, bucket, -delta, base::Time::Now(), base::DoNothing());
   bucket_data_.erase(it);
   std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
 }

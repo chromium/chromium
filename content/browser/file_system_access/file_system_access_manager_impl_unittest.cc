@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -567,7 +566,6 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         bucket_future;
     quota_manager_proxy_->CreateBucketForTesting(
         kTestStorageKey, "custom_bucket",
-        base::SequencedTaskRunner::GetCurrentDefault(),
         bucket_future.GetCallback());
     return bucket_future.Take().transform(
         &storage::BucketInfo::ToBucketLocator);
@@ -678,7 +676,6 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
       bucket_future;
   quota_manager_proxy_->CreateBucketForTesting(
       kTestStorageKey, "custom_bucket",
-      base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto bucket, bucket_future.Take());
 
@@ -737,7 +734,6 @@ TEST_F(FileSystemAccessManagerImplTest,
       bucket_future;
   quota_manager_proxy_->CreateBucketForTesting(
       kTestStorageKey, "custom_bucket",
-      base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto bucket, bucket_future.Take());
 
@@ -1472,7 +1468,6 @@ TEST_F(FileSystemAccessManagerImplTest,
       bucket_future;
   quota_manager_proxy_->CreateBucketForTesting(
       kOtherStorageKey, "custom_bucket",
-      base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto other_bucket, bucket_future.Take());
 

@@ -57,32 +57,12 @@ class QuotaManagerProxyTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(QuotaManagerProxyTest, GetBucketPath) {
-  base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-  BucketInitParams params(
-      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
-      "draft_bucket");
-  quota_manager_proxy_->UpdateOrCreateBucket(
-      params, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      future.GetCallback());
-  ASSERT_OK_AND_ASSIGN(auto bucket, future.Take());
-
-  base::FilePath expected_path =
-      profile_path_.GetPath()
-          .AppendASCII("WebStorage")
-          .AppendASCII(base::NumberToString(bucket.id.value()));
-  EXPECT_EQ(quota_manager_proxy_->GetBucketPath(bucket.ToBucketLocator()),
-            expected_path);
-}
-
 TEST_F(QuotaManagerProxyTest, GetClientBucketPath) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
   BucketInitParams params(
       blink::StorageKey::CreateFromStringForTesting("http://example.com"),
       "draft_bucket");
-  quota_manager_proxy_->UpdateOrCreateBucket(
-      params, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      future.GetCallback());
+  quota_manager_proxy_->UpdateOrCreateBucket(params, future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto bucket, future.Take());
 
   base::FilePath bucket_path =
@@ -126,9 +106,8 @@ TEST_F(QuotaManagerProxyTest, GetBucketsModifiedBetween) {
   BucketInitParams params(
       blink::StorageKey::CreateFromStringForTesting("http://example.com"),
       "draft_bucket");
-  quota_manager_proxy_->UpdateOrCreateBucket(
-      params, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      create_future.GetCallback());
+  quota_manager_proxy_->UpdateOrCreateBucket(params,
+                                             create_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(BucketInfo bucket, create_future.Take());
 
   base::test::TestFuture<std::set<BucketLocator>> buckets_future;

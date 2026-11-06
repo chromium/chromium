@@ -260,7 +260,6 @@ void ServiceWorkerRegistry::CreateNewRegistration(
     // Can be nullptr in tests.
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(key),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindOnce(
             &ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo,
             weak_factory_.GetWeakPtr(), std::move(options), key,
@@ -1721,8 +1720,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
         storage::QuotaClientType::kServiceWorker,
         storage::BucketLocator::ForDefaultBucket(key),
         stored_resources_total_size_bytes - deleted_resources_size,
-        base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-        std::move(registration_stored_callback));
+        base::Time::Now(), std::move(registration_stored_callback));
   } else {
     std::move(registration_stored_callback).Run();
   }
@@ -1778,8 +1776,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     quota_manager_proxy_->NotifyBucketModified(
         storage::QuotaClientType::kServiceWorker,
         storage::BucketLocator::ForDefaultBucket(key), -deleted_resources_size,
-        base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-        std::move(notify_registration_deleted_callback));
+        base::Time::Now(), std::move(notify_registration_deleted_callback));
   } else {
     std::move(notify_registration_deleted_callback).Run();
   }

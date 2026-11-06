@@ -75,7 +75,7 @@ void SiteQualityMetricsTask::Start() {
   storage_partition_->GetQuotaManager()
       ->proxy()
       ->GetStorageKeyUsageWithBreakdown(
-          storage_key, base::SequencedTaskRunner::GetCurrentDefault(),
+          storage_key,
           base::BindOnce(&SiteQualityMetricsTask::OnQuotaUsageRetrieved,
                          weak_factory_.GetWeakPtr())
               .Then(barrier));

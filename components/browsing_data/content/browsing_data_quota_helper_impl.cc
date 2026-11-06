@@ -13,7 +13,6 @@
 #include "base/functional/concurrent_callbacks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -81,7 +80,7 @@ void BrowsingDataQuotaHelperImpl::DeleteStorageKeyData(
     base::OnceClosure completed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   quota_manager_proxy_->DeleteStorageKeyData(
-      storage_key, base::SequencedTaskRunner::GetCurrentDefault(),
+      storage_key,
       base::IgnoreArgs<blink::mojom::QuotaStatusCode>(std::move(completed)));
 }
 

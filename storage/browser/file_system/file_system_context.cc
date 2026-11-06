@@ -405,15 +405,13 @@ void FileSystemContext::OpenFileSystem(
       // is still alive.
       std::move(got_bucket).Run(base::unexpected(QuotaError::kUnknownError));
     } else {
-      quota_manager_proxy()->GetBucketById(bucket->id, io_task_runner_.get(),
-                                           std::move(got_bucket));
+      quota_manager_proxy()->GetBucketById(bucket->id, std::move(got_bucket));
     }
   } else {
     // Ensure default bucket for `storage_key` exists so that Quota API
     // is aware of the usage.
     quota_manager_proxy()->UpdateOrCreateBucket(
-        BucketInitParams::ForDefaultBucket(storage_key), io_task_runner_.get(),
-        std::move(got_bucket));
+        BucketInitParams::ForDefaultBucket(storage_key), std::move(got_bucket));
   }
 }
 
@@ -539,7 +537,7 @@ void FileSystemContext::DeleteFileSystem(const blink::StorageKey& storage_key,
   }
 
   quota_manager_proxy()->UpdateOrCreateBucket(
-      BucketInitParams::ForDefaultBucket(storage_key), io_task_runner_.get(),
+      BucketInitParams::ForDefaultBucket(storage_key),
       base::BindOnce(&FileSystemContext::OnGetBucketForDeleteFileSystem,
                      weak_factory_.GetWeakPtr(), type, std::move(callback)));
 }

@@ -5,7 +5,6 @@
 #include "content/browser/buckets/bucket_host.h"
 
 #include "base/functional/bind.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/buckets/bucket_manager.h"
@@ -71,7 +70,6 @@ void BucketHost::Persist(PersistCallback callback) {
       blink::mojom::PermissionStatus::GRANTED) {
     GetQuotaManagerProxy()->UpdateBucketPersistence(
         bucket_id_, /*persistent=*/true,
-        base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(
             &BucketHost::DidGetBucket, weak_factory_.GetWeakPtr(),
             base::BindOnce(&BucketHost::DidValidateForPersist,
@@ -88,7 +86,7 @@ void BucketHost::Persisted(PersistedCallback callback) {
   }
 
   GetQuotaManagerProxy()->GetBucketById(
-      bucket_id_, base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_id_,
       base::BindOnce(
           &BucketHost::DidGetBucket, weak_factory_.GetWeakPtr(),
           base::BindOnce(&BucketHost::DidValidateForPersist,
@@ -107,7 +105,7 @@ void BucketHost::Estimate(EstimateCallback callback) {
   }
 
   GetQuotaManagerProxy()->GetBucketUsageAndReportedQuota(
-      bucket_id_, base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_id_,
       base::BindOnce(&BucketHost::DidGetUsageAndQuota,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -119,7 +117,7 @@ void BucketHost::Durability(DurabilityCallback callback) {
   }
 
   GetQuotaManagerProxy()->GetBucketById(
-      bucket_id_, base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_id_,
       base::BindOnce(
           &BucketHost::DidGetBucket, weak_factory_.GetWeakPtr(),
           base::BindOnce(&BucketHost::DidValidateForDurability,
@@ -133,7 +131,7 @@ void BucketHost::DidValidateForDurability(DurabilityCallback callback,
 
 void BucketHost::SetExpires(base::Time expires, SetExpiresCallback callback) {
   GetQuotaManagerProxy()->UpdateBucketExpiration(
-      bucket_id_, expires, base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_id_, expires,
       base::BindOnce(&BucketHost::DidGetBucket, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
@@ -145,7 +143,7 @@ void BucketHost::Expires(ExpiresCallback callback) {
   }
 
   GetQuotaManagerProxy()->GetBucketById(
-      bucket_id_, base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_id_,
       base::BindOnce(
           &BucketHost::DidGetBucket, weak_factory_.GetWeakPtr(),
           base::BindOnce(&BucketHost::DidValidateForExpires,

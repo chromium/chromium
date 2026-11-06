@@ -183,7 +183,6 @@ void IdbFactoryTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
         ->proxy()
         ->UpdateOrCreateBucket(
             storage::BucketInitParams(kStorageKey, "custom_bucket"),
-            content::GetUIThreadTaskRunner({}),
             base::BindOnce(
                 [](storage::BucketLocator& bucket_locator,
                    base::OnceClosure continue_setup,

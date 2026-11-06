@@ -930,7 +930,6 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
         ->proxy()
         ->UpdateOrCreateBucket(
             storage::BucketInitParams::ForDefaultBucket(storage_key),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
             future.GetCallback());
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }

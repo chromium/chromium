@@ -26,7 +26,6 @@ MockQuotaManagerProxy::MockQuotaManagerProxy(
 
 void MockQuotaManagerProxy::UpdateOrCreateBucket(
     const BucketInitParams& params,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->UpdateOrCreateBucket(params, std::move(callback));
@@ -43,7 +42,6 @@ QuotaErrorOr<BucketInfo> MockQuotaManagerProxy::GetOrCreateBucketSync(
 void MockQuotaManagerProxy::CreateBucketForTesting(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->CreateBucketForTesting(storage_key, bucket_name,
@@ -54,7 +52,6 @@ void MockQuotaManagerProxy::CreateBucketForTesting(
 void MockQuotaManagerProxy::GetBucketByNameUnsafe(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->GetBucketByNameUnsafe(storage_key, bucket_name,
@@ -64,7 +61,6 @@ void MockQuotaManagerProxy::GetBucketByNameUnsafe(
 
 void MockQuotaManagerProxy::GetBucketById(
     const BucketId& bucket_id,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->GetBucketById(bucket_id, std::move(callback));
@@ -74,7 +70,6 @@ void MockQuotaManagerProxy::GetBucketById(
 void MockQuotaManagerProxy::GetBucketsForStorageKey(
     const blink::StorageKey& storage_key,
     bool delete_expired,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->GetBucketsForStorageKey(
@@ -86,7 +81,6 @@ void MockQuotaManagerProxy::GetBucketsForStorageKey(
 
 void MockQuotaManagerProxy::GetUsageAndQuota(
     const blink::StorageKey& storage_key,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     QuotaManager::UsageAndQuotaCallback callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->GetUsageAndQuota(storage_key,
@@ -107,7 +101,6 @@ void MockQuotaManagerProxy::NotifyBucketModified(
     const BucketLocator& bucket,
     std::optional<int64_t> delta,
     base::Time modification_time,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
   base::AutoLock locked(lock_);
   ++bucket_modified_count_;
@@ -117,7 +110,8 @@ void MockQuotaManagerProxy::NotifyBucketModified(
     mock_quota_manager_->UpdateUsage(bucket, delta);
   }
   if (callback) {
-    callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 }
 

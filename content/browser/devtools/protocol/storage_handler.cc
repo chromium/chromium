@@ -25,7 +25,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -324,7 +323,6 @@ class StorageHandler::QuotaManagerObserver
     }
     manager->GetBucketsForStorageKey(
         storage_key, /*delete_expired=*/false,
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindOnce(
             [](base::WeakPtr<StorageHandler> owner_storage_handler,
                storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
@@ -690,7 +688,6 @@ void StorageHandler::GetUsageAndQuota(
 
   GetQuotaManagerProxy()->GetUsageAndQuotaForDevtools(
       blink::StorageKey::CreateFirstParty(*origin),
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&ReportUsageAndQuotaDataOnUIThread, std::move(callback)));
 }
 
@@ -1059,7 +1056,6 @@ DispatchResponse StorageHandler::DeleteStorageBucket(
   }
 
   manager->DeleteBucket(*storage_key, bucket->GetName(""),
-                        base::SingleThreadTaskRunner::GetCurrentDefault(),
                         base::DoNothing());
   return Response::Success();
 }

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/storage_partition_impl.h"
@@ -31,8 +30,7 @@ void StorageBucketClearSiteDataTester::CreateBucketForTesting(
         callback) {
   storage_partition_impl_->GetQuotaManagerProxy()
       ->CreateBucketForTesting(  // IN-TEST
-          storage_key, bucket_name,
-          base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
+          storage_key, bucket_name, std::move(callback));
 }
 
 void StorageBucketClearSiteDataTester::GetBucketsForStorageKey(
@@ -41,8 +39,7 @@ void StorageBucketClearSiteDataTester::GetBucketsForStorageKey(
         void(storage::QuotaErrorOr<std::set<storage::BucketInfo>>)> callback) {
   storage_partition_impl_->GetQuotaManagerProxy()->GetBucketsForStorageKey(
       storage_key,
-      /*delete_expired=*/false, base::SequencedTaskRunner::GetCurrentDefault(),
-      std::move(callback));
+      /*delete_expired=*/false, std::move(callback));
 }
 
 }  // namespace content

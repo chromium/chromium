@@ -82,7 +82,6 @@ TEST_F(BucketContextTest, CanUseZeroDiskSpaceWhenOverQuota) {
   quota_manager_proxy_->NotifyBucketModified(
       storage::QuotaClientType::kIndexedDatabase,
       bucket_context_->bucket_locator(), /*delta=*/2, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(),
       usage_future.GetCallback());
   ASSERT_TRUE(usage_future.Wait());
 

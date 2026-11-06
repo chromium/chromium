@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
@@ -163,7 +162,6 @@ SyncFileSystemGetUsageAndQuotaFunction::Run() {
       ->GetUsageAndQuotaForWebApps(
           blink::StorageKey::CreateFirstParty(
               url::Origin::Create(source_url())),
-          base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(
               &SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
               this));

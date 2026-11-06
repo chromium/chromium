@@ -219,7 +219,6 @@ TEST_F(FileSystemContextTest, ResolveURLOnOpenFileSystem_CustomBucket) {
       bucket_future;
   proxy()->CreateBucketForTesting(
       storage_key, "custom_bucket",
-      base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto bucket, bucket_future.Take());
   ASSERT_FALSE(last_resolved_url_.has_value());
@@ -258,7 +257,6 @@ TEST_F(FileSystemContextTest, OpenFileSystem_OtherStorageKeyBucket) {
       bucket_future;
   proxy()->CreateBucketForTesting(
       other_storage_key, "custom_bucket",
-      base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto bucket, bucket_future.Take());
 

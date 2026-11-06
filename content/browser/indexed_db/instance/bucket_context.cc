@@ -539,9 +539,8 @@ void BucketContext::CheckCanUseDiskSpace(
             base::BindOnce(&BucketContext::OnGotBucketSpaceRemaining,
                            weak_factory_.GetWeakPtr())));
 
-    quota_manager()->GetBucketSpaceRemaining(
-        bucket_locator(), base::SequencedTaskRunner::GetCurrentDefault(),
-        std::move(callback_with_logging));
+    quota_manager()->GetBucketSpaceRemaining(bucket_locator(),
+                                             std::move(callback_with_logging));
   }
 }
 

@@ -114,12 +114,10 @@ void CacheStorageContextImpl::AddReceiver(
     CHECK_EQ(storage::BucketId(), bucket_locator.id, base::NotFatalUntil::M158);
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(bucket_locator.storage_key),
-        base::SequencedTaskRunner::GetCurrentDefault(),
         std::move(add_receiver));
   } else if (!bucket_locator.is_null()) {
-    quota_manager_proxy_->GetBucketById(
-        bucket_locator.id, base::SequencedTaskRunner::GetCurrentDefault(),
-        std::move(add_receiver));
+    quota_manager_proxy_->GetBucketById(bucket_locator.id,
+                                        std::move(add_receiver));
   } else {
     std::move(add_receiver)
         .Run(base::unexpected(storage::QuotaError::kNotFound));

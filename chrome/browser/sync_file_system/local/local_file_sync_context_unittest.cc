@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
@@ -439,8 +438,7 @@ TEST_F(LocalFileSyncContextTest, CreateDefaultTemporaryBucket) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
   file_system.quota_manager()->proxy()->GetBucketByNameUnsafe(
       blink::StorageKey::CreateFromStringForTesting(kOrigin1),
-      storage::kDefaultBucketName,
-      base::SequencedTaskRunner::GetCurrentDefault(), future.GetCallback());
+      storage::kDefaultBucketName, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(const auto result, future.Take());
   EXPECT_EQ(result.name, storage::kDefaultBucketName);

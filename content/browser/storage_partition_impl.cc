@@ -3254,9 +3254,7 @@ void StoragePartitionImpl::ClearDataForBuckets(
   storage::QuotaManagerProxy* quota_manager_proxy = GetQuotaManagerProxy();
 
   for (const auto& bucket : storage_buckets) {
-    quota_manager_proxy->DeleteBucket(
-        storage_key, bucket, base::SequencedTaskRunner::GetCurrentDefault(),
-        remove_buckets_done);
+    quota_manager_proxy->DeleteBucket(storage_key, bucket, remove_buckets_done);
   }
 }
 
@@ -3453,7 +3451,6 @@ void StoragePartitionImpl::BindLockManager(
 
   GetQuotaManagerProxy()->UpdateOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key),
-      GetUIThreadTaskRunner({}),
       base::BindOnce(&StoragePartitionImpl::CreateLockManagerWithBucketInfo,
                      weak_factory_.GetWeakPtr(), std::move(receiver), token));
 }

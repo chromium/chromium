@@ -16,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
@@ -141,9 +140,8 @@ class SandboxFileSystemBackendTest : public testing::Test {
     base::test::TestFuture<QuotaErrorOr<BucketInfo>> custom_future;
     BucketInitParams params = BucketInitParams::ForDefaultBucket(storage_key);
     params.name = "non-default bucket";
-    quota_manager_->proxy()->UpdateOrCreateBucket(
-        params, base::SequencedTaskRunner::GetCurrentDefault(),
-        custom_future.GetCallback());
+    quota_manager_->proxy()->UpdateOrCreateBucket(params,
+                                                  custom_future.GetCallback());
     QuotaErrorOr<BucketInfo> custom_bucket = custom_future.Take();
     CHECK(custom_bucket.has_value());
     return custom_bucket.value().ToBucketLocator();

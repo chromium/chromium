@@ -39,15 +39,8 @@ class MockBGFQuotaManagerProxy : public storage::MockQuotaManagerProxy {
 
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override {
-    DCHECK(callback_task_runner);
-
-    // While this DCHECK is true, the PostTask() below isn't strictly necessary.
-    // The callback could be Run() directly.
-    DCHECK(callback_task_runner->RunsTasksInCurrentSequence());
-
-    callback_task_runner->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), blink::mojom::QuotaStatusCode::kOk,
                        /* usage= */ 0, kBackgroundFetchMaxQuotaBytes));

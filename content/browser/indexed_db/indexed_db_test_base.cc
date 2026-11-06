@@ -129,9 +129,7 @@ void IndexedDBTestBase::RunPostedTasks(
 storage::BucketInfo IndexedDBTestBase::GetOrCreateBucket(
     const storage::BucketInitParams& params) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-  quota_manager_proxy_->UpdateOrCreateBucket(
-      params, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      future.GetCallback());
+  quota_manager_proxy_->UpdateOrCreateBucket(params, future.GetCallback());
   return future.Take().value();
 }
 

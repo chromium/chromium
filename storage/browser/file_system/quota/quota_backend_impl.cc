@@ -50,7 +50,7 @@ void QuotaBackendImpl::ReserveQuota(const url::Origin& origin,
   }
   DCHECK(quota_manager_proxy_.get());
   quota_manager_proxy_->GetUsageAndQuota(
-      blink::StorageKey::CreateFirstParty(origin), file_task_runner_,
+      blink::StorageKey::CreateFirstParty(origin),
       base::BindOnce(&QuotaBackendImpl::DidGetUsageAndQuotaForReserveQuota,
                      weak_ptr_factory_.GetWeakPtr(),
                      QuotaReservationInfo(origin, type, delta),
@@ -144,7 +144,7 @@ void QuotaBackendImpl::ReserveQuotaInternal(const QuotaReservationInfo& info) {
       blink::StorageKey::CreateFirstParty(info.origin));
   quota_manager_proxy_->NotifyBucketModified(
       QuotaClientType::kFileSystem, bucket, info.delta, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+      base::DoNothing());
 }
 
 base::FileErrorOr<base::FilePath> QuotaBackendImpl::GetUsageCachePath(

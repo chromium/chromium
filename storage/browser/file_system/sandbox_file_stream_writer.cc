@@ -173,7 +173,7 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetBucketSpaceRemaining(
-      bucket, base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket,
       base::BindOnce(&SandboxFileStreamWriter::DidGetBucketSpaceRemaining,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

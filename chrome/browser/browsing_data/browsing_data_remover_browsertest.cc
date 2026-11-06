@@ -991,18 +991,17 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverStorageBucketsBrowserTest,
   auto* quota_manager_proxy = quota_manager->proxy();
 
   quota_manager_proxy->CreateBucketForTesting(
-      storage_key, "drafts", base::SequencedTaskRunner::GetCurrentDefault(),
+      storage_key, "drafts",
       base::BindOnce(
           [](storage::QuotaErrorOr<storage::BucketInfo> error_or_bucket_info) {
           }));
   quota_manager_proxy->CreateBucketForTesting(
-      storage_key, "inbox", base::SequencedTaskRunner::GetCurrentDefault(),
+      storage_key, "inbox",
       base::BindOnce(
           [](storage::QuotaErrorOr<storage::BucketInfo> error_or_bucket_info) {
           }));
   quota_manager_proxy->CreateBucketForTesting(
       storage_key, "attachments",
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           [](storage::QuotaErrorOr<storage::BucketInfo> error_or_bucket_info) {
           }));
@@ -1011,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverStorageBucketsBrowserTest,
 
   quota_manager_proxy->GetBucketsForStorageKey(
       storage_key,
-      /*delete_expired*/ false, base::SequencedTaskRunner::GetCurrentDefault(),
+      /*delete_expired*/ false,
       base::BindOnce([](storage::QuotaErrorOr<std::set<storage::BucketInfo>>
                             error_or_buckets) {
         EXPECT_EQ(1u, error_or_buckets.value().size());

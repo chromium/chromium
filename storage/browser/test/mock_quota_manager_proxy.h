@@ -38,7 +38,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
 
   void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
   QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
@@ -47,18 +46,15 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   void GetBucketByNameUnsafe(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 
   void GetBucketById(
       const BucketId& bucket_id,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
   void GetBucketsForStorageKey(
       const blink::StorageKey& storage_key,
       bool delete_expired,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback)
       override;
 
@@ -68,12 +64,10 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
                             bool enabled) override {}
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override;
 
   void GetUsageAndQuota(
       const BucketLocator& bucket_locator,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 
   // Updates the internal access count which can be accessed via
@@ -91,13 +85,11 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       const BucketLocator& bucket,
       std::optional<int64_t> delta,
       base::Time modification_time,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback) override;
 
   void CreateBucketForTesting(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
   blink::StorageKey last_notified_storage_key() const {

@@ -257,7 +257,6 @@ class IndexedDBBrowserTestBase : public ContentBrowserTest {
         ->GetQuotaManager()
         ->proxy()
         ->DeleteBucket(storage_key, storage::kDefaultBucketName,
-                       base::SequencedTaskRunner::GetCurrentDefault(),
                        future.GetCallback());
     return future.Take() == blink::mojom::QuotaStatusCode::kOk;
   }
@@ -327,9 +326,7 @@ class IndexedDBBrowserTestBase : public ContentBrowserTest {
         ->GetDefaultStoragePartition()
         ->GetQuotaManager()
         ->proxy()
-        ->UpdateOrCreateBucket(
-            params, base::SingleThreadTaskRunner::GetCurrentDefault(),
-            future.GetCallback());
+        ->UpdateOrCreateBucket(params, future.GetCallback());
     return future.Take();
   }
 
@@ -1425,7 +1422,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithCorruption,
       ->proxy()
       ->UpdateOrCreateBucket(
           storage::BucketInitParams::ForDefaultBucket(storage_key),
-          base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindLambdaForTesting(
               [&](storage::QuotaErrorOr<storage::BucketInfo> result) {
                 ASSERT_TRUE(result.has_value());

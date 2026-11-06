@@ -1428,12 +1428,10 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
         // Use the default storage bucket.
         context_->quota_manager_proxy()->UpdateOrCreateBucket(
             storage::BucketInitParams::ForDefaultBucket(storage_key),
-            base::SequencedTaskRunner::GetCurrentDefault(),
             std::move(bucket_callback));
       } else {
         context_->quota_manager_proxy()->GetBucketById(
             storage::BucketId::FromUnsafeValue(data.sandboxed().bucket_id()),
-            base::SequencedTaskRunner::GetCurrentDefault(),
             std::move(bucket_callback));
       }
       break;
@@ -2489,7 +2487,6 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
   context_->quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kFileSystem, *url.bucket(), -overallocation,
       base::Time::Now(),
-      /*callback_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
       std::move(callback));
 }
 

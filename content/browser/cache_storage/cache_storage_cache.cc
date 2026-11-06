@@ -888,7 +888,7 @@ void CacheStorageCache::WriteSideData(CacheStorageCacheHandle cache_handle,
   // GetBucketSpaceRemaining is called before entering a scheduled operation
   // since it can call Size, another scheduled operation.
   quota_manager_proxy_->GetBucketSpaceRemaining(
-      bucket_locator_, base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_locator_,
       base::BindOnce(
           &CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining,
           weak_ptr_factory_.GetWeakPtr(), std::move(cache_handle),
@@ -966,7 +966,7 @@ void CacheStorageCache::BatchOperation(
   uint64_t side_data_size = safe_side_data_size.ValueOrDie();
   if (space_required || side_data_size) {
     quota_manager_proxy_->GetBucketSpaceRemaining(
-        bucket_locator_, base::SequencedTaskRunner::GetCurrentDefault(),
+        bucket_locator_,
         base::BindOnce(&CacheStorageCache::BatchDidGetBucketSpaceRemaining,
                        weak_ptr_factory_.GetWeakPtr(), std::move(operations),
                        trace_id, std::move(callback),
@@ -2362,7 +2362,6 @@ void CacheStorageCache::UpdateCacheSizeGotSize(
   quota_manager_proxy_->NotifyBucketModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), bucket_locator_,
       size_delta, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&CacheStorageCache::UpdateCacheSizeNotifiedStorageModified,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

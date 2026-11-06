@@ -427,7 +427,7 @@ void FileSystemOperationImpl::GetBucketSpaceRemainingAndRunTask(
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetBucketSpaceRemaining(
-      bucket, base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket,
       base::BindOnce(&FileSystemOperationImpl::DidGetBucketSpaceRemaining,
                      weak_ptr_, std::move(task), std::move(error_callback)));
 }

@@ -24,7 +24,6 @@
 #include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -279,7 +278,6 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
   // TODO(crbug.com/41417435): Use helper for url::Origin creation from string.
   GetQuotaManagerProxy()->GetUsageAndQuota(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(origin))),
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           [](bool is_quota, blink::mojom::QuotaStatusCode status, int64_t usage,
              int64_t quota) -> int64_t {

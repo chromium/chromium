@@ -6,7 +6,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -101,14 +100,13 @@ void FileSystemAccessFileModificationHostImpl::RequestCapacityChange(
     granted_capacity_ = new_granted_capacity;
     quota_manager_proxy()->NotifyBucketModified(
         storage::QuotaClientType::kFileSystem, *url_.bucket(), capacity_delta,
-        base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-        base::DoNothing());
+        base::Time::Now(), base::DoNothing());
     std::move(callback).Run(capacity_delta);
     return;
   }
 
   quota_manager_proxy()->GetUsageAndQuota(
-      url_.storage_key(), base::SequencedTaskRunner::GetCurrentDefault(),
+      url_.storage_key(),
       base::BindOnce(
           &FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota,
           weak_factory_.GetWeakPtr(), capacity_delta, std::move(callback)));
@@ -146,8 +144,7 @@ void FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota(
   granted_capacity_ = new_granted_capacity;
   quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kFileSystem, *url_.bucket(), capacity_delta,
-      base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-      base::DoNothing());
+      base::Time::Now(), base::DoNothing());
   std::move(callback).Run(capacity_delta);
 }
 

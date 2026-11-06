@@ -12,7 +12,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -310,9 +309,8 @@ blink::mojom::QuotaStatusCode AsyncFileTestHelper::GetUsageAndQuota(
       blink::mojom::QuotaStatusCode::kUnknown;
   base::RunLoop run_loop;
   quota_manager_proxy->GetUsageAndQuota(
-      storage_key, base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&DidGetUsageAndQuota, &status, usage, quota,
-                     run_loop.QuitWhenIdleClosure()));
+      storage_key, base::BindOnce(&DidGetUsageAndQuota, &status, usage, quota,
+                                  run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
   return status;
 }

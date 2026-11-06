@@ -63,7 +63,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       const BucketLocator& bucket,
       std::optional<int64_t> delta,
       base::Time modification_time,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback) override {
     ++storage_modified_count_;
     if (delta) {
@@ -72,16 +71,15 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       usage_ = 0;
     }
     ASSERT_LE(usage_, quota_);
-    if (callback)
-      callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+    if (callback) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
+    }
   }
 
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override {
-    DCHECK(callback_task_runner);
-    DCHECK(callback_task_runner->RunsTasksInCurrentSequence());
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, usage_, quota_);
   }
 

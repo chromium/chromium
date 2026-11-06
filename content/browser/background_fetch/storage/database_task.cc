@@ -91,7 +91,7 @@ void DatabaseTask::IsQuotaAvailable(const blink::StorageKey& storage_key,
   CHECK_GT(size, 0, base::NotFatalUntil::M158);
 
   quota_manager_proxy()->GetUsageAndQuota(
-      storage_key, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      storage_key,
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), size));
 }
 

@@ -125,7 +125,6 @@ void StorageAccessHandle::Estimate(EstimateCallback callback) {
           blink::StorageKey::CreateFirstParty(
               render_frame_host().GetStorageKey().origin()),
           /*delete_expired=*/false,
-          base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&StorageAccessHandle::EstimateImpl,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -155,7 +154,7 @@ void StorageAccessHandle::EstimateImpl(
       .GetStoragePartition()
       ->GetQuotaManagerProxy()
       ->GetBucketUsageAndReportedQuota(
-          bucket_info.id, base::SequencedTaskRunner::GetCurrentDefault(),
+          bucket_info.id,
           base::BindOnce(&EstimateImplAfterGetBucketUsageAndQuota,
                          std::move(callback)));
 }

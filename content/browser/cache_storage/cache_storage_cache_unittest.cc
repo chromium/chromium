@@ -815,7 +815,6 @@ class CacheStorageCacheTest : public testing::Test {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(storage_key),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
         future.GetCallback());
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
@@ -2547,9 +2546,7 @@ TEST_P(CacheStorageCacheTestP, PutObeysBucketQuotaLimits) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
   storage::BucketInitParams bucket(storage_key, "inbox");
   bucket.quota = 15;
-  quota_manager_proxy_->UpdateOrCreateBucket(
-      bucket, base::SingleThreadTaskRunner::GetCurrentDefault(),
-      future.GetCallback());
+  quota_manager_proxy_->UpdateOrCreateBucket(bucket, future.GetCallback());
   ASSERT_OK_AND_ASSIGN(storage::BucketInfo value, future.Take());
   InitCache(nullptr, value.ToBucketLocator());
 

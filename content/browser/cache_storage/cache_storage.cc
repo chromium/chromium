@@ -952,8 +952,7 @@ void CacheStorage::CacheUnreferenced(CacheStorageCache* cache,
       quota_manager_proxy_->NotifyBucketModified(
           CacheStorageQuotaClient::GetClientTypeFromOwner(owner_),
           bucket_locator_, -size->AsByteSizeDelta().InBytes(),
-          base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-          base::DoNothing());
+          base::Time::Now(), base::DoNothing());
     }
 
     auto doomed_cache = std::move(doomed_caches_it->second);

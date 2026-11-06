@@ -71,7 +71,7 @@ void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->NotifyBucketModified(
         QuotaClientType::kFileSystem, url.GetBucket(), delta, base::Time::Now(),
-        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+        base::DoNothing());
   }
 
   base::FileErrorOr<base::FilePath> usage_file_path = GetUsageCachePath(url);

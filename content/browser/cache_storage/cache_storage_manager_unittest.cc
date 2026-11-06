@@ -796,7 +796,7 @@ class CacheStorageManagerTest : public testing::Test {
     std::optional<int64_t> usage;
     base::RunLoop loop;
     quota_manager_proxy_->GetUsageAndQuota(
-        storage_key, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        storage_key,
         base::BindOnce(&CacheStorageManagerTest::DidGetQuotaOriginUsage,
                        base::Unretained(this), base::Unretained(&usage),
                        &loop));
@@ -825,7 +825,6 @@ class CacheStorageManagerTest : public testing::Test {
         name == storage::kDefaultBucketName
             ? storage::BucketInitParams::ForDefaultBucket(storage_key)
             : storage::BucketInitParams(storage_key, name),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
         future.GetCallback());
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }

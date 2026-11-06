@@ -337,9 +337,8 @@ SandboxFileSystemBackendDelegate::DeleteBucketDataOnFileTaskRunner(
   bool result = obfuscated_file_util()->DeleteDirectoryForBucketAndType(
       bucket_locator, type);
   if (result && proxy && usage) {
-    proxy->NotifyBucketModified(
-        QuotaClientType::kFileSystem, bucket_locator, -usage, base::Time::Now(),
-        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+    proxy->NotifyBucketModified(QuotaClientType::kFileSystem, bucket_locator,
+                                -usage, base::Time::Now(), base::DoNothing());
   }
 
   if (result)

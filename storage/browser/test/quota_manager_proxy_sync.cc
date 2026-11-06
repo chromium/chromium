@@ -5,7 +5,6 @@
 #include "storage/browser/test/quota_manager_proxy_sync.h"
 
 #include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -28,7 +27,6 @@ QuotaErrorOr<BucketInfo> QuotaManagerProxySync::GetBucket(
   base::RunLoop run_loop;
   proxy_->GetBucketByNameUnsafe(
       storage_key, bucket_name,
-      base::SingleThreadTaskRunner::GetCurrentDefault().get(),
       base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket_info) {
         result = std::move(bucket_info);
         run_loop.Quit();

@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -124,17 +123,16 @@ void BucketManagerHost::OpenBucket(const std::string& name,
   }
 
   GetQuotaManagerProxy()->UpdateOrCreateBucket(
-      params, base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&BucketManagerHost::DidGetBucket,
-                     weak_factory_.GetWeakPtr(), receivers_.current_context(),
-                     std::move(callback)));
+      params, base::BindOnce(
+                  &BucketManagerHost::DidGetBucket, weak_factory_.GetWeakPtr(),
+                  receivers_.current_context(), std::move(callback)));
 }
 
 void BucketManagerHost::GetBucketForDevtools(
     const std::string& name,
     mojo::PendingReceiver<blink::mojom::BucketHost> receiver) {
   GetQuotaManagerProxy()->GetBucketByNameUnsafe(
-      storage_key_, name, base::SequencedTaskRunner::GetCurrentDefault(),
+      storage_key_, name,
       base::BindOnce(&BucketManagerHost::DidGetBucketForDevtools,
                      weak_factory_.GetWeakPtr(), receivers_.current_context(),
                      std::move(receiver)));
@@ -143,7 +141,7 @@ void BucketManagerHost::GetBucketForDevtools(
 void BucketManagerHost::Keys(KeysCallback callback) {
   GetQuotaManagerProxy()->GetBucketsForStorageKey(
       storage_key_,
-      /*delete_expired=*/true, base::SequencedTaskRunner::GetCurrentDefault(),
+      /*delete_expired=*/true,
       base::BindOnce(&BucketManagerHost::DidGetBuckets,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -156,7 +154,7 @@ void BucketManagerHost::DeleteBucket(const std::string& name,
   }
 
   GetQuotaManagerProxy()->DeleteBucket(
-      storage_key_, name, base::SequencedTaskRunner::GetCurrentDefault(),
+      storage_key_, name,
       base::BindOnce(&BucketManagerHost::DidDeleteBucket,
                      weak_factory_.GetWeakPtr(), name, std::move(callback)));
 }

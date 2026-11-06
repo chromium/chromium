@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -57,15 +56,14 @@ class DeferringQuotaManagerProxy : public storage::MockQuotaManagerProxy {
   using storage::MockQuotaManagerProxy::GetUsageAndQuota;
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       storage::QuotaManager::UsageAndQuotaCallback callback) override {
     if (!defer_callbacks_) {
-      storage::MockQuotaManagerProxy::GetUsageAndQuota(
-          storage_key, std::move(callback_task_runner), std::move(callback));
+      storage::MockQuotaManagerProxy::GetUsageAndQuota(storage_key,
+                                                       std::move(callback));
       return;
     }
     storage::MockQuotaManagerProxy::GetUsageAndQuota(
-        storage_key, std::move(callback_task_runner),
+        storage_key,
         base::BindLambdaForTesting([this, callback = std::move(callback)](
                                        blink::mojom::QuotaStatusCode status,
                                        int64_t usage, int64_t quota) mutable {

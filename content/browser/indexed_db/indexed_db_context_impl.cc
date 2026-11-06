@@ -415,10 +415,10 @@ void IndexedDBContextImpl::BindIndexedDB(
     // without an ID, meaning the bucket may still need to be created.
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(bucket_locator.storage_key),
-        idb_task_runner_, std::move(on_got_bucket));
+        std::move(on_got_bucket));
   } else {
     // Query the database to make sure the bucket still exists.
-    quota_manager_proxy_->GetBucketById(bucket_locator.id, idb_task_runner_,
+    quota_manager_proxy_->GetBucketById(bucket_locator.id,
                                         std::move(on_got_bucket));
   }
 }
@@ -598,8 +598,8 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
                     handler, std::move(callback)));
 
         for (const BucketLocator& bucket_locator : handler->bucket_set_) {
-          handler->quota_manager_proxy_->GetBucketById(
-              bucket_locator.id, handler->idb_task_runner_, collect_buckets);
+          handler->quota_manager_proxy_->GetBucketById(bucket_locator.id,
+                                                       collect_buckets);
         }
       },
       weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -876,8 +876,7 @@ void IndexedDBContextImpl::OnFilesWritten(const BucketLocator& bucket_locator,
   bucket_size_map_.erase(bucket_locator);
   quota_manager_proxy_->NotifyBucketModified(
       storage::QuotaClientType::kIndexedDatabase, bucket_locator,
-      /*delta=*/std::nullopt, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+      /*delta=*/std::nullopt, base::Time::Now(), base::DoNothing());
 
   if (!flushed) {
     // A negative value indicates "not cached, and LevelDB file write is
@@ -1055,12 +1054,11 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
   for (const auto& [storage_key, file_path] : storage_key_to_file_path) {
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(storage_key),
-        idb_task_runner_, on_lookup_done);
+        on_lookup_done);
   }
 
   for (const auto& bucket_id : bucket_ids) {
-    quota_manager_proxy_->GetBucketById(bucket_id, idb_task_runner_,
-                                        on_lookup_done);
+    quota_manager_proxy_->GetBucketById(bucket_id, on_lookup_done);
   }
 }
 
