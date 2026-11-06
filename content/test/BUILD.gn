@@ -3245,6 +3245,7 @@ test("content_unittests") {
 
   if (is_linux || is_chromeos) {
     sources += [
+      "../app/locale_posix_unittest.cc",
       "../browser/child_thread_type_switcher_linux_unittest.cc",
       "../child/sandboxed_process_thread_type_handler_unittest.cc",
     ]
@@ -3518,6 +3519,7 @@ test("content_unittests") {
   if (is_linux || is_chromeos) {
     deps += [
       "//components/crash/content/browser/error_reporting",
+      "//content/app:locale",
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:sandbox_services_headers",
     ]

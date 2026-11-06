@@ -105,6 +105,10 @@ source_set("app") {
 
   public_deps = [ ":content_main_runner_app" ]
 
+  if (is_posix && !is_android) {
+    deps += [ ":locale" ]
+  }
+
   # Only the public target should depend on this. All other targets (even
   # internal content ones) should depend on the public one.
   visibility = [
@@ -138,6 +142,19 @@ source_set("app") {
     ]
 
     frameworks = [ "Foundation.framework" ]
+  }
+}
+
+if (is_posix && !is_android) {
+  source_set("locale") {
+    sources = [
+      "locale_posix.cc",
+      "locale_posix.h",
+    ]
+    visibility = [
+      ":app",
+      "//content/test:*",
+    ]
   }
 }
 
