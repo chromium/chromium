@@ -743,20 +743,33 @@ bool PseudoElement::CanHaveNestedPseudoElement() const {
 }
 
 // Keep in sync with CanHaveNestedPseudoElement.
-bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
-  switch (GetPseudoId()) {
+// static
+bool PseudoElement::CanGeneratePseudoElement(PseudoId parent_pseudo_id,
+                                             PseudoId pseudo_id) {
+  switch (parent_pseudo_id) {
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-      if (pseudo_id != kPseudoIdMarker)
-        return false;
-      break;
+      return pseudo_id == kPseudoIdMarker;
     case kPseudoIdColumn:
-      if (pseudo_id != kPseudoIdScrollMarker) {
-        return false;
-      }
-      break;
+      return pseudo_id == kPseudoIdScrollMarker;
+    case kPseudoIdViewTransition:
+      return pseudo_id == kPseudoIdViewTransitionGroup;
+    case kPseudoIdViewTransitionGroup:
+      return pseudo_id == kPseudoIdViewTransitionImagePair ||
+             pseudo_id == kPseudoIdViewTransitionGroupChildren;
+    case kPseudoIdViewTransitionGroupChildren:
+      return pseudo_id == kPseudoIdViewTransitionGroup;
+    case kPseudoIdViewTransitionImagePair:
+      return pseudo_id == kPseudoIdViewTransitionOld ||
+             pseudo_id == kPseudoIdViewTransitionNew;
     default:
       return false;
+  }
+}
+
+bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
+  if (!CanGeneratePseudoElement(GetPseudoId(), pseudo_id)) {
+    return false;
   }
   return Element::CanGeneratePseudoElement(pseudo_id);
 }

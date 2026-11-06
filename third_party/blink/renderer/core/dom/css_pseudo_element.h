@@ -47,13 +47,9 @@ class CSSPseudoElement final : public ScriptWrappable {
                    const AtomicString& pseudo_argument = g_null_atom);
 
   // Parses the `type` to determine the PseudoId and if it's a currently
-  // supported pseudo-element. Optionally extracts the pseudo_argument, in the
-  // form that identifies the pseudo-element of `originating_element` (e.g.
-  // `block-start` for `::scroll-button(up)` in horizontal writing modes).
-  // `originating_element` is null for sub-pseudo-elements.
+  // supported pseudo-element. Optionally extracts the pseudo_argument.
   static std::pair<PseudoId, AtomicString> ConvertTypeToSupportedPseudoId(
-      const AtomicString& type,
-      Element* originating_element);
+      const AtomicString& type);
   // Returns true if the `pseudo_id` is a supported pseudo-element type
   // for CSSPseudoElement interface.
   static bool IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id);
@@ -88,9 +84,8 @@ class CSSPseudoElement final : public ScriptWrappable {
   // this pseudo-element, including any argument. For example, "::after" or
   // "::view-transition-group(name)". For sub-pseudo-elements this is only the
   // last compound, e.g. "::marker" for `::before::marker`. For scroll buttons,
-  // the argument is the logical direction the button is identified by, since
-  // e.g. `::scroll-button(up)` and `::scroll-button(block-start)` return the
-  // same object in horizontal writing modes.
+  // the argument is the direction specified when created via `pseudo()`, or the
+  // logical direction when created by the browser.
   String selectorText() const;
   // The pseudo(type) method returns the CSSPseudoElement interface representing
   // the sub-pseudo-element referenced in its argument, if such a

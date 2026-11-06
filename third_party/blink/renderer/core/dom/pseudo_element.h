@@ -61,6 +61,8 @@ class CORE_EXPORT PseudoElement : public Element {
   void AttachLayoutTree(AttachContext&) override;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   bool CanGeneratePseudoElement(PseudoId) const override;
+  static bool CanGeneratePseudoElement(PseudoId parent_pseudo_id,
+                                       PseudoId pseudo_id);
 
   // Returns true if the PseudoElement can generates child boxes based on the
   // CSS content property.

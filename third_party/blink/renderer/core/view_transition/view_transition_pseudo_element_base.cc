@@ -26,23 +26,7 @@ ViewTransitionPseudoElementBase::ViewTransitionPseudoElementBase(
 
 bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
     PseudoId pseudo_id) const {
-  switch (GetPseudoId()) {
-    case kPseudoIdViewTransition:
-      return pseudo_id == kPseudoIdViewTransitionGroup;
-    case kPseudoIdViewTransitionGroup:
-      return pseudo_id == kPseudoIdViewTransitionImagePair ||
-             pseudo_id == kPseudoIdViewTransitionGroupChildren;
-    case kPseudoIdViewTransitionGroupChildren:
-      return pseudo_id == kPseudoIdViewTransitionGroup;
-    case kPseudoIdViewTransitionImagePair:
-      return pseudo_id == kPseudoIdViewTransitionOld ||
-             pseudo_id == kPseudoIdViewTransitionNew;
-    case kPseudoIdViewTransitionOld:
-    case kPseudoIdViewTransitionNew:
-      return false;
-    default:
-      NOTREACHED();
-  }
+  return PseudoElement::CanGeneratePseudoElement(GetPseudoId(), pseudo_id);
 }
 
 const Vector<AtomicString>

@@ -17,14 +17,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focusable.h"
 #include "third_party/blink/renderer/core/dom/geometry_utils.h"
-#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -54,11 +52,9 @@ bool CSSPseudoElement::IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id) {
 namespace {
 
 // All scroll buttons have kPseudoIdScrollButton, so the argument is what
-// identifies a scroll button. Returns it as a logical direction, so that each
-// scroll button has a single CSSPseudoElement (e.g. `up` is `block-start` in
-// horizontal-tb), or null for `*`.
-AtomicString ResolveScrollButtonArgument(Element& originating_element,
-                                         const AtomicString& argument) {
+// identifies a scroll button. Returns the normalized direction keyword, or null
+// for `*`.
+AtomicString ResolveScrollButtonArgument(const AtomicString& argument) {
   if (!RuntimeEnabledFeatures::CSSPseudoElementScrollButtonEnabled()) {
     return g_null_atom;
   }
@@ -68,23 +64,14 @@ AtomicString ResolveScrollButtonArgument(Element& originating_element,
     case CSSValueID::kInlineStart:
     case CSSValueID::kInlineEnd:
     case CSSValueID::kBlockEnd:
-      return GetCSSValueNameAs<AtomicString>(direction);
     case CSSValueID::kUp:
     case CSSValueID::kRight:
     case CSSValueID::kDown:
     case CSSValueID::kLeft:
-      break;
+      return GetCSSValueNameAs<AtomicString>(direction);
     default:
       return g_null_atom;
   }
-  // Physical directions map to logical ones based on the writing mode.
-  originating_element.GetDocument().UpdateStyleAndLayoutTreeForElement(
-      &originating_element, DocumentUpdateReason::kJavaScript);
-  const ComputedStyle* style = originating_element.EnsureComputedStyle();
-  return ScrollButtonPseudoElement::ScrollButtonArgumentFromPseudoId(
-      ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
-          GetCSSValueNameAs<AtomicString>(direction),
-          style ? *style : ComputedStyle::GetInitialStyleSingleton()));
 }
 
 PseudoId GetViewTransitionPseudoParentId(PseudoId pseudo_id) {
@@ -156,8 +143,7 @@ String CSSPseudoElement::selectorText() const {
 }
 
 std::pair<PseudoId, AtomicString>
-CSSPseudoElement::ConvertTypeToSupportedPseudoId(const AtomicString& type,
-                                                 Element* originating_element) {
+CSSPseudoElement::ConvertTypeToSupportedPseudoId(const AtomicString& type) {
   HeapVector<CSSSelector> arena;
   CSSParserTokenStream stream(type);
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
@@ -181,11 +167,7 @@ CSSPseudoElement::ConvertTypeToSupportedPseudoId(const AtomicString& type,
     }
     argument = selector.IdentList()[0];
   } else if (pseudo_id == kPseudoIdScrollButton) {
-    // Only elements have scroll buttons.
-    if (originating_element) {
-      argument = ResolveScrollButtonArgument(*originating_element,
-                                             selector.Argument());
-    }
+    argument = ResolveScrollButtonArgument(selector.Argument());
     if (argument.IsNull()) {
       return {kPseudoIdInvalid, g_null_atom};
     }
@@ -240,7 +222,8 @@ CSSPseudoElement* CSSPseudoElement::From(PseudoElement* pseudo_element) {
 CSSPseudoElement* CSSPseudoElement::pseudo(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) {
-  if (!IsSupportedTypeForCSSPseudoElement(pseudo_id)) {
+  if (!IsSupportedTypeForCSSPseudoElement(pseudo_id) ||
+      !PseudoElement::CanGeneratePseudoElement(pseudo_id_, pseudo_id)) {
     return nullptr;
   }
 
@@ -275,8 +258,7 @@ CSSPseudoElement* CSSPseudoElement::pseudo(
 }
 
 CSSPseudoElement* CSSPseudoElement::pseudo(const AtomicString& type) {
-  auto [pseudo_id, pseudo_argument] =
-      ConvertTypeToSupportedPseudoId(type, /*originating_element=*/nullptr);
+  auto [pseudo_id, pseudo_argument] = ConvertTypeToSupportedPseudoId(type);
   return pseudo(pseudo_id, pseudo_argument);
 }
 
