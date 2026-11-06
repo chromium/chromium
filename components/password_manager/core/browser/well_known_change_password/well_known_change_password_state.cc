@@ -80,7 +80,7 @@ CreateResourceRequestToWellKnownNonExistingResourceFor(
 }
 }  // namespace
 
-constexpr base::TimeDelta WellKnownChangePasswordState::kPrefetchTimeout;
+constexpr base::TimeDelta WellKnownChangePasswordState::kFetchTimeout;
 
 WellKnownChangePasswordState::WellKnownChangePasswordState(
     WellKnownChangePasswordStateDelegate* delegate)
@@ -105,16 +105,23 @@ void WellKnownChangePasswordState::FetchNonExistingResource(
           base::Unretained(this)));
 }
 
-void WellKnownChangePasswordState::PrefetchChangePasswordURL(
+void WellKnownChangePasswordState::FetchChangePasswordURL(
     affiliations::AffiliationService* affiliation_service,
     const GURL& url) {
-  prefetch_timer_.Start(FROM_HERE, kPrefetchTimeout, this,
-                        &WellKnownChangePasswordState::ContinueProcessing);
-  affiliation_service->FetchChangePasswordURL(
-      url,
-      base::BindOnce(
-          &WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback,
-          weak_factory_.GetWeakPtr()));
+  if (!affiliation_service) {
+    return;
+  }
+  change_password_url_override_ =
+      affiliation_service->GetChangePasswordURL(url);
+  if (change_password_url_override_.is_empty()) {
+    fetch_timer_.Start(FROM_HERE, kFetchTimeout, this,
+                       &WellKnownChangePasswordState::ContinueProcessing);
+    affiliation_service->FetchChangePasswordURL(
+        url, base::BindOnce(
+                 &WellKnownChangePasswordState::OnChangePasswordURLFetched,
+                 weak_factory_.GetWeakPtr(),
+                 base::Unretained(affiliation_service), url));
+  }
 }
 
 void WellKnownChangePasswordState::SetChangePasswordResponseCode(
@@ -130,9 +137,14 @@ void WellKnownChangePasswordState::FetchNonExistingResourceCallback(
   ContinueProcessing();
 }
 
-void WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback(GURL) {
-  if (prefetch_timer_.IsRunning()) {
-    prefetch_timer_.Stop();
+void WellKnownChangePasswordState::OnChangePasswordURLFetched(
+    affiliations::AffiliationService* affiliation_service,
+    const GURL& requested_url,
+    GURL fetched_url) {
+  if (fetch_timer_.IsRunning()) {
+    change_password_url_override_ =
+        affiliation_service->GetChangePasswordURL(requested_url);
+    fetch_timer_.Stop();
     ContinueProcessing();
   }
 }
@@ -143,14 +155,14 @@ void WellKnownChangePasswordState::ContinueProcessing() {
     // We can proceed to notify the delegate in two cases:
     // 1. The site supports the well-known change-password URL. In this case,
     //    we don't need the affiliation fallback URL, so we can finish early
-    //    and stop the prefetch timer.
-    // 2. We are not waiting for the affiliation prefetch anymore (either it
+    //    and stop the fetch timer.
+    // 2. We are not waiting for the affiliation fetch anymore (either it
     //    finished or timed out, so the timer is not running).
-    if (is_well_known_supported || !prefetch_timer_.IsRunning()) {
+    if (is_well_known_supported || !fetch_timer_.IsRunning()) {
       // Stop the timer if we are finishing early (case 1). This also prevents
-      // the prefetch callback from running ContinueProcessing() again if it
+      // the fetch callback from running ContinueProcessing() again if it
       // arrives later.
-      prefetch_timer_.Stop();
+      fetch_timer_.Stop();
       if (delegate_) {
         auto* delegate = delegate_.get();
         delegate_ = nullptr;

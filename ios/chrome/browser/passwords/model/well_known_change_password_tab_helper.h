@@ -11,10 +11,6 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-namespace affiliations {
-class AffiliationService;
-}  // namespace affiliations
-
 // This TabHelper checks whether a site supports the .well-known/change-password
 // url. To check whether a site supports the change-password url the TabHelper
 // also request a .well-known path that is defined to return a 404. When that
@@ -85,7 +81,6 @@ class WellKnownChangePasswordTabHelper
   web::WebStatePolicyDecider::PolicyDecisionCallback response_policy_callback_;
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
-  raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_WELL_KNOWN_CHANGE_PASSWORD_TAB_HELPER_H_

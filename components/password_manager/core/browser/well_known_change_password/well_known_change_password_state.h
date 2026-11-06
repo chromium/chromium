@@ -39,9 +39,9 @@ class WellKnownChangePasswordStateDelegate {
 class WellKnownChangePasswordState {
  public:
   // Time to wait for the callback from AffiliationService before finishing
-  // processing. A callback signals the prefetch action was completed regardless
+  // processing. A callback signals the fetch action was completed regardless
   // if the response arrived or not.
-  static constexpr base::TimeDelta kPrefetchTimeout = base::Seconds(2);
+  static constexpr base::TimeDelta kFetchTimeout = base::Seconds(2);
 
   explicit WellKnownChangePasswordState(
       password_manager::WellKnownChangePasswordStateDelegate* delegate);
@@ -55,8 +55,8 @@ class WellKnownChangePasswordState {
       std::optional<url::Origin> request_initiator = std::nullopt,
       std::optional<network::ResourceRequest::TrustedParams> trusted_params =
           std::nullopt);
-  // Prefetch change password URLs from |affiliation_service|.
-  void PrefetchChangePasswordURL(
+  // Fetches the change password URL from `affiliation_service`.
+  void FetchChangePasswordURL(
       affiliations::AffiliationService* affiliation_service,
       const GURL& url);
   // The request to .well-known/change-password is not made by this State. To
@@ -64,12 +64,22 @@ class WellKnownChangePasswordState {
   // this method to tell the state.
   void SetChangePasswordResponseCode(int status_code);
 
+  // Returns the change password URL override obtained from
+  // `AffiliationService`, or an empty GURL if none was available or the fetch
+  // timed out.
+  const GURL& change_password_url_override() const {
+    return change_password_url_override_;
+  }
+
  private:
   // Callback for the request to the "not exist" path.
   void FetchNonExistingResourceCallback(
       scoped_refptr<net::HttpResponseHeaders> headers);
-  // Callback for the request to the Affiliation Service prefetch.
-  void PrefetchChangePasswordURLsCallback(GURL);
+  // Callback for the request to the Affiliation Service fetch.
+  void OnChangePasswordURLFetched(
+      affiliations::AffiliationService* affiliation_service,
+      const GURL& requested_url,
+      GURL fetched_url);
   // Function is called when both requests are finished. Decides to continue or
   // redirect to change password URL or homepage.
   void ContinueProcessing();
@@ -82,8 +92,9 @@ class WellKnownChangePasswordState {
   raw_ptr<WellKnownChangePasswordStateDelegate> delegate_ = nullptr;
   int non_existing_resource_response_code_ = 0;
   int change_password_response_code_ = 0;
+  GURL change_password_url_override_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  base::OneShotTimer prefetch_timer_;
+  base::OneShotTimer fetch_timer_;
   base::WeakPtrFactory<WellKnownChangePasswordState> weak_factory_{this};
 };
 

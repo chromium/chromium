@@ -5,17 +5,12 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_UI_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_NAVIGATION_THROTTLE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
-
-namespace affiliations {
-class AffiliationService;
-}  // namespace affiliations
 
 // This NavigationThrottle checks whether a site supports the
 // .well-known/change-password url. To check whether a site supports the
@@ -58,7 +53,6 @@ class WellKnownChangePasswordNavigationThrottle
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
-  raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
   base::WeakPtrFactory<password_manager::WellKnownChangePasswordState>
       weak_ptr_factory_{&well_known_change_password_state_};
 };

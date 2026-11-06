@@ -106,14 +106,12 @@ WellKnownChangePasswordNavigationThrottle::
     return;
   }
 
-  affiliation_service_ =
+  affiliations::AffiliationService* affiliation_service =
       AffiliationServiceFactory::GetForProfile(Profile::FromBrowserContext(
           handle.GetWebContents()->GetBrowserContext()));
-  CHECK(affiliation_service_);
-  if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
-    well_known_change_password_state_.PrefetchChangePasswordURL(
-        affiliation_service_, request_url_);
-  }
+  CHECK(affiliation_service);
+  well_known_change_password_state_.FetchChangePasswordURL(affiliation_service,
+                                                           request_url_);
 }
 
 WellKnownChangePasswordNavigationThrottle::
@@ -182,7 +180,8 @@ const char* WellKnownChangePasswordNavigationThrottle::GetNameForLogging() {
 
 void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     bool is_supported) {
-  GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
+  GURL redirect_url =
+      well_known_change_password_state_.change_password_url_override();
 
   // If affiliation service returns .well-known/change-password as change
   // password url - show it even if Chrome doesn't detect it as supported.
