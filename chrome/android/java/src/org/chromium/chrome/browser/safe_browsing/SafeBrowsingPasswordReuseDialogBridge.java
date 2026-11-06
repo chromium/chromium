@@ -8,7 +8,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -25,8 +28,12 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 @JNINamespace("safe_browsing")
 @NullMarked
 public class SafeBrowsingPasswordReuseDialogBridge {
+    @JniType("::safe_browsing::PasswordReuseDialogViewAndroid")
+    interface NativePasswordReuseDialogViewAndroid extends JniTypeToken {}
+
     // The address of its C++ counterpart.
-    private long mNativePasswordReuseDialogViewAndroid;
+    private @Nullable JniRawPtr<NativePasswordReuseDialogViewAndroid>
+            mNativePasswordReuseDialogViewAndroid;
     // The coordinator for the password manager illustration modal dialog. Manages the sub-component
     // objects.
     private final PasswordManagerDialogCoordinator mDialogCoordinator;
@@ -36,7 +43,8 @@ public class SafeBrowsingPasswordReuseDialogBridge {
     private @Nullable PasswordManagerDialogContents mPasswordManagerDialogContents;
 
     private SafeBrowsingPasswordReuseDialogBridge(
-            WindowAndroid windowAndroid, long nativePasswordReuseDialogViewAndroid) {
+            WindowAndroid windowAndroid,
+            JniRawPtr<NativePasswordReuseDialogViewAndroid> nativePasswordReuseDialogViewAndroid) {
         mNativePasswordReuseDialogViewAndroid = nativePasswordReuseDialogViewAndroid;
         mWindowAndroid = windowAndroid;
         mDialogCoordinator =
@@ -50,7 +58,7 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
     private SafeBrowsingPasswordReuseDialogBridge(
             WindowAndroid windowAndroid,
-            long nativePasswordReuseDialogViewAndroid,
+            JniRawPtr<NativePasswordReuseDialogViewAndroid> nativePasswordReuseDialogViewAndroid,
             PasswordManagerDialogCoordinator dialogCoordinator) {
         mNativePasswordReuseDialogViewAndroid = nativePasswordReuseDialogViewAndroid;
         mWindowAndroid = windowAndroid;
@@ -60,7 +68,7 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
     public static SafeBrowsingPasswordReuseDialogBridge createForTests(
             WindowAndroid windowAndroid,
-            long nativePasswordReuseDialogViewAndroid,
+            JniRawPtr<NativePasswordReuseDialogViewAndroid> nativePasswordReuseDialogViewAndroid,
             PasswordManagerDialogCoordinator dialogCoordinator) {
         return new SafeBrowsingPasswordReuseDialogBridge(
                 windowAndroid, nativePasswordReuseDialogViewAndroid, dialogCoordinator);
@@ -72,7 +80,8 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
     @CalledByNative
     public static SafeBrowsingPasswordReuseDialogBridge create(
-            WindowAndroid windowAndroid, long nativeDialog) {
+            WindowAndroid windowAndroid,
+            JniRawPtr<NativePasswordReuseDialogViewAndroid> nativeDialog) {
         return new SafeBrowsingPasswordReuseDialogBridge(windowAndroid, nativeDialog);
     }
 
@@ -120,20 +129,21 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
     @CalledByNative
     private void destroy() {
-        mNativePasswordReuseDialogViewAndroid = 0;
+        if (mNativePasswordReuseDialogViewAndroid != null) {
+            mNativePasswordReuseDialogViewAndroid.release();
+            mNativePasswordReuseDialogViewAndroid = null;
+        }
         mDialogCoordinator.dismissDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 
     private void onClickWithNegativeButtonDisabled(@DialogDismissalCause int dismissalCause) {
-        // 0 indicates its C++ counterpart has already been destroyed.
-        if (mNativePasswordReuseDialogViewAndroid == 0) return;
+        if (mNativePasswordReuseDialogViewAndroid == null) return;
 
         SafeBrowsingPasswordReuseDialogBridgeJni.get().close(mNativePasswordReuseDialogViewAndroid);
     }
 
     private void onClickWithNegativeButtonEnabled(@DialogDismissalCause int dismissalCause) {
-        // 0 indicates its C++ counterpart has already been destroyed.
-        if (mNativePasswordReuseDialogViewAndroid == 0) return;
+        if (mNativePasswordReuseDialogViewAndroid == null) return;
 
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
@@ -152,10 +162,10 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
     @NativeMethods
     interface Natives {
-        void checkPasswords(long nativePasswordReuseDialogViewAndroid);
+        void checkPasswords(JniPtr<NativePasswordReuseDialogViewAndroid> self);
 
-        void ignore(long nativePasswordReuseDialogViewAndroid);
+        void ignore(JniPtr<NativePasswordReuseDialogViewAndroid> self);
 
-        void close(long nativePasswordReuseDialogViewAndroid);
+        void close(JniPtr<NativePasswordReuseDialogViewAndroid> self);
     }
 }

@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +24,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogContents;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogCoordinator;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingPasswordReuseDialogBridge.NativePasswordReuseDialogViewAndroid;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -38,6 +41,7 @@ public class SafeBrowsingPasswordReuseDialogBridgeTest {
     @Mock private PasswordManagerDialogCoordinator mDialogCoordinator;
     private Activity mActivity;
     private SafeBrowsingPasswordReuseDialogBridge mDialog;
+    private JniRawPtr<NativePasswordReuseDialogViewAndroid> mNativePtr;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -45,11 +49,15 @@ public class SafeBrowsingPasswordReuseDialogBridgeTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mNativePtr = JniRawPtr.createForTesting(1L);
         mDialog =
                 SafeBrowsingPasswordReuseDialogBridge.createForTests(
-                        mWindowAndroid,
-                        /* nativePasswordReuseDialogViewAndroid= */ 1L,
-                        mDialogCoordinator);
+                        mWindowAndroid, mNativePtr, mDialogCoordinator);
+    }
+
+    @After
+    public void tearDown() {
+        mNativePtr.release();
     }
 
     @Test
