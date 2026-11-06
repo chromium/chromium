@@ -3422,6 +3422,11 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/582409909.
+      name: "FontFallbackPreferContentLocale",
+      status: "stable",
+    },
+    {
       name: "FontFamilyPostscriptMatchingCTMigration",
     },
     {

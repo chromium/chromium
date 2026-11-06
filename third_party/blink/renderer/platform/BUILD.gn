@@ -2099,6 +2099,8 @@ static_library("test_support") {
     "testing/picture_matchers.h",
     "testing/renderer_fuzzing_support.cc",
     "testing/renderer_fuzzing_support.h",
+    "testing/scoped_default_locale.cc",
+    "testing/scoped_default_locale.h",
     "testing/scoped_fake_ukm_recorder.cc",
     "testing/scoped_fake_ukm_recorder.h",
     "testing/scoped_main_thread_overrider.cc",

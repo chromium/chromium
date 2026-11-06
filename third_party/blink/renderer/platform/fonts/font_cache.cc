@@ -355,9 +355,14 @@ FontCache::Bcp47Vector FontCache::GetBcp47LocaleForRequest(
           LayoutLocale::LocaleForHan(content_locale)) {
     result.push_back(han_locale->LocaleForHanForSkFontMgr());
   }
-  result.push_back(LayoutLocale::GetDefault().LocaleForSkFontMgr());
-  if (content_locale)
-    result.push_back(content_locale->LocaleForSkFontMgr());
+  if (RuntimeEnabledFeatures::FontFallbackPreferContentLocaleEnabled()) {
+    result.push_back(font_description.LocaleOrDefault().LocaleForSkFontMgr());
+  } else {
+    result.push_back(LayoutLocale::GetDefault().LocaleForSkFontMgr());
+    if (content_locale) {
+      result.push_back(content_locale->LocaleForSkFontMgr());
+    }
+  }
 
   if (IsEmojiPresentationEmoji(fallback_priority)) {
     result.push_back(kColorEmojiLocale);
