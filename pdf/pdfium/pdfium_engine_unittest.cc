@@ -4713,7 +4713,6 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   ASSERT_EQ(2, obj_count);
 
   // Verify all text objects have a mark with the same textbox ID.
-  std::string textbox_id;
   for (int i = 0; i < obj_count; ++i) {
     FPDF_PAGEOBJECT obj = FPDFPage_GetObject(pdf_page, i);
     ASSERT_EQ(1, FPDFPageObj_CountMarks(obj));
