@@ -18,6 +18,7 @@ namespace blink {
 class Editor;
 class FrameSelection;
 class HTMLElement;
+class Range;
 
 class EditingTestBase : public PageTestBase {
   USING_FAST_MALLOC(EditingTestBase);
@@ -60,6 +61,11 @@ class EditingTestBase : public PageTestBase {
   std::string GetSelectionTextFromBody(const SelectionInDomTree&) const;
 
   std::string GetSelectionTextFromBody() const;
+
+  // Returns selection text for child nodes of BODY with specified
+  // |EphemeralRange| or |Range|.
+  std::string GetRangeTextFromBody(const EphemeralRange&) const;
+  std::string GetRangeTextFromBody(const Range*) const;
 
   // Returns selection text for child nodes of BODY with specified
   // |SelectionInFlatTree|.

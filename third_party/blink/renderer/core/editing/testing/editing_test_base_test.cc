@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 
+#include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 
 namespace blink {
@@ -30,6 +33,18 @@ TEST_F(EditingTestBaseTest, GetCaretTextFromBody) {
             GetCaretTextFromBody(Position::LastPositionInNode(*div)));
 
   EXPECT_EQ("<div>foo</div>|", GetCaretTextFromBody(Position::AfterNode(*div)));
+}
+
+TEST_F(EditingTestBaseTest, GetRangeTextFromBody) {
+  SetBodyContent("<div>foo</div>");
+  Element* const div = QuerySelector("div");
+  Text* const text = To<Text>(div->firstChild());
+
+  Range* range = Range::Create(GetDocument());
+  range->setStart(text, 1, IGNORE_EXCEPTION_FOR_TESTING);
+  range->setEnd(text, 3, IGNORE_EXCEPTION_FOR_TESTING);
+  EXPECT_EQ("<div>f^oo|</div>", GetRangeTextFromBody(range));
+  EXPECT_EQ("<div>f^oo|</div>", GetRangeTextFromBody(EphemeralRange(range)));
 }
 
 // TODO(editing-dev): Add demos of other functions of EditingTestBase.

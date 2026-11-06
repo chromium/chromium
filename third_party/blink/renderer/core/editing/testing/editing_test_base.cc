@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -55,6 +56,16 @@ std::string EditingTestBase::GetSelectionTextFromBody(
 
 std::string EditingTestBase::GetSelectionTextFromBody() const {
   return GetSelectionTextFromBody(Selection().GetSelectionInDomTree());
+}
+
+std::string EditingTestBase::GetRangeTextFromBody(
+    const EphemeralRange& range) const {
+  return GetSelectionTextFromBody(
+      SelectionInDomTree::Builder().SetAsForwardSelection(range).Build());
+}
+
+std::string EditingTestBase::GetRangeTextFromBody(const Range* range) const {
+  return GetRangeTextFromBody(EphemeralRange(range));
 }
 
 std::string EditingTestBase::GetSelectionTextInFlatTreeFromBody(
