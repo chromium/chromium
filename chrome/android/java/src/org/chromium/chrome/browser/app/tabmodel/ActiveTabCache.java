@@ -158,7 +158,7 @@ public class ActiveTabCache {
     private void onActiveTabChanged(boolean isModelOtr, @Nullable Tab tab) {
         if (tab != null) {
             saveActiveTab(tab);
-        } else {
+        } else if (mTabModelSelector.getModel(isModelOtr).getCount() == 0) {
             clearActiveTab(isModelOtr);
         }
     }

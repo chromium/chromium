@@ -291,6 +291,57 @@ public class ActiveTabCacheUnitTest {
         assertTrue(getCacheFile(false).exists());
     }
 
+    @Test
+    public void testCurrentTabSupplier_SetNull_NonEmptyModel_PreservesCachedActiveTab() {
+        initActiveTabCache(/* hasCipherFactory= */ false);
+
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(1);
+        when(tab.isOffTheRecord()).thenReturn(false);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(1, tabState);
+
+        when(mTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getCount()).thenReturn(1);
+
+        mActiveTabCache.startTracking(/* incognito= */ false);
+        mCurrentTabSupplier.set(tab);
+        mExecutor.runAll();
+        assertTrue(getCacheFile(false).exists());
+
+        // Setting null when model still has tabs should NOT clear the cached active tab file.
+        mCurrentTabSupplier.set(null);
+        mExecutor.runAll();
+        assertTrue(getCacheFile(false).exists());
+    }
+
+    @Test
+    public void testCurrentTabSupplier_SetNull_EmptyModel_ClearsCachedActiveTab() {
+        initActiveTabCache(/* hasCipherFactory= */ false);
+
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(1);
+        when(tab.isOffTheRecord()).thenReturn(false);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(1, tabState);
+
+        when(mTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getCount()).thenReturn(1);
+
+        mActiveTabCache.startTracking(/* incognito= */ false);
+        mCurrentTabSupplier.set(tab);
+        mExecutor.runAll();
+        assertTrue(getCacheFile(false).exists());
+
+        // Setting null when model is empty should clear the cached active tab file.
+        when(mTabModel.getCount()).thenReturn(0);
+        mCurrentTabSupplier.set(null);
+        mExecutor.runAll();
+        assertFalse(getCacheFile(false).exists());
+    }
+
     private void initActiveTabCache(boolean hasCipherFactory) {
         mActiveTabCache =
                 new ActiveTabCache(

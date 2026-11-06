@@ -375,6 +375,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         observer.didBecomeEmpty();
         assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+        verify(mActiveTabCache).clearActiveTab(true);
     }
 
     @Test

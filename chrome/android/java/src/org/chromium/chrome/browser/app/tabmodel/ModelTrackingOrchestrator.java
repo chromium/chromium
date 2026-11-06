@@ -128,6 +128,7 @@ public class ModelTrackingOrchestrator {
 
                 @Override
                 public void didBecomeEmpty() {
+                    mActiveTabCache.clearActiveTab(/* incognito= */ true);
                     assumeNonNull(mIncognitoSynchronizerManager).reset();
                 }
             };
