@@ -140,8 +140,6 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
-#include "content/public/browser/reduce_accept_language_controller_delegate.h"
-#include "content/public/browser/reduce_accept_language_utils.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/security_principal.h"
@@ -2153,21 +2151,6 @@ NavigationRequest::NavigationRequest(
           frame_tree_node_, commit_params_->frame_policy.container_policy,
           common_params_->url);
       headers.MergeFrom(client_hints_headers);
-    }
-
-    // Add reduced accept language header.
-    if (auto reduce_accept_lang_utils =
-            ReduceAcceptLanguageUtils::Create(browser_context);
-        reduce_accept_lang_utils && !devtools_accept_language_override_) {
-      // Add the Accept-Language header with the reduce accept language value.
-      // Chromium network stack won't overwrite the value if Accept-Language
-      // header was already added in the request header.
-      net::HttpRequestHeaders accept_language_headers;
-      reduce_accept_lang_utils.value()
-          .AddNavigationRequestAcceptLanguageHeaders(
-              url::Origin::Create(common_params_->url), frame_tree_node_,
-              &accept_language_headers);
-      headers.MergeFrom(accept_language_headers);
     }
 
     headers.AddHeadersFromString(begin_params_->headers);
@@ -6840,19 +6823,6 @@ void NavigationRequest::OnRedirectChecksComplete(
           net::HttpRequestHeaders::kUserAgent,
           ComputeUserAgentValue(GetUserAgentOverride()));
     }
-  }
-
-  // Add reduced accept language header to the current request.
-  // If devtools has overridden the Accept-Language header, skip reduce
-  // Accept-Language header.
-  if (auto reduce_accept_lang_utils =
-          ReduceAcceptLanguageUtils::Create(browser_context);
-      reduce_accept_lang_utils && !devtools_accept_language_override_) {
-    net::HttpRequestHeaders accept_language_headers;
-    reduce_accept_lang_utils.value().AddNavigationRequestAcceptLanguageHeaders(
-        url::Origin::Create(common_params_->url), frame_tree_node_,
-        &accept_language_headers);
-    headers_update_params.modified_headers.MergeFrom(accept_language_headers);
   }
 
   loader_->FollowRedirect(std::move(headers_update_params));

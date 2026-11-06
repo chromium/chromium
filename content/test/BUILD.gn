@@ -2825,7 +2825,6 @@ test("content_unittests") {
     "../browser/preloading/speculation_rules/speculation_rules_tags_unittest.cc",
     "../browser/presentation/presentation_service_impl_unittest.cc",
     "../browser/push_messaging/push_messaging_manager_unittest.cc",
-    "../browser/reduce_accept_language/reduce_accept_language_utils_unittest.cc",
     "../browser/renderer_host/ancestor_throttle_unittest.cc",
     "../browser/renderer_host/back_forward_cache_disabling_feature_handle_unittest.cc",
     "../browser/renderer_host/browsing_context_group_swap_unittest.cc",

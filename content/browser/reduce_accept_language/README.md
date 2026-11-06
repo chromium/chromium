@@ -1,1 +1,0 @@
-A full README can be found at: [/components/reduce_accept_language/README.md](/components/reduce_accept_language/README.md)
