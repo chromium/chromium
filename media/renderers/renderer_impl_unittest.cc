@@ -1003,7 +1003,6 @@ TEST_F(RendererImplTest, AudioUnderflowDuringAudioTrackChange) {
 
   EXPECT_CALL(time_source_, CurrentMediaTime()).Times(2);
   EXPECT_CALL(time_source_, SetMediaTime(_)).Times(testing::AnyNumber());
-  std::vector<raw_ptr<DemuxerStream>> tracks;
   renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, {}, loop.QuitClosure());
 
   EXPECT_CALL(callbacks_,

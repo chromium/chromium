@@ -89,7 +89,6 @@ bool GetKeyIdsForCommonSystemId(base::span<const uint8_t> pssh_boxes,
 
   // Check all children for an appropriate 'pssh' box, returning the
   // key IDs found.
-  KeyIdList result;
   for (const auto& child : children) {
     if (base::as_byte_span(child.system_id) == kCencCommonSystemId) {
       key_ids->assign(child.key_ids.begin(), child.key_ids.end());

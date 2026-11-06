@@ -540,7 +540,6 @@ std::unique_ptr<RawVideo> RawVideo::Create(
     return nullptr;
   }
 
-  std::vector<size_t> plane_offsets;
   size_t video_frame_size = 0;
   constexpr VideoPixelFormat kPixelFormat = PIXEL_FORMAT_I420;
   const gfx::Size& resolution = metadata.frame_layout->coded_size();

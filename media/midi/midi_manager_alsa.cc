@@ -638,13 +638,10 @@ MidiManagerAlsa::AlsaSeqState::ToMidiPortState(const AlsaCardMap& alsa_cards) {
     auto* client = client_pair.second.get();
 
     // Get client metadata.
-    const std::string client_name = client->name();
     std::string manufacturer;
     std::string driver;
     std::string path;
     MidiPort::Id id;
-    std::string card_name;
-    std::string card_longname;
     int midi_device = -1;
 
     if (IsCardClient(client->type(), client_id)) {
@@ -656,8 +653,6 @@ MidiManagerAlsa::AlsaSeqState::ToMidiPortState(const AlsaCardMap& alsa_cards) {
       path = card->path();
       id = MidiPort::Id(card->bus(), card->vendor_id(), card->model_id(),
                         card->usb_interface_num(), card->serial());
-      card_name = card->name();
-      card_longname = card->longname();
       midi_device = card_midi_device;
 
       ++card_midi_device;

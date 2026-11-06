@@ -63,9 +63,6 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandle(const gfx::Size& size,
       SharedImageFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
 
-  auto data = std::vector<uint8_t>(
-      VideoFrame::AllocationSize(*video_pixel_format, size));
-
   gfx::NativePixmapHandle native_pixmap_handle;
   for (size_t i = 0; i < VideoFrame::NumPlanes(*video_pixel_format); i++) {
     const gfx::Size plane_size_in_bytes =

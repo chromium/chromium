@@ -579,7 +579,6 @@ TEST_F(JSONWebKeyTest, CreateInitData) {
                            0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10};
 
   KeyIdList key_ids;
-  std::string error_message;
 
   key_ids.emplace_back(std::begin(data1), std::end(data1));
   std::vector<uint8_t> init_data1;

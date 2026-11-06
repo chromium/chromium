@@ -1193,9 +1193,6 @@ TEST_P(AesDecryptorTest, NoKeysChangeForSameKey) {
 }
 
 TEST_P(AesDecryptorTest, RandomSessionIDs) {
-  std::vector<uint8_t> key_id(
-      kKeyId.data(),
-      base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
   const size_t kNumIterations = 25;
   std::set<std::string> seen_sessions;
 

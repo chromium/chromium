@@ -1060,8 +1060,6 @@ TEST_F(MappableSharedImageVideoFramePoolTest, AtMostOneCopyInFlight) {
 // Tests that adding a frame that the pool doesn't handle does not break the
 // FIFO order in tasks.
 TEST_F(MappableSharedImageVideoFramePoolTest, PreservesOrder) {
-  std::vector<scoped_refptr<VideoFrame>> frame_outputs;
-
   scoped_refptr<VideoFrame> software_frame_1 = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame_1;
   mappable_shared_image_pool_->MaybeCreateHardwareFrame(

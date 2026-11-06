@@ -1689,7 +1689,6 @@ TEST_F(ChunkDemuxerTest, ReadMultiBuffer_LastBufferIsEOS) {
   EXPECT_CALL(host_, SetDuration(base::Milliseconds(66)));
   MarkEndOfStream(PIPELINE_OK);
 
-  DemuxerStream::DecoderBufferVector video_buffers;
   DemuxerStream* video_stream = GetStream(DemuxerStream::Type::VIDEO);
 
   bool audio_read_done = false;

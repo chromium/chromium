@@ -194,7 +194,6 @@ TEST_F(MuxerTimestampAdapterTest, ForwardsAudioVideoSamples) {
   CreateAdapterWithSuccessfulPut(/*has_video=*/true, /*has_audio=*/true);
   InSequence s;
   std::string str1 = "f1";
-  std::string str2 = "f2";
   std::string alpha_data1 = "a1";
   EXPECT_CALL(*muxer_, PutFrame(MatchBufferDataAndAlphaData(str1, alpha_data1),
                                 base::Milliseconds(0)));

@@ -541,8 +541,6 @@ void SourceBufferState::InitializeParser(
     SplitCodecs(expected_codecs.value(), &expected_codecs_parsed);
   }
 
-  std::vector<AudioCodec> expected_acodecs;
-  std::vector<VideoCodec> expected_vcodecs;
   for (const auto& codec_id : expected_codecs_parsed) {
     AudioCodec acodec = StringToAudioCodec(codec_id);
     if (acodec != AudioCodec::kUnknown) {

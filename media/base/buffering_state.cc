@@ -22,7 +22,6 @@ std::string BufferingStateToString(BufferingState state,
                                  ? "BUFFERING_HAVE_NOTHING"
                                  : "BUFFERING_HAVE_ENOUGH";
 
-  std::vector<std::string> flag_strings;
   if (reason == DEMUXER_UNDERFLOW)
     state_string += " (DEMUXER_UNDERFLOW)";
   else if (reason == DECODER_UNDERFLOW)

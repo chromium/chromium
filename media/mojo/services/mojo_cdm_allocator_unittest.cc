@@ -88,7 +88,6 @@ TEST_F(MojoCdmAllocatorTest, MaxFreeBuffers) {
   const size_t kMaxExpectedFreeBuffers = 3;
   size_t buffer_size = 0;
   const size_t kBufferSizeIncrease = 1000;
-  std::vector<cdm::Buffer*> buffers;
 
   // Allocate and destroy 10 buffers in increasing size (to avoid buffer reuse).
   // Eventually allocating a new buffer will free the smallest free buffer, so
