@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -46,6 +47,8 @@ class RecordingObserver : public VoiceFocusedContentsTracker::Observer {
       content::WebContents* web_contents) override {
     changes_.push_back(web_contents);
   }
+
+  bool has_changes() const { return !changes_.empty(); }
 
   // Returns the changes recorded since the last call, and clears them.
   std::vector<raw_ptr<content::WebContents>> TakeChanges() {
@@ -224,6 +227,52 @@ IN_PROC_BROWSER_TEST_F(VoiceFocusedContentsTrackerBrowserTest,
   CloseBrowserSynchronously(first_browser);
   EXPECT_EQ(tracker->GetActiveWebContents(), nullptr);
   EXPECT_EQ(tracker->GetActiveBrowserWindow(), nullptr);
+  EXPECT_THAT(observer.TakeChanges(), ElementsAre(nullptr));
+}
+
+// Non-TYPE_NORMAL browser windows (such as popup and app windows) are ignored
+// when activated, when constructing the tracker, and when falling back after a
+// normal window closes.
+IN_PROC_BROWSER_TEST_F(VoiceFocusedContentsTrackerBrowserTest,
+                       IgnoresNonNormalBrowserWindows) {
+  BrowserWindowInterface* normal_browser = browser();
+  content::WebContents* normal_tab = ActiveContents(normal_browser);
+
+  std::unique_ptr<VoiceFocusedContentsTracker> tracker = CreateTracker();
+  RecordingObserver observer(*tracker);
+  // The tracker posts its initial notification asynchronously.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return observer.has_changes(); }));
+  ASSERT_THAT(observer.TakeChanges(), ElementsAre(normal_tab));
+  ASSERT_EQ(tracker->GetActiveBrowserWindow(), normal_browser);
+  ASSERT_EQ(tracker->GetActiveWebContents(), normal_tab);
+
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserForPopup(normal_browser->GetProfile());
+  ui_test_utils::WaitForBrowserSetLastActive(popup_browser);
+  ASSERT_EQ(popup_browser->GetType(), BrowserWindowInterface::TYPE_POPUP);
+  EXPECT_EQ(tracker->GetActiveBrowserWindow(), normal_browser);
+  EXPECT_EQ(tracker->GetActiveWebContents(), normal_tab);
+  EXPECT_THAT(observer.TakeChanges(), IsEmpty());
+
+  BrowserWindowInterface* app_browser =
+      CreateBrowserForApp("TestApp", normal_browser->GetProfile());
+  ui_test_utils::WaitForBrowserSetLastActive(app_browser);
+  ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::TYPE_APP);
+  EXPECT_EQ(tracker->GetActiveBrowserWindow(), normal_browser);
+  EXPECT_EQ(tracker->GetActiveWebContents(), normal_tab);
+  EXPECT_THAT(observer.TakeChanges(), IsEmpty());
+
+  // Creating a tracker while a non-normal window is last-active still binds to
+  // the last-active normal window.
+  std::unique_ptr<VoiceFocusedContentsTracker> second_tracker = CreateTracker();
+  EXPECT_EQ(second_tracker->GetActiveBrowserWindow(), normal_browser);
+  EXPECT_EQ(second_tracker->GetActiveWebContents(), normal_tab);
+
+  // Closing the only normal window clears the bound browser rather than falling
+  // back to the open popup or app windows.
+  CloseBrowserSynchronously(normal_browser);
+  EXPECT_EQ(tracker->GetActiveBrowserWindow(), nullptr);
+  EXPECT_EQ(tracker->GetActiveWebContents(), nullptr);
   EXPECT_THAT(observer.TakeChanges(), ElementsAre(nullptr));
 }
 

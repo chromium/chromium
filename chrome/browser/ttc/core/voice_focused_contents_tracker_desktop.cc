@@ -28,7 +28,7 @@ VoiceFocusedContentsTrackerDesktop::VoiceFocusedContentsTrackerDesktop(
     return;
   }
   browser_collection_observation_.Observe(browsers);
-  BindToBrowser(browsers->GetLastActiveBrowser());
+  BindToBrowser(browsers->FindTabbedBrowser());
 }
 
 VoiceFocusedContentsTrackerDesktop::~VoiceFocusedContentsTrackerDesktop() =
@@ -50,6 +50,11 @@ VoiceFocusedContentsTrackerDesktop::GetActiveBrowserWindow() {
 
 void VoiceFocusedContentsTrackerDesktop::OnBrowserActivated(
     BrowserWindowInterface* browser) {
+  // Tools and page context act on tabs, so app and popup windows don't take
+  // over from the last tabbed window.
+  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
   BindToBrowser(browser);
 }
 
@@ -59,7 +64,7 @@ void VoiceFocusedContentsTrackerDesktop::OnBrowserClosed(
     return;
   }
   BindToBrowser(
-      browser_collection_observation_.GetSource()->GetLastActiveBrowser());
+      browser_collection_observation_.GetSource()->FindTabbedBrowser());
 }
 
 void VoiceFocusedContentsTrackerDesktop::BindToBrowser(

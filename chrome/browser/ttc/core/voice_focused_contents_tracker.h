@@ -23,12 +23,13 @@ namespace ttc {
 // Tracks the active tab's contents across `profile`'s browser windows, and
 // notifies observers whenever it changes.
 //
-// The tracker binds to `profile`'s currently active browser window (a TabModel
-// on Android):
+// The tracker binds to `profile`'s last active tabbed (TYPE_NORMAL) browser
+// window on the current workspace (a TabModel on Android):
 //  - Switching tabs within the bound window changes the active tab.
-//  - Activating a different browser window of `profile` binds to that window
-//    and tracks its active tab.
-//  - Closing all browser windows of `profile` clears the active tab.
+//  - Activating a different tabbed window of `profile` binds to that window
+//    and tracks its active tab. App and popup windows are ignored.
+//  - Closing the bound window binds to the next tabbed window, or clears the
+//    active tab if none remains.
 //
 // Desktop and Android implementations live in
 // VoiceFocusedContentsTrackerDesktop and VoiceFocusedContentsTrackerAndroid
@@ -40,7 +41,7 @@ class VoiceFocusedContentsTracker {
     // Invoked asynchronously after construction with the initial active tab's
     // contents, and whenever the tracked active tab subsequently changes.
     // `web_contents` is the active tab's contents, or null if there is no
-    // active tab (e.g. all browser windows of the profile closed).
+    // active tab (e.g. all tabbed windows of the profile closed).
     virtual void OnVoiceFocusedContentsChanged(
         content::WebContents* web_contents) {}
   };

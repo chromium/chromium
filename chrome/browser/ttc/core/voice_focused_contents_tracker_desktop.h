@@ -41,7 +41,7 @@ class VoiceFocusedContentsTrackerDesktop : public VoiceFocusedContentsTracker,
   void OnBoundBrowserActiveTabChanged(BrowserWindowInterface* browser);
 
   // The browser window this tracker is bound to. Null until a window is bound,
-  // or after all windows of the profile close.
+  // or after all tabbed windows of the profile close.
   raw_ptr<BrowserWindowInterface> bound_browser_ = nullptr;
 
   base::CallbackListSubscription active_tab_subscription_;

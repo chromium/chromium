@@ -22,8 +22,9 @@ namespace ttc {
 class TtcVoicePlate;
 
 // Owns the voice plate - the bubble that is the main UI surface of a session -
-// and keeps it in the browser window the user is currently working in by
-// following window activation changes.
+// and keeps it in the tabbed browser window the user is working in: it follows
+// activation of tabbed windows, and moves to the next tabbed window when its
+// window closes.
 class VoicePlateController : public BrowserCollectionObserver {
  public:
   VoicePlateController(Profile& profile, base::RepeatingClosure close_callback);

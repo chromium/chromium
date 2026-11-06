@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -42,7 +43,7 @@ VoicePlateController::VoicePlateController(
   }
 
   browser_collection_observation_.Observe(browsers);
-  MoveToWindow(browsers->GetLastActiveBrowser());
+  MoveToWindow(browsers->FindTabbedBrowser());
 }
 
 VoicePlateController::~VoicePlateController() = default;
@@ -60,6 +61,11 @@ void VoicePlateController::UpdateAudioLevel(float audio_level) {
 }
 
 void VoicePlateController::OnBrowserActivated(BrowserWindowInterface* browser) {
+  // TTC follows the user's tabbed window, which supplies page context and
+  // tools, so app and popup windows don't take the plate.
+  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
   MoveToWindow(browser);
 }
 
@@ -68,7 +74,19 @@ void VoicePlateController::OnBrowserClosed(BrowserWindowInterface* browser) {
     return;
   }
 
-  // The plate is recreated in whichever window is activated next.
+  // A normal exit marks every window delete-scheduled before any of them
+  // closes, so FindTabbedBrowser() skips them. Other shutdown paths, such as
+  // ChromeOS session end, may not, so also skip the move once shutdown has
+  // started; otherwise each closing window would get a new plate.
+  if (!browser_shutdown::HasShutdownStarted()) {
+    MoveToWindow(
+        browser_collection_observation_.GetSource()->FindTabbedBrowser());
+  }
+  if (anchored_browser_ != browser) {
+    return;
+  }
+
+  // The plate is recreated when a tabbed window is next activated.
   anchored_browser_ = nullptr;
   voice_plate_.reset();
 }

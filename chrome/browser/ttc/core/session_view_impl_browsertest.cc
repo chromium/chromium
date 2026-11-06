@@ -228,6 +228,81 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ToastShowsOnError) {
   // clang-format on
 }
 
+// Opening a popup or app window does not move the voice plate away from the
+// normal browser window.
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
+                       NonNormalWindowDoesNotMoveUI) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(TtcVoicePlate::kViewElementId)
+  );
+  // clang-format on
+
+  BrowserWindowInterface* const popup_browser =
+      CreateBrowserForPopup(profile());
+  ui_test_utils::WaitForBrowserSetLastActive(popup_browser);
+  ASSERT_EQ(popup_browser->GetType(), BrowserWindowInterface::TYPE_POPUP);
+
+  BrowserWindowInterface* const app_browser =
+      CreateBrowserForApp("TestApp", profile());
+  ui_test_utils::WaitForBrowserSetLastActive(app_browser);
+  ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::TYPE_APP);
+
+  // clang-format off
+  RunTestSequence(
+    InContext(
+        BrowserElements::From(popup_browser)->GetContext(),
+        EnsureNotPresent(TtcVoicePlate::kViewElementId)),
+    InContext(
+        BrowserElements::From(app_browser)->GetContext(),
+        EnsureNotPresent(TtcVoicePlate::kViewElementId)),
+    InContext(
+        BrowserElements::From(browser())->GetContext(),
+        EnsurePresent(TtcVoicePlate::kViewElementId)),
+    CheckHasSession(true)
+  );
+  // clang-format on
+}
+
+// Closing the plate's window moves the plate to the next tabbed window, not to
+// an open popup window.
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
+                       ClosingWindowMovesUIToNextTabbedWindow) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(TtcVoicePlate::kViewElementId)
+  );
+  // clang-format on
+
+  BrowserWindowInterface* const second_browser = CreateBrowser(profile());
+  // clang-format off
+  RunTestSequence(
+    InContext(
+        BrowserElements::From(second_browser)->GetContext(),
+        WaitForShow(TtcVoicePlate::kViewElementId))
+  );
+  // clang-format on
+
+  BrowserWindowInterface* const popup_browser =
+      CreateBrowserForPopup(profile());
+  ui_test_utils::WaitForBrowserSetLastActive(popup_browser);
+  CloseBrowserSynchronously(second_browser);
+
+  // clang-format off
+  RunTestSequence(
+    InContext(
+        BrowserElements::From(browser())->GetContext(),
+        WaitForShow(TtcVoicePlate::kViewElementId)),
+    InContext(
+        BrowserElements::From(popup_browser)->GetContext(),
+        EnsureNotPresent(TtcVoicePlate::kViewElementId)),
+    CheckHasSession(true)
+  );
+  // clang-format on
+}
+
 }  // namespace
 
 }  // namespace ttc
