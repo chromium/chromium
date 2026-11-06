@@ -16,6 +16,7 @@ source_set("contextual_tasks_private") {
     "//base",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/common/extensions/api",
+    "//components/sessions",
     "//content/public/browser",
     "//extensions/browser",
   ]
@@ -42,6 +43,7 @@ source_set("browser_tests") {
     "//chrome/browser/contextual_tasks:user_data",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/contextual_tasks/public:feature_list",
@@ -54,5 +56,7 @@ source_set("browser_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//third_party/omnibox_proto",
+    "//ui/base",
+    "//url",
   ]
 }

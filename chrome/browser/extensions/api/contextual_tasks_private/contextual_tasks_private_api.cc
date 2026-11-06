@@ -4,12 +4,23 @@
 
 #include "chrome/browser/extensions/api/contextual_tasks_private/contextual_tasks_private_api.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -18,6 +29,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -80,6 +92,103 @@ GURL AppendAimUrlParams(
     }
   }
   return url;
+}
+
+// The search results page that sent a request: the primary main frame of a tab
+// in a normal browser window.
+struct SearchResultsPage {
+  const raw_ref<content::RenderFrameHost> frame;
+  const raw_ref<tabs::TabInterface> tab;
+  const raw_ref<BrowserWindowInterface> browser;
+};
+
+// Returns the search results page whose primary main frame `document_id`
+// identifies, if it belongs to `profile` and is in a normal browser window.
+// Otherwise, returns the error to respond with.
+base::expected<SearchResultsPage, std::string> GetSearchResultsPage(
+    Profile* profile,
+    contextual_tasks::ContextualTasksUiService& ui_service,
+    const std::string& document_id) {
+  content::RenderFrameHost* rfh = GetRfhForDocumentId(document_id);
+  if (!rfh) {
+    return base::unexpected(kInvalidFrameError);
+  }
+
+  if (rfh->GetBrowserContext() != profile) {
+    return base::unexpected(
+        "Document ID does not belong to the active profile.");
+  }
+
+  if (!rfh->IsInPrimaryMainFrame()) {
+    return base::unexpected(kNotTopLevelFrameError);
+  }
+
+  if (!ui_service.IsSearchResultsUrl(rfh->GetLastCommittedURL())) {
+    return base::unexpected(
+        "Contextual Tasks are only supported on Search Results pages.");
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    return base::unexpected(
+        "Unable to find WebContents for the provided document ID");
+  }
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  BrowserWindowInterface* browser =
+      tab ? tab->GetBrowserWindowInterface() : nullptr;
+  if (!browser) {
+    return base::unexpected("Unable to identify active browser window");
+  }
+
+  if (browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
+    return base::unexpected(
+        "Contextual Tasks are only supported in normal browser windows.");
+  }
+
+  return SearchResultsPage{.frame = raw_ref(*rfh),
+                           .tab = raw_ref(*tab),
+                           .browser = raw_ref(*browser)};
+}
+
+contextual_tasks::AimPromoParams ToAimPromoParams(
+    api::contextual_tasks_private::AimPromoParams params) {
+  contextual_tasks::AimPromoParams result;
+  // LINT.IfChange(AimPromoParamsCpp)
+  result.mstk = std::move(params.mstk);
+  result.aioh = std::move(params.aioh).value_or(std::string());
+  result.csuir = std::move(params.csuir).value_or(std::string());
+  result.sxsrf = std::move(params.sxsrf).value_or(std::string());
+  // LINT.ThenChange(//chrome/common/extensions/api/contextual_tasks_private.webidl:AimPromoParams)
+  return result;
+}
+
+contextual_tasks::AimPromoQueryHints ToAimPromoQueryHints(
+    base::optional_ref<
+        const std::vector<api::contextual_tasks_private::AimPromoQueryHint>>
+        hints) {
+  contextual_tasks::AimPromoQueryHints result;
+  if (!hints) {
+    return result;
+  }
+  for (api::contextual_tasks_private::AimPromoQueryHint hint : *hints) {
+    switch (hint) {
+      case api::contextual_tasks_private::AimPromoQueryHint::kNone:
+        NOTREACHED();
+      case api::contextual_tasks_private::AimPromoQueryHint::kEduHomework:
+        result.Put(contextual_tasks::AimPromoQueryHint::kEduHomework);
+        break;
+      case api::contextual_tasks_private::AimPromoQueryHint::kEduConceptual:
+        result.Put(contextual_tasks::AimPromoQueryHint::kEduConceptual);
+        break;
+      case api::contextual_tasks_private::AimPromoQueryHint::kHowToWebApp:
+        result.Put(contextual_tasks::AimPromoQueryHint::kHowToWebApp);
+        break;
+    }
+  }
+  return result;
 }
 
 }  // namespace
@@ -152,20 +261,14 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile);
 
-  content::RenderFrameHost* rfh =
-      GetRfhForDocumentId(params->details.document_id);
-  if (!rfh) {
-    return RespondNow(Error(kInvalidFrameError));
+  base::expected<SearchResultsPage, std::string> page =
+      GetSearchResultsPage(profile, *ui_service, params->details.document_id);
+  if (!page.has_value()) {
+    return RespondNow(Error(std::move(page).error()));
   }
-
-  if (!rfh->IsInPrimaryMainFrame()) {
-    return RespondNow(Error(kNotTopLevelFrameError));
-  }
-
-  if (!ui_service->IsSearchResultsUrl(rfh->GetLastCommittedURL())) {
-    return RespondNow(
-        Error("Contextual Tasks are only supported on Search Results pages."));
-  }
+  content::RenderFrameHost* rfh = &page->frame.get();
+  tabs::TabInterface* initiator_tab = &page->tab.get();
+  BrowserWindowInterface* browser = &page->browser.get();
 
   // Determine the target host: use the forced embedded page host if set;
   // otherwise, default to the host/origin of the one the request came from.
@@ -187,31 +290,6 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
 
   if (!aim_url.is_valid() || !aim_url.SchemeIs(url::kHttpsScheme)) {
     return RespondNow(Error("Generated AI URL is invalid or not HTTPS"));
-  }
-
-  content::WebContents* initiator_web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  if (!initiator_web_contents) {
-    return RespondNow(
-        Error("Unable to find WebContents for the provided document ID"));
-  }
-
-  if (initiator_web_contents->GetBrowserContext() != profile) {
-    return RespondNow(
-        Error("Document ID does not belong to the active profile."));
-  }
-
-  tabs::TabInterface* initiator_tab =
-      tabs::TabInterface::MaybeGetFromContents(initiator_web_contents);
-  BrowserWindowInterface* browser =
-      initiator_tab ? initiator_tab->GetBrowserWindowInterface() : nullptr;
-  if (!browser) {
-    return RespondNow(Error("Unable to identify active browser window"));
-  }
-
-  if (browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
-    return RespondNow(Error(
-        "Contextual Tasks are only supported in normal browser windows."));
   }
 
   TabListInterface* tab_list = TabListInterface::From(browser);
@@ -261,6 +339,71 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
           .open_time_ticks = open_time_ticks,
       });
 
+  return RespondNow(NoArguments());
+}
+
+ContextualTasksPrivateRegisterAimThreadForPromoFunction::
+    ContextualTasksPrivateRegisterAimThreadForPromoFunction() = default;
+
+ContextualTasksPrivateRegisterAimThreadForPromoFunction::
+    ~ContextualTasksPrivateRegisterAimThreadForPromoFunction() = default;
+
+ExtensionFunction::ResponseAction
+ContextualTasksPrivateRegisterAimThreadForPromoFunction::Run() {
+  std::optional<
+      api::contextual_tasks_private::RegisterAimThreadForPromo::Params>
+      params = api::contextual_tasks_private::RegisterAimThreadForPromo::
+          Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!contextual_tasks::IsABASearchJourneysEnabled()) {
+    return RespondNow(Error("ABA search journeys are disabled"));
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  if (!IsContextualTasksEnabledForProfile(profile)) {
+    return RespondNow(
+        Error("ContextualTasks Private API is not eligible for this profile"));
+  }
+
+  if (params->details.aim_promo_params.mstk.empty()) {
+    return RespondNow(Error("Missing required URL params"));
+  }
+
+  contextual_tasks::ContextualTasksUiService* ui_service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile);
+  base::expected<SearchResultsPage, std::string> page =
+      GetSearchResultsPage(profile, *ui_service, params->details.document_id);
+  if (!page.has_value()) {
+    return RespondNow(Error(std::move(page).error()));
+  }
+
+  contextual_tasks::SearchJourneyTracker* tracker =
+      contextual_tasks::SearchJourneyTrackerFactory::GetForProfile(profile);
+  if (!tracker) {
+    return RespondNow(
+        Error("ABA search journeys are unavailable for this profile"));
+  }
+
+  // The parameters are bound to the query the page shows when this runs, so
+  // they can't be paired with a different search. A same-document navigation
+  // keeps the document ID, so this assumes the results page doesn't change `q`
+  // that way while a call is in flight. If it did, a registration for the new
+  // query would replace these parameters.
+  const std::u16string search_terms =
+      tracker->GetSearchTerms(page->frame->GetLastCommittedURL());
+  if (search_terms.empty()) {
+    return RespondNow(Error("Unable to read the search query of the page"));
+  }
+
+  // Whether the parameters match a journey is never reported back, so the page
+  // learns nothing about the user's other tabs.
+  tracker->OnAimPromoParamsReceived(
+      sessions::SessionTabHelper::IdForTab(page->tab->GetContents()),
+      search_terms,
+      ToAimPromoParams(std::move(params->details.aim_promo_params)),
+      ToAimPromoQueryHints(params->details.query_hints));
   return RespondNow(NoArguments());
 }
 

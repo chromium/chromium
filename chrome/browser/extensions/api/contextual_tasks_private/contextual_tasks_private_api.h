@@ -46,6 +46,25 @@ class ContextualTasksPrivateLaunchPanelInNewTabFunction
   ResponseAction Run() override;
 };
 
+class ContextualTasksPrivateRegisterAimThreadForPromoFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("contextualTasksPrivate.registerAimThreadForPromo",
+                             CONTEXTUALTASKSPRIVATE_REGISTERAIMTHREADFORPROMO)
+
+  ContextualTasksPrivateRegisterAimThreadForPromoFunction();
+  ContextualTasksPrivateRegisterAimThreadForPromoFunction(
+      const ContextualTasksPrivateRegisterAimThreadForPromoFunction&) = delete;
+  ContextualTasksPrivateRegisterAimThreadForPromoFunction& operator=(
+      const ContextualTasksPrivateRegisterAimThreadForPromoFunction&) = delete;
+
+ protected:
+  ~ContextualTasksPrivateRegisterAimThreadForPromoFunction() override;
+
+  // Override from ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_CONTEXTUAL_TASKS_PRIVATE_CONTEXTUAL_TASKS_PRIVATE_API_H_

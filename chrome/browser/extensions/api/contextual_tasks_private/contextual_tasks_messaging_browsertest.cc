@@ -16,10 +16,15 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/test/base/search_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/logger.h"
@@ -34,6 +39,8 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -833,6 +840,103 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingTest,
     EXPECT_NE(entry.tag, "OnWebviewMessage");
     EXPECT_NE(entry.tag, "PostAimMessage");
   }
+}
+
+class ContextualTasksExtensionMessagingAbaSearchJourneysTest
+    : public ContextualTasksExtensionMessagingTest {
+ public:
+  ContextualTasksExtensionMessagingAbaSearchJourneysTest()
+      : ContextualTasksExtensionMessagingTest(
+            /*enabled_features=*/{contextual_tasks::kABASearchJourneys}) {}
+
+ protected:
+  // Registers restore parameters for the active tab's results page through the
+  // component extension, along with a hint Chrome doesn't know. Returns
+  // "success" or the error.
+  content::EvalJsResult RegisterAimThreadForPromo() {
+    const std::string script = base::StringPrintf(
+        R"(
+      (async () => {
+        return new Promise((resolve) => {
+          chrome.runtime.sendMessage(
+              '%s', {
+                type: 'contextualTasksPrivate.registerAimThreadForPromo',
+                args: {
+                  aimPromoParams: {
+                    mstk: 'token',
+                    aioh: '3',
+                    csuir: '1',
+                    sxsrf: 'xsrf'
+                  },
+                  queryHints: ['edu_homework', 'not_a_hint']
+                }
+              }, (response) => {
+                if (chrome.runtime.lastError) {
+                  resolve(chrome.runtime.lastError.message);
+                } else if (response && response.error) {
+                  resolve(response.error);
+                } else {
+                  resolve('success');
+                }
+              });
+        });
+      })()
+      )",
+        extension_misc::kContextualTasksExtensionId);
+    return content::EvalJs(GetActiveWebContents(), script);
+  }
+};
+
+// Tests that a results page can register restore parameters for its AI Overview
+// through the component extension, which drops hints Chrome doesn't know.
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingAbaSearchJourneysTest,
+                       RegisterAimThreadForPromo) {
+  search_test_utils::WaitForTemplateURLServiceToLoad(
+      TemplateURLServiceFactory::GetForProfile(profile()));
+
+  // Leaving a page for a Google search in a new tab arms a journey.
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://example.com/simple.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com/search?q=how+do+tides+work"),
+      WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  contextual_tasks::SearchJourneyTracker* tracker =
+      contextual_tasks::SearchJourneyTrackerFactory::GetForProfile(profile());
+  ASSERT_EQ(tracker->GetActiveJourneysForTesting().size(), 1u);
+
+  EXPECT_EQ("success", RegisterAimThreadForPromo());
+
+  const contextual_tasks::JourneyState& journey =
+      tracker->GetActiveJourneysForTesting().begin()->second;
+  ASSERT_TRUE(journey.promo_params.has_value());
+  EXPECT_EQ(journey.promo_params->mstk, "token");
+  EXPECT_EQ(journey.promo_params->aioh, "3");
+  EXPECT_EQ(journey.promo_params->csuir, "1");
+  EXPECT_EQ(journey.promo_params->sxsrf, "xsrf");
+  EXPECT_EQ(journey.query_hints,
+            contextual_tasks::AimPromoQueryHints(
+                {contextual_tasks::AimPromoQueryHint::kEduHomework}));
+}
+
+// Tests that registering restore parameters that match no journey still
+// succeeds, so the results page can't tell whether the user came from another
+// tab.
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingAbaSearchJourneysTest,
+                       RegisterAimThreadForPromoWithoutJourney) {
+  search_test_utils::WaitForTemplateURLServiceToLoad(
+      TemplateURLServiceFactory::GetForProfile(profile()));
+
+  // A search in the same tab doesn't arm a journey.
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    GURL("https://www.google.com/search?q=how+do+tides+work")));
+  contextual_tasks::SearchJourneyTracker* tracker =
+      contextual_tasks::SearchJourneyTrackerFactory::GetForProfile(profile());
+  ASSERT_TRUE(tracker->GetActiveJourneysForTesting().empty());
+
+  EXPECT_EQ("success", RegisterAimThreadForPromo());
+  EXPECT_TRUE(tracker->GetActiveJourneysForTesting().empty());
 }
 
 }  // namespace extensions

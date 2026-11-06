@@ -9,6 +9,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
+#include "chrome/browser/extensions/api/contextual_tasks_private/contextual_tasks_private_api.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +18,8 @@
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -343,6 +346,145 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiIneligibleTest,
   EXPECT_TRUE(RunExtensionTest(
       "contextual_tasks_private",
       {.extension_url = "test.html", .custom_arg = "launch_panel_ineligible"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+class ContextualTasksPrivateApiAbaSearchJourneysDisabledTest
+    : public ContextualTasksPrivateApiTest {
+ public:
+  ContextualTasksPrivateApiAbaSearchJourneysDisabledTest()
+      : ContextualTasksPrivateApiTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{contextual_tasks::kABASearchJourneys}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysDisabledTest,
+                       RegisterAimThreadForPromo) {
+  EXPECT_TRUE(RunExtensionTest(
+      "contextual_tasks_private",
+      {.extension_url = "test.html", .custom_arg = "register_promo_disabled"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+class ContextualTasksPrivateApiAbaSearchJourneysTest
+    : public ContextualTasksPrivateApiTest {
+ public:
+  ContextualTasksPrivateApiAbaSearchJourneysTest()
+      : ContextualTasksPrivateApiTest({contextual_tasks::kABASearchJourneys}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysTest,
+                       RegisterAimThreadForPromoMissingMstk) {
+  EXPECT_TRUE(RunExtensionTest("contextual_tasks_private",
+                               {.extension_url = "test.html",
+                                .custom_arg = "register_promo_missing_mstk"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysTest,
+                       RegisterAimThreadForPromoInvalidDocumentId) {
+  EXPECT_TRUE(
+      RunExtensionTest("contextual_tasks_private",
+                       {.extension_url = "test.html",
+                        .custom_arg = "register_promo_invalid_document_id"},
+                       {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysTest,
+                       RegisterAimThreadForPromoSubframe) {
+  EXPECT_TRUE(RunExtensionTest(
+      "contextual_tasks_private",
+      {.extension_url = "test.html", .custom_arg = "register_promo_subframe"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysTest,
+                       RegisterAimThreadForPromoNonSearchResultsPage) {
+  ON_CALL(*GetMockUiService(), IsSearchResultsUrl(testing::_))
+      .WillByDefault(Return(false));
+
+  EXPECT_TRUE(
+      RunExtensionTest("contextual_tasks_private",
+                       {.extension_url = "test.html",
+                        .custom_arg = "register_promo_non_search_results_page"},
+                       {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysTest,
+                       RegisterAimThreadForPromoCrossProfile) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowserWindow();
+  Profile* incognito_profile = incognito_browser->GetProfile();
+  contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+      ->SetTestingFactory(
+          incognito_profile,
+          base::BindRepeating([](content::BrowserContext* context)
+                                  -> std::unique_ptr<KeyedService> {
+            Profile* profile = Profile::FromBrowserContext(context);
+            auto mock_eligibility_manager =
+                std::make_unique<MockContextualTasksEligibilityManager>(
+                    /*pref_service=*/nullptr,
+                    /*identity_manager=*/nullptr,
+                    /*aim_eligibility_service=*/nullptr,
+                    /*is_eligible=*/true);
+            auto mock_ui_service = std::make_unique<
+                NiceMock<contextual_tasks::MockContextualTasksUiService>>(
+                profile,
+                /*service=*/nullptr,
+                /*identity_manager=*/nullptr,
+                /*aim_eligibility_service=*/nullptr,
+                std::move(mock_eligibility_manager),
+                /*cookie_synchronizer=*/nullptr);
+            ON_CALL(*mock_ui_service, GetEligibilityManager())
+                .WillByDefault([service_ptr = mock_ui_service.get()]() {
+                  return service_ptr
+                      ->ContextualTasksUiService::GetEligibilityManager();
+                });
+            return std::unique_ptr<KeyedService>(std::move(mock_ui_service));
+          }));
+
+  const std::string document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(
+          GetActiveWebContents()->GetPrimaryMainFrame())
+          .ToString();
+  auto function = base::MakeRefCounted<
+      ContextualTasksPrivateRegisterAimThreadForPromoFunction>();
+  const std::string args = base::StringPrintf(
+      R"([{"aimPromoParams": {"mstk": "token"}, "documentId": "%s"}])",
+      document_id.c_str());
+
+  EXPECT_EQ("Document ID does not belong to the active profile.",
+            api_test_utils::RunFunctionAndReturnError(function, args,
+                                                      incognito_profile));
+}
+
+// The test page isn't a Google results page, so there's no query to bind the
+// parameters to.
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysTest,
+                       RegisterAimThreadForPromoWithoutQuery) {
+  EXPECT_TRUE(RunExtensionTest("contextual_tasks_private",
+                               {.extension_url = "test.html",
+                                .custom_arg = "register_promo_without_query"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+class ContextualTasksPrivateApiAbaSearchJourneysIneligibleTest
+    : public ContextualTasksPrivateApiAbaSearchJourneysTest {
+ public:
+  bool IsEligible() const override { return false; }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiAbaSearchJourneysIneligibleTest,
+                       RegisterAimThreadForPromo) {
+  EXPECT_TRUE(RunExtensionTest(
+      "contextual_tasks_private",
+      {.extension_url = "test.html", .custom_arg = "register_promo_ineligible"},
       {.load_as_component = true}))
       << message_;
 }

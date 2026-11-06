@@ -19,14 +19,10 @@
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/utils.h"
-#include "components/google/core/common/google_util.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -98,7 +94,6 @@ SearchJourneyTabFeature::SearchJourneyTabFeature(tabs::TabInterface& tab)
     Profile* profile =
         Profile::FromBrowserContext(contents->GetBrowserContext());
     tracker_ = SearchJourneyTrackerFactory::GetForProfile(profile);
-    template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile);
   }
 }
 
@@ -184,21 +179,14 @@ void SearchJourneyTabFeature::OnTextCopiedToClipboard(
 
 void SearchJourneyTabFeature::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!tracker_ || !template_url_service_ ||
-      !navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||
-      !google_util::IsGoogleSearchUrl(navigation_handle->GetURL())) {
+  if (!tracker_ || !navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     return;
   }
 
-  const TemplateURL* default_provider =
-      template_url_service_->GetDefaultSearchProvider();
-  std::u16string search_terms;
-  if (!default_provider ||
-      !default_provider->ExtractSearchTermsFromURL(
-          navigation_handle->GetURL(),
-          template_url_service_->search_terms_data(), &search_terms) ||
-      search_terms.empty()) {
+  const std::u16string search_terms =
+      tracker_->GetSearchTerms(navigation_handle->GetURL());
+  if (search_terms.empty()) {
     return;
   }
 

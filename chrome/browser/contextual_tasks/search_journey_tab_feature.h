@@ -14,7 +14,6 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class GURL;
-class TemplateURLService;
 
 namespace content {
 class NavigationHandle;
@@ -83,7 +82,6 @@ class SearchJourneyTabFeature : public content::WebContentsObserver {
 
   const raw_ref<tabs::TabInterface> tab_;
   raw_ptr<SearchJourneyTracker> tracker_ = nullptr;
-  raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   base::CallbackListSubscription will_discard_contents_subscription_;
   base::CallbackListSubscription did_activate_subscription_;
   base::CallbackListSubscription will_deactivate_subscription_;

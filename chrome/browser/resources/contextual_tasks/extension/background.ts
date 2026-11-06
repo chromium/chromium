@@ -79,7 +79,12 @@ interface AimParams {
 
 interface ExtensionMessage {
   type?: string;
-  args?: {targetUrl?: string, aimParams?: AimParams};
+  args?: {
+    targetUrl?: string,
+    aimParams?: AimParams,
+    aimPromoParams?: Partial<chrome.contextualTasksPrivate.AimPromoParams>,
+    queryHints?: unknown,
+  };
 }
 
 interface SearchChannelMessage {
@@ -228,6 +233,20 @@ function urlMatchesAllowList(origin: string): boolean {
 //   manifest.json:WebAccessibleMatches
 // )
 
+// Returns the hints this version of Chrome knows. Unknown hints are dropped, so
+// new hints from Search can't make the call fail.
+function getKnownQueryHints(hints: unknown):
+    chrome.contextualTasksPrivate.AimPromoQueryHint[] {
+  if (!Array.isArray(hints)) {
+    return [];
+  }
+  const knownHints: string[] =
+      Object.values(chrome.contextualTasksPrivate.AimPromoQueryHint);
+  return hints.filter(
+      (hint): hint is chrome.contextualTasksPrivate.AimPromoQueryHint =>
+          knownHints.includes(hint));
+}
+
 chrome.runtime.onConnectExternal.addListener((port: chrome.runtime.Port) => {
   // Only accept connections on the dedicated search channel.
   if (port.name !== CHROME_SEARCH_CHANNEL_NAME) {
@@ -320,6 +339,28 @@ chrome.runtime.onMessageExternal.addListener(
               });
           // LINT.ThenChange(//chrome/common/extensions/api/contextual_tasks_private.webidl:AimParams)
           return result;
+        } catch (err: any) {
+          return {error: err.message || 'Unknown error'};
+        }
+      }
+
+      if (message.type === 'contextualTasksPrivate.registerAimThreadForPromo' &&
+          message.args) {
+        const aimPromoParams = message.args.aimPromoParams || {};
+        try {
+          // LINT.IfChange(AimPromoParamsCall)
+          await chrome.contextualTasksPrivate.registerAimThreadForPromo({
+            aimPromoParams: {
+              mstk: aimPromoParams.mstk ?? '',
+              aioh: aimPromoParams.aioh,
+              csuir: aimPromoParams.csuir,
+              sxsrf: aimPromoParams.sxsrf,
+            },
+            queryHints: getKnownQueryHints(message.args.queryHints),
+            documentId: sender.documentId,
+          });
+          // LINT.ThenChange(//chrome/common/extensions/api/contextual_tasks_private.webidl:AimPromoParams)
+          return;
         } catch (err: any) {
           return {error: err.message || 'Unknown error'};
         }

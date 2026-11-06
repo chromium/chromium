@@ -59,6 +59,43 @@ dictionary LaunchPanelInNewTabDetails {
   required DOMString documentId;
 };
 
+// LINT.IfChange(AimPromoParams)
+
+dictionary AimPromoParams {
+  // Magi State Token. Restores the AI Overview as the first turn of an AIM
+  // thread.
+  required DOMString mstk;
+
+  // How to handle the AIM handover. See `AimParams.aioh`.
+  DOMString aioh;
+
+  // Where to restore the AIM thread from. See `AimParams.csuir`.
+  DOMString csuir;
+
+  // XSRF token for the restore navigation. See go/gws-xsleaks-proposal.
+  DOMString sxsrf;
+};
+// LINT.ThenChange(//chrome/browser/resources/contextual_tasks/extension/background.ts:AimPromoParamsCall,//chrome/browser/extensions/api/contextual_tasks_private/contextual_tasks_private_api.cc:AimPromoParamsCpp)
+
+// Coarse labels that Search can send about the query. Chrome only uses them to
+// slice metrics.
+enum AimPromoQueryHint {
+  "edu_homework",
+  "edu_conceptual",
+  "how_to_web_app"
+};
+
+dictionary RegisterAimThreadForPromoDetails {
+  // Used to build the AIM restore URL if the user accepts the cue.
+  required AimPromoParams aimPromoParams;
+
+  // Never shown in UI or added to the restore URL.
+  sequence<AimPromoQueryHint> queryHints;
+
+  // The documentId of the Search Results Page that sent the parameters.
+  required DOMString documentId;
+};
+
 interface ContextualTasksPrivate {
   // Returns the profile state for Contextual Tasks.
   // |PromiseValue|: state: The current ProfileState for Contextual Tasks.
@@ -68,6 +105,14 @@ interface ContextualTasksPrivate {
   // |Returns|: Promise that resolves when the launch is successful.
   static Promise<undefined> launchPanelInNewTab(
       LaunchPanelInNewTabDetails details);
+
+  // Registers AIM thread restore parameters for a Search Results Page, so
+  // Chrome may later show a contextual cue that reopens its AI Overview in the
+  // Contextual Tasks side panel. Never shows UI itself.
+  // |Returns|: Promise that resolves once the parameters are handled, whether
+  // or not Chrome keeps them.
+  static Promise<undefined> registerAimThreadForPromo(
+      RegisterAimThreadForPromoDetails details);
 };
 
 partial interface Browser {
