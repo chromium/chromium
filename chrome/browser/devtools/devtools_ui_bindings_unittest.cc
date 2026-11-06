@@ -18,10 +18,12 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 #include "chrome/browser/devtools/devtools_http_service_registry.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -52,6 +54,13 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/test/test_dialog_model_host.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/themes.mojom.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -1694,6 +1703,371 @@ TEST_F(DevToolsUIBindingsHostConfigTest, SetChromeFlag) {
   ASSERT_TRUE(final_protocol_monitor);
   EXPECT_FALSE(final_protocol_monitor->FindBool("enabled").value_or(true));
 }
+
+TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigUserColorSourceDefault) {
+#if !BUILDFLAG(IS_ANDROID)
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(theme_service, nullptr);
+  EXPECT_FALSE(theme_service->GetIsGrayscale());
+  EXPECT_TRUE(theme_service->GetIsBaseline());
+#endif
+
+  base::DictValue config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* user_color_source = config.FindString("userColorSource");
+  ASSERT_NE(user_color_source, nullptr);
+  EXPECT_EQ(*user_color_source, "baseline-default");
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest,
+       GetHostConfigUserColorSourceOffTheRecordDefault) {
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_NE(otr_profile, nullptr);
+
+  base::DictValue config =
+      DevToolsUIBindings::GetHostConfigDictionary(otr_profile);
+  EXPECT_THAT(config.FindBool("isOffTheRecord"), testing::Optional(true));
+  const std::string* user_color_source = config.FindString("userColorSource");
+  ASSERT_NE(user_color_source, nullptr);
+  EXPECT_EQ(*user_color_source, "baseline-default");
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(DevToolsUIBindingsHostConfigTest,
+       GetHostConfigUserColorSourceGrayscaleAndReset) {
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(theme_service, nullptr);
+
+  theme_service->SetIsGrayscale(true);
+  EXPECT_TRUE(theme_service->GetIsGrayscale());
+  base::DictValue grayscale_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* grayscale_source =
+      grayscale_config.FindString("userColorSource");
+  ASSERT_NE(grayscale_source, nullptr);
+  EXPECT_EQ(*grayscale_source, "baseline-grayscale");
+
+  theme_service->SetIsGrayscale(false);
+  EXPECT_FALSE(theme_service->GetIsGrayscale());
+  EXPECT_TRUE(theme_service->GetIsBaseline());
+  base::DictValue ungrayscale_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* ungrayscale_source =
+      ungrayscale_config.FindString("userColorSource");
+  ASSERT_NE(ungrayscale_source, nullptr);
+  EXPECT_EQ(*ungrayscale_source, "baseline-default");
+
+  theme_service->SetIsGrayscale(true);
+  theme_service->UseDefaultTheme();
+  EXPECT_FALSE(theme_service->GetIsGrayscale());
+  EXPECT_TRUE(theme_service->GetIsBaseline());
+  base::DictValue reset_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* reset_source = reset_config.FindString("userColorSource");
+  ASSERT_NE(reset_source, nullptr);
+  EXPECT_EQ(*reset_source, "baseline-default");
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest,
+       GetHostConfigUserColorSourceDynamicUserColor) {
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(theme_service, nullptr);
+
+  theme_service->SetUserColor(SK_ColorBLUE);
+  EXPECT_FALSE(theme_service->GetIsGrayscale());
+  EXPECT_FALSE(theme_service->GetIsBaseline());
+  base::DictValue user_color_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* user_color_source =
+      user_color_config.FindString("userColorSource");
+  ASSERT_NE(user_color_source, nullptr);
+  EXPECT_EQ(*user_color_source, "dynamic");
+
+  theme_service->SetUserColor(std::nullopt);
+  EXPECT_TRUE(theme_service->GetIsBaseline());
+  base::DictValue cleared_color_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* cleared_color_source =
+      cleared_color_config.FindString("userColorSource");
+  ASSERT_NE(cleared_color_source, nullptr);
+  EXPECT_EQ(*cleared_color_source, "baseline-default");
+
+  theme_service->SetUserColorAndBrowserColorVariant(
+      SK_ColorGREEN, ui::mojom::BrowserColorVariant::kTonalSpot);
+  EXPECT_FALSE(theme_service->GetIsBaseline());
+  base::DictValue variant_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* variant_source =
+      variant_config.FindString("userColorSource");
+  ASSERT_NE(variant_source, nullptr);
+  EXPECT_EQ(*variant_source, "dynamic");
+
+  theme_service->UseDefaultTheme();
+  base::DictValue reset_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* reset_source = reset_config.FindString("userColorSource");
+  ASSERT_NE(reset_source, nullptr);
+  EXPECT_EQ(*reset_source, "baseline-default");
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest,
+       GetHostConfigUserColorSourceAutogeneratedTheme) {
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(theme_service, nullptr);
+
+  theme_service->BuildAutogeneratedThemeFromColor(SK_ColorRED);
+  EXPECT_FALSE(theme_service->GetIsGrayscale());
+  EXPECT_FALSE(theme_service->GetIsBaseline());
+  base::DictValue autogen_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* autogen_source =
+      autogen_config.FindString("userColorSource");
+  ASSERT_NE(autogen_source, nullptr);
+  EXPECT_EQ(*autogen_source, "dynamic");
+
+  theme_service->UseDefaultTheme();
+  base::DictValue reset_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const std::string* reset_source = reset_config.FindString("userColorSource");
+  ASSERT_NE(reset_source, nullptr);
+  EXPECT_EQ(*reset_source, "baseline-default");
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest,
+       GetHostConfigUserColorSourceOffTheRecordInheritsOriginalProfileTheme) {
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_NE(otr_profile, nullptr);
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(theme_service, nullptr);
+
+  theme_service->SetIsGrayscale(true);
+  base::DictValue grayscale_config =
+      DevToolsUIBindings::GetHostConfigDictionary(otr_profile);
+  EXPECT_THAT(grayscale_config.FindBool("isOffTheRecord"),
+              testing::Optional(true));
+  const std::string* grayscale_source =
+      grayscale_config.FindString("userColorSource");
+  ASSERT_NE(grayscale_source, nullptr);
+  EXPECT_EQ(*grayscale_source, "baseline-grayscale");
+
+  theme_service->SetUserColor(SK_ColorBLUE);
+  base::DictValue dynamic_config =
+      DevToolsUIBindings::GetHostConfigDictionary(otr_profile);
+  EXPECT_THAT(dynamic_config.FindBool("isOffTheRecord"),
+              testing::Optional(true));
+  const std::string* dynamic_source =
+      dynamic_config.FindString("userColorSource");
+  ASSERT_NE(dynamic_source, nullptr);
+  EXPECT_EQ(*dynamic_source, "dynamic");
+
+  theme_service->BuildAutogeneratedThemeFromColor(SK_ColorRED);
+  base::DictValue autogen_config =
+      DevToolsUIBindings::GetHostConfigDictionary(otr_profile);
+  EXPECT_THAT(autogen_config.FindBool("isOffTheRecord"),
+              testing::Optional(true));
+  const std::string* autogen_source =
+      autogen_config.FindString("userColorSource");
+  ASSERT_NE(autogen_source, nullptr);
+  EXPECT_EQ(*autogen_source, "dynamic");
+
+  theme_service->UseDefaultTheme();
+  base::DictValue default_config =
+      DevToolsUIBindings::GetHostConfigDictionary(otr_profile);
+  EXPECT_THAT(default_config.FindBool("isOffTheRecord"),
+              testing::Optional(true));
+  const std::string* default_source =
+      default_config.FindString("userColorSource");
+  ASSERT_NE(default_source, nullptr);
+  EXPECT_EQ(*default_source, "baseline-default");
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest,
+       GetHostConfigUserColorSourceNullThemeServiceFallback) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      ThemeServiceFactory::GetInstance(),
+      BrowserContextKeyedServiceFactory::TestingFactory());
+  std::unique_ptr<TestingProfile> profile_without_theme_service =
+      profile_builder.Build();
+  ASSERT_EQ(ThemeServiceFactory::GetForProfile(
+                profile_without_theme_service->GetOriginalProfile()),
+            nullptr);
+
+  base::DictValue config = DevToolsUIBindings::GetHostConfigDictionary(
+      profile_without_theme_service.get());
+  const std::string* user_color_source = config.FindString("userColorSource");
+  ASSERT_NE(user_color_source, nullptr);
+  EXPECT_EQ(*user_color_source, "baseline-default");
+}
+
+class DevToolsUIBindingsThemeTest : public testing::Test {
+ public:
+  void SetUp() override {
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents_, GURL("devtools://devtools/bundled/devtools_app.html"));
+    bindings_ = std::make_unique<testing::NiceMock<TestDevToolsUIBindings>>(
+        web_contents_);
+  }
+
+  ThemeService* theme_service() {
+    return ThemeServiceFactory::GetForProfile(profile_.get());
+  }
+
+  void ExpectColorThemeChanged(TestDevToolsUIBindings& bindings,
+                               const std::string& expected_source) {
+    EXPECT_CALL(bindings, CallClientMethodImpl("DevToolsAPI",
+                                               "colorThemeChanged", _, _, _, _))
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(
+            [expected_source](
+                const std::string& object_name, const std::string& method_name,
+                base::Value arg1, base::Value arg2, base::Value arg3,
+                base::OnceCallback<void(base::Value)> completion_callback) {
+              ASSERT_TRUE(arg1.is_string());
+              EXPECT_EQ(arg1.GetString(), expected_source);
+              EXPECT_TRUE(arg2.is_none());
+              EXPECT_TRUE(arg3.is_none());
+            });
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  std::unique_ptr<testing::NiceMock<TestDevToolsUIBindings>> bindings_;
+};
+
+TEST_F(DevToolsUIBindingsThemeTest, OnThemeChangedDirectCallSendsSource) {
+  ASSERT_NE(theme_service(), nullptr);
+
+  EXPECT_CALL(*bindings_, CallClientMethodImpl("DevToolsAPI",
+                                               "colorThemeChanged", _, _, _, _))
+      .WillOnce([](const std::string& object_name,
+                   const std::string& method_name, base::Value arg1,
+                   base::Value arg2, base::Value arg3,
+                   base::OnceCallback<void(base::Value)> completion_callback) {
+        ASSERT_TRUE(arg1.is_string());
+        EXPECT_EQ(arg1.GetString(), "baseline-default");
+        EXPECT_TRUE(arg2.is_none());
+        EXPECT_TRUE(arg3.is_none());
+      });
+  bindings_->OnThemeChanged();
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+
+  theme_service()->SetIsGrayscale(true);
+  EXPECT_CALL(*bindings_, CallClientMethodImpl("DevToolsAPI",
+                                               "colorThemeChanged", _, _, _, _))
+      .WillOnce([](const std::string& object_name,
+                   const std::string& method_name, base::Value arg1,
+                   base::Value arg2, base::Value arg3,
+                   base::OnceCallback<void(base::Value)> completion_callback) {
+        ASSERT_TRUE(arg1.is_string());
+        EXPECT_EQ(arg1.GetString(), "baseline-grayscale");
+        EXPECT_TRUE(arg2.is_none());
+        EXPECT_TRUE(arg3.is_none());
+      });
+  bindings_->OnThemeChanged();
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+
+  theme_service()->SetUserColor(SK_ColorGREEN);
+  EXPECT_CALL(*bindings_, CallClientMethodImpl("DevToolsAPI",
+                                               "colorThemeChanged", _, _, _, _))
+      .WillOnce([](const std::string& object_name,
+                   const std::string& method_name, base::Value arg1,
+                   base::Value arg2, base::Value arg3,
+                   base::OnceCallback<void(base::Value)> completion_callback) {
+        ASSERT_TRUE(arg1.is_string());
+        EXPECT_EQ(arg1.GetString(), "dynamic");
+        EXPECT_TRUE(arg2.is_none());
+        EXPECT_TRUE(arg3.is_none());
+      });
+  bindings_->OnThemeChanged();
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+}
+
+TEST_F(DevToolsUIBindingsThemeTest,
+       ThemeServiceTransitionsNotifyColorThemeChanged) {
+  ASSERT_NE(theme_service(), nullptr);
+
+  ExpectColorThemeChanged(*bindings_, "baseline-grayscale");
+  theme_service()->SetIsGrayscale(true);
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+
+  ExpectColorThemeChanged(*bindings_, "dynamic");
+  theme_service()->SetUserColor(SK_ColorGREEN);
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+
+  ExpectColorThemeChanged(*bindings_, "baseline-default");
+  theme_service()->UseDefaultTheme();
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+}
+
+TEST_F(DevToolsUIBindingsThemeTest,
+       AutogeneratedAndVariantThemesNotifyColorThemeChanged) {
+  ASSERT_NE(theme_service(), nullptr);
+
+  ExpectColorThemeChanged(*bindings_, "dynamic");
+  theme_service()->BuildAutogeneratedThemeFromColor(SK_ColorRED);
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+
+  ExpectColorThemeChanged(*bindings_, "baseline-default");
+  theme_service()->UseDefaultTheme();
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+
+  ExpectColorThemeChanged(*bindings_, "dynamic");
+  theme_service()->SetUserColorAndBrowserColorVariant(
+      SK_ColorBLUE, ui::mojom::BrowserColorVariant::kVibrant);
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+}
+
+TEST_F(DevToolsUIBindingsThemeTest,
+       OffTheRecordBindingsNotifyOriginalProfileThemeChanges) {
+  ASSERT_NE(theme_service(), nullptr);
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_NE(otr_profile, nullptr);
+  content::WebContents* otr_web_contents =
+      web_contents_factory_.CreateWebContents(otr_profile);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      otr_web_contents, GURL("devtools://devtools/bundled/devtools_app.html"));
+  auto otr_bindings =
+      std::make_unique<testing::NiceMock<TestDevToolsUIBindings>>(
+          otr_web_contents);
+
+  ExpectColorThemeChanged(*otr_bindings, "baseline-grayscale");
+  theme_service()->SetIsGrayscale(true);
+  testing::Mock::VerifyAndClearExpectations(otr_bindings.get());
+
+  ExpectColorThemeChanged(*otr_bindings, "dynamic");
+  theme_service()->SetUserColor(SK_ColorGREEN);
+  testing::Mock::VerifyAndClearExpectations(otr_bindings.get());
+
+  ExpectColorThemeChanged(*otr_bindings, "baseline-default");
+  theme_service()->UseDefaultTheme();
+  testing::Mock::VerifyAndClearExpectations(otr_bindings.get());
+}
+
+TEST_F(DevToolsUIBindingsThemeTest,
+       DestroyingBindingsUnregistersThemeServiceObserver) {
+  ASSERT_NE(theme_service(), nullptr);
+
+  bindings_.reset();
+
+  theme_service()->SetIsGrayscale(true);
+  theme_service()->SetUserColor(SK_ColorGREEN);
+  theme_service()->UseDefaultTheme();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class DevToolsUIBindingsExtensionsTest : public testing::Test {

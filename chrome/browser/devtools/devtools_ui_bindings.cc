@@ -198,6 +198,24 @@ bool IsDevToolsGdpProfilesSupported() {
 #endif
 }
 
+std::string_view GetUserColorSource(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (profile) {
+    if (const auto* theme_service =
+            ThemeServiceFactory::GetForProfile(profile->GetOriginalProfile())) {
+      if (theme_service->GetIsGrayscale()) {
+        return "baseline-grayscale";
+      }
+      if (theme_service->GetIsBaseline()) {
+        return "baseline-default";
+      }
+      return "dynamic";
+    }
+  }
+#endif
+  return "baseline-default";
+}
+
 base::DictValue CreateFileSystemValue(
     DevToolsFileHelper::FileSystem file_system) {
   base::DictValue file_system_value;
@@ -2152,6 +2170,7 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
   response_dict.Set("devToolsVeLogging", std::move(ve_logging_dict));
 
   response_dict.Set("isOffTheRecord", profile->IsOffTheRecord());
+  response_dict.Set("userColorSource", GetUserColorSource(profile));
 
   base::DictValue origin_bound_cookies_dict;
   origin_bound_cookies_dict.Set(
@@ -3225,7 +3244,8 @@ bool DevToolsUIBindings::IsAttachedTo(content::DevToolsAgentHost* agent_host) {
 
 #if !BUILDFLAG(IS_ANDROID)
 void DevToolsUIBindings::OnThemeChanged() {
-  CallClientMethod("DevToolsAPI", "colorThemeChanged");
+  CallClientMethod("DevToolsAPI", "colorThemeChanged",
+                   base::Value(GetUserColorSource(profile_)));
 }
 #endif
 
