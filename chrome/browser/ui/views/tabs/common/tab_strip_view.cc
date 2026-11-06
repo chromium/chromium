@@ -37,8 +37,10 @@
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/layout_types.h"
@@ -179,6 +181,8 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
 
   SetLayoutManager(std::make_unique<TabStripViewLayout>(orientation_));
   SetProperty(views::kElementIdentifierKey, kTabStripElementId);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+  GetViewAccessibility().SetIsMultiselectable(true);
 
   pinned_tabs_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));

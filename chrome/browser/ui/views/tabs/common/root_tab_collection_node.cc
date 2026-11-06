@@ -18,6 +18,7 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
 
@@ -53,6 +54,7 @@ void RootTabCollectionNode::Init() {
   tab_strip_model_->Root()->AddObserver(this);
   tab_strip_model_->SetTabStripUI(this);
   add_node_view_to_parent_.Run(Initialize());
+  UpdateAccessibleTabIndices();
 }
 
 void RootTabCollectionNode::Reset() {
@@ -104,6 +106,7 @@ void RootTabCollectionNode::OnChildrenAdded(
         ->AddNewChild(GetPassKey(), child, position.index,
                       /*perform_initialization=*/insert_from_detached);
   }
+  UpdateAccessibleTabIndices();
   on_children_added_callback_list_.Notify(handles);
 }
 
@@ -124,6 +127,7 @@ void RootTabCollectionNode::OnChildrenRemoved(
     parent_node->RemoveChild(GetPassKey(), handle,
                              /*perform_deinitialization=*/false);
   }
+  UpdateAccessibleTabIndices();
   on_children_removed_callback_list_.Notify();
 }
 
@@ -173,6 +177,7 @@ void RootTabCollectionNode::OnChildMoved(
   }
 
   TabCollectionNode* final_moved_node = GetNodeForHandle(moved_node_handle);
+  UpdateAccessibleTabIndices();
   on_child_moved_callback_list_.Notify(final_moved_node);
 }
 
@@ -303,4 +308,28 @@ void RootTabCollectionNode::NotifyTabSelectionChanged(
   for (auto* node : nodes_to_notify) {
     node->NotifyTabSelectionChanged();
   }
+}
+
+void RootTabCollectionNode::UpdateAccessibleTabIndices() {
+  if (tab_strip_model_->closing_all()) {
+    return;
+  }
+
+  const int num_tabs = tab_strip_model_->count();
+  int pos_in_set = 0;
+  auto update_indices = [&](this const auto& self,
+                            const TabCollectionNode& node) -> void {
+    if (node.type() == TabCollectionNode::Type::TAB) {
+      ++pos_in_set;
+      if (views::View* view = node.view()) {
+        view->GetViewAccessibility().SetPosInSet(pos_in_set);
+        view->GetViewAccessibility().SetSetSize(num_tabs);
+      }
+      return;
+    }
+    for (const auto& child : node.children()) {
+      self(*child);
+    }
+  };
+  update_indices(*this);
 }

@@ -79,6 +79,7 @@ class RootTabCollectionNode : public TabCollectionNode,
 
   void NotifyTabSelectionChanged(
       const std::set<tabs::TabInterface*>& changed_tabs);
+  void UpdateAccessibleTabIndices();
 
   raw_ptr<TabStripModel> tab_strip_model_;
   SelectionHandles selected_tabs_;

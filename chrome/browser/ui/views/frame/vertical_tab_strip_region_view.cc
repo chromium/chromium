@@ -214,8 +214,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 
-  GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
-
   SetBackground(std::make_unique<CustomCornersBackground>(
       *this, *browser_view,
       /*primary_color=*/CustomCornersBackground::FrameTheme(),
