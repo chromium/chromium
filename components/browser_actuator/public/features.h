@@ -18,6 +18,9 @@ BASE_DECLARE_FEATURE(kBrowserActuator);
 BASE_DECLARE_FEATURE(kBrowserActuatorInternals);
 BASE_DECLARE_FEATURE(kEnableBrowserActuatorForGlicExperimentalTriggering);
 
+// Enables Chrome-initiated task ingress sessions.
+BASE_DECLARE_FEATURE(kBrowserActuatorTaskIngress);
+
 // The OAuth2 scope used by the Browser Actuator for authentication with
 // Google APIs. This is configurable via Finch to support testing.
 extern const base::FeatureParam<std::string> kBrowserActuatorOAuth2ScopeParam;
