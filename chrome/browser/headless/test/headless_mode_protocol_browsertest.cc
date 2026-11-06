@@ -19,7 +19,6 @@
 #include "chrome/browser/headless/test/headless_browser_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
 #include "components/headless/test/shared_test_util.h"
@@ -75,13 +74,6 @@ bool HeadlessModeProtocolBrowserTest::IsSharedTestScript() {
 }
 
 void HeadlessModeProtocolBrowserTest::SetUp() {
-  webui_omnibox_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/
-      // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-      // is enabled and then remove these two Features.
-      {omnibox::internal::kWebUIOmniboxPopup,
-       omnibox::internal::kWebUIOmniboxAimPopup});
   LoadTestMetaInfo();
   HeadlessModeDevTooledBrowserTest::SetUp();
 }

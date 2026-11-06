@@ -7,14 +7,12 @@
 #include <string_view>
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -185,16 +183,6 @@ static constexpr const char* const kSlowChromeUrls[] = {
 class ChromeURLDataManagerWebUITrustedTypesTest
     : public WebUIAllUrlsBrowserTest {
  public:
-  ChromeURLDataManagerWebUITrustedTypesTest() {
-    webui_omnibox_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-        // is enabled and then remove these two Features.
-        {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
-  }
-
   void CheckNoTrustedTypesViolation(std::string_view url) {
     std::unique_ptr<base::test::ScopedRunLoopTimeout> timeout;
     if (std::ranges::contains(kSlowChromeUrls, url)) {
@@ -250,8 +238,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   static base::TimeDelta GetSlowTestTimeout() {
     return TestTimeouts::test_launcher_timeout();
   }
-
-  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 // Verify that there's no Trusted Types violation in any `kChromeUrls`.

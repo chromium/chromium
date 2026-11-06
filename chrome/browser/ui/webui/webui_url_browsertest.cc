@@ -6,9 +6,7 @@
 #include <string_view>
 
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/web_ui_all_urls_browser_test.h"
 #include "chrome/browser/ui/webui/webui_urls_for_test.h"
@@ -97,16 +95,6 @@ static const char* const kConsoleErrorUrls[] = {
 
 class WebUIUrlNoConsoleErrorsTest : public WebUIAllUrlsBrowserTest {
  public:
-  WebUIUrlNoConsoleErrorsTest() {
-    webui_omnibox_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
-        // is enabled and then remove these two Features.
-        {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
-  }
-
   void CheckNoConsoleErrors(std::string_view url) {
     for (const char* broken_url : kConsoleErrorUrls) {
       if (url == broken_url) {
@@ -132,9 +120,6 @@ class WebUIUrlNoConsoleErrorsTest : public WebUIAllUrlsBrowserTest {
     log_watcher.FlushAndStopWatching();
     EXPECT_EQ(log_watcher.last_message(), "");
   }
-
- private:
-  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 // Verify that there's no console errors when loading any `kChromeUrls`.
