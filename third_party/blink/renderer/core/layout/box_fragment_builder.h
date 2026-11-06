@@ -855,7 +855,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // Handle (lay out / propagate) out-of-flow positioned descendants and other
   // special descendants. This function is to be called when an algorithm is
   // done with regular in-flow descendants and has set up its final size.
-  void HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus HandleOofsAndSpecialDescendants();
 
  private:
   // Propagate fragmentation details. This includes checking whether we have

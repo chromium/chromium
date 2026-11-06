@@ -292,7 +292,9 @@ const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
       previous_result_.InitialBreakBefore());
   container_builder_.SetPreviousBreakAfter(previous_result_.FinalBreakAfter());
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  DCHECK_EQ(oof_status, LayoutResult::kSuccess);
 
   return container_builder_.ToBoxFragment();
 }

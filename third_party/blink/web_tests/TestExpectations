@@ -4330,7 +4330,6 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-posi
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/anchor-scroll-003.html [ Failure Crash ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/position-try-fallbacks-multicol-001.html [ Failure Crash ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/position-try-fallbacks-multicol-002.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/abspos-in-clipped-overflow-print.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/abspos-in-opacity-003.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/firefox-bug-2021187-crash.html [ Crash ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/flexbox/multi-line-column-flex-fragmentation-037.html [ Failure ]
@@ -4362,12 +4361,6 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-page/fixedp
 crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/fixed-positioned-headers-and-footers-larger-than-page.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/fixed-positioned-headers-and-footers-transformed.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/fixed-positioned-headers-and-footers.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-container-004.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-container-005.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-container-006.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-container-007.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-container-008.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/oof-in-clipped-container-009.html [ Failure ]
 
 crbug.com/325836823 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Pass Timeout ]
 

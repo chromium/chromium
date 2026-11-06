@@ -275,6 +275,11 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
 
 const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   const LayoutResult* result = LayoutInternal();
+
+  if (result->Status() == LayoutResult::kDisableFragmentation) {
+    return RelayoutWithoutFragmentation<ColumnLayoutAlgorithm>();
+  }
+
   if ((relayout_mode_ & kRelayoutForFragmentedOof) ||
       GetConstraintSpace().HasBlockFragmentation()) {
     return result;
@@ -470,7 +475,11 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutInternal() {
     container_builder_.CollectUnfragmentedOofs();
   }
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  if (oof_status != LayoutResult::kSuccess) {
+    return container_builder_.Abort(oof_status);
+  }
 
   if (gap_accumulator_) {
     const GapGeometry* gap_geometry = gap_accumulator_->BuildGapGeometry(

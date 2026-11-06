@@ -1526,7 +1526,11 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
                       unconstrained_intrinsic_block_size, container_builder_);
   }
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  if (oof_status != LayoutResult::kSuccess) {
+    return container_builder_.Abort(oof_status);
+  }
 
   if (constraint_space.GetBaselineAlgorithmType() ==
       BaselineAlgorithmType::kInlineBlock) {

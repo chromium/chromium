@@ -288,7 +288,9 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
   container_builder_.SetBaselines(row_baseline_tabulator.ComputeBaseline(
       container_builder_.FragmentBlockSize()));
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  DCHECK_EQ(oof_status, LayoutResult::kSuccess);
   return container_builder_.ToBoxFragment();
 }
 

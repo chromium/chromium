@@ -532,7 +532,11 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
             total_intrinsic_block_size, oof_children));
   }
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  if (oof_status != LayoutResult::kSuccess) {
+    return container_builder_.Abort(oof_status);
+  }
   return container_builder_.ToBoxFragment();
 }
 

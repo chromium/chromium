@@ -667,7 +667,7 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
   }
 }
 
-void OutOfFlowLayoutPart::Run() {
+LayoutResult::EStatus OutOfFlowLayoutPart::Run() {
   if (DisableLayoutSideEffectsScope::IsDisabled() &&
       RuntimeEnabledFeatures::OofLayoutRequiresSideEffectsEnabled()) {
     // OOF fragmentation depends on LayoutBox data being up-to-date, which isn't
@@ -675,7 +675,7 @@ void OutOfFlowLayoutPart::Run() {
     // side-effects disabled is only used for size measurements, and not actual
     // layout, out-of-flow positioned elements shouldn't affect the result. So
     // don't waste time on something that cannot affect the result.
-    return;
+    return LayoutResult::kSuccess;
   }
 
   if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
@@ -689,7 +689,7 @@ void OutOfFlowLayoutPart::Run() {
   // so we can early out immediately.
   const BlockNode& node = Node();
   if (node.ChildLayoutBlockedByDisplayLock()) {
-    return;
+    return LayoutResult::kSuccess;
   }
 
   HeapVector<LogicalOofPositionedNode> candidates;
@@ -754,8 +754,16 @@ void OutOfFlowLayoutPart::Run() {
   if (container_builder_.ShouldBreakInsideForContent() &&
       !container_builder_.FoundColumnSpanner() &&
       RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    if (container_builder_.IsAtBlockEnd() &&
+        node.HasNonVisibleBlockOverflow()) {
+      // We have reached the end of a breakable node that clips overflow in the
+      // block direction.
+      return LayoutResult::kDisableFragmentation;
+    }
     container_builder_.UpdateConsumedBlockSizeToFragmentainerEnd();
   }
+
+  return LayoutResult::kSuccess;
 }
 
 void OutOfFlowLayoutPart::PropagateOOFsFromPageAreas() {
@@ -2857,7 +2865,7 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   // the pre-computed layout result is unusable then.
   if (fragmentainer_constraint_space ||
       (RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
-       GetConstraintSpace().HasBlockFragmentation()) ||
+       InvolvedInBlockFragmentation(container_builder_)) ||
       GetConstraintSpace().IsInsideRepeatableContent()) {
     layout_result = nullptr;
   }

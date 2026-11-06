@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_containing_block_utils.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
@@ -42,7 +43,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   STACK_ALLOCATED();
 
  public:
-  static void Run(BoxFragmentBuilder* builder) {
+  static LayoutResult::EStatus Run(BoxFragmentBuilder* builder) {
     if (builder->GetFragmentedOofContainer()) {
       // No OOFs (apart from those which are being resumed from a previous
       // break) are discovered during child walking, since we're managed by
@@ -57,14 +58,14 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     if (!builder->HasOutOfFlowPositionedCandidates() &&
         !builder->HasOutOfFlowFragmentainerDescendants() &&
         !builder->HasMulticolsWithPendingOOFs() && !builder->IsRoot()) {
-      return;
+      return LayoutResult::kSuccess;
     }
 
-    OutOfFlowLayoutPart(builder).Run();
+    return OutOfFlowLayoutPart(builder).Run();
   }
 
   explicit OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder);
-  void Run();
+  LayoutResult::EStatus Run();
 
   struct ColumnBalancingInfo {
     DISALLOW_NEW();

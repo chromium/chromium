@@ -144,7 +144,9 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
 #endif
   }
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  DCHECK_EQ(oof_status, LayoutResult::kSuccess);
 
   const auto& style = Style();
   if (style.LogicalHeight().MayHavePercentDependence() ||

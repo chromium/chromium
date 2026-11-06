@@ -724,6 +724,10 @@ const LayoutResult* TableLayoutAlgorithm::Layout() {
     return RelayoutAndBreakEarlier<TableLayoutAlgorithm>(
         *result->GetEarlyBreak());
   }
+  if (result->Status() == LayoutResult::kDisableFragmentation) {
+    DCHECK(GetConstraintSpace().HasBlockFragmentation());
+    return RelayoutWithoutFragmentation<TableLayoutAlgorithm>();
+  }
 
   return result;
 }
@@ -1734,7 +1738,11 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
                                    table_borders, table_grid_rect,
                                    column_block_size);
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  if (oof_status != LayoutResult::kSuccess) {
+    return container_builder_.Abort(oof_status);
+  }
 
   if ((has_repeated_header ||
        container_builder_.ShouldCloneBoxEndDecorations()) &&

@@ -692,17 +692,24 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
   SetPageNameIfNeeded(child_page_name);
 }
 
-void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
+LayoutResult::EStatus BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
   has_final_size_ = true;
 
   // There may be OOFs with anchors. So be sure to propagate any anchors that
   // we've found so far.
   PropagateSizeDependentData();
 
-  OutOfFlowLayoutPart::Run(this);
+  LayoutResult::EStatus status = OutOfFlowLayoutPart::Run(this);
+  if (status != LayoutResult::kSuccess) {
+    DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    return status;
+  }
+
   if (!Style().ScrollMarkerGroupNone() && !GetConstraintSpace().IsAnonymous()) {
     Node().HandleScrollMarkerGroup();
   }
+
+  return status;
 }
 
 const LayoutResult* BoxFragmentBuilder::ToBoxFragment(

@@ -1444,7 +1444,11 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   // Un-freeze descendant scrollbars before we run the OOF layout part.
   freeze_scrollbars.reset();
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  if (oof_status != LayoutResult::kSuccess) {
+    return container_builder_.Abort(oof_status);
+  }
 
   if (gap_accumulator) {
     container_builder_.SetGapGeometry(

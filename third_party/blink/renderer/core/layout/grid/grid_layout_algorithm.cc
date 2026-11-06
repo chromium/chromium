@@ -251,7 +251,11 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
             cumulative_gap_offset_adjustment, first_unprocessed_row_gap_idx));
   }
 
-  container_builder_.HandleOofsAndSpecialDescendants();
+  LayoutResult::EStatus oof_status =
+      container_builder_.HandleOofsAndSpecialDescendants();
+  if (oof_status != LayoutResult::kSuccess) {
+    return container_builder_.Abort(oof_status);
+  }
   return container_builder_.ToBoxFragment();
 }
 
