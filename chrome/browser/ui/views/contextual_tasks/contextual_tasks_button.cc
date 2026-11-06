@@ -909,6 +909,19 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
         GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
                                                     : kGLogoPillShapeIconSize);
   }
+  if (contextual_tasks::ShouldUseGraySuperGIconForPinButtons()) {
+    const gfx::VectorIcon& gray_super_g_icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleGLogoMonochromeIcon;
+#else
+        features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                          : kBrowserLogoOldIcon;
+#endif
+    return ui::ImageModel::FromVectorIcon(
+        gray_super_g_icon, icon_color_id,
+        GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
+                                                    : kGLogoPillShapeIconSize);
+  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
       contextual_tasks::kShowEntryPoint.Get() ==
@@ -924,19 +937,6 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
             gfx::Size(icon_size, icon_size)));
   }
 #endif
-  if (contextual_tasks::ShouldUseGraySuperGIconForPinButtons()) {
-    const gfx::VectorIcon& gray_super_g_icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        vector_icons::kGoogleGLogoMonochromeIcon;
-#else
-        features::IsRoundedIconsEnabled() ? kChromeProductIcon
-                                          : kBrowserLogoOldIcon;
-#endif
-    return ui::ImageModel::FromVectorIcon(
-        gray_super_g_icon, icon_color_id,
-        GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
-                                                    : kGLogoPillShapeIconSize);
-  }
   const gfx::VectorIcon& contextual_tasks_icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       vector_icons::kGoogleGLogoIcon;
