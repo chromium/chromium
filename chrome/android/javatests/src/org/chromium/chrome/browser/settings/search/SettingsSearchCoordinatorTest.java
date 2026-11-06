@@ -31,7 +31,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsActivityInterface;
@@ -171,7 +170,6 @@ public class SettingsSearchCoordinatorTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/572623849")
     public void testHistograms_clickedResult() throws Exception {
         mSettingsTestRule.startSettingsActivity();
         SettingsActivityInterface activity = waitForSettingsActivity();
@@ -188,7 +186,7 @@ public class SettingsSearchCoordinatorTest {
         String query = activity.getString(titleId);
         performSearch(query);
         onView(withText(titleId)).perform(click());
-        ThreadUtils.runOnUiThreadBlocking(() -> histograms.assertExpected());
+        histograms.pollInstrumentationThreadUntilSatisfied();
 
         // Invoke OS back to get back to search UI, and perform a new search. But exit search
         // without cliking the results -> emit "abandoned-results"
