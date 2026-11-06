@@ -832,22 +832,6 @@ def _get_rust_crate_root_directory_from_crate_root(crate_root: str) -> str:
     return None
 
 
-# Directory prefixes referenced in the GN graph or blueprints that should not be
-# imported by Copybara (e.g. host toolchains, SDKs, dependencies replaced by
-# Android system libraries, or internal configs).
-COPYBARA_EXCLUDED_PREFIXES = (
-    "build/linux/",
-    "components/cronet/gn2bp/",
-    "internal/",
-    "third_party/android_build_tools/",
-    "third_party/android_deps/",
-    "third_party/android_sdk/",
-    "third_party/jdk/",
-    "third_party/rust-toolchain/",
-    # Cronet uses Android's libz via builtin_deps.
-    "third_party/zlib/",
-)
-
 # Files and globs required by templates (boringssl_Android.bp.template),
 # external/cronet/Android.bp, driver scripts (run_gn2bp.py), or header-only
 # includes without a corresponding GN target.
@@ -894,9 +878,18 @@ def extract_copybara_paths(
     gn: gn_utils.GnParser,
     top_level_blueprint: Union[soong_ast.Blueprint, None] = None,
     final_blueprints: Union[Dict[str, soong_ast.Blueprint], None] = None,
+    context: Union[translation_context.TranslationContext, None] = None,
 ) -> List[str]:
     """Extracts exact file paths and required globs for Copybara from the GN graph and blueprints."""
     paths = set(COPYBARA_ADDITIONAL_PATHS)
+    excluded_prefixes = (
+        tuple(
+            d.removeprefix(f"{context.tree_path}/")
+            for d in context.include_dirs_denylist
+        )
+        if context is not None
+        else ()
+    )
 
     def _add_path(raw_path: Union[str, None]):
         if (
@@ -910,7 +903,7 @@ def extract_copybara_paths(
             clean_path = clean_path.removesuffix("/*")
         if clean_path in ("", ".") or clean_path.startswith(("/", "../")):
             return
-        if clean_path.startswith(COPYBARA_EXCLUDED_PREFIXES):
+        if clean_path.startswith(excluded_prefixes):
             return
         if clean_path == "BUILD.gn" or clean_path.endswith(
             ("/BUILD.gn", ".gni", ".map.txt")
@@ -933,7 +926,7 @@ def extract_copybara_paths(
             clean_dir = ""
         if clean_dir.startswith(("/", "../", "external/cronet/")):
             return
-        if clean_dir.startswith(COPYBARA_EXCLUDED_PREFIXES):
+        if clean_dir.startswith(excluded_prefixes):
             return
         if clean_dir not in seen_include_dirs and os.path.isdir(
             os.path.join(REPOSITORY_ROOT, clean_dir)
@@ -950,15 +943,12 @@ def extract_copybara_paths(
                 )
             )
         _add_path(target.crate_root)
-        _add_path(target.script)
         for src in itertools.chain(
             target.public_headers, target.transitive_jni_java_sources
         ):
             _add_path(src)
         for arch in (target.common, *target.arch.values()):
-            for inc_dir in arch.include_dirs:
-                _add_include_dir(inc_dir)
-            for src in itertools.chain(arch.sources, arch.inputs):
+            for src in arch.sources:
                 _add_path(src)
 
     for src in getattr(gn, "jni_java_sources", ()):
@@ -1011,7 +1001,7 @@ def extract_copybara_paths(
 
     cpp_queue = [p for p in paths if p.endswith(_CPP_SOURCE_EXTENSIONS)]
     visited_cpp = set(cpp_queue)
-    inc_cache: Dict[str, Union[str, None]] = {}
+    inc_cache: Dict[str, List[str]] = {}
     file_cache: Dict[str, bool] = {}
 
     def _is_repo_file(rel_path: str) -> bool:
@@ -1025,14 +1015,15 @@ def extract_copybara_paths(
         return (
             cand not in ("", ".")
             and not cand.startswith(("/", "../"))
-            and not cand.startswith(COPYBARA_EXCLUDED_PREFIXES)
+            and not cand.startswith(excluded_prefixes)
             and not cand.startswith(glob_prefixes)
             and _is_repo_file(cand)
         )
 
-    def _resolve_include_from_dirs(inc: str) -> Union[str, None]:
+    def _resolve_include_from_dirs(inc: str) -> List[str]:
         if inc in inc_cache:
             return inc_cache[inc]
+        matches = []
         for inc_dir in include_dirs:
             cand = (
                 os.path.normpath(os.path.join(inc_dir, inc))
@@ -1040,10 +1031,9 @@ def extract_copybara_paths(
                 else os.path.normpath(inc)
             )
             if _is_valid_include_candidate(cand):
-                inc_cache[inc] = cand
-                return cand
-        inc_cache[inc] = None
-        return None
+                matches.append(cand)
+        inc_cache[inc] = matches
+        return matches
 
     while cpp_queue:
         curr = cpp_queue.pop()
@@ -1065,13 +1055,14 @@ def extract_copybara_paths(
                 else os.path.normpath(inc)
             )
             if _is_valid_include_candidate(rel_cand):
-                found = rel_cand
+                found_list = [rel_cand]
             else:
-                found = _resolve_include_from_dirs(inc)
-            if found and found not in visited_cpp:
-                visited_cpp.add(found)
-                _add_path(found)
-                cpp_queue.append(found)
+                found_list = _resolve_include_from_dirs(inc)
+            for found in found_list:
+                if found not in visited_cpp:
+                    visited_cpp.add(found)
+                    _add_path(found)
+                    cpp_queue.append(found)
 
     for inc_dir in include_dirs:
         if (
@@ -1098,7 +1089,7 @@ def extract_copybara_paths(
     for readme_rel in readme_candidates:
         if (
             readme_rel in license_constants.IGNORED_README
-            or readme_rel.startswith(COPYBARA_EXCLUDED_PREFIXES)
+            or readme_rel.startswith(excluded_prefixes)
         ):
             continue
         readme_abs = os.path.join(REPOSITORY_ROOT, readme_rel)
@@ -1393,7 +1384,7 @@ def main():
         )
 
     generated_paths = extract_copybara_paths(
-        gn, top_level_blueprint, final_blueprints
+        gn, top_level_blueprint, final_blueprints, context
     )
     write_copybara_paths_file(args.output_dir, generated_paths)
 

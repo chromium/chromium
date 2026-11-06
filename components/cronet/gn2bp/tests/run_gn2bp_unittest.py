@@ -253,6 +253,7 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         )
         mod.srcs = {":tot_cronet_other_mod", "components/prefs/pref_service.cc"}
         mod.tool_files = {"tools/metrics/histograms/enums.xml"}
+        mod.export_include_dirs = {"third_party/empty_inc/include"}
         top_bp.add_module(mod)
 
         final_bps = {
@@ -283,7 +284,13 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             )
             pref_cc = pathlib.Path(tmp_dir) / "components/prefs/pref_service.cc"
             pref_cc.parent.mkdir(parents=True, exist_ok=True)
-            pref_cc.write_text('#include "components/prefs/pref_service.h"\n')
+            pref_cc.write_text(
+                '#include "components/prefs/pref_service.h"\n'
+                '#include "third_party/zlib/zlib.h"\n'
+            )
+            zlib_h = pathlib.Path(tmp_dir) / "third_party/zlib/zlib.h"
+            zlib_h.parent.mkdir(parents=True, exist_ok=True)
+            zlib_h.write_text("// zlib header\n")
             pref_h = pathlib.Path(tmp_dir) / "components/prefs/pref_service.h"
             pref_h.write_text('#include "unlisted_internal.h"\n')
             unlisted_h = (
@@ -295,7 +302,9 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             )
             empty_inc_dir.mkdir(parents=True, exist_ok=True)
             generated_paths = set(
-                gen_android_bp.extract_copybara_paths(gn, top_bp, final_bps)
+                gen_android_bp.extract_copybara_paths(
+                    gn, top_bp, final_bps, ctx
+                )
             )
         expected_subset = {
             "base/third_party/nspr/prtime.cc",
@@ -318,12 +327,16 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/METADATA",
             "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/MODULE_LICENSE_APACHE_2_0",
             "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/src/lib.rs",
-            "third_party/rust/cxx/chromium_integration/run_cxxbridge.py",
             "third_party/rust/small_ctor/v0_1/README.chromium",
             "tools/metrics/histograms/enums.xml",
         }
         self.assertTrue(expected_subset.issubset(generated_paths))
         self.assertNotIn("third_party/jdk/bin/java", generated_paths)
+        self.assertNotIn(
+            "third_party/rust/cxx/chromium_integration/run_cxxbridge.py",
+            generated_paths,
+        )
+        self.assertNotIn("third_party/zlib/zlib.h", generated_paths)
         self.assertNotIn("out/tmp/gen/generated.h", generated_paths)
         self.assertNotIn("components/prefs/prefs.gni", generated_paths)
         self.assertNotIn(":tot_cronet_other_mod", generated_paths)
