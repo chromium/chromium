@@ -1001,6 +1001,25 @@ class GlicExperimentalTriggeringCoordinatorWithTabTest
     coordinator_->set_active_tab(&mock_tab_);
   }
 
+  // Sends `request` with replies going to `update_callback`. Every request on
+  // a context replaces the handler's update callback, so tests that wait for
+  // a reply must pass the same callback to each request.
+  std::optional<ExperimentalTriggeringResponse> SendRequestWithCallback(
+      const ExperimentalTriggeringRequest& request,
+      GlicExperimentalTriggeringUpdateCallback update_callback) {
+    return coordinator_->OnRequest(
+        kTestContextId, request,
+        ScopedIncomingMessageResultLogger(
+            GlicMetricReporter(profile_),
+            ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+        std::move(update_callback), nullptr);
+  }
+
+  MockGlicKeyedService* mock_glic_service() {
+    return static_cast<MockGlicKeyedService*>(
+        GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  }
+
   void TearDown() override {
     // Destroy the coordinator, and with it any in-flight actor task, while the
     // tab and its WebContents are still around for the task to unwind against.
@@ -1745,20 +1764,6 @@ class GlicExperimentalTriggeringCoordinatorOptInTest
     // Initialized after the base fixture's list, so it is destroyed first.
     opt_in_features_.InitAndDisableFeature(
         features::kGlicExperimentalTriggeringOptInTabFocus);
-  }
-
-  // Sends `request` with replies going to `update_callback`. Every request on
-  // a context replaces the handler's update callback, so tests that wait for
-  // a reply must pass the same callback to each request.
-  std::optional<ExperimentalTriggeringResponse> SendRequestWithCallback(
-      const ExperimentalTriggeringRequest& request,
-      GlicExperimentalTriggeringUpdateCallback update_callback) {
-    return coordinator_->OnRequest(
-        kTestContextId, request,
-        ScopedIncomingMessageResultLogger(
-            GlicMetricReporter(profile_),
-            ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
-        std::move(update_callback), nullptr);
   }
 
  private:
@@ -2717,6 +2722,354 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kDestroyedBeforeCompletion,
       1);
+}
+
+// A terminal update (COMPLETE, STOPPED or FAILED) ends the task on both sides:
+// after one, nothing more arrives for the task, so the handler must stop the
+// work it still owns and end the session itself.
+class GlicExperimentalTriggeringCoordinatorTerminalUpdateTest
+    : public GlicExperimentalTriggeringCoordinatorWithTabTest {
+ protected:
+  // Sends a TriggerActuationRequest whose updates go to `updates_`, and
+  // returns its synchronous reply.
+  std::optional<ExperimentalTriggeringResponse> SendTrigger() {
+    return SendRequestWithCallback(
+        CreateRequest(TriggerActuationRequest{.initial_prompt = "hello"}),
+        updates_.GetRepeatingCallback());
+  }
+
+  void StartSession() {
+    auto response = SendTrigger();
+    ASSERT_TRUE(response.has_value());
+    ASSERT_TRUE(response->task_update.has_value());
+    EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStarting);
+    EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+  }
+
+  void SendWebClientUpdate(mojom::ExperimentalTriggeringUpdateType type,
+                           mojom::SubscriberObservationType observation =
+                               mojom::SubscriberObservationType::kUpdate) {
+    auto update = mojom::ExperimentalTriggeringUpdate::New();
+    update->type = type;
+    update->data = "data";
+    test_triggering_manager_.SendUpdate(std::move(update), observation);
+    test_triggering_manager_.FlushForTesting();
+  }
+
+  // Expects the next update sent to the server to be in `state`.
+  void ExpectNextUpdate(TaskUpdate::State state) {
+    ExperimentalTriggeringResponse response = updates_.Take();
+    ASSERT_TRUE(response.task_update.has_value());
+    EXPECT_EQ(response.task_update->state, state);
+  }
+
+  void ExpectSessionEnded() {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return coordinator_->GetUpdatesHandlerMapSizeForTesting() == 0;
+    }));
+  }
+
+  // Reports that an actor task was created on the instance after this
+  // session's trigger.
+  void CreateActorTask() {
+    actor_task_manager_->NotifyActuatingChangedForTesting(true);
+  }
+
+  // Makes the next invocation keep running and hand its error callback to
+  // `on_error`. If `client_connects`, it first reports that the web client
+  // connected.
+  void ExpectInvocation(base::OnceCallback<void(GlicInvokeError)>& on_error,
+                        bool client_connects) {
+    EXPECT_CALL(*mock_glic_service(),
+                InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+        .WillOnce([&on_error, client_connects, this](
+                      InvokeWithAutoSubmitPasskey passkey,
+                      GlicInvokeOptions options,
+                      GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+          if (client_connects) {
+            std::move(options.on_client_connected)
+                .Run(mock_glic_instance_.GetWeakPtr());
+          }
+          on_error = std::move(options.on_error);
+          return mock_glic_instance_.GetWeakPtr();
+        });
+  }
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> updates_;
+};
+
+struct SessionEndTestCase {
+  enum class End { kUpdate, kErrorObservation, kDisconnect, kDestroy };
+  std::string test_name;
+  End end;
+  // For End::kUpdate.
+  mojom::ExperimentalTriggeringUpdateType type =
+      mojom::ExperimentalTriggeringUpdateType::kUnknown;
+  TaskUpdate::State expected_state;
+  bool expect_cancel_task;
+};
+
+class GlicExperimentalTriggeringCoordinatorSessionEndTest
+    : public GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
+      public testing::WithParamInterface<SessionEndTestCase> {};
+
+TEST_P(GlicExperimentalTriggeringCoordinatorSessionEndTest,
+       StopsOwnedWorkAndEndsSession) {
+  const SessionEndTestCase& test_case = GetParam();
+  // An invocation is in progress on the instance. GlicInstance can't tell
+  // whether it is this handler's, so it is left alone.
+  ON_CALL(mock_glic_instance_, IsInvoking())
+      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(mock_glic_instance_, CancelInvoke()).Times(0);
+  EXPECT_CALL(mock_glic_instance_, CancelTask())
+      .Times(test_case.expect_cancel_task ? 1 : 0);
+  StartSession();
+  CreateActorTask();
+
+  switch (test_case.end) {
+    case SessionEndTestCase::End::kUpdate:
+      SendWebClientUpdate(test_case.type);
+      break;
+    case SessionEndTestCase::End::kErrorObservation:
+      SendWebClientUpdate(mojom::ExperimentalTriggeringUpdateType::kUnknown,
+                          mojom::SubscriberObservationType::kError);
+      break;
+    case SessionEndTestCase::End::kDisconnect:
+      test_triggering_manager_.ResetHandler();
+      break;
+    case SessionEndTestCase::End::kDestroy:
+      coordinator_.reset();
+      break;
+  }
+  ExpectNextUpdate(test_case.expected_state);
+  if (test_case.end == SessionEndTestCase::End::kDestroy) {
+    return;
+  }
+  ExpectSessionEnded();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GlicExperimentalTriggeringCoordinatorSessionEndTest,
+    testing::Values(
+        // After COMPLETE the web client stops its actor task itself.
+        SessionEndTestCase{
+            .test_name = "TerminalCompletion",
+            .end = SessionEndTestCase::End::kUpdate,
+            .type =
+                mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion,
+            .expected_state = TaskUpdate::State::kComplete,
+            .expect_cancel_task = false},
+        SessionEndTestCase{
+            .test_name = "TerminalStopped",
+            .end = SessionEndTestCase::End::kUpdate,
+            .type = mojom::ExperimentalTriggeringUpdateType::kTerminalStopped,
+            .expected_state = TaskUpdate::State::kStopped,
+            .expect_cancel_task = true},
+        SessionEndTestCase{
+            .test_name = "TerminalFailed",
+            .end = SessionEndTestCase::End::kUpdate,
+            .type = mojom::ExperimentalTriggeringUpdateType::kTerminalFailed,
+            .expected_state = TaskUpdate::State::kFailed,
+            .expect_cancel_task = true},
+        SessionEndTestCase{.test_name = "ErrorObservation",
+                           .end = SessionEndTestCase::End::kErrorObservation,
+                           .expected_state = TaskUpdate::State::kFailed,
+                           .expect_cancel_task = true},
+        SessionEndTestCase{.test_name = "Disconnect",
+                           .end = SessionEndTestCase::End::kDisconnect,
+                           .expected_state = TaskUpdate::State::kFailed,
+                           .expect_cancel_task = true},
+        SessionEndTestCase{.test_name = "DestroyedMidTask",
+                           .end = SessionEndTestCase::End::kDestroy,
+                           .expected_state = TaskUpdate::State::kFailed,
+                           .expect_cancel_task = true}),
+    [](const testing::TestParamInfo<SessionEndTestCase>& info) {
+      return info.param.test_name;
+    });
+
+struct InvokeErrorTestCase {
+  std::string test_name;
+  bool create_actor_task;
+  GlicInvokeError error;
+  bool expect_cancel_task;
+};
+
+class GlicExperimentalTriggeringCoordinatorInvokeErrorTest
+    : public GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
+      public testing::WithParamInterface<InvokeErrorTestCase> {};
+
+TEST_P(GlicExperimentalTriggeringCoordinatorInvokeErrorTest,
+       SendsFailedAndEndsSession) {
+  const InvokeErrorTestCase& test_case = GetParam();
+  base::OnceCallback<void(GlicInvokeError)> on_error;
+  ExpectInvocation(on_error, /*client_connects=*/true);
+  EXPECT_CALL(mock_glic_instance_, CancelTask())
+      .Times(test_case.expect_cancel_task ? 1 : 0);
+  StartSession();
+  if (test_case.create_actor_task) {
+    CreateActorTask();
+  }
+
+  ASSERT_TRUE(on_error);
+  std::move(on_error).Run(test_case.error);
+  ExpectNextUpdate(TaskUpdate::State::kFailed);
+  ExpectSessionEnded();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GlicExperimentalTriggeringCoordinatorInvokeErrorTest,
+    testing::Values(
+        InvokeErrorTestCase{.test_name = "AfterActorTask",
+                            .create_actor_task = true,
+                            .error = GlicInvokeError::kTabClosed,
+                            .expect_cancel_task = true},
+        // The client connected, but the invocation failed before an actor
+        // task was created, for example before the prompt was sent. An actor
+        // task that is active on the instance belongs to another caller.
+        InvokeErrorTestCase{.test_name = "BeforeActorTask",
+                            .create_actor_task = false,
+                            .error = GlicInvokeError::kTimeout,
+                            .expect_cancel_task = false},
+        // The superseding invocation doesn't start an actor task for this
+        // handler.
+        InvokeErrorTestCase{.test_name = "Superseded",
+                            .create_actor_task = false,
+                            .error = GlicInvokeError::kSuperseded,
+                            .expect_cancel_task = false}),
+    [](const testing::TestParamInfo<InvokeErrorTestCase>& info) {
+      return info.param.test_name;
+    });
+
+class GlicExperimentalTriggeringCoordinatorRegistrationFailureTest
+    : public GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(GlicExperimentalTriggeringCoordinatorRegistrationFailureTest,
+       EndsSessionAndRemovesPendingTask) {
+  const bool no_triggering_manager = GetParam();
+  if (no_triggering_manager) {
+    ON_CALL(mock_glic_instance_, GetExperimentalTriggeringManager())
+        .WillByDefault(testing::Return(nullptr));
+  } else {
+    test_triggering_manager_.set_registration_success(false);
+  }
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_);
+  actor_service->AddPendingTask(kTestContextId);
+  // No actor task was created yet, so there is none to cancel.
+  EXPECT_CALL(mock_glic_instance_, CancelTask()).Times(0);
+
+  // The failure is reported synchronously, so the terminal update has been
+  // sent, but the posted cleanup has not run yet.
+  ASSERT_TRUE(SendTrigger().has_value());
+  EXPECT_FALSE(actor_service->HasPendingTask(kTestContextId));
+  ExpectNextUpdate(TaskUpdate::State::kFailed);
+  ExpectSessionEnded();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GlicExperimentalTriggeringCoordinatorRegistrationFailureTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "NoTriggeringManager" : "RegistrationRejected";
+    });
+
+class GlicExperimentalTriggeringCoordinatorFailedContinueTest
+    : public GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
+      public testing::WithParamInterface<bool> {};
+
+// A yielded actor task is still this handler's, so a Continue that fails
+// before acting must cancel it.
+TEST_P(GlicExperimentalTriggeringCoordinatorFailedContinueTest,
+       CancelsYieldedTask) {
+  const bool fails_synchronously = GetParam();
+  base::OnceCallback<void(GlicInvokeError)> continue_on_error;
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce(testing::DoDefault())
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options)
+                    -> base::WeakPtr<GlicInstance> {
+        if (fails_synchronously) {
+          // Like GlicInstanceCoordinatorImpl, a synchronous failure posts
+          // on_error and returns no instance.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(options.on_error),
+                                        GlicInvokeError::kLiveModeActive));
+          return base::WeakPtr<GlicInstance>();
+        }
+        // The continuation never reaches the web client.
+        continue_on_error = std::move(options.on_error);
+        return mock_glic_instance_.GetWeakPtr();
+      });
+  StartSession();
+  CreateActorTask();
+  SendWebClientUpdate(mojom::ExperimentalTriggeringUpdateType::kYieldToUser);
+  ExpectNextUpdate(TaskUpdate::State::kYield);
+
+  EXPECT_CALL(mock_glic_instance_, CancelTask());
+  auto response = SendRequestWithCallback(
+      CreateRequest(
+          ContinueActuationRequest{.continuation_prompt = "keep going"}),
+      updates_.GetRepeatingCallback());
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStarting);
+  if (!fails_synchronously) {
+    ASSERT_TRUE(continue_on_error);
+    std::move(continue_on_error).Run(GlicInvokeError::kTimeout);
+  }
+  ExpectNextUpdate(TaskUpdate::State::kFailed);
+  ExpectSessionEnded();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GlicExperimentalTriggeringCoordinatorFailedContinueTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "Synchronously" : "Asynchronously";
+    });
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
+       StaleCleanupDoesNotDeleteNewHandler) {
+  // The invocation succeeds without a Glic instance, so the handler has no
+  // live work left, but has not sent a terminal update.
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([](InvokeWithAutoSubmitPasskey passkey,
+                   GlicInvokeOptions options,
+                   GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        std::move(options.on_success).Run();
+        return base::WeakPtr<GlicInstance>();
+      })
+      .WillRepeatedly(testing::DoDefault());
+  StartSession();
+
+  // The next request deletes that handler. Its destructor sends FAILED and
+  // posts a cleanup for the same context id.
+  EXPECT_FALSE(SendRequestWithCallback(CreateRequest(TaskMetadataUpdated{}),
+                                       updates_.GetRepeatingCallback())
+                   .has_value());
+  ExpectNextUpdate(TaskUpdate::State::kFailed);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  // A new session starts on the same context id before that cleanup runs, on
+  // a new handler whose sequence numbers restart at 0.
+  auto response = SendTrigger();
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_metadata.has_value());
+  EXPECT_EQ(response->task_metadata->sender_sequence_number, 0);
+  // Tasks run in order, so the stale cleanup has run once this task runs.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,

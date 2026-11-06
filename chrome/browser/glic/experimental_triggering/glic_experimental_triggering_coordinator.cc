@@ -316,7 +316,10 @@ GlicExperimentalTriggeringExecutionOutcome GlicInvokeErrorToOutcome(
 //    handler must call `cleanup_runner.Release()` after that work has started.
 //    A Process* method must not arm `cleanup_runner` itself, unless it ends a
 //    live session on purpose (ProcessStopActuationRequest()).
-//  - CleanupAsync(): the Glic invocation failed or the web client disconnected.
+//  - HandleTerminalUpdate(): the handler sent a terminal task update
+//    (COMPLETE, STOPPED or FAILED). The server treats every terminal update as
+//    the end of the task and sends nothing more for it, so the handler stops
+//    the work it still owns (StopOwnedLiveWork()) and ends the session too.
 //  - SendDeviceOptInResult() and SendExecuteActionsResponse(): the async work
 //    that a request started has finished, and the handler has no other live
 //    work.
@@ -335,6 +338,7 @@ class ExperimentalTriggeringUpdatesHandler
         metric_reporter_(profile) {}
 
   ~ExperimentalTriggeringUpdatesHandler() override {
+    // Covers destruction without a terminal update.
     RemovePendingTask();
     if (is_actuation_started_) {
       if (!terminal_update_sent_) {
@@ -377,6 +381,7 @@ class ExperimentalTriggeringUpdatesHandler
       return;
     }
     actuating_subscription_ = {};
+    task_created_ = true;
     RemovePendingTask();
   }
 
@@ -593,10 +598,10 @@ class ExperimentalTriggeringUpdatesHandler
   // request never deletes a handler that has live work, except
   // StopActuationRequest.
   //
-  // A completed turn still counts: `instance_` stays set after the turn
-  // reaches a terminal state, so that continuations keep their sequence
-  // numbers. So this means "a session is still open", not "something is
-  // running right now".
+  // A yielded turn still counts: `instance_` stays set while the task waits
+  // for a continuation, so that the continuation keeps its sequence numbers.
+  // So this means "a session is still open", not "something is running right
+  // now". A terminal update ends the session (see HandleTerminalUpdate()).
   bool HasLiveWork() const {
     return instance_ || actions_runner_ || awaiting_opt_in_ ||
            !pending_invoke_ids_.empty();
@@ -660,7 +665,6 @@ class ExperimentalTriggeringUpdatesHandler
           GlicExperimentalTriggeringExecutionOutcome::
               kUpdatesRegistrationFailed,
           "GlicExperimentalTriggeringManager is not available.");
-      CleanupAsync();
       return;
     }
     mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> remote;
@@ -690,9 +694,12 @@ class ExperimentalTriggeringUpdatesHandler
         TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
         GlicExperimentalTriggeringExecutionOutcome::kUpdatesRegistrationFailed,
         "Failed to register experimental triggering updates handler.");
-    CleanupAsync();
   }
 
+  // Sends the terminal update for the current turn, then ends the session.
+  // COMPLETE, STOPPED and FAILED are terminal: after one, the task is over for
+  // the server too, and nothing more arrives for it. So Chrome must not keep
+  // any work running, or keep the handler, once it has sent one.
   void HandleTerminalUpdate(TaskUpdate::State state,
                             std::optional<TaskUpdate::DataType> data_type,
                             GlicExperimentalTriggeringExecutionOutcome outcome,
@@ -711,8 +718,34 @@ class ExperimentalTriggeringUpdatesHandler
           "ExperimentalTriggering.Latency.ToTerminalCompletion",
           base::TimeTicks::Now() - task_start_time_);
     }
+    // After COMPLETE the web client stops its actor task itself, with the
+    // completion reason. Cancelling it here could record a successful task as
+    // stopped by the user.
+    StopOwnedLiveWork(/*cancel_actor_task=*/state !=
+                      TaskUpdate::State::kComplete);
+    CleanupAsync();
+    // Send last: the update callback may end this session synchronously.
     SendTaskUpdateMessage(state, data_type, std::move(data),
                           std::move(metadata));
+  }
+
+  // Stops the work that this handler started and that may still be running:
+  // its direct action execution, and, if `cancel_actor_task`, the actor task
+  // that was created after its trigger. Cancelling the actor task also ends an
+  // invocation that waits for it. Must only be called once the task is over.
+  void StopOwnedLiveWork(bool cancel_actor_task) {
+    // The task is over, so it is no longer pending. Don't wait for the posted
+    // cleanup, which is skipped if the coordinator goes away first.
+    actuating_subscription_ = {};
+    RemovePendingTask();
+    actions_timeout_timer_.Stop();
+    actions_runner_.reset();
+    if (!instance_) {
+      return;
+    }
+    if (cancel_actor_task && task_created_) {
+      instance_->CancelTask();
+    }
   }
 
   void OnPanelOpened() {
@@ -752,7 +785,6 @@ class ExperimentalTriggeringUpdatesHandler
       if (!pending_invoke_ids_.empty() || invoke_id + 1 < next_invoke_id_) {
         return;
       }
-      RemovePendingTask();
       // Superseded by some other (non experimental triggering) invocation.
       // Preserve existing ExecutionOutcome semantics while still notifying the
       // remote caller so it does not stall waiting for a terminal update.
@@ -762,10 +794,8 @@ class ExperimentalTriggeringUpdatesHandler
                            GlicInvokeErrorToOutcome(error, client_connected_),
                            base::StrCat({"Glic invocation failed: ",
                                          GlicInvokeErrorToString(error)}));
-      CleanupAsync();
       return;
     }
-    RemovePendingTask();
     DLOG(WARNING) << "Glic invocation failed with error: "
                   << GlicInvokeErrorToString(error);
     HandleTerminalUpdate(TaskUpdate::State::kFailed,
@@ -773,7 +803,6 @@ class ExperimentalTriggeringUpdatesHandler
                          GlicInvokeErrorToOutcome(error, client_connected_),
                          base::StrCat({"Glic invocation failed: ",
                                        GlicInvokeErrorToString(error)}));
-    CleanupAsync();
   }
 
   void OnDisconnect() {
@@ -924,13 +953,11 @@ class ExperimentalTriggeringUpdatesHandler
 
   void FailClientDisconnected() {
     CancelReconnectGrace();
-    RemovePendingTask();
     HandleTerminalUpdate(TaskUpdate::State::kFailed,
                          TaskUpdate::DataType::kErrorMessage,
                          GlicExperimentalTriggeringExecutionOutcome::
                              kClientDisconnectedBeforeResponse,
                          "Client disconnected unexpectedly.");
-    CleanupAsync();
   }
 
   // The prepared target tab closed while waiting for the reloaded guest to
@@ -938,13 +965,11 @@ class ExperimentalTriggeringUpdatesHandler
   // same way GlicInvokeHandler reports GlicInvokeError::kTabClosed.
   void FailPreparedTabClosed() {
     CancelReconnectGrace();
-    RemovePendingTask();
     HandleTerminalUpdate(
         TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
         GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorTabClosed,
         "Target tab closed before completion.",
         {{"chrome_error_code", "GLIC_TAB_CLOSED"}});
-    CleanupAsync();
   }
 
   void CleanupAsync() {
@@ -955,11 +980,21 @@ class ExperimentalTriggeringUpdatesHandler
     CancelReconnectGrace();
     receiver_.reset();
     if (coordinator_) {
+      // Only erase this handler. If it is already gone, for example because
+      // this runs from the destructor, the entry for `context_id_` may belong
+      // to a newer handler.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup,
-              coordinator_, context_id_));
+              [](base::WeakPtr<GlicExperimentalTriggeringCoordinator>
+                     coordinator,
+                 base::WeakPtr<ExperimentalTriggeringUpdatesHandler> handler,
+                 std::string context_id) {
+                if (coordinator && handler) {
+                  coordinator->OnUpdatesHandlerCleanup(context_id);
+                }
+              },
+              coordinator_, weak_ptr_factory_.GetWeakPtr(), context_id_));
     }
   }
 
@@ -1753,6 +1788,11 @@ class ExperimentalTriggeringUpdatesHandler
   bool is_actuation_started_ = false;
   bool panel_opened_ = false;
   bool client_connected_ = false;
+  // True once an actor task was created on `instance_` after this handler's
+  // trigger. There is no direct link between an actor task and the
+  // invocation that led to it, so the first one created afterwards is
+  // treated as this handler's, like WaitForActuationTask does.
+  bool task_created_ = false;
   bool first_response_received_ = false;
   bool outcome_recorded_ = false;
   bool is_cleaning_up_ = false;
