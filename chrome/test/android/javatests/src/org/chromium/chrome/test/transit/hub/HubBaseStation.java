@@ -36,6 +36,7 @@ public abstract class HubBaseStation
         extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity> {
     public final ViewElement<HubToolbarView> toolbarElement;
     public final ViewElement<View> paneHostElement;
+    public final ViewElement<View> paneFrameElement;
     public ViewElement<View> viewHolderElement;
     public final ViewElement<View> menuButtonElement;
     public final ViewElement<TabLayout> paneSwitcherElement;
@@ -56,6 +57,7 @@ public abstract class HubBaseStation
 
         toolbarElement = declareView(HubToolbarView.class, withId(R.id.hub_toolbar));
         paneHostElement = declareView(withId(R.id.hub_pane_host));
+        paneFrameElement = declareView(paneHostElement.descendant(withId(R.id.pane_frame)));
         viewHolderElement = declareView(withId(R.id.tab_switcher_view_holder));
         menuButtonElement =
                 hasMenuButton
