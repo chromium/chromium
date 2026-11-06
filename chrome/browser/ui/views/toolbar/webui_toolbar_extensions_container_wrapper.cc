@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -291,7 +292,42 @@ void WebUIToolbarExtensionsContainerWrapper::SendExtensionsState() {
     state.push_back(GetExtensionsButton());
   }
   last_sent_extension_ids_ = std::move(sent_ids);
+
+  const int old_preferred_width = GetWidth(WidthType::kPreferredWidth);
+  const int old_min_width = GetWidth(WidthType::kMinWidth);
   delegate_->OnExtensionsStateChanged(std::move(state));
+  if (old_preferred_width != GetWidth(WidthType::kPreferredWidth) ||
+      old_min_width != GetWidth(WidthType::kMinWidth)) {
+    delegate_->OnPreferredSizeChanged();
+  }
+}
+
+int WebUIToolbarExtensionsContainerWrapper::GetWidth(
+    WidthType width_type) const {
+  const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  const auto& extensions_state = delegate_->GetState().extensions_state;
+  int width = 0;
+  for (const auto& action : extensions_state) {
+    // Javascript may hide all actions other than the extensions menu button
+    // and forced visible actions.
+    if (width_type == WidthType::kMinWidth &&
+        !action->id->is_extensions_menu_button() && !action->force_visible) {
+      continue;
+    }
+    // Matches toolbar_button.css, plus the trailing margin from
+    // toolbar_action_container.css.
+    width += GetLayoutConstant(LayoutConstant::kToolbarButtonHeight) + gap;
+  }
+  if (width) {
+    // Matches toolbar_divider.css, plus the trailing margin from
+    // toolbar_action_container.css. Since the divider is the last child, its
+    // leading and trailing margins are both
+    // `kToolbarDividerSpacing - kToolbarIconDefaultMargin`.
+    width += GetLayoutConstant(LayoutConstant::kToolbarDividerWidth) +
+             2 * GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing) -
+             2 * gap;
+  }
+  return width;
 }
 
 void WebUIToolbarExtensionsContainerWrapper::ExecuteUserAction(

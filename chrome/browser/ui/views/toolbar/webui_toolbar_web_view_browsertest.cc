@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <set>
 #include <string>
@@ -7641,6 +7642,320 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
   ASSERT_TRUE(WaitForExtensionsState(all_extensions_hidden));
   EXPECT_TRUE(WaitForPinnedActionHidden(
       toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads));
+
+  AssertNoJsErrors();
+}
+
+// Tests for WebUIToolbarWebView::GetMinimumSize() when the WebUI toolbar is
+// fully enabled, and overflow is handled entirely in Javascript.
+class WebUIToolbarMinimumSizeBrowserTest
+    : public WebUIToolbarFullyEnabledBrowserTest {
+ public:
+  // Waits until the toolbar has been initialized, as signalled by the forward
+  // button, which is pinned by default, being visible.
+  [[nodiscard]] bool WaitForToolbarInitialized() {
+    return WaitUntilResponsiveControlsAreVisible({kForwardSelector});
+  }
+
+  // Returns the minimum width of the toolbar, as calculated by the Javascript
+  // layout code. Works by appending a spacer to the toolbar that's as wide as
+  // the window, which forces all ResponsiveControls to their minimum width
+  // (hiding all controls that can be overflowed), and showing the overflow
+  // button if anything was overflowed. Then measures the width of the
+  // toolbar-app, excluding the spacer and the gap before it. Removes the spacer
+  // and lays out the toolbar again before returning. Returns -1 on failure.
+  int GetJsMinimumWidth() {
+    content::EvalJsResult result = content::EvalJs(GetWebUIWebContents(), R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const spacer = document.createElement('div');
+            spacer.style.flexShrink = '0';
+            spacer.style.width = window.innerWidth + 'px';
+            app.shadowRoot.appendChild(spacer);
+            app.layoutResponsiveControls();
+
+            const gap = parseFloat(getComputedStyle(app).columnGap) || 0;
+            const minWidth = app.getBoundingClientRect().width -
+                spacer.getBoundingClientRect().width - gap;
+
+            spacer.remove();
+            app.layoutResponsiveControls();
+            return Math.round(minWidth);
+          })();
+        )");
+    if (!result.is_ok() || !result.is_int()) {
+      ADD_FAILURE() << "Failed to get JS minimum width: " << result;
+      return -1;
+    }
+    return result.ExtractInt();
+  }
+
+  // Returns the preferred width of the toolbar, as calculated by the Javascript
+  // layout code. Works by hiding the overflow button and setting all
+  // ResponsiveControls that should be shown to their preferred width, and then
+  // measuring the width of the toolbar-app. Lays out the toolbar again before
+  // returning, to restore the controls to their original sizes. Must not be
+  // called while there's a spacer in the toolbar, since it would be included in
+  // the result. Returns -1 on failure.
+  int GetJsPreferredWidth() {
+    content::EvalJsResult result = content::EvalJs(GetWebUIWebContents(), R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const overflowButton = app.shadowRoot.querySelector('#overflow');
+            overflowButton.toggleAttribute('hidden', true);
+            for (const control of app.getResponsiveControls()) {
+              if (control.shouldBeShown()) {
+                control.setToPreferredWidth();
+              }
+            }
+            const preferredWidth = app.clientWidth;
+
+            // Lay out again to restore controls to their original sizes.
+            app.layoutResponsiveControls();
+            return preferredWidth;
+          })();
+        )");
+    if (!result.is_ok() || !result.is_int()) {
+      ADD_FAILURE() << "Failed to get JS preferred width: " << result;
+      return -1;
+    }
+    return result.ExtractInt();
+  }
+
+  // Returns the number of non-divider pinned toolbar actions in the
+  // #pinnedToolbarActions element, whether visible or not.
+  int GetNumPinnedActionsInJs() {
+    return content::EvalJs(GetWebUIWebContents(), R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const pinned =
+                app?.shadowRoot?.querySelector('#pinnedToolbarActions');
+            if (!pinned) {
+              return 0;
+            }
+            return pinned.getActions().filter(el => !el.isDivider).length;
+          })()
+        )")
+        .ExtractInt();
+  }
+
+  // Returns true if the ResponsiveControl matching `selector` exists and its
+  // shouldBeShown() method returns true. The control may still be hidden due
+  // to overflow.
+  bool ShouldControlBeShown(std::string_view selector) {
+    return content::EvalJs(GetWebUIWebContents(), content::JsReplace(R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const control = app?.shadowRoot?.querySelector($1);
+            return !!control && control.shouldBeShown();
+          })()
+        )",
+                                                                     selector))
+        .ExtractBool();
+  }
+
+  // Pins a number of toolbar actions, an extension, the home button
+  // and the split tabs button, all of which may be overflowed by the
+  // Javascript layout code. Waits until the Javascript toolbar has been updated
+  // to include all of them, and until the preferred width of the
+  // WebUIToolbarWebView has grown to make room for the new buttons.
+  //
+  // Blocking must be allowed when this is called, and when
+  // `extension_temp_dir` is destroyed.
+  void PinOverflowableControls(base::ScopedTempDir& extension_temp_dir) {
+    const int initial_preferred_width =
+        GetWebUIToolbar()->GetPreferredSize().width();
+
+    // Load the extension first, since LoadAndPinExtension() waits for the
+    // extension's button to be visible, which may not happen if the other
+    // controls have already been pinned, due to overflow.
+    ASSERT_TRUE(extension_temp_dir.CreateUniqueTempDir());
+    scoped_refptr<const extensions::Extension> extension =
+        LoadAndPinExtension(extension_temp_dir);
+    ASSERT_TRUE(extension);
+
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                    true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                    true);
+
+    auto* model = PinnedToolbarActionsModel::Get(browser()->GetProfile());
+    const auto kActionsToPin = std::to_array<actions::ActionId>({
+        kActionShowDownloads,
+        kActionSidePanelShowBookmarks,
+        kActionSidePanelShowReadingList,
+        kActionSidePanelShowHistoryCluster,
+        kActionPrint,
+        kActionCopyUrl,
+        kActionQrCodeGenerator,
+        kActionClearBrowsingData,
+        kActionTaskManager,
+        kActionDevTools,
+    });
+    for (actions::ActionId action : kActionsToPin) {
+      model->UpdatePinnedState(action, true);
+    }
+
+    // Wait for the Javascript toolbar to have all the new controls. Some of
+    // them may be overflowed, depending on window size, so don't wait for them
+    // to be visible.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return ShouldControlBeShown(kHomeSelector) &&
+             ShouldControlBeShown(kSplitTabsSelector) &&
+             GetNumPinnedActionsInJs() ==
+                 static_cast<int>(kActionsToPin.size());
+    }));
+
+    // Wait for the C++ side to reflect the new controls. Each of the new
+    // buttons (the pinned toolbar actions, the home button, the split tabs
+    // button, and the extension) should increase the preferred width by at
+    // least a button's width.
+    const int min_expected_preferred_width_increase =
+        static_cast<int>(kActionsToPin.size() + 3) *
+        GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetWebUIToolbar()->GetPreferredSize().width() >=
+             initial_preferred_width + min_expected_preferred_width_increase;
+    })) << "Initial preferred width: "
+        << initial_preferred_width << ", current preferred width: "
+        << GetWebUIToolbar()->GetPreferredSize().width();
+  }
+};
+
+// Checks that the minimum width of the WebUI toolbar is less than its preferred
+// width, both in the default state, and when a large number of overflowable
+// controls are pinned.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
+                       MinimumWidthLessThanPreferredWidth) {
+  ASSERT_TRUE(WaitForToolbarInitialized());
+
+  WebUIToolbarWebView* toolbar = GetWebUIToolbar();
+  EXPECT_LT(toolbar->GetMinimumSize().width(),
+            toolbar->GetPreferredSize().width());
+
+  // Creating, writing to, and deleting the extensions' temp directories
+  // requires blocking. Declared before the ScopedTempDirs so it outlives them.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir extension_temp_dir;
+  ASSERT_NO_FATAL_FAILURE(PinOverflowableControls(extension_temp_dir));
+  EXPECT_LT(toolbar->GetMinimumSize().width(),
+            toolbar->GetPreferredSize().width());
+}
+
+// Checks that pinning a large number of controls that Javascript can overflow
+// (pinned toolbar actions, an extension, the home button, and the split tabs
+// button) doesn't increase the minimum width of the WebUI toolbar.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
+                       PinningOverflowableControlsDoesNotIncreaseMinimumWidth) {
+  ASSERT_TRUE(WaitForToolbarInitialized());
+
+  // Install an unpinned extension first. Installing any extension shows the
+  // extensions menu button, which is never overflowed, so does increase the
+  // minimum width. Pinning extensions, however, should not.
+  // Creating, writing to, and deleting the extensions' temp directories
+  // requires blocking. Declared before the ScopedTempDirs so it outlives them.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir unpinned_extension_temp_dir;
+  ASSERT_TRUE(unpinned_extension_temp_dir.CreateUniqueTempDir());
+  scoped_refptr<const extensions::Extension> unpinned_extension =
+      LoadExtension(unpinned_extension_temp_dir);
+  ASSERT_TRUE(unpinned_extension);
+  // The extension may be pinned by default, so explicitly unpin it.
+  ToolbarActionsModel::Get(browser()->GetProfile())
+      ->SetActionVisibility(unpinned_extension->id(), false);
+  ASSERT_TRUE(WaitForExtensionsState("<menu>,<divider>"));
+
+  WebUIToolbarWebView* toolbar = GetWebUIToolbar();
+  const int initial_min_width = toolbar->GetMinimumSize().width();
+
+  base::ScopedTempDir extension_temp_dir;
+  ASSERT_NO_FATAL_FAILURE(PinOverflowableControls(extension_temp_dir));
+
+  // When all pinned toolbar actions are overflowed, Javascript still displays
+  // the zero-width pinned toolbar actions container, which results in an extra
+  // gap between it and the previous control.
+  //
+  // TODO(crbug.com/538175276): Hide the pinned toolbar actions container in
+  // Javascript when all of its actions are overflowed, and remove this.
+  const int pinned_toolbar_actions_container_gap =
+      GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  EXPECT_EQ(toolbar->GetMinimumSize().width(),
+            initial_min_width + pinned_toolbar_actions_container_gap);
+}
+
+// Checks that the minimum width calculated by C++ is consistent with the
+// minimum width the Javascript layout code can actually shrink the toolbar to.
+// If the C++ minimum width is too small, the toolbar can be clipped when the
+// window is at its minimum width. If it's too large, the window can't be made
+// as narrow as it should be. Checks both in the default state, and when a large
+// number of overflowable controls are pinned.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
+                       MinimumWidthMatchesJsMinimumWidth) {
+  ASSERT_TRUE(WaitForToolbarInitialized());
+  InstallErrorListener();
+
+  // Allow for a small amount of rounding error between the C++ and Javascript
+  // calculations.
+  constexpr int kMinWidthTolerance = 2;
+
+  // The C++ minimum width of the location bar (WebUILocationBar::MinimumSize())
+  // is 30 pixels smaller than the Javascript minimum width
+  // (LocationBarElement.LOCATION_BAR_MIN_WIDTH), so the C++ minimum width of
+  // the toolbar is expected to be 30 pixels smaller than the Javascript one.
+  //
+  // TODO(crbug.com/474060468): Remove this once the C++ and Javascript location
+  // bar sizes match.
+  constexpr int kLocationBarMinWidthDifference = 30;
+
+  WebUIToolbarWebView* toolbar = GetWebUIToolbar();
+
+  int js_min_width = GetJsMinimumWidth();
+  ASSERT_GT(js_min_width, 0);
+  EXPECT_NEAR(toolbar->GetMinimumSize().width(),
+              js_min_width - kLocationBarMinWidthDifference,
+              kMinWidthTolerance);
+
+  // Creating, writing to, and deleting the extensions' temp directories
+  // requires blocking. Declared before the ScopedTempDirs so it outlives them.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir extension_temp_dir;
+  ASSERT_NO_FATAL_FAILURE(PinOverflowableControls(extension_temp_dir));
+
+  js_min_width = GetJsMinimumWidth();
+  ASSERT_GT(js_min_width, 0);
+  EXPECT_NEAR(toolbar->GetMinimumSize().width(),
+              js_min_width - kLocationBarMinWidthDifference,
+              kMinWidthTolerance);
+
+  AssertNoJsErrors();
+}
+
+// Checks that the preferred width calculated by C++ exactly matches the
+// preferred width calculated by the Javascript layout code, both in the default
+// state, and when a large number of overflowable controls are pinned.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarMinimumSizeBrowserTest,
+                       PreferredWidthMatchesJsPreferredWidth) {
+  ASSERT_TRUE(WaitForToolbarInitialized());
+  InstallErrorListener();
+
+  WebUIToolbarWebView* toolbar = GetWebUIToolbar();
+
+  const int initial_js_preferred_width = GetJsPreferredWidth();
+  ASSERT_GT(initial_js_preferred_width, 0);
+  EXPECT_EQ(toolbar->GetPreferredSize().width(), initial_js_preferred_width);
+
+  // Creating, writing to, and deleting the extensions' temp directories
+  // requires blocking. Declared before the ScopedTempDirs so it outlives them.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir extension_temp_dir;
+  ASSERT_NO_FATAL_FAILURE(PinOverflowableControls(extension_temp_dir));
+
+  // Pinning all those controls should increase the preferred width, and the
+  // C++ and Javascript preferred widths should still match.
+  const int js_preferred_width = GetJsPreferredWidth();
+  ASSERT_GT(js_preferred_width, 0);
+  EXPECT_GT(js_preferred_width, initial_js_preferred_width);
+  EXPECT_EQ(toolbar->GetPreferredSize().width(), js_preferred_width);
 
   AssertNoJsErrors();
 }

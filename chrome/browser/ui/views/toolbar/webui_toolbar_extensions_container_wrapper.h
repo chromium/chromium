@@ -60,6 +60,22 @@ class WebUIToolbarExtensionsContainerWrapper
   void MoveExtension(const std::string& extension_id, int32_t target_index);
   void MoveExtensionBy(const std::string& extension_id, int32_t delta);
 
+  // Which width GetWidth() should calculate.
+  enum class WidthType {
+    // The width needed to display all extension actions.
+    kPreferredWidth,
+    // The width needed to display only the actions that are never hidden due
+    // to overflow: the extensions menu button, and any extension actions that
+    // are forced visible (e.g., popped out).
+    kMinWidth,
+  };
+
+  // Calculates the width of the extensions container in the WebUI toolbar,
+  // based on the last state sent to it. See WidthType for which actions are
+  // included. Includes the trailing divider whenever any actions are
+  // displayed. Returns 0 if there are no actions to display.
+  int GetWidth(WidthType width_type) const;
+
   // WebUIToolbarExtensionsContainer::Observer:
   void OnActionsAddedOrUpdated(
       std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,

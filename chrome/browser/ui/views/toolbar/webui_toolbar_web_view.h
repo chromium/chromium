@@ -628,6 +628,13 @@ class WebUIToolbarWebView
   // `force_navigation_buttons` forces the home and forward buttons to be
   // displayed, if pinned, and `force_location_bar` forces the location bar to
   // be at least its preferred width, if enabled.
+  //
+  // If `is_webui_toolbar_fully_enabled_` is true and `available_width` is
+  // bounded, elements that Javascript may overflow (split tabs, avatar,
+  // forward, and home buttons, pinned toolbar actions, and extension actions)
+  // may not be included in the computed size, but the overflow button is.
+  // Note that the location bar will consume any remaining `available_width`
+  // and hence the returned size will always be >= `available_width`.
   gfx::Size ComputeLayout(views::SizeBound available_width,
                           ButtonOverflowInfo* button_overflow_info = nullptr,
                           bool force_navigation_buttons = false,
