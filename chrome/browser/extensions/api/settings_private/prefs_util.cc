@@ -1179,7 +1179,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kDictionary;
   (*s_allowlist)[ash::kDisplayRotationDefault] =
       settings_api::PrefType::kDictionary;
-  (*s_allowlist)[::prefs::kAllowExcludeDisplayInMirrorMode] =
+  (*s_allowlist)[ash::prefs::kAllowExcludeDisplayInMirrorMode] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[arc::prefs::kArcVisibleExternalStorages] =
       settings_api::PrefType::kList;

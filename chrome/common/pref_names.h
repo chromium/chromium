@@ -500,23 +500,6 @@ inline constexpr char kInsightsExtensionEnabled[] =
 inline constexpr char kChromeOSReleaseNotesVersion[] =
     "settings.release_notes.version";
 
-// A boolean pref. If set to true, the Unified Desktop feature is made
-// available and turned on by default, which allows applications to span
-// multiple screens. Users may turn the feature off and on in the settings
-// while this is set to true.
-inline constexpr char kUnifiedDesktopEnabledByDefault[] =
-    "settings.display.unified_desktop_enabled_by_default";
-
-// A boolean pref. If set to true, the Exclude Display in Mirror Mode feature
-// is made available to the user, which allows a display to be excluded in
-// mirror mode. Users may turn the feature off and on in the settings while
-// this is set to true.
-inline constexpr char kAllowExcludeDisplayInMirrorMode[] =
-    "settings.display.allow_exclude_display_in_mirror_mode";
-
-// Boolean pref indicating whether someone can cast to the device.
-inline constexpr char kCastReceiverEnabled[] = "cast_receiver.enabled";
-
 // Dictionary preference that maps language to default voice name preferences
 // for the users's text-to-speech settings. For example, this might map
 // 'en-US' to 'Chrome OS US English'.
@@ -541,11 +524,6 @@ inline constexpr char kTextToSpeechVolume[] = "settings.tts.speech_volume";
 // A string pref storing the path of device wallpaper image file.
 inline constexpr char kDeviceWallpaperImageFilePath[] =
     "policy.device_wallpaper_image_file_path";
-
-// A boolean pref that when set to true, prevents the browser window from
-// launching at the start of the session.
-inline constexpr char kStartupBrowserWindowLaunchSuppressed[] =
-    "startup_browser_window_launch_suppressed";
 
 // A string pref stored in local state. Set and read by extensions using the
 // chrome.login API.

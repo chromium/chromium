@@ -212,10 +212,10 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kEnableTouchpadThreeFingerClick, false);
   // This preference can only be set to true by policy or command_line flag
   // and it should not carry over to sessions were neither of these is set.
-  registry->RegisterBooleanPref(::prefs::kUnifiedDesktopEnabledByDefault, false,
+  registry->RegisterBooleanPref(prefs::kUnifiedDesktopEnabledByDefault, false,
                                 PrefRegistry::NO_REGISTRATION_FLAGS);
-  registry->RegisterBooleanPref(::prefs::kAllowExcludeDisplayInMirrorMode,
-                                false, PrefRegistry::NO_REGISTRATION_FLAGS);
+  registry->RegisterBooleanPref(prefs::kAllowExcludeDisplayInMirrorMode, false,
+                                PrefRegistry::NO_REGISTRATION_FLAGS);
 
   // TODO(anasalazar): Finish moving this to ash.
   registry->RegisterBooleanPref(
@@ -521,7 +521,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kExtendedUpdatesNotificationDismissed,
                                 false);
 
-  registry->RegisterBooleanPref(::prefs::kCastReceiverEnabled, false);
+  registry->RegisterBooleanPref(prefs::kCastReceiverEnabled, false);
   registry->RegisterBooleanPref(::ash::prefs::kShowSyncSettingsOnSessionStart,
                                 false);
 
@@ -546,7 +546,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ::ash::prefs::kTPMFirmwareUpdateCleanupDismissed, false);
 
-  registry->RegisterBooleanPref(::prefs::kStartupBrowserWindowLaunchSuppressed,
+  registry->RegisterBooleanPref(prefs::kStartupBrowserWindowLaunchSuppressed,
                                 false);
 
   registry->RegisterBooleanPref(prefs::kLoginDisplayPasswordButtonEnabled,
@@ -644,7 +644,7 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   three_finger_click_enabled_.Init(prefs::kEnableTouchpadThreeFingerClick,
                                    prefs, callback);
   unified_desktop_enabled_by_default_.Init(
-      ::prefs::kUnifiedDesktopEnabledByDefault, prefs, callback);
+      prefs::kUnifiedDesktopEnabledByDefault, prefs, callback);
   // TODO(anasalazar): Finish moving this to ash.
   natural_scroll_.Init(prefs::kNaturalScroll, prefs, callback);
   mouse_reverse_scroll_.Init(prefs::kMouseReverseScroll, prefs, callback);
@@ -918,7 +918,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kUnifiedDesktopEnabledByDefault) {
+      pref_name == prefs::kUnifiedDesktopEnabledByDefault) {
     // "Unified Desktop" is a per-user policy setting which will not be applied
     // until a user logs in.
     if (ash::Shell::HasInstance()) {

@@ -100,6 +100,7 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -360,7 +361,7 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
 
 #if BUILDFLAG(IS_CHROMEOS)
   return profile->GetPrefs()->GetBoolean(
-      prefs::kStartupBrowserWindowLaunchSuppressed);
+      ash::prefs::kStartupBrowserWindowLaunchSuppressed);
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
