@@ -304,7 +304,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                 if (params == null) {
                     continue;
                 } else if (ids.contains(params.getId())) {
-                    Log.e(TAG, "Bottom bar items contain duplicate id: " + params.getId());
+                    Log.e(TAG, "Bottom bar items contain duplicate id: %d", params.getId());
                     continue;
                 }
                 ids.add(params.getId());

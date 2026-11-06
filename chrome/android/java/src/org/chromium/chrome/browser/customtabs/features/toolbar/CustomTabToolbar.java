@@ -384,7 +384,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         boolean show =
                 buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
                         || buttonVariant == AdaptiveToolbarButtonVariant.PRICE_INSIGHTS;
-        Log.i(TAG, "fallback-ui-variant: " + buttonVariant + " show: " + show);
+        Log.i(TAG, "fallback-ui-variant: %d show: %s", buttonVariant, show);
         if (!show) {
             resetOptionalButtonState();
             return;

@@ -419,11 +419,9 @@ public class CustomTabsConnection {
             String packageName = getClientPackageNameForSession(session);
             Log.i(
                     TAG,
-                    "New Custom Tab session created by package: "
-                            + packageName
-                            + " (UID: "
-                            + Binder.getCallingUid()
-                            + ")");
+                    "New Custom Tab session created by package: %s (UID: %d)",
+                    packageName,
+                    Binder.getCallingUid());
         }
         return success;
     }
@@ -1172,7 +1170,7 @@ public class CustomTabsConnection {
                 ParallelRequestStatus.NUM_ENTRIES);
 
         if (mLogRequests) {
-            Log.w(TAG, "handleParallelRequest() = " + PARALLEL_REQUEST_MESSAGES[status]);
+            Log.w(TAG, "handleParallelRequest() = %s", PARALLEL_REQUEST_MESSAGES[status]);
         }
 
         // Success is already reported per URL, report any failures here.

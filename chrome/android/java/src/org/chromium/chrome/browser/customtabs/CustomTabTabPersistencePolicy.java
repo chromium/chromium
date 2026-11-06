@@ -158,11 +158,12 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                                 if (!metadataFile.setLastModified(System.currentTimeMillis())) {
                                     Log.e(
                                             TAG,
-                                            "Unable to update last modified time: " + metadataFile);
+                                            "Unable to update last modified time: %s",
+                                            metadataFile);
                                 }
                             } else {
                                 if (!metadataFile.delete()) {
-                                    Log.e(TAG, "Failed to delete file: " + metadataFile);
+                                    Log.e(TAG, "Failed to delete file: %s", metadataFile);
                                 }
                             }
                         }
@@ -233,7 +234,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                     File stateDir = getOrCreateStateDirectory();
                     File metadataFile = new File(stateDir, getMetadataFileName());
                     if (metadataFile.exists() && !metadataFile.delete()) {
-                        Log.e(TAG, "Failed to delete file: " + metadataFile);
+                        Log.e(TAG, "Failed to delete file: %s", metadataFile);
                     }
                 });
     }
@@ -408,7 +409,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                                 new BufferedInputStream(new FileInputStream(metadataFile)));
                 TabMetadataFileManager.readSavedMetadataFile(stream, /* callback= */ null, tabIds);
             } catch (Exception e) {
-                Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
+                Log.e(TAG, "Unable to read state for %s", metadataFile.getName(), e);
             } finally {
                 StreamUtil.closeQuietly(stream);
             }

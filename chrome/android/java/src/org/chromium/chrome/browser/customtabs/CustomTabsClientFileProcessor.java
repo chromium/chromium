@@ -52,7 +52,7 @@ public class CustomTabsClientFileProcessor {
             case CustomTabsService.FILE_PURPOSE_TRUSTED_WEB_ACTIVITY_SPLASH_IMAGE:
                 return receiveTwaSplashImage(session, uri);
         }
-        Log.w(TAG, "Unknown FilePurpose " + purpose);
+        Log.w(TAG, "Unknown FilePurpose %d", purpose);
         return false;
     }
 

@@ -83,7 +83,7 @@ public class CustomTabCookiesFetcher extends CookiesFetcher {
         if (deletableFiles.isEmpty()) return;
         for (File deletableFile : deletableFiles) {
             if (!deletableFile.delete()) {
-                Log.e(TAG, "Failed to delete file: " + deletableFile);
+                Log.e(TAG, "Failed to delete file: %s", deletableFile);
             }
         }
     }
