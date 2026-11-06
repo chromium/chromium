@@ -13,13 +13,9 @@ import type {Attachment} from '../constants.js';
 import {getCss} from './viewer_attachment.css.js';
 import {getHtml} from './viewer_attachment.html.js';
 
-export interface SaveAttachment {
-  index: number;
-}
-
 declare global {
   interface HTMLElementEventMap {
-    'save-attachment': CustomEvent<SaveAttachment>;
+    'save-attachment': CustomEvent<number>;
   }
 }
 

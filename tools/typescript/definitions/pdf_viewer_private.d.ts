@@ -41,7 +41,7 @@ declare global {
       // tools/metrics/histograms/metadata/pdf/enums.xml.
       export enum SaveToDriveStatus {
         NOT_STARTED = 'NOT_STARTED',
-        INITIATED = 'INITATED',
+        INITIATED = 'INITIATED',
         ACCOUNT_CHOOSER_SHOWN = 'ACCOUNT_CHOOSER_SHOWN',
         ACCOUNT_SELECTED = 'ACCOUNT_SELECTED',
         ACCOUNT_ADD_SELECTED = 'ACCOUNT_ADD_SELECTED',
@@ -90,6 +90,7 @@ declare global {
       // <if expr="enable_pdf_ink2">
       export interface Typeface {
         uniqueId: number;
+        name: string;
         serializedTypeface: ArrayBuffer;
       }
 

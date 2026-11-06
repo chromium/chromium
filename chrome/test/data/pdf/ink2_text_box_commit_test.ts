@@ -270,7 +270,11 @@ chrome.test.runTests([
     // Test with some text information.
     privateProxy.reset();
     privateProxy.setGetTextInfoResult({
-      typefaces: [{uniqueId: 123, serializedTypeface: new ArrayBuffer(10)}],
+      typefaces: [{
+        uniqueId: 123,
+        name: 'test_font',
+        serializedTypeface: new ArrayBuffer(10),
+      }],
       mojoTextInfo: new ArrayBuffer(5),
     });
 
@@ -312,7 +316,11 @@ chrome.test.runTests([
     // Set up test font information.
     privateProxy.reset();
     privateProxy.setGetTextInfoResult({
-      typefaces: [{uniqueId: 123, serializedTypeface: new ArrayBuffer(10)}],
+      typefaces: [{
+        uniqueId: 123,
+        name: 'test_font',
+        serializedTypeface: new ArrayBuffer(10),
+      }],
       mojoTextInfo: new ArrayBuffer(5),
     });
 
