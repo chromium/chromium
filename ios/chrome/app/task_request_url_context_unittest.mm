@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -941,9 +940,8 @@ TEST_F(TaskRequestForURLContextTest, TestGoogleOneDeepLinkEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kSupportGoogleOneDeepLink);
 
-  CommandDispatcher* dispatcher =
-      scene_state_.browserProviderInterface.currentBrowserProvider.browser
-          ->GetCommandDispatcher();
+  CommandDispatcher* dispatcher = scene_state_.browserProviderInterface
+                                      .currentBrowser->GetCommandDispatcher();
   id mock_google_one_handler = OCMProtocolMock(@protocol(GoogleOneCommands));
   [dispatcher startDispatchingToTarget:mock_google_one_handler
                            forProtocol:@protocol(GoogleOneCommands)];

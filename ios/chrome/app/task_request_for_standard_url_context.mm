@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -101,8 +100,7 @@ void RecordExternalActionMetrics(NSURL* url) {
 // Presents the Google One screen for `url` on the current browser of
 // `scene_state`.
 void ShowGoogleOneForURL(SceneState* scene_state, const GURL& url) {
-  if (Browser* browser =
-          scene_state.browserProviderInterface.currentBrowserProvider.browser) {
+  if (Browser* browser = scene_state.browserProviderInterface.currentBrowser) {
     id<GoogleOneCommands> google_one_handler =
         HandlerForProtocol(browser->GetCommandDispatcher(), GoogleOneCommands);
     [google_one_handler showGoogleOneForURL:url];
