@@ -77,10 +77,17 @@ size_t FilePathWatcherKQueue::EventsForPath(base::FilePath path,
     base::FilePath::StringType subdir =
         (i != (components.end() - 1)) ? *(i + 1) : "";
     EventData* data = new EventData(built_path, subdir);
+    // Only watch `NOTE_ATTRIB` on ancestor directories (where `subdir` is
+    // non-empty) so `HandleAttributesChange()` can detect when a child
+    // component along the watched path becomes inaccessible. Attribute-only
+    // changes on the watched target itself are ignored.
+    uint32_t fflags =
+        NOTE_DELETE | NOTE_WRITE | NOTE_RENAME | NOTE_REVOKE | NOTE_EXTEND;
+    if (!subdir.empty()) {
+      fflags |= NOTE_ATTRIB;
+    }
     struct kevent event;
-    EV_SET(&event, fd, EVFILT_VNODE, (EV_ADD | EV_CLEAR | EV_RECEIPT),
-           (NOTE_DELETE | NOTE_WRITE | NOTE_ATTRIB | NOTE_RENAME | NOTE_REVOKE |
-            NOTE_EXTEND),
+    EV_SET(&event, fd, EVFILT_VNODE, (EV_ADD | EV_CLEAR | EV_RECEIPT), fflags,
            0, data);
     events->push_back(event);
   }

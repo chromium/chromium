@@ -410,4 +410,40 @@ TEST_F(FilePathWatcherFSEventsChangeTrackerTest, MoveWithOverwriteDirectory) {
               testing::ElementsAre(MovedDirectory(a_path, b_path)));
 }
 
+TEST_F(FilePathWatcherFSEventsChangeTrackerTest,
+       CoalesceTargetCreationWithModifiedAndInodeMetaMod) {
+  base::FilePath target_path = temp_dir_.GetPath().AppendASCII("target_file");
+  change_tracker_ = FilePathWatcherFSEventsChangeTracker{
+      base::BindRepeating(&FilePathWatcherFSEventsChangeTrackerTest::Callback,
+                          base::Unretained(this)),
+      target_path, FilePathWatcher::Type::kNonRecursive,
+      /*report_modified_path=*/true};
+  uint64_t target_inode = CreateFile(target_path);
+
+  DispatchEvents({
+      {0,
+       {
+           kFSEventStreamEventFlagRootChanged,
+           target_path,
+           std::nullopt,
+       }},
+      {156251260,
+       {
+           kFSEventStreamEventFlagItemCreated |
+               kFSEventStreamEventFlagItemModified |
+               kFSEventStreamEventFlagItemInodeMetaMod |
+               kFSEventStreamEventFlagItemIsFile,
+           target_path,
+           target_inode,
+       }},
+  });
+
+  FilePathWatcher::ChangeInfo expected_change_info(
+      FilePathWatcher::FilePathType::kUnknown,
+      FilePathWatcher::ChangeType::kCreated, target_path);
+  EXPECT_THAT(file_path_watcher_events_,
+              testing::ElementsAre(Event(expected_change_info, target_path,
+                                         /*error=*/false)));
+}
+
 }  // namespace content

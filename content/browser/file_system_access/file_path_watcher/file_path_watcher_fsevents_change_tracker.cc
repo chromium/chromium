@@ -154,6 +154,7 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       if (stat(target_.value().c_str(), &buffer) == -1) {
         // If the next event is a deletion of the target path itself, coalesce
         // the following, duplicate delete event.
+        coalesce_target_deletion = true;
         coalesce_next_target_deletion_ = true;
         ReportChangeEvent(
             {file_path_type, FilePathWatcher::ChangeType::kDeleted, target_});
@@ -163,6 +164,7 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       // Otherwise, a rename has occurred on the target path (which represents a
       // move into-scope), or the target has been created initially. Both
       // scenarios are reported as 'create' events.
+      coalesce_target_creation = true;
       coalesce_next_target_creation_ = true;
       ReportChangeEvent(
           {file_path_type, FilePathWatcher::ChangeType::kCreated, target_});
@@ -254,6 +256,7 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       // event which has already been reported as a result of the previous root
       // changed event.
       if (exists && event_path == target_ && coalesce_target_creation) {
+        coalesce_target_creation = false;
         coalesce_next_target_creation_ = false;
         continue;
       }
@@ -284,11 +287,24 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       // Skip over coalesced delete events, that have already been reported for
       // a delete event on the target path.
       if (coalesce_target_deletion && event_path == target_) {
+        coalesce_target_deletion = false;
         coalesce_next_target_deletion_ = false;
         continue;
       }
       ReportChangeEvent(
           {file_path_type, FilePathWatcher::ChangeType::kDeleted, event_path});
+      continue;
+    }
+
+    // If the current event is a target creation event following a root changed
+    // event, coalesce it before checking for `ItemInodeMetaMod` +
+    // `ItemModified`, since creating and writing the target file in one step
+    // can report `ItemCreated | ItemModified | ItemInodeMetaMod` in the same
+    // event flags batch.
+    if ((event_flags & kFSEventStreamEventFlagItemCreated) &&
+        coalesce_target_creation && event_path == target_) {
+      coalesce_target_creation = false;
+      coalesce_next_target_creation_ = false;
       continue;
     }
 
@@ -314,13 +330,6 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
     // `kFSEventStreamEventFlagItemModified` flag are present in the same batch
     // of `event_flags`.
     if (event_flags & kFSEventStreamEventFlagItemCreated) {
-      // If the current event is for the target path, skip reporting a duplicate
-      // create event, since we've already reported one earlier as a result of
-      // the previous root changed event.
-      if (coalesce_target_creation && event_path == target_) {
-        coalesce_next_target_creation_ = false;
-        continue;
-      }
       ReportChangeEvent(
           {file_path_type, FilePathWatcher::ChangeType::kCreated, event_path});
       continue;
