@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Same as tile_view_icon_background_modern.xml (same size and color), but a rounded square
+     with 16dp corners instead of a circle. Used for NTP Aurora V2. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+  android:shape="rectangle">
+  <solid android:color="@color/tile_view_icon_background_color"/>
+  <corners android:radius="@dimen/tile_view_icon_background_corner_radius"/>
+</shape>
