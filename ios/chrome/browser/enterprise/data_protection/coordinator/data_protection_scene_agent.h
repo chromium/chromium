@@ -13,9 +13,14 @@
 // performance degradation.
 inline constexpr int kMaxTabsToCheckForWatermark = 600;
 
-// Scene agent that manages screenshot protection for the scene's window.
-// It obfuscates the window when the Tab Grid is visible and screenshot
-// protection policies are enabled, or when the active tab requires protection.
+// Scene agent that manages enterprise data protection (screenshot
+// protection and Tab Grid watermarking) for the scene's windows:
+// - Screenshot protection: It obfuscates the window when the Tab Grid is
+//   visible and screenshot protection policies are enabled, or when the active
+//   tab requires protection.
+// - Tab Grid watermarking: Displays a watermark overlay on the scene's window
+//   when the non-Incognito Tab Grid is visible and any open tab in the
+//   window's active Browser requires watermarking.
 @interface DataProtectionSceneAgent : ObservingSceneAgent
 @end
 
