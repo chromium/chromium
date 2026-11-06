@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/number_formatting.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
@@ -53,6 +55,7 @@
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -63,7 +66,10 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -434,6 +440,57 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(SynonymSearchCase{u"friend", kActionOpenGuestProfile},
                     SynonymSearchCase{u"firefox", kActionImportSettings}));
 #endif
+
+// Activating a zoom in/out search result zooms the active tab, keeps the menu
+// open, and updates that row's secondary title with the new zoom level.
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
+                       ZoomSearchResultZoomsAndShowsNewLevel) {
+  auto* const zoom_controller = zoom::ZoomController::FromWebContents(
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_TRUE(zoom_controller);
+  ASSERT_EQ(zoom_controller->GetZoomPercent(), 100);
+  // The breadcrumb is the zoom submenu's text, without its mnemonic marker.
+  const actions::ActionItem* const zoom_submenu =
+      actions::ActionManager::Get().FindAction(
+          kActionZoomSubmenu,
+          BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(zoom_submenu);
+  const auto zoom_row_secondary_title = [&](int percent) {
+    return l10n_util::GetStringFUTF16(
+        IDS_APP_MENU_SEARCH_SECONDARY_TEXT_WITH_VALUE,
+        std::u16string(zoom_submenu->GetText()), base::FormatPercent(percent));
+  };
+
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
+  ASSERT_TRUE(action_menu);
+  action_menu->search_bar_for_testing()->SetText(u"Zoom");
+  views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+  views::MenuItemView* zoom_in = root->GetMenuItemByID(kActionZoomPlus);
+  views::MenuItemView* zoom_out = root->GetMenuItemByID(kActionZoomMinus);
+  ASSERT_TRUE(zoom_in && zoom_out);
+  // The level is shown as soon as the results appear, before any zoom change.
+  EXPECT_EQ(zoom_in->secondary_title(), zoom_row_secondary_title(100));
+  EXPECT_EQ(zoom_out->secondary_title(), zoom_row_secondary_title(100));
+
+  // Activate the row as the user would with Enter.
+  views::MenuController* controller = zoom_in->GetMenuController();
+  ASSERT_TRUE(controller);
+  controller->SelectItemAndOpenSubmenu(zoom_in);
+  ui::KeyEvent enter(ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&enter);
+
+  EXPECT_EQ(zoom_controller->GetZoomPercent(), 110);
+  EXPECT_TRUE(menu_control->IsMenuShowing());
+  ASSERT_EQ(root->GetMenuItemByID(kActionZoomPlus), zoom_in);
+  EXPECT_EQ(controller->GetSelectedMenuItem(), zoom_in);
+  EXPECT_EQ(zoom_in->secondary_title(), zoom_row_secondary_title(110));
+  EXPECT_EQ(zoom_out->secondary_title(), zoom_row_secondary_title(110));
+
+  menu_control->CloseMenu();
+}
 
 class ActionAppMenuWithSearchQueryBrowserTest
     : public ActionAppMenuBrowserTest {

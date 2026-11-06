@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -2346,6 +2347,48 @@ void BrowserCommandController::UpdateCommandsForZoomState() {
 
   content::WebContents* contents =
       browser_->tab_strip_model()->GetActiveWebContents();
+  const zoom::ZoomController* const zoom_controller =
+      contents ? zoom::ZoomController::FromWebContents(contents) : nullptr;
+
+  // Zoom in/out carry the active tab's zoom level as their secondary text
+  // ("Zoom - 110%"), shown by views bound to them such as app menu search
+  // results. Clear it when there is no zoomable active tab rather than keep the
+  // previous tab's level.
+  const std::u16string zoom_percent =
+      zoom_controller ? base::FormatPercent(zoom_controller->GetZoomPercent())
+                      : std::u16string();
+  std::u16string zoom_secondary_text;
+  if (!zoom_percent.empty()) {
+    const actions::ActionItem* const zoom_submenu =
+        FindAction(kActionZoomSubmenu, browser_);
+    zoom_secondary_text =
+        (zoom_submenu && !zoom_submenu->GetText().empty())
+            ? l10n_util::GetStringFUTF16(
+                  IDS_APP_MENU_SEARCH_SECONDARY_TEXT_WITH_VALUE,
+                  std::u16string(zoom_submenu->GetText()), zoom_percent)
+            : zoom_percent;
+  }
+  for (const actions::ActionId action_id :
+       {kActionZoomMinus, kActionZoomPlus}) {
+    auto* const zoom_action = FindAction(action_id, browser_);
+    if (!zoom_action) {
+      continue;
+    }
+    const std::u16string* const secondary_text =
+        zoom_action->GetProperty(chrome::kActionSecondaryTextKey);
+    const std::u16string_view current =
+        secondary_text ? *secondary_text : std::u16string_view();
+    if (current == zoom_secondary_text) {
+      continue;
+    }
+    if (zoom_secondary_text.empty()) {
+      zoom_action->ClearProperty(chrome::kActionSecondaryTextKey);
+    } else {
+      zoom_action->SetProperty(chrome::kActionSecondaryTextKey,
+                               zoom_secondary_text);
+    }
+  }
+
   if (!contents) {
     return;
   }
@@ -2354,11 +2397,9 @@ void BrowserCommandController::UpdateCommandsForZoomState() {
                                          CanResetZoom(contents));
   command_updater_->UpdateCommandEnabled(IDC_ZOOM_MINUS, CanZoomOut(contents));
 
-  if (const auto* zoom_controller =
-          zoom::ZoomController::FromWebContents(contents)) {
+  if (zoom_controller) {
     if (auto* const zoom_action = FindAction(kActionZoomNormal, browser_)) {
-      zoom_action->SetText(
-          base::FormatPercent(zoom_controller->GetZoomPercent()));
+      zoom_action->SetText(zoom_percent);
     }
   }
 }

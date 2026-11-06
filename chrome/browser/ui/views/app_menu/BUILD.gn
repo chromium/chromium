@@ -301,6 +301,7 @@ if (toolkit_views) {
       "//components/prefs",
       "//components/sync:test_support",
       "//components/sync_sessions",
+      "//components/zoom",
       "//content/test:test_support",
       "//testing/gtest",
       "//ui/base",

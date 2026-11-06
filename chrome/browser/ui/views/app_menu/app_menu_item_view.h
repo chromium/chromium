@@ -45,6 +45,15 @@ class AppMenuItemView : public views::MenuItemView {
   std::optional<ui::ColorId> default_icon_color() const {
     return default_icon_color_;
   }
+  // The row's own secondary text (e.g. the search result breadcrumb), shown
+  // unless the bound action provides chrome::kActionSecondaryTextKey.
+  const std::u16string& default_secondary_text() const {
+    return default_secondary_text_;
+  }
+
+  // Shows `secondary_title` in place, repainting without relayout. Called from
+  // the action binding whenever the bound action changes.
+  void UpdateSecondaryTitle(const std::u16string& secondary_title);
 
   // views::MenuItemView:
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
@@ -54,6 +63,7 @@ class AppMenuItemView : public views::MenuItemView {
   std::optional<ui::ImageModel> icon_override_;
   int default_icon_size_ = 0;
   std::optional<ui::ColorId> default_icon_color_;
+  std::u16string default_secondary_text_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_ITEM_VIEW_H_

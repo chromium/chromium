@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 
+#include <string>
+
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace chrome {
@@ -17,6 +19,12 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ActionInvocationSource,
                              ActionInvocationSource::kUnknown)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kActionItemIconSizeDeltaKey, 0)
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string,
+                                   kActionSecondaryTextKeyInternal)
+
+const ui::ClassProperty<std::u16string*>* const kActionSecondaryTextKey =
+    kActionSecondaryTextKeyInternal;
 
 }  // namespace chrome
 

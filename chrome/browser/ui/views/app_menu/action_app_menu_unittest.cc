@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -1973,6 +1974,23 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
         AppMenuSearchBarView::kClearButtonElementId));
   }
 
+  // Sets the secondary text the zoom in/out actions carry, as
+  // BrowserCommandController does on every zoom change (clearing it when there
+  // is no zoomable tab).
+  void SetZoomSecondaryText(const std::u16string& secondary_text) {
+    for (const actions::ActionId action_id :
+         {kActionZoomMinus, kActionZoomPlus}) {
+      actions::ActionItem* const action =
+          actions::ActionManager::Get().FindAction(
+              action_id, browser_actions_->root_action_item());
+      if (secondary_text.empty()) {
+        action->ClearProperty(chrome::kActionSecondaryTextKey);
+      } else {
+        action->SetProperty(chrome::kActionSecondaryTextKey, secondary_text);
+      }
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -2467,6 +2485,64 @@ TEST_F(ActionAppMenuWithSearchTest,
   menu.CloseMenu();
 }
 #endif
+
+TEST_F(ActionAppMenuWithSearchTest, ZoomSearchResultsShowLiveZoomPercent) {
+  SetZoomSecondaryText(u"Zoom - 100%");
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+  menu.search_bar_for_testing()->SetText(u"Zoom");
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::MenuItemView* zoom_in = root->GetMenuItemByID(kActionZoomPlus);
+  views::MenuItemView* zoom_out = root->GetMenuItemByID(kActionZoomMinus);
+  views::MenuItemView* fullscreen = root->GetMenuItemByID(kActionFullscreen);
+  ASSERT_TRUE(zoom_in && zoom_out && fullscreen);
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
+
+  // The action's secondary text replaces the breadcrumb on the zoom in/out
+  // rows only, and is exposed to screen readers as the description.
+  EXPECT_EQ(zoom_in->secondary_title(), u"Zoom - 100%");
+  EXPECT_EQ(zoom_out->secondary_title(), u"Zoom - 100%");
+  EXPECT_EQ(fullscreen->secondary_title(), u"Zoom");
+  EXPECT_EQ(zoom_in->GetViewAccessibility().GetCachedDescription(),
+            u"Zoom - 100%");
+  EXPECT_EQ(fullscreen->GetViewAccessibility().GetCachedDescription(), u"Zoom");
+
+  SetZoomSecondaryText(u"Zoom - 110%");
+  EXPECT_EQ(zoom_in->secondary_title(), u"Zoom - 110%");
+  EXPECT_EQ(zoom_out->secondary_title(), u"Zoom - 110%");
+  ASSERT_EQ(root->GetMenuItemByID(kActionZoomPlus), zoom_in);
+  EXPECT_TRUE(menu.IsShowing());
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kAlert), 0);
+
+  views::MenuController* controller = zoom_in->GetMenuController();
+  ASSERT_TRUE(controller);
+  controller->SelectItemAndOpenSubmenu(zoom_in);
+  SetZoomSecondaryText(u"Zoom - 125%");
+  EXPECT_EQ(zoom_in->secondary_title(), u"Zoom - 125%");
+  EXPECT_EQ(zoom_in->GetViewAccessibility().GetCachedDescription(),
+            u"Zoom - 125%");
+  EXPECT_EQ(controller->GetSelectedMenuItem(), zoom_in);
+#if !BUILDFLAG(IS_MAC)
+  // On Mac, AnnounceAlert() goes through NSAccessibility, not Event::kAlert.
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kAlert), 1);
+  SetZoomSecondaryText(u"Zoom - 125%");
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kAlert), 1);
+#endif
+
+  // Clearing falls back to the breadcrumb, without announcing.
+  SetZoomSecondaryText(u"");
+  EXPECT_EQ(zoom_in->secondary_title(), u"Zoom");
+  EXPECT_EQ(zoom_in->GetViewAccessibility().GetCachedDescription(), u"Zoom");
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kAlert), 1);
+#endif
+  SetZoomSecondaryText(u"Zoom - 100%");
+  EXPECT_EQ(zoom_in->secondary_title(), u"Zoom - 100%");
+
+  menu.CloseMenu();
+}
 
 TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;

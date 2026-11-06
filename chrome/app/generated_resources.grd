@@ -1446,6 +1446,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_APP_MENU_SEARCH_TAB_GROUPS_HEADER" desc="Section header for tab group matches in the App Menu search results.">
           Tab groups
         </message>
+        <message name="IDS_APP_MENU_SEARCH_SECONDARY_TEXT_WITH_VALUE" desc="Secondary line shown under an App Menu search result, combining the name of the submenu the item came from with a live value. For the zoom in/out results the value is the current page zoom level and updates as the user zooms. In English the two parts are separated by a hyphen with a space on either side; use whichever separator is customary in your language.">
+          <ph name="CONTEXT">$1<ex>Zoom</ex></ph> - <ph name="VALUE">$2<ex>110%</ex></ph>
+        </message>
         <message name="IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER" desc="Header title for the Tools and actions section in the main App Menu">
           Tools and actions
         </message>
