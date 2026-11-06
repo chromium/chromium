@@ -18,12 +18,16 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ARCHIVED_TABS_MESSAGE;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabGroupItem;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabItem;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListItem;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -33,6 +37,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /** A {@link PropertyListModel} implementation to keep information about a list of {@link Tab}s. */
 @NullMarked
@@ -229,6 +234,8 @@ public class TabListModel extends ModelList {
         return lastTabIndex + 1;
     }
 
+    // TabListDataProvider item lookup methods.
+
     /**
      * Returns the index of the first TAB or TAB_GROUP card in the {@link TabListModel}, i.e. where
      * the tab region begins after any leading non-tab items (e.g. message cards).
@@ -241,6 +248,45 @@ public class TabListModel extends ModelList {
         }
         return size();
     }
+
+    /**
+     * Returns whether the given card model represents the given {@link TabListItem}.
+     *
+     * @param model The card model to check.
+     * @param item The data provider item to compare against.
+     */
+    @VisibleForTesting
+    static boolean matchesItem(PropertyModel model, TabListItem item) {
+        if (item instanceof TabItem tabItem) {
+            return TabProperties.isTabOrTabGroup(model)
+                    && !TabProperties.isTabGroupHeader(model)
+                    && TabProperties.getTabId(model) == tabItem.getTabId();
+        } else if (item instanceof TabGroupItem groupItem) {
+            return TabProperties.isTabGroupHeader(model)
+                    && groupItem.getTabGroupId().equals(model.get(TAB_GROUP_HEADER_ID));
+        }
+        assert false : "Unsupported TabListItem: " + item;
+        return false;
+    }
+
+    /**
+     * Returns whether the tab and tab group cards match {@code items} one-to-one, in order,
+     * ignoring non-tab cards such as message cards.
+     */
+    public boolean matchesItems(List<? extends TabListItem> items) {
+        int itemsIndex = 0;
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (!TabProperties.isTabOrTabGroup(model)) continue;
+            if (itemsIndex >= items.size() || !matchesItem(model, items.get(itemsIndex))) {
+                return false;
+            }
+            itemsIndex++;
+        }
+        return itemsIndex == items.size();
+    }
+
+    // End TabListDataProvider item lookup methods.
 
     /**
      * Returns the tab group ID of the tab group card at the given index, or null if the index is

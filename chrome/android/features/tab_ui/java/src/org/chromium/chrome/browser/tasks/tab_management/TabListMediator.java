@@ -421,6 +421,10 @@ public class TabListMediator implements TabListNotificationHandler {
     private boolean mInBatchReset;
     private @Nullable Boolean mTrackPricesOnTabsEnabledForBatch;
 
+    // The quickMode value from the latest resetWithListOfTabs that requested a data reset from the
+    // TabListDataProvider. Consumed by onProviderDataReset.
+    private boolean mPendingQuickMode;
+
     private final ActorUiTabController.Observer mActorObserver =
             new ActorUiTabController.Observer() {
                 @Override
@@ -1148,6 +1152,7 @@ public class TabListMediator implements TabListNotificationHandler {
         return tabIds;
     }
 
+    // TODO(crbug.com/562590772): Remove once Virtualization is enabled by default.
     private boolean areTabsUnchanged(@Nullable List<Tab> tabs) {
         int tabsCount = 0;
         for (int i = 0; i < mModelList.size(); i++) {
@@ -1199,14 +1204,14 @@ public class TabListMediator implements TabListNotificationHandler {
             assert tabGroupSyncIds == null
                     : "Saved tab group sync IDs are not yet supported with TabListDataProvider.";
             if (tabs == null) {
+                mPendingQuickMode = false;
                 dataProvider.stop();
                 clearProviderTabCards();
                 return;
             }
             assert tabModel != null;
             recordPriceAnnotationsEnabledMetrics();
-            // TODO(crbug.com/562590772): Support areItemsUnchanged + quickMode in-place refresh
-            // in onProviderDataReset.
+            mPendingQuickMode = quickMode;
             dataProvider.requestDataReset();
             return;
         }
@@ -1327,6 +1332,7 @@ public class TabListMediator implements TabListNotificationHandler {
         if (!mTrackingTabs) return;
         TabListDataProvider dataProvider = mTabListConfig.dataProvider;
         if (dataProvider != null) {
+            mPendingQuickMode = false;
             dataProvider.stop();
         }
         removeObservers(mCurrentTabModelSupplier.get());
@@ -2756,43 +2762,146 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param items The snapshot of items to display, in display order.
      */
     private void onProviderDataReset(List<? extends TabListItem> items) {
+        boolean quickMode = mPendingQuickMode;
+        mPendingQuickMode = false;
         TabModel tabModel = mCurrentTabModelSupplier.get();
         if (!mTrackingTabs || tabModel == null) return;
+        removeObservers(tabModel);
 
-        assert !mSuppressUpdateLayout;
-        mSuppressUpdateLayout = true;
+        boolean itemsUnchanged = mModelList.matchesItems(items);
+        if (!itemsUnchanged) {
+            beginProviderUpdate();
+            clearProviderTabCards();
+            mTabListLayoutDelegate.reset();
+        }
+
         mInBatchReset = true;
         mTrackPricesOnTabsEnabledForBatch = null;
-        removeObservers(tabModel);
-        int insertionIndex = mModelList.tabRegionStart();
-        clearProviderTabCards();
-        mTabListLayoutDelegate.reset();
+        if (itemsUnchanged) {
+            int itemsIndex = 0;
+            for (int i = 0; i < mModelList.size(); i++) {
+                PropertyModel model = mModelList.get(i).model;
+                if (!TabProperties.isTabOrTabGroup(model)) continue;
+                boolean applied =
+                        addOrUpdateCardForItem(
+                                tabModel,
+                                items.get(itemsIndex),
+                                i,
+                                /* updateInPlace= */ true,
+                                quickMode);
+                // The snapshot matched the cards and comes from the same TabModel, so every
+                // item resolves.
+                assert applied;
+                itemsIndex++;
+            }
+        } else {
+            insertProviderItems(tabModel, items, mModelList.tabRegionStart());
+        }
+        mInBatchReset = false;
+        mTrackPricesOnTabsEnabledForBatch = null;
 
+        if (itemsUnchanged) {
+            mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
+        } else {
+            endProviderUpdate();
+        }
+    }
+
+    /** Suppresses layout updates while applying a batch of provider changes to the model list. */
+    private void beginProviderUpdate() {
+        assert !mSuppressUpdateLayout;
+        mSuppressUpdateLayout = true;
+    }
+
+    /**
+     * Re-enables layout updates after a provider batch, updates the layout, and clears the cached
+     * selected index since cards may have shifted.
+     */
+    private void endProviderUpdate() {
+        mSuppressUpdateLayout = false;
+        updateLayout();
+        mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Inserts cards for {@code items} starting at {@code insertionIndex} and attaches per-tab
+     * observers.
+     */
+    private void insertProviderItems(
+            TabModel tabModel, List<? extends TabListItem> items, int insertionIndex) {
         for (TabListItem item : items) {
-            if (item instanceof TabItem tabItem) {
-                Tab tab = tabModel.getTabById(tabItem.getTabId());
-                if (tab == null) continue;
-                addTabInfoToModelForTab(tab, insertionIndex);
-                addObserversForTab(tab);
+            if (addOrUpdateCardForItem(
+                    tabModel,
+                    item,
+                    insertionIndex,
+                    /* updateInPlace= */ false,
+                    /* quickMode= */ false)) {
                 insertionIndex++;
-            } else if (item instanceof TabGroupItem groupItem) {
-                Token tabGroupId = groupItem.getTabGroupId();
-                List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
-                if (groupTabs.isEmpty()) continue;
-                addTabInfoToModelForGroup(groupTabs.get(0), tabGroupId, insertionIndex);
+            }
+        }
+    }
+
+    /**
+     * Shows {@code item} as the card at {@code cardIndex} and starts observing its tabs.
+     *
+     * <p>If {@code updateInPlace} is true, refreshes the existing card at {@code cardIndex} with
+     * the item's current tab data and keeps its model. Otherwise inserts a new card at {@code
+     * cardIndex}. A tab group card is filled from the group's first tab.
+     *
+     * @param tabModel Used to look up the item's tabs.
+     * @param item The tab or tab group to show.
+     * @param cardIndex The card to refresh, or where to insert the new card.
+     * @param updateInPlace Whether to refresh the existing card instead of inserting one.
+     * @param quickMode Whether to skip the forced thumbnail refresh of the selected and last
+     *     selected cards. Only used when refreshing in place.
+     * @return False if the item's tabs no longer exist, so no card was added or refreshed.
+     */
+    private boolean addOrUpdateCardForItem(
+            TabModel tabModel,
+            TabListItem item,
+            int cardIndex,
+            boolean updateInPlace,
+            boolean quickMode) {
+        if (item instanceof TabItem tabItem) {
+            Tab tab = tabModel.getTabById(tabItem.getTabId());
+            if (tab == null) return false;
+            if (updateInPlace) {
+                updateTabInPlace(cardIndex, tab, quickMode);
+            } else {
+                addTabInfoToModelForTab(tab, cardIndex);
+            }
+            addObserversForTab(tab);
+            return true;
+        } else if (item instanceof TabGroupItem groupItem) {
+            Token tabGroupId = groupItem.getTabGroupId();
+            List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+            if (groupTabs.isEmpty()) return false;
+            Tab firstTab = groupTabs.get(0);
+            if (updateInPlace) {
+                updateTabInPlace(cardIndex, firstTab, quickMode);
+            } else {
+                addTabInfoToModelForGroup(firstTab, tabGroupId, cardIndex);
+            }
+            // Observe member tabs only when the group card stands in for them (GROUPED). NESTED
+            // group headers don't show member tab state.
+            if (mTabListLayoutDelegate.isChildTabRepresentedByGroupCard(firstTab)) {
                 for (Tab groupTab : groupTabs) {
                     addObserversForTab(groupTab);
                 }
-                insertionIndex++;
-            } else {
-                assert false : "Unsupported TabListItem: " + item;
             }
+            return true;
         }
+        assert false : "Unsupported TabListItem: " + item;
+        return false;
+    }
 
-        mInBatchReset = false;
-        mTrackPricesOnTabsEnabledForBatch = null;
-        mSuppressUpdateLayout = false;
-        updateLayout();
+    /**
+     * Updates the card at {@code index} in place for {@code tab}, updating the card's tab id if the
+     * primary tab changed.
+     */
+    private void updateTabInPlace(int index, Tab tab, boolean quickMode) {
+        PropertyModel model = mModelList.get(index).model;
+        updateTab(model, index, tab, model.get(TAB_ID) != tab.getId(), quickMode);
     }
 
     // End TabListDataProvider consumer methods.
