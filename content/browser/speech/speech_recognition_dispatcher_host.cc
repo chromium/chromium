@@ -26,6 +26,7 @@
 #include "content/public/browser/speech_recognition_session_config.h"
 #include "content/public/browser/speech_recognition_session_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/constants.mojom.h"
@@ -232,10 +233,12 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
 
   bool can_render_frame_use_on_device =
       is_valid_storage_context && is_policy_enabled;
+  // The accepted languages are the preference of the user that the frame is
+  // shown for.
   const std::string& language =
       SpeechRecognitionDispatcherHost::GetAcceptedLanguages(
-          params->language,
-          GetContentClient()->browser()->GetAcceptLangs(browser_context));
+          params->language, GetContentClient()->browser()->GetAcceptLangs(
+                                GetUserBrowserContext(*rfh)));
 
 #if !BUILDFLAG(IS_ANDROID)
   bool on_device_available =
