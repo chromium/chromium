@@ -1172,6 +1172,40 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void ntpPlusButtonTap_recordsPopupShownMetricsAndIphEvent() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", true)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.AttachmentButtonShown",
+                                FuseboxAttachmentButtonType.GALLERY)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+
+        recreateMediator();
+
+        assertNotEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+        histogramWatcher.assertExpected();
+        verify(mTracker).notifyEvent(EventConstants.FUSEBOX_ATTACHMENT_POPUP_USED);
+    }
+
+    @Test
+    public void plusButtonToggle_recordsShownOnceAndHiddenOnce() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", true)
+                        .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", false)
+                        .build();
+
+        mMediator.onPlusButtonClicked();
+        mMediator.onPlusButtonClicked();
+
+        histogramWatcher.assertExpected();
+        verify(mTracker).notifyEvent(EventConstants.FUSEBOX_ATTACHMENT_POPUP_USED);
+    }
+
+    @Test
     public void testPopupShowHide_floatingMode_triggersTransparentScrim() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         recreateMediator();
@@ -1286,14 +1320,14 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void plusButtonToggleClose_ntpPlusMenu_sessionEndedByPopupDismiss_doesNotCrash() {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", false)
-                        .build();
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
         recreateMediator();
         assertNotEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         endInputWhenPopupDismissed();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", false)
+                        .build();
 
         // Toolbar plus button tapped while the NTP plus menu is open.
         mMediator.onPlusButtonClicked();

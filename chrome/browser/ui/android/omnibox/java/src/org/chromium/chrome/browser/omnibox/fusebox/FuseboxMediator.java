@@ -649,26 +649,38 @@ class FuseboxMediator implements BackPressHandler {
         return true;
     }
 
-    /** Toggles the visibility of the attachments popup. */
+    /**
+     * Toggles the visibility of the attachments popup.
+     *
+     * <p>Omnibox.MobileFusebox.AttachmentsPopupToggled counts deliberate user toggles only. Every
+     * open is deliberate, so the {@code true} record lives in {@link #showPopup()} where it also
+     * covers the NTP plus button. Closing is different: {@link #dismissPopup()} runs on every close
+     * (item selected, picker launched, scrim tap, back press, session end), and those are
+     * intentionally excluded from this histogram, so the {@code false} record stays here with the
+     * explicit plus-button close.
+     */
     /* package */ void onPlusButtonClicked() {
         if (!isInInputSession()) return;
 
-        // Resolve everything the metrics call needs before toggling: for NTP plus-menu sessions,
-        // hiding the popup completes the interaction and LocationBarMediator may end the input
-        // session synchronously, which clears mProfile and mMetrics.
-        boolean toShowPopup = mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN;
-        FuseboxMetrics metrics = mMetrics;
-        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
-
-        if (toShowPopup) {
+        if (mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN) {
             showPopup();
-        } else {
-            dismissPopup();
+            return;
         }
 
-        metrics.notifyAttachmentsPopupToggled(toShowPopup, mModel, tracker);
+        // Resolve everything the metrics call needs before hiding: for NTP plus-menu sessions,
+        // hiding the popup completes the interaction and LocationBarMediator may end the input
+        // session synchronously, which clears mProfile and mMetrics.
+        FuseboxMetrics metrics = mMetrics;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
+        dismissPopup();
+        metrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ false, mModel, tracker);
     }
 
+    /**
+     * Shows the attachments popup. Records the popup impression (histograms, per-session flags and
+     * the feature engagement event) regardless of whether the popup was opened from the Omnibox
+     * plus button or from the NTP fakebox plus button.
+     */
     private void showPopup() {
         if (!isInInputSession()) return;
         // Prevent rapid clicks from "showing" the popup more than once.
@@ -694,6 +706,8 @@ class FuseboxMediator implements BackPressHandler {
             mScrimManager.showScrim(mScrimModel);
         }
         mBackPressStateSupplier.set(true);
+        mMetrics.notifyAttachmentsPopupToggled(
+                /* toShowPopup= */ true, mModel, TrackerFactory.getTrackerForProfile(mProfile));
     }
 
     /**
