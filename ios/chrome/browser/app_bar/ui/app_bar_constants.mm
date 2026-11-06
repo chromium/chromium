@@ -23,6 +23,9 @@ CGFloat AppBarHeightPortrait() {
 
 CGFloat CurrentAppBarHeightPortrait(BOOL gemini_floaty_invoked,
                                     BOOL app_bar_locked_in_fullscreen) {
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    return AppBarHeightPortrait();
+  }
   if (IsIOSGeminiBottomSheetMigrationEnabled() &&
       app_bar_locked_in_fullscreen) {
     return kAppBarHeightFullscreen;

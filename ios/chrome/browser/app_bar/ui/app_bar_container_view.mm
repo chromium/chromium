@@ -130,9 +130,8 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
     case AppBarPosition::kBottom: {
       appBarWidth = windowSize.width;
       heightInAppCoordinates = windowSize.height;
-      CGFloat portraitHeight = self.assistantContainerInvoked
-                                   ? kAppBarHeightFullscreen
-                                   : AppBarHeightPortrait();
+      CGFloat portraitHeight = CurrentAppBarHeightPortrait(
+          /*gemini_floaty_invoked=*/NO, self.assistantContainerInvoked);
       extraOffset = AlignValueToLowerPixel((1 - self.fullscreenProgress) *
                                            portraitHeight);
       break;
