@@ -14,13 +14,9 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
@@ -30,8 +26,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -42,29 +36,6 @@ import java.util.Set;
 public class MinimizedFeatureUtils {
 
     private static @Nullable Set<String> sManufacturerExcludeList;
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        MinimizedFeatureAvailability.AVAILABLE,
-        MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE,
-        MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE,
-        MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION,
-        MinimizedFeatureAvailability.UNAVAILABLE_EXCLUDED_MANUFACTURER,
-        MinimizedFeatureAvailability.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting
-    @interface MinimizedFeatureAvailability {
-        int AVAILABLE = 0;
-        // (Obsolete) int UNAVAILABLE_API_LEVEL = 1;
-        int UNAVAILABLE_LOW_END_DEVICE = 2;
-        int UNAVAILABLE_SYSTEM_FEATURE = 3;
-        int UNAVAILABLE_PIP_PERMISSION = 4;
-        int UNAVAILABLE_EXCLUDED_MANUFACTURER = 5;
-
-        int NUM_ENTRIES = 6;
-    }
 
     private static @Nullable Boolean sIsDeviceEligibleForMinimizedCustomTab;
     private static boolean sIsDeviceEligibleForMinimizedCustomTabForTesting;
@@ -81,8 +52,7 @@ public class MinimizedFeatureUtils {
     }
 
     /**
-     * Computes the eligibility of the Minimized Custom Tab feature based on multiple signals and
-     * emits histograms accordingly.
+     * Computes the eligibility of the Minimized Custom Tab feature based on multiple signals.
      *
      * @param context The {@link Context}.
      * @return Whether the device is eligible for Minimized Custom Tab feature.
@@ -94,27 +64,12 @@ public class MinimizedFeatureUtils {
             return sIsDeviceEligibleForMinimizedCustomTab;
         }
 
-        @MinimizedFeatureAvailability int availability = MinimizedFeatureAvailability.AVAILABLE;
-        sIsDeviceEligibleForMinimizedCustomTab = true;
-        if (SysUtils.isLowEndDevice()) {
-            availability = MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE;
-            sIsDeviceEligibleForMinimizedCustomTab = false;
-        } else if (!context.getPackageManager()
-                .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
-            availability = MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE;
-            sIsDeviceEligibleForMinimizedCustomTab = false;
-        } else if (!isPipAllowed(context)) {
-            availability = MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION;
-            sIsDeviceEligibleForMinimizedCustomTab = false;
-        } else if (isDeviceExcluded()) {
-            availability = MinimizedFeatureAvailability.UNAVAILABLE_EXCLUDED_MANUFACTURER;
-            sIsDeviceEligibleForMinimizedCustomTab = false;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.MinimizedFeatureAvailability",
-                availability,
-                MinimizedFeatureAvailability.NUM_ENTRIES);
+        sIsDeviceEligibleForMinimizedCustomTab =
+                !SysUtils.isLowEndDevice()
+                        && context.getPackageManager()
+                                .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+                        && isPipAllowed(context)
+                        && !isDeviceExcluded();
         ResettersForTesting.register(() -> sIsDeviceEligibleForMinimizedCustomTab = null);
         return sIsDeviceEligibleForMinimizedCustomTab;
     }

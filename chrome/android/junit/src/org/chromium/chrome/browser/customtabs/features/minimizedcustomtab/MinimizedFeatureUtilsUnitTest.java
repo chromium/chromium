@@ -31,11 +31,9 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils.MinimizedFeatureAvailability;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 
 /** Unit tests for {@link MinimizedFeatureUtils}. */
@@ -43,7 +41,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 public class MinimizedFeatureUtilsUnitTest {
     private static final String NAME = "Chrome";
     private static final int UID = 101;
-    private static final String HISTOGRAM = "CustomTabs.MinimizedFeatureAvailability";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -83,32 +80,20 @@ public class MinimizedFeatureUtilsUnitTest {
 
     @Test
     public void testSdkLevel_OAndAbove() {
-        try (var ignored =
-                HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM, MinimizedFeatureAvailability.AVAILABLE)) {
-            assertTrue(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
-        }
+        assertTrue(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
     }
 
     @Test
     public void testLowEndDevice() {
         SysUtils.setIsLowEndDeviceForTesting(true);
-        try (var ignored =
-                HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
-        }
+        assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
     }
 
     @Test
     public void testHasSystemFeatureFalse() {
         when(mPackageManager.hasSystemFeature(eq(PackageManager.FEATURE_PICTURE_IN_PICTURE)))
                 .thenReturn(false);
-        try (var ignored =
-                HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
-        }
+        assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
     }
 
     @Test
@@ -116,11 +101,7 @@ public class MinimizedFeatureUtilsUnitTest {
         when(mAppOpsManager.checkOpNoThrow(
                         eq(AppOpsManager.OPSTR_PICTURE_IN_PICTURE), eq(UID), eq(NAME)))
                 .thenReturn(AppOpsManager.MODE_IGNORED);
-        try (var ignored =
-                HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
-        }
+        assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
     }
 
     @Test
