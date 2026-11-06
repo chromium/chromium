@@ -26,7 +26,7 @@ BASE_DECLARE_FEATURE(kCommitAvailableMemoryPressureThresholds);
 
 #if BUILDFLAG(IS_MAC)
 namespace features {
-// Controls whether macOS uses physical available memory byte thresholds
+// Controls whether macOS uses available physical memory thresholds
 // instead of native OS DISPATCH_SOURCE_TYPE_MEMORYPRESSURE notifications.
 BASE_DECLARE_FEATURE(kMacAvailableMemoryPressureEvaluator);
 }  // namespace features
@@ -58,7 +58,8 @@ class ThresholdMemoryPressureEvaluator
 
 #if BUILDFLAG(IS_MAC)
   // Static factory method initializing thresholds from macOS feature
-  // parameters.
+  // parameters. Reads percentage-of-RAM parameters first and falls back to MB
+  // parameters when unset or invalid.
   static std::unique_ptr<ThresholdMemoryPressureEvaluator>
   CreateWithMacFeatureParams(std::unique_ptr<MemoryPressureVoter> voter);
 #endif

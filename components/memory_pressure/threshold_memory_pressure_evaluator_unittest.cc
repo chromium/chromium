@@ -16,6 +16,10 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/test/scoped_amount_of_physical_memory_override.h"
+#endif
+
 namespace memory_pressure {
 
 namespace {
@@ -332,6 +336,122 @@ TEST_F(ThresholdMemoryPressureEvaluatorTest,
     EXPECT_EQ(base::MiB(1200), evaluator->moderate_threshold());
     EXPECT_EQ(base::MiB(800), evaluator->critical_threshold());
   }
+}
+
+TEST_F(ThresholdMemoryPressureEvaluatorTest,
+       CreateWithMacFeatureParamsPercent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kMacAvailableMemoryPressureEvaluator,
+      {{"MacModerateThresholdPercent", "13"},
+       {"MacCriticalThresholdPercent", "9"}});
+
+  {
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::MiB(8000));
+    auto evaluator =
+        ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+    ASSERT_TRUE(evaluator);
+    EXPECT_EQ(base::MiB(1040), evaluator->moderate_threshold());
+    EXPECT_EQ(base::MiB(720), evaluator->critical_threshold());
+  }
+
+  {
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::MiB(16000));
+    auto evaluator =
+        ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+    ASSERT_TRUE(evaluator);
+    EXPECT_EQ(base::MiB(2080), evaluator->moderate_threshold());
+    EXPECT_EQ(base::MiB(1440), evaluator->critical_threshold());
+  }
+}
+
+TEST_F(ThresholdMemoryPressureEvaluatorTest,
+       CreateWithMacFeatureParamsPercentTakesPrecedence) {
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::MiB(10000));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kMacAvailableMemoryPressureEvaluator,
+      {{"MacModerateThresholdPercent", "13"},
+       {"MacCriticalThresholdPercent", "9"},
+       {"MacModerateThresholdMB", "1500"},
+       {"MacCriticalThresholdMB", "1000"}});
+
+  auto evaluator =
+      ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+  ASSERT_TRUE(evaluator);
+  EXPECT_EQ(base::MiB(1300), evaluator->moderate_threshold());
+  EXPECT_EQ(base::MiB(900), evaluator->critical_threshold());
+}
+
+TEST_F(ThresholdMemoryPressureEvaluatorTest,
+       CreateWithMacFeatureParamsPercentInvalidFallsBackToMB) {
+  // Test inverted percent thresholds (moderate < critical).
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kMacAvailableMemoryPressureEvaluator,
+        {{"MacModerateThresholdPercent", "8"},
+         {"MacCriticalThresholdPercent", "12"},
+         {"MacModerateThresholdMB", "1500"},
+         {"MacCriticalThresholdMB", "1000"}});
+
+    auto evaluator =
+        ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+    ASSERT_TRUE(evaluator);
+    EXPECT_EQ(base::MiB(1500), evaluator->moderate_threshold());
+    EXPECT_EQ(base::MiB(1000), evaluator->critical_threshold());
+  }
+
+  // Test critical = 0 with moderate set.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kMacAvailableMemoryPressureEvaluator,
+        {{"MacModerateThresholdPercent", "13"},
+         {"MacCriticalThresholdPercent", "0"},
+         {"MacModerateThresholdMB", "1500"},
+         {"MacCriticalThresholdMB", "1000"}});
+
+    auto evaluator =
+        ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+    ASSERT_TRUE(evaluator);
+    EXPECT_EQ(base::MiB(1500), evaluator->moderate_threshold());
+    EXPECT_EQ(base::MiB(1000), evaluator->critical_threshold());
+  }
+
+  // Test moderate > 100.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kMacAvailableMemoryPressureEvaluator,
+        {{"MacModerateThresholdPercent", "105"},
+         {"MacCriticalThresholdPercent", "9"},
+         {"MacModerateThresholdMB", "1500"},
+         {"MacCriticalThresholdMB", "1000"}});
+
+    auto evaluator =
+        ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+    ASSERT_TRUE(evaluator);
+    EXPECT_EQ(base::MiB(1500), evaluator->moderate_threshold());
+    EXPECT_EQ(base::MiB(1000), evaluator->critical_threshold());
+  }
+}
+
+TEST_F(ThresholdMemoryPressureEvaluatorTest,
+       CreateWithMacFeatureParamsPercentUnsetUsesMB) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kMacAvailableMemoryPressureEvaluator,
+      {{"MacModerateThresholdMB", "1500"}, {"MacCriticalThresholdMB", "1000"}});
+
+  auto evaluator =
+      ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+  ASSERT_TRUE(evaluator);
+  EXPECT_EQ(base::MiB(1500), evaluator->moderate_threshold());
+  EXPECT_EQ(base::MiB(1000), evaluator->critical_threshold());
 }
 #endif  // BUILDFLAG(IS_MAC)
 

@@ -11695,13 +11695,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_TargetCombined_1200MB_800MB_150MB_50MB_45Percent",
+                    "name": "Enabled_TargetCombined_13Pct_9Pct_150MB_50MB_45Percent",
                     "params": {
                         "MacCompressorCriticalThresholdPercent": "45",
-                        "MacCriticalThresholdMB": "800",
+                        "MacCriticalThresholdPercent": "9",
                         "MacFreeCriticalThresholdMB": "50",
                         "MacFreeModerateThresholdMB": "150",
-                        "MacModerateThresholdMB": "1200"
+                        "MacModerateThresholdPercent": "13"
                     },
                     "enable_features": [
                         "MacAvailableMemoryPressureEvaluator",

@@ -17,6 +17,10 @@
 #include "base/metrics/histogram_macros.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/system/sys_info.h"
+#endif
+
 namespace memory_pressure {
 
 #if BUILDFLAG(IS_WIN)
@@ -98,6 +102,19 @@ BASE_FEATURE_PARAM(int,
                    &features::kMacAvailableMemoryPressureEvaluator,
                    kDefaultMacCriticalThreshold.InMiB());
 
+// Thresholds as a percentage of total physical RAM. When set (non-zero), they
+// take precedence over the MB params. The available-memory plateau, where the
+// kernel pins the file cache at its protected minimum, sits at ~9-12% of RAM
+// regardless of RAM size, so a percentage means the same thing on every Mac.
+BASE_FEATURE_PARAM(int,
+                   kMacModerateThresholdPercent,
+                   &features::kMacAvailableMemoryPressureEvaluator,
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kMacCriticalThresholdPercent,
+                   &features::kMacAvailableMemoryPressureEvaluator,
+                   0);
+
 }  // namespace
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -108,8 +125,8 @@ ThresholdMemoryPressureEvaluator::ThresholdMemoryPressureEvaluator(
     : AvailableMemoryMonitorEvaluator(std::move(voter)),
       moderate_threshold_(moderate_threshold),
       critical_threshold_(critical_threshold) {
-  DCHECK_GE(moderate_threshold_, critical_threshold_);
-  DCHECK(critical_threshold_.is_positive());
+  CHECK_GE(moderate_threshold_, critical_threshold_);
+  CHECK(critical_threshold_.is_positive());
 }
 
 ThresholdMemoryPressureEvaluator::~ThresholdMemoryPressureEvaluator() = default;
@@ -130,6 +147,22 @@ ThresholdMemoryPressureEvaluator::CreateWithWinDefaults(
 std::unique_ptr<ThresholdMemoryPressureEvaluator>
 ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(
     std::unique_ptr<MemoryPressureVoter> voter) {
+  const int moderate_pct = kMacModerateThresholdPercent.Get();
+  const int critical_pct = kMacCriticalThresholdPercent.Get();
+  if (moderate_pct != 0 || critical_pct != 0) {
+    if (critical_pct > 0 && critical_pct <= moderate_pct &&
+        moderate_pct <= 100) {
+      const base::ByteSize total = base::SysInfo::AmountOfTotalPhysicalMemory();
+      return std::make_unique<ThresholdMemoryPressureEvaluator>(
+          total * moderate_pct / 100, total * critical_pct / 100,
+          std::move(voter));
+    }
+    DLOG(WARNING) << "Invalid Finch percent thresholds for Mac threshold "
+                     "memory pressure evaluator (Moderate: "
+                  << moderate_pct << "%, Critical: " << critical_pct
+                  << "%). Falling back to MB thresholds.";
+  }
+
   int moderate_mb = kMacModerateThresholdMB.Get();
   int critical_mb = kMacCriticalThresholdMB.Get();
 
