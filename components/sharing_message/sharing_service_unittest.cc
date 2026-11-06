@@ -36,7 +36,9 @@
 #include "components/sharing_message/sharing_message_handler.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -161,18 +163,8 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
 class SharingServiceTest : public testing::Test {
  public:
   SharingServiceTest() {
-    sync_prefs_ =
-        new SharingSyncPreference(&prefs_, &fake_device_info_sync_service);
-    sharing_device_registration_ = new FakeSharingDeviceRegistration(
-        /* pref_service= */ nullptr, sync_prefs_, &mock_instance_id_driver_,
-        &test_sync_service_);
-    handler_registry_ = new testing::NiceMock<MockSharingHandlerRegistry>();
-    fcm_handler_ = new testing::NiceMock<MockSharingFCMHandler>();
-    device_source_ = new testing::NiceMock<MockSharingDeviceSource>();
-    sharing_message_sender_ = new testing::NiceMock<MockSharingMessageSender>();
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
-
-    ON_CALL(*device_source_, IsReady()).WillByDefault(testing::Return(true));
+    ResetSharingService();
   }
 
   ~SharingServiceTest() override {
@@ -186,7 +178,7 @@ class SharingServiceTest : public testing::Test {
 
     // Go through the proper shutdown sequence to avoid hitting a `DCHECK` in
     // the destructor of the `SharingService`.
-    static_cast<KeyedService*>(sharing_service)->Shutdown();
+    sharing_service->Shutdown();
   }
 
   void OnMessageSent(
@@ -224,6 +216,23 @@ class SharingServiceTest : public testing::Test {
     }
     task_environment_.RunUntilIdle();
     return sharing_service_.get();
+  }
+
+  void ResetSharingService() {
+    sync_prefs_ =
+        new SharingSyncPreference(&prefs_, &fake_device_info_sync_service);
+    sharing_device_registration_ = new FakeSharingDeviceRegistration(
+        /*pref_service=*/nullptr, sync_prefs_, &mock_instance_id_driver_,
+        &test_sync_service_);
+    handler_registry_ = new testing::NiceMock<MockSharingHandlerRegistry>();
+    fcm_handler_ = new testing::NiceMock<MockSharingFCMHandler>();
+    device_source_ = new testing::NiceMock<MockSharingDeviceSource>();
+    sharing_message_sender_ = new testing::NiceMock<MockSharingMessageSender>();
+    ON_CALL(*device_source_, IsReady()).WillByDefault(testing::Return(true));
+    if (sharing_service_) {
+      sharing_service_->Shutdown();
+      sharing_service_.reset();
+    }
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -667,6 +676,42 @@ TEST_F(SharingServiceTest, StartListeningToFCMAtConstructor) {
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
   EXPECT_CALL(*fcm_handler_, StartListening()).Times(1);
   GetSharingService();
+}
+
+TEST_F(SharingServiceTest, DeviceUnregistrationWhenAlreadyRegisteredAtStartup) {
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPreferences});
+
+  // Simulate an existing registration from a previous browser session.
+  sync_prefs_->SetFCMRegistration(
+      SharingSyncPreference::FCMRegistration(base::Time::Now()));
+  GetSharingService();
+
+  // Simulate a browser restart where `SyncService` is still `INITIALIZING`
+  // when the new `SharingService` is constructed.
+  test_sync_service_.SetMaxTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+  ResetSharingService();
+  EXPECT_CALL(*fcm_handler_, StartListening());
+  GetSharingService();
+  ASSERT_EQ(SharingService::State::DISABLED,
+            GetSharingService()->GetStateForTesting());
+  EXPECT_EQ(0, sharing_device_registration_->unregistration_attempts());
+
+  // Signing out before `SyncService` transitions to `ACTIVE` should still
+  // trigger unregistration once and stop listening to FCM.
+  test_sync_service_.SetSignedOut();
+  EXPECT_CALL(*fcm_handler_, StopListening());
+  test_sync_service_.FireStateChanged();
+  EXPECT_EQ(1, sharing_device_registration_->unregistration_attempts());
+  EXPECT_EQ(SharingService::State::DISABLED,
+            GetSharingService()->GetStateForTesting());
+
+  // Subsequent `OnStateChanged()` calls should not unregister again.
+  EXPECT_CALL(*fcm_handler_, StopListening()).Times(0);
+  test_sync_service_.FireStateChanged();
+  EXPECT_EQ(1, sharing_device_registration_->unregistration_attempts());
 }
 
 TEST_F(SharingServiceTest, GetDeviceByGuid) {

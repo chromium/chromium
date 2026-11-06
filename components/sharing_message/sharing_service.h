@@ -158,11 +158,11 @@ class SharingService : public KeyedService,
   void OnEntryAddedLocally(
       const send_tab_to_self::SendTabToSelfEntry* entry) override;
 
- private:
-  void ResetConnectionToSyncService();
-
   // Overrides for KeyedService
   void Shutdown() override;
+
+ private:
+  void ResetConnectionToSyncService();
 
   // Overrides for syncer::SyncServiceObserver.
   void OnSyncShutdown(syncer::SyncService* sync) override;
@@ -193,6 +193,10 @@ class SharingService : public KeyedService,
 
   net::BackoffEntry backoff_entry_;
   State state_;
+
+  // True if the previous browser session had a persisted FCM registration
+  // that has not yet been unregistered in this session.
+  bool should_unregister_previous_session_ = false;
 
   base::CancelableTaskTracker task_tracker_;
 

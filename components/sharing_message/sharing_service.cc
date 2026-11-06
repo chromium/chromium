@@ -57,6 +57,7 @@ SharingService::SharingService(
   // to avoid missing messages.
   if (sync_prefs_ && sync_prefs_->GetFCMRegistration()) {
     fcm_handler_->StartListening();
+    should_unregister_previous_session_ = true;
   }
 
   if (sync_service_ && !sync_service_->HasObserver(this)) {
@@ -198,14 +199,29 @@ void SharingService::OnSyncShutdown(syncer::SyncService* sync) {
 }
 
 void SharingService::OnStateChanged(syncer::SyncService* sync) {
-  if (IsSyncEnabledForSharing(sync_service_) && state_ == State::DISABLED) {
-    RegisterDevice();
-  } else if (IsSyncDisabledForSharing(sync_service_) &&
-             (state_ == State::ACTIVE || state_ == State::REGISTERING)) {
-    // Unregister both when already `ACTIVE` and when still `REGISTERING` (e.g.
-    // if registration is in flight or waiting for a backoff retry when sync is
-    // disabled).
-    UnregisterDevice();
+  switch (state_) {
+    case State::ACTIVE:
+    case State::REGISTERING:
+      // TODO(crbug.com/581672240): Revisit unregistering while in
+      // `State::REGISTERING` (e.g. using a separate state for pending backoff
+      // retries).
+      if (IsSyncDisabledForSharing(sync_service_)) {
+        UnregisterDevice();
+      }
+      break;
+    case State::DISABLED:
+      if (IsSyncEnabledForSharing(sync_service_)) {
+        RegisterDevice();
+      } else if (IsSyncDisabledForSharing(sync_service_) &&
+                 should_unregister_previous_session_) {
+        // Unregister when `DISABLED` at startup with a persisted registration
+        // from a prior session (if sync transitions from `INITIALIZING` to
+        // disabled before reaching `ACTIVE`).
+        UnregisterDevice();
+      }
+      break;
+    case State::UNREGISTERING:
+      break;
   }
 }
 
@@ -240,6 +256,7 @@ void SharingService::UnregisterDevice() {
   // start a new registration before `OnDeviceUnregistered()` completes and
   // transitions the state to `REGISTERING` or `DISABLED`.
   state_ = State::UNREGISTERING;
+  should_unregister_previous_session_ = false;
   sharing_device_registration_->UnregisterDevice(base::BindOnce(
       &SharingService::OnDeviceUnregistered, weak_ptr_factory_.GetWeakPtr()));
   message_sender_->ClearPendingMessages();
