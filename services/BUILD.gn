@@ -197,6 +197,7 @@ if (is_android) {
       "device/nfc/android/junit/src/org/chromium/device/nfc/NFCTest.java",
       "device/nfc/android/junit/src/org/chromium/device/nfc/NfcBlocklistTest.java",
       "device/serial/android/javatests/src/org/chromium/device/serial/ChromeSerialManagerTest.java",
+      "device/time_zone_monitor/android/junit/src/org/chromium/device/time_zone_monitor/TimeZoneMonitorTest.java",
       "device/wake_lock/power_save_blocker/android/junit/src/org/chromium/device/power_save_blocker/PowerSaveBlockerTest.java",
       "shape_detection/android/junit/src/org/chromium/shape_detection/BitmapUtilsTest.java",
     ]
@@ -224,6 +225,7 @@ if (is_android) {
       "//services/device/public/mojom:generic_sensor_java",
       "//services/device/public/mojom:mojom_java",
       "//services/device/serial:java",
+      "//services/device/time_zone_monitor:java",
       "//services/device/wake_lock/power_save_blocker:java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",

@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 
 /** Android implementation details for device::TimeZoneMonitorAndroid. */
@@ -52,7 +53,10 @@ class TimeZoneMonitor {
     private TimeZoneMonitor(long nativePtr) {
         mNativePtr = nativePtr;
         ContextUtils.registerProtectedBroadcastReceiver(
-                ContextUtils.getApplicationContext(), mBroadcastReceiver, mFilter);
+                ContextUtils.getApplicationContext(),
+                mBroadcastReceiver,
+                mFilter,
+                ThreadUtils.getUiThreadHandler());
     }
 
     @CalledByNative
