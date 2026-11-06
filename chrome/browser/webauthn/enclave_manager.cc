@@ -2016,8 +2016,8 @@ class EnclaveManager::StateMachine {
 
     bool state_dirty = false;
 
-    MaybeUVKey maybe_uv_key =
-        std::move(std::get_if<KeyReady>(&event)->value().first);
+    auto [maybe_uv_key, identity_key] =
+        std::move(std::get<KeyReady>(event).value());
     // TODO(crbug.com/40253837): There is a presubmit bug that makes the script
     // complain about the unique_ptr within the holds_alternative if they are
     // on different lines. The type alias is just to work around that.
@@ -2037,7 +2037,7 @@ class EnclaveManager::StateMachine {
 
     manager_->identity_key_ =
         unexportable_keys::MakeRefCountedUnexportableSigningKey(
-            std::move(std::get_if<KeyReady>(&event)->value().second));
+            std::move(identity_key));
 
     if (manager_->user_verifying_key_) {
       const std::vector<uint8_t> uv_public_key =
@@ -2087,7 +2087,7 @@ class EnclaveManager::StateMachine {
     CHECK(std::holds_alternative<AccessToken>(event)) << ToString(event);
 
     state_ = State::kRegisteringWithEnclave;
-    std::string token = std::move(std::get_if<AccessToken>(&event)->value());
+    std::string token = std::move(std::get<AccessToken>(event).value());
     pending_transaction_ = enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
@@ -2110,7 +2110,7 @@ class EnclaveManager::StateMachine {
     }
 
     cbor::Value response =
-        std::move(std::get_if<EnclaveResponse>(&event)->value());
+        std::move(std::get<EnclaveResponse>(event).value());
     if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "Registration resulted in error response: "
                       << cbor::WriteDiagnostic(response);
@@ -2147,7 +2147,7 @@ class EnclaveManager::StateMachine {
     }
 
     state_ = State::kWrappingSecrets;
-    std::string token = std::move(std::get_if<AccessToken>(&event)->value());
+    std::string token = std::move(std::get<AccessToken>(event).value());
     pending_transaction_ = enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
@@ -2185,7 +2185,7 @@ class EnclaveManager::StateMachine {
     }
 
     cbor::Value response =
-        std::move(std::get_if<EnclaveResponse>(&event)->value());
+        std::move(std::get<EnclaveResponse>(event).value());
     if (!IsAllOk(response, new_security_domain_secrets.size())) {
       FIDO_LOG(ERROR) << "Wrapping resulted in error response: "
                       << cbor::WriteDiagnostic(response);
@@ -2224,7 +2224,7 @@ class EnclaveManager::StateMachine {
 
     CHECK(std::holds_alternative<JoinStatus>(event));
     const trusted_vault::TrustedVaultRegistrationStatus status =
-        std::get_if<JoinStatus>(&event)->value().first;
+        std::get<JoinStatus>(event).value().first;
 
     switch (status) {
       case trusted_vault::TrustedVaultRegistrationStatus::kSuccess:
