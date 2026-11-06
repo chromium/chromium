@@ -6825,7 +6825,7 @@ crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-onsignalings
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Skip Timeout ]
-crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Skip Timeout ]
+# crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Crash Timeout ]
 crbug.com/356930166 [ Mac14 ] external/wpt/webrtc/simplecall.https.html [ Timeout ]
@@ -6872,7 +6872,7 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-onsign
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Skip Timeout ]
-crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Skip Timeout ]
+# crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Crash Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ Crash Timeout ]
@@ -6956,7 +6956,7 @@ crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/RTCPeerConnection-perfect-nego
 crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/RTCPeerConnection-remote-track-currentTime.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Timeout ]
 crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Skip Timeout ]
-crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Skip Timeout ]
+# crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
 crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/356930166 [ Mac26 ] external/wpt/webrtc/legacy/simplecall_callbacks.optional.https.html [ Crash Timeout ]
@@ -7098,7 +7098,7 @@ crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/RTCPeerConnection-perfec
 crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/RTCPeerConnection-remote-track-currentTime.https.html [ Skip Timeout ]
 crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Timeout ]
 crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Skip Timeout ]
-crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Skip Timeout ]
+# crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Skip Timeout ]
 crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
 crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/519462980 [ Mac26-arm64 ] external/wpt/webrtc/no-media-call.html [ Timeout ]
@@ -8091,6 +8091,9 @@ crbug.com/450592015 [ Win11-arm64 ] external/wpt/webxr/idlharness.https.window.h
 
 # Disabled for landing behavior change
 crbug.com/439514253 external/wpt/webrtc-extensions/RTCRtpTransceiver-headerExtensionControl.html [ Failure Pass ]
+
+# TODO(crbug.com/webrtc/581453735): re-enable after webrtc roll
+crbug.com/webrtc/581453735 external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Failure Pass Timeout ]
 
 crbug.com/453203283 [ Mac ] virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-on-body-not-propagated-to-root.html [ Pass Timeout ]
 
