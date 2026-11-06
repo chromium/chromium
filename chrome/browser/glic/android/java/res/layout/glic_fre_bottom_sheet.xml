@@ -4,19 +4,16 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<!-- TODO(crbug.com/578631249): Remove tools:ignore once GlicBottomSheetFreCoordinator inflates this layout. -->
 <!-- TODO(crbug.com/582354339): Verify TalkBack. -->
 <org.chromium.chrome.browser.glic.ui.GlicFreRootView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/glic_fre_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="false"
-    android:importantForAccessibility="no"
-    tools:ignore="UnusedResources">
+    android:importantForAccessibility="no">
 
     <LinearLayout
         android:id="@+id/glic_fre_content_container"
