@@ -503,6 +503,9 @@
       <message name="IDS_IOS_AI_HUB_GEMINI_UNAVAILABLE_ENTERPRISE_LABEL" desc="The message displayed in the footer for the Gemini entry point of the AI hub whenever it is unavailable because of enterprise policies.">
         Gemini is turned off for your account. Contact your admin for more information.
       </message>
+      <message name="IDS_IOS_AI_HUB_GEMINI_UNAVAILABLE_INCOGNITO_LABEL" desc="The message displayed in the footer for the Gemini entry point of the AI hub whenever it is unavailable because the user is in Incognito mode.">
+        Gemini is not available in Incognito mode
+      </message>
       <message name="IDS_IOS_AI_HUB_HIDE_BUTTON_LABEL" desc="The button label for hiding feature entry points in the AI hub.">
         Turn off
       </message>

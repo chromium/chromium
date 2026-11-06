@@ -1705,6 +1705,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Gemini - Enterprise Policies"/>
   <int value="1" label="Lens - Enterprise Policies"/>
   <int value="2" label="Lens - Non Google Search Engine"/>
+  <int value="3" label="Gemini - Incognito"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h:IOSPageActionMenuFooterReason) -->

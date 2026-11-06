@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -227,6 +228,17 @@ TEST_F(PageActionMenuMediatorTest, IsGeminiAvailable) {
   fake_gemini_service_->SetIsEligible(true);
   web_state_->SetVisibleURL(GURL("chrome://newtab"));  // Ineligible URL
   EXPECT_FALSE([mediator_ geminiEntryPoint].enabled);
+
+  // Failure state 3: Gemini is not available in Incognito and returns the
+  // Incognito footer item.
+  web_state_->SetVisibleURL(GURL("https://example.com"));
+  web_state_->SetBrowserState(browser_state_->GetOffTheRecordProfile());
+  PageActionMenuContentEntryPoint* incognito_entry_point =
+      [mediator_ geminiEntryPoint];
+  EXPECT_FALSE(incognito_entry_point.enabled);
+  ASSERT_NE(incognito_entry_point.unavailabilityItem, nil);
+  EXPECT_EQ(incognito_entry_point.unavailabilityItem.metricIdentifier,
+            IOSPageActionMenuFooterReason::kGeminiIncognito);
 }
 
 // Tests that lensEntryPointForTraitCollection reflects conditions correctly.

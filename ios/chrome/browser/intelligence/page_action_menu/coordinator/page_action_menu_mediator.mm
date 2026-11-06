@@ -198,7 +198,9 @@ IOSPermissionSetting IOSPermissionSettingForPageActionMenuPermissionSetting(
 
 - (PageActionMenuContentEntryPoint*)geminiEntryPoint {
   if (_webState && _webState->GetBrowserState()->IsOffTheRecord()) {
-    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+    return [[PageActionMenuContentEntryPoint alloc]
+        initWithEnabled:NO
+             footerItem:[ContentEntryPointUnavailabilityItem geminiIncognito]];
   }
 
   if (!_geminiService || !_geminiTabHelper) {

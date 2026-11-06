@@ -55,6 +55,20 @@ TEST_F(PageActionMenuContentEntryPointTest, GeminiEnterpriseFactory) {
             IOSPageActionMenuFooterReason::kGeminiEnterprise);
 }
 
+// Tests the geminiIncognito factory method.
+TEST_F(PageActionMenuContentEntryPointTest, GeminiIncognitoFactory) {
+  ContentEntryPointUnavailabilityItem* item =
+      [ContentEntryPointUnavailabilityItem geminiIncognito];
+  EXPECT_NE(item, nil);
+  EXPECT_TRUE([item.text
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_IOS_AI_HUB_GEMINI_UNAVAILABLE_INCOGNITO_LABEL)]);
+  EXPECT_EQ(item.icon, nil);
+  EXPECT_EQ(item.actionIdentifier, nil);
+  EXPECT_EQ(item.metricIdentifier,
+            IOSPageActionMenuFooterReason::kGeminiIncognito);
+}
+
 // Tests the lensEnterprise factory method.
 TEST_F(PageActionMenuContentEntryPointTest, LensEnterpriseFactory) {
   ContentEntryPointUnavailabilityItem* item =

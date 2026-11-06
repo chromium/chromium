@@ -27,6 +27,8 @@
 - (instancetype)init NS_UNAVAILABLE;
 // Factory for an item linked to enterprise policies with Gemini.
 + (instancetype)geminiEnterprise;
+// Factory for an item linked to Incognito mode with Gemini.
++ (instancetype)geminiIncognito;
 // Factory for an item linked to enterprise policies with Lens.
 + (instancetype)lensEnterprise;
 // Factory for an item linked to the default search engine with Lens.

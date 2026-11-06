@@ -64,6 +64,16 @@ const CGFloat kIconSize = 20;
       metricIdentifier:IOSPageActionMenuFooterReason::kGeminiEnterprise];
 }
 
++ (instancetype)geminiIncognito {
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_AI_HUB_GEMINI_UNAVAILABLE_INCOGNITO_LABEL);
+  return [[ContentEntryPointUnavailabilityItem alloc]
+          initWithText:text
+                  icon:nil
+      actionIdentifier:nil
+      metricIdentifier:IOSPageActionMenuFooterReason::kGeminiIncognito];
+}
+
 + (instancetype)lensEnterprise {
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_AI_HUB_LENS_UNAVAILABLE_ENTERPRISE_LABEL);
