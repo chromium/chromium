@@ -3742,6 +3742,33 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, IsShowingResults) {
   EXPECT_FALSE(IsShowingLensResults());
   EXPECT_FALSE(IsShowingAimResults());
 
+  // 1a. An unsubmitted query (added context) in AIM zero state
+  // counts as having an active session so the ephemeral and pinned buttons
+  // stay active when the side panel is closed.
+  auto* zero_state_user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          zero_state_wc);
+  zero_state_user_data->set_has_unsubmitted_query(true);
+  EXPECT_TRUE(coordinator_->IsShowingResults());
+  EXPECT_TRUE(coordinator_->HasResults());
+  EXPECT_FALSE(IsShowingLensResults());
+  EXPECT_TRUE(IsShowingAimResults());
+
+  // Closing the panel with an unsubmitted query in zero state keeps
+  // HasResults() true while IsShowingResults() becomes false.
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_TRUE(coordinator_->HasResults());
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+
+  zero_state_user_data->set_has_unsubmitted_query(false);
+  EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(coordinator_->HasResults());
+  EXPECT_FALSE(IsShowingLensResults());
+  EXPECT_FALSE(IsShowingAimResults());
+
   // 1b. While a navigation to AIM results is still in progress (before commit),
   // HasResults() and IsShowingResults() are already true.
   auto pending_aim_nav = content::NavigationSimulator::CreateBrowserInitiated(

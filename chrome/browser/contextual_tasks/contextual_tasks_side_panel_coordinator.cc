@@ -2694,10 +2694,17 @@ bool ContextualTasksSidePanelCoordinator::IsShowingAimResults() const {
     return false;
   }
 
+  content::WebContents* web_contents = cache_it->second->web_contents.get();
+  const auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents);
+  const bool has_unsubmitted_query =
+      user_data && user_data->has_unsubmitted_query();
+
   const GURL url = GetActiveResultsUrl();
   if (!url.is_empty()) {
     return ui_service->IsAiUrl(url) &&
-           !ContextualTasksUI::IsZeroState(url, ui_service);
+           (!ContextualTasksUI::IsZeroState(url, ui_service) ||
+            has_unsubmitted_query);
   }
 
   // Pre-rearchitecture, the side panel `WebContents` loads
@@ -2706,7 +2713,7 @@ bool ContextualTasksSidePanelCoordinator::IsShowingAimResults() const {
   // task without navigating the embedded frame). In that state,
   // `GetActiveResultsUrl()` is empty even though the task already has an
   // active thread.
-  return task->GetThread().has_value();
+  return task->GetThread().has_value() || has_unsubmitted_query;
 }
 
 void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(

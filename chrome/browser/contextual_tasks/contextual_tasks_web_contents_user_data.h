@@ -281,6 +281,10 @@ class ContextualTasksWebContentsUserData
     return failed_context_uploads_;
   }
   bool submit_pending() const { return pending_submit_.has_value(); }
+  bool has_unsubmitted_query() const { return has_unsubmitted_query_; }
+  void set_has_unsubmitted_query(bool has_unsubmitted_query) {
+    has_unsubmitted_query_ = has_unsubmitted_query;
+  }
   void DeleteContext(const base::UnguessableToken& file_token);
   void DeleteTabContext(int32_t tab_id);
   bool OnBrowserTabClosedOrNavigated(SessionID tab_session_id,
@@ -433,6 +437,7 @@ class ContextualTasksWebContentsUserData
   std::optional<ImplicitTab> implicit_tab_;
   base::flat_set<GURL> dismissed_implicit_urls_;
   bool preserve_prestaged_context_ = false;
+  bool has_unsubmitted_query_ = false;
   base::RepeatingClosureList zero_state_callbacks_;
 
   base::flat_map<base::UnguessableToken,

@@ -1917,6 +1917,7 @@ void ContextualTasksWebContentsUserData::DoSubmitQueryCleanup() {
   auto& page_state = GetPrimaryPageSearchState();
   page_state.is_zero_state = false;
   page_state.has_known_page_state = true;
+  has_unsubmitted_query_ = false;
   implicit_tab_.reset();
   pending_context_uploads_.clear();
   failed_context_uploads_.clear();
@@ -2210,6 +2211,7 @@ void ContextualTasksWebContentsUserData::ClearFiles(
 #endif
   }
   implicit_tab_.reset();
+  has_unsubmitted_query_ = false;
   pending_context_uploads_.clear();
   failed_context_uploads_.clear();
   if (auto* session_handle = GetOrCreateContextualSessionHandle()) {

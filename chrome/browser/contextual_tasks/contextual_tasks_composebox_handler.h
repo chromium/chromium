@@ -126,6 +126,7 @@ class ContextualTasksComposeboxHandler
   void OnTaskChanged() override;
 
   std::vector<int32_t> GetSelectedTabIds() const override;
+  bool HasUnsubmittedQuery();
 
   // contextual_tasks::ContextualTasksService::Observer:
   void OnWillBeDestroyed() override;
@@ -240,6 +241,9 @@ class ContextualTasksComposeboxHandler
 
   // Updates the composebox with any submitted tabs from the session handle.
   void CacheSubmittedTabsFromSessionHandle();
+
+  // Syncs `HasUnsubmittedQuery()` to `ContextualTasksWebContentsUserData`.
+  void UpdateHasUnsubmittedQuery();
 
   TakeInputStateModelCallback take_input_model_callback_;
   raw_ptr<contextual_tasks::ContextualTasksUIInterface> web_ui_interface_;

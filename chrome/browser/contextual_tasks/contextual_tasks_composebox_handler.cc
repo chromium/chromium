@@ -286,6 +286,7 @@ ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() {
 void ContextualTasksComposeboxHandler::MarkContextUploadFinished(
     const base::UnguessableToken& token) {
   pending_context_uploads_.erase(token);
+  UpdateHasUnsubmittedQuery();
   MaybeSendPendingQuery();
 }
 
@@ -608,6 +609,36 @@ std::vector<int32_t> ContextualTasksComposeboxHandler::GetSelectedTabIds()
     tab_ids.push_back(tab_id);
   }
   return tab_ids;
+}
+
+bool ContextualTasksComposeboxHandler::HasUnsubmittedQuery() {
+  // Intentionally calls the base class GetSelectedTabIds() rather than the
+  // override, which also includes `delayed_tabs_`.
+  if (!pending_context_uploads_.empty() ||
+      !ContextualSearchboxHandler::GetSelectedTabIds().empty()) {
+    return true;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  // Has visual selection.
+  if (visual_selection_token_.has_value()) {
+    return true;
+  }
+#endif
+  // Check if there are any uploaded tabs in the session handle.
+  return !GetUploadedContextTokens().empty();
+}
+
+void ContextualTasksComposeboxHandler::UpdateHasUnsubmittedQuery() {
+  if (!web_ui_interface_) {
+    return;
+  }
+  content::WebContents* web_contents = web_ui_interface_->GetWebUIWebContents();
+  if (!web_contents) {
+    return;
+  }
+  contextual_tasks::ContextualTasksWebContentsUserData::
+      GetOrCreateForWebContents(web_contents)
+          ->set_has_unsubmitted_query(HasUnsubmittedQuery());
 }
 
 void ContextualTasksComposeboxHandler::OnWillBeDestroyed() {
@@ -1139,6 +1170,7 @@ void ContextualTasksComposeboxHandler::AddFileContext(
   }
   auto token = session_handle->CreateContextToken();
   pending_context_uploads_.insert(token);
+  UpdateHasUnsubmittedQuery();
   std::string mime_type = file_info->mime_type;
   std::string file_name = file_info->file_name;
   ContextualSearchboxHandler::page_->AddFileContext(token,
@@ -1225,6 +1257,7 @@ void ContextualTasksComposeboxHandler::AddTabContext(
   auto token = contextual_session_handle->CreateContextToken();
 
   pending_context_uploads_.insert(token);
+  UpdateHasUnsubmittedQuery();
 
   ContextualSearchboxHandler::ContinueAddTabContext(
       tab_id, delay_upload, token,
@@ -1270,6 +1303,7 @@ void ContextualTasksComposeboxHandler::ClearFiles(
   visual_selection_token_.reset();
   visual_selection_overlay_token_.reset();
 #endif
+  UpdateHasUnsubmittedQuery();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1374,6 +1408,7 @@ void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
     visual_selection_token_ = std::nullopt;
     visual_selection_overlay_token_ = std::nullopt;
   }
+  UpdateHasUnsubmittedQuery();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1452,6 +1487,7 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   } else if (deleted_tab_url.has_value()) {
     auto_suggestion_manager->OnTabContextRemoved(deleted_tab_url.value());
   }
+  UpdateHasUnsubmittedQuery();
 }
 
 bool ContextualTasksComposeboxHandler::HasAutoSuggestedTab() {
