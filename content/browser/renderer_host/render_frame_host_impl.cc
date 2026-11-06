@@ -13542,10 +13542,27 @@ void RenderFrameHostImpl::CommitNavigation(
         subresource_proxying_factory_bundle;
     if (subresource_loader_factories) {
       base::ElapsedTimer subresource_proxying_timer;
+      // `PendingURLLoaderFactoryBundle::CreateFactory()` ignores
+      // `local_resource_loader_config`, so
+      // `subresource_proxying_factory_bundle` does not use it. Move
+      // `local_resource_loader_config` out before constructing and cloning
+      // `bundle` so we do not deep-clone the entire WebUI resource map and
+      // generated CSS strings twice here.
+      const bool optimize_local_resource_config = base::FeatureList::IsEnabled(
+          features::kWebUIOptimizeLocalResourceLoaderConfig);
+      blink::mojom::LocalResourceLoaderConfigPtr local_resource_loader_config;
+      if (optimize_local_resource_config) {
+        local_resource_loader_config = std::move(
+            subresource_loader_factories->local_resource_loader_config());
+      }
       // Clone the factory bundle for prefetch.
       auto bundle = base::MakeRefCounted<blink::URLLoaderFactoryBundle>(
           std::move(subresource_loader_factories));
       subresource_loader_factories = CloneFactoryBundle(bundle);
+      if (optimize_local_resource_config) {
+        subresource_loader_factories->set_local_resource_loader_config(
+            std::move(local_resource_loader_config));
+      }
 
       if (base::FeatureList::IsEnabled(
               features::kReduceMojoURLLoaderFactoryCloning) &&

@@ -71,18 +71,43 @@ std::u16string GetJavascriptCallImpl(std::string_view function_name,
   return result;
 }
 
-// Populates `path_to_resource_map` with resources from `webui_data_source`.
-// This includes both IDR resources (mapped to resource IDs) and generated
-// resources (mapped to response bodies).
-void PopulateLocalResourceMap(
-    const WebUIDataSourceImpl& webui_data_source,
-    base::flat_map<std::string, blink::mojom::LocalResourceValuePtr>&
-        path_to_resource_map,
-    bool enable_in_process_loading_v2) {
-  // Add IDR resources.
-  for (const auto& [path, resource_id] : webui_data_source.path_to_idr_map()) {
-    path_to_resource_map[path] =
-        blink::mojom::LocalResourceValue::NewResourceId(resource_id);
+// Populates `loader_source`'s resource and replacement maps from
+// `webui_data_source`. This includes IDR resources (mapped to resource IDs),
+// string replacements, and generated resources (mapped to response bodies).
+void PopulateLocalResourceMap(const WebUIDataSourceImpl& webui_data_source,
+                              blink::mojom::LocalResourceSource& loader_source,
+                              bool enable_in_process_loading_v2) {
+  const auto& idr_map = webui_data_source.path_to_idr_map();
+  const auto* replacements = webui_data_source.GetReplacements();
+  if (base::FeatureList::IsEnabled(
+          features::kWebUIOptimizeLocalResourceLoaderConfig)) {
+    // `path_to_idr_map()` and `*GetReplacements()` are already sorted, unique
+    // maps. Build the underlying vectors in a single reserved pass and adopt
+    // them via `base::flat_map::replace()` to avoid O(N log N) insertions and
+    // reallocations (~700 entries for `chrome://resources`).
+    using ResourceMap =
+        base::flat_map<std::string, blink::mojom::LocalResourceValuePtr>;
+    ResourceMap::container_type resource_entries;
+    resource_entries.reserve(idr_map.size());
+    for (const auto& [path, resource_id] : idr_map) {
+      resource_entries.emplace_back(
+          path, blink::mojom::LocalResourceValue::NewResourceId(resource_id));
+    }
+    loader_source.path_to_resource_map.replace(std::move(resource_entries));
+
+    using ReplacementMap = base::flat_map<std::string, std::string>;
+    ReplacementMap::container_type replacement_entries;
+    replacement_entries.reserve(replacements->size());
+    replacement_entries.assign(replacements->begin(), replacements->end());
+    loader_source.replacement_strings.replace(std::move(replacement_entries));
+  } else {
+    // Add IDR resources and replacement strings.
+    for (const auto& [path, resource_id] : idr_map) {
+      loader_source.path_to_resource_map[path] =
+          blink::mojom::LocalResourceValue::NewResourceId(resource_id);
+    }
+    loader_source.replacement_strings.insert(replacements->begin(),
+                                             replacements->end());
   }
 
   if (!enable_in_process_loading_v2) {
@@ -94,19 +119,23 @@ void PopulateLocalResourceMap(
   webui_data_source.PopulateWebUIResources(generated_resources);
 
   for (auto& [path, content] : generated_resources) {
-    // Ensures dynamic resources, e.g., string.m.js, do not have a resource id.
-    CHECK(path_to_resource_map.find(path) == path_to_resource_map.end());
-    path_to_resource_map[path] =
-        blink::mojom::LocalResourceValue::NewResponseBody(std::move(content));
+    auto [it, inserted] = loader_source.path_to_resource_map.try_emplace(
+        path,
+        blink::mojom::LocalResourceValue::NewResponseBody(std::move(content)));
+    // Ensures dynamic resources, e.g., strings.m.js, do not collide with an
+    // existing resource id in `path_to_resource_map`.
+    CHECK(inserted);
   }
 }
 
-// Returns true if the data source from `origin` should be included for a WebUI
-// with `current_origin`.
-// For performance, a WebUI page should only receives data from its own data
-// sources and shared resources.
+// Returns true if `webui_data_source` from `origin` should be included for a
+// WebUI with `current_origin`.
+// For performance, a WebUI page should only receive data from its own data
+// sources, shared resources, or cross-origin data sources that explicitly grant
+// CORS access to `current_origin`.
 // TODO(crbug.com/459528908): Allow configuring this from URLDataSource.
-bool ShouldIncludeDataSource(const url::Origin& origin,
+bool ShouldIncludeDataSource(const WebUIDataSourceImpl& webui_data_source,
+                             const url::Origin& origin,
                              const url::Origin& current_origin,
                              bool enable_in_process_loading_v2) {
   // We only support data sources that serve URLs of the form: chrome://*
@@ -114,12 +143,22 @@ bool ShouldIncludeDataSource(const url::Origin& origin,
     return false;
   }
 
-  if (!enable_in_process_loading_v2) {
+  if (origin == current_origin || origin.host() == kChromeUIResourcesHost ||
+      origin.host() == kChromeUIThemeHost) {
     return true;
   }
 
-  return origin == current_origin || origin.host() == kChromeUIResourcesHost ||
-         origin.host() == kChromeUIThemeHost;
+  if (!enable_in_process_loading_v2 &&
+      !base::FeatureList::IsEnabled(
+          features::kWebUIOptimizeLocalResourceLoaderConfig)) {
+    return true;
+  }
+
+  const std::string current_origin_str = current_origin.Serialize();
+  const std::string allowed_origin =
+      webui_data_source.source()->GetAccessControlAllowOriginForOrigin(
+          current_origin_str);
+  return allowed_origin == "*" || allowed_origin == current_origin_str;
 }
 
 // Helper to add a single data source to the config.
@@ -130,7 +169,7 @@ void AddDataSourceToConfig(
     bool enable_in_process_loading_v2) {
   url::Origin origin = webui_data_source->GetOrigin();
 
-  if (!ShouldIncludeDataSource(origin, current_origin,
+  if (!ShouldIncludeDataSource(*webui_data_source, origin, current_origin,
                                enable_in_process_loading_v2)) {
     return;
   }
@@ -138,16 +177,14 @@ void AddDataSourceToConfig(
   auto loader_source = blink::mojom::LocalResourceSource::New();
   webui_data_source->EnsureLoadTimeDataDefaultsAdded();
   loader_source->headers =
-      URLDataManagerBackend::GetHeaders(webui_data_source, GURL("/"), "")
+      URLDataManagerBackend::GetHeaders(
+          webui_data_source, GURL("/"),
+          origin == current_origin ? std::string() : current_origin.Serialize())
           ->raw_headers();
   loader_source->should_replace_i18n_in_js =
       webui_data_source->source()->ShouldReplaceI18nInJS();
-  PopulateLocalResourceMap(*webui_data_source,
-                           loader_source->path_to_resource_map,
+  PopulateLocalResourceMap(*webui_data_source, *loader_source,
                            enable_in_process_loading_v2);
-  loader_source->replacement_strings.insert(
-      webui_data_source->GetReplacements()->begin(),
-      webui_data_source->GetReplacements()->end());
   loader_config->sources[origin] = std::move(loader_source);
 }
 

@@ -277,6 +277,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWarmUpNetworkProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDynamicTiering);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTPAssertionFeaturePolicy);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIInProcessResourceLoading);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIOptimizeLocalResourceLoaderConfig);
 
 // Please keep features in alphabetical order.
 

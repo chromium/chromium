@@ -283,6 +283,90 @@ TEST_F(WebUIImplLocalResourceLoaderConfigTest, ResourcesIsolatedPerWebUI) {
   }
 }
 
+// Verifies that even when V2 in-process resource loading is not enabled for a
+// WebUI, `LocalResourceLoaderConfig` isolates data sources per WebUI unless
+// the cross-origin data source explicitly grants CORS access.
+TEST_F(WebUIImplLocalResourceLoaderConfigTest,
+       ResourcesIsolatedPerWebUIForV1AndHonorsCors) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebUIOptimizeLocalResourceLoaderConfig);
+
+  URLDataManagerBackend data_backend;
+
+  auto* source1 = CreateDataSource("host1");
+  source1->AddResourcePath("res1.js", 101);
+  data_backend.AddDataSource(source1);
+
+  auto* source2 = CreateDataSource("host2");
+  source2->AddResourcePath("res2.js", 202);
+  data_backend.AddDataSource(source2);
+
+  auto* cors_source = CreateDataSource("cors-shared");
+  cors_source->AddAccessControlAllowOrigin(
+      url::Origin::Create(GURL("chrome://host1")));
+  cors_source->AddResourcePath("shared.js", 303);
+  data_backend.AddDataSource(cors_source);
+
+  auto* wildcard_cors_source = CreateDataSource("wildcard-shared");
+  wildcard_cors_source->SetAllowAllOrigins(true);
+  wildcard_cors_source->AddResourcePath("wildcard.js", 404);
+  data_backend.AddDataSource(wildcard_cors_source);
+
+  const url::Origin host1_origin = url::Origin::Create(GURL("chrome://host1"));
+  const url::Origin host2_origin = url::Origin::Create(GURL("chrome://host2"));
+  const url::Origin cors_origin =
+      url::Origin::Create(GURL("chrome://cors-shared"));
+  const url::Origin wildcard_origin =
+      url::Origin::Create(GURL("chrome://wildcard-shared"));
+
+  // `chrome://host1` should include `host1`, `resources`, `cors-shared`, and
+  // `wildcard-shared`, but exclude `host2`.
+  {
+    auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
+        &browser_context_, &data_backend, host1_origin,
+        /*controller=*/nullptr);
+    ASSERT_TRUE(config->sources.contains(host1_origin));
+    EXPECT_EQ(config->sources.at(host1_origin)
+                  ->path_to_resource_map.at("res1.js")
+                  ->get_resource_id(),
+              101);
+    EXPECT_TRUE(config->sources.contains(
+        url::Origin::Create(GURL("chrome://resources"))));
+    ASSERT_TRUE(config->sources.contains(cors_origin));
+    EXPECT_EQ(config->sources.at(cors_origin)
+                  ->path_to_resource_map.at("shared.js")
+                  ->get_resource_id(),
+              303);
+    EXPECT_NE(config->sources.at(cors_origin)
+                  ->headers.find("Access-Control-Allow-Origin: chrome://host1"),
+              std::string::npos);
+    ASSERT_TRUE(config->sources.contains(wildcard_origin));
+    EXPECT_NE(config->sources.at(wildcard_origin)
+                  ->headers.find("Access-Control-Allow-Origin: *"),
+              std::string::npos);
+    EXPECT_FALSE(config->sources.contains(host2_origin));
+  }
+
+  // `chrome://host2` should include `host2`, `resources`, and
+  // `wildcard-shared`, but exclude `host1` and `cors-shared`.
+  {
+    auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
+        &browser_context_, &data_backend, host2_origin,
+        /*controller=*/nullptr);
+    ASSERT_TRUE(config->sources.contains(host2_origin));
+    EXPECT_EQ(config->sources.at(host2_origin)
+                  ->path_to_resource_map.at("res2.js")
+                  ->get_resource_id(),
+              202);
+    EXPECT_TRUE(config->sources.contains(
+        url::Origin::Create(GURL("chrome://resources"))));
+    EXPECT_TRUE(config->sources.contains(wildcard_origin));
+    EXPECT_FALSE(config->sources.contains(host1_origin));
+    EXPECT_FALSE(config->sources.contains(cors_origin));
+  }
+}
+
 class WebUIImplRenderViewHostTest : public RenderViewHostTestHarness,
                                     public WebUIImplTestBase {
  public:

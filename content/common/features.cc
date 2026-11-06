@@ -930,6 +930,11 @@ BASE_FEATURE(kWebUIInProcessResourceLoading,
 #endif
 );
 
+// Optimizes WebUI `LocalResourceLoaderConfig` generation and avoids redundant
+// deep-clones during navigation commit.
+BASE_FEATURE(kWebUIOptimizeLocalResourceLoaderConfig,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables WebOTP calls in cross-origin iframes if allowed by Permissions
 // Policy.
 BASE_FEATURE(kWebOTPAssertionFeaturePolicy, base::FEATURE_DISABLED_BY_DEFAULT);
