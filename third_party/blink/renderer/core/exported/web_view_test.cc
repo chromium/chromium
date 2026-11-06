@@ -2072,10 +2072,13 @@ TEST_F(WebViewTest, ExplicitlyTargetedComposition) {
   WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
   Vector<ui::ImeTextSpan> empty_ime_text_spans;
 
+  gfx::Range composition_range = gfx::Range::InvalidRange();
   widget->SetComposition("hello", empty_ime_text_spans, gfx::Range(), 0, 0,
                          mojom::blink::ImeState::kNone,
-                         DOMNodeIdType(input2->GetDomNodeId()));
+                         DOMNodeIdType(input2->GetDomNodeId()),
+                         composition_range);
 
+  EXPECT_EQ(gfx::Range(0, 5), composition_range);
   EXPECT_EQ("helloInput 2", To<Element>(input2)->innerText().Utf8());
   EXPECT_EQ(input1, document->FocusedElement());
 }
@@ -2103,10 +2106,13 @@ TEST_F(WebViewTest, ExplicitlyTargetedCompositionTextArea) {
   WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
   Vector<ui::ImeTextSpan> empty_ime_text_spans;
 
+  gfx::Range composition_range = gfx::Range::InvalidRange();
   widget->SetComposition("hello", empty_ime_text_spans, gfx::Range(), 0, 0,
                          mojom::blink::ImeState::kNone,
-                         DOMNodeIdType(input2->GetDomNodeId()));
+                         DOMNodeIdType(input2->GetDomNodeId()),
+                         composition_range);
 
+  EXPECT_EQ(gfx::Range(0, 5), composition_range);
   EXPECT_EQ("helloInput 2", To<HTMLTextAreaElement>(input2)->Value().Utf8());
   EXPECT_EQ(input1, document->FocusedElement());
 }
@@ -2167,12 +2173,394 @@ TEST_F(WebViewTest, ExplicitlyTargetedSetCompositionWithNoFocus) {
   WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
   Vector<ui::ImeTextSpan> empty_ime_text_spans;
 
+  gfx::Range composition_range = gfx::Range::InvalidRange();
   widget->SetComposition("hello", empty_ime_text_spans, gfx::Range(), 0, 0,
                          mojom::blink::ImeState::kNone,
-                         DOMNodeIdType(input2->GetDomNodeId()));
+                         DOMNodeIdType(input2->GetDomNodeId()),
+                         composition_range);
 
+  EXPECT_EQ(gfx::Range(0, 5), composition_range);
   EXPECT_EQ("helloInput 2", To<Element>(input2)->innerText().Utf8());
   EXPECT_EQ(nullptr, document->FocusedElement());
+}
+
+TEST_F(WebViewTest, ExplicitlyTargetedCompositionReplacementRange) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
+                                     "<textarea id='input1'>Input 1</textarea>"
+                                     "<textarea id='input2'>Input 2</textarea>",
+                                     base_url);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+
+  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
+  Element* input1 = document->getElementById(AtomicString("input1"));
+  Element* input2 = document->getElementById(AtomicString("input2"));
+
+  ASSERT_TRUE(input1);
+  ASSERT_TRUE(input2);
+
+  // Focus input1 so that targeting input2 temporarily moves focus and then
+  // restores focus to input1 (which commits the composition in input2 when
+  // input2 blurs).
+  input1->Focus();
+  EXPECT_EQ(input1, document->FocusedElement());
+
+  WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
+  WebInputMethodController* controller =
+      widget->GetActiveWebInputMethodController();
+  ASSERT_TRUE(controller);
+  Vector<ui::ImeTextSpan> empty_ime_text_spans;
+  DOMNodeIdType target_id(input2->GetDomNodeId());
+
+  gfx::Range composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition(
+      "hello", empty_ime_text_spans, gfx::Range::InvalidRange(), 5, 5,
+      mojom::blink::ImeState::kNone, target_id, composition_range);
+  EXPECT_TRUE(controller->CompositionRange().IsEmpty());
+  EXPECT_EQ(gfx::Range(0, 5), composition_range);
+  EXPECT_EQ("helloInput 2", To<HTMLTextAreaElement>(input2)->Value().Utf8());
+  EXPECT_EQ(input1, document->FocusedElement());
+
+  // Passing `composition_range` as `replacement_range` replaces the committed
+  // text from the first composition rather than duplicating it.
+  gfx::Range second_composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition("hello world", empty_ime_text_spans, composition_range,
+                         11, 11, mojom::blink::ImeState::kNone, target_id,
+                         second_composition_range);
+  EXPECT_TRUE(controller->CompositionRange().IsEmpty());
+  EXPECT_EQ(gfx::Range(0, 11), second_composition_range);
+  EXPECT_EQ("hello worldInput 2",
+            To<HTMLTextAreaElement>(input2)->Value().Utf8());
+
+  widget->CommitText("hi there!", empty_ime_text_spans,
+                     second_composition_range, 0, target_id);
+  EXPECT_TRUE(controller->CompositionRange().IsEmpty());
+  EXPECT_EQ("hi there!Input 2",
+            To<HTMLTextAreaElement>(input2)->Value().Utf8());
+  EXPECT_EQ(input1, document->FocusedElement());
+}
+
+TEST_F(WebViewTest, ExplicitlyTargetedCompositionPunctuationFilteringInput) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<input type='text' id='input'>"
+      "<script>"
+      "  const input = document.getElementById('input');"
+      "  input.addEventListener('input', () => {"
+      "    input.value = input.value.replace(/\\p{P}/gu, '');"
+      "  });"
+      "</script>",
+      base_url);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+
+  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
+  auto* input =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input")));
+  ASSERT_TRUE(input);
+
+  input->Focus();
+  EXPECT_EQ(input, document->FocusedElement());
+
+  WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
+  WebInputMethodController* controller =
+      widget->GetActiveWebInputMethodController();
+  ASSERT_TRUE(controller);
+  Vector<ui::ImeTextSpan> empty_ime_text_spans;
+  DOMNodeIdType target_id(input->GetDomNodeId());
+
+  gfx::Range composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition("1?", empty_ime_text_spans, gfx::Range::InvalidRange(),
+                         2, 2, mojom::blink::ImeState::kNone, target_id,
+                         composition_range);
+  EXPECT_TRUE(controller->CompositionRange().IsEmpty());
+  EXPECT_EQ(gfx::Range(0, 1), composition_range);
+  EXPECT_EQ("1", input->Value().Utf8());
+
+  gfx::Range second_composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition("1?2!", empty_ime_text_spans, composition_range, 4, 4,
+                         mojom::blink::ImeState::kNone, target_id,
+                         second_composition_range);
+  EXPECT_TRUE(controller->CompositionRange().IsEmpty());
+  EXPECT_EQ(gfx::Range(0, 2), second_composition_range);
+  EXPECT_EQ("12", input->Value().Utf8());
+
+  widget->CommitText("1?2!3.4", empty_ime_text_spans, second_composition_range,
+                     0, target_id);
+  EXPECT_TRUE(controller->CompositionRange().IsEmpty());
+  EXPECT_EQ("1234", input->Value().Utf8());
+}
+
+TEST_F(WebViewTest, ExplicitlyTargetedCompositionReplacesSelection) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<input type='text' id='input' value='Prefix ReplaceMe Suffix'>"
+      "<script>"
+      "  const input = document.getElementById('input');"
+      "  input.addEventListener('input', () => {"
+      "    input.value = input.value.replace(/\\p{P}/gu, '');"
+      "  });"
+      "</script>",
+      base_url);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+
+  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
+  auto* input =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input")));
+  ASSERT_TRUE(input);
+
+  // Select "ReplaceMe" (offsets 7..16) so that starting a new composition
+  // replaces a non-empty selection.
+  input->Focus();
+  input->SetSelectionRange(7, 16);
+
+  WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
+  WebInputMethodController* controller =
+      widget->GetActiveWebInputMethodController();
+  ASSERT_TRUE(controller);
+  Vector<ui::ImeTextSpan> empty_ime_text_spans;
+  DOMNodeIdType target_id(input->GetDomNodeId());
+
+  gfx::Range composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition("1?", empty_ime_text_spans, gfx::Range::InvalidRange(),
+                         2, 2, mojom::blink::ImeState::kNone, target_id,
+                         composition_range);
+  EXPECT_TRUE(controller->CompositionRange().IsEmpty());
+  EXPECT_EQ(gfx::Range(7, 8), composition_range);
+  EXPECT_EQ("Prefix 1 Suffix", input->Value().Utf8());
+
+  widget->CommitText("123", empty_ime_text_spans, composition_range, 0,
+                     target_id);
+  EXPECT_EQ("Prefix 123 Suffix", input->Value().Utf8());
+}
+
+TEST_F(WebViewTest, ExplicitlyTargetedCompositionPageChangesFocus) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<input type='text' id='input1' value='Prefix '>"
+      "<input type='text' id='input2'>"
+      "<script>"
+      "  const input1 = document.getElementById('input1');"
+      "  const input2 = document.getElementById('input2');"
+      "  input1.addEventListener('input', () => {"
+      "    input2.focus();"
+      "  }, { once: true });"
+      "</script>",
+      base_url);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+
+  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
+  auto* input1 =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input1")));
+  auto* input2 =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input2")));
+  ASSERT_TRUE(input1);
+  ASSERT_TRUE(input2);
+
+  input1->Focus();
+  input1->SetSelectionRange(7, 7);
+  EXPECT_EQ(input1, document->FocusedElement());
+
+  WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
+  WebInputMethodController* controller =
+      widget->GetActiveWebInputMethodController();
+  ASSERT_TRUE(controller);
+  Vector<ui::ImeTextSpan> empty_ime_text_spans;
+  DOMNodeIdType target_id(input1->GetDomNodeId());
+
+  gfx::Range composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition(
+      "hello", empty_ime_text_spans, gfx::Range::InvalidRange(), 5, 5,
+      mojom::blink::ImeState::kNone, target_id, composition_range);
+  EXPECT_EQ(input2, document->FocusedElement());
+  EXPECT_TRUE(controller->CompositionRange().IsEmpty());
+  EXPECT_EQ(gfx::Range(7, 12), composition_range);
+  EXPECT_EQ("Prefix hello", input1->Value().Utf8());
+
+  widget->CommitText("hi there", empty_ime_text_spans, composition_range, 0,
+                     target_id);
+  EXPECT_EQ(input2, document->FocusedElement());
+  EXPECT_EQ("Prefix hi there", input1->Value().Utf8());
+  EXPECT_EQ("", input2->Value().Utf8());
+}
+
+TEST_F(WebViewTest, ExplicitlyTargetedCompositionNonEditable) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<input type='text' id='input' value='Prefix ' readonly>", base_url);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+
+  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
+  auto* input =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input")));
+  ASSERT_TRUE(input);
+
+  input->Focus();
+  input->SetSelectionRange(7, 7);
+
+  WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
+  Vector<ui::ImeTextSpan> empty_ime_text_spans;
+  DOMNodeIdType target_id(input->GetDomNodeId());
+
+  gfx::Range composition_range = gfx::Range::InvalidRange();
+  EXPECT_FALSE(widget->SetComposition(
+      "hello", empty_ime_text_spans, gfx::Range::InvalidRange(), 5, 5,
+      mojom::blink::ImeState::kNone, target_id, composition_range));
+  EXPECT_FALSE(composition_range.IsValid());
+  EXPECT_EQ("Prefix ", input->Value().Utf8());
+
+  EXPECT_FALSE(widget->SetComposition(
+      "hello", empty_ime_text_spans, gfx::Range(0, 6), 5, 5,
+      mojom::blink::ImeState::kNone, target_id, composition_range));
+  EXPECT_FALSE(composition_range.IsValid());
+  EXPECT_EQ("Prefix ", input->Value().Utf8());
+}
+
+TEST_F(WebViewTest,
+       ExplicitlyTargetedCompositionPageChangesFocusBeforeInsertion) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<input type='text' id='input1' value='Prefix Suffix'>"
+      "<input type='text' id='input2'>"
+      "<script>"
+      "  const input1 = document.getElementById('input1');"
+      "  const input2 = document.getElementById('input2');"
+      "  input1.addEventListener('beforeinput', () => {"
+      "    input2.focus();"
+      "  }, { once: true });"
+      "</script>",
+      base_url);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+
+  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
+  auto* input1 =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input1")));
+  auto* input2 =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input2")));
+  ASSERT_TRUE(input1);
+  ASSERT_TRUE(input2);
+
+  input1->Focus();
+  input1->SetSelectionRange(7, 7);
+  EXPECT_EQ(input1, document->FocusedElement());
+
+  WebFrameWidgetImpl* widget = web_view->MainFrameImpl()->FrameWidgetImpl();
+  Vector<ui::ImeTextSpan> empty_ime_text_spans;
+  DOMNodeIdType target_id(input1->GetDomNodeId());
+
+  gfx::Range composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition(
+      "hello", empty_ime_text_spans, gfx::Range::InvalidRange(), 5, 5,
+      mojom::blink::ImeState::kNone, target_id, composition_range);
+  EXPECT_EQ(input2, document->FocusedElement());
+  EXPECT_FALSE(composition_range.IsValid());
+  EXPECT_EQ("Prefix Suffix", input1->Value().Utf8());
+  EXPECT_EQ("hello", input2->Value().Utf8());
+
+  widget->CommitText("hi there ", empty_ime_text_spans, composition_range, 0,
+                     target_id);
+  EXPECT_EQ(input2, document->FocusedElement());
+  EXPECT_EQ("Prefix hi there Suffix", input1->Value().Utf8());
+}
+
+TEST_F(WebViewTest, ExplicitlyTargetedCommitTextReplacementMovesCaret) {
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<input type='text' id='input' value='Hello world'>"
+      "<div id='editable' contenteditable>Hello world</div>"
+      "<script>"
+      "  const input = document.getElementById('input');"
+      "  input.addEventListener('input', () => {"
+      "    if (/\\p{P}/u.test(input.value)) {"
+      "      input.value = input.value.replace(/\\p{P}/gu, '');"
+      "    }"
+      "  });"
+      "  const editable = document.getElementById('editable');"
+      "  editable.addEventListener('input', () => {"
+      "    if (/\\p{P}/u.test(editable.textContent)) {"
+      "      editable.textContent ="
+      "          editable.textContent.replace(/\\p{P}/gu, '');"
+      "    }"
+      "  });"
+      "</script>",
+      base_url);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+
+  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
+  auto* input =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input")));
+  Element* editable = document->getElementById(AtomicString("editable"));
+  ASSERT_TRUE(input);
+  ASSERT_TRUE(editable);
+
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  WebFrameWidgetImpl* widget = frame->FrameWidgetImpl();
+  WebInputMethodController* controller = frame->GetInputMethodController();
+  ASSERT_TRUE(controller);
+  Vector<ui::ImeTextSpan> empty_ime_text_spans;
+
+  // 1. `<input>`: rewriting `input.value` during `SetComposition` moves the
+  // selection to the end of the field; `CommitText` with `replacement_range`
+  // should move the caret right after the committed text.
+  input->Focus();
+  input->SetSelectionRange(6, 6);
+  DOMNodeIdType input_id(input->GetDomNodeId());
+
+  gfx::Range input_composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition("1?", empty_ime_text_spans, gfx::Range::InvalidRange(),
+                         2, 2, mojom::blink::ImeState::kNone, input_id,
+                         input_composition_range);
+  EXPECT_EQ(gfx::Range(6, 7), input_composition_range);
+  EXPECT_EQ("Hello 1world", input->Value().Utf8());
+  EXPECT_EQ(12u, input->selectionStart());
+  EXPECT_EQ(12u, input->selectionEnd());
+
+  widget->CommitText("123 ", empty_ime_text_spans, input_composition_range, 0,
+                     input_id);
+  EXPECT_EQ("Hello 123 world", input->Value().Utf8());
+  EXPECT_EQ(10u, input->selectionStart());
+  EXPECT_EQ(10u, input->selectionEnd());
+
+  // 2. `contenteditable`: rewriting `textContent` during `SetComposition`
+  // collapses the selection to (0, 0); `CommitText` with `replacement_range`
+  // should move the caret right after the committed text.
+  editable->Focus();
+  frame->SetEditableSelectionOffsets(6, 6);
+  DOMNodeIdType editable_id(editable->GetDomNodeId());
+
+  gfx::Range editable_composition_range = gfx::Range::InvalidRange();
+  widget->SetComposition("1?", empty_ime_text_spans, gfx::Range::InvalidRange(),
+                         2, 2, mojom::blink::ImeState::kNone, editable_id,
+                         editable_composition_range);
+  EXPECT_EQ(gfx::Range(6, 7), editable_composition_range);
+  EXPECT_EQ("Hello 1world", editable->textContent().Utf8());
+  EXPECT_EQ(0, controller->GetSelectionOffsets().StartOffset());
+  EXPECT_EQ(0, controller->GetSelectionOffsets().EndOffset());
+
+  widget->CommitText("123 ", empty_ime_text_spans, editable_composition_range,
+                     0, editable_id);
+  EXPECT_EQ("Hello 123 world", editable->textContent().Utf8());
+  EXPECT_EQ(10, controller->GetSelectionOffsets().StartOffset());
+  EXPECT_EQ(10, controller->GetSelectionOffsets().EndOffset());
 }
 
 TEST_F(WebViewTest, ExplicitlyTargetedPasteIntoNode) {

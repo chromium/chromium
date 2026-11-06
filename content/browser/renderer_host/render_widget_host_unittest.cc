@@ -3398,12 +3398,14 @@ TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
   int length = text.length();
   GlobalDOMNodeId node_id;
   node_id.target_element_dom_id = blink::DOMNodeIdType(123);
+  gfx::Range replacement_range(0, 3);
 
   ui::ImeTextSpan ime_text_span;
   ime_text_span.end_offset = length;
   ime_text_span.underline_style = ui::ImeTextSpan::UnderlineStyle::kDot;
-  host_->SetExternallySourcedComposition(text, {ime_text_span}, node_id,
-                                         /*on_complete=*/base::OnceClosure());
+  host_->SetExternallySourcedComposition(
+      text, {ime_text_span}, replacement_range, node_id,
+      /*on_complete=*/base::OnceCallback<void(const gfx::Range&)>());
 
   {
     MockWidgetInputHandler::MessageVector dispatched_messages =
@@ -3414,12 +3416,12 @@ TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
     ASSERT_TRUE(ime_message);
     EXPECT_EQ("SetComposition", ime_message->name());
     EXPECT_TRUE(ime_message->Matches(
-        text, {ime_text_span}, gfx::Range::InvalidRange(), length, length,
+        text, {ime_text_span}, replacement_range, length, length,
         blink::mojom::ImeState::kNone, node_id.target_element_dom_id));
   }
 
   host_->CommitExternallySourcedComposition(
-      text, node_id, /*on_complete=*/base::OnceClosure());
+      text, replacement_range, node_id, /*on_complete=*/base::OnceClosure());
 
   {
     MockWidgetInputHandler::MessageVector dispatched_messages =
@@ -3430,7 +3432,7 @@ TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
     ASSERT_TRUE(ime_message);
     EXPECT_EQ("CommitText", ime_message->name());
     EXPECT_TRUE(ime_message->Matches(
-        text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0, 0,
+        text, std::vector<ui::ImeTextSpan>(), replacement_range, 0, 0,
         blink::mojom::ImeState::kNone, node_id.target_element_dom_id));
   }
 }

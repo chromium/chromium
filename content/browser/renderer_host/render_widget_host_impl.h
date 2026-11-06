@@ -255,10 +255,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetExternallySourcedComposition(
       const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
       const GlobalDOMNodeId& target_dom_node_id,
-      base::OnceClosure on_complete) override;
+      base::OnceCallback<void(const gfx::Range&)> on_complete) override;
   void CommitExternallySourcedComposition(
       const std::u16string& text,
+      const gfx::Range& replacement_range,
       const GlobalDOMNodeId& target_dom_node_id,
       base::OnceClosure on_complete) override;
   void PasteIntoNode(const std::u16string& text,

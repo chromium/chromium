@@ -1361,15 +1361,15 @@ void InputHandler::ImeSetComposition(
     }
   }
 
-  base::OnceClosure closure = base::BindOnce(
-      &ImeSetCompositionCallback::sendSuccess, std::move(callback));
+  auto on_complete = base::IgnoreArgs<const gfx::Range&>(base::BindOnce(
+      &ImeSetCompositionCallback::sendSuccess, std::move(callback)));
 
   widget_host->Focus();
 
   widget_host->GetWidgetInputHandler()->ImeSetComposition(
       text16, std::vector<ui::ImeTextSpan>(), replacement_range,
       selection_start, selection_end, blink::mojom::ImeState::kNone,
-      /*target_dom_node_id=*/blink::DOMNodeIdType(), std::move(closure));
+      /*target_dom_node_id=*/blink::DOMNodeIdType(), std::move(on_complete));
 }
 
 void InputHandler::DispatchMouseEvent(

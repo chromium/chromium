@@ -30,6 +30,11 @@ class CORE_EXPORT WebInputMethodControllerImpl
   DISALLOW_NEW();
 
  public:
+  enum class CommitReplacementSelectionBehavior {
+    kKeepSelection,
+    kMoveCaret,
+  };
+
   explicit WebInputMethodControllerImpl(WebLocalFrameImpl& web_frame);
   WebInputMethodControllerImpl(const WebInputMethodControllerImpl&) = delete;
   WebInputMethodControllerImpl& operator=(const WebInputMethodControllerImpl&) =
@@ -70,6 +75,13 @@ class CORE_EXPORT WebInputMethodControllerImpl
   void SetVirtualKeyboardVisibilityRequest(
       ui::mojom::VirtualKeyboardVisibilityRequest vk_visibility_request)
       override;
+
+  bool CommitText(
+      const WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const WebRange& replacement_range,
+      int relative_caret_position,
+      CommitReplacementSelectionBehavior replacement_selection_behavior);
 
   void Trace(Visitor*) const;
 

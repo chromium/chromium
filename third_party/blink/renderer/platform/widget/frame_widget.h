@@ -209,13 +209,17 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void ClearTextInputState() = 0;
 
   // This message sends a string being composed with an input method.
+  // `composition_range` is populated with the resulting range of the
+  // composition (or text immediately committed by the page) in the target
+  // element.
   virtual bool SetComposition(const String& text,
                               const Vector<ui::ImeTextSpan>& ime_text_spans,
                               const gfx::Range& replacement_range,
                               int selection_start,
                               int selection_end,
                               mojom::blink::ImeState ime_state,
-                              DOMNodeIdType target_dom_node_id) = 0;
+                              DOMNodeIdType target_dom_node_id,
+                              gfx::Range& composition_range) = 0;
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.

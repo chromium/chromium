@@ -159,6 +159,17 @@ bool WebInputMethodControllerImpl::CommitText(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const WebRange& replacement_range,
     int relative_caret_position) {
+  return CommitText(text, ime_text_spans, replacement_range,
+                    relative_caret_position,
+                    CommitReplacementSelectionBehavior::kKeepSelection);
+}
+
+bool WebInputMethodControllerImpl::CommitText(
+    const WebString& text,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    const WebRange& replacement_range,
+    int relative_caret_position,
+    CommitReplacementSelectionBehavior replacement_selection_behavior) {
   if (!text.IsEmpty()) {
     LocalFrame::NotifyUserActivation(
         GetFrame(), mojom::blink::UserActivationNotificationType::kInteraction);
@@ -179,10 +190,16 @@ bool WebInputMethodControllerImpl::CommitText(
   GetFrame()->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kInput);
 
   if (!replacement_range.IsNull()) {
+    PlainTextRange plain_text_range(replacement_range.StartOffset(),
+                                    replacement_range.EndOffset());
+    if (replacement_selection_behavior ==
+        CommitReplacementSelectionBehavior::kMoveCaret) {
+      return GetInputMethodController().ReplaceTextAndMoveCaret(
+          text, plain_text_range, relative_caret_position);
+    }
     return GetInputMethodController().ReplaceTextAndKeepSelection(
         text, ImeTextSpanVectorBuilder::Build(ime_text_spans),
-        PlainTextRange(replacement_range.StartOffset(),
-                       replacement_range.EndOffset()));
+        plain_text_range);
   }
 
   return GetInputMethodController().CommitText(

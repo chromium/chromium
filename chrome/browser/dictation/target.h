@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/dictation/dictation_agent.mojom.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/gfx/range/range.h"
 
 namespace content {
 struct FocusedNodeDetails;
@@ -85,9 +86,11 @@ class Target {
   virtual void SetExternallySourcedComposition(
       const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& spans,
-      base::OnceClosure on_complete);
+      const gfx::Range& replacement_range,
+      base::OnceCallback<void(const gfx::Range&)> on_complete);
   virtual void CommitExternallySourcedComposition(
       const std::u16string& text,
+      const gfx::Range& replacement_range,
       base::OnceClosure on_complete);
   virtual void PasteIntoNode(const std::u16string& text);
   virtual std::optional<std::u16string_view> GetTextPrecedingSelection();
@@ -123,6 +126,9 @@ class Target {
                                 base::OnceClosure operation_complete);
   // Dispatches the given operation based on its type.
   void ExecuteOperation(QueuedOperation op);
+  // Called when SetExternallySourcedComposition completes.
+  void OnSetCompositionComplete(base::OnceClosure operation_complete,
+                                const gfx::Range& composition_range);
   // Called when the currently executing operations completes.
   void OnOperationComplete(base::OnceClosure on_commit_complete);
 
@@ -133,6 +139,11 @@ class Target {
 
   TargetDetails target_details_;
   std::u16string last_sent_composition_;
+  // The range of the last composition (or text immediately committed by the
+  // page) reported by the renderer. Passed as the replacement range on
+  // subsequent composition updates and commits in case the active IME
+  // composition was lost.
+  gfx::Range last_composition_range_ = gfx::Range::InvalidRange();
   bool has_lost_focus_during_composition_ = false;
   bool paste_fallback_required_ = false;
 

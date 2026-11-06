@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/exported/web_input_method_controller_impl.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -316,7 +317,8 @@ class CORE_EXPORT WebFrameWidgetImpl
                       int selection_start,
                       int selection_end,
                       mojom::blink::ImeState ime_state,
-                      DOMNodeIdType target_dom_node_id) override;
+                      DOMNodeIdType target_dom_node_id,
+                      gfx::Range& composition_range) override;
   void CommitText(const String& text,
                   const Vector<ui::ImeTextSpan>& ime_text_spans,
                   const gfx::Range& replacement_range,
@@ -400,7 +402,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // WebFrameWidget overrides.
   void InitializeNonCompositing(WebNonCompositedWidgetClient* client) override;
   WebLocalFrame* LocalRoot() const override;
-  WebInputMethodController* GetActiveWebInputMethodController() const override;
+  WebInputMethodControllerImpl* GetActiveWebInputMethodController()
+      const override;
   void DisableDragAndDrop() override;
   WebLocalFrameImpl* FocusedWebLocalFrameInWidget() const override;
   bool ScrollFocusedEditableElementIntoView() override;

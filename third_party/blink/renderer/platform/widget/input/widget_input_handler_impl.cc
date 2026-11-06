@@ -116,9 +116,10 @@ static void ImeSetCompositionOnMainThread(
     mojom::blink::ImeState ime_state,
     DOMNodeIdType target_dom_node_id,
     WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
-  widget->ImeSetComposition(text, ime_text_spans, range, start, end, ime_state,
-                            target_dom_node_id);
-  callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+  gfx::Range composition_range = widget->ImeSetComposition(
+      text, ime_text_spans, range, start, end, ime_state, target_dom_node_id);
+  callback_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), composition_range));
 }
 
 void WidgetInputHandlerImpl::ImeSetComposition(

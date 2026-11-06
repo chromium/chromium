@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
@@ -101,8 +102,10 @@
 #include "third_party/blink/renderer/core/editing/reveal_selection_scope.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/clipboard_event.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
+#include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
@@ -253,6 +256,30 @@ class TargetImeNodeFocusChangeScope {
   Document* document_ = nullptr;
   Element* previous_focused_ = nullptr;
   bool focus_changed_ = false;
+};
+
+// Used during `WebFrameWidgetImpl::SetComposition` to detect whether the
+// composition text was actually inserted into the initially focused element.
+// `WebInputMethodController::SetComposition` returns whether a composition is
+// still active at the end of the call, which is false both when no text was
+// inserted (e.g., the element is not editable or a `compositionstart` /
+// `beforeinput` handler moved focus away before insertion) and when text was
+// inserted and the composition was then lost during an `input` event handler.
+// Observing a trusted composing `input` event on the element distinguishes
+// between these cases.
+class CompositionInputEventListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event* event) override {
+    if (event->IsInputEvent() && event->isTrusted() &&
+        static_cast<InputEvent*>(event)->isComposing()) {
+      did_insert_composition_ = true;
+    }
+  }
+
+  bool did_insert_composition() const { return did_insert_composition_; }
+
+ private:
+  bool did_insert_composition_ = false;
 };
 
 using ::ui::mojom::blink::DragOperation;
@@ -1674,7 +1701,7 @@ void WebFrameWidgetImpl::OnDevToolsSessionConnectionChanged(bool attached) {
   widget_base_->OnDevToolsSessionConnectionChanged(attached);
 }
 
-WebInputMethodController*
+WebInputMethodControllerImpl*
 WebFrameWidgetImpl::GetActiveWebInputMethodController() const {
   WebLocalFrameImpl* local_frame =
       WebLocalFrameImpl::FromFrame(FocusedLocalFrameInWidget());
@@ -4510,7 +4537,10 @@ bool WebFrameWidgetImpl::SetComposition(
     int selection_start,
     int selection_end,
     mojom::blink::ImeState ime_state,
-    DOMNodeIdType target_dom_node_id) {
+    DOMNodeIdType target_dom_node_id,
+    gfx::Range& composition_range) {
+  CHECK_NE(&replacement_range, &composition_range);
+  composition_range = gfx::Range::InvalidRange();
   TargetImeNodeFocusChangeScope focus_scope(target_dom_node_id);
 
   WebInputMethodController* controller = GetActiveWebInputMethodController();
@@ -4518,13 +4548,109 @@ bool WebFrameWidgetImpl::SetComposition(
     return false;
   }
 
-  return controller->SetComposition(
+  Element* initial_focused_element = FocusedElement();
+  WebRange initial_composition = controller->CompositionRange();
+  // When targeting a specific node, an active IME composition takes priority
+  // over `replacement_range` (which is only used as a fallback if the
+  // composition was lost).
+  gfx::Range effective_replacement_range =
+      !target_dom_node_id.is_null() && !initial_composition.IsEmpty()
+          ? gfx::Range::InvalidRange()
+          : replacement_range;
+
+  // Record the start offset and length of the text range that `SetComposition`
+  // will replace (either the existing IME composition, the explicit replacement
+  // range, or the current selection) so we can still determine the resulting
+  // range if the composition is immediately committed or modified by the page.
+  std::optional<uint32_t> insertion_start;
+  uint32_t replaced_length = 0;
+  if (!initial_composition.IsEmpty()) {
+    insertion_start =
+        base::checked_cast<uint32_t>(initial_composition.StartOffset());
+    replaced_length =
+        base::checked_cast<uint32_t>(initial_composition.length());
+  } else if (effective_replacement_range.IsValid()) {
+    insertion_start =
+        base::checked_cast<uint32_t>(effective_replacement_range.start());
+    replaced_length =
+        base::checked_cast<uint32_t>(effective_replacement_range.length());
+  } else if (WebRange selection = controller->GetSelectionOffsets();
+             !selection.IsNull()) {
+    insertion_start = base::checked_cast<uint32_t>(selection.StartOffset());
+    replaced_length = base::checked_cast<uint32_t>(selection.length());
+  }
+
+  // Record the total plain-text length outside the replaced range so that if a
+  // page event handler modifies the text and ends the composition during
+  // `SetComposition`, we can infer how many characters remain in the inserted
+  // region from the change in total text length.
+  uint32_t surrounding_text_length = 0;
+  if (insertion_start.has_value()) {
+    uint32_t initial_text_length = base::checked_cast<uint32_t>(
+        controller->TextInputInfo().value.length());
+    surrounding_text_length = initial_text_length > replaced_length
+                                  ? initial_text_length - replaced_length
+                                  : 0;
+  }
+
+  CompositionInputEventListener* input_listener = nullptr;
+  if (!text.empty() && initial_focused_element) {
+    input_listener = MakeGarbageCollected<CompositionInputEventListener>();
+    initial_focused_element->addEventListener(
+        event_type_names::kInput, input_listener, /*use_capture=*/true);
+  }
+
+  bool result = controller->SetComposition(
       text, base::ToVector(ime_text_spans),
-      replacement_range.IsValid()
-          ? WebRange(base::checked_cast<int>(replacement_range.start()),
-                     base::checked_cast<int>(replacement_range.length()))
+      effective_replacement_range.IsValid()
+          ? WebRange(
+                base::checked_cast<int>(effective_replacement_range.start()),
+                base::checked_cast<int>(effective_replacement_range.length()))
           : WebRange(),
       selection_start, selection_end, ime_state);
+
+  bool did_insert_composition = false;
+  if (input_listener) {
+    initial_focused_element->removeEventListener(
+        event_type_names::kInput, input_listener, /*use_capture=*/true);
+    did_insert_composition = input_listener->did_insert_composition();
+  }
+
+  if (!text.empty()) {
+    controller = GetActiveWebInputMethodController();
+    if (controller && FocusedElement() == initial_focused_element) {
+      WebRange current_composition = controller->CompositionRange();
+      if (!current_composition.IsEmpty()) {
+        // The composition is still active; report its exact range.
+        composition_range = gfx::Range(
+            base::checked_cast<uint32_t>(current_composition.StartOffset()),
+            base::checked_cast<uint32_t>(current_composition.EndOffset()));
+      } else if (did_insert_composition && insertion_start.has_value()) {
+        // The composition was inserted into `initial_focused_element` and then
+        // lost while focus remained on the same element (e.g., an `input` event
+        // handler rewrote `.value` or `.textContent`). Because such DOM updates
+        // can move the selection to the end of an `<input>` or collapse it to
+        // the start of a `contenteditable`, compute the inserted text length
+        // from the change in total plain-text length.
+        uint32_t current_text_length = base::checked_cast<uint32_t>(
+            controller->TextInputInfo().value.length());
+        if (current_text_length >= surrounding_text_length) {
+          composition_range = gfx::Range(
+              *insertion_start, *insertion_start + (current_text_length -
+                                                    surrounding_text_length));
+        }
+      }
+    } else if (did_insert_composition && insertion_start.has_value()) {
+      // The composition was inserted into `initial_focused_element`, and then
+      // focus moved away during `SetComposition` (committing `text`), so
+      // `controller` no longer queries the original element. Fall back to the
+      // range of `text` at `insertion_start`.
+      composition_range =
+          gfx::Range(*insertion_start, *insertion_start + text.length());
+    }
+  }
+
+  return result;
 }
 
 void WebFrameWidgetImpl::CommitText(
@@ -4536,25 +4662,39 @@ void WebFrameWidgetImpl::CommitText(
   TargetImeNodeFocusChangeScope focus_scope(target_dom_node_id);
 
   std::optional<RevealSelectionScope> reveal_selection_scope;
+  auto replacement_selection_behavior = WebInputMethodControllerImpl::
+      CommitReplacementSelectionBehavior::kKeepSelection;
   if (LocalFrame* target_frame = !target_dom_node_id.is_null()
                                      ? FocusedLocalFrameInWidget()
                                      : nullptr) {
     // If given a target node, keep the selection in view.
     reveal_selection_scope.emplace(*target_frame);
+    replacement_selection_behavior = WebInputMethodControllerImpl::
+        CommitReplacementSelectionBehavior::kMoveCaret;
   }
 
-  WebInputMethodController* controller = GetActiveWebInputMethodController();
+  WebInputMethodControllerImpl* controller =
+      GetActiveWebInputMethodController();
   if (!controller) {
     return;
   }
 
+  // When targeting a specific node, an active IME composition takes priority
+  // over `replacement_range` (which is only used as a fallback if the
+  // composition was lost).
+  gfx::Range effective_replacement_range =
+      !target_dom_node_id.is_null() && !controller->CompositionRange().IsEmpty()
+          ? gfx::Range::InvalidRange()
+          : replacement_range;
+
   controller->CommitText(
       text, base::ToVector(ime_text_spans),
-      replacement_range.IsValid()
-          ? WebRange(base::checked_cast<int>(replacement_range.start()),
-                     base::checked_cast<int>(replacement_range.length()))
+      effective_replacement_range.IsValid()
+          ? WebRange(
+                base::checked_cast<int>(effective_replacement_range.start()),
+                base::checked_cast<int>(effective_replacement_range.length()))
           : WebRange(),
-      relative_cursor_pos);
+      relative_cursor_pos, replacement_selection_behavior);
 }
 
 void WebFrameWidgetImpl::PasteIntoNode(const String& text,

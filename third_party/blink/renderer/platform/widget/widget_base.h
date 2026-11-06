@@ -293,13 +293,13 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       std::unique_ptr<blink::WebCoalescedInputEvent> event);
   void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> edit_commands);
-  void ImeSetComposition(const String& text,
-                         const Vector<ui::ImeTextSpan>& ime_text_spans,
-                         const gfx::Range& replacement_range,
-                         int selection_start,
-                         int selection_end,
-                         mojom::blink::ImeState ime_state,
-                         DOMNodeIdType target_dom_node_id);
+  gfx::Range ImeSetComposition(const String& text,
+                               const Vector<ui::ImeTextSpan>& ime_text_spans,
+                               const gfx::Range& replacement_range,
+                               int selection_start,
+                               int selection_end,
+                               mojom::blink::ImeState ime_state,
+                               DOMNodeIdType target_dom_node_id);
   void ImeCommitText(const String& text,
                      const Vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& replacement_range,

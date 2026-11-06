@@ -3243,7 +3243,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WebLocalFrameImpl::GetTaskRunner(
   return GetFrame()->GetTaskRunner(task_type);
 }
 
-WebInputMethodController* WebLocalFrameImpl::GetInputMethodController() {
+WebInputMethodControllerImpl* WebLocalFrameImpl::GetInputMethodController() {
   return &input_method_controller_;
 }
 

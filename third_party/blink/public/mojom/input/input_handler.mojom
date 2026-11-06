@@ -507,21 +507,32 @@ interface WidgetInputHandler {
   CursorVisibilityChanged(bool visible);
 
   // This message sends a string being composed with an input method.
+  // If `range` is valid, it specifies the range of existing text to replace.
+  // When `target_dom_node_id` is not a null value, an active IME composition
+  // takes priority over `range` (so `range` is only used as a fallback if there
+  // is no active composition).
   // `target_dom_node_id`, if not a null value, will target composition to the
   // specified node, adjusting and restoring focus if necessary.
   // TODO(crbug.com/535826288): Make `DOMNodeId` optional once the typemap
   // is nullable_is_same_type.
-  // Note, the response is specifically for Devtools to learn about completion
+  // Returns the resulting range of the composition (or text immediately
+  // committed by the page) in the target element, or an invalid range if
+  // unavailable.
   ImeSetComposition(mojo_base.mojom.String16 text,
                     array<ui.mojom.ImeTextSpan> ime_text_spans,
                     gfx.mojom.Range range,
                     int32 start,
                     int32 end,
                     ImeState ime_state,
-                    blink.mojom.DOMNodeId target_dom_node_id) => ();
+                    blink.mojom.DOMNodeId target_dom_node_id)
+      => (gfx.mojom.Range composition_range);
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.
+  // If `range` is valid, it specifies the range of existing text to replace.
+  // When `target_dom_node_id` is not a null value, an active IME composition
+  // takes priority over `range` (so `range` is only used as a fallback if there
+  // is no active composition).
   // `target_dom_node_id`, if not a null value, will target the text commit to
   // the specified node, adjusting and restoring focus if necessary, and
   // revealing the selection.

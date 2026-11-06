@@ -44,6 +44,7 @@ struct ScreenInfo;
 
 namespace gfx {
 class Point;
+class Range;
 }
 
 namespace ui {
@@ -358,22 +359,31 @@ class CONTENT_EXPORT RenderWidgetHost {
   // that want to programmatically insert text without simulating an actual IME.
   // `text` is the composition text.
   // `ime_text_spans` sets the styling of the composition marker(s).
+  // `replacement_range`, if valid, specifies the range of existing text in the
+  // element to replace. When `target_dom_node_id` is not a null value,
+  // an active IME composition takes priority over `replacement_range` (so
+  // `replacement_range` is only used as a fallback if there is no active
+  // composition).
   // `target_dom_node_id`, if not a null value, sets the composition on the
   // identified node. This adjusts focus if necessary, then restores it, in
   // order to target the node. For comparison, a regular IME would simply
   // compose in whatever node is focused.
-  // `on_complete` is invoked when the operation completes, if it is not null.
+  // `on_complete` is invoked when the operation completes with the resulting
+  // range of the composition (or text immediately committed by the page) in the
+  // target element, if it is not null.
   virtual void SetExternallySourcedComposition(
       const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
       const GlobalDOMNodeId& target_dom_node_id,
-      base::OnceClosure on_complete) = 0;
+      base::OnceCallback<void(const gfx::Range&)> on_complete) = 0;
 
   // Commits composition text. See `SetExternallySourcedComposition`.
   // Additionally, if `target_dom_node_id` is not a null value, the caret is
   // kept in view in the element after the commit.
   virtual void CommitExternallySourcedComposition(
       const std::u16string& text,
+      const gfx::Range& replacement_range,
       const GlobalDOMNodeId& target_dom_node_id,
       base::OnceClosure on_complete) = 0;
 

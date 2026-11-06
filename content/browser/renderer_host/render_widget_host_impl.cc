@@ -2519,7 +2519,7 @@ void RenderWidgetHostImpl::ImeSetComposition(
   GetWidgetInputHandler()->ImeSetComposition(
       text, ime_text_spans, replacement_range, selection_start, selection_end,
       ime_state, /*target_dom_node_id=*/blink::DOMNodeIdType(),
-      base::OnceClosure());
+      blink::mojom::WidgetInputHandler::ImeSetCompositionCallback());
 #if BUILDFLAG(IS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeSetComposingTextEvent(text);
@@ -2557,27 +2557,30 @@ void RenderWidgetHostImpl::ImeCancelComposition() {
   GetWidgetInputHandler()->ImeSetComposition(
       std::u16string(), std::vector<ui::ImeTextSpan>(),
       gfx::Range::InvalidRange(), 0, 0, blink::mojom::ImeState::kNone,
-      /*target_dom_node_id=*/blink::DOMNodeIdType(), base::OnceClosure());
+      /*target_dom_node_id=*/blink::DOMNodeIdType(),
+      blink::mojom::WidgetInputHandler::ImeSetCompositionCallback());
 }
 
 void RenderWidgetHostImpl::SetExternallySourcedComposition(
     const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    const gfx::Range& replacement_range,
     const GlobalDOMNodeId& target_dom_node_id,
-    base::OnceClosure on_complete) {
+    base::OnceCallback<void(const gfx::Range&)> on_complete) {
   int length = text.length();
   GetWidgetInputHandler()->ImeSetComposition(
-      text, ime_text_spans, gfx::Range::InvalidRange(), length, length,
+      text, ime_text_spans, replacement_range, length, length,
       blink::mojom::ImeState::kNone, target_dom_node_id.target_element_dom_id,
       std::move(on_complete));
 }
 
 void RenderWidgetHostImpl::CommitExternallySourcedComposition(
     const std::u16string& text,
+    const gfx::Range& replacement_range,
     const GlobalDOMNodeId& target_dom_node_id,
     base::OnceClosure on_complete) {
   GetWidgetInputHandler()->ImeCommitText(
-      text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0,
+      text, std::vector<ui::ImeTextSpan>(), replacement_range, 0,
       target_dom_node_id.target_element_dom_id, std::move(on_complete));
 }
 

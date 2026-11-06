@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <!-- Disable spellcheck to avoid flakiness related to dictionary init on
+         Windows. -->
+    <p>Input element that filters out punctuation:</p>
+    <input type="text" id="input" spellcheck="false">
+    <p>Contenteditable element that filters out punctuation:</p>
+    <div id="contenteditable" contenteditable="true" spellcheck="false"></div>
+    <script>
+      const input = document.getElementById('input');
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/\p{P}/gu, '');
+      });
+      const contenteditable = document.getElementById('contenteditable');
+      contenteditable.addEventListener('input', () => {
+        contenteditable.textContent =
+            contenteditable.textContent.replace(/\p{P}/gu, '');
+      });
+    </script>
+  </body>
+</html>

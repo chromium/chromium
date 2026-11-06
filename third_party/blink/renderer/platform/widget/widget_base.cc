@@ -1693,7 +1693,7 @@ void WidgetBase::CursorVisibilityChange(bool is_visible) {
   client_->SetCursorVisibilityState(is_visible);
 }
 
-void WidgetBase::ImeSetComposition(
+gfx::Range WidgetBase::ImeSetComposition(
     const String& text,
     const Vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
@@ -1704,25 +1704,27 @@ void WidgetBase::ImeSetComposition(
   // If the browser is setting a targeted composition, ignore normal IME focus
   // requirements.
   if (target_dom_node_id.is_null() && !ShouldHandleImeEvents()) {
-    return;
+    return gfx::Range::InvalidRange();
   }
 
   FrameWidget* frame_widget = client_->FrameWidget();
-  if (!frame_widget)
-    return;
+  if (!frame_widget) {
+    return gfx::Range::InvalidRange();
+  }
   if (frame_widget->ShouldDispatchImeEventsToPlugin()) {
     frame_widget->ImeSetCompositionForPlugin(text, ime_text_spans,
                                              replacement_range, selection_start,
                                              selection_end);
-    return;
+    return gfx::Range::InvalidRange();
   }
 
   ImeEventGuard guard(weak_ptr_factory_.GetWeakPtr());
+  gfx::Range composition_range = gfx::Range::InvalidRange();
   bool success = frame_widget->SetComposition(
       text, ime_text_spans, replacement_range, selection_start, selection_end,
-      ime_state, target_dom_node_id);
+      ime_state, target_dom_node_id, composition_range);
   if (!guard.IsValid()) {
-    return;
+    return gfx::Range::InvalidRange();
   }
   if (!success) {
     // If we failed to set the composition text, then we need to let the browser
@@ -1734,6 +1736,7 @@ void WidgetBase::ImeSetComposition(
     }
   }
   UpdateCompositionInfo(false /* not an immediate request */);
+  return composition_range;
 }
 
 void WidgetBase::ImeCommitText(const String& text,

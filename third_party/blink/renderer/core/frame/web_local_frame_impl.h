@@ -320,7 +320,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void PostIdleTask(
       const base::Location&,
       base::OnceCallback<void(base::TimeTicks deadline)>) override;
-  WebInputMethodController* GetInputMethodController() override;
+  WebInputMethodControllerImpl* GetInputMethodController() override;
   std::unique_ptr<WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions&) override;
   void DeprecatedStopLoading() override;

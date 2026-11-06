@@ -4,6 +4,8 @@
 
 #include "chrome/browser/dictation/target.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -159,7 +161,9 @@ void Target::ExecuteSetComposition(const std::u16string& text,
       return;
     }
     last_sent_composition_ = u"";
-    CommitExternallySourcedComposition(u"",
+    gfx::Range replacement_range =
+        std::exchange(last_composition_range_, gfx::Range::InvalidRange());
+    CommitExternallySourcedComposition(u"", replacement_range,
                                        scoped_operation_complete.Release());
     return;
   }
@@ -175,35 +179,43 @@ void Target::ExecuteSetComposition(const std::u16string& text,
 
   last_sent_composition_ = text;
 
-  SetExternallySourcedComposition(text, {text_span},
-                                  scoped_operation_complete.Release());
+  SetExternallySourcedComposition(
+      text, {text_span}, last_composition_range_,
+      base::BindOnce(&Target::OnSetCompositionComplete,
+                     weak_factory_.GetWeakPtr(),
+                     scoped_operation_complete.Release()));
 }
 
 void Target::ExecuteCommitComposition(const std::u16string& text,
                                       base::OnceClosure operation_complete) {
+  gfx::Range replacement_range =
+      std::exchange(last_composition_range_, gfx::Range::InvalidRange());
+
   if (paste_fallback_required_) {
     PasteIntoNode(text);
     CompleteAsync(std::move(operation_complete));
     return;
   }
 
-  // If we've lost focus, then some of the previously composed text has already
-  // been committed. Determine what has already been sent to avoid duplication.
-  // TODO(b/539566748): This will be incorrect if the stream rewrites text. We
-  // should instead determine the last composition range and replace the text in
-  // that range.
-  std::u16string text_to_commit =
-      has_lost_focus_during_composition_
-          ? RemovePrefix(text, last_sent_composition_)
-          : text;
-
-  if (richly_editable() && text_to_commit.find(u'\n') != std::u16string::npos) {
-    PasteIntoNode(text_to_commit);
+  if (richly_editable() && text.find(u'\n') != std::u16string::npos) {
+    // If we've lost focus, then some of the previously composed text has
+    // already been committed. Determine what has already been sent to avoid
+    // duplication.
+    // TODO(b/539566748): This will be incorrect if the stream rewrites text. We
+    // should instead determine the last composition range and replace the text
+    // in that range.
+    std::u16string text_to_paste =
+        has_lost_focus_during_composition_
+            ? RemovePrefix(text, last_sent_composition_)
+            : text;
+    if (!text_to_paste.empty()) {
+      PasteIntoNode(text_to_paste);
+    }
     CompleteAsync(std::move(operation_complete));
     return;
   }
 
-  CommitExternallySourcedComposition(text_to_commit,
+  CommitExternallySourcedComposition(text, replacement_range,
                                      std::move(operation_complete));
 }
 
@@ -229,6 +241,12 @@ void Target::ExecuteOperation(QueuedOperation op) {
   }
 }
 
+void Target::OnSetCompositionComplete(base::OnceClosure operation_complete,
+                                      const gfx::Range& composition_range) {
+  last_composition_range_ = composition_range;
+  std::move(operation_complete).Run();
+}
+
 void Target::OnOperationComplete(base::OnceClosure on_commit_complete) {
   is_waiting_on_operation_completion_ = false;
 
@@ -244,20 +262,25 @@ void Target::OnOperationComplete(base::OnceClosure on_commit_complete) {
 void Target::SetExternallySourcedComposition(
     const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& spans,
-    base::OnceClosure on_complete) {
+    const gfx::Range& replacement_range,
+    base::OnceCallback<void(const gfx::Range&)> on_complete) {
   if (content::RenderWidgetHost* rwh = GetRenderWidgetHost()) {
-    rwh->SetExternallySourcedComposition(text, spans, global_dom_node_id(),
+    rwh->SetExternallySourcedComposition(text, spans, replacement_range,
+                                         global_dom_node_id(),
                                          std::move(on_complete));
-  } else {
-    CompleteAsync(std::move(on_complete));
+  } else if (on_complete) {
+    CompleteAsync(
+        base::BindOnce(std::move(on_complete), gfx::Range::InvalidRange()));
   }
 }
 
-void Target::CommitExternallySourcedComposition(const std::u16string& text,
-                                                base::OnceClosure on_complete) {
+void Target::CommitExternallySourcedComposition(
+    const std::u16string& text,
+    const gfx::Range& replacement_range,
+    base::OnceClosure on_complete) {
   if (content::RenderWidgetHost* rwh = GetRenderWidgetHost()) {
-    rwh->CommitExternallySourcedComposition(text, global_dom_node_id(),
-                                            std::move(on_complete));
+    rwh->CommitExternallySourcedComposition(
+        text, replacement_range, global_dom_node_id(), std::move(on_complete));
   } else {
     CompleteAsync(std::move(on_complete));
   }

@@ -31,7 +31,13 @@ class TestTarget : public Target {
   const std::u16string& last_sent_composition() const {
     return last_sent_composition_;
   }
+  const gfx::Range& last_sent_composition_replacement_range() const {
+    return last_sent_composition_replacement_range_;
+  }
   const std::u16string& last_sent_commit() const { return last_sent_commit_; }
+  const gfx::Range& last_sent_commit_replacement_range() const {
+    return last_sent_commit_replacement_range_;
+  }
   const std::u16string& last_sent_paste() const { return last_sent_paste_; }
   int commit_count() const { return commit_count_; }
 
@@ -40,6 +46,13 @@ class TestTarget : public Target {
   void RunPendingCallback() {
     ASSERT_TRUE(pending_callback_);
     std::move(pending_callback_).Run();
+  }
+
+  // Overrides the composition range reported to the completion callback of the
+  // next `SetExternallySourcedComposition` call, to simulate the renderer
+  // modifying the composed text (e.g. stripping characters).
+  void set_next_composition_range(gfx::Range range) {
+    next_composition_range_ = range;
   }
 
   void set_text_preceding_selection(
@@ -51,16 +64,28 @@ class TestTarget : public Target {
   void SetExternallySourcedComposition(
       const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& spans,
-      base::OnceClosure on_complete) override {
+      const gfx::Range& replacement_range,
+      base::OnceCallback<void(const gfx::Range&)> on_complete) override {
     last_sent_composition_ = text;
+    last_sent_composition_replacement_range_ = replacement_range;
 
-    SetCompletionCallback(std::move(on_complete));
+    uint32_t start =
+        replacement_range.IsValid() ? replacement_range.start() : 0;
+    gfx::Range resulting_range = next_composition_range_.value_or(
+        gfx::Range(start, start + text.length()));
+    next_composition_range_.reset();
+
+    SetCompletionCallback(
+        on_complete ? base::BindOnce(std::move(on_complete), resulting_range)
+                    : base::OnceClosure());
   }
 
   void CommitExternallySourcedComposition(
       const std::u16string& text,
+      const gfx::Range& replacement_range,
       base::OnceClosure on_complete) override {
     last_sent_commit_ = text;
+    last_sent_commit_replacement_range_ = replacement_range;
     ++commit_count_;
 
     SetCompletionCallback(std::move(on_complete));
@@ -92,9 +117,13 @@ class TestTarget : public Target {
   base::OnceClosure pending_callback_;
 
   std::u16string last_sent_composition_;
+  gfx::Range last_sent_composition_replacement_range_ =
+      gfx::Range::InvalidRange();
   std::u16string last_sent_commit_;
+  gfx::Range last_sent_commit_replacement_range_ = gfx::Range::InvalidRange();
   std::u16string last_sent_paste_;
   int commit_count_ = 0;
+  std::optional<gfx::Range> next_composition_range_;
   std::optional<std::u16string> text_preceding_selection_;
 };
 
@@ -143,6 +172,8 @@ TEST_F(DictationTargetTest, FocusChangeDuringComposition) {
 
   target.SetComposition(u"A", true);
   EXPECT_EQ(target.last_sent_composition(), u"A");
+  EXPECT_EQ(target.last_sent_composition_replacement_range(),
+            gfx::Range::InvalidRange());
   EXPECT_EQ(target.last_sent_commit(), u"");
 
   target.OnFocusChanged(MakeFocusChange(2));
@@ -153,10 +184,37 @@ TEST_F(DictationTargetTest, FocusChangeDuringComposition) {
   EXPECT_EQ(target.last_sent_commit(), u"");
 
   // When we commit, the previous composition would have been committed, so we
-  // don't commit the same text again.
+  // pass its range as the replacement range.
   target.CommitComposition(u"ABC", base::NullCallback());
   EXPECT_EQ(target.last_sent_composition(), u"A");
-  EXPECT_EQ(target.last_sent_commit(), u"BC");
+  EXPECT_EQ(target.last_sent_commit(), u"ABC");
+  EXPECT_EQ(target.last_sent_commit_replacement_range(), gfx::Range(0, 1));
+}
+
+TEST_F(DictationTargetTest, FocusChangeDuringCompositionWithRewrite) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
+
+  target.SetComposition(u"A", true);
+  EXPECT_EQ(target.last_sent_composition(), u"A");
+  EXPECT_EQ(target.last_sent_composition_replacement_range(),
+            gfx::Range::InvalidRange());
+  EXPECT_EQ(target.last_sent_commit(), u"");
+
+  target.OnFocusChanged(MakeFocusChange(2));
+
+  // Focus was lost, so we don't update the composition.
+  target.SetComposition(u"AB", true);
+  EXPECT_EQ(target.last_sent_composition(), u"A");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+
+  // Even when the committed text rewrites the previously composed prefix, the
+  // full rewritten text is committed with the previous composition's range as
+  // the replacement range.
+  target.CommitComposition(u"XYZ", base::NullCallback());
+  EXPECT_EQ(target.last_sent_composition(), u"A");
+  EXPECT_EQ(target.last_sent_commit(), u"XYZ");
+  EXPECT_EQ(target.last_sent_commit_replacement_range(), gfx::Range(0, 1));
 }
 
 TEST_F(DictationTargetTest, FocusChangeBeforeComposition) {
@@ -342,11 +400,41 @@ TEST_F(DictationTargetTest, FocusChangeDuringInFlightComposition) {
   // Focus changes while "hello" is in progress.
   target.OnFocusChanged(MakeFocusChange(2));
 
-  // "hello" completes. Target proceeds to commit the remaining text.
+  // "hello" completes. Target proceeds to commit the text, replacing the
+  // range of "hello".
   target.RunPendingCallback();
-  EXPECT_EQ(target.last_sent_commit(), u" world");
+  EXPECT_EQ(target.last_sent_commit(), u"hello world");
+  EXPECT_EQ(target.last_sent_commit_replacement_range(), gfx::Range(0, 5));
 
   target.RunPendingCallback();
+}
+
+TEST_F(DictationTargetTest, ModifiedCompositionRangeUsedAsReplacementRange) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kDictation, {{"show_partials", "true"}});
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
+
+  // Simulate the page stripping '?' from "1?", resulting in range [0, 1].
+  target.set_next_composition_range(gfx::Range(0, 1));
+  target.SetComposition(u"1?", false);
+  EXPECT_EQ(target.last_sent_composition(), u"1?");
+  EXPECT_EQ(target.last_sent_composition_replacement_range(),
+            gfx::Range::InvalidRange());
+
+  // The next composition should pass [0, 1] as the replacement range.
+  // Simulate the page stripping '?' and '!' from "1?2!", resulting in [0, 2].
+  target.set_next_composition_range(gfx::Range(0, 2));
+  target.SetComposition(u"1?2!", false);
+  EXPECT_EQ(target.last_sent_composition(), u"1?2!");
+  EXPECT_EQ(target.last_sent_composition_replacement_range(), gfx::Range(0, 1));
+
+  // Commit should pass [0, 2] as the replacement range.
+  target.CommitComposition(u"1?2!3", base::NullCallback());
+  EXPECT_EQ(target.last_sent_commit(), u"1?2!3");
+  EXPECT_EQ(target.last_sent_commit_replacement_range(), gfx::Range(0, 2));
 }
 
 TEST_F(DictationTargetTest, SuccessiveDictationPrependsWhitespace) {
