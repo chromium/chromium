@@ -233,6 +233,8 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Normal) {
   // Simulate decoding a single frame.
   EXPECT_TRUE(DecodeSingleFrame(i_frame_buffer_).is_ok());
   ASSERT_EQ(1U, output_frames_.size());
+  EXPECT_EQ(kCodedSize, output_frames_[0]->coded_size());
+  EXPECT_EQ(kVisibleRect, output_frames_[0]->visible_rect());
 }
 
 TEST_F(FFmpegVideoDecoderTest, DecodeFrame_OOM) {
@@ -289,7 +291,9 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Smaller) {
   ASSERT_EQ(2u, output_frames_.size());
 
   constexpr gfx::Size kExpectedSize(320, 192);
+  EXPECT_EQ(kExpectedSize, output_frames_[0]->coded_size());
   EXPECT_EQ(kExpectedSize, output_frames_[0]->visible_rect().size());
+  EXPECT_EQ(kCodedSize, output_frames_[1]->coded_size());
   EXPECT_EQ(kVisibleRect.size(), output_frames_[1]->visible_rect().size());
 }
 
@@ -309,9 +313,11 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Larger) {
   EXPECT_TRUE(status.is_ok());
   ASSERT_EQ(2u, output_frames_.size());
 
+  EXPECT_EQ(kCodedSize, output_frames_[0]->coded_size());
   EXPECT_EQ(kVisibleRect.size(), output_frames_[0]->visible_rect().size());
 
   constexpr gfx::Size kExpectedSize(320, 192);
+  EXPECT_EQ(kExpectedSize, output_frames_[1]->coded_size());
   EXPECT_EQ(kExpectedSize, output_frames_[1]->visible_rect().size());
 }
 

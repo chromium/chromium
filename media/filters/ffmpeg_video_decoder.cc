@@ -416,10 +416,23 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
   CHECK(!!opaque);
 
   // `frame->width,height` may be different from what they were when we
-  // allocated the buffer.  Presumably `width` is always the same, but in
-  // practice `height` can be smaller.  They are advertised as the coded size,
-  // though, so that's how we use them here.  `crop*` take this difference into
-  // account, and are meant to be applied to `width` and `height` as they are.
+  // allocated the buffer in `GetVideoBuffer()`.  `opaque->layout.coded_size()`
+  // includes FFmpeg's internal over-allocation from `avcodec_align_dimensions2`
+  // (e.g. 32-row alignment and +2 rows for SIMD chroma MC overread protection)
+  // which FFmpeg never writes to.  Do not expose that over-allocation as the
+  // `VideoFrame::coded_size()`: downstream paths (such as
+  // `ConvertYuvVideoFrameToRgbSharedImage`) upload `coded_size` and draw
+  // `visible_rect` with `SkFilterMode::kNearest`, where Skia's YUVA fancy
+  // upsampling promotes chroma planes to linear filtering that samples just
+  // outside `visible_rect`.  Since `FrameBufferPool` zero-initializes buffers
+  // (`U=0, V=0` is bright green in YUV, not neutral `128`) and does not
+  // re-clear on reuse, exposing the unwritten padding rows in `coded_size`
+  // causes edge bleeding (http://crbug.com/578868477).
+  //
+  // `crop*` take this difference into account, and are meant to be applied to
+  // `width` and `height` as they are.
+  const gfx::Size coded_size = VideoFrame::DetermineAlignedSize(
+      opaque->layout.format(), gfx::Size(frame->width, frame->height));
   const gfx::Rect visible_rect(frame->crop_left, frame->crop_top,
                                frame->width - frame->crop_right,
                                frame->height - frame->crop_bottom);
@@ -433,8 +446,14 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
   gfx::Size natural_size = aspect_ratio.GetNaturalSize(visible_rect);
 
   const auto pts = ConvertFromTimeBase(codec_context_->pkt_timebase, frame->pts);
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      opaque->layout.format(), coded_size, opaque->layout.planes(),
+      opaque->layout.buffer_addr_align());
+  if (!layout) {
+    return false;
+  }
   auto video_frame = VideoFrame::WrapExternalDataWithLayout(
-      opaque->layout, visible_rect, natural_size, opaque->data, pts);
+      *layout, visible_rect, natural_size, opaque->data, pts);
   if (!video_frame) {
     return false;
   }
