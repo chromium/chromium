@@ -33,11 +33,6 @@ ExportedCanvasResource::ExportedCanvasResource(
       use_legacy_external_canvas_resource_bitmap_path_(true) {
   // Unretained is safe because wait_sync_token_ is private callback that is
   // destroyed in dtor.
-  wait_sync_token_ = base::BindRepeating(
-      [](ExportedCanvasResource* resource, gpu::SyncToken sync_token) {
-        resource->last_access_sync_token_ = sync_token;
-      },
-      base::Unretained(this));
   release_callback_ = base::BindOnce(
       [](ExportedCanvasResource* resource, viz::ReleaseCallback callback,
          bool is_lost) {
@@ -179,7 +174,10 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
     auto release_callback = base::BindOnce(
         [](scoped_refptr<ExportedCanvasResource>&& exported_resource,
            const gpu::SyncToken& sync_token, bool lost_resource) {
-          exported_resource->wait_sync_token_.Run(sync_token);
+          exported_resource->last_access_sync_token_ = sync_token;
+          if (exported_resource->wait_sync_token_) {
+            exported_resource->wait_sync_token_.Run(sync_token);
+          }
           if (lost_resource) {
             exported_resource->is_lost_ = true;
           }
@@ -212,7 +210,11 @@ void ExportedCanvasResource::EndDisplayCompositorAccess(
 void ExportedCanvasResource::EndDisplayCompositorAccess(
     gpu::SyncToken sync_token,
     bool is_lost) {
-  wait_sync_token_.Run(sync_token);
+  last_access_sync_token_ = sync_token;
+  if (wait_sync_token_) {
+    wait_sync_token_.Run(sync_token);
+  }
+
   if (is_lost) {
     is_lost_ = true;
   }
