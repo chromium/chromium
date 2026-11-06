@@ -19,6 +19,21 @@ namespace ttc {
 
 using voice::WaveformMode;
 
+namespace {
+
+WaveformMode ToWaveformMode(UiState state) {
+  switch (state) {
+    case UiState::kInitializing:
+      return WaveformMode::kProcessing;
+    case UiState::kLive:
+      return WaveformMode::kLive;
+  }
+
+  NOTREACHED();
+}
+
+}  // namespace
+
 ToastId GetToastIdForError(ErrorCode error) {
   switch (error) {
     case ErrorCode::kUnknown:
@@ -44,7 +59,7 @@ ToastId GetToastIdForError(ErrorCode error) {
 }
 
 SessionViewImpl::SessionViewImpl(SessionViewDelegate& delegate)
-    : delegate_(delegate),
+    : SessionView(delegate),
       voice_plate_controller_(std::make_unique<VoicePlateController>(
           *delegate.GetProfile(),
           base::BindRepeating(&SessionViewImpl::OnVoicePlateCloseClicked,
@@ -52,33 +67,27 @@ SessionViewImpl::SessionViewImpl(SessionViewDelegate& delegate)
 
 SessionViewImpl::~SessionViewImpl() = default;
 
-void SessionViewImpl::UpdateAudioLevel(float audio_level) {
+void SessionViewImpl::OnError(ErrorCode error) {
+  if (ToastController* toast_controller =
+          ToastController::From(delegate().GetBrowserWindowInterface())) {
+    toast_controller->MaybeShowToast(ToastParams(GetToastIdForError(error)));
+  }
+}
+
+void SessionViewImpl::OnUserAudioLevelUpdate(float audio_level) {
   if (voice_plate_controller_) {
     voice_plate_controller_->UpdateAudioLevel(audio_level);
   }
 }
 
-void SessionViewImpl::OnSessionInitialized() {
+void SessionViewImpl::OnUiStateChanged(UiState state) {
   if (voice_plate_controller_) {
-    voice_plate_controller_->SetMode(WaveformMode::kLive);
-  }
-}
-
-void SessionViewImpl::OnError(ErrorCode error) {
-  if (ToastController* toast_controller =
-          ToastController::From(delegate_->GetBrowserWindowInterface())) {
-    toast_controller->MaybeShowToast(ToastParams(GetToastIdForError(error)));
+    voice_plate_controller_->SetMode(ToWaveformMode(state));
   }
 }
 
 void SessionViewImpl::OnVoicePlateCloseClicked() {
-  delegate_->EndSessionAsync();
+  delegate().EndSessionAsync();
 }
-
-// The desktop voice plate doesn't show transcripts yet; they're only surfaced
-// on Android so far.
-void SessionViewImpl::OnTranscriptionsUpdated(
-    const std::string& user_transcript,
-    const std::string& model_transcript) {}
 
 }  // namespace ttc

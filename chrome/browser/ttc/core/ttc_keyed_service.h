@@ -43,20 +43,14 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // Creates the Conversation used by a session.
   using ConversationFactory = base::RepeatingCallback<std::unique_ptr<
       Conversation>(SessionController&, std::unique_ptr<AudioController>)>;
-  // Creates the SessionView used by a session.
-  using SessionViewFactory =
-      base::RepeatingCallback<std::unique_ptr<SessionView>(
-          SessionViewDelegate&)>;
 
   static TtcKeyedService* Get(content::BrowserContext* context);
 
-  // The default ConversationFactory creates a ConversationImpl, and the default
-  // SessionViewFactory the platform's SessionView. Tests can pass in factories
-  // to provide mock/fake objects.
+  // The default ConversationFactory creates a ConversationImpl. Tests can pass
+  // in a factory to provide mock/fake objects.
   explicit TtcKeyedService(
       Profile* profile,
-      ConversationFactory conversation_factory = ConversationFactory(),
-      SessionViewFactory session_view_factory = SessionViewFactory());
+      ConversationFactory conversation_factory = ConversationFactory());
   TtcKeyedService(const TtcKeyedService&) = delete;
   TtcKeyedService& operator=(const TtcKeyedService&) = delete;
   ~TtcKeyedService() override;
@@ -122,7 +116,6 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
  private:
   raw_ptr<Profile> profile_;
   ConversationFactory conversation_factory_;
-  SessionViewFactory session_view_factory_;
   std::unique_ptr<actor::EnterprisePolicyChecker> enterprise_policy_checker_;
   // Must outlive `session_controller_`, which indirectly holds a reference to
   // it, as do the actor tasks created during a session.

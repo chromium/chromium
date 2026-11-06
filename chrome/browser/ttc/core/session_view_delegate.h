@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_VIEW_DELEGATE_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_VIEW_DELEGATE_H_
 
+#include "chrome/browser/ttc/core/states.h"
+
 class BrowserWindowInterface;
 class Profile;
 
@@ -25,6 +27,9 @@ class SessionViewDelegate {
   // destroyed in a subsequent task so it is safe to call this from the
   // SessionView.
   virtual void EndSessionAsync() = 0;
+
+  // Returns the session's current lifecycle state.
+  virtual SessionLifecycle GetSessionLifecycle() const = 0;
 };
 
 }  // namespace ttc

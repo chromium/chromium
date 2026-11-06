@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/core/session_view.h"
+#include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "components/ttc/app/public/error_codes.h"
 
@@ -26,20 +26,16 @@ class SessionViewImpl : public SessionView {
   SessionViewImpl(const SessionViewImpl&) = delete;
   SessionViewImpl& operator=(const SessionViewImpl&) = delete;
 
-  // SessionView implementation:
-  void UpdateAudioLevel(float audio_level) override;
-  void OnSessionInitialized() override;
+  // SessionController::Observer:
   void OnError(ErrorCode error) override;
-  void OnTranscriptionsUpdated(const std::string& user_transcript,
-                               const std::string& model_transcript) override;
+  void OnUserAudioLevelUpdate(float audio_level) override;
 
  private:
+  // SessionView:
+  void OnUiStateChanged(UiState state) override;
+
   // Invoked when the user clicks the voice plate's close button.
   void OnVoicePlateCloseClicked();
-
-  // Safe because the delegate is guaranteed to outlive this object. Assigned on
-  // construction.
-  const raw_ref<SessionViewDelegate> delegate_;
 
   // Owns the main UI surface for the session and keeps it in the active
   // window.

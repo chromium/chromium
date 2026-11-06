@@ -13,18 +13,18 @@
 namespace ttc {
 
 SessionViewAndroid::SessionViewAndroid(SessionViewDelegate& delegate)
-    : bridge_(TtcKeyedServiceAndroid::Get(
+    : SessionView(delegate),
+      bridge_(TtcKeyedServiceAndroid::Get(
           CHECK_DEREF(TtcKeyedService::Get(delegate.GetProfile())))) {}
 
 SessionViewAndroid::~SessionViewAndroid() = default;
 
-void SessionViewAndroid::UpdateAudioLevel(float audio_level) {
-  bridge_->OnAudioLevelChanged(audio_level);
-}
-
-void SessionViewAndroid::OnSessionInitialized() {
-  // The Java UI follows the session's SessionLifecycle instead, which only
-  // becomes kLive once the backend has connected.
+// TODO(danielmendz): We should probably change this to not override but
+// instead react to the OnUiStateChanged event and forward that UiState to the
+// bridge.
+void SessionViewAndroid::OnSessionLifecycleChanged(SessionLifecycle lifecycle) {
+  SessionView::OnSessionLifecycleChanged(lifecycle);
+  bridge_->OnSessionLifecycleChanged(lifecycle);
 }
 
 void SessionViewAndroid::OnError(ErrorCode error) {
@@ -35,6 +35,10 @@ void SessionViewAndroid::OnTranscriptionsUpdated(
     const std::string& user_transcript,
     const std::string& model_transcript) {
   bridge_->OnTranscriptionsUpdated(user_transcript, model_transcript);
+}
+
+void SessionViewAndroid::OnUserAudioLevelUpdate(float audio_level) {
+  bridge_->OnAudioLevelChanged(audio_level);
 }
 
 }  // namespace ttc

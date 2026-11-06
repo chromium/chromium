@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/core/session_view.h"
+#include "chrome/browser/ttc/core/states.h"
+#include "components/ttc/app/public/error_codes.h"
 
 namespace ttc {
 
@@ -16,9 +18,8 @@ class SessionViewDelegate;
 class TtcKeyedServiceAndroid;
 
 // Android SessionView. The session UI itself lives in Java, so this forwards
-// view events to the profile's TtcKeyedServiceAndroid bridge, which relays them
-// to the Java TtcKeyedService observers. Session initialization isn't
-// forwarded: the Java UI follows the session's SessionLifecycle instead.
+// the session's UI events to the profile's TtcKeyedServiceAndroid bridge,
+// which relays them to the Java TtcKeyedService observers.
 class SessionViewAndroid : public SessionView {
  public:
   explicit SessionViewAndroid(SessionViewDelegate& delegate);
@@ -26,12 +27,12 @@ class SessionViewAndroid : public SessionView {
   SessionViewAndroid& operator=(const SessionViewAndroid&) = delete;
   ~SessionViewAndroid() override;
 
-  // SessionView:
-  void UpdateAudioLevel(float audio_level) override;
-  void OnSessionInitialized() override;
+  // SessionController::Observer:
+  void OnSessionLifecycleChanged(SessionLifecycle lifecycle) override;
   void OnError(ErrorCode error) override;
   void OnTranscriptionsUpdated(const std::string& user_transcript,
                                const std::string& model_transcript) override;
+  void OnUserAudioLevelUpdate(float audio_level) override;
 
  private:
   // Owned by the TtcKeyedService, which outlives the session this view

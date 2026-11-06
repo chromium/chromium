@@ -5,33 +5,42 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_VIEW_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_VIEW_H_
 
-#include <string>
-
-#include "components/ttc/app/public/error_codes.h"
+#include "base/memory/raw_ref.h"
+#include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/states.h"
 
 namespace ttc {
 
-// Interface for the object holding and implementing all UI interaction for a
-// session.
-class SessionView {
+class SessionViewDelegate;
+
+// Base class for the object holding and implementing all UI interaction for a
+// session, which the session owns for as long as it exists.
+class SessionView : public SessionController::Observer {
  public:
-  virtual ~SessionView() = default;
+  SessionView(const SessionView&) = delete;
+  SessionView& operator=(const SessionView&) = delete;
+  ~SessionView() override;
 
-  // Called when the audio level of the user's microphone input changes.
-  virtual void UpdateAudioLevel(float audio_level) = 0;
+  UiState GetUiState() const;
 
-  // Called when the session has finished initializing and audio capture is
-  // live.
-  virtual void OnSessionInitialized() = 0;
+  // SessionController::Observer:
+  void OnSessionLifecycleChanged(SessionLifecycle lifecycle) override;
 
-  // Called when the session encounters an error.
-  virtual void OnError(ErrorCode error) = 0;
+ protected:
+  explicit SessionView(SessionViewDelegate& delegate);
 
-  // Called when the transcripts of the current exchange change: the user's
-  // turn and the model's reply to it, each the full text so far. Either may be
-  // empty.
-  virtual void OnTranscriptionsUpdated(const std::string& user_transcript,
-                                       const std::string& model_transcript) = 0;
+  SessionViewDelegate& delegate() const { return *delegate_; }
+
+  virtual void OnUiStateChanged(UiState state) {}
+
+ private:
+  UiState ComputeUiState() const;
+  void UpdateUiState();
+
+  UiState ui_state_ = UiState::kInitializing;
+
+  // Safe because the delegate is guaranteed to outlive this object.
+  const raw_ref<SessionViewDelegate> delegate_;
 };
 
 }  // namespace ttc

@@ -96,7 +96,6 @@ class FakeSessionController : public SessionController {
   }
   void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) override {}
   void OnSpeakerChanged(Speaker speaker) override {}
-  void OnSessionInitialized() override { ++session_initialized_count_; }
   void OnError(ErrorCode error) override {
     last_error_ = error;
     ++error_count_;
@@ -108,7 +107,6 @@ class FakeSessionController : public SessionController {
   std::optional<ErrorCode> last_error() const { return last_error_; }
   int error_count() const { return error_count_; }
   int end_session_count() const { return end_session_count_; }
-  int session_initialized_count() const { return session_initialized_count_; }
   int turn_started_count() const { return turn_started_count_; }
   int turn_complete_count() const { return turn_complete_count_; }
   int interrupted_count() const { return interrupted_count_; }
@@ -132,7 +130,6 @@ class FakeSessionController : public SessionController {
   std::optional<ErrorCode> last_error_;
   int error_count_ = 0;
   int end_session_count_ = 0;
-  int session_initialized_count_ = 0;
   int turn_started_count_ = 0;
   int turn_complete_count_ = 0;
   int interrupted_count_ = 0;
@@ -474,11 +471,9 @@ TEST_F(ConversationImplTest, SessionGoesLiveOnlyOnceBackendInitialized) {
   conversation.Start();
   EXPECT_EQ(session_controller_.GetSessionLifecycle(),
             SessionLifecycle::kInitializing);
-  EXPECT_EQ(session_controller_.session_initialized_count(), 0);
 
   conversation.OnBackendInitialized();
   EXPECT_EQ(session_controller_.GetSessionLifecycle(), SessionLifecycle::kLive);
-  EXPECT_EQ(session_controller_.session_initialized_count(), 1);
 }
 
 TEST_F(ConversationImplTest, MuteStopsAndResumesCapture) {

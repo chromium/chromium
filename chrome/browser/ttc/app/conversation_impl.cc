@@ -121,7 +121,6 @@ void ConversationImpl::OnBackendInitialized() {
   backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
   session_controller_->SetSessionLifecycle(SessionLifecycle::kLive);
   audio_controller_->StartCapture(/*device_id=*/"");
-  session_controller_->OnSessionInitialized();
 }
 
 void ConversationImpl::OnBackendClosed() {

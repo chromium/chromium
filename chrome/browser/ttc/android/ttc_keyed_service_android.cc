@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -53,17 +54,6 @@ ScopedJavaLocalRef<jobject> JNI_TtcKeyedServiceFactory_GetForProfile(
   return TtcKeyedServiceAndroid::Get(*service).GetJavaObject();
 }
 
-TtcKeyedServiceAndroid::SessionObserver::SessionObserver(
-    TtcKeyedServiceAndroid& bridge)
-    : bridge_(bridge) {}
-
-TtcKeyedServiceAndroid::SessionObserver::~SessionObserver() = default;
-
-void TtcKeyedServiceAndroid::SessionObserver::OnSessionLifecycleChanged(
-    SessionLifecycle lifecycle) {
-  bridge_->OnSessionLifecycleChanged(lifecycle);
-}
-
 TtcKeyedServiceAndroid::TtcKeyedServiceAndroid(TtcKeyedService& service)
     : service_(service) {
   JNIEnv* env = AttachCurrentThread();
@@ -72,8 +62,6 @@ TtcKeyedServiceAndroid::TtcKeyedServiceAndroid(TtcKeyedService& service)
   state_changed_subscription_ = service_->RegisterStateChangedCallback(
       base::BindRepeating(&TtcKeyedServiceAndroid::OnServiceStateChanged,
                           base::Unretained(this)));
-  // The bridge is created lazily, so a session may already be running.
-  MaybeObserveSession();
 }
 
 TtcKeyedServiceAndroid::~TtcKeyedServiceAndroid() {
@@ -137,30 +125,13 @@ void TtcKeyedServiceAndroid::OnTranscriptionsUpdated(
 }
 
 void TtcKeyedServiceAndroid::OnServiceStateChanged(ServiceState state) {
-  if (state == ServiceState::kSessionActive) {
-    MaybeObserveSession();
-  }
   JNIEnv* env = AttachCurrentThread();
   Java_TtcKeyedService_onServiceStateChanged(env, java_obj_,
                                              static_cast<int32_t>(state));
 }
 
-void TtcKeyedServiceAndroid::MaybeObserveSession() {
-  SessionController* controller = service_->session_controller();
-  if (controller && !session_observation_.IsObserving()) {
-    // Reports the session's current lifecycle synchronously.
-    session_observation_.Observe(controller);
-  }
-}
-
 void TtcKeyedServiceAndroid::OnSessionLifecycleChanged(
     SessionLifecycle lifecycle) {
-  // Every session reports kFinished exactly once before it's destroyed
-  // (SessionControllerImpl's destructor reports it if EndSessionAsync() hasn't
-  // already), so stop observing here rather than after it's gone.
-  if (lifecycle == SessionLifecycle::kFinished) {
-    session_observation_.Reset();
-  }
   JNIEnv* env = AttachCurrentThread();
   Java_TtcKeyedService_onSessionLifecycleChanged(
       env, java_obj_, static_cast<int32_t>(lifecycle));

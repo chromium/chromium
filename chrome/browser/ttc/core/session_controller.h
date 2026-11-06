@@ -38,6 +38,8 @@ class SessionController {
                                           bool success) {}
     virtual void OnInputTranscription(const std::string& text) {}
     virtual void OnOutputTranscription(const std::string& text) {}
+    virtual void OnTranscriptionsUpdated(const std::string& user_transcript,
+                                         const std::string& model_transcript) {}
     virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) {}
     virtual void OnUserAudioLevelUpdate(float audio_level) {}
   };
@@ -51,9 +53,6 @@ class SessionController {
 
   // Submits a user text query into the active session conversation.
   virtual void SendTextInput(const std::string& text) = 0;
-
-  // Called when the backend is connected and the session is interactive.
-  virtual void OnSessionInitialized() = 0;
 
   // Called when the session encounters an error.
   virtual void OnError(ErrorCode error) = 0;

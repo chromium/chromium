@@ -11,9 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
-#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "components/ttc/app/public/error_codes.h"
@@ -52,46 +50,18 @@ class TtcKeyedServiceAndroid : public base::SupportsUserData::Data {
   bool IsMicMuted(JNIEnv* env);
 
   // Called by SessionViewAndroid to surface session events in the Java UI.
+  void OnSessionLifecycleChanged(SessionLifecycle lifecycle);
   void OnAudioLevelChanged(float audio_level);
   void OnError(ErrorCode error);
   void OnTranscriptionsUpdated(const std::string& user_transcript,
                                const std::string& model_transcript);
 
  private:
-  // Forwards the active session's lifecycle changes to the bridge. A separate
-  // object rather than a base class of the bridge: SessionController::Observer
-  // also has an OnError(), which would clash with the OnError() that
-  // SessionViewAndroid calls and deliver every error to Java twice.
-  class SessionObserver : public SessionController::Observer {
-   public:
-    explicit SessionObserver(TtcKeyedServiceAndroid& bridge);
-    SessionObserver(const SessionObserver&) = delete;
-    SessionObserver& operator=(const SessionObserver&) = delete;
-    ~SessionObserver() override;
-
-    // SessionController::Observer:
-    void OnSessionLifecycleChanged(SessionLifecycle lifecycle) override;
-
-   private:
-    const raw_ref<TtcKeyedServiceAndroid> bridge_;
-  };
-
   void OnServiceStateChanged(ServiceState state);
-
-  // Starts observing the active session, if there is one and it isn't
-  // observed yet.
-  void MaybeObserveSession();
-
-  void OnSessionLifecycleChanged(SessionLifecycle lifecycle);
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   const raw_ref<TtcKeyedService> service_;
   base::CallbackListSubscription state_changed_subscription_;
-  SessionObserver session_observer_{*this};
-  // Observes the active session from when the service reports it active until
-  // its lifecycle reaches kFinished.
-  base::ScopedObservation<SessionController, SessionController::Observer>
-      session_observation_{&session_observer_};
 };
 
 }  // namespace ttc

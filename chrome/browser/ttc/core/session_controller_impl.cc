@@ -69,6 +69,9 @@ SessionControllerImpl::SessionControllerImpl(
                    .GetJournal(),
                actor_task_holder_.task_id()),
       tool_controller_(*this) {
+  // Not using AddObserver() because its immediate callback would reach Java on
+  // Android before the session is stored. The view starts initializing anyway.
+  observers_.AddObserver(session_view_.get());
   GetJournal().Log("TtcSessionStart", {});
 
   voice_focused_contents_tracker_observation_.Observe(
@@ -173,7 +176,6 @@ std::vector<ToolDefinition> SessionControllerImpl::GetToolDefinitions() {
 }
 
 void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
-  session_view_->UpdateAudioLevel(audio_level);
   for (SessionController::Observer& observer : observers_) {
     observer.OnUserAudioLevelUpdate(audio_level);
   }
@@ -181,10 +183,6 @@ void SessionControllerImpl::UserAudioLevelUpdate(float audio_level) {
 
 BrowserWindowInterface* SessionControllerImpl::GetBrowserWindowInterface() {
   return voice_focused_contents_tracker_->GetActiveBrowserWindow();
-}
-
-void SessionControllerImpl::OnSessionInitialized() {
-  session_view_->OnSessionInitialized();
 }
 
 void SessionControllerImpl::OnError(ErrorCode error) {
@@ -198,7 +196,6 @@ void SessionControllerImpl::OnError(ErrorCode error) {
     return;
   }
 
-  session_view_->OnError(error);
   for (SessionController::Observer& observer : observers_) {
     observer.OnError(error);
   }
@@ -251,13 +248,14 @@ void SessionControllerImpl::OnModelAudioEnvelopeReady(
 }
 
 void SessionControllerImpl::NotifyTranscriptsUpdated() {
-  // A finished session no longer updates its UI.
+  // A finished session no longer reports transcripts.
   if (session_lifecycle_ == SessionLifecycle::kFinished) {
     return;
   }
-  session_view_->OnTranscriptionsUpdated(
-      transcript_tracker_.user_transcript(),
-      transcript_tracker_.model_transcript());
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnTranscriptionsUpdated(transcript_tracker_.user_transcript(),
+                                     transcript_tracker_.model_transcript());
+  }
 }
 
 void SessionControllerImpl::OnSpeakerChanged(Speaker speaker) {}

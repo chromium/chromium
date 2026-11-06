@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_interactive_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/ttc/ttc_voice_plate.h"
+#include "chrome/browser/ui/views/voice/waveform_mode.h"
+#include "chrome/browser/ui/views/voice/waveform_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "content/public/test/browser_test.h"
@@ -36,6 +39,12 @@ class SessionViewImplBrowserTest : public TtcInteractiveBrowserTestBase {
   StepBuilder StartSession() {
     return Do([this]() { ttc_service().StartSession(); });
   }
+
+  StepBuilder SetSessionLifecycle(SessionLifecycle lifecycle) {
+    return Do([this, lifecycle]() {
+      session_controller().SetSessionLifecycle(lifecycle);
+    });
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, StartSessionShowsUI) {
@@ -47,6 +56,23 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, StartSessionShowsUI) {
     StartSession(),
     CheckHasSession(true),
     WaitForShow(TtcVoicePlate::kViewElementId)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
+                       VoicePlateFollowsSessionLifecycle) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(TtcVoicePlate::kViewElementId),
+    CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                      &voice::WaveformView::mode,
+                      voice::WaveformMode::kProcessing),
+
+    SetSessionLifecycle(SessionLifecycle::kLive),
+    CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                      &voice::WaveformView::mode, voice::WaveformMode::kLive)
   );
   // clang-format on
 }
