@@ -117,6 +117,7 @@ if (toolkit_views) {
     ]
     deps = [
       ":interaction",
+      "//base:i18n",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/actions:actions_headers",
@@ -133,6 +134,7 @@ if (toolkit_views) {
       "//net:test_support",
       "//ui/base:test_support",
       "//ui/views:test_support",
+      "//ui/webui/tracked_element",
     ]
   }
 }
