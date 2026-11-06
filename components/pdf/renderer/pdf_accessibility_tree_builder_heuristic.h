@@ -93,11 +93,15 @@ struct PageLayoutData {
   base::raw_span<const uint32_t> text_run_start_indices;
 };
 
-// Bundles a single text run with its character span and the following run on
-// the page.
+// Bundles a text run with its characters and the runs just before and after
+// it on the page.
 struct TextRunContext {
   // The text run being evaluated.
   const raw_ref<const chrome_pdf::AccessibilityTextRunInfo> run;
+
+  // The immediately preceding text run on the page, or nullptr if `run` is the
+  // first run.
+  raw_ptr<const chrome_pdf::AccessibilityTextRunInfo> previous_run = nullptr;
 
   // The immediately following text run on the page, or nullptr if `run` is the
   // last run.
@@ -212,7 +216,6 @@ class PdfAccessibilityTreeBuilderHeuristic {
   class LineHelper;
 
   BlockLevelNodeResult CreateBlockLevelNode(
-      const PageLayoutData& layout,
       size_t text_run_index,
       const HeuristicPageProperties& page_properties,
       const chrome_pdf::AccessibilityFormGraphicInfo* graphic);
@@ -286,6 +289,9 @@ class PdfAccessibilityTreeBuilderHeuristic {
   );
 
   raw_ref<PdfAccessibilityTreeBuilder> builder_;
+
+  // The page's text runs and characters from `builder_`.
+  const PageLayoutData page_layout_;
 
   // Sequential index tracking for page objects.
   uint32_t current_link_index_ = 0;

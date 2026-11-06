@@ -1027,6 +1027,7 @@ TextRunContext GetTextRunContext(const PageLayoutData& layout,
                                  size_t text_run_index) {
   return {
       .run = raw_ref(layout.text_runs[text_run_index]),
+      .previous_run = GetRunBeforeIndex(layout.text_runs, text_run_index),
       .next_run = GetRunAfterIndex(layout.text_runs, text_run_index),
       .chars = GetTextRunChars(layout, text_run_index),
       .next_chars = text_run_index + 1 < layout.text_runs.size()
@@ -1068,12 +1069,12 @@ bool CanBeSuperOrSubScriptText(
   });
 }
 
-// Returns whether the run at `text_run_index` reads as a superscript or a
-// subscript relative to the run beside it on the same visual line, or `kNone`.
-// `chars` are the characters of that run.
+// Returns whether `run_context.run` reads as a superscript or a subscript
+// relative to the run beside it on the same visual line, or `kNone`. `chars`
+// are the run's characters, which may exclude a list marker prefix that
+// `run_context.chars` includes.
 ax::mojom::TextPosition GetTextPosition(
-    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
-    size_t text_run_index,
+    const TextRunContext& run_context,
     base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
   if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     return ax::mojom::TextPosition::kNone;
@@ -1083,25 +1084,21 @@ ax::mojom::TextPosition GetTextPosition(
     return ax::mojom::TextPosition::kNone;
   }
 
-  const chrome_pdf::AccessibilityTextRunInfo& run = text_runs[text_run_index];
+  const chrome_pdf::AccessibilityTextRunInfo& run = *run_context.run;
 
   // Check against the preceding run first (e.g., "x²", "H₂O", "word¹"), then
   // against the following run (e.g., "¹Footnote text" at the start of a line).
-  const chrome_pdf::AccessibilityTextRunInfo* previous_run =
-      GetRunBeforeIndex(text_runs, text_run_index);
-  if (previous_run) {
+  if (run_context.previous_run) {
     ax::mojom::TextPosition position =
-        ClassifySuperOrSubScriptRelativeToHost(run, *previous_run);
+        ClassifySuperOrSubScriptRelativeToHost(run, *run_context.previous_run);
     if (position != ax::mojom::TextPosition::kNone) {
       return position;
     }
   }
 
-  const chrome_pdf::AccessibilityTextRunInfo* next_run =
-      GetRunAfterIndex(text_runs, text_run_index);
-  if (next_run) {
+  if (run_context.next_run) {
     ax::mojom::TextPosition position =
-        ClassifySuperOrSubScriptRelativeToHost(run, *next_run);
+        ClassifySuperOrSubScriptRelativeToHost(run, *run_context.next_run);
     if (position != ax::mojom::TextPosition::kNone) {
       return position;
     }
@@ -2150,10 +2147,9 @@ bool BreakParagraph(uint32_t text_run_index,
   // Measure line spacing from the line's text rather than a raised marker or
   // accent emitted at the end of the line.
   const chrome_pdf::AccessibilityTextRunInfo& line_run =
-      text_run_index > 0 &&
-              IsSmallRaisedRun(current_run,
-                               layout.text_runs[text_run_index - 1])
-          ? layout.text_runs[text_run_index - 1]
+      current_run_context.previous_run &&
+              IsSmallRaisedRun(current_run, *current_run_context.previous_run)
+          ? *current_run_context.previous_run
           : current_run;
   bool is_large_line_spacing_break = BreakParagraphByLineSpacing(
       line_run, next_run, page_properties.paragraph_spacing_threshold);
@@ -2571,7 +2567,12 @@ StaticTextState::~StaticTextState() = default;
 
 PdfAccessibilityTreeBuilderHeuristic::PdfAccessibilityTreeBuilderHeuristic(
     PdfAccessibilityTreeBuilder& builder)
-    : builder_(builder) {}
+    : builder_(builder),
+      page_layout_{
+          .text_runs = builder.text_runs(),
+          .chars = builder.chars(),
+          .text_run_start_indices = builder.text_run_start_indices(),
+      } {}
 
 PdfAccessibilityTreeBuilderHeuristic::~PdfAccessibilityTreeBuilderHeuristic() =
     default;
@@ -2608,11 +2609,6 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   const HeuristicPageProperties page_properties =
       ComputeHeuristicPageProperties(builder_->text_runs(), graphics,
                                      page_bounds);
-  const PageLayoutData page_layout = {
-      .text_runs = builder_->text_runs(),
-      .chars = builder_->chars(),
-      .text_run_start_indices = builder_->text_run_start_indices(),
-  };
 
   ui::AXNodeData* block_node = nullptr;
   // Blocks that are direct children of the page node, with each `kList` in
@@ -2634,7 +2630,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   for (size_t text_run_index = 0; text_run_index < builder_->text_runs().size();
        ++text_run_index) {
     const TextRunContext run_context =
-        GetTextRunContext(page_layout, text_run_index);
+        GetTextRunContext(page_layout_, text_run_index);
     const chrome_pdf::AccessibilityTextRunInfo& text_run = *run_context.run;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2681,13 +2677,12 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     // If we don't have a block level node, create one.
     if (!block_node) {
       BlockLevelNodeResult result = CreateBlockLevelNode(
-          page_layout, text_run_index, page_properties, current_graphic);
+          text_run_index, page_properties, current_graphic);
       block_node = result.node;
       current_heading_classifier = result.heading_classifier;
       list_marker_kind = result.list_marker_kind;
       block_starts_with_superscript_marker =
-          GetTextPosition(builder_->text_runs(), text_run_index,
-                          run_context.chars) ==
+          GetTextPosition(run_context, run_context.chars) ==
           ax::mojom::TextPosition::kSuperscript;
       // `CreateBlockLevelNode()` already attaches `kListItem` blocks to the
       // enclosing `kList` (which is itself attached to `page_node()`).
@@ -2733,7 +2728,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
         item_text_x = text_run.bounds.x() +
                       GetCharsWidth(run_context.chars.first(prefix.char_count));
         item_start_char_index =
-            page_layout.text_run_start_indices[text_run_index] +
+            page_layout_.text_run_start_indices[text_run_index] +
             prefix.char_count;
       } else {
         CHECK_EQ(list_marker_kind.form, ListMarkerForm::kStandalone);
@@ -2742,7 +2737,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
         CHECK(run_context.next_run);
         item_text_x = run_context.next_run->bounds.x();
         item_start_char_index =
-            page_layout.text_run_start_indices[text_run_index + 1];
+            page_layout_.text_run_start_indices[text_run_index + 1];
       }
       list_levels_.back().item_text_x = item_text_x;
       list_levels_.back().last_item_start_char_index = item_start_char_index;
@@ -2788,8 +2783,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       // node, which ends any heading the current block was classified as.
       if (BreaksStaticTextNode(
               static_text_state, text_run,
-              GetTextPosition(builder_->text_runs(), text_run_index,
-                              run_context.chars))) {
+              GetTextPosition(run_context, run_context.chars))) {
         current_heading_classifier = HeadingClassifier::kNone;
       }
       ui::AXNodeData* inline_text_box_node =
@@ -2862,7 +2856,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 
     if (!previous_on_line_node) {
       if (BreakParagraph(text_run_index, block_node, current_heading_classifier,
-                         page_layout, page_properties, list_levels_,
+                         page_layout_, page_properties, list_levels_,
                          last_recorded_lookahead_run_index_)) {
         BuildStaticNode(&static_text_state);
         block_node = nullptr;
@@ -2873,7 +2867,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 
   if (!list_levels_.empty()) {
     list_levels_.back().item_char_counts.push_back(
-        page_layout.chars.size() -
+        page_layout_.chars.size() -
         list_levels_.back().last_item_start_char_index);
     PopListLevels(list_levels_, /*levels_to_keep=*/0, ListEndReason::kPageEnd);
   }
@@ -2937,7 +2931,6 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateLineBreakingNode(
 
 PdfAccessibilityTreeBuilderHeuristic::BlockLevelNodeResult
 PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
-    const PageLayoutData& layout,
     size_t text_run_index,
     const HeuristicPageProperties& page_properties,
     const chrome_pdf::AccessibilityFormGraphicInfo* graphic) {
@@ -2951,7 +2944,7 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     std::swap(levels, list_levels_);
     if (!levels.empty()) {
       levels.back().item_char_counts.push_back(
-          layout.text_run_start_indices[text_run_index] -
+          page_layout_.text_run_start_indices[text_run_index] -
           levels.back().last_item_start_char_index);
     }
   }
@@ -2964,7 +2957,8 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     }
   };
 
-  const TextRunContext run_context = GetTextRunContext(layout, text_run_index);
+  const TextRunContext run_context =
+      GetTextRunContext(page_layout_, text_run_index);
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() && graphic) {
     end_reason = ListEndReason::kGraphic;
     result.node = CreateLineBreakingNode(ax::mojom::Role::kFigure,
@@ -2992,9 +2986,9 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     // start a new list if there is none. The marker run itself becomes the
     // item's `kListMarker` in `BuildPageTree()`.
     if (!header_footer_ax_role.has_value()) {
-      result.list_marker_kind =
-          ClassifyListMarker(layout, text_run_index, levels, page_properties,
-                             last_recorded_lookahead_run_index_);
+      result.list_marker_kind = ClassifyListMarker(
+          page_layout_, text_run_index, levels, page_properties,
+          last_recorded_lookahead_run_index_);
     }
     if (result.list_marker_kind.form != ListMarkerForm::kNone) {
       result.node = CreateListItemNode(run_context, result.list_marker_kind,
@@ -3179,8 +3173,10 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::AddTextRunToNode(
   base::span<const chrome_pdf::AccessibilityCharInfo> char_span =
       base::span(builder_->chars())
           .subspan(page_char_index.char_index, text_run.len);
+  const TextRunContext run_context =
+      GetTextRunContext(page_layout_, text_run_index);
   ax::mojom::TextPosition text_position =
-      GetTextPosition(builder_->text_runs(), text_run_index, char_span);
+      GetTextPosition(run_context, char_span);
 
   // If the current block was given the opening run's language and a later run
   // in the block has a different language, move the language attribute from the
