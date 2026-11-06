@@ -453,6 +453,8 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
   EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
   handler.partialTranslateDelegate = nil;
   [partial_translate_mediator shutdown];
+  handler.searchWithDelegate = nil;
+  [search_with_mediator shutdown];
 }
 
 // Tests that the share option is removed when sharing is blocked by Data
@@ -520,6 +522,7 @@ TEST_F(BrowserEditMenuHandlerTest, SearchWithButtonTitle_Adjacent) {
                        incognito:NO];
 
   EXPECT_NSEQ([search_with_mediator buttonTitle], @"Google Search");
+  [search_with_mediator shutdown];
 }
 
 TEST_F(BrowserEditMenuHandlerTest, SearchWithButtonTitle_Default) {
@@ -546,4 +549,5 @@ TEST_F(BrowserEditMenuHandlerTest, SearchWithButtonTitle_Default) {
                        incognito:NO];
 
   EXPECT_NSEQ([search_with_mediator buttonTitle], @"Search with Google");
+  [search_with_mediator shutdown];
 }

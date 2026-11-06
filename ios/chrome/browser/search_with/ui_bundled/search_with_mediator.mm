@@ -91,7 +91,7 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 
 @implementation SearchWithMediator {
   // The service to retrieve default search engine URL.
-  raw_ptr<TemplateURLService, DanglingUntriaged> _templateURLService;
+  raw_ptr<TemplateURLService> _templateURLService;
   // The service to determine AIM eligibility.
   raw_ptr<AimEligibilityService> _aimEligibilityService;
   // The browser agent for cobrowse.
