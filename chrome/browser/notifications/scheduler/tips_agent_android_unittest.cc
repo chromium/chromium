@@ -9,20 +9,25 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tips/core/tips_service.h"
 #include "chrome/browser/tips/core/tips_signal_keys.h"
 #include "chrome/browser/tips/core/tips_types.h"
+#include "chrome/browser/tips/core/tips_utils.h"
 #include "chrome/browser/tips/tips_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,6 +35,35 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Field;
+using ::testing::InSequence;
+using ::testing::Pointee;
+
+namespace {
+
+// Matches NotificationParams scheduled for `data` with the stable tips guid for
+// `feature_type`.
+auto IsTipsNotification(const notifications::NotificationData& data,
+                        tips::TipsNotificationsFeatureType feature_type) {
+  return Pointee(
+      AllOf(Field(&notifications::NotificationParams::notification_data, data),
+            Field(&notifications::NotificationParams::guid,
+                  "tips_notification_" +
+                      base::NumberToString(static_cast<int>(feature_type)))));
+}
+
+notifications::NotificationData CreateTipData(
+    tips::TipsNotificationsFeatureType feature_type,
+    const std::u16string& title) {
+  notifications::NotificationData data;
+  data.title = title;
+  data.custom_data[notifications::kTipsNotificationsFeatureType] =
+      base::NumberToString(static_cast<int>(feature_type));
+  return data;
+}
+
+}  // namespace
 
 class MockTipsService : public tips::TipsService {
  public:
@@ -195,19 +229,44 @@ TEST_F(TipsAgentAndroidTest,
 }
 
 TEST_F(TipsAgentAndroidTest, TestOnBestTipChosen) {
-  notifications::NotificationData test_data;
-  test_data.title = u"Test Title";
-  test_data.custom_data["feature_type"] = "1";
+  notifications::NotificationData test_data = CreateTipData(
+      tips::TipsNotificationsFeatureType::kQuickDelete, u"Test Title");
 
-  EXPECT_CALL(
-      mock_service_,
-      Schedule(::testing::Pointee(::testing::Field(
-          &notifications::NotificationParams::notification_data, test_data))))
-      .Times(1);
+  {
+    InSequence sequence;
+    EXPECT_CALL(mock_service_,
+                DeleteNotifications(notifications::SchedulerClientType::kTips));
+    EXPECT_CALL(
+        mock_service_,
+        Schedule(IsTipsNotification(
+            test_data, tips::TipsNotificationsFeatureType::kQuickDelete)));
+  }
   TipsAgentAndroid::OnBestTipChosen(&mock_service_, test_data);
 
+  EXPECT_CALL(mock_service_, DeleteNotifications(_)).Times(0);
   EXPECT_CALL(mock_service_, Schedule(_)).Times(0);
   TipsAgentAndroid::OnBestTipChosen(&mock_service_, std::nullopt);
+}
+
+TEST_F(TipsAgentAndroidTest,
+       TestRunGetClassificationResultCallback_ReplacesPendingNotification) {
+  segmentation_platform::ClassificationResult result(
+      segmentation_platform::PredictionStatus::kSucceeded);
+  result.ordered_labels = {segmentation_platform::kEnhancedSafeBrowsing};
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(mock_service_,
+                DeleteNotifications(notifications::SchedulerClientType::kTips));
+    EXPECT_CALL(
+        mock_service_,
+        Schedule(IsTipsNotification(
+            tips::GetTipsNotificationData(
+                tips::TipsNotificationsFeatureType::kEnhancedSafeBrowsing),
+            tips::TipsNotificationsFeatureType::kEnhancedSafeBrowsing)));
+  }
+  TipsAgentAndroid::RunGetClassificationResultCallback(profile_.get(),
+                                                       &mock_service_, result);
 }
 
 TEST_F(TipsAgentAndroidTest,
@@ -280,14 +339,66 @@ TEST_F(TipsAgentAndroidTest,
 }
 
 TEST_F(TipsAgentAndroidTest, TestOnGetClientOverview_Reschedule) {
-  notifications::ClientOverview overview;
+  // A random guid, e.g. persisted before tips used a stable guid, is replaced
+  // by the stable guid on reschedule.
   notifications::NotificationEntry entry(
-      notifications::SchedulerClientType::kTips, "guid");
+      notifications::SchedulerClientType::kTips, "random-guid");
+  entry.notification_data =
+      CreateTipData(tips::TipsNotificationsFeatureType::kGoogleLens, u"Tip");
+  notifications::ClientOverview overview;
   overview.scheduled_notifications.push_back(&entry);
 
-  EXPECT_CALL(mock_service_,
-              DeleteNotifications(notifications::SchedulerClientType::kTips));
-  EXPECT_CALL(mock_service_, Schedule(_));
+  {
+    InSequence sequence;
+    EXPECT_CALL(mock_service_,
+                DeleteNotifications(notifications::SchedulerClientType::kTips));
+    EXPECT_CALL(mock_service_,
+                Schedule(IsTipsNotification(
+                    entry.notification_data,
+                    tips::TipsNotificationsFeatureType::kGoogleLens)));
+  }
+
+  TipsAgentAndroid::OnGetClientOverview(profile_.get(),
+                                        /*custom_signals=*/{}, &mock_service_,
+                                        std::move(overview));
+}
+
+TEST_F(TipsAgentAndroidTest,
+       TestOnGetClientOverview_MultiplePending_ReschedulesNewest) {
+  base::Time now = base::Time::Now();
+  notifications::NotificationEntry oldest(
+      notifications::SchedulerClientType::kTips, "guid-1");
+  oldest.create_time = now - base::Minutes(10);
+  oldest.notification_data = CreateTipData(
+      tips::TipsNotificationsFeatureType::kEnhancedSafeBrowsing, u"Oldest");
+  notifications::NotificationEntry newest(
+      notifications::SchedulerClientType::kTips, "guid-2");
+  newest.create_time = now;
+  newest.notification_data = CreateTipData(
+      tips::TipsNotificationsFeatureType::kQuickDelete, u"Newest");
+  notifications::NotificationEntry middle(
+      notifications::SchedulerClientType::kTips, "guid-3");
+  middle.create_time = now - base::Minutes(5);
+  middle.notification_data =
+      CreateTipData(tips::TipsNotificationsFeatureType::kGoogleLens, u"Middle");
+
+  // Entries are not ordered by creation time.
+  notifications::ClientOverview overview;
+  overview.scheduled_notifications.push_back(&oldest);
+  overview.scheduled_notifications.push_back(&newest);
+  overview.scheduled_notifications.push_back(&middle);
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(mock_service_,
+                DeleteNotifications(notifications::SchedulerClientType::kTips))
+        .Times(1);
+    EXPECT_CALL(mock_service_,
+                Schedule(IsTipsNotification(
+                    newest.notification_data,
+                    tips::TipsNotificationsFeatureType::kQuickDelete)))
+        .Times(1);
+  }
 
   TipsAgentAndroid::OnGetClientOverview(profile_.get(),
                                         /*custom_signals=*/{}, &mock_service_,

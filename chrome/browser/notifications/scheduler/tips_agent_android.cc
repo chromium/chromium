@@ -4,17 +4,21 @@
 
 #include "chrome/browser/notifications/scheduler/tips_agent_android.h"
 
+#include <algorithm>
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
 #include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
@@ -48,6 +52,10 @@ namespace {
 // notification when the self-service approach is not enabled.
 constexpr int kDefaultStartTimeMinutes = 120;
 constexpr int kDefaultWindowTimeMinutes = 120;
+
+// Prefix for the guid of a scheduled tips notification, followed by the tip's
+// feature type. See `ReplacePendingTipsNotification()`.
+constexpr char kTipsNotificationGuidPrefix[] = "tips_notification_";
 
 tips::TipsNotificationsFeatureType GetFeatureType(const std::string& label) {
   if (label == segmentation_platform::kEnhancedSafeBrowsing) {
@@ -100,6 +108,33 @@ notifications::ScheduleParams GetCurrentScheduleParams() {
   return schedule_params;
 }
 
+// Deletes any pending tips notification and schedules `data` in its place,
+// with a delivery window starting from now (see `GetCurrentScheduleParams()`).
+//
+// Tips have at most one pending notification. Scheduling passes can overlap
+// (e.g. one per window), and the scheduler commits `Schedule()` asynchronously,
+// so deleting first is not enough on its own: a delete cannot see another
+// pass's schedule that has not been committed yet. The scheduler's store is
+// keyed by guid, so a guid derived from the tip's feature type makes
+// overlapping schedules of the same tip overwrite each other instead of
+// accumulating. Each tip is shown at most once, so the guid is still unique per
+// displayed notification.
+void ReplacePendingTipsNotification(
+    notifications::NotificationScheduleService* service,
+    notifications::NotificationData data) {
+  auto params = std::make_unique<notifications::NotificationParams>(
+      notifications::SchedulerClientType::kTips, std::move(data),
+      GetCurrentScheduleParams());
+  auto it = params->notification_data.custom_data.find(
+      notifications::kTipsNotificationsFeatureType);
+  if (it != params->notification_data.custom_data.end()) {
+    params->guid = base::StrCat({kTipsNotificationGuidPrefix, it->second});
+  }
+
+  service->DeleteNotifications(notifications::SchedulerClientType::kTips);
+  service->Schedule(std::move(params));
+}
+
 }  // namespace
 
 // static
@@ -115,14 +150,8 @@ void TipsAgentAndroid::RunGetClassificationResultCallback(
   const std::string& action_label = result.ordered_labels[0];
   tips::TipsNotificationsFeatureType feature_type =
       GetFeatureType(action_label);
-
-  notifications::ScheduleParams schedule_params = GetCurrentScheduleParams();
-
-  notifications::NotificationData data =
-      tips::GetTipsNotificationData(feature_type);
-  service->Schedule(std::make_unique<notifications::NotificationParams>(
-      notifications::SchedulerClientType::kTips, std::move(data),
-      std::move(schedule_params)));
+  ReplacePendingTipsNotification(service,
+                                 tips::GetTipsNotificationData(feature_type));
 }
 
 // static
@@ -291,21 +320,17 @@ void TipsAgentAndroid::OnGetClientOverview(
     notifications::ClientOverview overview) {
   // If there is a scheduled notification, reschedule it.
   if (!overview.scheduled_notifications.empty()) {
-    // There will only ever be 1 notification scheduled at a time for tips.
-    // TODO(crbug.com/580550840): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK_EQ(overview.scheduled_notifications.size(), 1u);
-    const auto& entry = overview.scheduled_notifications[0];
-    notifications::NotificationData data = entry->notification_data;
-
-    // Use new ScheduleParams to reschedule based on the current time.
-    notifications::ScheduleParams params = GetCurrentScheduleParams();
-
-    // Wipe all pending notifications before rescheduling.
-    service->DeleteNotifications(notifications::SchedulerClientType::kTips);
-    service->Schedule(std::make_unique<notifications::NotificationParams>(
-        notifications::SchedulerClientType::kTips, std::move(data),
-        std::move(params)));
+    // Tips should have at most one pending notification, but duplicates can
+    // still exist, e.g. persisted before tips used a stable guid, or from
+    // overlapping passes that chose different tips. Keep the newest one; the
+    // replace below deletes the rest.
+    const notifications::NotificationEntry* newest_entry =
+        *std::ranges::max_element(
+            overview.scheduled_notifications, {},
+            [](const notifications::NotificationEntry* entry) {
+              return entry->create_time;
+            });
+    ReplacePendingTipsNotification(service, newest_entry->notification_data);
   } else {
     TipsAgentAndroid::ScheduleNewNotification(
         profile, std::move(custom_signals), service);
@@ -320,11 +345,7 @@ void TipsAgentAndroid::OnBestTipChosen(
     return;
   }
 
-  notifications::ScheduleParams schedule_params = GetCurrentScheduleParams();
-
-  service->Schedule(std::make_unique<notifications::NotificationParams>(
-      notifications::SchedulerClientType::kTips, std::move(*data),
-      std::move(schedule_params)));
+  ReplacePendingTipsNotification(service, std::move(*data));
 }
 
 TipsAgentAndroid::TipsAgentAndroid() = default;
