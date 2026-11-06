@@ -1,9 +1,8 @@
-
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drop_navigator.h"
 
 #include <memory>
 
@@ -11,7 +10,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,16 +17,16 @@
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
-namespace browser_controls_api {
+namespace webui_toolbar {
 namespace {
 
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-class BrowserControlsAdapterImplTest : public ChromeRenderViewHostTestHarness {
+class WebUIToolbarDropNavigatorTest : public ChromeRenderViewHostTestHarness {
  public:
-  BrowserControlsAdapterImplTest() = default;
+  WebUIToolbarDropNavigatorTest() = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -40,25 +38,22 @@ class BrowserControlsAdapterImplTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
     ON_CALL(browser_window_interface_, GetProfile())
         .WillByDefault(Return(profile()));
-    command_updater_ = std::make_unique<NiceMock<MockCommandUpdater>>();
-    adapter_ = std::make_unique<BrowserControlsAdapterImpl>(
-        &browser_window_interface_, command_updater_.get(), web_contents());
+    navigator_ = std::make_unique<WebUIToolbarDropNavigator>(
+        browser_window_interface_, web_contents());
   }
 
   void TearDown() override {
-    adapter_.reset();
-    command_updater_.reset();
+    navigator_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
   NiceMock<MockBrowserWindowInterface> browser_window_interface_;
-  std::unique_ptr<MockCommandUpdater> command_updater_;
-  std::unique_ptr<BrowserControlsAdapterImpl> adapter_;
+  std::unique_ptr<WebUIToolbarDropNavigator> navigator_;
 };
 
 // Matches `content::OpenURLParams` that open `url` in the active tab, which is
-// how the adapter handles every drop on the toolbar.
+// how the navigator handles every drop on the toolbar.
 MATCHER_P(OpensInCurrentTab, url, "") {
   return arg.url == url &&
          arg.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab;
@@ -77,100 +72,92 @@ MATCHER(HasNoInitiator, "") {
   return !arg.initiator_origin.has_value();
 }
 
-TEST_F(BrowserControlsAdapterImplTest, NavigateToDroppedText_HTTPAllowed) {
+TEST_F(WebUIToolbarDropNavigatorTest, NavigateToDroppedText_HTTPAllowed) {
   GURL expected_url("https://www.example.com/");
   EXPECT_CALL(browser_window_interface_,
               OpenURL(OpensInCurrentTab(expected_url), _));
-  adapter_->NavigateToDroppedText("https://www.example.com/");
+  navigator_->NavigateToDroppedText("https://www.example.com/");
 }
 
-TEST_F(BrowserControlsAdapterImplTest,
+TEST_F(WebUIToolbarDropNavigatorTest,
        NavigateToDroppedText_PrivilegedSchemeBlockedOnRendererDrag) {
-  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-      web_contents())
+  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
       ->set_drag_originated_from_renderer(true);
   EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
-  adapter_->NavigateToDroppedText("chrome://settings");
+  navigator_->NavigateToDroppedText("chrome://settings");
 }
 
-// The adapter trusts the drag state as recorded. ChromeOS treating every drag
+// The navigator trusts the drag state as recorded. ChromeOS treating every drag
 // as renderer-originated (b/256022714) happens earlier, in
 // `PreHandleDragUpdate`, which these tests bypass.
-TEST_F(BrowserControlsAdapterImplTest,
+TEST_F(WebUIToolbarDropNavigatorTest,
        NavigateToDroppedText_PrivilegedSchemeWhenDragNotRendererTainted) {
-  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-      web_contents())
+  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
       ->set_drag_originated_from_renderer(false);
   EXPECT_CALL(browser_window_interface_,
               OpenURL(OpensInCurrentTab(GURL("chrome://settings")), _));
-  adapter_->NavigateToDroppedText("chrome://settings");
+  navigator_->NavigateToDroppedText("chrome://settings");
 }
 
-TEST_F(BrowserControlsAdapterImplTest,
+TEST_F(WebUIToolbarDropNavigatorTest,
        NavigateToDroppedUrl_PrivilegedSchemeWhenDragNotRendererTainted) {
-  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-      web_contents())
+  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
       ->set_drag_originated_from_renderer(false);
   EXPECT_CALL(browser_window_interface_,
               OpenURL(OpensInCurrentTab(GURL("chrome://settings")), _));
-  adapter_->NavigateToDroppedUrl(GURL("chrome://settings"));
+  navigator_->NavigateToDroppedUrl(GURL("chrome://settings"));
 }
 
-TEST_F(BrowserControlsAdapterImplTest,
+TEST_F(WebUIToolbarDropNavigatorTest,
        NavigateToDroppedUrl_PrivilegedSchemeIgnoredOnRendererDrag) {
-  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-      web_contents())
+  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
       ->set_drag_originated_from_renderer(true);
   EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
-  adapter_->NavigateToDroppedUrl(GURL("chrome://settings"));
+  navigator_->NavigateToDroppedUrl(GURL("chrome://settings"));
 }
 
-TEST_F(BrowserControlsAdapterImplTest,
+TEST_F(WebUIToolbarDropNavigatorTest,
        NavigateToDroppedUrl_IgnoredWhenUnfilteredDragUrlIsJavaScript) {
-  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-      web_contents())
+  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
       ->set_drag_has_javascript_url(true);
   EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
-  adapter_->NavigateToDroppedUrl(GURL("about:blank#blocked"));
+  navigator_->NavigateToDroppedUrl(GURL("about:blank#blocked"));
 }
 
-TEST_F(BrowserControlsAdapterImplTest,
+TEST_F(WebUIToolbarDropNavigatorTest,
        NavigateToDroppedUrl_RendererDragHasOpaqueInitiator) {
-  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-      web_contents())
+  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
       ->set_drag_originated_from_renderer(true);
   const GURL url("https://www.example.com/");
   EXPECT_CALL(
       browser_window_interface_,
       OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasOpaqueInitiator()),
               _));
-  adapter_->NavigateToDroppedUrl(url);
+  navigator_->NavigateToDroppedUrl(url);
 }
 
-TEST_F(BrowserControlsAdapterImplTest,
+TEST_F(WebUIToolbarDropNavigatorTest,
        NavigateToDroppedText_RendererDragHasOpaqueInitiator) {
-  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-      web_contents())
+  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
       ->set_drag_originated_from_renderer(true);
   const GURL url("https://www.example.com/");
   EXPECT_CALL(
       browser_window_interface_,
       OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasOpaqueInitiator()),
               _));
-  adapter_->NavigateToDroppedText(url.spec());
+  navigator_->NavigateToDroppedText(url.spec());
 }
 
-TEST_F(BrowserControlsAdapterImplTest,
+TEST_F(WebUIToolbarDropNavigatorTest,
        NavigateToDroppedUrl_OsDragHasNoInitiator) {
-  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
-      web_contents())
+  WebUIToolbarDragState::GetOrCreateForWebContents(web_contents())
       ->set_drag_originated_from_renderer(false);
   const GURL url("https://www.example.com/");
   EXPECT_CALL(
       browser_window_interface_,
       OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasNoInitiator()), _));
-  adapter_->NavigateToDroppedUrl(url);
+  navigator_->NavigateToDroppedUrl(url);
 }
 
 }  // namespace
-}  // namespace browser_controls_api
+}  // namespace webui_toolbar

@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drop_navigator.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -253,9 +254,8 @@ class WebUIToolbarInternalWebView : public views::WebView {
     //
     // Security is still maintained because accidental drops in the empty
     // toolbar area are intercepted and safely discarded by
-    // `BrowserControlsAdapterImpl::NavigateToDroppedText`, and drops into the
-    // Omnibox
-    // are sanitized by `WebUIReadOnlyOmnibox::OnDropText`.
+    // `WebUIToolbarDropNavigator::NavigateToDroppedText`, and drops into the
+    // Omnibox are sanitized by `WebUIReadOnlyOmnibox::OnDropText`.
     return true;
   }
 
@@ -500,11 +500,14 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   // The accessibility and tooltip attributes are handled by the WebUI.
   SetProperty(views::kElementIdentifierKey, kWebUIToolbarElementIdentifier);
 
+  drop_navigator_ = std::make_unique<webui_toolbar::WebUIToolbarDropNavigator>(
+      *browser, web_contents);
+
   // `controller` may be nullptr in unit tests.
   if (controller) {
     browser_controls_adapter_ =
         std::make_unique<browser_controls_api::BrowserControlsAdapterImpl>(
-            browser, controller, web_contents);
+            browser, controller);
   }
 }
 
@@ -1584,21 +1587,15 @@ void WebUIToolbarWebView::OnHomeButtonDropText(const std::string& text) {
   if (!home_control_.ShouldHandleDropText()) {
     return;
   }
-  if (browser_controls_adapter_) {
-    browser_controls_adapter_->NavigateToDroppedText(text);
-  }
+  drop_navigator_->NavigateToDroppedText(text);
 }
 
 void WebUIToolbarWebView::OnToolbarDropUrl(const GURL& url) {
-  if (browser_controls_adapter_) {
-    browser_controls_adapter_->NavigateToDroppedUrl(url);
-  }
+  drop_navigator_->NavigateToDroppedUrl(url);
 }
 
 void WebUIToolbarWebView::OnToolbarDropText(const std::string& text) {
-  if (browser_controls_adapter_) {
-    browser_controls_adapter_->NavigateToDroppedText(text);
-  }
+  drop_navigator_->NavigateToDroppedText(text);
 }
 
 void WebUIToolbarWebView::OnToolbarDropFile(const gfx::PointF& drop_position) {

@@ -55,10 +55,6 @@ class ToyBrowserControlsAdapter : public BrowserControlsAdapter {
         {.command_id = IDC_HOME, .disposition = disposition});
   }
 
-  void NavigateToDroppedUrl(const GURL& url) override {}
-
-  void NavigateToDroppedText(const std::string& text) override {}
-
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override {
     webui_toolbar::TabSplitStatus status;
 

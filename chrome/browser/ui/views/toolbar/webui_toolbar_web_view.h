@@ -63,6 +63,10 @@ namespace browser_controls_api {
 class BrowserControlsAdapterImpl;
 }
 
+namespace webui_toolbar {
+class WebUIToolbarDropNavigator;
+}
+
 namespace content {
 struct ContextMenuParams;
 }  // namespace content
@@ -711,6 +715,9 @@ class WebUIToolbarWebView
   // to use WebUI themselves, this should no longer be needed.
   std::unique_ptr<browser_controls_api::BrowserControlsAdapterImpl>
       browser_controls_adapter_;
+
+  // Navigates the current tab to URLs and text dropped on the toolbar.
+  std::unique_ptr<webui_toolbar::WebUIToolbarDropNavigator> drop_navigator_;
 
   webui_toolbar::IconTable icon_table_;
 

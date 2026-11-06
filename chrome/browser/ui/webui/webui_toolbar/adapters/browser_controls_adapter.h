@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
-#include "url/gurl.h"
 
 namespace browser_controls_api {
 
@@ -27,8 +26,6 @@ class BrowserControlsAdapter {
   virtual void BackButtonHovered() = 0;
   virtual void CreateNewSplitTab() = 0;
   virtual void NavigateHome(ui::mojom::WindowOpenDisposition disposition) = 0;
-  virtual void NavigateToDroppedUrl(const GURL& url) = 0;
-  virtual void NavigateToDroppedText(const std::string& text) = 0;
   // These should probably be pulled to their own adapter.
   virtual webui_toolbar::TabSplitStatus ComputeSplitTabStatus() = 0;
 };

@@ -13,6 +13,7 @@ source_set("webui_toolbar") {
     "icon_table.h",
     "toolbar_ui_service.h",
     "webui_toolbar_drag_state.h",
+    "webui_toolbar_drop_navigator.h",
     "webui_toolbar_extensions_container_observer.h",
     "webui_toolbar_ui.h",
   ]
@@ -69,6 +70,7 @@ source_set("impl") {
     "icon_table.cc",
     "toolbar_ui_service.cc",
     "webui_toolbar_drag_state.cc",
+    "webui_toolbar_drop_navigator.cc",
     "webui_toolbar_extensions_container.cc",
     "webui_toolbar_extensions_container.h",
     "webui_toolbar_ui.cc",
@@ -79,6 +81,7 @@ source_set("impl") {
     "adapters",
     "adapters:impl",
     "utils",
+    "//chrome/browser/autocomplete",
     "//chrome/browser/contextual_search",
     "//chrome/browser/extensions",
     "//chrome/browser/glic/browser_ui",
@@ -105,6 +108,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/util",
+    "//components/omnibox/browser",
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",
     "//components/user_education/webui",
@@ -129,10 +133,10 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "adapters/browser_controls_adapter_impl_unittest.cc",
     "browser_controls_service_unittest.cc",
     "icon_table_unittest.cc",
     "toolbar_ui_service_unittest.cc",
+    "webui_toolbar_drop_navigator_unittest.cc",
     "webui_toolbar_layout_css_helper_unittest.cc",
     "webui_toolbar_ui_unittest.cc",
   ]

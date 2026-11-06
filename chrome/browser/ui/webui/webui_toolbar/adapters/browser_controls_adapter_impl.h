@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class CommandUpdater;
@@ -16,12 +15,10 @@ class BrowserWindowInterface;
 namespace browser_controls_api {
 
 // Adapter implementation for the desktop platform.
-class BrowserControlsAdapterImpl : public BrowserControlsAdapter,
-                                   public content::WebContentsObserver {
+class BrowserControlsAdapterImpl : public BrowserControlsAdapter {
  public:
   BrowserControlsAdapterImpl(BrowserWindowInterface* browser_interface,
-                             CommandUpdater* command_updater,
-                             content::WebContents* web_contents);
+                             CommandUpdater* command_updater);
   BrowserControlsAdapterImpl(const BrowserControlsAdapterImpl&&) = delete;
   BrowserControlsAdapterImpl operator=(const BrowserControlsAdapterImpl&&) =
       delete;
@@ -36,22 +33,9 @@ class BrowserControlsAdapterImpl : public BrowserControlsAdapter,
   void BackButtonHovered() override;
   void CreateNewSplitTab() override;
   void NavigateHome(ui::mojom::WindowOpenDisposition disposition) override;
-  void NavigateToDroppedUrl(const GURL& url) override;
-  void NavigateToDroppedText(const std::string& text) override;
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override;
 
  private:
-  // Helper to retrieve and reset the drag origin state.
-  bool GetDragOriginatedFromRendererAndReset();
-
-  // Helper to retrieve and reset whether the unfiltered drag URL had a
-  // `javascript:` scheme.
-  bool GetDragHasJavaScriptUrlAndReset();
-
-  // Opens `url` in the current tab on behalf of a drop. Navigations from
-  // renderer-originated drags get an opaque initiator origin.
-  void OpenDroppedUrl(const GURL& url, bool drag_originated_from_renderer);
-
   // Not owned.
   const base::raw_ref<BrowserWindowInterface> browser_;
   const base::raw_ref<CommandUpdater> command_updater_;
