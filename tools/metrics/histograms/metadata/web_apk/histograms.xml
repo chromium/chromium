@@ -415,16 +415,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Update.RequestSent" enum="WebApkUpdateRequestSent"
-    expires_after="2024-02-20">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records the time point when a request to update a WebAPK is sent to the
-    WebAPK Server.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Update.ShellVersion" units="units"
     expires_after="2027-05-19">
   <owner>eirage@chromium.org</owner>

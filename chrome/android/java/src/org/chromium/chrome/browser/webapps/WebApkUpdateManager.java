@@ -605,8 +605,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                     callback.run();
                 };
 
-        WebApkUmaRecorder.recordUpdateRequestSent(
-                WebApkUmaRecorder.UpdateRequestSent.WHILE_WEBAPK_CLOSED);
         WebApkUpdateManagerJni.get()
                 .updateWebApkFromFile(storage.getPendingUpdateRequestPath(), callbackRunner);
     }

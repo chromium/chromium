@@ -30,17 +30,6 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class WebApkUmaRecorder {
     // This enum is used to back UMA histograms, and should therefore be treated as append-only.
-    @IntDef({UpdateRequestSent.WHILE_WEBAPK_CLOSED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface UpdateRequestSent {
-        // Deprecated: FIRST_TRY = 0;
-        // Deprecated: ONSTOP = 1;
-        // Deprecated: WHILE_WEBAPK_IN_FOREGROUND = 2;
-        int WHILE_WEBAPK_CLOSED = 3;
-        int NUM_ENTRIES = 4;
-    }
-
-    // This enum is used to back UMA histograms, and should therefore be treated as append-only.
     @IntDef({
         GooglePlayInstallResult.SUCCESS,
         GooglePlayInstallResult.FAILED_NO_DELEGATE,
@@ -82,8 +71,6 @@ public class WebApkUmaRecorder {
         int NUM_ENTRIES = 16;
     }
 
-    public static final String HISTOGRAM_UPDATE_REQUEST_SENT = "WebApk.Update.RequestSent";
-
     public static final String HISTOGRAM_UPDATE_REQUEST_SHELL_VERSION =
             "WebApk.Update.ShellVersion";
 
@@ -98,15 +85,6 @@ public class WebApkUmaRecorder {
 
     private static final long WEBAPK_EXTRA_INSTALLATION_SPACE_BYTES =
             100 * (long) ConversionUtils.BYTES_PER_MEGABYTE; // 100 MB
-
-    /**
-     * Records the time point when a request to update a WebAPK is sent to the WebAPK Server.
-     * @param type representing when the update request is sent to the WebAPK server.
-     */
-    public static void recordUpdateRequestSent(@UpdateRequestSent int type) {
-        RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_UPDATE_REQUEST_SENT, type, UpdateRequestSent.NUM_ENTRIES);
-    }
 
     /**
      * Records the times that an update request has been queued once, twice and three times before

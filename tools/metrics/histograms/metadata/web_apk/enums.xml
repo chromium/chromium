@@ -169,13 +169,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Launch on device, and modification to Sync"/>
 </enum>
 
-<enum name="WebApkUpdateRequestSent">
-  <int value="0" label="Sent immediately after an update check (deprecated)"/>
-  <int value="1" label="Sent when WebAPK is moved to background (deprecated)"/>
-  <int value="2" label="Sent by forcing an update (deprecated)"/>
-  <int value="3" label="Sent when WebAPK is closed"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>
