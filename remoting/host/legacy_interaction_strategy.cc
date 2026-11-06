@@ -47,6 +47,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "remoting/host/win/evaluate_d3d.h"
 #include "remoting/host/win/mouse_cursor_monitor_win.h"
 #endif
 
@@ -230,7 +231,18 @@ LegacyInteractionStrategy::LegacyInteractionStrategy(
       video_capture_task_runner_(std::move(video_capture_task_runner)),
       input_task_runner_(std::move(input_task_runner)),
       display_info_monitor_(ui_task_runner_,
-                            DesktopDisplayInfoLoader::Create()) {}
+                            DesktopDisplayInfoLoader::Create()) {
+#if BUILDFLAG(IS_WIN)
+  // Check whether D3D is available as long as the DirectX capturer wasn't
+  // explicitly disabled. This check is necessary because the network process
+  // runs in Session 0 and cannot check whether D3D is available or not so the
+  // default value is set to true but can be overridden by the client.
+  if (options_.desktop_capture_options()->allow_directx_capturer()) {
+    options_.desktop_capture_options()->set_allow_directx_capturer(
+        IsD3DAvailable());
+  }
+#endif
+}
 
 LegacyInteractionStrategyFactory::LegacyInteractionStrategyFactory(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,

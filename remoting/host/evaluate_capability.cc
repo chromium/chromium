@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -109,7 +108,7 @@ int EvaluateCapability(const std::string& type,
                             kProcessTypeEvaluateCapability);
   command.AppendSwitchASCII(kEvaluateCapabilitySwitchName, type);
 
-  int exit_code;
+  int exit_code = kInitializationFailed;
   std::string dummy_output;
   if (!output) {
     output = &dummy_output;

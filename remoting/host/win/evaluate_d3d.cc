@@ -6,7 +6,10 @@
 
 #include <D3DCommon.h>
 
+#include <algorithm>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -22,6 +25,7 @@ namespace remoting {
 
 namespace {
 
+constexpr char kDirectXCapturer[] = "DirectX-Capturer";
 constexpr char kNoDirectXCapturer[] = "No-DirectX-Capturer";
 
 }  // namespace
@@ -35,7 +39,7 @@ int EvaluateD3D() {
   if (webrtc::ScreenCapturerWinDirectx::IsSupported()) {
     // Guaranteed to work.
     // This string is also hard-coded in host_attributes_unittests.cc.
-    std::cout << "DirectX-Capturer" << std::endl;
+    std::cout << kDirectXCapturer << std::endl;
   } else if (webrtc::ScreenCapturerWinDirectx::IsCurrentSessionSupported()) {
     // If we are in a supported session, but DirectX capturer is not able to be
     // initialized. Something must be wrong, we should actively disable it.
@@ -102,13 +106,24 @@ bool GetD3DCapabilities(std::vector<std::string>* result) {
   return true;
 }
 
+bool HasDirectXCapturerCapability(
+    const std::vector<std::string>& capabilities) {
+  return std::ranges::contains(capabilities, kDirectXCapturer);
+}
+
 bool IsD3DAvailable() {
-  if (BlockD3DCheck()) {
+  std::vector<std::string> capabilities;
+  if (!GetD3DCapabilities(&capabilities)) {
+    LOG(WARNING) << "DirectX capability check failed or was skipped; "
+                 << "falling back to GDI capturer.";
     return false;
   }
-
-  std::string unused;
-  return (EvaluateCapability(kEvaluateD3D, &unused) == kSuccessExitCode);
+  if (!HasDirectXCapturerCapability(capabilities)) {
+    LOG(WARNING) << "DirectX capturer is not supported in this session; "
+                 << "falling back to GDI capturer.";
+    return false;
+  }
+  return true;
 }
 
 }  // namespace remoting

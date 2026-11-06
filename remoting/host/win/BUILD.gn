@@ -243,6 +243,7 @@ source_set("unit_tests") {
     "chromoting_module_unittest.cc",
     "default_audio_device_change_detector_unittest.cc",
     "desktop_event_handler_unittest.cc",
+    "evaluate_d3d_unittest.cc",
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
