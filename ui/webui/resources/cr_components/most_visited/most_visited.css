@@ -103,6 +103,18 @@
   background-color: var(--google-grey-700);
 }
 
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 :host([use-white-tile-icon_]) #addShortcutIcon,
 :host([use-white-tile-icon_]) #showMoreIcon,
 :host([use-white-tile-icon_]) #showLessIcon {
