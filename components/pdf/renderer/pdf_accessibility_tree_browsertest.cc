@@ -4214,6 +4214,57 @@ TEST_F(PdfAccessibilityTreeTest,
             sup_text->data().GetTextPosition());
 }
 
+// Real geometry from a LaTeX paper's author line: the footnote marker's glyph
+// box ends exactly at the name's top edge, so the two don't overlap vertically.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSuperscriptZeroVerticalOverlapStaysInParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1100);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{9.5f, 4.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"AVARRETTA", "*", "ABSTRACT", "body1", "body2"}),
+      {gfx::RectF(636.0f, 210.7f, 76.0f, 9.3f),
+       gfx::RectF(713.3f, 206.7f, 4.0f, 4.0f),
+       gfx::RectF(401.3f, 242.7f, 81.3f, 12.0f),
+       gfx::RectF(401.3f, 260.0f, 200.0f, 12.0f),
+       gfx::RectF(401.3f, 280.0f, 200.0f, 12.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_GE(page->GetChildCount(), 2u);
+
+  // "AVARRETTA" and "*" must share a single paragraph block.
+  const ui::AXNode* author_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, author_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, author_block->GetRole());
+  ASSERT_EQ(2u, author_block->GetChildCount());
+
+  const ui::AXNode* author_text = author_block->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, author_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, author_text->GetRole());
+  EXPECT_EQ("AVARRETTA",
+            author_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(ax::mojom::TextPosition::kNone,
+            author_text->data().GetTextPosition());
+
+  const ui::AXNode* sup_text = author_block->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, sup_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, sup_text->GetRole());
+  EXPECT_EQ("*",
+            sup_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(ax::mojom::TextPosition::kSuperscript,
+            sup_text->data().GetTextPosition());
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicSuperscriptDetectedInsideLink) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -5769,6 +5820,55 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListPrivateUseMarkerNames) {
       page->GetChildAtIndex(0u),
       {"Symbol item", "Wingdings item", "Black circle item", "Combined item"},
       {"• ", "▪ ", "● ", "• "});
+}
+
+// Uses run positions from an Italian LaTeX document, with placeholder text.
+//
+// LaTeX can draw the grave accent of "È" as its own tiny "`" run. PDFium emits
+// it after the rest of its line, and its glyph box ends at the line's top edge,
+// so the two don't overlap vertically.
+//
+// The accent must stay on the first item's line, and the gap to the wrapped
+// line must be measured from the line's text, not the accent. Otherwise the
+// first item would be split in two.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicListMidLineRaisedDiacriticDoesNotBreakItem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{12.0f, 4.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style,
+       normal_style, normal_style},
+      MakeCharVector({"• First line of the item text", "`",
+                      "wrapped continuation of the item",
+                      "• Second item in list", "continuation of second item",
+                      "• Third item in list", "continuation of third item"}),
+      {gfx::RectF(178.7f, 566.7f, 452.0f, 14.7f),
+       // The accent sits mid-line, ending at the first line's top edge.
+       gfx::RectF(333.3f, 562.7f, 4.0f, 4.0f),
+       gfx::RectF(178.7f, 585.3f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 603.9f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 622.5f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 641.1f, 452.0f, 14.7f),
+       gfx::RectF(178.7f, 659.7f, 452.0f, 14.7f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(
+      page->GetChildAtIndex(0u),
+      {"First line of the item text`wrapped continuation of the item",
+       "Second item in listcontinuation of second item",
+       "Third item in listcontinuation of third item"});
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicMidLineBulletNotList) {

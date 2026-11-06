@@ -907,10 +907,91 @@ std::string GetTrimmedText(
   return std::string(base::TrimWhitespaceASCII(result, base::TRIM_ALL));
 }
 
+// Checks whether `candidate` is positioned and sized like a superscript or
+// subscript relative to `host` on the same visual line.
+ax::mojom::TextPosition ClassifySuperOrSubScriptRelativeToHost(
+    const chrome_pdf::AccessibilityTextRunInfo& candidate,
+    const chrome_pdf::AccessibilityTextRunInfo& host) {
+  if (candidate.style.font_size <= 0.0f || host.style.font_size <= 0.0f ||
+      candidate.bounds.height() <= 0.0f || host.bounds.height() <= 0.0f) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  // Must be short and substantially smaller in font size than the host run.
+  if (candidate.len > kMaxSuperOrSubScriptCharCount ||
+      candidate.style.font_size >=
+          host.style.font_size * kSmallTextFontSizeRatio) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  // Must be horizontally adjacent to the host run, so that smaller text in a
+  // separate column, sidebar, or table cell on the same visual line is not
+  // misclassified.
+  const float horizontal_gap =
+      std::max(candidate.bounds.x() - host.bounds.right(),
+               host.bounds.x() - candidate.bounds.right());
+  if (horizontal_gap > host.bounds.height()) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  const float candidate_top = candidate.bounds.y();
+  const float candidate_bottom = candidate.bounds.bottom();
+  const float candidate_mid = candidate.bounds.CenterPoint().y();
+
+  const float host_top = host.bounds.y();
+  const float host_bottom = host.bounds.bottom();
+  const float host_mid = host.bounds.CenterPoint().y();
+  const float tolerance =
+      host.bounds.height() * kSuperOrSubScriptVerticalToleranceRatio;
+
+  // Must be on the same visual line as the host run. A raised run whose glyph
+  // box ends at the host's top edge, such as a footnote marker, doesn't
+  // overlap the host vertically but is still on its line.
+  const bool is_raised_to_host_top =
+      candidate_top < host_top && candidate_bottom >= host_top - tolerance;
+  if (!is_raised_to_host_top &&
+      !DoBoundsOverlapOnLine(candidate_top, candidate.bounds.height(), host_top,
+                             host.bounds.height())) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  // Superscript: vertical center sits above the host's vertical center, and
+  // bottom does not extend significantly past the host's vertical center.
+  // Bounds come from glyph boxes, so a smaller run on the host's baseline that
+  // lacks descenders while the host has a descender (e.g. 'p' or 'g') ends at
+  // the shared baseline rather than in the upper half of the host's box, and is
+  // not a superscript.
+  if (candidate_mid < host_mid && candidate_bottom <= host_mid + tolerance) {
+    return ax::mojom::TextPosition::kSuperscript;
+  }
+
+  // Subscript: vertical center sits below the host's vertical center, the top
+  // does not rise significantly above the host's top, and the bottom drops past
+  // the host's bottom. Bounds come from glyph boxes, so a run that merely sets
+  // smaller type on the host's baseline, such as an acronym in small caps,
+  // shares the host's bottom edge and is not a subscript.
+  if (candidate_mid > host_mid && candidate_top >= host_top - tolerance &&
+      candidate_bottom > host_bottom) {
+    return ax::mojom::TextPosition::kSubscript;
+  }
+
+  return ax::mojom::TextPosition::kNone;
+}
+
+// Returns whether `candidate` is raised like a superscript on `host`'s line,
+// e.g. a footnote marker or an accent emitted as its own run.
+bool IsSmallRaisedRun(const chrome_pdf::AccessibilityTextRunInfo& candidate,
+                      const chrome_pdf::AccessibilityTextRunInfo& host) {
+  return features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+         ClassifySuperOrSubScriptRelativeToHost(candidate, host) ==
+             ax::mojom::TextPosition::kSuperscript;
+}
+
 bool AreRunsOnSameLine(const chrome_pdf::AccessibilityTextRunInfo& run1,
                        const chrome_pdf::AccessibilityTextRunInfo& run2) {
   return DoBoundsOverlapOnLine(run1.bounds.y(), run1.bounds.height(),
-                               run2.bounds.y(), run2.bounds.height());
+                               run2.bounds.y(), run2.bounds.height()) ||
+         IsSmallRaisedRun(run1, run2) || IsSmallRaisedRun(run2, run1);
 }
 
 // Returns the right edge of the visual line that starts with the text run at
@@ -985,67 +1066,6 @@ bool CanBeSuperOrSubScriptText(
         static_cast<base_icu::UChar32>(char_info.unicode_character);
     return u_isalnum(code_point) || IsFootnoteMarkerSymbol(code_point);
   });
-}
-
-// Checks whether `candidate` is positioned and sized like a superscript or
-// subscript relative to `host` on the same visual line.
-ax::mojom::TextPosition ClassifySuperOrSubScriptRelativeToHost(
-    const chrome_pdf::AccessibilityTextRunInfo& candidate,
-    const chrome_pdf::AccessibilityTextRunInfo& host) {
-  if (candidate.style.font_size <= 0.0f || host.style.font_size <= 0.0f ||
-      candidate.bounds.height() <= 0.0f || host.bounds.height() <= 0.0f) {
-    return ax::mojom::TextPosition::kNone;
-  }
-
-  // Must be substantially smaller in font size and on the same visual line as
-  // the host run.
-  if (candidate.style.font_size >=
-          host.style.font_size * kSmallTextFontSizeRatio ||
-      !AreRunsOnSameLine(candidate, host)) {
-    return ax::mojom::TextPosition::kNone;
-  }
-
-  // Must be horizontally adjacent to the host run, so that smaller text in a
-  // separate column, sidebar, or table cell on the same visual line is not
-  // misclassified.
-  const float horizontal_gap =
-      std::max(candidate.bounds.x() - host.bounds.right(),
-               host.bounds.x() - candidate.bounds.right());
-  if (horizontal_gap > host.bounds.height()) {
-    return ax::mojom::TextPosition::kNone;
-  }
-
-  const float candidate_top = candidate.bounds.y();
-  const float candidate_bottom = candidate.bounds.bottom();
-  const float candidate_mid = candidate.bounds.CenterPoint().y();
-
-  const float host_top = host.bounds.y();
-  const float host_bottom = host.bounds.bottom();
-  const float host_mid = host.bounds.CenterPoint().y();
-  const float tolerance =
-      host.bounds.height() * kSuperOrSubScriptVerticalToleranceRatio;
-
-  // Superscript: vertical center sits above the host's vertical center, and
-  // bottom does not extend significantly past the host's vertical center.
-  // Bounds come from glyph boxes, so a smaller run on the host's baseline that
-  // lacks descenders while the host has a descender (e.g. 'p' or 'g') ends at
-  // the shared baseline rather than in the upper half of the host's box, and is
-  // not a superscript.
-  if (candidate_mid < host_mid && candidate_bottom <= host_mid + tolerance) {
-    return ax::mojom::TextPosition::kSuperscript;
-  }
-
-  // Subscript: vertical center sits below the host's vertical center, the top
-  // does not rise significantly above the host's top, and the bottom drops past
-  // the host's bottom. Bounds come from glyph boxes, so a run that merely sets
-  // smaller type on the host's baseline, such as an acronym in small caps,
-  // shares the host's bottom edge and is not a subscript.
-  if (candidate_mid > host_mid && candidate_top >= host_top - tolerance &&
-      candidate_bottom > host_bottom) {
-    return ax::mojom::TextPosition::kSubscript;
-  }
-
-  return ax::mojom::TextPosition::kNone;
 }
 
 // Returns whether the run at `text_run_index` reads as a superscript or a
@@ -2127,8 +2147,16 @@ bool BreakParagraph(uint32_t text_run_index,
       GetTextRunContext(layout, text_run_index + 1);
   const chrome_pdf::AccessibilityTextRunInfo& next_run = *next_run_context.run;
 
+  // Measure line spacing from the line's text rather than a raised marker or
+  // accent emitted at the end of the line.
+  const chrome_pdf::AccessibilityTextRunInfo& line_run =
+      text_run_index > 0 &&
+              IsSmallRaisedRun(current_run,
+                               layout.text_runs[text_run_index - 1])
+          ? layout.text_runs[text_run_index - 1]
+          : current_run;
   bool is_large_line_spacing_break = BreakParagraphByLineSpacing(
-      current_run, next_run, page_properties.paragraph_spacing_threshold);
+      line_run, next_run, page_properties.paragraph_spacing_threshold);
 
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     if (block_node->role == ax::mojom::Role::kFigure) {
@@ -2463,7 +2491,9 @@ class PdfAccessibilityTreeBuilderHeuristic::LineHelper {
     // Look at the next run, and determine how much it overlaps the line.
     const auto& run_bounds = (*text_runs_)[run_index].bounds;
     return DoBoundsOverlapOnLine(line_top, line_height, run_bounds.y(),
-                                 run_bounds.height());
+                                 run_bounds.height()) ||
+           (run_index > 0 && IsSmallRaisedRun((*text_runs_)[run_index],
+                                              (*text_runs_)[run_index - 1]));
   }
 
   // Returns whether the run at `run_index` is on the current line and
