@@ -79,6 +79,7 @@ constexpr const char* const kExtensionsAllowedToUseChromeResources[] = {
     extension_misc::kAimEligibilityExtensionId,
     extension_misc::kContextualTasksExtensionId,
     extension_misc::kNewTabPageExtensionId,
+    extension_misc::kPdfExtensionId,
 };
 
 using Directive = CSPParser::Directive;

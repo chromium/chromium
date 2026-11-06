@@ -721,6 +721,31 @@ TEST_F(CSPInfoUnitTest, ComponentExtensionWebUITestCSP) {
                      mojom::ManifestLocation::kExternalComponent);
   LoadAndExpectError(manifest_data, expected_error,
                      mojom::ManifestLocation::kInternal);
+
+  // Component extensions without chrome://webui-test in their manifest also
+  // automatically receive chrome://webui-test in script-src when the test-only
+  // switch is set.
+  static constexpr char kStandardComponentManifest[] =
+      R"({
+           "name": "Standard Component Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "content_security_policy": {
+             "extension_pages": "script-src 'self'; object-src 'self';"
+           }
+         })";
+  ManifestData standard_manifest_data(
+      base::test::ParseJsonDict(kStandardComponentManifest));
+  scoped_refptr<Extension> standard_component = LoadAndExpectSuccess(
+      standard_manifest_data, mojom::ManifestLocation::kComponent);
+  ASSERT_TRUE(standard_component);
+  EXPECT_EQ("script-src 'self' chrome://webui-test; object-src 'self';",
+            CSPInfo::GetExtensionPagesCSP(standard_component.get()));
+  EXPECT_EQ(
+      "script-src 'self' chrome://webui-test 'wasm-unsafe-eval' "
+      "'inline-speculation-rules'; object-src 'self';",
+      *CSPInfo::GetMinimumCSPToAppend(*standard_component, "/test.html",
+                                      /*is_service_worker=*/false));
 }
 
 }  // namespace extensions

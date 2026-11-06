@@ -40,6 +40,7 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/scoped_time_zone.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
@@ -57,6 +58,12 @@
 
 class PDFExtensionJSTestBase : public PDFExtensionTestBase {
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PDFExtensionTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        extensions::switches::kAllowWebUITestInComponentExtensions);
+  }
+
   void SetUpOnMainThread() override {
     PDFExtensionTestBase::SetUpOnMainThread();
 
@@ -161,6 +168,12 @@ class PDFExtensionJSMochaTest : public WebUIMochaBrowserTest {
  protected:
   PDFExtensionJSMochaTest() {
     set_test_loader_host(extension_misc::kPdfExtensionId);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUIMochaBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        extensions::switches::kAllowWebUITestInComponentExtensions);
   }
 
   void SetUpOnMainThread() override {

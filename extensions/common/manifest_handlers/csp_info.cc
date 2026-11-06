@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/linear_find.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -148,6 +149,38 @@ std::string_view GetDefaultExtensionPagesCSP(const Extension& extension) {
   return kDefaultContentSecurityPolicy;
 }
 
+// If `extension` is allowed to use chrome://webui-test in tests, appends
+// chrome://webui-test to the `script-src` directive in `extension_pages_csp`.
+// This is a no-op when there is no explicit `script-src` (the policy falls back
+// to `default-src`), when `script-src` is empty or `'none'`, or when
+// chrome://webui-test is already present.
+void MaybeAppendWebUITestSource(const Extension& extension,
+                                std::string* extension_pages_csp) {
+  if (!csp_validator::IsWebUITestAllowedForLocation(extension.location())) {
+    return;
+  }
+
+  csp_validator::CSPParser parser(*extension_pages_csp);
+  const auto* script_src =
+      base::LinearFind(parser.directives(), "script-src",
+                       &csp_validator::CSPParser::Directive::directive_name);
+  if (!script_src || script_src->directive_values.empty()) {
+    return;
+  }
+
+  for (std::string_view value : script_src->directive_values) {
+    if (base::EqualsCaseInsensitiveASCII(value, "'none'") ||
+        base::EqualsCaseInsensitiveASCII(value, "chrome://webui-test")) {
+      return;
+    }
+  }
+
+  const size_t pos =
+      script_src->directive_string.data() - parser.policy().data();
+  extension_pages_csp->insert(pos + script_src->directive_string.size(),
+                              " chrome://webui-test");
+}
+
 // Returns the minimum CSP to apply for the given MV3 extension.
 std::string_view GetMinimumMV3CSPForExtension(const Extension& extension) {
   CHECK_GE(extension.manifest_version(), 3);
@@ -155,8 +188,10 @@ std::string_view GetMinimumMV3CSPForExtension(const Extension& extension) {
   if (extension.location() == mojom::ManifestLocation::kComponent) {
     const bool allows_chrome_resources =
         csp_validator::IsExtensionAllowedToUseChromeResources(extension.id());
-    // Listing chrome://webui-test in the manifest is not enough on its own;
-    // the test-only switch must also be set.
+    // Including chrome://webui-test in the minimum CSP requires both the
+    // test-only switch and chrome://webui-test in the effective extension pages
+    // CSP (e.g. `MaybeAppendWebUITestSource()` leaves `script-src 'none'`
+    // unchanged).
     const bool allows_webui_test =
         csp_validator::IsWebUITestAllowedForLocation(extension.location()) &&
         CSPInfo::GetExtensionPagesCSP(&extension).find("chrome://webui-test") !=
@@ -385,11 +420,12 @@ bool CSPHandler::ParseExtensionPagesCSP(
   CHECK(error->empty());
 
   if (!content_security_policy) {
-    std::string_view default_extension_pages_csp =
-        GetDefaultExtensionPagesCSP(*extension);
+    std::string default_extension_pages_csp(
+        GetDefaultExtensionPagesCSP(*extension));
+    MaybeAppendWebUITestSource(*extension, &default_extension_pages_csp);
     ValidateExtensionPagesCSP(*extension, manifest_key,
                               default_extension_pages_csp);
-    *out_extension_pages_csp = default_extension_pages_csp;
+    *out_extension_pages_csp = std::move(default_extension_pages_csp);
     return true;
   }
 
@@ -411,9 +447,10 @@ bool CSPHandler::ParseExtensionPagesCSP(
             manifest_key, error)) {
       return false;
     }
-    ValidateExtensionPagesCSP(*extension, manifest_key,
-                              content_security_policy_str);
-    *out_extension_pages_csp = content_security_policy_str;
+    std::string extension_pages_csp = content_security_policy_str;
+    MaybeAppendWebUITestSource(*extension, &extension_pages_csp);
+    ValidateExtensionPagesCSP(*extension, manifest_key, extension_pages_csp);
+    *out_extension_pages_csp = std::move(extension_pages_csp);
     return true;
   }
 

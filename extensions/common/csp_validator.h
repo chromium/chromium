@@ -82,6 +82,8 @@ class CSPParser {
   // name).
   const DirectiveList& directives() const { return directives_; }
 
+  std::string_view policy() const { return policy_; }
+
  private:
   void Parse();
 

@@ -761,10 +761,14 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCodeChromeResources) {
       "'wasm-unsafe-eval';";
   std::u16string error;
 
-  // ChromeVox is allowed to access scripts from chrome://resources.
+  // ChromeVox and PDF Viewer are allowed to access scripts from
+  // chrome://resources.
   EXPECT_TRUE(extensions::csp_validator::DoesCSPDisallowRemoteCode(
       extension_misc::kChromeVoxExtensionId, location, policy, kManifestKey,
       &error));
+  EXPECT_EQ(u"", error);
+  EXPECT_TRUE(extensions::csp_validator::DoesCSPDisallowRemoteCode(
+      extension_misc::kPdfExtensionId, location, policy, kManifestKey, &error));
   EXPECT_EQ(u"", error);
 
   // Other component extensions do not get the same privilege.
@@ -772,7 +776,8 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCodeChromeResources) {
       extensions::manifest_errors::kInvalidCSPInsecureValueError, kManifestKey,
       "chrome://resources", "script-src");
   EXPECT_FALSE(extensions::csp_validator::DoesCSPDisallowRemoteCode(
-      extension_misc::kPdfExtensionId, location, policy, kManifestKey, &error));
+      extension_misc::kQuickOfficeInternalExtensionId, location, policy,
+      kManifestKey, &error));
   EXPECT_EQ(base::ASCIIToUTF16(expected_error), error);
 }
 

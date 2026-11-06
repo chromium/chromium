@@ -432,7 +432,6 @@ export function getZoomableViewport(
 
   const dummyPlugin = document.createElement('embed');
   dummyPlugin.id = 'plugin';
-  dummyPlugin.src = 'data:text/plain,plugin-content';
   viewport.setContent(dummyPlugin);
   return viewport;
 }
@@ -629,7 +628,6 @@ export function setUpInkTestContext(scrollbarWidth: number = 5): {
   const mockPlugin = createMockPdfPluginForTest();
   mockPlugin.viewport = viewport;
   mockPlugin.id = 'plugin';
-  mockPlugin.src = 'data:text/plain,plugin-content';
   mockPlugin.setMessageReply('getAnnotationBrush', {
     data: {
       type: AnnotationBrushType.PEN,
