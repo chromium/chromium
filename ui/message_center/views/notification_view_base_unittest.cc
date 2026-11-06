@@ -506,13 +506,9 @@ TEST_F(NotificationViewBaseTest, TestActionButtonClick) {
   EXPECT_EQ(1, delegate_->clicked_button_index());
 }
 
-// TODO(crbug.com/40780100): Test failing on ozone.
-#if BUILDFLAG(IS_OZONE)
-#define MAYBE_TestInlineReply DISABLED_TestInlineReply
-#else
-#define MAYBE_TestInlineReply TestInlineReply
-#endif
-TEST_F(NotificationViewBaseTest, MAYBE_TestInlineReply) {
+// Verifies that clicking an inline reply action button shows and focuses the
+// inline reply `views::Textfield` and submits the typed reply on `VKEY_RETURN`.
+TEST_F(NotificationViewBaseTest, TestInlineReply) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   delegate_->set_expecting_reply_submission(true);
 
