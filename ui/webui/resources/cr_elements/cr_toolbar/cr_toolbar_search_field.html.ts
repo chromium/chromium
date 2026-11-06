@@ -34,14 +34,15 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
         @blur="${this.onInputBlur_}" ?autofocus="${this.autofocus}"
         spellcheck="false" ?disabled="${this.disabled}">
   </div>
-  ${this.hasSearchText ? html`
+  ${this.shouldShowClearButton_() ? html`
     <cr-icon-button id="clearSearch" iron-icon="cr:cancel-filled"
         title="${this.clearLabel}" @click="${this.onClearSearchClick_}"
         ?disabled="${this.disabled}">
     </cr-icon-button>
-  ` : html`
+  ` : ''}
+  ${!this.hasSearchText ? html`
     <slot name="suffixElement"></slot>
-  `}
+  ` : ''}
 </div>`;
   // clang-format on
 }

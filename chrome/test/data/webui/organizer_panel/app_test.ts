@@ -543,8 +543,11 @@ suite('OrganizerPanelAppTest', () => {
     app.$.searchField.setValue('Tab');
     await microtasksFinished();
 
-    // Tab on searchInput does not prevent default (allowing natural Tab to the
-    // clear button).
+    assertTrue(app.$.searchField.hideClearButton);
+    assertEquals(
+        null, app.$.searchField.shadowRoot.querySelector('#clearSearch'));
+
+    // Tab on searchInput focuses the first section header directly.
     searchInput.focus();
     const inputTabEvent = new KeyboardEvent('keydown', {
       key: 'Tab',
@@ -554,22 +557,7 @@ suite('OrganizerPanelAppTest', () => {
     });
     searchInput.dispatchEvent(inputTabEvent);
     await microtasksFinished();
-    assertFalse(inputTabEvent.defaultPrevented);
-
-    // Tab on the clear button focuses the first section header.
-    const clearButton = app.$.searchField.shadowRoot.querySelector<HTMLElement>(
-        '#clearSearch')!;
-    assertTrue(!!clearButton);
-    clearButton.focus();
-    const clearButtonTabEvent = new KeyboardEvent('keydown', {
-      key: 'Tab',
-      bubbles: true,
-      composed: true,
-      cancelable: true,
-    });
-    clearButton.dispatchEvent(clearButtonTabEvent);
-    await microtasksFinished();
-    assertTrue(clearButtonTabEvent.defaultPrevented);
+    assertTrue(inputTabEvent.defaultPrevented);
     assertEquals(sections[0]!.$.header, getDeepActiveElement());
   });
 

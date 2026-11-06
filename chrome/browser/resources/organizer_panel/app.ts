@@ -90,7 +90,6 @@ export class OrganizerPanelAppElement extends CrLitElement {
         e.stopPropagation();
       } else if (
           !e.shiftKey && path.includes(this.$.searchField) &&
-          !this.$.searchField.isSearchFocused() &&
           this.$.list.focusFirstSection()) {
         e.preventDefault();
         e.stopPropagation();

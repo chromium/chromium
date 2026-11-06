@@ -318,4 +318,35 @@ suite('cr-toolbar-search-field', function() {
     assertTrue(hasStyle(field.$.prompt, 'text-overflow', 'ellipsis'));
     assertTrue(hasStyle(field.$.searchTerm, 'min-width', '0px'));
   });
+
+  test('hides clear button when hideClearButton is true', async () => {
+    await addSlottedChild();
+    assertFalse(field.hideClearButton);
+
+    simulateSearch('query');
+    await field.updateComplete;
+    assertTrue(!!field.shadowRoot.querySelector('#clearSearch'));
+    assertFalse(!!field.shadowRoot.querySelector('slot[name=suffixElement]'));
+
+    field.hideClearButton = true;
+    await field.updateComplete;
+    assertEquals(null, field.shadowRoot.querySelector('#clearSearch'));
+    assertFalse(!!field.shadowRoot.querySelector('slot[name=suffixElement]'));
+
+    field.hideClearButton = false;
+    await field.updateComplete;
+    assertTrue(!!field.shadowRoot.querySelector('#clearSearch'));
+
+    // Also works via the hide-clear-button HTML attribute.
+    field.setAttribute('hide-clear-button', '');
+    await field.updateComplete;
+    assertTrue(field.hideClearButton);
+    assertEquals(null, field.shadowRoot.querySelector('#clearSearch'));
+
+    // Clearing search text still restores slotted content.
+    field.setValue('');
+    await field.updateComplete;
+    assertTrue(!!field.shadowRoot.querySelector('slot[name=suffixElement]'));
+    assertEquals(null, field.shadowRoot.querySelector('#clearSearch'));
+  });
 });
