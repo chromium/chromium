@@ -84,6 +84,16 @@ class TestScanningTest(unittest.TestCase):
     finally:
       shutil.rmtree(test_dir)
 
+  def testFindAllTestsSkipsTheTestRunner(self) -> None:
+    runner_path = path_util.METRICS_TOOLS_PATH / 'metrics_python_tests.py'
+
+    tests = set(tests_helpers.find_all_tests())
+
+    # Guards against a vacuous pass if the runner is moved or renamed.
+    self.assertTrue(runner_path.is_file())
+    self.assertIn(pathlib.Path(__file__).resolve(), tests)
+    self.assertNotIn(runner_path, tests)
+
 
 class BuildGnValidationTest(unittest.TestCase):
   @mock.patch('pathlib.Path.is_dir')

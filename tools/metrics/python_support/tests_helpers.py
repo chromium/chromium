@@ -33,6 +33,10 @@ TEST_DIRECTORIES_RELATIVE_TO_SRC = [
 
 _EXPECTED_TEST_FILES_SUFFIXES = ['test.py', 'tests.py']
 
+# The script running all the tests matches the suffixes above, but it is not a
+# test itself.
+_TEST_RUNNER_PATH = path_util.METRICS_TOOLS_PATH / 'metrics_python_tests.py'
+
 
 def _get_temp_path(prefix=''):
   fd, path = tempfile.mkstemp(prefix=prefix)
@@ -146,11 +150,13 @@ def _find_all_tests_in(directory_path: pathlib.Path) -> Iterable[pathlib.Path]:
 
 
 def find_all_tests() -> Iterable[pathlib.Path]:
-  """Finds all python tests in all directories listed in DIRECTORIES_TO_SCAN"""
-  all_test_files: List[pathlib.Path] = []
-  for dir in TEST_DIRECTORIES_RELATIVE_TO_SRC:
-    all_test_files.extend(_find_all_tests_in(dir))
-  return all_test_files
+  """Finds all python tests in TEST_DIRECTORIES_RELATIVE_TO_SRC."""
+  return [
+    path
+    for directory in TEST_DIRECTORIES_RELATIVE_TO_SRC
+    for path in _find_all_tests_in(directory)
+    if path != _TEST_RUNNER_PATH
+  ]
 
 
 def validate_gn_sources(target_group: str) -> set[str]:
