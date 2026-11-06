@@ -8058,6 +8058,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabUiRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabUiRefactor)},
 
+    {"tab-ui-data-virtualization",
+     flag_descriptions::kTabUiDataVirtualizationName,
+     flag_descriptions::kTabUiDataVirtualizationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabUiDataVirtualization)},
+
     {"android-adaptive-ui-transitions",
      flag_descriptions::kAndroidAdaptiveUiTransitionsName,
      flag_descriptions::kAndroidAdaptiveUiTransitionsDescription, kOsAndroid,

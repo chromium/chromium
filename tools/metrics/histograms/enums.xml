@@ -13819,6 +13819,7 @@ from previous Chrome versions.
   <int value="-363560573" label="ImmersiveReadAnythingPrint:enabled"/>
   <int value="-363237269" label="OmniboxNumWebZpsMostVisitedUrls:disabled"/>
   <int value="-363145046" label="LegacyTechReportTopLevelUrl:disabled"/>
+  <int value="-363047058" label="TabUiDataVirtualization:disabled"/>
   <int value="-362821234" label="ExperimentalUi:enabled"/>
   <int value="-362579873" label="force-ai-subscription-tier"/>
   <int value="-362022976" label="disable-quirks-client"/>
@@ -19501,6 +19502,7 @@ from previous Chrome versions.
   <int value="1324623677"
       label="SessionRestorePrioritizesBackgroundUseCases:enabled"/>
   <int value="1324658052" label="VoiceSearchCoherenceComposeboxes:enabled"/>
+  <int value="1324889846" label="TabUiDataVirtualization:enabled"/>
   <int value="1325459977" label="HandwritingGestureEditing:disabled"/>
   <int value="1326063771" label="ChromeWebuiRefresh2023:disabled"/>
   <int value="1326530782" label="AutofillParseAsync:enabled"/>

@@ -1479,6 +1479,12 @@ inline constexpr char kAndroidTabUiRefactorDescription[] =
     "Enables Tab UI refactoring on Android. For example, modeling tab group "
     "cards as first-class group items in the tab switcher.";
 
+inline constexpr char kTabUiDataVirtualizationName[] =
+    "Tab UI Data Virtualization";
+inline constexpr char kTabUiDataVirtualizationDescription[] =
+    "Enables data providers that drive the Tab UI lists on Android from tab "
+    "and tab group items instead of observing the tab model directly.";
+
 inline constexpr char kAndroidAdaptiveUiTransitionsName[] =
     "Android Adaptive UI Transitions";
 inline constexpr char kAndroidAdaptiveUiTransitionsDescription[] =

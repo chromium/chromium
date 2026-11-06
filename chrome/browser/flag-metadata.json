@@ -9689,6 +9689,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "tab-ui-data-virtualization",
+    "owners": [
+      "agazal@google.com",
+      "ckitagawa@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "tabs-from-other-devices-enhancement",
     "owners": [
       "mtatarski@google.com",
