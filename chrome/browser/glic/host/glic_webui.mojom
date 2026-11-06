@@ -289,6 +289,10 @@ interface PageHandler {
   // Opens the sign-in page, and closes the Glic panel.
   SignInAndClosePanel();
 
+  // Relaunches Chrome to apply a pending provider change, if one is still
+  // pending.
+  RelaunchForProviderChange();
+
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();

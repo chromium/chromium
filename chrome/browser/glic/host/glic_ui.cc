@@ -222,6 +222,12 @@ GlicUI::GlicUI(content::WebUI* web_ui)
       {"locationMismatchNoticeHeader",
        IDS_GLIC_LOCATION_MISMATCH_NOTICE_HEADER},
       {"locationMismatchNotice", IDS_GLIC_LOCATION_MISMATCH_NOTICE},
+      {"relaunchRequiredGeminiToGeicNoticeHeader",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEMINI_TO_GEIC_HEADER},
+      {"relaunchRequiredGeminiToGeicNotice",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEMINI_TO_GEIC_BODY},
+      {"relaunchRequiredNoticeActionButton",
+       IDS_GLIC_RELAUNCH_REQUIRED_ACTION_BUTTON},
       {"getHelp", IDS_GLIC_GET_HELP},
   };
 
@@ -333,6 +339,8 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean("simulateNoConnection", simulate_no_connection_);
 
   source->AddResourcePath("glic_logo.svg", GetResourceID(IDR_GLIC_LOGO));
+  source->AddResourcePath("geic_spark.png",
+                          GetResourceID(IDR_GEIC_BUTTON_ICON));
 
   // Set up guest api source.
   // This comes from 'glic_api_injection' in

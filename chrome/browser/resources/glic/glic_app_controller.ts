@@ -52,6 +52,8 @@ interface PageElementTypes {
   locationMismatchHelpButton: HTMLButtonElement;
   ineligibleAccountHelpButton: HTMLButtonElement;
   ineligibleAccountPanel: HTMLElement;
+  relaunchRequiredPanel: HTMLElement;
+  relaunchButton: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -62,7 +64,7 @@ const $: PageElementTypes = new Proxy({}, {
 
 type PanelId = 'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|
     'unavailablePanel'|'ineligibleAccountPanel'|'disabledByAdminPanel'|
-    'signInPanel'|'locationMismatchPanel';
+    'signInPanel'|'locationMismatchPanel'|'relaunchRequiredPanel';
 
 interface StateDescriptor {
   onEnter?: () => void;
@@ -209,6 +211,9 @@ export class GlicAppController implements WebviewDelegate {
     });
     $.signInButton.addEventListener('click', () => {
       this.signIn();
+    });
+    $.relaunchButton.addEventListener('click', () => {
+      this.browserProxy.pageHandler.relaunchForProviderChange();
     });
     $.showError.addEventListener('click', () => {
       this.showPanel('guestPanel');
@@ -603,6 +608,18 @@ export class GlicAppController implements WebviewDelegate {
             () => {
               this.destroyWebview();
               this.showPanel('locationMismatchPanel');
+            },
+      },
+    ],
+    [
+      WebUiState.kPendingProviderChangeGeminiToGeic,
+      {
+        clientLoadErrorReason: ClientLoadErrorReason.kPendingProviderChange,
+        reloadOnOpen: true,
+        onEnter:
+            () => {
+              this.destroyWebview();
+              this.showPanel('relaunchRequiredPanel');
             },
       },
     ],

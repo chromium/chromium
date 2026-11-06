@@ -181,6 +181,26 @@
           </div>
         </div>
       </section>
+      <section hidden class="dialog panel" id="relaunchRequiredPanel">
+        <div class="container">
+          <div class="header">
+            <img class="logo" src="glic_logo.svg" alt="" aria-hidden="true">
+            <cr-icon-button class="close-button" iron-icon="cr:close" aria-label="$i18n{closeButtonLabel}">
+            </cr-icon-button>
+          </div>
+          <div class="notice">
+            <div class="relaunch-card">
+              <!-- TODO(b/582345185): Use the target provider's icon once UX
+                   finalizes it. -->
+              <img class="spark-icon" src="geic_spark.png" alt=""
+                  aria-hidden="true">
+              <p class="headline">$i18n{relaunchRequiredGeminiToGeicNoticeHeader}</p>
+              <p class="notice-message">$i18n{relaunchRequiredGeminiToGeicNotice}</p>
+              <cr-button class="tonal-button" id="relaunchButton" role="button">$i18n{relaunchRequiredNoticeActionButton}</cr-button>
+            </div>
+          </div>
+        </div>
+      </section>
       <section class="hidden overlay" id="unresponsiveOverlay">
         <div class="container">
           <div class="message">
