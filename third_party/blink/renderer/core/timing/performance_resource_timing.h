@@ -96,8 +96,10 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   virtual uint64_t decodedBodySize() const;
   uint16_t responseStatus() const;
   const HeapVector<Member<PerformanceServerTiming>>& serverTiming() const;
-  AtomicString workerMatchedSourceType() const;
-  AtomicString workerFinalSourceType() const;
+  AtomicString workerMatchedRouterSource(ExecutionContext*) const;
+  AtomicString workerFinalRouterSource(ExecutionContext*) const;
+  AtomicString workerMatchedSourceType(ExecutionContext*) const;
+  AtomicString workerFinalSourceType(ExecutionContext*) const;
 
   void Trace(Visitor*) const override;
 
@@ -127,6 +129,8 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
 
   AtomicString GetNextHopProtocol(const AtomicString& alpn_negotiated_protocol,
                                   const AtomicString& connection_info) const;
+  AtomicString GetWorkerMatchedRouterSource() const;
+  AtomicString GetWorkerFinalRouterSource() const;
 
   // Returns true if the response comes from the CacheStorage. This is
   // regardless of where the response came from whether it is from the `cache`
@@ -137,6 +141,14 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   double WorkerReady() const;
 
   AtomicString initiator_type_;
+
+  // Per-entry getter read tracking for non-empty Service Worker Static Router
+  // source fields to isolate generic `for...in` enumeration from targeted
+  // reads.
+  mutable bool matched_router_source_read_ = false;
+  mutable bool matched_source_type_read_ = false;
+  mutable bool final_router_source_read_ = false;
+  mutable bool final_source_type_read_ = false;
 
   // Do not access private fields directly. Use getter methods.
   base::TimeTicks time_origin_;

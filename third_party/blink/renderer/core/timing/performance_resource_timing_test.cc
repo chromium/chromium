@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
 #include "base/time/time.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -216,5 +218,113 @@ TEST_F(PerformanceResourceTimingTest, TestRequestStartNullSendStart) {
   // to connectEnd.
   EXPECT_EQ(resource_timing->requestStart(), resource_timing->connectEnd());
   EXPECT_EQ(resource_timing->requestStart(), 651);
+}
+
+TEST_F(PerformanceResourceTimingTest,
+       ServiceWorkerRouterSourceUseCountersEmpty) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
+  Document& document = scope.GetDocument();
+  ExecutionContext* context = scope.GetExecutionContext();
+
+  mojom::blink::ResourceTimingInfo info;
+  info.allow_timing_details = true;
+
+  auto* resource_timing = MakeGarbageCollected<PerformanceResourceTiming>(
+      info.Clone(), g_empty_atom, base::TimeTicks() + base::Milliseconds(100),
+      context->CrossOriginIsolatedCapability(), context,
+      performance_->NavigationId().web_exposed_id);
+
+  EXPECT_TRUE(resource_timing->workerMatchedSourceType(context).empty());
+  EXPECT_TRUE(resource_timing->workerMatchedRouterSource(context).empty());
+  EXPECT_TRUE(resource_timing->workerFinalSourceType(context).empty());
+  EXPECT_TRUE(resource_timing->workerFinalRouterSource(context).empty());
+
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedSourceTypeNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedRouterSourceNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedBothGettersNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalSourceTypeNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalRouterSourceNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty));
+}
+
+TEST_F(PerformanceResourceTimingTest,
+       ServiceWorkerRouterSourceUseCountersNonEmptyAndBothGetters) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
+  Document& document = scope.GetDocument();
+  ExecutionContext* context = scope.GetExecutionContext();
+
+  mojom::blink::ResourceTimingInfo info;
+  info.allow_timing_details = true;
+  info.service_worker_router_info =
+      network::mojom::blink::ServiceWorkerRouterInfo::New();
+  info.service_worker_router_info->matched_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  info.service_worker_router_info->actual_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kCache;
+
+  auto* resource_timing = MakeGarbageCollected<PerformanceResourceTiming>(
+      info.Clone(), g_empty_atom, base::TimeTicks() + base::Milliseconds(100),
+      context->CrossOriginIsolatedCapability(), context,
+      performance_->NavigationId().web_exposed_id);
+
+  // Entry construction and toJSON() should not trigger any of the non-empty
+  // getter UseCounters.
+  resource_timing->toJSONForBinding(scope.GetScriptState());
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedSourceTypeNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedRouterSourceNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedBothGettersNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalSourceTypeNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalRouterSourceNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty));
+
+  // Reading only the legacy matched getter counts only MatchedSourceType.
+  EXPECT_EQ(resource_timing->workerMatchedSourceType(context), "network");
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedSourceTypeNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedRouterSourceNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedBothGettersNonEmpty));
+
+  // Reading only the standard final getter counts only FinalRouterSource.
+  EXPECT_EQ(resource_timing->workerFinalRouterSource(context), "cache");
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalRouterSourceNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalSourceTypeNonEmpty));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty));
+
+  // Reading the standard matched getter on the same entry now triggers both
+  // MatchedRouterSource and MatchedBothGetters.
+  EXPECT_EQ(resource_timing->workerMatchedRouterSource(context), "network");
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedRouterSourceNonEmpty));
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerMatchedBothGettersNonEmpty));
+
+  // Reading the legacy final getter on the same entry now triggers both
+  // FinalSourceType and FinalBothGetters.
+  EXPECT_EQ(resource_timing->workerFinalSourceType(context), "cache");
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalSourceTypeNonEmpty));
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty));
 }
 }  // namespace blink
