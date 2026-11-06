@@ -64,6 +64,24 @@ struct GlicSelectionInlineCueFeatureParams {
   base::flat_set<std::string> default_blocked_sites;
 };
 
+struct GlicIndigoFeatureParams {
+  GlicIndigoFeatureParams();
+  GlicIndigoFeatureParams(const GlicIndigoFeatureParams&);
+  GlicIndigoFeatureParams& operator=(const GlicIndigoFeatureParams&);
+  GlicIndigoFeatureParams(GlicIndigoFeatureParams&&);
+  GlicIndigoFeatureParams& operator=(GlicIndigoFeatureParams&&);
+  ~GlicIndigoFeatureParams();
+
+  // Prompt sent to Glic. Overrides `prompt_key`.
+  std::string prompt;
+  // Key of a prompt from the Indigo component, used if `prompt` is empty.
+  std::string prompt_key;
+  // Skill whose prompt is sent to Glic instead, if the skill exists.
+  std::string skill_id;
+  // Delay between the Glic panel opening and the Indigo agent running.
+  base::TimeDelta trigger_delay = base::Milliseconds(300);
+};
+
 class GlicFreStore;
 // Provider-specific data for a profile's Glic surface. Feature code reads
 // values from here instead of checking which provider the profile uses.
@@ -156,6 +174,7 @@ class GlicProviderSpec {
       const = 0;
   virtual GlicSelectionInlineCueFeatureParams
   GetSelectionInlineCueFeatureParams() const = 0;
+  virtual GlicIndigoFeatureParams GetIndigoFeatureParams() const = 0;
   // Whether this provider's guest supports server-side rendering.
   virtual bool SupportsSsr() const = 0;
   // Whether daisy-chained tabs (e.g. tabs opened via CreateTab or link clicks)

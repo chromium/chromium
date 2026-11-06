@@ -14,6 +14,7 @@
 // and flag registration may include this file.
 
 namespace glic {
+struct GlicIndigoFeatureParams;
 struct GlicPdfAutoOpenFeatureParams;
 struct GlicPdfSummarizeFeatureParams;
 struct GlicSelectionInlineCueFeatureParams;
@@ -65,6 +66,16 @@ BASE_DECLARE_FEATURE(kGlicCaptureRegion);
 // --force-fre-feature-showcase-steps (which should be used only for testing).
 BASE_DECLARE_FEATURE(kFirstRunFeatureShowcaseGeminiStep);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// Opening Glic from the Indigo page action. See GlicFeature::kIndigoOpenGlic.
+BASE_DECLARE_FEATURE(kIndigoOpenGlic);
+inline constexpr char kIndigoGlicPromptParam[] = "indigo_glic_prompt";
+inline constexpr char kIndigoGlicPromptKeyParam[] = "indigo_glic_prompt_key";
+inline constexpr char kIndigoGlicSkillIdParam[] = "indigo_glic_skill_id";
+inline constexpr char kIndigoGlicTriggerDelayParam[] =
+    "indigo_glic_trigger_delay";
+glic::GlicIndigoFeatureParams PopulateIndigoFeatureParams(
+    const base::Feature& feature);
 
 }  // namespace features
 

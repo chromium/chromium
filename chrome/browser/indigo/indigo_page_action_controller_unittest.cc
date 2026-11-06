@@ -29,10 +29,13 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
@@ -2983,5 +2986,50 @@ TEST_P(IndigoPageActionControllerTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       tab_interface_->GetContents(), url2);
 }
+class IndigoPageActionControllerGeicTest
+    : public IndigoPageActionControllerTest {
+ private:
+  glic::ScopedGlicProviderOverride provider_override_{
+      glic::GlicProvider::kGeminiEnterprise};
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndigoPageActionControllerGeicTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "ContextualCues" : "Legacy";
+                         });
+
+// Gemini Enterprise profiles still run the in-page Indigo image replacement
+// flow, but skip opening the Glic side panel even when `kIndigoOpenGlic` is
+// enabled.
+TEST_P(IndigoPageActionControllerGeicTest,
+       InvokeActionSkipsGlicAndTriggersInPageAgent) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  ClickAnchoredMessage();
+
+  histogram_tester.ExpectUniqueSample(
+      kMaybeInvokeGlicResultHistogramName,
+      IndigoMaybeInvokeGlicResult::kFeatureDisabled, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.TriggerSource",
+      IndigoTransformationTriggerSource::kPageAction, 1);
+}
+
 }  // namespace
 }  // namespace indigo
+

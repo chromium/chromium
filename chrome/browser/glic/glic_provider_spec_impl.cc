@@ -42,6 +42,18 @@
 #include "url/gurl.h"
 
 namespace glic {
+
+GlicIndigoFeatureParams::GlicIndigoFeatureParams() = default;
+GlicIndigoFeatureParams::GlicIndigoFeatureParams(
+    const GlicIndigoFeatureParams&) = default;
+GlicIndigoFeatureParams& GlicIndigoFeatureParams::operator=(
+    const GlicIndigoFeatureParams&) = default;
+GlicIndigoFeatureParams::GlicIndigoFeatureParams(GlicIndigoFeatureParams&&) =
+    default;
+GlicIndigoFeatureParams& GlicIndigoFeatureParams::operator=(
+    GlicIndigoFeatureParams&&) = default;
+GlicIndigoFeatureParams::~GlicIndigoFeatureParams() = default;
+
 namespace {
 
 // Appended by `GetLocalizedGuestURL()` from Chrome's UI locale.
@@ -188,6 +200,8 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
         return true;
       case GlicFeature::kSkills:
         return base::FeatureList::IsEnabled(::features::kSkillsEnabled);
+      case GlicFeature::kIndigoOpenGlic:
+        return base::FeatureList::IsEnabled(features::kIndigoOpenGlic);
     }
     NOTREACHED();
   }
@@ -207,6 +221,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       const override {
     return features::PopulateSelectionInlineCueFeatureParams(
         features::kGlicSelectionPrompt);
+  }
+  GlicIndigoFeatureParams GetIndigoFeatureParams() const override {
+    return features::PopulateIndigoFeatureParams(features::kIndigoOpenGlic);
   }
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGlicSsr);
@@ -277,6 +294,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kContextualCueing:
       case GlicFeature::kZeroStateSuggestions:
       case GlicFeature::kSkills:
+      case GlicFeature::kIndigoOpenGlic:
         return false;
     }
     NOTREACHED();
@@ -291,6 +309,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       const override {
     return {};
   }
+  GlicIndigoFeatureParams GetIndigoFeatureParams() const override { return {}; }
   // TODO(b/576365433): Enable `kGeicSsr` once the webapp supports it.
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGeicSsr);

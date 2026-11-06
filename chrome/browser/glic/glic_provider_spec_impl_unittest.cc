@@ -153,6 +153,11 @@ TEST(GlicProviderSpecImplTest, GeminiSkillsFollowsSkillsEnabled) {
                                  ::features::kSkillsEnabled);
 }
 
+TEST(GlicProviderSpecImplTest, GeminiIndigoFollowsIndigoOpenGlic) {
+  ExpectGeminiFeatureFollowsFlag(GlicFeature::kIndigoOpenGlic,
+                                 features::kIndigoOpenGlic);
+}
+
 TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
   std::vector<base::test::FeatureRef> enabled_features = {
       features::kGlicLiveMode,
@@ -161,6 +166,7 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
       features::kGlicSelectionPrompt,
       features::kGlicCaptureRegion,
       ::features::kSkillsEnabled,
+      features::kIndigoOpenGlic,
 #if BUILDFLAG(ENABLE_PDF)
       features::kPdfGlicSummarize,
 #endif

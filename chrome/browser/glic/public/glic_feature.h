@@ -39,8 +39,10 @@ enum class GlicFeature {
   kZeroStateSuggestions,
   // Chrome Skills (chrome://skills and skill invocation from Glic).
   kSkills,
+  // Opening Glic from the Indigo page action (chrome/browser/indigo).
+  kIndigoOpenGlic,
 
-  kMaxValue = kSkills,
+  kMaxValue = kIndigoOpenGlic,
 };
 
 }  // namespace glic

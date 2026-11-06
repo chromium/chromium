@@ -23,8 +23,10 @@
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/indigo/api_client.h"
@@ -320,7 +322,17 @@ void IndigoPageActionController::ContinueInvoke(
 }
 
 bool IndigoPageActionController::MaybeInvokeGlic() {
-  if (!base::FeatureList::IsEnabled(features::kIndigoOpenGlic)) {
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    base::UmaHistogramEnumeration(kMaybeInvokeGlicResultHistogramName,
+                                  IndigoMaybeInvokeGlicResult::kNoWebContents);
+    return false;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  const glic::GlicProviderSpec& spec = glic::GetGlicProviderSpec(profile);
+  if (!spec.SupportsFeature(glic::GlicFeature::kIndigoOpenGlic)) {
     base::UmaHistogramEnumeration(
         kMaybeInvokeGlicResultHistogramName,
         IndigoMaybeInvokeGlicResult::kFeatureDisabled);
@@ -333,15 +345,6 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
     return false;
   }
 
-  content::WebContents* web_contents = tab().GetContents();
-  if (!web_contents) {
-    base::UmaHistogramEnumeration(kMaybeInvokeGlicResultHistogramName,
-                                  IndigoMaybeInvokeGlicResult::kNoWebContents);
-    return false;
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* glic_keyed_service = glic::GlicKeyedService::Get(profile);
   if (!glic_keyed_service) {
     base::UmaHistogramEnumeration(
@@ -367,7 +370,8 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
       glic::Target(tab(), glic::NewConversation()),
       glic::mojom::InvocationSource::kIndigoPageAction);
 
-  std::string skill_id = features::kIndigoGlicSkillId.Get();
+  const glic::GlicIndigoFeatureParams params = spec.GetIndigoFeatureParams();
+  std::string skill_id = params.skill_id;
   const skills::Skill* skill = nullptr;
   if (!skill_id.empty()) {
     if (auto* skills_service =
@@ -381,9 +385,9 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
     prompt = skill->prompt;
     options.skill_id = skill_id;
   } else {
-    prompt = features::kIndigoGlicPrompt.Get();
+    prompt = params.prompt;
     if (prompt.empty()) {
-      std::string prompt_key = features::kIndigoGlicPromptKey.Get();
+      std::string prompt_key = params.prompt_key;
       if (!prompt_key.empty() && indigo_service_) {
         std::optional<std::string> proto_prompt =
             indigo_service_->GetPrompt(prompt_key);
@@ -439,11 +443,17 @@ void IndigoPageActionController::TriggerIndigoAgent(
 
 void IndigoPageActionController::TriggerIndigoAgentWithDelay(
     IndigoTransformationTriggerSource source) {
-  CHECK(base::FeatureList::IsEnabled(features::kIndigoOpenGlic));
+  content::WebContents* web_contents = tab().GetContents();
+  Profile* profile =
+      web_contents
+          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          : nullptr;
+  const glic::GlicProviderSpec& spec = glic::GetGlicProviderSpec(profile);
+  CHECK(spec.SupportsFeature(glic::GlicFeature::kIndigoOpenGlic));
   base::UmaHistogramBoolean(kPanelActuallyShowingOnCallbackHistogramName,
                             glic::GlicSidePanelCoordinator::IsShowing(&tab()));
   delay_agent_invoke_timer_.Start(
-      FROM_HERE, features::kIndigoGlicTriggerDelay.Get(),
+      FROM_HERE, spec.GetIndigoFeatureParams().trigger_delay,
       base::BindOnce(&IndigoPageActionController::TriggerIndigoAgent,
                      invoke_weak_ptr_factory_.GetWeakPtr(), source));
 }

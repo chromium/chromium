@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals_page_handler.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/skills/public/skill.h"
@@ -132,12 +132,14 @@ void IndigoInternalsPageHandler::GetOptimizationGuideStatus(
 void IndigoInternalsPageHandler::GetGlicPromptInfo(
     GetGlicPromptInfoCallback callback) {
   auto info = indigo_internals::mojom::GlicPromptInfo::New();
+  const glic::GlicProviderSpec& spec = glic::GetGlicProviderSpec(profile_);
   info->integration_enabled =
-      base::FeatureList::IsEnabled(features::kIndigoOpenGlic);
-  info->current_key = features::kIndigoGlicPromptKey.Get();
-  info->override_prompt = features::kIndigoGlicPrompt.Get();
+      spec.SupportsFeature(glic::GlicFeature::kIndigoOpenGlic);
+  const glic::GlicIndigoFeatureParams params = spec.GetIndigoFeatureParams();
+  info->current_key = params.prompt_key;
+  info->override_prompt = params.prompt;
 
-  info->skill_id = features::kIndigoGlicSkillId.Get();
+  info->skill_id = params.skill_id;
   if (!info->skill_id.empty()) {
     if (auto* skills_service =
             skills::SkillsServiceFactory::GetForProfile(profile_)) {

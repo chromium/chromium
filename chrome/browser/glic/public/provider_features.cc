@@ -76,4 +76,19 @@ BASE_FEATURE(kFirstRunFeatureShowcaseGeminiStep,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+BASE_FEATURE(kIndigoOpenGlic, base::FEATURE_DISABLED_BY_DEFAULT);
+glic::GlicIndigoFeatureParams PopulateIndigoFeatureParams(
+    const base::Feature& feature) {
+  glic::GlicIndigoFeatureParams params;
+  params.prompt = base::GetFieldTrialParamByFeatureAsString(
+      feature, kIndigoGlicPromptParam, params.prompt);
+  params.prompt_key = base::GetFieldTrialParamByFeatureAsString(
+      feature, kIndigoGlicPromptKeyParam, params.prompt_key);
+  params.skill_id = base::GetFieldTrialParamByFeatureAsString(
+      feature, kIndigoGlicSkillIdParam, params.skill_id);
+  params.trigger_delay = base::GetFieldTrialParamByFeatureAsTimeDelta(
+      feature, kIndigoGlicTriggerDelayParam, params.trigger_delay);
+  return params;
+}
+
 }  // namespace features

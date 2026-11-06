@@ -1313,17 +1313,6 @@ const base::FeatureParam<base::TimeDelta>
                                                "max_wait_time",
                                                base::Milliseconds(2500)};
 
-// Experimental image replacement feature opens glic.
-BASE_FEATURE(kIndigoOpenGlic, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kIndigoGlicPrompt{
-    &kIndigoOpenGlic, "indigo_glic_prompt", ""};
-const base::FeatureParam<std::string> kIndigoGlicPromptKey{
-    &kIndigoOpenGlic, "indigo_glic_prompt_key", ""};
-const base::FeatureParam<std::string> kIndigoGlicSkillId{
-    &kIndigoOpenGlic, "indigo_glic_skill_id", ""};
-const base::FeatureParam<base::TimeDelta> kIndigoGlicTriggerDelay{
-    &kIndigoOpenGlic, "indigo_glic_trigger_delay", base::Milliseconds(300)};
-
 BASE_FEATURE(kIndigoGeneratedImageCache, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kIndigoGeneratedImageCacheLifetime{
     &kIndigoGeneratedImageCache, "indigo_generated_image_cache_lifetime",
