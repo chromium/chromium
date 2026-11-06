@@ -6,7 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
 #import <string>
+#import <vector>
 
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "third_party/omnibox_proto/formatted_string.pb.h"
 
 namespace {
 
@@ -42,6 +45,78 @@ UIColor* DimColor() {
 }
 UIColor* DimColorIncognito() {
   return UIColor.whiteColor;
+}
+
+/// Returns the suggestion text color for the server color type `color_type`.
+/// `COLOR_SUGGEST_HINT_TEXT` and `COLOR_SUGGEST_ACTION_HIGH` get the secondary
+/// and blue colors. Every other type, including `COLOR_SUGGEST_QUERY_TEXT`,
+/// gets the primary text color.
+UIColor* ColorTypeToSuggestionTextColor(
+    omnibox::FormattedString::ColorType color_type) {
+  switch (color_type) {
+    case omnibox::FormattedString::COLOR_SUGGEST_HINT_TEXT:
+      return SuggestionDetailTextColor();
+    case omnibox::FormattedString::COLOR_SUGGEST_ACTION_HIGH:
+      return [UIColor colorNamed:kBlueColor];
+    default:
+      return SuggestionTextColor();
+  }
+}
+
+/// Applies the colors and bolding of the fragments in `formatted_string` to
+/// `text`. Does nothing if `text` is not the text of `formatted_string`, since
+/// the fragment indices only apply to that text. Fragments without a color keep
+/// the color `text` already has.
+void ApplyFormattedString(const omnibox::FormattedString& formatted_string,
+                          NSMutableAttributedString* text) {
+  if (formatted_string.fragments().empty() ||
+      ![text.string
+          isEqualToString:[NSString cr_fromString:formatted_string.text()]]) {
+    return;
+  }
+  // Fragments without a start index can't be placed in the text.
+  std::vector<const omnibox::FormattedString::FormattedStringFragment*>
+      fragments;
+  fragments.reserve(formatted_string.fragments_size());
+  for (const auto& fragment : formatted_string.fragments()) {
+    if (fragment.has_start_index()) {
+      fragments.push_back(&fragment);
+    }
+  }
+  for (size_t i = 0; i < fragments.size(); ++i) {
+    const omnibox::FormattedString::FormattedStringFragment& fragment =
+        *fragments[i];
+    // Each fragment runs until the next one starts or the text ends, whichever
+    // comes first. The indices are UTF-16 offsets, like NSString's.
+    const NSUInteger start = fragment.start_index();
+    const NSUInteger next_start = i + 1 < fragments.size()
+                                      ? fragments[i + 1]->start_index()
+                                      : text.length;
+    const NSUInteger end = std::min(next_start, text.length);
+    if (start >= end) {
+      continue;
+    }
+    const NSRange range = NSMakeRange(start, end - start);
+    if (fragment.is_bolded()) {
+      UIFont* font = [text attribute:NSFontAttributeName
+                             atIndex:start
+                      effectiveRange:nullptr];
+      UIFontDescriptor* bold_font_descriptor = [font.fontDescriptor
+          fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+      if (bold_font_descriptor) {
+        [text addAttribute:NSFontAttributeName
+                     value:[UIFont fontWithDescriptor:bold_font_descriptor
+                                                 size:0]
+                     range:range];
+      }
+    }
+    if (fragment.has_color() &&
+        fragment.color() != omnibox::FormattedString::COLOR_UNKNOWN) {
+      [text addAttribute:NSForegroundColorAttributeName
+                   value:ColorTypeToSuggestionTextColor(fragment.color())
+                   range:range];
+    }
+  }
 }
 
 }  // namespace
@@ -125,11 +200,18 @@ UIColor* DimColorIncognito() {
     suggestionDetailTextColor = SuggestionTextColor();
   }
   DCHECK(suggestionDetailTextColor);
-  return [self attributedStringWithString:detailText
-                          classifications:classifications
-                                smallFont:YES
-                                    color:suggestionDetailTextColor
-                                 dimColor:DimColor()];
+  NSMutableAttributedString* attributedDetailText =
+      [self attributedStringWithString:detailText
+                       classifications:classifications
+                             smallFont:YES
+                                 color:suggestionDetailTextColor
+                              dimColor:DimColor()];
+  if (_match.suggest_template &&
+      _match.suggest_template->has_secondary_text()) {
+    ApplyFormattedString(_match.suggest_template->secondary_text(),
+                         attributedDetailText);
+  }
+  return attributedDetailText;
 }
 
 - (id<OmniboxIcon>)icon {
@@ -192,12 +274,16 @@ UIColor* DimColorIncognito() {
   UIColor* suggestionTextColor = SuggestionTextColor();
   UIColor* dimColor = self.incognito ? DimColorIncognito() : DimColor();
 
-  NSAttributedString* attributedText =
+  NSMutableAttributedString* attributedText =
       [self attributedStringWithString:text
                        classifications:textClassifications
                              smallFont:NO
                                  color:suggestionTextColor
                               dimColor:dimColor];
+  if (_match.suggest_template && _match.suggest_template->has_primary_text()) {
+    ApplyFormattedString(_match.suggest_template->primary_text(),
+                         attributedText);
+  }
 
   if (self.isTailSuggestion || self.isMultimodal) {
     NSMutableAttributedString* mutableString =

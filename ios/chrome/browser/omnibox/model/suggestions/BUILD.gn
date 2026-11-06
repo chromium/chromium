@@ -109,6 +109,7 @@ swift_source_set("omnibox_pedal_swift") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autocomplete_match_formatter_unittest.mm",
     "autocomplete_result_wrapper_unittest.mm",
     "omnibox_pedal_annotator_unittest.mm",
     "pedal_section_extractor_unittest.mm",
@@ -128,6 +129,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/omnibox/model:test_support",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
