@@ -7,8 +7,6 @@
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/media_stream_request.h"
-#include "content/public/browser/web_contents.h"
 
 namespace content {
 
@@ -128,23 +126,6 @@ bool DevToolsManagerDelegate::HasBundledFrontendResources() {
 
 bool DevToolsManagerDelegate::IsBrowserTargetDiscoverable() {
   return false;
-}
-
-DevToolsManagerDelegate::BrowserWindowCaptureDevice::
-    BrowserWindowCaptureDevice() = default;
-DevToolsManagerDelegate::BrowserWindowCaptureDevice::BrowserWindowCaptureDevice(
-    BrowserWindowCaptureDevice&& other) = default;
-DevToolsManagerDelegate::BrowserWindowCaptureDevice&
-DevToolsManagerDelegate::BrowserWindowCaptureDevice::operator=(
-    BrowserWindowCaptureDevice&& other) = default;
-DevToolsManagerDelegate::BrowserWindowCaptureDevice::
-    ~BrowserWindowCaptureDevice() = default;
-
-void DevToolsManagerDelegate::GetBrowserWindowCaptureDevice(
-    WebContents* web_contents,
-    BrowserWindowCaptureDeviceCallback callback) {
-  std::move(callback).Run(
-      base::unexpected(kBrowserWindowRecordingNotSupportedError));
 }
 
 void DevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {

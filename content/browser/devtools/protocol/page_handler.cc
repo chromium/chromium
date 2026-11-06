@@ -36,7 +36,6 @@
 #include "content/browser/back_forward_cache/back_forward_cache_disable.h"
 #include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
-#include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/devtools_mhtml_helper.h"
@@ -1751,6 +1750,13 @@ void PageHandler::StartScreenRecording(
     return;
   }
 
+  // No embedder supports the browser window yet.
+  if (record_browser_window) {
+    callback->sendFailure(Response::ServerError(
+        "Recording the browser window is not supported for this target."));
+    return;
+  }
+
   media_recorder_ = std::make_unique<MediaRecorder>(
       io_context_, base::BindRepeating(&PageHandler::OnMediaRecorderFlushed,
                                        weak_factory_.GetWeakPtr()));
@@ -1759,12 +1765,6 @@ void PageHandler::StartScreenRecording(
   int fps = frame_rate.value_or(30);
   if (fps <= 0) {
     fps = 30;
-  }
-
-  if (record_browser_window) {
-    StartBrowserWindowRecording(has_audio, width, height, fps,
-                                std::move(callback));
-    return;
   }
 
   Response result =
@@ -1789,16 +1789,6 @@ void PageHandler::StopScreenRecording(
   }
 
   auto recorder = std::move(media_recorder_);
-  // For captureArea: browserWindow, the stream only exists after the
-  // embedder answered. The pending start then fails.
-  if (recorder->GetStream().empty()) {
-    recorder.reset();
-    if (callback) {
-      callback->sendFailure(
-          Response::ServerError("Screen recording has not started yet."));
-    }
-    return;
-  }
   recorder->Stop(base::BindOnce(
       [](std::unique_ptr<MediaRecorder> recorder,
          std::unique_ptr<StopScreenRecordingCallback> callback,
@@ -1808,86 +1798,6 @@ void PageHandler::StopScreenRecording(
         }
       },
       std::move(recorder), std::move(callback)));
-}
-
-void PageHandler::StartBrowserWindowRecording(
-    bool audio,
-    int max_width,
-    int max_height,
-    int frame_rate,
-    std::unique_ptr<StartScreenRecordingCallback> callback) {
-  WebContentsImpl* web_contents =
-      WebContentsImpl::FromRenderFrameHostImpl(host_);
-  DevToolsManagerDelegate* delegate =
-      DevToolsManager::GetInstance()->delegate();
-  if (!web_contents || !delegate) {
-    media_recorder_.reset();
-    callback->sendFailure(Response::ServerError(
-        DevToolsManagerDelegate::kBrowserWindowRecordingNotSupportedError));
-    return;
-  }
-  delegate->GetBrowserWindowCaptureDevice(
-      web_contents,
-      base::BindOnce(&PageHandler::OnBrowserWindowCaptureDevice,
-                     weak_factory_.GetWeakPtr(), media_recorder_->GetWeakPtr(),
-                     audio, max_width, max_height, frame_rate,
-                     std::move(callback)));
-}
-
-void PageHandler::OnBrowserWindowCaptureDevice(
-    base::WeakPtr<MediaRecorder> recorder,
-    bool audio,
-    int max_width,
-    int max_height,
-    int frame_rate,
-    std::unique_ptr<StartScreenRecordingCallback> callback,
-    base::expected<DevToolsManagerDelegate::BrowserWindowCaptureDevice,
-                   std::string> device) {
-  // Page.stopScreenRecording can run before the embedder answers.
-  if (!recorder || recorder.get() != media_recorder_.get()) {
-    callback->sendFailure(Response::ServerError(
-        "Screen recording was stopped before it started."));
-    return;
-  }
-  if (!device.has_value()) {
-    media_recorder_.reset();
-    callback->sendFailure(Response::ServerError(device.error()));
-    return;
-  }
-  // Audio comes from the target, as when only the target is recorded.
-  WebContentsImpl* web_contents =
-      WebContentsImpl::FromRenderFrameHostImpl(host_);
-  if (!web_contents) {
-    media_recorder_.reset();
-    callback->sendFailure(Response::ServerError(
-        DevToolsManagerDelegate::kBrowserWindowRecordingNotSupportedError));
-    return;
-  }
-  media_recorder_->StartDisplayCapture(
-      device->media_id, web_contents, std::move(device->ui), audio, max_width,
-      max_height, frame_rate,
-      base::BindOnce(&PageHandler::OnBrowserWindowRecordingStarted,
-                     weak_factory_.GetWeakPtr(), std::move(recorder),
-                     std::move(callback)));
-}
-
-void PageHandler::OnBrowserWindowRecordingStarted(
-    base::WeakPtr<MediaRecorder> recorder,
-    std::unique_ptr<StartScreenRecordingCallback> callback,
-    Response response) {
-  const bool is_current = recorder && recorder.get() == media_recorder_.get();
-  if (response.IsError() || !is_current) {
-    if (is_current) {
-      media_recorder_.reset();
-    }
-    callback->sendFailure(
-        response.IsError()
-            ? std::move(response)
-            : Response::ServerError(
-                  "Screen recording was stopped before it started."));
-    return;
-  }
-  callback->sendSuccess(media_recorder_->GetStream());
 }
 
 void PageHandler::OnMediaRecorderFlushed() {

@@ -87,10 +87,6 @@ class CONTENT_EXPORT MediaRecorder
   void Stop(base::OnceCallback<void(std::string)> on_stop_callback);
   const std::string& GetStream() const { return stream_; }
 
-  base::WeakPtr<MediaRecorder> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle);
   void OnFrameReadyInBuffer(media::ReadyFrameInBuffer frame);
