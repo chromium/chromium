@@ -1877,10 +1877,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // Returns true if the hover event is to be consumed by accessibility feature.
     @CalledByNative
     private boolean onHoverEvent(int action) {
-        if (!isAccessibilityEnabled()
-                || !AccessibilityState.isTouchExplorationEnabled()
-                || !AccessibilityState.relevantEventTypesForCurrentServices()
-                        .contains(AccessibilityEvent.TYPE_VIEW_HOVER_ENTER)) {
+        if (!isAccessibilityEnabled()) {
             return false;
         }
 
