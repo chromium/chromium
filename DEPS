@@ -2194,7 +2194,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '30b7523ec4a7630412af3107176daf02a65b8728',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + 'b4932b7d52baa58517fa35ed5e410f690ea056e2',
       'condition': 'checkout_chromeos',
   },
 
