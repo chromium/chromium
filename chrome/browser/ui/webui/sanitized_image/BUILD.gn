@@ -35,6 +35,10 @@ source_set("sanitized_image_source") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/top_chrome" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -50,4 +54,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
+
+  # The tests in TopChromeWebUIProfile are only under
+  # #if !BUILDFLAG(IS_ANDROID).
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/top_chrome" ]
+  }
 }

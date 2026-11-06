@@ -131,6 +131,8 @@ class SanitizedImageSource : public content::URLDataSource {
 #endif
     EncodeType encode_type = EncodeType::kPng;
     std::optional<signin::AccessTokenInfo> access_token_info;
+    // The URLLoaderFactory of the user who requests the image.
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   };
 
   void StartImageDownload(RequestAttributes request_attributes,
@@ -155,6 +157,9 @@ class SanitizedImageSource : public content::URLDataSource {
   // Owned by `IdentityManagerFactory` or `IdentityTestEnvironment`.
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
 
+  // Null in TopChromeWebUIProfile, which is shared by the windows of all
+  // profiles. Then each request uses the IdentityManager and the
+  // URLLoaderFactory of the user profile of the requesting WebContents.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   std::unique_ptr<DataDecoderDelegate> data_decoder_delegate_;

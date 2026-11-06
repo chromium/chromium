@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -41,6 +42,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -116,7 +121,9 @@ SanitizedImageSource::SanitizedImageSource(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<DataDecoderDelegate> delegate)
     : identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
-      url_loader_factory_(url_loader_factory),
+      url_loader_factory_(profile->IsTopChromeWebUIProfile()
+                              ? nullptr
+                              : std::move(url_loader_factory)),
       data_decoder_delegate_(std::move(delegate)) {}
 
 SanitizedImageSource::~SanitizedImageSource() = default;
@@ -180,6 +187,23 @@ void SanitizedImageSource::StartDataRequest(
 
   request_attributes.image_url = image_url;
 
+  signin::IdentityManager* identity_manager = identity_manager_;
+  request_attributes.url_loader_factory = url_loader_factory_;
+#if !BUILDFLAG(IS_ANDROID)
+  if (!url_loader_factory_) {
+    // In TopChromeWebUIProfile, which is shared by the windows of all profiles,
+    // use the account and the network of the user who requests the image. The
+    // user profile is set when the WebContents is created in
+    // TopChromeWebUIProfile, and outlives it.
+    content::WebContents* web_contents = wc_getter.Run();
+    CHECK(web_contents);
+    Profile* user_profile = webui::GetUserProfile(web_contents);
+    CHECK(user_profile);
+    identity_manager = IdentityManagerFactory::GetForProfile(user_profile);
+    request_attributes.url_loader_factory = user_profile->GetURLLoaderFactory();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Download the image body.
   if (!send_auth_token) {
     StartImageDownload(std::move(request_attributes), std::move(callback));
@@ -188,7 +212,7 @@ void SanitizedImageSource::StartDataRequest(
 
   // Request an auth token for downloading the image body.
   auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      signin::OAuthConsumerId::kSanitizedImageSource, identity_manager_,
+      signin::OAuthConsumerId::kSanitizedImageSource, identity_manager,
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSignin);
   auto* fetcher_ptr = fetcher.get();
@@ -290,8 +314,11 @@ void SanitizedImageSource::StartImageDownload(
         })"));
   }
   auto* loader_ptr = loader.get();
+  // Take the factory before `request_attributes` is moved into the callback.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      request_attributes.url_loader_factory;
   loader_ptr->DownloadToString(
-      url_loader_factory_.get(),
+      url_loader_factory.get(),
       base::BindOnce(&SanitizedImageSource::OnImageLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(loader),
                      std::move(request_attributes), std::move(callback)),
