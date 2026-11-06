@@ -83,6 +83,10 @@ source_set("impl") {
     "//components/subresource_filter/core/browser",
     "//services/device/public/cpp:device_features",
   ]
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/apps/app_shim" ]
+  }
 }
 
 source_set("browser_tests") {

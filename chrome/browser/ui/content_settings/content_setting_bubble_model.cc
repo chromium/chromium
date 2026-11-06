@@ -101,7 +101,9 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
 
 using base::UserMetricsAction;
@@ -1502,6 +1504,13 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
                                       ContentSettingsType::NOTIFICATIONS) {
   base::RecordAction(
       base::UserMetricsAction("ContentSettings.NotificationsDialog.Shown"));
+  if (std::optional<webapps::AppId> app_id =
+          web_app::WebAppTabHelper::GetAppIdForNotificationAttribution(
+              web_contents())) {
+    if (apps::AppShimManager* app_shim_manager = apps::AppShimManager::Get()) {
+      app_shim_manager->SynchronizeNotificationPermissionStatus(*app_id);
+    }
+  }
   set_title(l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
   AddListItem(ContentSettingBubbleModel::ListItem(
       &(features::IsRoundedIconsEnabled()

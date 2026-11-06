@@ -916,6 +916,10 @@ void MacNotificationServiceUN::DoSynchronizeNotifications(
   }
 }
 
+void MacNotificationServiceUN::SynchronizePermissionStatus() {
+  SynchronizePermissionStatus(/*log_result=*/false);
+}
+
 void MacNotificationServiceUN::SynchronizePermissionStatus(bool log_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_synchronizing_permission_status_) {

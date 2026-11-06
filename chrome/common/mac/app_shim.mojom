@@ -129,6 +129,10 @@ interface AppShim {
   RequestNotificationPermission()
       => (mac_notifications.mojom.RequestPermissionResult result);
 
+  // Re-queries macOS for the app's current notification permission status and
+  // reports any change via AppShimHost::NotificationPermissionStatusChanged().
+  SynchronizeNotificationPermissionStatus();
+
   // Called to connect to a ChildHistogramFetcherFactory, to allow chrome to
   // fetch histogram data from the app shim.
   BindChildHistogramFetcherFactory(

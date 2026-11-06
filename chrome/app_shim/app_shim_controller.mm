@@ -772,6 +772,21 @@ void AppShimController::OnShimConnectedResponse(
     [NSApp terminate:nil];
     return;
   }
+  // While the constructor should have created the `notification_service_`
+  // instance already, it is possible that the base::FeatureList state at the
+  // time did not match the current Chrome state, so make sure to create the
+  // service now if it wasn't created already.
+  if (!notification_service_ && ShouldCreateNotificationServiceUN()) {
+    CHECK(notification_action_handler_remote_);
+    notification_service_ =
+        std::make_unique<mac_notifications::MacNotificationServiceUN>(
+            std::move(notification_action_handler_remote_),
+            base::BindRepeating(
+                &AppShimController::NotificationPermissionStatusChanged,
+                base::Unretained(this)),
+            UNUserNotificationCenter.currentNotificationCenter);
+  }
+
   shim_receiver_.Bind(std::move(app_shim_receiver),
                       ui::WindowResizeHelperMac::Get()->task_runner());
   shim_receiver_.set_disconnect_with_reason_handler(
@@ -882,6 +897,12 @@ void AppShimController::RequestNotificationPermission(
   notification_service_un()->RequestPermission(std::move(callback));
 }
 
+void AppShimController::SynchronizeNotificationPermissionStatus() {
+  if (auto* service = notification_service_un()) {
+    service->SynchronizePermissionStatus();
+  }
+}
+
 void AppShimController::BindNotificationService(
     mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>
         service,
@@ -894,20 +915,6 @@ void AppShimController::BindNotificationService(
   // UNUserNotification API (and not support notification attribution on other
   // platforms at all).
   if (WebAppIsAdHocSigned()) {
-    // While the constructor should have created the `notification_service_`
-    // instance already, it is possible that the base::FeatureList state at the
-    // time did not match the current Chrome state, so make sure to create the
-    // service now if it wasn't created already.
-    if (!notification_service_ && ShouldCreateNotificationServiceUN()) {
-      CHECK(notification_action_handler_remote_);
-      notification_service_ =
-          std::make_unique<mac_notifications::MacNotificationServiceUN>(
-              std::move(notification_action_handler_remote_),
-              base::BindRepeating(
-                  &AppShimController::NotificationPermissionStatusChanged,
-                  base::Unretained(this)),
-              UNUserNotificationCenter.currentNotificationCenter);
-    }
     if (notification_service_un()) {
       // Note that `handler` as passed in to this method is ignored.
       // Notification actions instead will be dispatched to the app-shim scoped

@@ -552,25 +552,14 @@ AppShimManager::LaunchNotificationProvider(const webapps::AppId& app_id) {
       },
       remote.BindNewPipeAndPassReceiver(), weak_factory_.GetWeakPtr());
 
-  auto found_app = apps_.find(app_id);
-  if (found_app == apps_.end()) {
-    // To check or display a notification associated with a specific app, calls
-    // to the notifications API need to happen from within that app. If we don't
-    // already have a running app shim, launch a new one, but launch it in
-    // "background" mode, so to the user it isn't noticeable that this is
-    // happening.
-    LaunchShimInBackgroundMode(app_id, base::BindOnce(std::move(bind_provider),
-                                                      /*existing_app=*/false));
-    return remote;
-  }
-
-  AppState* app_state = found_app->second.get();
-  CHECK(app_state->IsMultiProfile());
-  AppShimHost* shim = app_state->multi_profile_host.get();
-  std::move(bind_provider).Run(/*existing_app=*/true, shim);
-  // Ensure the shim process is launched in case the host was pre-created
-  // without launching (e.g. via `FindOrCreateHostForTesting()`).
-  shim->LaunchShim(web_app::ShimLaunchMode::kBackground);
+  // To check or display a notification associated with a specific app, calls
+  // to the notifications API need to happen from within that app. If we don't
+  // already have a running app shim, launch a new one, but launch it in
+  // "background" mode, so to the user it isn't noticeable that this is
+  // happening.
+  LaunchShimInBackgroundMode(
+      app_id, base::BindOnce(std::move(bind_provider),
+                             /*existing_app=*/apps_.contains(app_id)));
   return remote;
 }
 
@@ -611,19 +600,19 @@ void AppShimManager::ShowNotificationPermissionRequest(
       },
       weak_factory_.GetWeakPtr(), app_id, std::move(callback));
 
-  auto found_app = apps_.find(app_id);
-  if (found_app == apps_.end()) {
-    LaunchShimInBackgroundMode(app_id, std::move(request_permission));
-    return;
-  }
+  LaunchShimInBackgroundMode(app_id, std::move(request_permission));
+}
 
-  AppState* app_state = found_app->second.get();
-  CHECK(app_state->IsMultiProfile());
-  AppShimHost* shim = app_state->multi_profile_host.get();
-  std::move(request_permission).Run(shim);
-  // Ensure the shim process is launched in case the host was pre-created
-  // without launching (e.g. via `FindOrCreateHostForTesting()`).
-  shim->LaunchShim(web_app::ShimLaunchMode::kBackground);
+void AppShimManager::SynchronizeNotificationPermissionStatus(
+    const webapps::AppId& app_id) {
+  CHECK(web_app::UseNotificationAttributionForWebAppShims());
+
+  LaunchShimInBackgroundMode(
+      app_id, base::BindOnce([](AppShimHost* host) {
+        if (host) {
+          host->GetAppShim()->SynchronizeNotificationPermissionStatus();
+        }
+      }));
 }
 
 Profile* AppShimManager::ProfileForBackgroundShimLaunch(
@@ -646,6 +635,18 @@ Profile* AppShimManager::ProfileForBackgroundShimLaunch(
 void AppShimManager::LaunchShimInBackgroundMode(
     const webapps::AppId& app_id,
     base::OnceCallback<void(AppShimHost*)> callback) {
+  auto found_app = apps_.find(app_id);
+  if (found_app != apps_.end()) {
+    AppState* app_state = found_app->second.get();
+    CHECK(app_state->IsMultiProfile());
+    AppShimHost* shim = app_state->multi_profile_host.get();
+    std::move(callback).Run(shim);
+    // Ensure the shim process is launched in case the host was pre-created
+    // without launching (e.g. via `FindOrCreateHostForTesting()`).
+    shim->LaunchShim(web_app::ShimLaunchMode::kBackground);
+    return;
+  }
+
   // Don't launch app shims once the browser has started shutting down (see
   // OnShimLaunchRequested()).
   if (g_browser_process->IsShuttingDown()) {
@@ -667,6 +668,10 @@ void AppShimManager::LaunchShimInBackgroundMode(
 
   CHECK(delegate_->AppIsMultiProfile(profile, app_id));
   auto* profile_state = GetOrCreateProfileState(profile, app_id);
+  if (!profile_state) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
   std::move(callback).Run(profile_state->GetHost());
   profile_state->GetHost()->LaunchShim(web_app::ShimLaunchMode::kBackground);
 }

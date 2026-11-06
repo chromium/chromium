@@ -321,6 +321,9 @@ class TestAppShim : public chrome::mojom::AppShim,
       RequestNotificationPermissionCallback callback) override {
     request_notification_permission_callback_.SetValue(std::move(callback));
   }
+  void SynchronizeNotificationPermissionStatus() override {
+    synchronize_notification_permission_count_++;
+  }
   void BindChildHistogramFetcherFactory(
       mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
           receiver) override {}
@@ -340,6 +343,7 @@ class TestAppShim : public chrome::mojom::AppShim,
       notification_provider_receiver_{this};
   base::test::TestFuture<RequestNotificationPermissionCallback>
       request_notification_permission_callback_;
+  int synchronize_notification_permission_count_ = 0;
 };
 
 class TestHost : public AppShimHost {
@@ -2611,6 +2615,47 @@ TEST_F(AppShimManagerMockTimeTest, OSNotificationPermissionStatusMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Notifications.Permissions.AppShim.OSStatus.ChromeBlock",
       RegistryStatus::kExplicitlyDenied, 1);
+}
+
+TEST_F(AppShimManagerTest,
+       SynchronizeNotificationPermissionStatusWithAppRunning) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_,
+              DoLaunchShim(&profile_a_, kTestAppIdA,
+                           web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                           web_app::ShimLaunchMode::kNormal));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+
+  manager_->SynchronizeNotificationPermissionStatus(kTestAppIdA);
+  EXPECT_EQ(
+      1, host_aa_->test_app_shim_->synchronize_notification_permission_count_);
+}
+
+TEST_F(AppShimManagerTest,
+       SynchronizeNotificationPermissionStatusWithoutAppRunning) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
+      .WillOnce(Return(&profile_a_));
+
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_,
+              DoLaunchShim(&profile_a_, kTestAppIdA,
+                           web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                           web_app::ShimLaunchMode::kBackground));
+
+  manager_->SynchronizeNotificationPermissionStatus(kTestAppIdA);
+  EXPECT_EQ(
+      1, host_aa_->test_app_shim_->synchronize_notification_permission_count_);
 }
 
 }  // namespace apps

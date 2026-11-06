@@ -79,6 +79,10 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   // that gets send to an application shortly afterwards.
   bool DidRecentlyHandleClickAction() const;
 
+  // Queries `UNUserNotificationCenter` for the current authorization status and
+  // reports any change via `permission_status_changed_callback_`.
+  void SynchronizePermissionStatus();
+
  private:
   // Holds state for an in-flight notification delivery request (including its
   // temporary icon file and attachment-retry state) across asynchronous
