@@ -662,9 +662,6 @@ void DanglingRawPtrReleased(uintptr_t id) {
     }
   }
 
-  std::string dangling_signature = ExtractDanglingPtrSignature(
-      free_info, stack_trace_release, task_trace_release);
-
   {
     // Log the full error in a single LogMessage. Printing StackTrace is
     // expensive, so we want to avoid interleaving the output with other logs.

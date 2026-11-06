@@ -166,7 +166,6 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValue_ActivatesTrial) {
   scoped_refptr<FieldTrial> trial(CreateFieldTrial(kTrialName, 100, "A"));
   ASSERT_FALSE(FieldTrialList::IsTrialActive(kTrialName));
 
-  FieldTrialParams params;
   EXPECT_EQ(std::string(), GetFieldTrialParamValue(kTrialName, "x"));
   ASSERT_TRUE(FieldTrialList::IsTrialActive(kTrialName));
 }
@@ -200,7 +199,6 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
-  FieldTrialParams actualParams;
   EXPECT_EQ(params["x"], GetFieldTrialParamValueByFeature(kFeature, "x"));
 }
 

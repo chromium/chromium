@@ -67,7 +67,6 @@ TEST(StringPrintfTest, StringPrintfBounds) {
 
   for (int i = 1; i < 3; i++) {
     src[kSrcLen - i] = 0;
-    std::string out;
     EXPECT_EQ(src.data(), StringPrintf("%s", src.data()));
   }
 }

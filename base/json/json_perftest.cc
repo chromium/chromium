@@ -67,8 +67,6 @@ DictValue GenerateLayeredDict(int breadth, int depth) {
 class JSONPerfTest : public testing::Test {
  public:
   void TestWriteAndRead(int breadth, int depth) {
-    std::string description = "Breadth: " + base::NumberToString(breadth) +
-                              ", Depth: " + base::NumberToString(depth);
     DictValue dict = GenerateLayeredDict(breadth, depth);
     std::string json;
 

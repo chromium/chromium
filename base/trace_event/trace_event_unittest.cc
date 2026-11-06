@@ -807,9 +807,7 @@ TEST_F(TraceEventTestFixture, NewTraceRecording) {
 
 // Test that categories work.
 TEST_F(TraceEventTestFixture, Categories) {
-  const std::vector<std::string> empty_categories;
   std::vector<std::string> included_categories;
-  std::vector<std::string> excluded_categories;
 
   // Test that category filtering works.
 
@@ -1329,7 +1327,6 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
 
   const DictValue* args_dict = nullptr;
   const DictValue* dict = nullptr;
-  std::string str_value;
 
   dict = FindNamePhase("event1", "X");
   ASSERT_TRUE(dict);

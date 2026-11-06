@@ -141,7 +141,6 @@ TEST(StringSearchTest, UnicodeLocaleIndependent) {
   // Base characters
   const std::u16string e_base = u"e";
   const std::u16string E_base = u"E";
-  const std::u16string a_base = u"a";
 
   // Composed characters
   const std::u16string e_with_acute_accent = u"\u00e9";

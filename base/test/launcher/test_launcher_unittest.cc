@@ -406,10 +406,6 @@ TEST_F(TestLauncherTest, RetryPreTests) {
   AddMockedTests("Test", {"firstTest", "PRE_PRE_firstTest", "PRE_firstTest"});
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("test-launcher-retry-limit", "2");
-  std::vector<TestResult> results = {
-      GenerateTestResult("Test.PRE_PRE_firstTest", TestResult::TEST_SUCCESS),
-      GenerateTestResult("Test.PRE_firstTest", TestResult::TEST_FAILURE),
-      GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS)};
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(::testing::DoAll(
           OnTestResult(&test_launcher, "Test.PRE_PRE_firstTest",
@@ -449,9 +445,6 @@ TEST_F(TestLauncherTest, RetryPreTests) {
 TEST_F(TestLauncherTest, PreTestFailure) {
   AddMockedTests("Test", {"FirstTest", "PRE_FirstTest"});
   SetUpExpectCalls();
-  std::vector<TestResult> results = {
-      GenerateTestResult("Test.PRE_FirstTest", TestResult::TEST_FAILURE),
-      GenerateTestResult("Test.FirstTest", TestResult::TEST_SUCCESS)};
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(
           ::testing::DoAll(OnTestResult(&test_launcher, "Test.PRE_FirstTest",

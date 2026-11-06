@@ -275,7 +275,6 @@ TEST_F(BaseThreadLocalStorageTest, VerifyAllocatorIsUsedForMultipleChunks) {
   std::mutex thread_worker_mutex;
   std::condition_variable thread_counter_cv;
   std::atomic_uint32_t thread_counter{0};
-  std::unordered_set<void*> stored_object_addresses;
 
   std::mutex threads_can_finish_mutex;
   std::condition_variable threads_can_finish_cv;
