@@ -37,6 +37,11 @@ bool IsUniversalOptOutExtensionSilentEnabled();
 // Feature flag for the settings page development.
 BASE_DECLARE_FEATURE(kUniversalOptOutSettings);
 
+// Controls whether `UniversalOptOutService` updates location history and
+// eligibility on `VariationsService::Observer::OnCountryOrAdminAreaChanged()`
+// notifications instead of `OnSeedFetched()`.
+BASE_DECLARE_FEATURE(kUniversalOptOutUpdateOnGeoLocationChanged);
+
 // Returns whether the Universal Opt-Out feature is enabled.
 // On non-iOS platforms, returns `kUniversalOptOut`.
 // On iOS < 18.4, returns false.

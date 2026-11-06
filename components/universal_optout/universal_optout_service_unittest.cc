@@ -340,6 +340,51 @@ TEST_F(UniversalOptOutServiceTest, OnSeedFetchedUpdatesEligibility) {
   EXPECT_TRUE(service->IsEligible());
 }
 
+TEST_F(UniversalOptOutServiceTest,
+       OnCountryOrAdminAreaChangedUpdatesEligibility) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{base::test::FeatureRefAndParams(
+                                features::kUniversalOptOut,
+                                {{"target_locations", "us-hi"}}),
+                            base::test::FeatureRefAndParams(
+                                features::
+                                    kUniversalOptOutUpdateOnGeoLocationChanged,
+                                {})},
+      /*disabled_features=*/{});
+
+  // Initially no location is set and user is not eligible.
+  auto service = CreateService();
+  EXPECT_FALSE(service->IsEligible());
+
+  // When `kUniversalOptOutUpdateOnGeoLocationChanged` is enabled,
+  // `OnSeedFetched()` is ignored in favor of `OnCountryOrAdminAreaChanged()`.
+  SetGeoLevel1("us-hi");
+  service->OnSeedFetched();
+  EXPECT_FALSE(service->IsEligible());
+
+  // Location is updated when `OnCountryOrAdminAreaChanged()` fires.
+  service->OnCountryOrAdminAreaChanged();
+
+  EXPECT_TRUE(service->IsEligible());
+}
+
+TEST_F(UniversalOptOutServiceTest,
+       OnCountryOrAdminAreaChangedIgnoredWhenFeatureDisabled) {
+  EnableFeatureWithTargetLocations("us-hi");
+
+  // Initially no location is set and user is not eligible.
+  auto service = CreateService();
+  EXPECT_FALSE(service->IsEligible());
+
+  // Location is updated on a 304 response, but
+  // `kUniversalOptOutUpdateOnGeoLocationChanged` is disabled by default.
+  SetGeoLevel1("us-hi");
+  service->OnCountryOrAdminAreaChanged();
+
+  EXPECT_FALSE(service->IsEligible());
+}
+
 TEST_F(UniversalOptOutServiceTest, MultipleTargetLocations) {
   EnableFeatureWithTargetLocations("us-ut,us-nv");
 
