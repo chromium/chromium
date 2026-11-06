@@ -12,15 +12,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "build/buildflag.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -254,12 +251,6 @@ class GaiaCookieManagerServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void Advance(scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner,
-               base::TimeDelta advance_by) {
-    test_task_runner->FastForwardBy(advance_by + base::Milliseconds(1));
-    test_task_runner->RunUntilIdle();
-  }
-
   bool IsLoadPending(const std::string& url) {
     return signin_client_->GetTestURLLoaderFactory()->IsPending(
         GURL(url).spec());
@@ -297,8 +288,10 @@ class GaiaCookieManagerServiceTest : public testing::Test {
   const CoreAccountId account_id3_;
   const CoreAccountId account_id4_;
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
-  base::test::TaskEnvironment task_environment_;
   GoogleServiceAuthError no_error_;
   GoogleServiceAuthError error_;
   GoogleServiceAuthError canceled_;
@@ -381,10 +374,6 @@ TEST_F(GaiaCookieManagerServiceTest, LogoutRetried) {
                                               token_service(), signin_client());
   MockObserver observer(&helper);
 
-  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting
-      sttrcdh_override(test_task_runner);
-
   EXPECT_CALL(helper, StartGaiaLogOut()).Times(2);
 
   MockLogOutFromCookieCompletedCallback log_out_from_cookie_completed;
@@ -394,22 +383,17 @@ TEST_F(GaiaCookieManagerServiceTest, LogoutRetried) {
                            log_out_from_cookie_completed.Get());
 
   SimulateLogOutFailure(&helper, canceled());
-  DCHECK(helper.is_running());
-  Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
+  EXPECT_TRUE(helper.is_running());
+  task_environment_.FastForwardBy(
+      helper.GetBackoffEntry()->GetTimeUntilRelease());
   SimulateLogOutSuccess(&helper);
-  DCHECK(!helper.is_running());
+  EXPECT_FALSE(helper.is_running());
 }
 
 TEST_F(GaiaCookieManagerServiceTest, LogoutRetriedTwice) {
   InstrumentedGaiaCookieManagerService helper(account_tracker_service(),
                                               token_service(), signin_client());
   MockObserver observer(&helper);
-  base::HistogramTester histograms;
-
-  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-
-  base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting
-      sttrcdh_override(test_task_runner);
 
   EXPECT_CALL(helper, StartGaiaLogOut()).Times(3);
 
@@ -420,13 +404,15 @@ TEST_F(GaiaCookieManagerServiceTest, LogoutRetriedTwice) {
                            log_out_from_cookie_completed.Get());
   // Logout requests are retried even if the error is persistent.
   SimulateLogOutFailure(&helper, error());
-  DCHECK(helper.is_running());
-  Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
+  EXPECT_TRUE(helper.is_running());
+  task_environment_.FastForwardBy(
+      helper.GetBackoffEntry()->GetTimeUntilRelease());
   SimulateLogOutFailure(&helper, canceled());
-  DCHECK(helper.is_running());
-  Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
+  EXPECT_TRUE(helper.is_running());
+  task_environment_.FastForwardBy(
+      helper.GetBackoffEntry()->GetTimeUntilRelease());
   SimulateLogOutSuccess(&helper);
-  DCHECK(!helper.is_running());
+  EXPECT_FALSE(helper.is_running());
 }
 
 TEST_F(GaiaCookieManagerServiceTest, ContinueAfterSuccess) {
@@ -1073,14 +1059,14 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
     MockObserver observer(&helper);
 
     EXPECT_CALL(helper, StartFetchingListAccounts());
-    // |kGaiaCookieLastListAccountsBinaryData| is empty.
+    // `kGaiaCookieLastListAccountsBinaryData` is empty.
     ASSERT_EQ(helper.ListAccounts(), kCookiesEmptyStale);
 
     EXPECT_CALL(observer, OnGaiaAccountsInCookieUpdated(cookies_expected_fresh,
                                                         no_error()));
 
     SimulateListAccountsSuccess(&helper, data);
-    // |kGaiaCookieLastListAccountsBinaryData| is set.
+    // `kGaiaCookieLastListAccountsBinaryData` is set.
     ASSERT_EQ(signin_client()->GetPrefs()->GetString(
                   prefs::kGaiaCookieLastListAccountsBinaryData),
               data);
@@ -1095,48 +1081,55 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
     InstrumentedGaiaCookieManagerService helper(
         account_tracker_service(), token_service(), signin_client());
     MockObserver observer(&helper);
-    auto test_task_runner =
-        base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
-    base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting
-        sttrcdh_override(test_task_runner);
-
-    EXPECT_CALL(helper, StartFetchingListAccounts()).Times(3);
-
-    // Though |SimulateListAccountsSuccess| is not yet called, we are able to
-    // retrieve last |list_accounts| and  |expected_accounts| from the pref,
-    // but mark them as stale. A |StartFetchingListAccounts| is triggered.
+    // Though `SimulateListAccountsSuccess()` is not yet called, we are able to
+    // retrieve last `list_accounts` and `expected_accounts` from the pref,
+    // but mark them as stale. A `StartFetchingListAccounts()` is triggered.
+    EXPECT_CALL(helper, StartFetchingListAccounts());
     signin::AccountsInCookieJarInfo cookies_expected_stale(
         false, {signed_in_account, signed_out_account});
     EXPECT_EQ(helper.ListAccounts(), cookies_expected_stale);
+    testing::Mock::VerifyAndClearExpectations(&helper);
 
-    // |SimulateListAccountsSuccess| and assert list accounts is not stale
+    // `SimulateListAccountsSuccess()` and assert list accounts is not stale
     // anymore.
     EXPECT_CALL(observer, OnGaiaAccountsInCookieUpdated(cookies_expected_fresh,
                                                         no_error()));
     SimulateListAccountsSuccess(&helper, data);
     ASSERT_EQ(helper.ListAccounts(), cookies_expected_fresh);
+    testing::Mock::VerifyAndClearExpectations(&observer);
 
     // Change list account state to be stale, which will trigger list accounts
     // request.
+    EXPECT_CALL(helper, StartFetchingListAccounts());
     helper.ForceOnCookieChangeProcessing();
+    testing::Mock::VerifyAndClearExpectations(&helper);
 
     // Receive an unexpected response from the server. Listed accounts as well
-    // as the pref should be cleared.
+    // as the pref should be cleared, and a retry should be scheduled with
+    // backoff without notifying the observer yet.
+    EXPECT_CALL(observer, OnGaiaAccountsInCookieUpdated(_, _)).Times(0);
+    EXPECT_CALL(helper, StartFetchingListAccounts()).Times(0);
+    SimulateListAccountsSuccess(&helper, "[]");
+    EXPECT_EQ(helper.ListAccounts(), kCookiesEmptyStale);
+    testing::Mock::VerifyAndClearExpectations(&observer);
+    testing::Mock::VerifyAndClearExpectations(&helper);
+
+    // List accounts retries once on `UNEXPECTED_SERVICE_RESPONSE` errors with
+    // backoff protection.
+    EXPECT_CALL(helper, StartFetchingListAccounts());
+    task_environment_.FastForwardBy(
+        helper.GetBackoffEntry()->GetTimeUntilRelease());
+    testing::Mock::VerifyAndClearExpectations(&helper);
+
     GoogleServiceAuthError error =
         GoogleServiceAuthError::FromUnexpectedServiceResponse(
             "Error parsing ListAccounts response");
     EXPECT_CALL(observer,
                 OnGaiaAccountsInCookieUpdated(kCookiesEmptyStale, error));
     SimulateListAccountsSuccess(&helper, "[]");
-    EXPECT_EQ(helper.ListAccounts(), kCookiesEmptyStale);
 
-    // List accounts retries once on |UNEXPECTED_SERVICE_RESPONSE| errors with
-    // backoff protection.
-    Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
-    SimulateListAccountsSuccess(&helper, "[]");
-
-    // |kGaiaCookieLastListAccountsBinaryData| is cleared.
+    // `kGaiaCookieLastListAccountsBinaryData` is cleared.
     EXPECT_TRUE(signin_client()
                     ->GetPrefs()
                     ->GetString(prefs::kGaiaCookieLastListAccountsBinaryData)
@@ -1144,7 +1137,7 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
   }
 
   {
-    // On next startup, |kGaiaCookieLastListAccountsBinaryData| contains last
+    // On next startup, `kGaiaCookieLastListAccountsBinaryData` contains last
     // list accounts data.
     EXPECT_TRUE(signin_client()
                     ->GetPrefs()
