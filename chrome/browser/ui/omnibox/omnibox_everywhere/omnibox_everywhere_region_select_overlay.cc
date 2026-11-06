@@ -971,6 +971,7 @@ OmniboxEverywhereRegionSelectOverlay::CreateWidgetForDisplay(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "OmniboxEverywhereRegionSelectOverlay";
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
 #if BUILDFLAG(IS_MAC)
   // Required to support Widget::SetActivationIndependence().
