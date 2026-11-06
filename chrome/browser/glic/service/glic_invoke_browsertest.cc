@@ -598,13 +598,84 @@ content::WebContents* GetOffscreenRenderingContents(
                                       : instance.host().webui_contents();
 }
 
+// Invokes Glic with auto-submit on `tab` without showing the panel, and returns
+// the instance. The client stays in hidden initialization, so offscreen
+// rendering is active.
+GlicInstanceImpl* InvokeHidden(GlicInstanceCoordinatorImpl& coordinator,
+                               tabs::TabInterface& tab,
+                               InvokeWithAutoSubmitPasskey passkey) {
+  GlicInvokeOptions options(glic::Target(tab),
+                            mojom::InvocationSource::kOsButton);
+  GlicInvokeWithAutoSubmitOptions auto_submit_options;
+  auto_submit_options.show_panel = false;
+  coordinator.InvokeWithAutoSubmit(passkey, std::move(options),
+                                   std::move(auto_submit_options));
+  return coordinator.GetInstanceImplForTab(&tab);
+}
+
+// Reloads the host while offscreen rendering is active and checks that the new
+// contents, not the destroyed ones, are attached to the offscreen window. Then
+// stops hidden initialization and checks that the new contents are detached
+// from the offscreen window before showing the panel.
+void ExpectReloadMovesOffscreenRenderingToNewContents(
+    GlicKeyedService& service,
+    GlicInstanceImpl& instance,
+    tabs::TabInterface& tab) {
+  ASSERT_TRUE(instance.is_offscreen_rendering_active_for_testing());
+  content::WebContents* old_contents =
+      GetOffscreenRenderingContents(service, instance);
+  ASSERT_TRUE(old_contents);
+  content::WebContentsDestroyedWatcher old_contents_watcher(old_contents);
+
+  instance.host().Reload();
+  EXPECT_TRUE(old_contents_watcher.IsDestroyed());
+
+  EXPECT_TRUE(instance.is_offscreen_rendering_active_for_testing());
+  content::WebContents* new_contents =
+      GetOffscreenRenderingContents(service, instance);
+  ASSERT_TRUE(new_contents);
+  gfx::NativeWindow offscreen_window = new_contents->GetTopLevelNativeWindow();
+  ASSERT_TRUE(offscreen_window);
+  EXPECT_NE(offscreen_window, tab.GetContents()->GetTopLevelNativeWindow());
+
+  instance.SetHiddenInitializing(false);
+  EXPECT_FALSE(instance.is_offscreen_rendering_active_for_testing());
+  EXPECT_FALSE(new_contents->GetTopLevelNativeWindow());
+
+  instance.Show(ShowOptions::ForSidePanel(tab));
+  EXPECT_TRUE(instance.IsShowing());
+}
+
+// Destroys the host contents while offscreen rendering is active, then shows
+// the panel. Offscreen rendering must stop with the destroyed contents and
+// must not stay attached to the contents created for the panel.
+void ExpectHibernateThenShowStopsOffscreenRendering(GlicKeyedService& service,
+                                                    GlicInstanceImpl& instance,
+                                                    tabs::TabInterface& tab) {
+  ASSERT_TRUE(instance.is_offscreen_rendering_active_for_testing());
+  content::WebContents* old_contents =
+      GetOffscreenRenderingContents(service, instance);
+  ASSERT_TRUE(old_contents);
+  content::WebContentsDestroyedWatcher old_contents_watcher(old_contents);
+
+  instance.Hibernate();
+  EXPECT_TRUE(old_contents_watcher.IsDestroyed());
+  EXPECT_FALSE(instance.is_offscreen_rendering_active_for_testing());
+
+  instance.Show(ShowOptions::ForSidePanel(tab));
+  EXPECT_FALSE(instance.is_offscreen_rendering_active_for_testing());
+  EXPECT_TRUE(instance.IsShowing());
+  ASSERT_TRUE(GetOffscreenRenderingContents(service, instance));
+}
+
 }  // namespace
 
 class GlicInvokeOffscreenRenderingBrowserTest : public GlicInvokeBrowserTest {
  public:
   GlicInvokeOffscreenRenderingBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kGlicAndroidOffscreenRendering);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicAndroidOffscreenRendering},
+        /*disabled_features=*/{features::kGlicNoWebview});
   }
 
  private:
@@ -644,6 +715,22 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOffscreenRenderingBrowserTest,
   instance->Show(ShowOptions::ForSidePanel(*tab));
   EXPECT_FALSE(instance->is_offscreen_rendering_active_for_testing());
   EXPECT_TRUE(instance->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeOffscreenRenderingBrowserTest,
+                       ReloadMovesOffscreenRenderingToNewContents) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  GlicInstanceImpl* instance = InvokeHidden(coordinator(), *tab, GetPassKey());
+  ASSERT_TRUE(instance);
+  ExpectReloadMovesOffscreenRenderingToNewContents(*service(), *instance, *tab);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeOffscreenRenderingBrowserTest,
+                       HibernateThenShowStopsOffscreenRendering) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  GlicInstanceImpl* instance = InvokeHidden(coordinator(), *tab, GetPassKey());
+  ASSERT_TRUE(instance);
+  ExpectHibernateThenShowStopsOffscreenRendering(*service(), *instance, *tab);
 }
 
 class GlicInvokeOffscreenRenderingDisabledBrowserTest
@@ -734,6 +821,22 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNoWebviewOffscreenRenderingBrowserTest,
   instance->Show(ShowOptions::ForSidePanel(*tab));
   EXPECT_FALSE(instance->is_offscreen_rendering_active_for_testing());
   EXPECT_TRUE(instance->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeNoWebviewOffscreenRenderingBrowserTest,
+                       ReloadMovesOffscreenRenderingToNewGuestContents) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  GlicInstanceImpl* instance = InvokeHidden(coordinator(), *tab, GetPassKey());
+  ASSERT_TRUE(instance);
+  ExpectReloadMovesOffscreenRenderingToNewContents(*service(), *instance, *tab);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeNoWebviewOffscreenRenderingBrowserTest,
+                       HibernateThenShowStopsOffscreenRendering) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  GlicInstanceImpl* instance = InvokeHidden(coordinator(), *tab, GetPassKey());
+  ASSERT_TRUE(instance);
+  ExpectHibernateThenShowStopsOffscreenRendering(*service(), *instance, *tab);
 }
 #endif
 

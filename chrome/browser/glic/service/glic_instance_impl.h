@@ -325,6 +325,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Host::Observer
   void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
+  void ContentsCreated() override;
   void WebUiStateChanged(mojom::WebUiState state) override;
   void ClientLoadErrorOccurred(ClientLoadErrorReason reason) override;
   void ContextAccessIndicatorChanged(bool enabled) override;
@@ -416,7 +417,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Idempotency helper: if the instance is hibernated
   // (!host_.webui_contents()), creates the WebUI container. No-op if contents
   // already exist.
-  void EnsureHostAwake() override;
+  void EnsureHostAwake();
 
   void MaybeActivateForegroundEmbedder();
   void MaybeRemoveBlankInstanceOnClose();
