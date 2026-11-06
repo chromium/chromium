@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ash/login/signin/token_handle_store.h"
 
+#include <deque>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/byte_size.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -36,9 +40,12 @@
 #include "components/user_manager/user_manager_impl.h"
 #include "crypto/obsolete/sha1.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -109,6 +116,31 @@ void AssertLastCheckedTimestampWithinTolerance(
 
 TestingPrefServiceSimple* local_state() {
   return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+}
+
+// Enqueues an HTTP response on `request.client` without spinning `RunUntilIdle`
+// (unlike `TestURLLoaderFactory::SimulateResponseForPendingRequest`), allowing
+// tests to queue multiple Mojo `URLLoaderClient` completions in the same turn.
+void EnqueuePendingResponse(
+    network::TestURLLoaderFactory::PendingRequest& request,
+    std::string_view content,
+    net::HttpStatusCode http_status = net::HTTP_OK) {
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle body;
+  ASSERT_EQ(mojo::CreateDataPipe(content.size(), producer_handle, body),
+            MOJO_RESULT_OK);
+  ASSERT_EQ(producer_handle->WriteAllData(base::as_byte_span(content)),
+            MOJO_RESULT_OK);
+
+  network::mojom::URLResponseHeadPtr head =
+      network::CreateURLResponseHead(http_status);
+  head->mime_type = "text/html";
+  request.client->OnReceiveResponse(std::move(head), std::move(body),
+                                    std::nullopt);
+
+  network::URLLoaderCompletionStatus status(net::OK);
+  status.decoded_body_length = base::ByteSize(content.size());
+  request.client->OnComplete(status);
 }
 
 }  // namespace
@@ -681,6 +713,62 @@ TEST_F(TokenHandleStoreIsReauthRequiredTest,
   EXPECT_EQ(1, outer_reply_count);
 }
 
+TEST_F(TokenHandleStoreIsReauthRequiredTest,
+       SupersededCheckGaiaPasswordCallbackDoesNotCrash) {
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(local_state());
+  injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
+  injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
+                                     kTokenHandleStatusValid);
+  std::deque<base::OnceCallback<void(std::optional<bool>)>>
+      gaia_password_callbacks;
+  auto token_handle_store = std::make_unique<TokenHandleStore>(
+      std::move(injected_known_user),
+      base::BindLambdaForTesting(
+          [&](const AccountId& account_id,
+              base::OnceCallback<void(std::optional<bool>)> continuation) {
+            gaia_password_callbacks.push_back(std::move(continuation));
+          }));
+  const GURL& url = GaiaUrls::GetInstance()->oauth2_token_info_url();
+  TokenValidationFuture future1;
+  TokenValidationFuture future2;
+
+  // Start the first check and complete its HTTP request as invalid so it waits
+  // on `does_user_have_gaia_password`.
+  token_handle_store->IsReauthRequired(account_id_, GetSharedURLLoaderFactory(),
+                                       future1.GetCallback());
+  url_loader_factory_.WaitForRequest(url);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), std::string(), net::HTTP_UNAUTHORIZED);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return gaia_password_callbacks.size() == 1u; }));
+
+  // Start a second check before the first check's Gaia password callback runs,
+  // and let it receive its HTTP response. Its completion is still queued once
+  // `response_received` resolves.
+  token_handle_store->IsReauthRequired(account_id_, GetSharedURLLoaderFactory(),
+                                       future2.GetCallback());
+  url_loader_factory_.WaitForRequest(url);
+  ASSERT_EQ(1u, url_loader_factory_.pending_requests()->size());
+  EnqueuePendingResponse(
+      (*url_loader_factory_.pending_requests())[0],
+      GetValidTokenInfoResponse(kFakeEmail, /*expires_in=*/1000));
+  base::test::TestFuture<void> response_received;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, response_received.GetCallback());
+  ASSERT_TRUE(response_received.Wait());
+
+  // Complete the superseded first check's Gaia password callback while the
+  // second check's completion is queued, then drain the queue. The second
+  // check's completion must not crash.
+  std::move(gaia_password_callbacks.front()).Run(true);
+  gaia_password_callbacks.pop_front();
+  base::test::TestFuture<void> pending_tasks_drained;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, pending_tasks_drained.GetCallback());
+  EXPECT_TRUE(pending_tasks_drained.Wait());
+}
+
 class TokenHandleStoreMaybeFetchTokenHandleTest
     : public TokenHandleStoreIsReauthRequiredTest {
  public:
@@ -740,6 +828,48 @@ TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
             *known_user->FindStringPath(account_id_, kTokenHandlePref));
   EXPECT_EQ(kTokenHandleStatusValid,
             *known_user->FindStringPath(account_id_, kTokenHandleStatusPref));
+}
+
+TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
+       FetchCompletingBeforeInFlightCheckDoesNotCrash) {
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(local_state());
+  injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
+  injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
+                                     kTokenHandleStatusValid);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      CreateTokenHandleStore(std::move(injected_known_user));
+  const GURL& url = GaiaUrls::GetInstance()->oauth2_token_info_url();
+  TokenValidationFuture future;
+
+  token_handle_store->IsReauthRequired(account_id_, GetSharedURLLoaderFactory(),
+                                       future.GetCallback());
+  url_loader_factory_.WaitForRequest(url);
+
+  token_handle_store->SetTokenHandleStale(account_id_);
+  token_handle_store->MaybeFetchTokenHandle(
+      &token_handle_mapping_store_, GetSharedURLLoaderFactory(), account_id_,
+      kFakeAccessToken, kFakeRefreshTokenHash);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return url_loader_factory_.pending_requests()->size() == 2u; }));
+
+  // Queue both Mojo responses in the same turn (fetch first, then check) so the
+  // check's completion task is already queued when `OnFetchToken` retires it.
+  EnqueuePendingResponse(
+      (*url_loader_factory_.pending_requests())[1],
+      GetTokenInfoFetchResponse(kFakeEmail, kFakeOtherToken));
+  EnqueuePendingResponse(
+      (*url_loader_factory_.pending_requests())[0],
+      GetValidTokenInfoResponse(kFakeEmail, /*expires_in=*/1000));
+
+  EXPECT_TRUE(future.Wait());
+  base::test::TestFuture<void> pending_tasks_drained;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, pending_tasks_drained.GetCallback());
+  EXPECT_TRUE(pending_tasks_drained.Wait());
+  EXPECT_EQ(account_id_, future.Get<AccountId>());
+  EXPECT_EQ(kFakeOtherToken, future.Get<std::string>());
+  EXPECT_FALSE(future.Get<bool>());
 }
 
 TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
