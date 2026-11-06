@@ -276,6 +276,7 @@ void TransformTree::UpdateTransforms(
   TransformNode& node = MutableNode(id);
   TransformNode& parent_node = MutableParent(node);
   gfx::Transform old_to_parent = node.to_parent;
+  gfx::Transform old_to_screen = ToScreen(id);
   gfx::Vector2dF old_snap_amount = node.snap_amount;
   // TODO(flackr): Only dirty when scroll offset changes.
   if (node.sticky_position_constraint_id >= 0 ||
@@ -292,13 +293,13 @@ void TransformTree::UpdateTransforms(
   UpdateNodeAndAncestorsAreAnimatedOrInvertible(&node, parent_node);
   UpdateNodeOrAncestorsWillChangeTransform(&node, parent_node);
 
-  // If `node` has been depended by a previous node and neither its `to_parent`
-  // nor its `snap_amount` is changed, the depending node actually got correct
-  // data, so remove `id` from `stale_forward_dependencies`. Note that we
-  // should check all changes that may affect the depending transform node.
+  // If `node` has been depended by a previous node and none of its `to_parent`,
+  // `to_screen`, or `snap_amount` is changed, the depending node actually got
+  // correct data, so remove `id` from `stale_forward_dependencies`. Note that
+  // we should check all changes that may affect the depending transform node.
   // For now forward dependency only happens in AnchorPositionOffset().
   if (update_data && node.to_parent == old_to_parent &&
-      node.snap_amount == old_snap_amount) {
+      ToScreen(id) == old_to_screen && node.snap_amount == old_snap_amount) {
     update_data->stale_forward_dependencies.erase(id);
   }
 
