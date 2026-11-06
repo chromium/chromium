@@ -30,6 +30,7 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
@@ -1392,6 +1393,7 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
   const bool use_d3d11 = GetParam();
   factory_.set_use_d3d11_with_media_foundation_for_testing(use_d3d11);
 
+  base::HistogramTester histogram_tester;
   std::vector<VideoCaptureDeviceInfo> devices_info;
   base::RunLoop run_loop;
   factory_.GetDevicesInfo(base::BindLambdaForTesting(
@@ -1400,6 +1402,13 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
         run_loop.Quit();
       }));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.Win.DeviceEnumeration.Duration."
+      "DevicesWithCapabilities",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.Win.DeviceEnumeration.Duration.DevicesOnly", 0);
 
   EXPECT_EQ(devices_info.size(), 6U);
   for (auto it = devices_info.begin(); it != devices_info.end(); it++) {
@@ -1633,6 +1642,7 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesOnly) {
 
   factory_.set_use_d3d11_with_media_foundation_for_testing(GetParam());
 
+  base::HistogramTester histogram_tester;
   std::vector<VideoCaptureDeviceInfo> devices_info;
   base::RunLoop run_loop;
   factory_.GetDevicesInfo(
@@ -1644,6 +1654,13 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesOnly) {
             run_loop.Quit();
           }));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.Win.DeviceEnumeration.Duration.DevicesOnly", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.Win.DeviceEnumeration.Duration."
+      "DevicesWithCapabilities",
+      0);
 
   // Return the complete list without creating Media Foundation device sources.
   EXPECT_EQ(devices_info.size(), 6U);
@@ -1686,6 +1703,7 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest,
 
   factory_.set_use_d3d11_with_media_foundation_for_testing(GetParam());
 
+  base::HistogramTester histogram_tester;
   std::vector<VideoCaptureDeviceInfo> devices_info;
   base::RunLoop run_loop;
   factory_.GetDevicesInfo(
@@ -1697,6 +1715,13 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest,
             run_loop.Quit();
           }));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.Win.DeviceEnumeration.Duration."
+      "DevicesWithCapabilities",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.Win.DeviceEnumeration.Duration.DevicesOnly", 0);
 
   EXPECT_GT(factory_.create_device_source_count(), 0);
   iterator it = FindDeviceInRange(devices_info.begin(), devices_info.end(),

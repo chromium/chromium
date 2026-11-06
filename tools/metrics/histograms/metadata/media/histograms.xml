@@ -8685,6 +8685,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.VideoCapture.Win.DeviceEnumeration.Duration{VideoCaptureDeviceEnumerationMode}"
+    units="ms" expires_after="2027-05-01">
+  <owner>ilnik@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <summary>
+    Duration of completed camera enumerations in the Windows capture device
+    factory, including empty results and UWP error fallbacks. Measured from the
+    start of enumeration on the COM sequence until the result is posted to the
+    origin sequence. Covers {VideoCaptureDeviceEnumerationMode}.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.DeviceFactory.CaptureApi"
     enum="VideoCaptureApi" expires_after="2027-12-14">
   <owner>ilnik@google.com</owner>
