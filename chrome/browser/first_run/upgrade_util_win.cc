@@ -25,21 +25,18 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "base/win/registry.h"
@@ -134,7 +131,6 @@ void CreateAndMarshalGoogleUpdate3Web(
 // without a timeout.
 Microsoft::WRL::ComPtr<IUnknown> CreateGoogleUpdate3Web() {
   constexpr int kDefaultTimeoutIncrementSeconds = 15;
-  constexpr base::TimeDelta kMaxTimeAfterSystemStartup = base::Seconds(150);
 
   auto result = base::MakeRefCounted<CreateGoogleUpdate3WebResult>();
   if (base::ThreadPool::CreateCOMSTATaskRunner(
@@ -149,15 +145,7 @@ Microsoft::WRL::ComPtr<IUnknown> CreateGoogleUpdate3Web() {
             .value_or(base::Value(kDefaultTimeoutIncrementSeconds))
             .GetIfInt()
             .value_or(kDefaultTimeoutIncrementSeconds));
-    const base::ElapsedTimer timer;
-    const bool is_at_startup =
-        base::SysInfo::Uptime() <= kMaxTimeAfterSystemStartup;
     if (!result->completion_event.TimedWait(timeout)) {
-      base::UmaHistogramMediumTimes(
-          is_at_startup
-              ? "Startup.CreateProcessLauncher2.TimedWaitFailedAtStartup"
-              : "Startup.CreateProcessLauncher2.TimedWaitFailed",
-          timer.Elapsed());
       creation_timeout.Set(base::Value(static_cast<int>(timeout.InSeconds()) +
                                        kDefaultTimeoutIncrementSeconds));
       TRACE_EVENT_INSTANT(
@@ -169,11 +157,6 @@ Microsoft::WRL::ComPtr<IUnknown> CreateGoogleUpdate3Web() {
     if (!result->stream) {
       return {};
     }
-    base::UmaHistogramMediumTimes(
-        is_at_startup
-            ? "Startup.CreateProcessLauncher2.TimedWaitSucceededAtStartup"
-            : "Startup.CreateProcessLauncher2.TimedWaitSucceeded",
-        timer.Elapsed());
 
     Microsoft::WRL::ComPtr<IUnknown> unknown;
     const HRESULT hr =

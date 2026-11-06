@@ -1127,25 +1127,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.CreateProcessLauncher2.{Status}" units="ms"
-    expires_after="2025-02-05">
-  <owner>ganesh@chromium.org</owner>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    Records the time it took for the creation attempt of the ProcessLauncher COM
-    class when {Status}. The `AtStartup` variants record the creation attempt
-    times for when Windows has just started up, and the non-`AtStartup` variants
-    record the creation attempt times for all the other cases. Only recorded on
-    Windows.
-  </summary>
-  <token key="Status">
-    <variant name="TimedWaitFailed"/>
-    <variant name="TimedWaitFailedAtStartup"/>
-    <variant name="TimedWaitSucceeded"/>
-    <variant name="TimedWaitSucceededAtStartup"/>
-  </token>
-</histogram>
-
 <histogram name="Startup.DirectLaunch.PayloadResult"
     enum="DirectLaunchPayloadResult" expires_after="2027-09-01">
   <owner>fdoray@chromium.org</owner>
