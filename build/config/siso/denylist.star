@@ -71,6 +71,11 @@ def __step_config(ctx, step_config):
         "third_party/dawn/webgpu-cts/scripts/gen_ts_dep_lists.py",
         "third_party/devtools-frontend/src/scripts/build/build_inspector_overlay.py",
         "third_party/devtools-frontend/src/scripts/build/typescript/generate_indexer_tsconfig.py",
+        # Dynamically reads files listed in JSON metadata files (expected_grd_files.json
+        # and remote_files.json generated via GN data_keys) without declaring them as
+        # action inputs (relying on depfiles instead), making it incompatible with RBE
+        # sandboxes on clean builds.
+        "third_party/devtools-frontend/src/scripts/build/zip_devtools_frontend.py",
         "third_party/inspector_protocol/check_protocol_compatibility.py",
         "third_party/inspector_protocol/code_generator.py",
         "third_party/libei/scanner.py",
