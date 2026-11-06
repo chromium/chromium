@@ -41,6 +41,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/host/glic_provider_change_relaunch.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
@@ -4151,6 +4152,48 @@ TEST_F(GlicEnablingGeicPolicyGlicDisabledTest,
 
   EXPECT_EQ(GlicEnabling::GetPendingProviderChange(profile()),
             GlicProviderChange::kGeicToGemini);
+}
+
+// The relaunch button can't restart Chrome unless a provider change is pending.
+TEST_F(GlicEnablingGeicPolicyTest,
+       RelaunchForProviderChange_DoesNothingWithoutPendingChange) {
+  base::test::ScopedFeatureList feature_list(
+      features::kGeicProviderChangePrompt);
+  ASSERT_EQ(GlicEnabling::GetPendingProviderChange(profile()),
+            GlicProviderChange::kNone);
+  base::UserActionTester user_action_tester;
+  int restart_count = 0;
+  auto restart_override = SetRestartCallbackForTesting(
+      base::BindLambdaForTesting([&] { ++restart_count; }));
+
+  MaybeRelaunchForProviderChange(profile());
+
+  EXPECT_EQ(restart_count, 0);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("Glic.ProviderChange.RelaunchClicked"),
+      0);
+}
+
+TEST_F(GlicEnablingGeicPolicyTest,
+       RelaunchForProviderChange_RestartsWithPendingChange) {
+  base::test::ScopedFeatureList feature_list(
+      features::kGeicProviderChangePrompt);
+  static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+      profile()->GetPrefs())
+      ->RemoveManagedPref(prefs::kGlicGeminiEnterpriseUrl);
+  ASSERT_EQ(GlicEnabling::GetPendingProviderChange(profile()),
+            GlicProviderChange::kGeicToGemini);
+  base::UserActionTester user_action_tester;
+  int restart_count = 0;
+  auto restart_override = SetRestartCallbackForTesting(
+      base::BindLambdaForTesting([&] { ++restart_count; }));
+
+  MaybeRelaunchForProviderChange(profile());
+
+  EXPECT_EQ(restart_count, 1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("Glic.ProviderChange.RelaunchClicked"),
+      1);
 }
 
 // Like `GlicEnablingGeicPolicyTest`, but with the `enabled` param of

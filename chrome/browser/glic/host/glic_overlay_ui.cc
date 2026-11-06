@@ -11,6 +11,8 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/resources/glic_resources.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
@@ -84,6 +86,24 @@ GlicOverlayUI::GlicOverlayUI(content::WebUI* web_ui)
       {"locationMismatchNoticeHeader",
        IDS_GLIC_LOCATION_MISMATCH_NOTICE_HEADER},
       {"locationMismatchNotice", IDS_GLIC_LOCATION_MISMATCH_NOTICE},
+      {"relaunchRequiredGeminiToGeicNoticeHeader",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEMINI_TO_GEIC_HEADER},
+      {"relaunchRequiredGeminiToGeicNotice",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEMINI_TO_GEIC_BODY},
+      {"relaunchRequiredGeicToGeminiNoticeHeader",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_GEMINI_HEADER},
+      {"relaunchRequiredGeicToGeminiNotice1",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_GEMINI_BODY_1},
+      {"relaunchRequiredGeicToGeminiNotice2",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_GEMINI_BODY_2},
+      {"relaunchRequiredGeicToGeminiNotice3",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_GEMINI_BODY_3},
+      {"relaunchRequiredGeicToOtherGeicNoticeHeader",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_OTHER_GEIC_HEADER},
+      {"relaunchRequiredGeicToOtherGeicNotice",
+       IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_OTHER_GEIC_BODY},
+      {"relaunchRequiredNoticeActionButton",
+       IDS_GLIC_RELAUNCH_REQUIRED_ACTION_BUTTON},
       {"getHelp", IDS_GLIC_GET_HELP},
   };
 
@@ -99,6 +119,8 @@ GlicOverlayUI::GlicOverlayUI(content::WebUI* web_ui)
                               IDR_GLIC_GLIC_OVERLAY_HTML);
   source->AddResourcePath("overlay", IDR_GLIC_GLIC_OVERLAY_HTML);
   source->AddResourcePath("overlay/", IDR_GLIC_GLIC_OVERLAY_HTML);
+  source->AddResourcePath("geic_spark.png",
+                          GetResourceID(IDR_GEIC_BUTTON_ICON));
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean("isNoWebview", true);

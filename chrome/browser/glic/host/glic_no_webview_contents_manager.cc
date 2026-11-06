@@ -22,6 +22,7 @@
 #include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_overlay_ui.h"
+#include "chrome/browser/glic/host/glic_provider_change_relaunch.h"
 #include "chrome/browser/glic/host/glic_pwc_permission_delegate.h"
 #include "chrome/browser/glic/host/glic_pwc_policy_delegate.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
@@ -174,6 +175,9 @@ bool IsTransientError(mojom::ErrorPanelType error_type) {
     case mojom::ErrorPanelType::kDisabledByAdminWithLink:
     case mojom::ErrorPanelType::kSignIn:
     case mojom::ErrorPanelType::kLocationMismatch:
+    case mojom::ErrorPanelType::kPendingProviderChangeGeminiToGeic:
+    case mojom::ErrorPanelType::kPendingProviderChangeGeicToGemini:
+    case mojom::ErrorPanelType::kPendingProviderChangeGeicToOtherGeic:
       return false;
   }
 }
@@ -195,6 +199,10 @@ const char* ErrorPanelTypeToHistogramSuffix(mojom::ErrorPanelType error_type) {
       return "SignIn";
     case mojom::ErrorPanelType::kLocationMismatch:
       return "LocationMismatch";
+    case mojom::ErrorPanelType::kPendingProviderChangeGeminiToGeic:
+    case mojom::ErrorPanelType::kPendingProviderChangeGeicToGemini:
+    case mojom::ErrorPanelType::kPendingProviderChangeGeicToOtherGeic:
+      return "PendingProviderChange";
   }
 }
 
@@ -575,6 +583,10 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::
   }
   owner_->StopGuestBootstrap();
   owner_->ShowGuestDirectly(GuestState::kGuestError);
+}
+
+void GlicNoWebviewContentsManager::OverlayContentsManager::OnRelaunchClicked() {
+  MaybeRelaunchForProviderChange(profile_);
 }
 
 GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(

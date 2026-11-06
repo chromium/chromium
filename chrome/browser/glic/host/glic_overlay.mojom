@@ -13,6 +13,9 @@ enum ErrorPanelType {
   kDisabledByAdminWithLink = 5,
   kSignIn = 6,
   kLocationMismatch = 7,
+  kPendingProviderChangeGeminiToGeic = 8,
+  kPendingProviderChangeGeicToGemini = 9,
+  kPendingProviderChangeGeicToOtherGeic = 10,
 };
 
 enum LoadingStyle {
@@ -67,6 +70,10 @@ interface GlicOverlayPageHandler {
   // Called when the user clicks the "Show error page" button on the error
   // panel.
   OnShowErrorClicked();
+
+  // Called when the user clicks the relaunch button on the relaunch-required
+  // panel.
+  OnRelaunchClicked();
 };
 
 // Factory to bind the page and page handler.

@@ -20,6 +20,33 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {browserProxyFactory, ErrorPanelType, LoadingStyle} from './glic_overlay.mojom-webui.js';
 import type {BrowserProxy, OverlayState} from './glic_overlay.mojom-webui.js';
 
+type RelaunchPanelType =
+    ErrorPanelType.kPendingProviderChangeGeminiToGeic|
+    ErrorPanelType.kPendingProviderChangeGeicToGemini|
+    ErrorPanelType.kPendingProviderChangeGeicToOtherGeic;
+
+// Each body entry is shown as a separate paragraph. glic_overlay.html has
+// three paragraph elements (relaunchBody1-3), so a body has at most three.
+const RELAUNCH_COPY:
+    Record<RelaunchPanelType, {header: string, body: string[]}> = {
+      [ErrorPanelType.kPendingProviderChangeGeminiToGeic]: {
+        header: 'relaunchRequiredGeminiToGeicNoticeHeader',
+        body: ['relaunchRequiredGeminiToGeicNotice'],
+      },
+      [ErrorPanelType.kPendingProviderChangeGeicToGemini]: {
+        header: 'relaunchRequiredGeicToGeminiNoticeHeader',
+        body: [
+          'relaunchRequiredGeicToGeminiNotice1',
+          'relaunchRequiredGeicToGeminiNotice2',
+          'relaunchRequiredGeicToGeminiNotice3',
+        ],
+      },
+      [ErrorPanelType.kPendingProviderChangeGeicToOtherGeic]: {
+        header: 'relaunchRequiredGeicToOtherGeicNoticeHeader',
+        body: ['relaunchRequiredGeicToOtherGeicNotice'],
+      },
+    };
+
 interface PageElementTypes {
   panelContainer: HTMLElement;
   loadingPanel: HTMLElement;
@@ -30,6 +57,11 @@ interface PageElementTypes {
   disabledByAdminPanel: HTMLElement;
   signInPanel: HTMLElement;
   locationMismatchPanel: HTMLElement;
+  relaunchRequiredPanel: HTMLElement;
+  relaunchHeadline: HTMLElement;
+  relaunchBody1: HTMLElement;
+  relaunchBody2: HTMLElement;
+  relaunchBody3: HTMLElement;
   retry: HTMLElement;
   reload: HTMLElement;
   showError: HTMLElement;
@@ -38,6 +70,7 @@ interface PageElementTypes {
   ineligibleAccountHelpButton: HTMLElement;
   locationMismatchHelpButton: HTMLElement;
   disabledByAdminCloseButton: HTMLElement;
+  relaunchButton: HTMLElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -88,6 +121,18 @@ export class GlicOverlayElement extends HTMLElement {
     }
   }
 
+  private showRelaunch(type: RelaunchPanelType): void {
+    const {header, body} = RELAUNCH_COPY[type];
+    $.relaunchHeadline.textContent = loadTimeData.getString(header);
+    const paragraphs = [$.relaunchBody1, $.relaunchBody2, $.relaunchBody3];
+    paragraphs.forEach((paragraph, i) => {
+      const key = body[i];
+      paragraph.textContent = key ? loadTimeData.getString(key) : '';
+      paragraph.hidden = !key;
+    });
+    $.relaunchRequiredPanel.hidden = false;
+  }
+
   private showError(errorType: ErrorPanelType): void {
     switch (errorType) {
       case ErrorPanelType.kOffline:
@@ -117,6 +162,11 @@ export class GlicOverlayElement extends HTMLElement {
         break;
       case ErrorPanelType.kLocationMismatch:
         $.locationMismatchPanel.hidden = false;
+        break;
+      case ErrorPanelType.kPendingProviderChangeGeminiToGeic:
+      case ErrorPanelType.kPendingProviderChangeGeicToGemini:
+      case ErrorPanelType.kPendingProviderChangeGeicToOtherGeic:
+        this.showRelaunch(errorType);
         break;
       default: {
         const _exhaustiveCheck: never = errorType;
@@ -179,6 +229,10 @@ export class GlicOverlayElement extends HTMLElement {
 
     $.disabledByAdminPanel.querySelector('a')?.addEventListener('click', () => {
       this.browserProxy.handler.onDisabledByAdminLinkClicked();
+    });
+
+    $.relaunchButton.addEventListener('click', () => {
+      this.browserProxy.handler.onRelaunchClicked();
     });
   }
 }

@@ -234,6 +234,32 @@ webview {
   display: none;
 }
 
+#relaunchRequiredPanel .relaunch-card {
+  align-items: center;
+  background-color: var(--cr-fallback-color-surface1);
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-width: 356px;
+  padding: 24px;
+  width: 100%;
+}
+
+#relaunchRequiredPanel .spark-icon {
+  height: 32px;
+  margin-bottom: 12px;
+  width: 32px;
+}
+
+#relaunchRequiredPanel .relaunch-body {
+  margin-bottom: 8px;
+}
+
+#relaunchRequiredPanel .notice-message {
+  color: var(--cr-fallback-color-on-surface-variant);
+}
+
 .dialog p {
   margin: 0 0 8px;
 }

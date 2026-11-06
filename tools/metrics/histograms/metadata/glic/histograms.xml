@@ -3346,6 +3346,8 @@ ApiRequestType variants; see go/geic-metrics-split. -->
                  guest"/>
     <variant name="LocationMismatch" summary="location mismatch error panel"/>
     <variant name="Offline" summary="offline error panel"/>
+    <variant name="PendingProviderChange"
+        summary="pending provider change (relaunch prompt) error panel"/>
     <variant name="SignIn" summary="sign-in error panel"/>
     <variant name="Unavailable" summary="unavailable error panel"/>
   </token>

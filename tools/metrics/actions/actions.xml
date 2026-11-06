@@ -14350,6 +14350,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.ProviderChange.RelaunchClicked">
+  <owner>alexwchen@google.com</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Recorded when the user clicks the relaunch button on the Glic
+    relaunch-required panel to apply a pending provider change.
+  </description>
+</action>
+
 <action name="Glic.Settings.BottomBarGlicButton.Disabled">
   <owner>madhavpruthi@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>

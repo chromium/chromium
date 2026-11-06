@@ -126,6 +126,33 @@
   <message name="IDS_GLIC_INELIGIBLE_ACCOUNT_NOTICE" desc="This is the text of the Gemini ineligible account notice.">
     Check that you're eligible and meet the requirements
   </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEMINI_TO_GEIC_HEADER" translateable="false" desc="Headline on the notice shown in the Gemini side panel when an administrator has configured Gemini Enterprise and Chrome must be relaunched to apply the change.">
+    Relaunch to start browsing with Gemini Enterprise
+  </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEMINI_TO_GEIC_BODY" translateable="false" desc="Body text on the notice shown in the Gemini side panel when an administrator has configured Gemini Enterprise and Chrome must be relaunched to apply the change.">
+    Ask Gemini about anything as you browse, and get answers grounded in files and services across your organization
+  </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_ACTION_BUTTON" translateable="false" desc="Button label on the notice shown in the Gemini side panel that relaunches Chrome to apply a provider change.">
+    Relaunch Chrome
+  </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_GEMINI_HEADER" translateable="false" desc="Headline on the notice shown in the Gemini Enterprise side panel when an administrator has turned off Gemini Enterprise and Chrome must be relaunched to apply the change.">
+    Gemini Enterprise not available for Gemini in Chrome
+  </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_GEMINI_BODY_1" translateable="false" desc="First paragraph of the body text on the notice shown in the Gemini Enterprise side panel when an administrator has turned off Gemini Enterprise but still allows Gemini in Chrome, and Chrome must be relaunched to switch to Gemini in Chrome. Explains why Gemini Enterprise is unavailable.">
+    Gemini Enterprise in Chrome isn't available due to your organization's policies.
+  </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_GEMINI_BODY_2" translateable="false" desc="Second paragraph of the body text on the notice shown in the Gemini Enterprise side panel when an administrator has turned off Gemini Enterprise but still allows Gemini in Chrome. Explains what changes after switching to Gemini in Chrome.">
+    You can continue using Gemini in Chrome, but it will no longer find or reference information managed by your organization. Your chat history may not carry over.
+  </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_GEMINI_BODY_3" translateable="false" desc="Third paragraph of the body text on the notice shown in the Gemini Enterprise side panel when an administrator has turned off Gemini Enterprise but still allows Gemini in Chrome. Shown above a 'Relaunch Chrome' button.">
+    Switching requires relaunching Chrome.
+  </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_OTHER_GEIC_HEADER" translateable="false" desc="Headline on the notice shown in the Gemini Enterprise side panel when an administrator has changed the Gemini Enterprise configuration and Chrome must be relaunched to apply the change.">
+    Relaunch required to continue browsing with Gemini
+  </message>
+  <message name="IDS_GLIC_RELAUNCH_REQUIRED_GEIC_TO_OTHER_GEIC_BODY" translateable="false" desc="Body text on the notice shown in the Gemini Enterprise side panel when an administrator has changed the Gemini Enterprise configuration and Chrome must be relaunched to apply the change.">
+    Your organization has updated policies and requires you to relaunch Chrome to continue using Gemini Enterprise in Chrome
+  </message>
 
   <message name="IDS_GLIC_MANAGED_BY_ORGANIZATION" desc="Text shown when the feature is managed by the organization but not disabled." formatter_data="android_java">
     Managed by your organization

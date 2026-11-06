@@ -144,6 +144,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     void OnDisabledByAdminLinkClicked() override;
     void OnClosePanelClicked() override;
     void OnShowErrorClicked() override;
+    void OnRelaunchClicked() override;
 
     void OpenUrlAndClosePanel(const GURL& url);
 

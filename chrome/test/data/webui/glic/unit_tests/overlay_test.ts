@@ -4,6 +4,7 @@
 
 import {browserProxyFactory, ErrorPanelType, GlicOverlayPageHandlerRemote, LoadingStyle} from 'chrome://glic/glic_overlay.js';
 import type {GlicOverlayElement, GlicOverlayPageRemote} from 'chrome://glic/glic_overlay.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -70,6 +71,18 @@ suite('GlicOverlayTest', () => {
         id: 'disabledByAdminPanel',
       },
       {type: ErrorPanelType.kSignIn, id: 'signInPanel'},
+      {
+        type: ErrorPanelType.kPendingProviderChangeGeminiToGeic,
+        id: 'relaunchRequiredPanel',
+      },
+      {
+        type: ErrorPanelType.kPendingProviderChangeGeicToGemini,
+        id: 'relaunchRequiredPanel',
+      },
+      {
+        type: ErrorPanelType.kPendingProviderChangeGeicToOtherGeic,
+        id: 'relaunchRequiredPanel',
+      },
       {type: ErrorPanelType.kLocationMismatch, id: 'locationMismatchPanel'},
     ];
 
@@ -98,12 +111,60 @@ suite('GlicOverlayTest', () => {
     }
   });
 
+  test('ShowRelaunchPanelCopyForProviderChange', async () => {
+    const cases:
+        Array<{type: ErrorPanelType, header: string, body: string[]}> = [
+          {
+            type: ErrorPanelType.kPendingProviderChangeGeminiToGeic,
+            header: 'relaunchRequiredGeminiToGeicNoticeHeader',
+            body: ['relaunchRequiredGeminiToGeicNotice'],
+          },
+          {
+            type: ErrorPanelType.kPendingProviderChangeGeicToGemini,
+            header: 'relaunchRequiredGeicToGeminiNoticeHeader',
+            body: [
+              'relaunchRequiredGeicToGeminiNotice1',
+              'relaunchRequiredGeicToGeminiNotice2',
+              'relaunchRequiredGeicToGeminiNotice3',
+            ],
+          },
+          {
+            type: ErrorPanelType.kPendingProviderChangeGeicToOtherGeic,
+            header: 'relaunchRequiredGeicToOtherGeicNoticeHeader',
+            body: ['relaunchRequiredGeicToOtherGeicNotice'],
+          },
+        ];
+
+    // Run the three-paragraph case between single-paragraph cases to check
+    // that unused paragraphs are hidden again.
+    for (const {type, header, body} of cases) {
+      remote.setOverlayState({error: type});
+      await remote.$.flushForTesting();
+
+      assertFalse(getElement('relaunchRequiredPanel').hidden);
+      assertEquals(
+          loadTimeData.getString(header),
+          getElement('relaunchHeadline').textContent);
+      for (let i = 0; i < 3; i++) {
+        const paragraph = getElement(`relaunchBody${i + 1}`);
+        const key = body[i];
+        if (key) {
+          assertFalse(paragraph.hidden);
+          assertEquals(loadTimeData.getString(key), paragraph.textContent);
+        } else {
+          assertTrue(paragraph.hidden);
+        }
+      }
+    }
+  });
+
   test('ButtonClicksNotifyHandler', () => {
     const clickCases:
         Array<{id: string, method: keyof GlicOverlayPageHandlerRemote}> = [
           {id: 'retry', method: 'onRetryClicked'},
           {id: 'reload', method: 'onRetryClicked'},
           {id: 'signInButton', method: 'onSignInClicked'},
+          {id: 'relaunchButton', method: 'onRelaunchClicked'},
           {id: 'profilePickerButton', method: 'onProfilePickerClicked'},
           {
             id: 'ineligibleAccountHelpButton',
