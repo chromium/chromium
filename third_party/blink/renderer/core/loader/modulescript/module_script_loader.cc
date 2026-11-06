@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -16,6 +19,7 @@
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/core/script/wasm_module_script.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -28,6 +32,57 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+
+// The creation params of a JavaScript module script whose creation is waiting
+// for NotifyCacheConsumeFinished(). ModuleScriptCreationParams holds its
+// garbage-collected objects via Persistent and so cannot itself be a field of
+// ModuleScriptLoader; this holds the same state via Member instead.
+class ModuleScriptLoader::PendingParams final
+    : public GarbageCollected<ModuleScriptLoader::PendingParams> {
+ public:
+  explicit PendingParams(const ModuleScriptCreationParams& params)
+      : source_url_(params.SourceURL()),
+        base_url_(params.BaseURL()),
+        source_location_type_(params.SourceLocationType()),
+        source_text_(params.GetSourceText()),
+        cache_handler_(params.CacheHandler()),
+        response_referrer_policy_(params.ResponseReferrerPolicy()),
+        source_map_url_(params.SourceMapURL()),
+        script_streamer_(params.GetScriptStreamer()),
+        not_streaming_reason_(params.NotStreamingReason()),
+        import_phase_(params.GetModuleImportPhase()),
+        cache_consumer_(params.CacheConsumer()) {
+    CHECK_EQ(params.GetModuleType(), ResolvedModuleType::kJavaScript);
+  }
+
+  ModuleScriptCreationParams ToParams() const {
+    return ModuleScriptCreationParams(
+        source_url_, base_url_, source_location_type_,
+        ResolvedModuleType::kJavaScript, ParkableString(source_text_),
+        cache_handler_.Get(), response_referrer_policy_, source_map_url_,
+        script_streamer_.Get(), not_streaming_reason_, import_phase_,
+        cache_consumer_.Get());
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(cache_handler_);
+    visitor->Trace(script_streamer_);
+    visitor->Trace(cache_consumer_);
+  }
+
+ private:
+  const KURL source_url_;
+  const KURL base_url_;
+  const ScriptSourceLocationType source_location_type_;
+  const ParkableString source_text_;
+  const Member<CachedMetadataHandler> cache_handler_;
+  const network::mojom::ReferrerPolicy response_referrer_policy_;
+  const String source_map_url_;
+  const Member<ScriptStreamer> script_streamer_;
+  const ScriptStreamer::NotStreamingReason not_streaming_reason_;
+  const ModuleImportPhase import_phase_;
+  const Member<ScriptCacheConsumer> cache_consumer_;
+};
 
 ModuleScriptLoader::ModuleScriptLoader(Modulator* modulator,
                                        const ScriptFetchOptions& options,
@@ -359,6 +414,35 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       // of creating a JavaScript module script given sourceText,
       // settingsObject, response's URL, and options/</spec>
       //
+      if (params.CacheConsumer()) {
+        // [nospec] A V8 code cache for this module script is being consumed
+        // off the main thread, on unchecked cached metadata. Check it now and,
+        // if it passed, create the module script (which compiles it with the
+        // consumed code cache) once the consumer has finished;
+        // NotifyCacheConsumeFinished() may be called synchronously from here.
+        params.CacheHandler()->Check(
+            ExecutionContext::GetCodeCacheHostFromContext(
+                ExecutionContext::From(modulator_->GetScriptState())),
+            params.GetSourceText());
+      }
+      if (params.CacheConsumer() &&
+          V8CodeCache::HasCodeCache(params.CacheHandler(),
+                                    CachedMetadataHandler::kCrashIfUnchecked)) {
+        CHECK(!params_waiting_for_cache_consumer_);
+        params_waiting_for_cache_consumer_ =
+            MakeGarbageCollected<PendingParams>(params);
+        ScriptState* script_state = modulator_->GetScriptState();
+        v8::Isolate* isolate = script_state->GetIsolate();
+        ScriptState::Scope scope(script_state);
+        params.CacheConsumer()->NotifyClientWaiting(
+            this, params.CacheHandler(),
+            V8String(isolate, params.GetSourceText()),
+            JSModuleScript::CreateScriptOrigin(
+                isolate, params, ReferrerScriptInfo(params.BaseURL(), options_),
+                TextPosition::MinimumPosition()),
+            modulator_->TaskRunner());
+        return;
+      }
       module_script_ = JSModuleScript::Create(params, modulator_, options_);
       break;
     case ResolvedModuleType::kWasm: {
@@ -397,6 +481,19 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
   AdvanceState(State::kFinished, params.GetModuleImportPhase());
 }
 
+void ModuleScriptLoader::NotifyCacheConsumeFinished() {
+  CHECK(params_waiting_for_cache_consumer_);
+  ModuleScriptCreationParams params =
+      params_waiting_for_cache_consumer_.Release()->ToParams();
+  // [nospec] Abort the steps if the browsing context is discarded.
+  if (!modulator_->HasValidContext()) {
+    AdvanceState(State::kFinished);
+    return;
+  }
+  module_script_ = JSModuleScript::Create(params, modulator_, options_);
+  AdvanceState(State::kFinished, params.GetModuleImportPhase());
+}
+
 void ModuleScriptLoader::NotifyWasmStreamingFinished(
     const std::variant<v8::Local<v8::WasmModuleObject>, v8::Local<v8::Value>>&
         wasm_module_or_error,
@@ -418,6 +515,7 @@ void ModuleScriptLoader::Trace(Visitor* visitor) const {
   visitor->Trace(registry_);
   visitor->Trace(client_);
   visitor->Trace(module_fetcher_);
+  visitor->Trace(params_waiting_for_cache_consumer_);
 }
 
 }  // namespace blink

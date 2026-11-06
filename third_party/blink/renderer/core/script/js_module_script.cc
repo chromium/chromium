@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/script/js_module_script.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
@@ -11,6 +12,7 @@
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "v8/include/v8.h"
@@ -131,6 +133,27 @@ JSModuleScript* JSModuleScript::Create(
 
   // <spec step="11">Return script.</spec>
   return script;
+}
+
+// static
+v8::ScriptOrigin JSModuleScript::CreateScriptOrigin(
+    v8::Isolate* isolate,
+    const ModuleScriptCreationParams& params,
+    const ReferrerScriptInfo& referrer_info,
+    const TextPosition& start_position) {
+  // |resource_is_shared_cross_origin| is always true and |resource_is_opaque|
+  // is always false because CORS is enforced to module scripts.
+  return v8::ScriptOrigin(
+      V8String(isolate, params.SourceURL()),
+      start_position.line_.ZeroBasedInt(),
+      start_position.column_.ZeroBasedInt(),
+      true,  // resource_is_shared_cross_origin
+      -1,    // script id
+      V8String(isolate, params.SourceMapURL()),
+      false,  // resource_is_opaque
+      false,  // is_wasm
+      true,   // is_module
+      referrer_info.ToV8HostDefinedOptions(isolate, params.SourceURL()));
 }
 
 JSModuleScript* JSModuleScript::CreateForTest(

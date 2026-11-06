@@ -187,9 +187,6 @@ ScriptResource::ScriptResource(
 
   if (!consume_code_cache_off_thread_enabled) {
     DisableOffThreadConsumeCache();
-  } else if (initial_request_script_type == mojom::blink::ScriptType::kModule) {
-    // TODO(leszeks): Enable off-thread cache consumption for modules.
-    DisableOffThreadConsumeCache();
   } else if (!isolate_if_main_thread_) {
     // If we have a null isolate disable off thread cache consumption.
     DisableOffThreadConsumeCache();
@@ -325,7 +322,8 @@ void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
     }
 
     // If `cached_metadata_handler_` has a valid code cache, use the code cache.
-    // Note that ClassicPendingScript::NotifyFinished runs
+    // Note that ClassicPendingScript::NotifyFinished and
+    // ModuleScriptLoader::NotifyFetchFinishedSuccess run
     // CachedMetadataHandler::Check() before calling
     // ScriptCacheConsumer::NotifyClientWaiting(), ensuring that
     // SourceTextAvailable() and MergeWithExistingScript() only run after the

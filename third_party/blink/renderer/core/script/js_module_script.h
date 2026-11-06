@@ -11,12 +11,14 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
 class KURL;
 class Modulator;
 class ModuleScriptCreationParams;
+class ReferrerScriptInfo;
 
 // JSModuleScript is a model object for the "JavaScript module script" spec
 // concept. https://html.spec.whatwg.org/C/#javascript-module-script
@@ -49,6 +51,14 @@ class CORE_EXPORT JSModuleScript final : public ModuleScript,
                  const TextPosition& start_position,
                  ModuleRecordProduceCacheData*);
   ~JSModuleScript() override = default;
+
+  // The v8::ScriptOrigin for the module script that Create() compiles from
+  // `params` (the module counterpart of ClassicScript::CreateScriptOrigin()).
+  static v8::ScriptOrigin CreateScriptOrigin(
+      v8::Isolate*,
+      const ModuleScriptCreationParams& params,
+      const ReferrerScriptInfo& referrer_info,
+      const TextPosition& start_position);
 
   void ProduceCache() override;
 

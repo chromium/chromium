@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
-#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -163,7 +162,9 @@ void ScriptCacheConsumer::Trace(Visitor* visitor) const {
 
 void ScriptCacheConsumer::NotifyClientWaiting(
     ScriptCacheConsumerClient* client,
-    ClassicScript* classic_script,
+    const CachedMetadataHandler* cache_handler,
+    v8::Local<v8::String> source_text,
+    const v8::ScriptOrigin& origin,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(IsMainThread());
 
@@ -176,17 +177,11 @@ void ScriptCacheConsumer::NotifyClientWaiting(
   CHECK(!finish_callback_task_runner_);
   finish_callback_task_runner_ = task_runner;
 
-  CHECK(V8CodeCache::HasCodeCache(classic_script->CacheHandler(),
+  CHECK(V8CodeCache::HasCodeCache(cache_handler,
                                   CachedMetadataHandler::kCrashIfUnchecked));
 
-  {
-    v8::HandleScope scope(isolate_);
-    const ParkableString& source_text = classic_script->SourceText();
-    v8::ScriptOrigin origin = classic_script->CreateScriptOrigin(isolate_);
-    if (consume_task_) {
-      consume_task_->SourceTextAvailable(
-          isolate_, V8String(isolate_, source_text), origin);
-    }
+  if (consume_task_) {
+    consume_task_->SourceTextAvailable(isolate_, source_text, origin);
   }
 
   State new_state = AdvanceState(State::kClientReady);

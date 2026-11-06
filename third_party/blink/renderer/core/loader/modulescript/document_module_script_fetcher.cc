@@ -104,13 +104,21 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
         kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
   }
 
+  // A V8 code cache for a JavaScript module script may already be being
+  // consumed off-thread; hand the consumer on so that module script creation
+  // waits for it and compiles with its result.
+  ScriptCacheConsumer* cache_consumer =
+      resolved_module_type == ResolvedModuleType::kJavaScript
+          ? script_resource->TakeCacheConsumer()
+          : nullptr;
+
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/url, /*base_url=*/url,
       ScriptSourceLocationType::kExternalFile, resolved_module_type.value(),
       script_resource->GetSourceTextOrWasmSource(resolved_module_type.value()),
       script_resource->CacheHandler(), response_referrer_policy,
       script_resource->GetResponse().HttpHeaderField(http_names::kSourceMap),
-      streamer, not_streamed_reason, import_phase_));
+      streamer, not_streamed_reason, import_phase_, cache_consumer));
 }
 
 void DocumentModuleScriptFetcher::Trace(Visitor* visitor) const {

@@ -52,10 +52,13 @@ void WorkletModuleScriptFetcher::Fetch(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
+  // The isolate is only used for streaming and for consuming a code cache off
+  // the main thread, and NotifyFinished() takes neither (the params may be
+  // passed to another thread), so pass none even for a main-thread worklet.
+  constexpr v8::Isolate* kNoIsolate = nullptr;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
-                        this, global_scope_->GetIsolate(),
-                        ScriptResource::kNoStreaming, kNoCompileHintsProducer,
-                        kNoCompileHintsConsumer,
+                        this, kNoIsolate, ScriptResource::kNoStreaming,
+                        kNoCompileHintsProducer, kNoCompileHintsConsumer,
                         v8_compile_hints::MagicCommentMode::kNone);
 }
 

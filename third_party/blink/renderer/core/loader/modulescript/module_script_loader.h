@@ -7,6 +7,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
@@ -32,6 +33,7 @@ enum class ModuleGraphLevel;
 // ModuleScriptLoader(s) should only be used via Modulator and its ModuleMap.
 class CORE_EXPORT ModuleScriptLoader final
     : public GarbageCollected<ModuleScriptLoader>,
+      public ScriptCacheConsumerClient,
       public ModuleScriptFetcher::Client {
   enum class State {
     kInitial,
@@ -69,6 +71,11 @@ class CORE_EXPORT ModuleScriptLoader final
       const KURL& source_url,
       const KURL& base_url);
 
+  // Implements ScriptCacheConsumerClient: the off-thread code cache consume
+  // task for a JavaScript module script has finished (see
+  // NotifyFetchFinishedSuccess()).
+  void NotifyCacheConsumeFinished() override;
+
   bool IsInitialState() const { return state_ == State::kInitial; }
   bool HasFinished() const { return state_ == State::kFinished; }
 
@@ -104,6 +111,9 @@ class CORE_EXPORT ModuleScriptLoader final
   Member<ModuleScriptLoaderRegistry> registry_;
   Member<ModuleScriptLoaderClient> client_;
   Member<ModuleScriptFetcher> module_fetcher_;
+  class PendingParams;
+  // Set while waiting for NotifyCacheConsumeFinished().
+  Member<PendingParams> params_waiting_for_cache_consumer_;
 #if DCHECK_IS_ON()
   KURL url_;
 #endif

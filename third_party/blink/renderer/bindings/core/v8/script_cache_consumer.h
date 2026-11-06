@@ -20,7 +20,7 @@ class SingleThreadTaskRunner;
 namespace blink {
 
 class CachedMetadata;
-class ClassicScript;
+class CachedMetadataHandler;
 class ScriptCacheConsumerClient;
 
 // A V8 code cache consumer for a script's code cache, which consumes the code
@@ -28,9 +28,10 @@ class ScriptCacheConsumerClient;
 // completed.
 //
 // ScriptCacheConsumer starts consuming unchecked CachedMetadata speculatively,
-// before the source is available. Once the resource finishes loading,
-// ClassicPendingScript::NotifyFinished() runs CachedMetadataHandler::Check()
-// before calling NotifyClientWaiting() (which enforces kCrashIfUnchecked). If
+// before the source is available. Once the resource finishes loading, the
+// client (ClassicPendingScript or ModuleScriptLoader) runs
+// CachedMetadataHandler::Check() before calling NotifyClientWaiting() (which
+// enforces kCrashIfUnchecked). If
 // Check() fails, the CachedMetadata is cleared and NotifyClientWaiting() is
 // never called, abandoning this consumer before SourceTextAvailable() or
 // MergeWithExistingScript() can run.
@@ -78,9 +79,15 @@ class CORE_EXPORT ScriptCacheConsumer final
   //   2) Otherwise, it updates the state and returns, Then, when the off-thread
   //      cache consume task completes, it will post a task that calls
   //      NotifyCacheConsumeFinished using the given task runner.
+  //
+  // `cache_handler` must hold a checked code cache, and `source_text` and
+  // `origin` must describe the script that will later be compiled with
+  // TakeV8ConsumeTask().
   void NotifyClientWaiting(
       ScriptCacheConsumerClient* client,
-      ClassicScript* classic_script,
+      const CachedMetadataHandler* cache_handler,
+      v8::Local<v8::String> source_text,
+      const v8::ScriptOrigin& origin,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Take ownership of the consume task, clearing it from the consumer so that

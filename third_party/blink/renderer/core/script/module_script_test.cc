@@ -4,11 +4,16 @@
 
 #include "third_party/blink/renderer/core/script/module_script.h"
 
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -105,6 +110,25 @@ ClassicScript* CreateClassicScript(const String& source_text,
                                SanitizeScriptErrors::kSanitize, cache_handler);
 }
 
+class StubScriptCacheConsumerClient final
+    : public GarbageCollected<StubScriptCacheConsumerClient>,
+      public ScriptCacheConsumerClient {
+ public:
+  explicit StubScriptCacheConsumerClient(base::OnceClosure finish_closure)
+      : finish_closure_(std::move(finish_closure)) {}
+
+  void NotifyCacheConsumeFinished() override {
+    cache_consume_finished_ = true;
+    std::move(finish_closure_).Run();
+  }
+
+  bool cache_consume_finished() const { return cache_consume_finished_; }
+
+ private:
+  base::OnceClosure finish_closure_;
+  bool cache_consume_finished_ = false;
+};
+
 static const int kScriptRepeatLength = 500;
 
 }  // namespace
@@ -124,16 +148,28 @@ class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
     return builder.ToString();
   }
 
-  static JSModuleScript* CreateJSModuleScript(
-      Modulator* modulator,
+  static ModuleScriptCreationParams CreateParams(
       const String& source_text,
-      CachedMetadataHandler* cache_handler) {
-    ModuleScriptCreationParams params(
+      CachedMetadataHandler* cache_handler,
+      ScriptCacheConsumer* cache_consumer = nullptr) {
+    return ModuleScriptCreationParams(
         KURL("https://fox.url/script.js"), KURL("https://fox.url/"),
         ScriptSourceLocationType::kInline, ResolvedModuleType::kJavaScript,
         ParkableString(source_text.Impl()->IsolatedCopy()), cache_handler,
-        network::mojom::ReferrerPolicy::kDefault, /*source_map_url=*/String());
-    return JSModuleScript::Create(params, modulator, ScriptFetchOptions());
+        network::mojom::ReferrerPolicy::kDefault, /*source_map_url=*/String(),
+        /*script_streamer=*/nullptr,
+        ScriptStreamer::NotStreamingReason::kStreamingDisabled,
+        ModuleImportPhase::kEvaluation, cache_consumer);
+  }
+
+  static JSModuleScript* CreateJSModuleScript(
+      Modulator* modulator,
+      const String& source_text,
+      CachedMetadataHandler* cache_handler,
+      ScriptCacheConsumer* cache_consumer = nullptr) {
+    return JSModuleScript::Create(
+        CreateParams(source_text, cache_handler, cache_consumer), modulator,
+        ScriptFetchOptions());
   }
 
   static ValueWrapperSyntheticModuleScript*
@@ -301,6 +337,87 @@ TEST_F(ModuleScriptTest, V8CodeCache) {
   // The CachedMetadata are cleared.
   EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
   EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+}
+
+// Tests that a module script's code cache that is consumed off the main thread
+// (ScriptCacheConsumer) is used when the module script is created.
+TEST_F(ModuleScriptTest, OffThreadV8CodeCacheConsume) {
+  feature_list_.InitAndEnableFeature(features::kConsumeCodeCacheOffThread);
+
+  V8TestingScope scope;
+  Modulator* modulator =
+      MakeGarbageCollected<ModuleScriptTestModulator>(scope.GetScriptState());
+  Modulator::SetModulator(scope.GetScriptState(), modulator);
+
+  auto sender = std::make_unique<testing::NiceMock<MockCachedMetadataSender>>();
+  CachedMetadataHandler* cache_handler =
+      MakeGarbageCollected<ScriptCachedMetadataHandler>(Utf8Encoding(),
+                                                        std::move(sender));
+  const uint32_t kCodeTag = V8CodeCache::TagForCodeCache(cache_handler);
+
+  // The first load sets the timestamp and the second produces the code cache.
+  for (int nth_load = 0; nth_load < 2; ++nth_load) {
+    JSModuleScript* module_script =
+        CreateJSModuleScript(modulator, LargeSourceText(), cache_handler);
+    ASSERT_TRUE(module_script);
+    module_script->ProduceCache();
+  }
+  ASSERT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+
+  // The third load consumes the code cache off-thread first, as
+  // ScriptResource does while the module script is loading.
+  v8::Isolate* isolate = scope.GetIsolate();
+  scoped_refptr<CachedMetadata> cached_metadata =
+      V8CodeCache::GetCachedMetadata(cache_handler);
+  auto* cache_consumer = MakeGarbageCollected<ScriptCacheConsumer>(
+      isolate, cached_metadata, "https://fox.url/script.js",
+      /*script_resource_identifier=*/0);
+
+  // Then, as ModuleScriptLoader does once the fetch has finished, gives the
+  // consumer the source text and waits for it.
+  base::RunLoop run_loop;
+  auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
+      run_loop.QuitClosure());
+  {
+    ModuleScriptCreationParams params =
+        CreateParams(LargeSourceText(), cache_handler, cache_consumer);
+    cache_handler->Check(ExecutionContext::GetCodeCacheHostFromContext(
+                             ExecutionContext::From(scope.GetScriptState())),
+                         params.GetSourceText());
+    cache_consumer->NotifyClientWaiting(
+        consumer_client, cache_handler,
+        V8String(isolate, params.GetSourceText()),
+        JSModuleScript::CreateScriptOrigin(
+            isolate, params,
+            ReferrerScriptInfo(params.BaseURL(), ScriptFetchOptions()),
+            TextPosition::MinimumPosition()),
+        scheduler::GetSingleThreadTaskRunnerForTesting());
+  }
+  run_loop.Run();
+  ASSERT_TRUE(consumer_client->cache_consume_finished());
+
+  // And then creates the module script, which compiles it with the consumed
+  // code cache.
+  JSModuleScript* module_script = CreateJSModuleScript(
+      modulator, LargeSourceText(), cache_handler, cache_consumer);
+  ASSERT_TRUE(module_script);
+  // The consume task was taken by the compile.
+  EXPECT_FALSE(cache_consumer->TakeV8ConsumeTask(cached_metadata.get()));
+  // The code cache was accepted: it is still there and nothing is produced.
+  EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+  EXPECT_FALSE(HandlerCachedMetadataWasDiscarded(cache_handler));
+  EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kNoProduceCache,
+            GetProduceCacheOptions(module_script));
+
+  ASSERT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(),
+                                        module_script->V8Module(),
+                                        module_script->SourceUrl())
+                  .IsEmpty());
+  ASSERT_EQ(module_script
+                ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())
+                .GetResultType(),
+            ScriptEvaluationResult::ResultType::kSuccess);
+  TestFoo(scope);
 }
 
 TEST_F(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {

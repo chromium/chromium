@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -50,7 +51,8 @@ class CORE_EXPORT ModuleScriptCreationParams {
       ScriptStreamer* script_streamer = nullptr,
       ScriptStreamer::NotStreamingReason not_streaming_reason =
           ScriptStreamer::NotStreamingReason::kStreamingDisabled,
-      ModuleImportPhase import_phase = ModuleImportPhase::kEvaluation)
+      ModuleImportPhase import_phase = ModuleImportPhase::kEvaluation,
+      ScriptCacheConsumer* cache_consumer = nullptr)
       : source_url_(source_url),
         base_url_(base_url),
         source_location_type_(source_location_type),
@@ -61,7 +63,8 @@ class CORE_EXPORT ModuleScriptCreationParams {
         source_map_url_(source_map_url),
         script_streamer_(script_streamer),
         not_streaming_reason_(not_streaming_reason),
-        import_phase_(import_phase) {
+        import_phase_(import_phase),
+        cache_consumer_(cache_consumer) {
     DCHECK(source_location_type == ScriptSourceLocationType::kExternalFile ||
            source_location_type == ScriptSourceLocationType::kInline);
     // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
@@ -126,8 +129,12 @@ class CORE_EXPORT ModuleScriptCreationParams {
 
   CachedMetadataHandler* CacheHandler() const { return cache_handler_; }
 
+  // An off-thread V8 code cache consume task for this module script, if one
+  // was started while it was loading. See ScriptResource::TakeCacheConsumer().
+  ScriptCacheConsumer* CacheConsumer() const { return cache_consumer_; }
+
   bool IsSafeToSendToAnotherThread() const {
-    return !script_streamer_ && !cache_handler_;
+    return !script_streamer_ && !cache_handler_ && !cache_consumer_;
   }
 
   ScriptStreamer* GetScriptStreamer() const { return script_streamer_; }
@@ -173,6 +180,8 @@ class CORE_EXPORT ModuleScriptCreationParams {
   const ScriptStreamer::NotStreamingReason not_streaming_reason_;
 
   const ModuleImportPhase import_phase_;
+
+  Persistent<ScriptCacheConsumer> cache_consumer_;
 };
 
 }  // namespace blink

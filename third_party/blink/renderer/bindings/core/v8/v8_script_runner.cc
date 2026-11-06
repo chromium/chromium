@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
@@ -400,18 +401,8 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
   TRACE_EVENT_BEGIN(kTraceEventCategoryGroup, "v8.compileModule", "fileName",
                     file_name.Utf8());
 
-  // |resource_is_shared_cross_origin| is always true and |resource_is_opaque|
-  // is always false because CORS is enforced to module scripts.
-  v8::ScriptOrigin origin(
-      V8String(isolate, file_name), start_position.line_.ZeroBasedInt(),
-      start_position.column_.ZeroBasedInt(),
-      true,  // resource_is_shared_cross_origin
-      -1,    // script id
-      V8String(isolate, params.SourceMapURL()),
-      false,  // resource_is_opaque
-      false,  // is_wasm
-      true,   // is_module
-      referrer_info.ToV8HostDefinedOptions(isolate, params.SourceURL()));
+  v8::ScriptOrigin origin = JSModuleScript::CreateScriptOrigin(
+      isolate, params, referrer_info, start_position);
 
   v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());
   std::optional<inspector_compile_script_event::V8ConsumeCacheResult>
@@ -455,13 +446,16 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         // previously.
         CachedMetadataHandler* cache_handler = params.CacheHandler();
         DCHECK(cache_handler);
+        ScriptCacheConsumer* cache_consumer = params.CacheConsumer();
         const scoped_refptr<CachedMetadata> cached_metadata =
             V8CodeCache::GetCachedMetadata(cache_handler);
         const bool full_code_cache = V8CodeCache::IsFull(cached_metadata.get());
-        // TODO(leszeks): Add support for passing in ScriptCacheConsumer.
         v8::ScriptCompiler::Source source(
             code, origin,
-            V8CodeCache::CreateCachedData(cache_handler).release());
+            V8CodeCache::CreateCachedData(cached_metadata).release(),
+            cache_consumer
+                ? cache_consumer->TakeV8ConsumeTask(cached_metadata.get())
+                : nullptr);
         const v8::ScriptCompiler::CachedData* cached_data =
             source.GetCachedData();
         script = v8::ScriptCompiler::CompileModule(

@@ -526,7 +526,9 @@ TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
       run_loop_.QuitClosure());
   classic_script->CacheConsumer()->NotifyClientWaiting(
-      consumer_client, classic_script,
+      consumer_client, classic_script->CacheHandler(),
+      V8String(scope.GetIsolate(), classic_script->SourceText()),
+      classic_script->CreateScriptOrigin(scope.GetIsolate()),
       scheduler::GetSingleThreadTaskRunnerForTesting());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
@@ -722,7 +724,9 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
       run_loop_.QuitClosure());
   classic_script->CacheConsumer()->NotifyClientWaiting(
-      consumer_client, classic_script,
+      consumer_client, classic_script->CacheHandler(),
+      V8String(scope.GetIsolate(), classic_script->SourceText()),
+      classic_script->CreateScriptOrigin(scope.GetIsolate()),
       scheduler::GetSingleThreadTaskRunnerForTesting());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
@@ -768,7 +772,9 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
       run_loop_.QuitClosure());
   classic_script->CacheConsumer()->NotifyClientWaiting(
-      consumer_client, classic_script,
+      consumer_client, classic_script->CacheHandler(),
+      V8String(scope.GetIsolate(), classic_script->SourceText()),
+      classic_script->CreateScriptOrigin(scope.GetIsolate()),
       scheduler::GetSingleThreadTaskRunnerForTesting());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
