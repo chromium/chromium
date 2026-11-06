@@ -449,7 +449,6 @@ ExtensionFunction::ResponseAction HistoryDeleteAllFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  std::set<GURL> restrict_urls;
   history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
       GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
   history::WebHistoryService* web_history =

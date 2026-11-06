@@ -307,7 +307,6 @@ void ExtensionSessionsTest::CreateSessionModels() {
           sync_start_future.Take());
 
   const base::Time time_now = base::Time::Now();
-  syncer::SyncDataList initial_data;
   for (size_t index = 0; index < std::size(kSessionTags); ++index) {
     // Fill an instance of session specifics with a foreign session's data.
     sync_pb::EntitySpecifics header_entity;

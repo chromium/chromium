@@ -422,7 +422,6 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
 
-    std::u16string error;
     std::vector<std::string> actual_ids;
     for (const auto& val : result->GetList()) {
       actual_ids.push_back(val.GetString());
@@ -491,7 +490,6 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
 
-    std::u16string error;
     std::vector<int> actual_disabled_rule_ids;
     for (const auto& val : result->GetList()) {
       actual_disabled_rule_ids.push_back(val.GetInt());
@@ -1016,7 +1014,6 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_StrongTypes) {
     std::vector<InstallWarning> install_warnings =
         GetFilteredInstallWarnings(*extension());
     ASSERT_EQ(2u, install_warnings.size());
-    std::vector<InstallWarning> expected_warnings;
 
     for (const auto& warning : install_warnings) {
       EXPECT_EQ(dnr_api::ManifestKeys::kDeclarativeNetRequest, warning.key);
@@ -1812,7 +1809,6 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRegexRuleLimits) {
 // specified.
 TEST_P(SingleRulesetTest, GetMatchedRulesInvalidTabID) {
   LoadAndExpectSuccess();
-  const ExtensionId extension_id = extension()->id();
 
   auto function =
       base::MakeRefCounted<DeclarativeNetRequestGetMatchedRulesFunction>();

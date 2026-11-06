@@ -168,7 +168,6 @@ IN_PROC_BROWSER_TEST_F(GcmApiTest, SendMessageDefaultTTL) {
 
   EXPECT_EQ("destination-id", service()->last_receiver_id());
   const gcm::OutgoingMessage& message = service()->last_sent_message();
-  gcm::MessageData::const_iterator iter;
 
   EXPECT_EQ(gcm::OutgoingMessage::kMaximumTTL, message.time_to_live);
 }

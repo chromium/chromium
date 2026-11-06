@@ -551,7 +551,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, RecordNavigationScheme) {
       {kHttpUrl, 0}, {kHttpsUrl, 0}, {kChromeUrl, 1},
       {kFileUrl, 2}, {kOtherUrl, 4},
   };
-  std::string error;
   GURL url;
 
   const Extension* extension =

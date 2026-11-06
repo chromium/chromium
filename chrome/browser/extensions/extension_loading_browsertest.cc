@@ -357,7 +357,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, PRE_ChangeBackgroundScriptType) {
   ASSERT_TRUE(extension);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  ExtensionId extension_id = extension->id();
   EXPECT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension));
 
   // Change |extension| to become an event page extension.

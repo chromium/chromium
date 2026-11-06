@@ -85,8 +85,6 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
   // main text) while
   // `autofill_private::EntityInstanceWithLabels::entity_instance_sub_label` is
   // the second line.
-  std::vector<autofill_private::EntityInstanceWithLabels>
-      entities_instances_with_labels;
   CHECK_EQ(entity_instances.size(), labels_for_entities.size());
   for (size_t i = 0; i < entity_instances.size(); i++) {
     const EntityInstance& entity_instance = *entity_instances[i];

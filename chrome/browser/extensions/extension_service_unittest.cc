@@ -5743,7 +5743,6 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   const Extension* extension = InstallCRX(path, INSTALL_NEW);
   ASSERT_TRUE(extension);
   GURL ext_url(extension->url());
-  std::string origin_id = storage::GetIdentifierFromOrigin(ext_url);
 
   // Set a cookie for the extension.
   net::CookieStore* cookie_store =
@@ -5868,7 +5867,6 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
       AppLaunchInfo::GetFullLaunchURL(extension).DeprecatedGetOriginAsURL());
   EXPECT_TRUE(profile()->GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
       origin1));
-  std::string origin_id = storage::GetIdentifierFromOrigin(origin1);
 
   // Install app2 from the same origin with unlimited storage.
   extension = PackAndInstallCRX(data_dir().AppendASCII("app2"), INSTALL_NEW);
@@ -8359,7 +8357,6 @@ TEST_F(ExtensionServiceTest, UninstallBlocklistedExtension) {
   std::string id = (*(registry()->enabled_extensions().begin()))->id();
   service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
-  std::u16string error;
   EXPECT_TRUE(registrar()->UninstallExtension(
       id, UNINSTALL_REASON_USER_INITIATED, nullptr));
   EXPECT_EQ(nullptr, registry()->GetInstalledExtension(id));

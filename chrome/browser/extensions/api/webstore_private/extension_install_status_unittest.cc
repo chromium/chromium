@@ -338,7 +338,6 @@ TEST_F(ExtensionInstallStatusTest, PendingExtensionIsApproved) {
   // Extension is approved but not installed, returns as INSTALLABLE.
   SetPolicy(enterprise_reporting::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
-  std::vector<ExtensionId> ids = {kExtensionId};
   SetExtensionSettings(R"({
     "abcdefghijklmnopabcdefghijklmnop": {
       "installation_mode": "allowed"
@@ -352,7 +351,6 @@ TEST_F(ExtensionInstallStatusTest, PendingExtensionIsRejected) {
   // Extension is rejected, it should be moved from the pending list soon.
   SetPolicy(enterprise_reporting::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
-  std::vector<ExtensionId> ids = {kExtensionId};
   SetExtensionSettings(kExtensionSettingsWithIdBlocked);
   EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));

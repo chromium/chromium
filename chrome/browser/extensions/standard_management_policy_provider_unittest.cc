@@ -200,7 +200,6 @@ TEST_F(StandardManagementPolicyProviderTest, UnsupportedDeveloperExtension) {
   util::SetDeveloperModeForProfile(&profile_, false);
   auto extension = CreateExtension(ManifestLocation::kUnpacked);
 
-  std::u16string error16;
   EXPECT_TRUE(provider_.MustRemainDisabled(extension.get(), nullptr));
 }
 

@@ -155,7 +155,6 @@ TEST_F(DeclarativeContentPageUrlConditionTrackerTest, AddAndRemovePredicates) {
   LoadURL(tabs[2].get(), GURL("http://test3/"));
 
   std::vector<std::unique_ptr<const ContentPredicate>> predicates;
-  std::string error;
   predicates.push_back(CreatePredicate("{\"hostPrefix\": \"test1\"}"));
   predicates.push_back(CreatePredicate("{\"hostPrefix\": \"test2\"}"));
   predicates.push_back(CreatePredicate("{\"hostPrefix\": \"test3\"}"));
@@ -205,7 +204,6 @@ TEST_F(DeclarativeContentPageUrlConditionTrackerTest, AddAndRemovePredicates) {
 // Tests that tracking WebContents triggers evaluation requests for matching
 // rules.
 TEST_F(DeclarativeContentPageUrlConditionTrackerTest, TrackWebContents) {
-  std::string error;
   std::unique_ptr<const ContentPredicate> predicate =
       CreatePredicate("{\"hostPrefix\": \"test1\"}");
 
@@ -239,7 +237,6 @@ TEST_F(DeclarativeContentPageUrlConditionTrackerTest, TrackWebContents) {
 // matching rules.
 TEST_F(DeclarativeContentPageUrlConditionTrackerTest,
        NotifyWebContentsNavigation) {
-  std::string error;
   std::unique_ptr<const ContentPredicate> predicate =
       CreatePredicate("{\"hostPrefix\": \"test1\"}");
 

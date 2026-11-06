@@ -504,7 +504,6 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsTooManyHosts) {
   std::string policy =
       base::StringPrintf(policy_template, urls.c_str(), urls.c_str());
 
-  std::string error;
   auto policy_value =
       base::JSONReader::ReadAndReturnValueWithError(policy, kJsonParseOptions);
   policy::Schema chrome_schema =

@@ -170,7 +170,6 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
     device.vendor.assign(&output_buf[device_descriptor->VendorIdOffset]);
   }
 
-  std::string product_id;
   if (device_descriptor->ProductIdOffset &&
       output_buf[device_descriptor->ProductIdOffset]) {
     device.model.assign(&output_buf[device_descriptor->ProductIdOffset]);

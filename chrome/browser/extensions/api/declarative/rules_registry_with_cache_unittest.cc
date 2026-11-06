@@ -328,9 +328,6 @@ TEST_F(RulesRegistryWithCacheTest, RulesStoredFlagMultipleRegistries) {
   const std::string rules_stored_key1(
       RulesCacheDelegate::GetRulesStoredKey(
           event_name1, profile()->IsOffTheRecord()));
-  const std::string rules_stored_key2(
-      RulesCacheDelegate::GetRulesStoredKey(
-          event_name2, profile()->IsOffTheRecord()));
   auto cache_delegate1 = std::make_unique<RulesCacheDelegate>(
       RulesCacheDelegate::Type::kPersistent);
   scoped_refptr<RulesRegistry> registry1(new TestRulesRegistry(

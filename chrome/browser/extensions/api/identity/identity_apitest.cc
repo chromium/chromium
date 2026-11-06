@@ -2380,8 +2380,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   // Closing all browsers ensures that the browser process is shutting down.
   CloseAllBrowsers();
 
-  std::string error = utils::RunFunctionAndReturnError(
-      func.get(), "[{\"interactive\": true}]", profile());
+  utils::RunFunctionAndReturnError(func.get(), "[{\"interactive\": true}]",
+                                   profile());
   // Check that the remote consent dialog is shown to ensure that the remote
   // consent flow fails.
   EXPECT_TRUE(func->scope_ui_shown());
@@ -3072,7 +3072,6 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   std::string error = utils::RunFunctionAndReturnError(
       func.get(), "[{\"account\": { \"id\": \"unknown@example.com\" } }]",
       profile());
-  std::string expected_error;
   if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     EXPECT_EQ(errors::kUserNonPrimary, error);
     histogram_tester()->ExpectUniqueSample(

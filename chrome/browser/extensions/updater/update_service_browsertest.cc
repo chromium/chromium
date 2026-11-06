@@ -808,8 +808,6 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest,
   // terminate).  So there may or may not be a network request -- either way
   // is fine.
 
-  const std::string update_request =
-      std::get<0>(update_interceptor_->GetRequests()[0]);
   const std::optional<base::DictValue> root = GetRequest(0);
   ASSERT_TRUE(root);
   const base::DictValue& app = GetFirstApp(root.value());

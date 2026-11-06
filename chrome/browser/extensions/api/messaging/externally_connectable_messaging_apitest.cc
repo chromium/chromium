@@ -1014,8 +1014,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        TlsChannelIdEmptyWhenDisabled) {
-  std::string expected_tls_channel_id_value;
-
   scoped_refptr<const Extension> chromium_connectable =
       LoadChromiumConnectableExtensionWithTlsChannelId();
   ASSERT_TRUE(chromium_connectable.get());

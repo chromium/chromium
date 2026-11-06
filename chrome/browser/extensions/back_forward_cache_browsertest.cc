@@ -601,7 +601,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url_a));
   content::RenderFrameHostWrapper render_frame_host_a(
       web_contents->GetPrimaryMainFrame());
-  std::u16string expected_title = u"connected";
 
   static constexpr char kScript[] =
       R"HTML(
@@ -704,7 +703,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url_a));
   content::RenderFrameHostWrapper render_frame_host_a(
       web_contents->GetPrimaryMainFrame());
-  std::u16string expected_title = u"connected";
 
   static constexpr char kScript[] =
       R"HTML(

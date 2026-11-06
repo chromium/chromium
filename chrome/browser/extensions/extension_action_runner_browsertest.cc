@@ -157,7 +157,6 @@ const Extension* ExtensionActionRunnerBrowserTest::CreateExtension(
       base::StringPrintf(R"("host_permissions": ["%s"])", permission_scheme);
 
   std::string scripts;
-  std::string script_source;
   if (injection_type == CONTENT_SCRIPT) {
     scripts = base::StringPrintf(
         R"("content_scripts": [{

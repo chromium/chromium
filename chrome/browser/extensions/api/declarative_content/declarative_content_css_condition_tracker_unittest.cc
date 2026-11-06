@@ -325,7 +325,6 @@ TEST_F(DeclarativeContentCssConditionTrackerTest,
   EXPECT_EQ(0, delegate_.evaluation_requests());
 
   // Add the first predicate and expect a WatchPages message.
-  std::string error;
   std::unique_ptr<const ContentPredicate> predicate1 =
       CreatePredicate("[\"a\"]");
 

@@ -3807,9 +3807,6 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   ASSERT_TRUE(extension) << message_;
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  // Extension communicates back using this listener name.
-  const std::string listener_message = "protected_origin";
-
   // The number of requests initiated by a protected origin is tracked in
   // the extension's background page under this variable name.
   const std::string request_counter_name = "self.protectedOriginCount";

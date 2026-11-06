@@ -3186,7 +3186,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/permissions_api"));
   ASSERT_TRUE(extension);
-  const ExtensionId extension_id = extension->id();
   EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
 
   // "storage" permission is optional in |extension|, and isn't available right

@@ -357,8 +357,7 @@ TEST_F(ComponentLoaderTest, Remove) {
 
   // Load an extension, and check that it's unloaded when Remove() is called.
   extension_system_->SetReady();
-  std::string extension_id =
-      component_loader_->Add(manifest_contents_, extension_path_);
+  component_loader_->Add(manifest_contents_, extension_path_);
   EXPECT_EQ(1u, registry->enabled_extensions().size());
   component_loader_->Remove(extension_path_);
   EXPECT_EQ(0u, registry->enabled_extensions().size());

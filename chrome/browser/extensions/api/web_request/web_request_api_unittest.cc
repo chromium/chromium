@@ -1803,7 +1803,6 @@ TEST(ExtensionWebRequestHelpersTest,
   base_headers.SetHeader("Cookie",
                          "name=value; name2=value2; name3=\"value3\"");
   helpers::IgnoredActions ignored_actions;
-  std::string header_value;
   EventResponseDeltas deltas;
 
   RequestCookieModification add_cookie;
@@ -1872,7 +1871,6 @@ std::string GetCookieExpirationDate(int delta_secs) {
 
 TEST(ExtensionWebRequestHelpersTest,
      TestMergeCookiesInOnHeadersReceivedResponses) {
-  std::string header_value;
   EventResponseDeltas deltas;
 
   std::string cookie_expiration = GetCookieExpirationDate(1200);
@@ -2083,7 +2081,6 @@ TEST(ExtensionWebRequestHelpersTest,
 
 TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   helpers::IgnoredActions ignored_actions;
-  std::string header_value;
   EventResponseDeltas deltas;
 
   char base_headers_string[] =
@@ -2296,7 +2293,6 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
 TEST(ExtensionWebRequestHelpersTest,
      TestMergeOnHeadersReceivedResponsesDeletion) {
   helpers::IgnoredActions ignored_actions;
-  std::string header_value;
   EventResponseDeltas deltas;
 
   char base_headers_string[] =
@@ -2487,7 +2483,6 @@ TEST(ExtensionWebRequestHelpersTest,
   info.dnr_actions->push_back(std::move(action_3));
 
   helpers::IgnoredActions ignored_actions;
-  std::string header_value;
   EventResponseDeltas deltas;
 
   char base_headers_string[] =
@@ -2597,7 +2592,6 @@ TEST(ExtensionWebRequestHelpersTest,
   info.dnr_actions->push_back(std::move(action_2));
 
   helpers::IgnoredActions ignored_actions;
-  std::string header_value;
   EventResponseDeltas deltas;
 
   char base_headers_string[] =

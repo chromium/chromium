@@ -1432,7 +1432,6 @@ TEST_F(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
 
   base::FilePath unpacked_path = test_dir.UnpackedPath();
   ASSERT_TRUE(base::PathExists(unpacked_path.AppendASCII("json_file.json")));
-  std::string error;
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))
