@@ -313,10 +313,18 @@ void MediaSessionImpl::DidFinishNavigation(
   }
 
   auto new_origin = url::Origin::Create(navigation_handle->GetURL());
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      !new_origin.IsSameOriginWith(origin_)) {
-    audio_device_id_for_origin_.reset();
-    origin_ = new_origin;
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    if (!new_origin.IsSameOriginWith(origin_)) {
+      audio_device_id_for_origin_.reset();
+      origin_ = new_origin;
+    }
+
+    // Observers such as Android's MediaSessionHelper clear their cached
+    // metadata on primary main frame cross-document navigations, so reset
+    // `metadata_` to ensure `RebuildAndNotifyMetadataChanged()` re-notifies
+    // observers even when the rebuilt metadata matches pre-navigation state
+    // (e.g. on page reload).
+    metadata_ = media_session::MediaMetadata();
   }
 
   const auto rfh_id = navigation_handle->GetRenderFrameHost()->GetGlobalId();

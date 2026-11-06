@@ -99,10 +99,6 @@ void MediaSessionAndroid::MediaSessionMetadataChanged(
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  // Avoid translating metadata through JNI if there is no Java observer.
-  if (!Java_MediaSessionImpl_hasObservers(env, j_local_session))
-    return;
-
   ScopedJavaLocalRef<jobject> j_metadata;
   if (metadata.has_value())
     j_metadata = metadata.value().CreateJavaObject(env);
@@ -137,10 +133,6 @@ void MediaSessionAndroid::MediaSessionImagesChanged(
   // Android is only interested in the artwork images.
   auto it = images.find(media_session::mojom::MediaSessionImageType::kArtwork);
   if (it == images.end())
-    return;
-
-  // Avoid translating metadata through JNI if there is no Java observer.
-  if (!Java_MediaSessionImpl_hasObservers(env, j_local_session))
     return;
 
   Java_MediaSessionImpl_mediaSessionArtworkChanged(

@@ -141,11 +141,6 @@ public class MediaSessionImpl extends MediaSession {
     }
 
     @CalledByNative
-    private boolean hasObservers() {
-        return !mObservers.isEmpty();
-    }
-
-    @CalledByNative
     private void mediaSessionDestroyed() {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
             mObserversIterator.next().mediaSessionDestroyed();

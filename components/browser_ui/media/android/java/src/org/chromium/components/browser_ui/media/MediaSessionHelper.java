@@ -433,6 +433,10 @@ public class MediaSessionHelper implements MediaImageCallback {
             return;
         }
 
+        if (mFallbackTitle == null && !TextUtils.isEmpty(webContents.getTitle())) {
+            mFallbackTitle = sanitizeMediaTitle(webContents.getTitle());
+        }
+
         mWebContentsObserver =
                 new WebContentsObserver(webContents) {
                     @Override
@@ -441,16 +445,19 @@ public class MediaSessionHelper implements MediaImageCallback {
                             return;
                         }
 
+                        String previousOrigin = mOrigin;
                         mOrigin = "";
                         mFavicon = null;
                         mPageMediaImage = null;
                         mPageMetadata = null;
                         // |mCurrentMetadata| selects either |mPageMetadata| or |mFallbackTitle|. As
                         // there is no guarantee {@link #titleWasSet()} will be called before or
-                        // after this method, |mFallbackTitle| is not reset in this callback, i.e.
-                        // relying solely on {@link #titleWasSet()}. The following assignment is
-                        // to keep |mCurrentMetadata| up to date as |mPageMetadata| may have
-                        // changed.
+                        // after this method, |mFallbackTitle| is not reset in this callback when it
+                        // holds a page title set by {@link #titleWasSet()}. However, if
+                        // |mFallbackTitle| was previously derived from |previousOrigin|, clear it
+                        // along with |mOrigin| so the stale origin is not mistaken for a page
+                        // title.
+                        maybeSetFallbackTitleFromOrigin(previousOrigin);
                         mCurrentMetadata = getMetadata();
                         mMediaSessionActions = Collections.emptySet();
 

@@ -376,6 +376,31 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
         assertEquals("second.example.com", getDisplayedTitle());
     }
 
+    @Test
+    public void testFallbackTitleFromSourceTitleResetsAfterNavigation_WhenPageTitleEmpty() {
+        mTabHolder.simulateNavigation("https://first.example.com/", false);
+        mTabHolder.simulateTitleUpdated("");
+        mTabHolder.simulateMediaSessionStateChanged(true, false);
+        mTabHolder.simulateMediaSessionMetadataChanged(
+                new MediaMetadata("", "artist", "album", "first.example.com"));
+        mTabHolder.simulateMediaSessionActionsChanged(DEFAULT_ACTIONS);
+        advanceTimeByMillis(THROTTLE_MILLIS);
+
+        assertEquals("first.example.com", getController().mMediaNotificationInfo.origin);
+        assertEquals("first.example.com", getDisplayedTitle());
+
+        // Navigate to a new page before a new page title is set; the old origin should not remain
+        // stuck in mFallbackTitle.
+        mTabHolder.simulateNavigation("https://second.example.com/", false);
+        mTabHolder.simulateMediaSessionMetadataChanged(
+                new MediaMetadata("", "artist", "album", "second.example.com"));
+        mTabHolder.simulateMediaSessionActionsChanged(DEFAULT_ACTIONS);
+        advanceTimeByMillis(THROTTLE_MILLIS);
+
+        assertEquals("second.example.com", getController().mMediaNotificationInfo.origin);
+        assertEquals("second.example.com", getDisplayedTitle());
+    }
+
     private CharSequence getDisplayedTitle() {
         Notification notification = getController().mNotificationBuilder.build();
         ShadowNotification shadowNotification = Shadows.shadowOf(notification);

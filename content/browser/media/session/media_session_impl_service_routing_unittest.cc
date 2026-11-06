@@ -962,6 +962,20 @@ TEST_F(MediaSessionImplServiceRoutingTest, NotifyObserverOnNavigation) {
   observer.WaitForExpectedMetadata(expected_metadata);
 }
 
+TEST_F(MediaSessionImplServiceRoutingTest,
+       NotifyObserverOnSameOriginNavigationWithUnchangedMetadata) {
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+    observer.WaitForExpectedMetadata(empty_metadata());
+  }
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  contents()->NavigateAndCommit(GURL("http://www.example.com/test"));
+  observer.WaitForExpectedMetadata(empty_metadata());
+}
+
 TEST_F(MediaSessionImplServiceRoutingTest, NotifyObserverOnTitleChange) {
   media_session::test::MockMediaSessionMojoObserver observer(
       *GetMediaSession());
