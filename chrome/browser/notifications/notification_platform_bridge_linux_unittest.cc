@@ -1466,6 +1466,62 @@ TEST_F(NotificationPlatformBridgeLinuxTest, CloseButtonForwards) {
   EXPECT_EQ(1u, fake_notification_proxy_->last_closed_id());
 }
 
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       CloseButtonWithSynchronousCloseInHandler) {
+  display_service_tester_->SetProcessNotificationOperationDelegate(
+      base::BindLambdaForTesting(
+          [&](NotificationOperation operation,
+              NotificationHandler::Type notification_type, const GURL& origin,
+              const std::string& notification_id,
+              const std::optional<int>& action_index,
+              const std::optional<std::u16string>& reply,
+              const std::optional<bool>& by_user,
+              const std::optional<bool>& is_suspicious) {
+            HandleOperation(operation, notification_type, origin,
+                            notification_id, action_index, reply, by_user,
+                            is_suspicious);
+            if (operation == NotificationOperation::kClose) {
+              notification_bridge_linux_->Close(profile(), notification_id);
+            }
+          }));
+
+  CreateNotificationBridgeLinux(TestParams().SetServerName("cinnamon"));
+
+  fake_notification_proxy_->SetNotificationId(1);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::NOTIFICATIONS_MUTED, profile(),
+      NotificationBuilder("1")
+          .SetOriginUrl(GURL("https://google.com"))
+          .GetResult(),
+      nullptr);
+  content::RunAllTasksUntilIdle();
+
+  fake_notification_proxy_->SetNotificationId(2);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("2")
+          .SetOriginUrl(GURL("https://google.com"))
+          .GetResult(),
+      nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(2, fake_notification_proxy_->notify_calls());
+
+  InvokeAction(1, "close");
+
+  EXPECT_EQ(NotificationOperation::kClose, last_operation_);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, fake_notification_proxy_->close_calls());
+  EXPECT_EQ(1u, fake_notification_proxy_->last_closed_id());
+
+  std::set<std::string> displayed;
+  notification_bridge_linux_->GetDisplayed(
+      profile(), base::BindLambdaForTesting(
+                     [&](std::set<std::string> set, bool supports_sync) {
+                       displayed = std::move(set);
+                     }));
+  EXPECT_THAT(displayed, testing::UnorderedElementsAre("2"));
+}
+
 TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
   fake_notification_proxy_->SetNotificationId(1);
 
@@ -1501,6 +1557,108 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationClosedForwards) {
   NotificationClosed(1, 3 /* closed by user */);
 
   EXPECT_EQ(NotificationOperation::kClose, last_operation_);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       NotificationClosedWithSynchronousCloseInHandler) {
+  display_service_tester_->SetProcessNotificationOperationDelegate(
+      base::BindLambdaForTesting(
+          [&](NotificationOperation operation,
+              NotificationHandler::Type notification_type, const GURL& origin,
+              const std::string& notification_id,
+              const std::optional<int>& action_index,
+              const std::optional<std::u16string>& reply,
+              const std::optional<bool>& by_user,
+              const std::optional<bool>& is_suspicious) {
+            HandleOperation(operation, notification_type, origin,
+                            notification_id, action_index, reply, by_user,
+                            is_suspicious);
+            if (operation == NotificationOperation::kClose) {
+              notification_bridge_linux_->Close(profile(), notification_id);
+            }
+          }));
+
+  CreateNotificationBridgeLinux(TestParams());
+
+  fake_notification_proxy_->SetNotificationId(1);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::NOTIFICATIONS_MUTED, profile(),
+      NotificationBuilder("1").GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+
+  fake_notification_proxy_->SetNotificationId(2);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("2").GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(2, fake_notification_proxy_->notify_calls());
+
+  NotificationClosed(1, 3 /* closed by user */);
+
+  EXPECT_EQ(NotificationOperation::kClose, last_operation_);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(0, fake_notification_proxy_->close_calls());
+
+  std::set<std::string> displayed;
+  notification_bridge_linux_->GetDisplayed(
+      profile(), base::BindLambdaForTesting(
+                     [&](std::set<std::string> set, bool supports_sync) {
+                       displayed = std::move(set);
+                     }));
+  EXPECT_THAT(displayed, testing::UnorderedElementsAre("2"));
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest,
+       PortalCloseButtonWithSynchronousCloseInHandler) {
+  display_service_tester_->SetProcessNotificationOperationDelegate(
+      base::BindLambdaForTesting(
+          [&](NotificationOperation operation,
+              NotificationHandler::Type notification_type, const GURL& origin,
+              const std::string& notification_id,
+              const std::optional<int>& action_index,
+              const std::optional<std::u16string>& reply,
+              const std::optional<bool>& by_user,
+              const std::optional<bool>& is_suspicious) {
+            HandleOperation(operation, notification_type, origin,
+                            notification_id, action_index, reply, by_user,
+                            is_suspicious);
+            if (operation == NotificationOperation::kClose) {
+              notification_bridge_linux_->Close(profile(), notification_id);
+            }
+          }));
+
+  std::vector<std::string> portal_ids;
+  fake_portal_notification_proxy_->SetAddNotificationCallback(
+      base::BindLambdaForTesting([&](const PortalNotificationRequest& request) {
+        portal_ids.push_back(request.id);
+      }));
+
+  CreateNotificationBridgeLinux(
+      TestParams().SetFdoNameHasOwner(false).SetPortalNameHasOwner(true));
+
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::NOTIFICATIONS_MUTED, profile(),
+      NotificationBuilder("1").GetResult(), nullptr);
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("2").GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  ASSERT_EQ(2u, portal_ids.size());
+
+  fake_portal_notification_proxy_->FireActionInvoked(portal_ids[0], "close");
+
+  EXPECT_EQ(NotificationOperation::kClose, last_operation_);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, fake_portal_notification_proxy_->remove_notification_calls());
+  EXPECT_EQ(portal_ids[0], fake_portal_notification_proxy_->last_removed_id());
+
+  std::set<std::string> displayed;
+  notification_bridge_linux_->GetDisplayed(
+      profile(), base::BindLambdaForTesting(
+                     [&](std::set<std::string> set, bool supports_sync) {
+                       displayed = std::move(set);
+                     }));
+  EXPECT_THAT(displayed, testing::UnorderedElementsAre("2"));
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, PortalFallbackWhenFdoUnavailable) {
