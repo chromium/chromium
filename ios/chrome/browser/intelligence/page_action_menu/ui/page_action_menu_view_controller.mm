@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 
-#import <vector>
-
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
@@ -1308,23 +1306,21 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
 }
 
 // Creates the menu listing the permission settings available for `featureType`,
-// with `selectedSetting` checked. "Allowed once" is only offered when it is the
-// current setting.
+// with `selectedSetting` checked. "Allowed once" is always offered so that
+// users can clear a persisted decision.
 - (UIMenu*)permissionMenuForFeature:(PageActionMenuFeatureType)featureType
                     selectedSetting:
                         (PageActionMenuPermissionSetting)selectedSetting {
   __weak PageActionMenuViewController* weakSelf = self;
 
   NSMutableArray<UIAction*>* actions = [NSMutableArray array];
-  std::vector<PageActionMenuPermissionSetting> settings = {
+  static constexpr PageActionMenuPermissionSetting kSettings[] = {
       PageActionMenuPermissionSetting::kAlwaysAllow,
+      PageActionMenuPermissionSetting::kAllowOnce,
+      PageActionMenuPermissionSetting::kNeverAllow,
   };
-  if (selectedSetting == PageActionMenuPermissionSetting::kAllowOnce) {
-    settings.push_back(PageActionMenuPermissionSetting::kAllowOnce);
-  }
-  settings.push_back(PageActionMenuPermissionSetting::kNeverAllow);
 
-  for (PageActionMenuPermissionSetting setting : settings) {
+  for (PageActionMenuPermissionSetting setting : kSettings) {
     UIAction* action =
         [UIAction actionWithTitle:PermissionSettingTitle(setting)
                             image:nil
