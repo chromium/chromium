@@ -57,6 +57,7 @@
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -306,6 +307,52 @@ TEST_F(SearchboxHandlerTest,
               dependent_strings.contains(item.first))
         << item.first;
   }
+}
+
+TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictComposeboxFileMaxCount) {
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        auto* prof = Profile::FromBrowserContext(context);
+        return std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+            *prof->GetPrefs(), nullptr, nullptr, nullptr);
+      }));
+
+  auto* service = static_cast<MockAimEligibilityService*>(
+      AimEligibilityServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(service);
+
+  auto* rule_set = service->config().mutable_rule_set();
+  auto* image_rule = rule_set->add_input_type_rules();
+  image_rule->set_input_type(omnibox::INPUT_TYPE_LENS_IMAGE);
+  auto* file_rule = rule_set->add_input_type_rules();
+  file_rule->set_input_type(omnibox::INPUT_TYPE_LENS_FILE);
+
+  base::DictValue strings = SearchboxHandler::GetWebUIDataSourceDict(profile());
+  EXPECT_EQ(omnibox::kDefaultMaxTotalInputs,
+            strings.FindInt("composeboxFileMaxCount"));
+  EXPECT_EQ(
+      l10n_util::GetPluralStringFUTF8(IDS_NTP_COMPOSE_MAX_IMAGES_REACHED_ERROR,
+                                      omnibox::kDefaultMaxTotalInputs),
+      *strings.FindString("maxImagesReachedError"));
+  EXPECT_EQ(
+      l10n_util::GetPluralStringFUTF8(IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR,
+                                      omnibox::kDefaultMaxTotalInputs),
+      *strings.FindString("maxPdfsReachedError"));
+
+  rule_set->set_max_total_inputs(5);
+  image_rule->set_max_instance(3);
+  strings = SearchboxHandler::GetWebUIDataSourceDict(profile());
+  EXPECT_EQ(5, strings.FindInt("composeboxFileMaxCount"));
+  EXPECT_EQ(l10n_util::GetPluralStringFUTF8(
+                IDS_NTP_COMPOSE_MAX_IMAGES_REACHED_ERROR, 3),
+            *strings.FindString("maxImagesReachedError"));
+  EXPECT_EQ(l10n_util::GetPluralStringFUTF8(
+                IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR, 5),
+            *strings.FindString("maxPdfsReachedError"));
+
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(profile(), {});
 }
 
 TEST_F(SearchboxHandlerTest, KeywordSpaceTriggeringDynamicPrefChange) {

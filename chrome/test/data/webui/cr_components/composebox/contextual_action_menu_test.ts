@@ -2442,6 +2442,56 @@ suite('ContextualActionMenu', () => {
       });
 
   test(
+      'Prefers inputState.maxTotalInputs over composeboxFileMaxCount',
+      async () => {
+        actionMenu.remove();
+        loadTimeData.overrideValues({
+          composeboxFileMaxCount: 0,
+        });
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        actionMenu.fileNum = 0;
+
+        const tabInfo = createTabSuggestion({
+          tabId: 1,
+          title: 'Google',
+        });
+        actionMenu.tabSuggestions = [tabInfo];
+
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [
+            InputType.kLensImage,
+            InputType.kLensFile,
+            InputType.kDrive,
+            InputType.kBrowserTab,
+          ],
+          disabledInputTypes: [],
+          maxTotalInputs: 10,
+          toolsSectionConfig: {header: ''},
+          modelSectionConfig: {header: ''},
+        });
+
+        document.body.appendChild(actionMenu);
+        await microtasksFinished();
+
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        const imageUpload = $$(actionMenu, '#imageUpload') as HTMLButtonElement;
+        const fileUpload = $$(actionMenu, '#fileUpload') as HTMLButtonElement;
+        const driveUpload = $$(actionMenu, '#driveUpload') as HTMLButtonElement;
+
+        assertFalse(imageUpload.disabled);
+        assertFalse(fileUpload.disabled);
+        assertFalse(driveUpload.disabled);
+
+        const tabButton = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+            '.suggestion-container button')!;
+        assertTrue(isVisible(tabButton));
+        assertFalse(tabButton.disabled);
+      });
+
+  test(
       'Disables unselected tabs and enable selected tabs if max files reached',
       async () => {
         // Recreate actionMenu with maxFileCount = 1.

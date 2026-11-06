@@ -789,8 +789,15 @@ export class ContextualActionMenuElement extends
         type => this.isItemAllowed_(type, this.inputState?.allowedInputTypes));
   }
 
+  private getMaxTotalInputs_(): number {
+    if (this.inputState && this.inputState.maxTotalInputs > 0) {
+      return this.inputState.maxTotalInputs;
+    }
+    return this.maxFileCount_;
+  }
+
   protected isInputTypeDisabled_(inputType: InputType): boolean {
-    const limitReached = this.fileNum >= this.maxFileCount_;
+    const limitReached = this.fileNum >= this.getMaxTotalInputs_();
     if (this.inputState) {
       return limitReached ||
           (this.inputState.disabledInputTypes || []).includes(inputType);
@@ -829,15 +836,11 @@ export class ContextualActionMenuElement extends
     }
 
     if (this.enableMultiTabSelection_) {
-      let maxTotal = this.maxFileCount_;
-      if (this.inputState && this.inputState.maxTotalInputs > 0) {
-        maxTotal = this.inputState.maxTotalInputs;
-      }
       const totalSelected = this.nonTabFileNum + this.selectedTabIds.size +
           (this.contextManagementInComposeboxEnabled ?
                (this.aimThreadRestoredTabs || []).length :
                0);
-      const limitReached = totalSelected >= maxTotal;
+      const limitReached = totalSelected >= this.getMaxTotalInputs_();
       // Disable unselected tabs only when the total selected count reaches the limit.
       return limitReached;
     }

@@ -604,8 +604,15 @@ base::DictValue SearchboxHandler::GetProfileDependentWebUIDataSourceDict(
   const omnibox::SearchboxConfig* config =
       service ? service->GetSearchboxConfig() : nullptr;
   if (config && config->has_rule_set()) {
-    max_files = config->rule_set().max_total_inputs();
+    if (config->rule_set().has_max_total_inputs()) {
+      max_files = config->rule_set().max_total_inputs();
+      max_images = max_files;
+      max_pdfs = max_files;
+    }
     for (const auto& rule : config->rule_set().input_type_rules()) {
+      if (!rule.has_max_instance()) {
+        continue;
+      }
       if (rule.input_type() == omnibox::INPUT_TYPE_LENS_IMAGE) {
         max_images = rule.max_instance();
       } else if (rule.input_type() == omnibox::INPUT_TYPE_LENS_FILE) {
