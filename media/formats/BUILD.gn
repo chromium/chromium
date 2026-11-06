@@ -42,6 +42,7 @@ source_set("formats") {
     "//media/filters",
     "//media/muxers",
     "//media/muxers:unit_tests",
+    "//media/video:openh264rs_video_encoder",
   ]
 
   sources = [

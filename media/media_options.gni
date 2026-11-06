@@ -140,7 +140,7 @@ declare_args() {
 # Use another declare_args() to allow dependence on args defined above.
 declare_args() {
   # Enable the Rust port of OpenH264 in the media library.
-  media_use_rust_openh264 = false
+  media_use_rust_openh264 = media_use_openh264 && is_linux
 
   # Enable usage of Symphonia audio decoder within the media library.
   media_use_symphonia_decoder = media_use_symphonia
@@ -437,4 +437,8 @@ if (enable_library_cdms || is_win) {
 
 if (is_win) {
   media_subcomponent_deps += [ "//media/base/win:media_foundation_util" ]
+}
+
+if (proprietary_codecs && media_use_rust_openh264) {
+  media_subcomponent_deps += [ "//media/video:openh264rs_video_encoder" ]
 }

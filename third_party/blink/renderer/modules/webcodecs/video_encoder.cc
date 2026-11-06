@@ -783,7 +783,7 @@ std::unique_ptr<media::VideoEncoder> CreateVpxVideoEncoder() {
 std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
 #if BUILDFLAG(ENABLE_OPENH264)
   return media::IsOpenH264SoftwareEncoderEnabled()
-             ? std::make_unique<media::OpenH264VideoEncoder>()
+             ? media::CreateOpenH264VideoEncoder()
              : nullptr;
 #else
   return nullptr;

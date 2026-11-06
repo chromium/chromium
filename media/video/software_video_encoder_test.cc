@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/barrier_closure.h"
 #include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -29,7 +30,9 @@
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/media_buildflags.h"
 #include "media/video/video_encode_accelerator_adapter.h"
+#include "media/video/video_encoder_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 
@@ -176,7 +179,7 @@ class SoftwareVideoEncoderTest
 #endif
       case media::VideoCodec::kH264:
 #if BUILDFLAG(ENABLE_OPENH264)
-        return std::make_unique<OpenH264VideoEncoder>();
+        return CreateOpenH264VideoEncoder();
 #else
         return nullptr;
 #endif
@@ -1817,13 +1820,13 @@ class OpenH264VideoEncoderResolutionTest : public ::testing::Test {
  public:
   OpenH264VideoEncoderResolutionTest() = default;
 
-  void SetUp() override { encoder_ = std::make_unique<OpenH264VideoEncoder>(); }
+  void SetUp() override { encoder_ = CreateOpenH264VideoEncoder(); }
 
   void TearDown() override { encoder_.reset(); }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<OpenH264VideoEncoder> encoder_;
+  std::unique_ptr<VideoEncoder> encoder_;
 };
 
 TEST_F(OpenH264VideoEncoderResolutionTest, HighestValidResolution) {
@@ -1898,6 +1901,48 @@ TEST_F(OpenH264VideoEncoderResolutionTest, HeightExceeding6p1AspectRatioLimit) {
       }));
   run_loop.Run();
 }
+
+#if BUILDFLAG(ENABLE_RUST_OPENH264)
+TEST(OpenH264VideoEncoderTest, RustOpenH264EncodingFeature) {
+  auto get_implementation_name = [](bool enable_rust) {
+    base::test::ScopedFeatureList feature_list;
+    if (enable_rust) {
+      feature_list.InitFromCommandLine(
+          /*enable_features=*/"RustOpenH264Encoding", /*disable_features=*/"");
+    } else {
+      feature_list.InitFromCommandLine(
+          /*enable_features=*/"", /*disable_features=*/"RustOpenH264Encoding");
+    }
+    base::test::TaskEnvironment task_environment;
+
+    auto encoder = CreateOpenH264VideoEncoder();
+    VideoEncoder::Options options;
+    options.frame_size = gfx::Size(320, 240);
+
+    std::string implementation_name;
+    base::RunLoop run_loop;
+    auto quit_closure = base::BarrierClosure(2, run_loop.QuitClosure());
+    encoder->Initialize(
+        H264PROFILE_BASELINE, options,
+        base::BindLambdaForTesting([&](const VideoEncoderInfo& info) {
+          implementation_name = info.implementation_name;
+          quit_closure.Run();
+        }),
+        /*output_cb=*/base::DoNothing(),
+        base::BindLambdaForTesting([&](EncoderStatus status) {
+          EXPECT_TRUE(status.is_ok());
+          quit_closure.Run();
+        }));
+    run_loop.Run();
+    return implementation_name;
+  };
+
+  EXPECT_EQ(get_implementation_name(/*enable_rust=*/true),
+            "OpenH264RsVideoEncoder");
+  EXPECT_EQ(get_implementation_name(/*enable_rust=*/false),
+            "OpenH264VideoEncoder");
+}
+#endif  // BUILDFLAG(ENABLE_RUST_OPENH264)
 #endif
 
 }  // namespace media

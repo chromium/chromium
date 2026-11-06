@@ -9,6 +9,7 @@
 #include <limits>
 #include <numeric>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
@@ -19,6 +20,7 @@
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/media_buildflags.h"
 #include "media/parsers/h264_level_limits.h"
 #include "media/parsers/h264_parser.h"
 #include "media/video/video_encoder_info.h"
@@ -26,6 +28,10 @@
 namespace media {
 
 namespace {
+
+#ifndef RUST_OPENH264_BUILD
+using c_void = void;
+#endif
 
 EProfileIdc ToOpenH264Profile(VideoCodecProfile profile) {
   switch (profile) {
@@ -347,7 +353,11 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
 
   if (info_cb) {
     VideoEncoderInfo info;
+#ifdef RUST_OPENH264_BUILD
+    info.implementation_name = "OpenH264RsVideoEncoder";
+#else
     info.implementation_name = "OpenH264VideoEncoder";
+#endif
     info.is_hardware_accelerated = false;
     BindCallbackToCurrentLoopIfNeeded(std::move(info_cb)).Run(info);
   }
@@ -666,5 +676,41 @@ void OpenH264VideoEncoder::UpdateEncoderColorSpace() {
   if (int err = codec_->InitializeExt(&params))
     DLOG(ERROR) << "Failed to reinitialize codec to set color space: " << err;
 }
+
+// When `BUILDFLAG(ENABLE_RUST_OPENH264)` (`media_use_rust_openh264`) is
+// enabled, this file is compiled twice:
+// 1. Without `RUST_OPENH264_BUILD` (in `//media/video`): builds Cisco's C++
+//    `OpenH264VideoEncoder`, defines `kRustOpenH264Encoding`, and defines
+//    `CreateOpenH264VideoEncoder()`.
+// 2. With `RUST_OPENH264_BUILD` (in `//media/video:openh264rs_video_encoder`):
+//    `openh264_video_encoder.h` includes `third_party/openh264rs/codec_api.h`
+//    and `#define`s `OpenH264VideoEncoder` to `OpenH264RsVideoEncoder`, and
+//    this file defines `CreateOpenH264RsVideoEncoder()` to instantiate it.
+//
+// `CreateOpenH264VideoEncoder()` checks `kRustOpenH264Encoding` at runtime to
+// return `OpenH264RsVideoEncoder` when enabled, or fall back to Cisco's C++
+// `OpenH264VideoEncoder` when disabled (or when `ENABLE_RUST_OPENH264` is off).
+#if BUILDFLAG(ENABLE_RUST_OPENH264)
+std::unique_ptr<VideoEncoder> CreateOpenH264RsVideoEncoder();
+#endif
+
+#ifdef RUST_OPENH264_BUILD
+std::unique_ptr<VideoEncoder> CreateOpenH264RsVideoEncoder() {
+  return std::make_unique<OpenH264VideoEncoder>();
+}
+#else
+#if BUILDFLAG(ENABLE_RUST_OPENH264)
+BASE_FEATURE(kRustOpenH264Encoding, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+std::unique_ptr<VideoEncoder> CreateOpenH264VideoEncoder() {
+#if BUILDFLAG(ENABLE_RUST_OPENH264)
+  if (base::FeatureList::IsEnabled(kRustOpenH264Encoding)) {
+    return CreateOpenH264RsVideoEncoder();
+  }
+#endif
+  return std::make_unique<OpenH264VideoEncoder>();
+}
+#endif
 
 }  // namespace media

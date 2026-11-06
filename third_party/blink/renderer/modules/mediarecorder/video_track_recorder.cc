@@ -327,7 +327,7 @@ GetCreateSoftwareVideoEncoderCallback(media::VideoCodec codec) {
     case media::VideoCodec::kH264:
       return CrossThreadBindRepeating(
           []() -> std::unique_ptr<media::VideoEncoder> {
-            return std::make_unique<media::OpenH264VideoEncoder>();
+            return media::CreateOpenH264VideoEncoder();
           });
 #endif  // BUILDFLAG(ENABLE_OPENH264)
 #if BUILDFLAG(ENABLE_LIBVPX)

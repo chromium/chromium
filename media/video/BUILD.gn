@@ -10,6 +10,7 @@ source_set("video") {
   # is a roll-up target which is part of the //media component. Most other DEPs
   # should be using //media and not directly DEP this roll-up target.
   visibility = [
+    ":openh264rs_video_encoder",
     "//media",
     "//media/filters",
     "//media/formats",
@@ -73,16 +74,34 @@ source_set("video") {
       "openh264_video_encoder.cc",
       "openh264_video_encoder.h",
     ]
-    if (media_use_rust_openh264) {
-      public_deps += [ "//third_party/openh264rs" ]
-    } else {
-      public_deps += [ "//third_party/openh264:encoder" ]
-    }
+    public_deps += [ "//third_party/openh264:encoder" ]
     deps += [ "//media/parsers" ]
   }
 
   if (is_apple) {
     deps += [ "//media/base/mac" ]
+  }
+}
+
+if (proprietary_codecs && media_use_rust_openh264) {
+  source_set("openh264rs_video_encoder") {
+    visibility = [ "//media" ]
+    sources = [
+      "openh264_video_encoder.cc",
+      "openh264_video_encoder.h",
+    ]
+    defines = [ "RUST_OPENH264_BUILD" ]
+    configs += [ "//media:subcomponent_config" ]
+    deps = [
+      ":video",
+      "//base",
+      "//media:media_buildflags",
+      "//media/base",
+      "//media/formats",
+      "//media/parsers",
+      "//third_party/openh264rs",
+      "//ui/gfx",
+    ]
   }
 }
 
