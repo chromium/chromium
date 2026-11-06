@@ -600,6 +600,22 @@
               visibility 50ms linear;
 }
 
+/* With inherit-visibility, the icon inherits its visibility instead of
+ * forcing visible, so it stays hidden while an ancestor (e.g. the NTP
+ * searchbox) is hidden. It shows instantly and hides after the 50 ms fade.
+ * These rules must come after the ones above (same specificity). */
+:host([dynamic][inherit-visibility]) .compose-icon {
+  visibility: inherit;
+  transition: opacity var(--aim-motion-duration-long) var(--aim-motion-easing),
+              visibility 0s;
+}
+
+:host([dynamic][inherit-visibility][has-user-input]) .compose-icon {
+  visibility: hidden;
+  transition: opacity 50ms linear,
+              visibility 0s linear 50ms; /* hide after the fade-out */
+}
+
 :host([dynamic]) .arrow-icon {
   display: inline-block;
   height: 18px;

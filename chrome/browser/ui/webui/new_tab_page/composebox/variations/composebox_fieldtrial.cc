@@ -273,4 +273,7 @@ BASE_FEATURE(kNtpRealboxCyclingPlaceholders, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNtpRealboxDynamicAiModeButton, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNtpRealboxDynamicAiModeButtonPreventEarlyPaint,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace ntp_realbox

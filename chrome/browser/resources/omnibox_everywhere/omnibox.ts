@@ -132,6 +132,7 @@ export class OmniboxEverywhereOmniboxElement extends
         attribute: 'has-user-input',
       },
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
+      ntpRealboxDynamicAiModeButtonPreventEarlyPaint_: {type: Boolean},
       inputState_: {type: Object},
       searchboxLayoutMode: {type: String},
       contextManagementInComposeboxEnabled: {type: Boolean},
@@ -204,6 +205,8 @@ export class OmniboxEverywhereOmniboxElement extends
   protected accessor hasUserInput_: boolean = false;
   protected accessor ntpRealboxDynamicAiModeButtonEnabled_: boolean =
       loadTimeData.getBoolean('ntpRealboxDynamicAiModeButton');
+  protected accessor ntpRealboxDynamicAiModeButtonPreventEarlyPaint_: boolean =
+      loadTimeData.getBoolean('ntpRealboxDynamicAiModeButtonPreventEarlyPaint');
   protected accessor inputState_: InputState|null = null;
   protected accessor searchboxLayoutMode: string =
       loadTimeData.getString('searchboxLayoutMode');

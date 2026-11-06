@@ -404,6 +404,10 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
       "ntpRealboxDynamicAiModeButton",
       is_fusebox_enabled && base::FeatureList::IsEnabled(
                                 ntp_realbox::kNtpRealboxDynamicAiModeButton));
+  source->AddBoolean(
+      "ntpRealboxDynamicAiModeButtonPreventEarlyPaint",
+      base::FeatureList::IsEnabled(
+          ntp_realbox::kNtpRealboxDynamicAiModeButtonPreventEarlyPaint));
   source->AddBoolean("composeboxShowTypedSuggest",
                      omnibox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());
