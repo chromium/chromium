@@ -258,6 +258,22 @@ TEST_F(OnDeviceTranslationInstallerTest, Init) {
               testing::StartsWith(install_dir_.GetPath().MaybeAsASCII()));
 }
 
+TEST_F(OnDeviceTranslationInstallerTest, IsNotInitWhileDownloadPending) {
+  base::RunLoop on_demand_loop;
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .WillOnce([&on_demand_loop](const std::string&,
+                                  component_updater::OnDemandUpdater::Priority,
+                                  component_updater::Callback callback) {
+        std::move(callback).Run(update_client::Error::NONE);
+        on_demand_loop.Quit();
+      });
+
+  installer_->Init(base::BindRepeating([]() { NOTREACHED(); }));
+  EXPECT_FALSE(installer_->IsInit());
+  on_demand_loop.Run();
+  EXPECT_FALSE(installer_->IsInit());
+}
+
 // Tests that the translate kit component can be registered only once.
 TEST_F(OnDeviceTranslationInstallerTest, InitWithCli) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kTranslateKitBinaryPath);

@@ -78,8 +78,9 @@ base::FilePath GetSquashFsImagePath(const base::FilePath& base) {
 
 void SetBinaryPathInPrefs(PrefService* pref_service,
                           const base::FilePath& install_dir) {
-  auto installed_path = GetInstalledPath(install_dir);
-  pref_service->SetFilePath(prefs::kTranslateKitBinaryPath, installed_path);
+  pref_service->SetFilePath(
+      prefs::kTranslateKitBinaryPath,
+      install_dir.empty() ? base::FilePath() : GetInstalledPath(install_dir));
 }
 
 }  // namespace

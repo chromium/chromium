@@ -183,6 +183,9 @@ TEST_F(RegisterTranslateKitComponentTest,
       std::make_unique<TranslateKitComponentMockComponentUpdateService>();
 
   pref_service()->SetBoolean(prefs::kTranslateKitPreviouslyRegistered, true);
+  pref_service()->SetFilePath(
+      prefs::kTranslateKitBinaryPath,
+      install_dir().AppendASCII("stale_installation_dir"));
   EXPECT_CALL(*service, RegisterComponent(_));
   EXPECT_CALL(*service, GetComponentIDs());
   base::RunLoop run_loop;
@@ -190,6 +193,8 @@ TEST_F(RegisterTranslateKitComponentTest,
                                 /*force_install=*/false,
                                 /*registered_callback=*/run_loop.QuitClosure(),
                                 base::DoNothing());
+  EXPECT_TRUE(
+      pref_service()->GetFilePath(prefs::kTranslateKitBinaryPath).empty());
   run_loop.Run();
   EXPECT_TRUE(
       pref_service()->GetBoolean(prefs::kTranslateKitPreviouslyRegistered));
@@ -218,10 +223,14 @@ TEST_F(RegisterTranslateKitComponentTest, ComponentRegistrationForceInstall) {
                                 /*registered_callback=*/run_loop.QuitClosure(),
                                 /*on_ready_callback=*/
                                 on_ready_loop.QuitClosure());
+  EXPECT_TRUE(
+      pref_service()->GetFilePath(prefs::kTranslateKitBinaryPath).empty());
   run_loop.Run();
   on_ready_loop.Run();
   EXPECT_TRUE(
       pref_service()->GetBoolean(prefs::kTranslateKitPreviouslyRegistered));
+  EXPECT_TRUE(
+      pref_service()->GetFilePath(prefs::kTranslateKitBinaryPath).IsAbsolute());
 }
 
 TEST_F(RegisterTranslateKitComponentTest,
