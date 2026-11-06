@@ -7,6 +7,10 @@
 <body>
 <script>
 promise_test(async t => {
+  // Collect any unreferenced peerconnections left behind by earlier tests in
+  // the same worker before checking peerConnectionCount().
+  await asyncGC();
+
   // Some scheduled events can hold Persistent references to RTCPeerConnection.
   // See |RTCPeerConnection::ChangeIceGatheringState()| or
   // |RTCPeerConnection::ChangePeerConnectionState()| for example.

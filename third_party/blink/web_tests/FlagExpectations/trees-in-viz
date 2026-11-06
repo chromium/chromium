@@ -27,8 +27,6 @@
 [ Mac15-arm64 ] fast/peerconnection/RTCPeerConnection-applyConstraints-remoteVideoTrack.html [ Pass ]
 [ Mac14-arm64 ] fast/peerconnection/RTCPeerConnection-datachannel.html [ Pass ]
 [ Mac15-arm64 ] fast/peerconnection/RTCPeerConnection-datachannel.html [ Pass ]
-[ Mac14-arm64 ] fast/peerconnection/RTCPeerConnection-iframe-gc.html [ Pass ]
-[ Mac15-arm64 ] fast/peerconnection/RTCPeerConnection-iframe-gc.html [ Pass ]
 [ Mac14-arm64 ] fast/peerconnection/RTCPeerConnection-lifetime.html [ Pass ]
 [ Mac15-arm64 ] fast/peerconnection/RTCPeerConnection-lifetime.html [ Pass ]
 [ Mac14-arm64 ] fast/spatial-navigation/snav-disappear-after-hover.html [ Pass ]

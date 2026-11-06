@@ -4,15 +4,18 @@
 <title>RTCPeerConnection.createDTMFSender</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
 </head>
 <body>
 <script>
 promise_test(async t => {
+  await asyncGC();
   let pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   let streams = await createStreams({audio:true, video:false}, 1);
   let stream = streams[0];
   let track = stream.getAudioTracks()[0];
+  t.add_cleanup(() => track.stop());
   let sender = pc1.addTrack(track);
   let dtmf = pc1.createDTMFSender(track);
   assert_false(dtmf.canInsertDTMF);

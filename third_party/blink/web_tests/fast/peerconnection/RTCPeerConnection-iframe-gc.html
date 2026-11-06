@@ -7,6 +7,9 @@
 <body>
 <script>
 promise_test(async t => {
+  // Collect any unreferenced peerconnections left behind by earlier tests in
+  // the same worker before recording the baseline count.
+  await asyncGC();
   // In case other tests that leak peerconnections have run before,
   // we record the number of peerconnections at start. Promise_test
   // is not supposed to execute in parallel with other tests.
