@@ -24,8 +24,9 @@
   color: var(--color-organizer-panel-foreground, var(--cr-primary-text-color));
   flex: 1;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
+  line-height: 20px;
   max-width: fit-content;
   min-width: 0;
   overflow: hidden;
@@ -36,7 +37,9 @@
 .separator {
   color: var(--color-organizer-panel-foreground, var(--cr-primary-text-color));
   flex-shrink: 0;
-  font-size: 12px;
+  font-family: inherit;
+  font-size: 13px;
   font-weight: 500;
+  line-height: 20px;
   margin-inline: 4px;
 }

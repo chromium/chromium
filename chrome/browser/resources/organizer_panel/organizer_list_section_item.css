@@ -19,6 +19,10 @@
   border-radius: 8px;
 }
 
+#crUrlListItem:not([size=compact]):not([size=large]) {
+  --cr-url-list-item-height: 52px;
+}
+
 #crUrlListItem::part(iconContainer) {
   background: none;
   color: var(--color-organizer-panel-foreground-subtle,
