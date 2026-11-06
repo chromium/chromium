@@ -18,7 +18,7 @@ export function getHtml(this: OrganizerListSectionElement) {
     @toggle-action="${this.onToggleAction_}">
 </organizer-list-section-header>
 <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}"
-    ?no-animation="${this.noAnimation_}">
+    ?no-animation="${this.noAnimation_ || this.prefersReducedMotion_}">
   ${this.hasZeroState_() ? this.getZeroState_() : ''}
   ${this.getFilteredItems_().map((item, index) => html`
     <organizer-list-section-item .item="${item}" role="listitem"

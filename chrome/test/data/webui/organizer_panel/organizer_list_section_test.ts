@@ -18,6 +18,7 @@ import {TestSearchApiProxy} from './test_search_api_proxy.js';
 import {TestSectionDelegate} from './test_section_delegate.js';
 
 suite('OrganizerListSectionTest', () => {
+  const originalMatchMedia = window.matchMedia;
   let listSection: OrganizerListSectionElement;
   let mockHandler: TestMock<OrganizerPanelPageHandlerRemote>&
       OrganizerPanelPageHandlerRemote;
@@ -40,6 +41,11 @@ suite('OrganizerListSectionTest', () => {
     listSection = document.createElement('organizer-list-section');
     document.body.appendChild(listSection);
     await microtasksFinished();
+  });
+
+  teardown(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    window.matchMedia = originalMatchMedia;
   });
 
   test('renders header and items from delegate', async () => {
@@ -1198,4 +1204,34 @@ suite('OrganizerListSectionTest', () => {
             metrics.count(
                 'Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList'));
       });
+
+  test('sets no-animation on cr-collapse for reduced motion', async () => {
+    const reducedMotionQuery =
+        Object.assign(new EventTarget(), {matches: true});
+    window.matchMedia = (query: string) => {
+      if (query === '(prefers-reduced-motion: reduce)') {
+        return reducedMotionQuery as unknown as MediaQueryList;
+      }
+      return originalMatchMedia.call(window, query);
+    };
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const section = document.createElement('organizer-list-section');
+    document.body.appendChild(section);
+    await microtasksFinished();
+
+    const itemsContainer =
+        section.shadowRoot.querySelector<CrCollapseElement>('#items')!;
+    assertTrue(itemsContainer.noAnimation);
+
+    reducedMotionQuery.matches = false;
+    reducedMotionQuery.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+    assertFalse(itemsContainer.noAnimation);
+
+    reducedMotionQuery.matches = true;
+    reducedMotionQuery.dispatchEvent(new Event('change'));
+    await microtasksFinished();
+    assertTrue(itemsContainer.noAnimation);
+  });
 });
