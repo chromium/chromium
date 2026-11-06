@@ -17,6 +17,8 @@ component("language_tag") {
     "chinese_helpers.h",
     "language_tag.cc",
     "language_tag.h",
+    "language_tag_list_helper.cc",
+    "language_tag_list_helper.h",
     "language_tag_matcher.cc",
     "language_tag_matcher.h",
     "language_tag_value_converters.cc",
@@ -88,6 +90,7 @@ source_set("unittests") {
   sources = [
     "bcp47_extensions_unittest.cc",
     "chinese_helpers_unittest.cc",
+    "language_tag_list_helper_unittest.cc",
     "language_tag_matcher_unittest.cc",
     "language_tag_unittest.cc",
     "locale_holder_unittest.cc",
