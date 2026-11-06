@@ -25,15 +25,8 @@ if (use_blink) {
       "//content/public/browser",
     ]
 
-    if (is_android) {
-      deps += [
-        "//components/privacy_sandbox/privacy_sandbox_attestations/preload",
-      ]
-    }
-
     public_deps = [
       "//base",
-      "//build:buildflag_header_h",
       "//net",
     ]
   }
@@ -78,6 +71,4 @@ if (use_blink) {
 
 source_set("metrics") {
   sources = [ "privacy_sandbox_attestations_histograms.h" ]
-
-  public_deps = [ "//build:buildflag_header_h" ]
 }

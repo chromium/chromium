@@ -5,7 +5,6 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "build/build_config.h"
 
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_
@@ -20,13 +19,6 @@ BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);
 // attestations map is absent.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kDefaultAllowPrivacySandboxAttestations);
-
-#if BUILDFLAG(IS_ANDROID)
-// Allow the Privacy Sandbox Attestations component to load the pre-installed
-// attestation list from Android APK assets.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset);
-#endif
 
 // Enables showing RWS UI.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)

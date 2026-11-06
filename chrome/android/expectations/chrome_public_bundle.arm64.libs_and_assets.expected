@@ -329,7 +329,6 @@ apk_path=assets/locales/zu.pak, compress=False
 apk_path=assets/locales/zu_FEMININE.pak, compress=False
 apk_path=assets/locales/zu_MASCULINE.pak, compress=False
 apk_path=assets/locales/zu_NEUTER.pak, compress=False
-apk_path=assets/privacy_sandbox_attestations/privacy-sandbox-attestations.dat, compress=False
 apk_path=assets/resources.pak+40064988+, compress=False
 apk_path=assets/snapshot_blob_64.bin+40064988+, compress=False
 apk_path=assets/v8_context_snapshot_64.bin+40064988+, compress=False

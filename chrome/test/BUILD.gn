@@ -827,8 +827,6 @@ if (is_android) {
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:metrics",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
-      "//components/privacy_sandbox/privacy_sandbox_attestations/preload",
-      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:privacy_sandbox_attestations_assets",
       "//components/privacy_sandbox/privacy_sandbox_attestations/proto",
       "//components/qr_code_generator:bitmap_generator",
       "//components/safe_browsing/content/common:interfaces",
