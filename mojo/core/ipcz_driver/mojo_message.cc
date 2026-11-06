@@ -397,7 +397,6 @@ std::unique_ptr<MojoMessage> MojoMessage::UnwrapFrom(MojoMessage& message) {
   }
 
   void* buffer;
-  std::vector<IpczHandle> handles(num_handles);
   auto new_message = std::make_unique<ipcz_driver::MojoMessage>();
   const MojoResult append_result = new_message->AppendData(
       base::checked_cast<uint32_t>(num_bytes), nullptr, 0, &buffer, nullptr,

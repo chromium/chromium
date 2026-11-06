@@ -73,7 +73,6 @@ TEST_F(RequestResponseTest, EchoStrings) {
   Remote<sample::Provider> provider;
   ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
-  std::string buf;
   base::RunLoop run_loop;
   constexpr const char kTestMessage1[] = "hello";
   constexpr const char kTestMessage2[] = "hello";
