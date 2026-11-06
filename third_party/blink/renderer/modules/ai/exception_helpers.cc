@@ -363,6 +363,9 @@ String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::
         kUnavailableIncompatiblePreferenceOptions:
       return kExceptionMessageIncompatiblePreferenceOptions;
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableUnsupportedEmbeddingSpace:
+      return "The requested embedding space is not supported.";
     case mojom::blink::ModelAvailabilityCheckResult::kAvailable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloadable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloading:

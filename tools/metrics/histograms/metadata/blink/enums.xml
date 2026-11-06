@@ -6923,6 +6923,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="PerformanceResourceTimingWorkerMatchedBothGettersNonEmpty"/>
   <int value="6086"
       label="PerformanceResourceTimingWorkerFinalBothGettersNonEmpty"/>
+  <int value="6087" label="SemanticEmbedder_EmbeddingSpace"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

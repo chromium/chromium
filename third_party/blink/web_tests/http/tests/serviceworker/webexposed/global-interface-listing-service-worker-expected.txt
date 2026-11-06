@@ -2020,6 +2020,7 @@ interface SemanticEmbedder
     static method availability
     static method create
     attribute @@toStringTag
+    getter embeddingSpace
     method constructor
     method destroy
     method embed

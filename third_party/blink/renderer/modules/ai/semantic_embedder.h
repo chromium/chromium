@@ -24,6 +24,7 @@
 
 namespace blink {
 
+class SemanticEmbedderCreateCoreOptions;
 class SemanticEmbedderResult;
 
 class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
@@ -43,7 +44,7 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
   // semantic_embedder.idl implementation.
   static ScriptPromise<V8Availability> availability(
       ScriptState* script_state,
-      SemanticEmbedderCreateOptions* options,
+      SemanticEmbedderCreateCoreOptions* options,
       ExceptionState& exception_state);
 
   static ScriptPromise<SemanticEmbedder> create(
@@ -59,6 +60,8 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
 
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
+  const String& embeddingSpace() const { return embedding_space_; }
+
   // Asks the browser to drop the in-flight embed() call `request_id` (an id
   // handed out by embed()). Called when its AbortSignal fires.
   void CancelEmbed(uint64_t request_id);
@@ -71,6 +74,8 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AISemanticEmbedder> embedder_remote_;
+  // Always set; the value passed to create().
+  const String embedding_space_;
   // Ids for embed() calls, unique per embedder.
   uint64_t next_request_id_ = 0;
   int in_flight_embed_requests_ = 0;

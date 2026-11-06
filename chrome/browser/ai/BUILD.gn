@@ -27,6 +27,7 @@ source_set("ai") {
     "ai_writer.h",
     "features.cc",
     "features.h",
+    "semantic_embedder_spaces.h",
   ]
   if (!is_android) {
     sources += [
@@ -69,6 +70,7 @@ source_set("impl") {
     "ai_summarizer.cc",
     "ai_utils.cc",
     "ai_writer.cc",
+    "semantic_embedder_spaces.cc",
   ]
   if (!is_android) {
     sources += [
@@ -143,6 +145,7 @@ source_set("unit_tests") {
     "ai_manager_unittest.cc",
     "ai_summarizer_unittest.cc",
     "ai_utils_unittest.cc",
+    "semantic_embedder_spaces_unittest.cc",
   ]
   if (!is_android) {
     sources += [

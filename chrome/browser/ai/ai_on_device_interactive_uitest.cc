@@ -126,8 +126,7 @@ std::vector<std::string> GetAPINames() {
 }
 
 // Returns the options passed to the API's availability(). SemanticEmbedder
-// gets an embeddingSpace, which availability() ignores until the
-// embedding-space CL makes it required; the other APIs need no options.
+// requires an embeddingSpace; the other APIs need no options.
 std::string_view GetAvailabilityOptions(std::string_view name) {
   return name == "SemanticEmbedder" ? "{embeddingSpace: 'embeddinggemma-300m'}"
                                     : "";

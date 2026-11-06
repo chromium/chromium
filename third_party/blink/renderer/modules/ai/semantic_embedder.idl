@@ -10,7 +10,13 @@ enum SemanticEmbedderTaskType {
   "retrieval-document"
 };
 
-dictionary SemanticEmbedderCreateOptions {
+dictionary SemanticEmbedderCreateCoreOptions {
+  // The requested embedding space identifier, e.g. "embeddinggemma-300m".
+  // availability() and create() express support for specific embedding spaces.
+  required DOMString embeddingSpace;
+};
+
+dictionary SemanticEmbedderCreateOptions : SemanticEmbedderCreateCoreOptions {
   AbortSignal signal;
   CreateMonitorCallback monitor;
 };
@@ -36,11 +42,13 @@ typedef (
 ) SemanticEmbedderInputs;
 
 dictionary SemanticEmbedderResult {
-  sequence<ContentEmbedding> embeddings;
+  required sequence<ContentEmbedding> embeddings;
 };
 
 dictionary ContentEmbedding {
-  Float32Array values;
+  required Float32Array values;
+  // The embedding space of `values`.
+  required DOMString embeddingSpace;
 };
 
 [
@@ -55,7 +63,7 @@ interface SemanticEmbedder {
     RaisesException
   ]
   static Promise<Availability> availability(
-    optional SemanticEmbedderCreateOptions options = {}
+    SemanticEmbedderCreateCoreOptions options
   );
 
   [
@@ -64,7 +72,7 @@ interface SemanticEmbedder {
     RaisesException
   ]
   static Promise<SemanticEmbedder> create(
-    optional SemanticEmbedderCreateOptions options = {}
+    SemanticEmbedderCreateOptions options
   );
 
   [
@@ -76,6 +84,10 @@ interface SemanticEmbedder {
     SemanticEmbedderInputs input,
     optional SemanticEmbedderEmbedOptions options = {}
   );
+
+  // The space this embedder produces vectors in; the value passed to create().
+  [MeasureAs=SemanticEmbedder_EmbeddingSpace]
+  readonly attribute DOMString embeddingSpace;
 
   [
     MeasureAs=SemanticEmbedder_Destroy,

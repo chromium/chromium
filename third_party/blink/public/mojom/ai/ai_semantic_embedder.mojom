@@ -22,6 +22,13 @@ enum AISemanticEmbedderTaskType {
   kRetrievalDocument,
 };
 
+// Options for AIManager's CanCreateSemanticEmbedder() and
+// CreateSemanticEmbedder().
+struct AISemanticEmbedderCreateOptions {
+  // The requested embedding space, e.g. "embeddinggemma-300m".
+  string embedding_space;
+};
+
 // Options for the Embed method.
 struct AISemanticEmbedderEmbedOptions {
   AISemanticEmbedderTaskType? task_type;

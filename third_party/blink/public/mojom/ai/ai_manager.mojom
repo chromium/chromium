@@ -78,6 +78,8 @@ enum ModelAvailabilityCheckResult {
   // The device does not have sufficient disk space to build caches for the
   // on-device model.
   kUnavailableInsufficientDiskSpaceForCaches = 22,
+  // The requested embedding space is not served by this browser.
+  kUnavailableUnsupportedEmbeddingSpace = 23,
 
   // Append new line here
 };
@@ -212,12 +214,16 @@ interface AIManager {
                     AIProofreaderCreateOptions options,
                     pending_remote<on_device_model.mojom.DownloadObserver>? monitor);
   // Returns embedder model availability info from the underlying service.
-  CanCreateSemanticEmbedder() => (ModelAvailabilityCheckResult result);
+  // Unknown spaces return kUnavailableUnsupportedEmbeddingSpace.
+  CanCreateSemanticEmbedder(AISemanticEmbedderCreateOptions options) =>
+      (ModelAvailabilityCheckResult result);
 
   // Creates an embedder, passing the result or error to the client.
   // Creation will be aborted if the client is disconnected.
+  // An unknown embedding space is a bad message.
   CreateSemanticEmbedder(
     pending_remote<AIManagerCreateSemanticEmbedderClient> client,
+    AISemanticEmbedderCreateOptions options,
     // If `monitor` is provided, the client will receive download progress
     // updates if the model needs to be downloaded. If it is not provided, the
     // download will still proceed if necessary, but the client will only be

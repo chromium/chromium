@@ -5403,6 +5403,7 @@ enum WebFeature {
   kPerformanceResourceTimingWorkerFinalRouterSourceNonEmpty = 6084,
   kPerformanceResourceTimingWorkerMatchedBothGettersNonEmpty = 6085,
   kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty = 6086,
+  kSemanticEmbedder_EmbeddingSpace = 6087,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -33,11 +33,12 @@ IN_PROC_BROWSER_TEST_F(AISemanticEmbedderBrowserTest, CreateAndEmbed) {
   const char kScript[] = R"(
     (async () => {
       try {
-        const availability = await SemanticEmbedder.availability();
+        const availability = await SemanticEmbedder.availability(
+            {embeddingSpace: 'embeddinggemma-300m'});
         if (availability !== 'available') return 'SKIPPED';
 
-        const embedder =
-            await SemanticEmbedder.create();
+        const embedder = await SemanticEmbedder.create(
+            {embeddingSpace: 'embeddinggemma-300m'});
         if (!embedder) return 'Failed to create';
 
         function cosineSimilarity(a, b) {

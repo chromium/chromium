@@ -50,6 +50,7 @@ Availability ConvertModelAvailabilityCheckResult(
     case ModelAvailabilityCheckResult::kUnavailableEnterprisePolicyDisabled:
     case ModelAvailabilityCheckResult::
         kUnavailableIncompatiblePreferenceOptions:
+    case ModelAvailabilityCheckResult::kUnavailableUnsupportedEmbeddingSpace:
       return Availability::kUnavailable;
   }
 }

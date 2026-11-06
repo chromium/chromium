@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_quota_exceeded_error.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_content_embedding.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_embed_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input.h"
@@ -102,16 +103,20 @@ class MockAISemanticEmbedder : public mojom::blink::AISemanticEmbedder {
 
 class EmbedderTest : public testing::Test {
  public:
+  static constexpr char kEmbeddingSpace[] = "embeddinggemma-300m";
+
   SemanticEmbedder* CreateSemanticEmbedder(ScriptState* script_state) {
     mojo::PendingRemote<mojom::blink::AISemanticEmbedder> pending_remote;
     mock_remote_ = std::make_unique<MockAISemanticEmbedder>(
         pending_remote.InitWithNewPipeAndPassReceiver());
 
+    auto* options = SemanticEmbedderCreateOptions::Create();
+    options->setEmbeddingSpace(kEmbeddingSpace);
     return MakeGarbageCollected<SemanticEmbedder>(
         script_state,
         ExecutionContext::From(script_state)
             ->GetTaskRunner(TaskType::kInternalDefault),
-        std::move(pending_remote), SemanticEmbedderCreateOptions::Create());
+        std::move(pending_remote), options);
   }
 
   // embed() input for one bare string.
@@ -228,6 +233,32 @@ TEST_F(EmbedderTest, EmbedAcceptsTypedTextItems) {
     EXPECT_EQ(mock_remote_->last_inputs(), (Vector<String>{"hello", "world"}));
   }
   EXPECT_EQ(mock_remote_->call_count(), 2);
+}
+
+TEST_F(EmbedderTest, ResultCarriesEmbeddingSpace) {
+  V8TestingScope scope;
+  SemanticEmbedder* embedder = CreateSemanticEmbedder(scope.GetScriptState());
+  EXPECT_EQ(embedder->embeddingSpace(), kEmbeddingSpace);
+
+  DummyExceptionStateForTesting exception_state;
+  auto* input = MakeInput(Vector<String>{"hello", "world"});
+  auto promise =
+      embedder->embed(scope.GetScriptState(), input,
+                      SemanticEmbedderEmbedOptions::Create(), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  SemanticEmbedderResult* result =
+      NativeValueTraits<SemanticEmbedderResult>::NativeValue(
+          scope.GetIsolate(), tester.Value().V8Value(), exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_EQ(result->embeddings().size(), 2u);
+  for (const auto& embedding : result->embeddings()) {
+    EXPECT_EQ(embedding->embeddingSpace(), kEmbeddingSpace);
+  }
 }
 
 TEST_F(EmbedderTest, DisconnectRejectsPromise) {

@@ -38,6 +38,7 @@
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_writer.h"
 #include "chrome/browser/ai/features.h"
+#include "chrome/browser/ai/semantic_embedder_spaces.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -76,6 +77,7 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_proofreader.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_semantic_embedder.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
@@ -1900,6 +1902,7 @@ bool AIManager::IsBlocked(
 }
 
 void AIManager::CanCreateSemanticEmbedder(
+    blink::mojom::AISemanticEmbedderCreateOptionsPtr options,
     CanCreateSemanticEmbedderCallback callback) {
   if (!base::FeatureList::IsEnabled(blink::features::kAIEmbeddingsAPI)) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
@@ -1921,6 +1924,12 @@ void AIManager::CanCreateSemanticEmbedder(
   if (!profile_has_optimization_guide_keyed_service_) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableServiceNotRunning);
+    return;
+  }
+
+  if (!semantic_embedder::SupportsEmbeddingSpace(options->embedding_space)) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedEmbeddingSpace);
     return;
   }
 
@@ -1946,6 +1955,7 @@ void AIManager::CanCreateSemanticEmbedder(
 void AIManager::CreateSemanticEmbedder(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
         client,
+    blink::mojom::AISemanticEmbedderCreateOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   if (!base::FeatureList::IsEnabled(blink::features::kAIEmbeddingsAPI)) {
     receivers_.ReportBadMessage("Feature not enabled");
@@ -1954,6 +1964,11 @@ void AIManager::CreateSemanticEmbedder(
 
   if (IsBlocked(network::mojom::PermissionsPolicyFeature::kSemanticEmbedder)) {
     receivers_.ReportBadMessage("Policy or user setting disabled");
+    return;
+  }
+
+  if (!semantic_embedder::SupportsEmbeddingSpace(options->embedding_space)) {
+    receivers_.ReportBadMessage("Unsupported embedding space");
     return;
   }
 

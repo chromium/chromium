@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_semantic_embedder.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/ai/echo_ai_decision_model.h"
@@ -34,6 +35,10 @@ namespace {
 
 const int kMockDownloadPreparationTimeMillisecond = 300;
 const int kMockModelSizeBytes = 0x10000;
+
+// Semantic Embedder web tests ask for this space to exercise the unsupported
+// path; every other name is served.
+constexpr char kEchoUnsupportedEmbeddingSpace[] = "unsupported-embedding-space";
 
 using blink::mojom::AILanguageCodePtr;
 
@@ -338,18 +343,28 @@ void EchoAIManagerImpl::CreateProofreader(
       std::move(client_remote));
 }
 
-
 void EchoAIManagerImpl::CanCreateSemanticEmbedder(
+    blink::mojom::AISemanticEmbedderCreateOptionsPtr options,
     CanCreateSemanticEmbedderCallback callback) {
+  if (options->embedding_space == kEchoUnsupportedEmbeddingSpace) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedEmbeddingSpace);
+    return;
+  }
   CanCreateClient<CanCreateSemanticEmbedderCallback>(std::move(callback));
 }
 
 void EchoAIManagerImpl::CreateSemanticEmbedder(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
         client,
+    blink::mojom::AISemanticEmbedderCreateOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   mojo::Remote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
       client_remote(std::move(client));
+  if (options->embedding_space == kEchoUnsupportedEmbeddingSpace) {
+    receivers_.ReportBadMessage("Unsupported embedding space");
+    return;
+  }
   if (monitor.is_valid()) {
     download_progress_observers_.Add(std::move(monitor));
   }
