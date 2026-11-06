@@ -201,7 +201,7 @@ void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished(
             &BrowserGpuChannelHostFactory::EstablishRequest::RestartTimeout,
             this));
     // TODO(jam): can we ever enter this when it was a sync call?
-    GetUIThreadTaskRunner({})->PostTask(
+    main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &BrowserGpuChannelHostFactory::EstablishRequest::Establish, this,
