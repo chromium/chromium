@@ -27,12 +27,15 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/pwn_open_url_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/events/base_event_utils.h"
 
 namespace {
 
@@ -501,4 +504,80 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
       blocked_content::PopupBlockerTabHelper::FromWebContents(active_tab);
   ASSERT_TRUE(popup_blocker);
   EXPECT_EQ(1u, popup_blocker->GetBlockedPopupsCount());
+}
+
+IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
+                       ModifiedClickInPanelOpensNewTabWithoutPopupBlock) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  content::WebContents* active_tab =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_EQ(initial_url, active_tab->GetLastCommittedURL());
+
+  MockContextualTasksUiServiceForAuth* ui_service = GetMockUiService();
+  ASSERT_TRUE(ui_service);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+
+  GURL guest_url = embedded_test_server()->GetURL("/empty.html");
+  ui_service->StartTaskUiInSidePanel(
+      browser(), browser()->GetActiveTabInterface(), guest_url,
+      /*session_handle=*/nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelShowing() &&
+           side_panel_ui->GetCurrentEntryId() ==
+               SidePanelEntry::Id::kContextualTasks;
+  }));
+
+  auto* controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(controller);
+  content::WebContents* panel_wc = controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_wc);
+  EXPECT_TRUE(content::WaitForLoadStop(panel_wc));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !panel_wc->GetInnerWebContents().empty(); }));
+  content::WebContents* guest_wc = panel_wc->GetInnerWebContents()[0];
+  ASSERT_TRUE(guest_wc);
+  EXPECT_TRUE(content::WaitForLoadStop(guest_wc));
+
+  const int tabs_before = browser()->GetTabStripModel()->count();
+  GURL target_url = embedded_test_server()->GetURL("/title2.html");
+
+  blink::WebMouseEvent mouse_event(blink::WebInputEvent::Type::kMouseDown,
+                                   blink::WebInputEvent::kControlKey,
+                                   ui::EventTimeForNow());
+  mouse_event.button = blink::WebMouseEvent::Button::kLeft;
+  guest_wc->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->SimulateUserInteraction(mouse_event);
+
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  ASSERT_TRUE(content::ExecJs(guest_wc, content::JsReplace(R"(
+        const a = document.createElement('a');
+        a.href = $1;
+        a.textContent = 'Open in new tab';
+        document.body.appendChild(a);
+        a.dispatchEvent(new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          ctrlKey: true,
+          metaKey: true,
+        }));
+      )",
+                                                           target_url)));
+  content::WebContents* new_tab = tab_waiter.Wait();
+  ASSERT_TRUE(new_tab);
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  EXPECT_EQ(tabs_before + 1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(target_url, new_tab->GetLastCommittedURL());
+  auto* popup_blocker =
+      blocked_content::PopupBlockerTabHelper::FromWebContents(active_tab);
+  ASSERT_TRUE(popup_blocker);
+  EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
 }

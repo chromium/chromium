@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
@@ -565,8 +566,7 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
   // cleared by `Navigator::RequestOpenURL()`, so checking
   // `!params.started_from_context_menu` ensures those IPCs are still validated.
   if (params.is_renderer_initiated || !params.started_from_context_menu) {
-    if (modified_params.user_gesture &&
-        (!source_rfh || !source_rfh->HasTransientUserActivation())) {
+    if (modified_params.user_gesture && !ConsumeUserActivation(source_rfh)) {
       modified_params.user_gesture = false;
     }
 
@@ -744,6 +744,28 @@ void ContextualTasksWebView::UpdateScrimVisibility() {
   }
   ghost_loader_view_->SetShowErrorPage(false);
   ghost_loader_view_->SetVisible(is_ghost_loader_visible_);
+}
+
+bool ContextualTasksWebView::ConsumeUserActivation(
+    content::RenderFrameHost* source_rfh) {
+  if (!source_rfh) {
+    return false;
+  }
+  if (source_rfh->ConsumeTransientUserActivation()) {
+    return true;
+  }
+  content::WebContents* source_wc =
+      content::WebContents::FromRenderFrameHost(source_rfh);
+  if (!source_wc || !source_wc->HasRecentInteraction()) {
+    return false;
+  }
+  const base::TimeTicks interaction_time =
+      source_wc->GetLastInteractionTimeTicks();
+  if (interaction_time <= last_consumed_interaction_time_) {
+    return false;
+  }
+  last_consumed_interaction_time_ = interaction_time;
+  return true;
 }
 
 BEGIN_METADATA(ContextualTasksWebView)
