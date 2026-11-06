@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.contacts_picker;
 import android.graphics.Bitmap;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -43,6 +44,10 @@ public class ContactsPickerImageDecoder {
 
     @NativeMethods
     interface Natives {
-        void decodeImage(byte[] data, int desiredSize, Callback<@Nullable Bitmap> callback);
+        void decodeImage(
+                @JniType("std::vector<uint8_t>") byte[] data,
+                int desiredSize,
+                @JniType("base::OnceCallback<void(const jni_zero::JavaRef<jobject>&)>")
+                        Callback<@Nullable Bitmap> callback);
     }
 }

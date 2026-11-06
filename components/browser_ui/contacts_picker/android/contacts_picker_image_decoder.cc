@@ -11,11 +11,10 @@
 #include <vector>
 
 #include "base/android/callback_android.h"
-#include "base/android/jni_array.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,6 +24,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorType.h"
@@ -56,7 +56,7 @@ data_decoder::DataDecoder* GetDataDecoder() {
 
 // Scales `bitmap` to the desired square size and converts it to a Java Bitmap
 // on a ThreadPool worker thread to prevent UI jank.
-base::android::ScopedJavaGlobalRef<jobject> ScaleAndConvertBitmapInBackground(
+jni_zero::ScopedJavaGlobalRef<jobject> ScaleAndConvertBitmapInBackground(
     const SkBitmap& bitmap,
     int32_t desired_size) {
   SkBitmap scaled_bitmap = ScaleContactIconBitmap(bitmap, desired_size);
@@ -64,29 +64,23 @@ base::android::ScopedJavaGlobalRef<jobject> ScaleAndConvertBitmapInBackground(
     return {};
   }
 
-  base::android::ScopedJavaLocalRef<jobject> j_bitmap =
-      gfx::ConvertToJavaBitmap(scaled_bitmap,
-                               gfx::OomBehavior::kReturnNullOnOom);
+  jni_zero::ScopedJavaLocalRef<jobject> j_bitmap = gfx::ConvertToJavaBitmap(
+      scaled_bitmap, gfx::OomBehavior::kReturnNullOnOom);
   if (!j_bitmap) {
     return {};
   }
 
-  return base::android::ScopedJavaGlobalRef<jobject>(j_bitmap);
+  return jni_zero::ScopedJavaGlobalRef<jobject>(j_bitmap);
 }
 
-void OnBitmapConverted(base::android::ScopedJavaGlobalRef<jobject> j_callback,
-                       base::android::ScopedJavaGlobalRef<jobject> j_bitmap) {
-  DCHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
-  base::android::RunObjectCallbackAndroid(j_callback, j_bitmap);
-}
-
-void OnImageDecoded(base::android::ScopedJavaGlobalRef<jobject> j_callback,
-                    int32_t desired_size,
-                    const SkBitmap& bitmap) {
+void OnImageDecoded(
+    base::OnceCallback<void(const jni_zero::JavaRef<jobject>&)> callback,
+    int32_t desired_size,
+    const SkBitmap& bitmap) {
   DCHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
 
   if (bitmap.drawsNothing() || bitmap.isNull()) {
-    base::android::RunObjectCallbackAndroid(j_callback, nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -94,7 +88,7 @@ void OnImageDecoded(base::android::ScopedJavaGlobalRef<jobject> j_callback,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ScaleAndConvertBitmapInBackground, bitmap, desired_size),
-      base::BindOnce(&OnBitmapConverted, std::move(j_callback)));
+      std::move(callback));
 }
 
 }  // namespace
@@ -123,20 +117,13 @@ SkBitmap ScaleContactIconBitmap(const SkBitmap& bitmap, int32_t desired_size) {
 }
 
 static void JNI_ContactsPickerImageDecoder_DecodeImage(
-    JNIEnv* env,
-    const base::android::JavaRef<jbyteArray>& j_data,
+    std::vector<uint8_t> data,
     int32_t desired_size,
-    const base::android::JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(const jni_zero::JavaRef<jobject>&)> callback) {
   DCHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
 
-  if (!j_data) {
-    base::android::RunObjectCallbackAndroid(j_callback, nullptr);
-    return;
-  }
-
-  size_t data_size = j_data.GetSize(env);
-  if (data_size == 0 || data_size > kMaxEncodedBytes) {
-    base::android::RunObjectCallbackAndroid(j_callback, nullptr);
+  if (data.empty() || data.size() > kMaxEncodedBytes) {
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -144,14 +131,10 @@ static void JNI_ContactsPickerImageDecoder_DecodeImage(
   gfx::Size desired_frame_size =
       clamped_size > 0 ? gfx::Size(clamped_size, clamped_size) : gfx::Size();
 
-  auto decode_callback = base::BindOnce(
-      &OnImageDecoded,
-      base::android::ScopedJavaGlobalRef<jobject>(env, j_callback),
-      clamped_size);
+  auto decode_callback =
+      base::BindOnce(&OnImageDecoded, std::move(callback), clamped_size);
 
-  std::vector<uint8_t> buffer(data_size);
-  base::android::JavaByteArrayToByteSpan(env, j_data, buffer);
-  data_decoder::DecodeImage(GetDataDecoder(), buffer,
+  data_decoder::DecodeImage(GetDataDecoder(), data,
                             data_decoder::mojom::ImageCodec::kDefault,
                             /*shrink_to_fit=*/true, kMaxDecodedImageBytes,
                             desired_frame_size, std::move(decode_callback));
