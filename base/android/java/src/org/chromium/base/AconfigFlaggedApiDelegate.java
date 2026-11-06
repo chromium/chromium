@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import android.app.Activity;
 import android.content.ClipDescription;
 import android.net.Uri;
 import android.os.LocaleList;
@@ -134,4 +135,18 @@ public interface AconfigFlaggedApiDelegate {
      * @param mode The {@link ActionMode} on which to clear the text selection.
      */
     default void clearTextSelection(ActionMode mode) {}
+
+    /**
+     * Returns whether {@code activity} is currently being projected onto a car display by Android
+     * Auto (phone projection). This is distinct from Chrome running natively on Android Automotive
+     * OS, which is reported by {@code DeviceInfo.isAutomotive()}.
+     *
+     * <p>Detection is only supported on Android 17 (API 37) and later; returns {@code false} on
+     * earlier releases and when the activity is not attached to a display.
+     *
+     * @param activity The activity to check.
+     */
+    default boolean isProjectedToCarDisplay(Activity activity) {
+        return false;
+    }
 }
