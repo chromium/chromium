@@ -9,10 +9,14 @@ import android.content.SharedPreferences;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 
 /**
  * Responsible for persisting the number of tabs in a tab model. Used to quickly determine how many
  * tabs need to be restored during startup without interacting with database task runner sequencing.
+ *
+ * <p>Counts are partitioned by {@code orchestratorType}, {@code windowTag}, and incognito (OTR)
+ * status.
  */
 @NullMarked
 public class TabCountTracker {
@@ -20,15 +24,25 @@ public class TabCountTracker {
     private static final String REGULAR_SUFFIX = "_regular";
     private static final String INCOGNITO_SUFFIX = "_incognito";
 
+    private static final String TAG_TABBED = "Tabbed";
+    private static final String TAG_CUSTOM = "Custom";
+    private static final String TAG_ARCHIVED = "Archived";
+    private static final String TAG_HEADLESS = "Headless";
+
+    private final String mWindowTag;
     private final String mRegularModelNumTabsKey;
     private final String mIncognitoModelNumTabsKey;
 
     /**
      * @param windowTag The tag for the window being tracked.
+     * @param orchestratorType The orchestrator type representing the tab model orchestrator.
      */
-    public TabCountTracker(String windowTag) {
-        mRegularModelNumTabsKey = getNumTabsKeyForModel(windowTag, /* incognito= */ false);
-        mIncognitoModelNumTabsKey = getNumTabsKeyForModel(windowTag, /* incognito= */ true);
+    public TabCountTracker(String windowTag, @TabOrchestratorType int orchestratorType) {
+        mWindowTag = windowTag;
+        mRegularModelNumTabsKey =
+                getNumTabsKeyForModel(windowTag, orchestratorType, /* incognito= */ false);
+        mIncognitoModelNumTabsKey =
+                getNumTabsKeyForModel(windowTag, orchestratorType, /* incognito= */ true);
     }
 
     /**
@@ -67,28 +81,26 @@ public class TabCountTracker {
     }
 
     /**
-     * Clears all tab count preferences associated with the current window. Called when a window is
-     * closed or destroyed.
+     * Clears all tab count preferences associated with the current window across all orchestrator
+     * types. Called when a window is closed or destroyed.
      */
     public void clearCurrentWindow() {
-        getSharedPreferences()
-                .edit()
-                .remove(mRegularModelNumTabsKey)
-                .remove(mIncognitoModelNumTabsKey)
-                .apply();
+        cleanupWindow(mWindowTag);
     }
 
     /**
-     * Cleans up all tab count preferences associated with a specific window. Typically called when
-     * a window is closed or destroyed.
+     * Cleans up all tab count preferences associated with a specific window across all orchestrator
+     * types. Typically called when a window is closed or destroyed.
      *
      * @param windowTag The tag for the window to clean up.
      */
     public static void cleanupWindow(String windowTag) {
-        String regularKey = getNumTabsKeyForModel(windowTag, /* incognito= */ false);
-        String incognitoKey = getNumTabsKeyForModel(windowTag, /* incognito= */ true);
-
-        getSharedPreferences().edit().remove(regularKey).remove(incognitoKey).apply();
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
+        for (@TabOrchestratorType int type = 0; type < TabOrchestratorType.NUM_ENTRIES; type++) {
+            editor.remove(getNumTabsKeyForModel(windowTag, type, /* incognito= */ false));
+            editor.remove(getNumTabsKeyForModel(windowTag, type, /* incognito= */ true));
+        }
+        editor.apply();
     }
 
     /** Clears all tab count data for all windows. */
@@ -101,8 +113,25 @@ public class TabCountTracker {
                 .getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
     }
 
-    private static String getNumTabsKeyForModel(String windowTag, boolean incognito) {
+    private static String getNumTabsKeyForModel(
+            String windowTag, @TabOrchestratorType int orchestratorType, boolean incognito) {
+        String orchestratorTag = getOrchestratorTag(orchestratorType);
         String suffix = incognito ? INCOGNITO_SUFFIX : REGULAR_SUFFIX;
-        return windowTag + suffix;
+        return orchestratorTag + "_" + windowTag + suffix;
+    }
+
+    private static String getOrchestratorTag(@TabOrchestratorType int orchestratorType) {
+        switch (orchestratorType) {
+            case TabOrchestratorType.TABBED:
+                return TAG_TABBED;
+            case TabOrchestratorType.CUSTOM:
+                return TAG_CUSTOM;
+            case TabOrchestratorType.ARCHIVED:
+                return TAG_ARCHIVED;
+            case TabOrchestratorType.HEADLESS:
+                return TAG_HEADLESS;
+            default:
+                throw new IllegalStateException("Unknown orchestrator type: " + orchestratorType);
+        }
     }
 }
