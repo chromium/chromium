@@ -417,8 +417,10 @@ TEST_F(PasswordStatusCheckServiceBaseTest, RepeatedlyUpdatingDoesNotCrash) {
 TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheckNoPasswords) {
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
+  // The initial password check is scheduled starting from tomorrow midnight, so
+  // it runs within GetScheduledPasswordCheckInterval() + 1 day.
   task_environment()->AdvanceClock(
-      service()->GetScheduledPasswordCheckInterval());
+      service()->GetScheduledPasswordCheckInterval() + base::Days(1));
   EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
   EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kIdle));
   RunUntilIdle();
@@ -558,10 +560,13 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
       service()->GetScheduledPasswordCheckInterval();
   base::Time check_time_before = service()->GetScheduledPasswordCheckTime();
 
-  // Time passes in which the scheduled password check should have run (Password
-  // check is scheduled in the time window of [Now, Now + Interval]).
-  task_environment()->AdvanceClock(
-      service()->GetScheduledPasswordCheckInterval());
+  // Advance to the exact timestamp at which the initial check is scheduled to
+  // run (in [tomorrow midnight, tomorrow midnight + Interval)). Jumping past
+  // the end of the window (Now + Interval + 1 day) instead would move Now()
+  // past `check_time_before + interval_before - kMinTimeBetweenPasswordChecks`
+  // whenever `check_time_before` falls on the first day, causing
+  // ScheduleCheckAndStartRepeatedUpdates() to add `interval_before` twice.
+  task_environment()->AdvanceClock(check_time_before - base::Time::Now());
   EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
   EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kIdle));
   RunUntilIdle();
@@ -643,10 +648,15 @@ TEST_F(PasswordStatusCheckServiceBaseTest, ScheduledCheckRunsRepeatedly) {
       .Times(runs);
 
   for (int i = 0; i < runs; ++i) {
-    // Advance slightly past the interval to avoid timer boundary rounding
-    // flakes.
-    task_environment()->AdvanceClock(
-        service()->GetScheduledPasswordCheckInterval() + base::Microseconds(1));
+    // The initial password check is scheduled starting from tomorrow midnight
+    // (up to Now + Interval + 1 day); subsequent checks are scheduled one
+    // interval after the previous check time. Advance slightly past the
+    // scheduled time to avoid timer boundary rounding flakes.
+    base::TimeDelta delta =
+        (i == 0 ? service()->GetScheduledPasswordCheckTime() - base::Time::Now()
+                : service()->GetScheduledPasswordCheckInterval()) +
+        base::Microseconds(1);
+    task_environment()->AdvanceClock(delta);
     RunUntilIdle();
   }
 }
