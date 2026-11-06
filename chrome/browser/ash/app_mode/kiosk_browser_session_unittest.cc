@@ -66,11 +66,11 @@ class KioskBrowserSessionBaseTest
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ash::AshTestHelper::InitParams init_params;
-    init_params.post_subsystems_teardown_callback =
-        base::BindOnce(&KioskBrowserSessionBaseTest::OnSubsystemsTornDown,
-                       base::Unretained(this));
-    ash_test_helper_.SetUp(std::move(init_params));
+    ash_test_helper_.SetUp(
+        {.users = ash::AshTestHelper::InitParams::DefaultUsers(),
+         .post_subsystems_teardown_callback =
+             base::BindOnce(&KioskBrowserSessionBaseTest::OnSubsystemsTornDown,
+                            base::Unretained(this))});
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());

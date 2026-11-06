@@ -67,12 +67,25 @@ TEST(AshTestHelperInitParamsTest, EmptyUsers) {
       base::test::TaskEnvironment::MainThreadType::UI};
   AshTestHelper ash_test_helper;
 
-  AshTestHelper::InitParams init_params;
-  init_params.users.clear();
-  ash_test_helper.SetUp(std::move(init_params));
+  // No user is logged in by default.
+  ash_test_helper.SetUp(AshTestHelper::InitParams());
 
   EXPECT_EQ(0, Shell::Get()->session_controller()->NumberOfLoggedInUsers());
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
+            Shell::Get()->session_controller()->GetSessionState());
+
+  ash_test_helper.TearDown();
+}
+
+TEST(AshTestHelperInitParamsTest, DefaultUsers) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::UI};
+  AshTestHelper ash_test_helper;
+
+  ash_test_helper.SetUp({.users = AshTestHelper::InitParams::DefaultUsers()});
+
+  EXPECT_EQ(1, Shell::Get()->session_controller()->NumberOfLoggedInUsers());
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
             Shell::Get()->session_controller()->GetSessionState());
 
   ash_test_helper.TearDown();
@@ -87,7 +100,6 @@ TEST(AshTestHelperInitParamsTest, MultipleUsers) {
   const AccountId kUser2 = AccountId::FromUserEmail("user2@example.com");
 
   AshTestHelper::InitParams init_params;
-  init_params.users.clear();
   init_params.users.push_back({.account_id = kUser1});
   init_params.users.push_back({.account_id = kUser2});
   ash_test_helper.SetUp(std::move(init_params));

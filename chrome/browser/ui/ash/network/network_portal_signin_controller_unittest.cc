@@ -116,8 +116,8 @@ class NetworkPortalSigninControllerTest : public testing::Test {
     user_manager_->Initialize();
 
     // AshTestHelper is needed to call webui in one of the tests.
-    ash::AshTestHelper::InitParams params;
-    ash_test_helper_.SetUp(std::move(params));
+    ash_test_helper_.SetUp(
+        {.users = ash::AshTestHelper::InitParams::DefaultUsers()});
     task_environment_.RunUntilIdle();
 
     // Initialize ProfileHelper.

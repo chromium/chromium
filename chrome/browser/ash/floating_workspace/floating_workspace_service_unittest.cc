@@ -345,8 +345,8 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     cros_settings_test_helper_ =
         std::make_unique<ScopedCrosSettingsTestHelper>();
-    ash::AshTestHelper::InitParams params;
-    ash_test_helper_.SetUp(std::move(params));
+    ash_test_helper_.SetUp(
+        {.users = ash::AshTestHelper::InitParams::DefaultUsers()});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());

@@ -154,7 +154,8 @@ void AshTestBase::SetUp() {
   CHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
   CHECK(base::ThreadPoolInstance::Get());
 
-  AshTestHelper::InitParams init_params;
+  AshTestHelper::InitParams init_params{
+      .users = AshTestHelper::InitParams::DefaultUsers()};
   SetUpInitParams(init_params);
   if (!init_params.local_state) {
     init_params.local_state = local_state();

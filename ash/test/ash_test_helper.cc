@@ -99,11 +99,12 @@ std::unique_ptr<views::TestViewsDelegate> MakeTestViewsDelegate() {
 }
 }  // namespace
 
-AshTestHelper::InitParams::InitParams() {
+// static
+std::vector<LoginInfo> AshTestHelper::InitParams::DefaultUsers() {
+  std::vector<LoginInfo> users;
   users.push_back(LoginInfo{});
+  return users;
 }
-AshTestHelper::InitParams::InitParams(InitParams&&) = default;
-AshTestHelper::InitParams::~InitParams() = default;
 
 class AshTestHelper::BluezDBusManagerInitializer {
  public:
@@ -157,7 +158,7 @@ AshTestHelper::~AshTestHelper() {
 }
 
 void AshTestHelper::SetUp() {
-  SetUp(InitParams());
+  SetUp({.users = InitParams::DefaultUsers()});
 }
 
 void AshTestHelper::TearDown() {

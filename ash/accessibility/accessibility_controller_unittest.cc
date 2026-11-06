@@ -2888,11 +2888,8 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
          features::kOsSyncAccessibilitySettingsBatch3},
         {});
 
-    AshTestHelper::InitParams params;
-    params.users.clear();
-    params.destroy_screen = false;
     ash_test_helper_ = std::make_unique<AshTestHelper>();
-    ash_test_helper_->SetUp(std::move(params));
+    ash_test_helper_->SetUp({.destroy_screen = false});
 
     Shell::Get()->session_controller()->AddObserver(this);
   }

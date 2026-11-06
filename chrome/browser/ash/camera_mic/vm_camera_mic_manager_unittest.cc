@@ -103,9 +103,9 @@ class VmCameraMicManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    ash::AshTestHelper::InitParams params;
-    params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
-    ash_test_helper_.SetUp(std::move(params));
+    ash_test_helper_.SetUp(
+        {.users = ash::AshTestHelper::InitParams::DefaultUsers(),
+         .local_state = TestingBrowserProcess::GetGlobal()->local_state()});
 
     vm_camera_mic_manager_ = std::make_unique<VmCameraMicManager>();
     vm_camera_mic_manager_->OnPrimaryUserSessionStarted();

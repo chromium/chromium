@@ -61,9 +61,7 @@ class FakeObserver : public AccelerometerReader::Observer {
 class AccelerometerProviderMojoTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    ash::AshTestHelper::InitParams init_params;
-    init_params.users.clear();
-    ash_test_helper_.SetUp(std::move(init_params));
+    ash_test_helper_.SetUp(ash::AshTestHelper::InitParams());
 
     sensor_hal_server_ =
         std::make_unique<chromeos::sensors::FakeSensorHalServer>();

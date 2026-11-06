@@ -134,9 +134,9 @@ class AppAccessNotifierTest : public testing::Test,
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 
-    ash::AshTestHelper::InitParams params;
-    params.local_state = &local_state_;
-    ash_test_helper_.SetUp(std::move(params));
+    ash_test_helper_.SetUp(
+        {.users = ash::AshTestHelper::InitParams::DefaultUsers(),
+         .local_state = &local_state_});
 
     app_access_notifier_ = std::make_unique<TestAppAccessNotifier>();
 

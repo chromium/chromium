@@ -111,7 +111,8 @@ class KioskAppWindowsLogsCollectorTest
                 content::BrowserTaskEnvironment::REAL_IO_THREAD)) {}
 
   void SetUp() override {
-    ash_test_helper_.SetUp(ash::AshTestHelper::InitParams());
+    ash_test_helper_.SetUp(
+        {.users = ash::AshTestHelper::InitParams::DefaultUsers()});
 
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kForceAppMode);

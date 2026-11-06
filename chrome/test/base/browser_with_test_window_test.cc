@@ -82,18 +82,11 @@ void BrowserWithTestWindowTest::SetUp() {
   session_manager::SessionManager::Get()->OnUserManagerCreated(
       user_manager::UserManager::Get());
 
-  {
-    ash::AshTestHelper::InitParams ash_init;
-    ash_init.local_state = g_browser_process->local_state();
-    ash_init.users.clear();
-
-    // Do not auto create user pref service. PrefService will be created by
-    // TestingProfile.
-    ash_init.auto_create_prefs_services = false;
-
-    ash_test_helper_->SetUp(std::move(ash_init));
-    OnAshTestHelperCreated();
-  }
+  ash_test_helper_->SetUp({.local_state = g_browser_process->local_state(),
+                           // Do not auto create user pref service. PrefService
+                           // will be created by TestingProfile.
+                           .auto_create_prefs_services = false});
+  OnAshTestHelperCreated();
 #endif
 
   // This must be created after |ash_test_helper_| is set up so that it doesn't

@@ -319,14 +319,12 @@ class WizardControllerTestBase : public ::testing::Test {
 
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
 
-    AshTestHelper::InitParams params;
-    params.users.clear();
-    params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
     test_context_factories_ = std::make_unique<ui::TestContextFactories>(
         /*enable_pixel_output=*/false);
     ash_test_helper_ = std::make_unique<AshTestHelper>(
         test_context_factories_->GetContextFactory());
-    ash_test_helper_->SetUp(std::move(params));
+    ash_test_helper_->SetUp(
+        {.local_state = TestingBrowserProcess::GetGlobal()->local_state()});
 
     // Initialize TimezoneResolverManager here because it depends on
     // SystemLocationProvider, which is initialized in AshTestHelper::SetUp.

@@ -259,6 +259,8 @@ class AshTestBase : public testing::Test {
   // Called inside `AshTestBase::SetUp()` right before `AshTestHelper` is
   // initialized. Subclasses can override this to customize `init_params`, and
   // should call the parent class's `SetUpInitParams(init_params)` first.
+  // `init_params.users` is `AshTestHelper::InitParams::DefaultUsers()` by
+  // default, i.e., a default user is logged in during `SetUp()`.
   virtual void SetUpInitParams(AshTestHelper::InitParams& init_params);
 
   base::test::TaskEnvironment* task_environment() {

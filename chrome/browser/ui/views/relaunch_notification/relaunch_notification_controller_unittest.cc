@@ -953,10 +953,8 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
         /*cros_settings=*/nullptr));
 
     // Set up Ash global instances.
-    ash::AshTestHelper::InitParams init_params;
-    init_params.users.clear();
     ash_test_helper_ = std::make_unique<ash::AshTestHelper>();
-    ash_test_helper_->SetUp(std::move(init_params));
+    ash_test_helper_->SetUp(ash::AshTestHelper::InitParams());
 
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->OnUserManagerCreated(user_manager_.Get());
