@@ -7717,6 +7717,48 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
                                         "el => el.aimButtonVisible_")));
 }
 
+// Clicking where the AIM button sits while an unfocused draft hides it should
+// focus the omnibox and select the draft rather than activating AI Mode or
+// navigating away from the NTP.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       ClickHiddenAimButtonAreaInUnfocusedDraftFocusesOmnibox) {
+  const std::string kDraft = "example text";
+  gfx::Point compose_button_point;
+  RunTestSequence(
+      SetAimEligibleResponse(), FocusOmniboxOnInitialNtp(kTab1),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InputWebUIText(kDraft),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      WaitForPopupToStopForwardingMouseEvents(),
+      InAnyContext(WithElement(kPopupWebView,
+                               [&compose_button_point](ui::TrackedElement* el) {
+                                 compose_button_point =
+                                     el->AsA<TrackedElementWebContents>()
+                                         ->owner()
+                                         ->GetElementBoundsInScreen(
+                                             kComposeButton)
+                                         .CenterPoint();
+                               })),
+      ClickWebPageBody(kTab1), WaitForVisibleOmniboxUnfocused(),
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => !el.aimButtonVisible_")),
+      InSameContextAs(
+          kPopupWebView, MoveMouseTo(std::ref(compose_button_point)),
+          ClickMouse(ui_controls::LEFT, /*release=*/false), ReleaseMouse()),
+      WaitForOmniboxFocus(true),
+      InAnyContext(CheckWebUIInputSelection(0, kDraft.length())),
+      CheckPopupState(OmniboxPopupState::kFull),
+      CheckResult(
+          [this]() {
+            auto* contents =
+                browser()->tab_strip_model()->GetActiveWebContents();
+            return contents->GetVisibleURL() ==
+                       GURL(chrome::kChromeUINewTabURL) &&
+                   !contents->GetController().GetPendingEntry();
+          },
+          true, "StaysOnNtp"));
+}
+
 class FullWebUIOmniboxSimplificationInteractiveTest
     : public FullWebUIOmniboxAimInteractiveTestBase {
  public:

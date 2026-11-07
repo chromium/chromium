@@ -499,10 +499,14 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
 #if BUILDFLAG(IS_MAC)
       // On macOS, the popup is a separate window that only becomes key when
       // the user returns to it (e.g. swiping back to the Space), so treat that
-      // as returning to the omnibox. On Aura, the popup can become active when
-      // the browser window deactivates, so its activation isn't a reliable
-      // signal.
-      if (IsShown() && !controller()->edit_model()->has_focus()) {
+      // as returning to the omnibox. Skip when a mouse button is down: AppKit
+      // makes the popup window key before dispatching `mouseDown:`, so focusing
+      // here would reveal UI (such as the AIM button) under the cursor before
+      // Blink hit-tests the press; the click itself will focus the input. On
+      // Aura, the popup can become active when the browser window deactivates,
+      // so its activation isn't a reliable signal.
+      if (IsShown() && !controller()->edit_model()->has_focus() &&
+          !widget->IsMouseButtonDown()) {
         if (auto* popup_view = location_bar()->GetOmniboxPopupView()) {
           popup_view->OnFocus(/*query_zps=*/false, /*select_all=*/false,
                               /*show_full_url=*/false);
