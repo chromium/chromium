@@ -17,7 +17,10 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -56,7 +59,11 @@ import java.util.List;
 /*package*/ class AutofillVcnEnrollBottomSheetBridge
         implements AutofillVcnEnrollBottomSheetCoordinator.Delegate,
                 AutofillVcnEnrollBottomSheetProperties.LinkOpener {
-    private long mNativeAutofillVcnEnrollBottomSheetBridge;
+    @JniType("::autofill::AutofillVCNEnrollBottomSheetBridge")
+    interface NativeAutofillVCNEnrollBottomSheetBridge extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAutofillVCNEnrollBottomSheetBridge>
+            mNativeAutofillVcnEnrollBottomSheetBridge;
     private @Nullable BottomSheetController mBottomSheetController;
     private @Nullable AnchoredDialogCoordinator mAnchoredDialogCoordinator;
     private @Nullable Context mContext;
@@ -98,7 +105,8 @@ import java.util.List;
     @CalledByNative
     @VisibleForTesting
     boolean requestShowContent(
-            long nativeAutofillVcnEnrollBottomSheetBridge,
+            JniRawPtr<NativeAutofillVCNEnrollBottomSheetBridge>
+                    nativeAutofillVcnEnrollBottomSheetBridge,
             WebContents webContents,
             @JniType("std::u16string") String messageText,
             @JniType("std::u16string") String descriptionText,
@@ -113,21 +121,39 @@ import java.util.List;
                     List<LegalMessageLine> issuerLegalMessages,
             @JniType("std::u16string") String acceptButtonLabel,
             @JniType("std::u16string") String cancelButtonLabel) {
-        if (webContents == null || webContents.isDestroyed()) return false;
+        if (webContents == null || webContents.isDestroyed()) {
+            nativeAutofillVcnEnrollBottomSheetBridge.release();
+            return false;
+        }
 
         WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return false;
+        if (window == null) {
+            nativeAutofillVcnEnrollBottomSheetBridge.release();
+            return false;
+        }
 
         mBottomSheetController = BottomSheetControllerProvider.from(window);
-        if (mBottomSheetController == null) return false;
+        if (mBottomSheetController == null) {
+            nativeAutofillVcnEnrollBottomSheetBridge.release();
+            return false;
+        }
 
         mAnchoredDialogCoordinator = AnchoredDialogCoordinatorProvider.from(window);
-        if (mAnchoredDialogCoordinator == null) return false;
+        if (mAnchoredDialogCoordinator == null) {
+            nativeAutofillVcnEnrollBottomSheetBridge.release();
+            return false;
+        }
 
         mContext = window.getContext().get();
-        if (mContext == null) return false;
+        if (mContext == null) {
+            nativeAutofillVcnEnrollBottomSheetBridge.release();
+            return false;
+        }
 
-        if (mNativeAutofillVcnEnrollBottomSheetBridge != 0) return false;
+        if (mNativeAutofillVcnEnrollBottomSheetBridge != null) {
+            nativeAutofillVcnEnrollBottomSheetBridge.release();
+            return false;
+        }
         mNativeAutofillVcnEnrollBottomSheetBridge = nativeAutofillVcnEnrollBottomSheetBridge;
 
         IconSpecs iconSpecs =
@@ -200,7 +226,11 @@ import java.util.List;
                         assumeNonNull(selectorSupplier),
                         /* delegate= */ this);
 
-        return mCoordinator.requestShowContent();
+        if (!mCoordinator.requestShowContent()) {
+            hide();
+            return false;
+        }
+        return true;
     }
 
     void setLayoutStateProviderForTesting(LayoutStateProvider layoutStateProvider) {
@@ -221,7 +251,7 @@ import java.util.List;
                 .build()
                 .launchUrl(mContext, Uri.parse(url));
 
-        if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
+        if (mNativeAutofillVcnEnrollBottomSheetBridge == null) return;
         AutofillVcnEnrollBottomSheetBridgeJni.get()
                 .recordLinkClickMetric(mNativeAutofillVcnEnrollBottomSheetBridge, linkType);
     }
@@ -229,34 +259,43 @@ import java.util.List;
     // AutofillVcnEnrollBottomSheetCoordinator.Delegate:
     @Override
     public void onAccept() {
-        if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
-        AutofillVcnEnrollBottomSheetBridgeJni.get()
-                .onAccept(mNativeAutofillVcnEnrollBottomSheetBridge);
-        mNativeAutofillVcnEnrollBottomSheetBridge = 0;
+        if (mNativeAutofillVcnEnrollBottomSheetBridge == null) return;
+        JniRawPtr<NativeAutofillVCNEnrollBottomSheetBridge> nativeBridge =
+                mNativeAutofillVcnEnrollBottomSheetBridge;
+        mNativeAutofillVcnEnrollBottomSheetBridge = null;
+        AutofillVcnEnrollBottomSheetBridgeJni.get().onAccept(nativeBridge);
+        nativeBridge.release();
     }
 
     // AutofillVcnEnrollBottomSheetCoordinator.Delegate:
     @Override
     public void onCancel() {
-        if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
-        AutofillVcnEnrollBottomSheetBridgeJni.get()
-                .onCancel(mNativeAutofillVcnEnrollBottomSheetBridge);
-        mNativeAutofillVcnEnrollBottomSheetBridge = 0;
+        if (mNativeAutofillVcnEnrollBottomSheetBridge == null) return;
+        JniRawPtr<NativeAutofillVCNEnrollBottomSheetBridge> nativeBridge =
+                mNativeAutofillVcnEnrollBottomSheetBridge;
+        mNativeAutofillVcnEnrollBottomSheetBridge = null;
+        AutofillVcnEnrollBottomSheetBridgeJni.get().onCancel(nativeBridge);
+        nativeBridge.release();
     }
 
     // AutofillVcnEnrollBottomSheetCoordinator.Delegate:
     @Override
     public void onDismiss() {
-        if (mNativeAutofillVcnEnrollBottomSheetBridge == 0) return;
-        AutofillVcnEnrollBottomSheetBridgeJni.get()
-                .onDismiss(mNativeAutofillVcnEnrollBottomSheetBridge);
-        mNativeAutofillVcnEnrollBottomSheetBridge = 0;
+        if (mNativeAutofillVcnEnrollBottomSheetBridge == null) return;
+        JniRawPtr<NativeAutofillVCNEnrollBottomSheetBridge> nativeBridge =
+                mNativeAutofillVcnEnrollBottomSheetBridge;
+        mNativeAutofillVcnEnrollBottomSheetBridge = null;
+        AutofillVcnEnrollBottomSheetBridgeJni.get().onDismiss(nativeBridge);
+        nativeBridge.release();
     }
 
     @CalledByNative
     @VisibleForTesting
     void hide() {
-        mNativeAutofillVcnEnrollBottomSheetBridge = 0;
+        if (mNativeAutofillVcnEnrollBottomSheetBridge != null) {
+            mNativeAutofillVcnEnrollBottomSheetBridge.release();
+            mNativeAutofillVcnEnrollBottomSheetBridge = null;
+        }
         if (mCoordinator == null) return;
         mCoordinator.hide();
         mCoordinator = null;
@@ -268,12 +307,13 @@ import java.util.List;
 
     @NativeMethods
     interface Natives {
-        void onAccept(long nativeAutofillVCNEnrollBottomSheetBridge);
+        void onAccept(JniPtr<NativeAutofillVCNEnrollBottomSheetBridge> self);
 
-        void onCancel(long nativeAutofillVCNEnrollBottomSheetBridge);
+        void onCancel(JniPtr<NativeAutofillVCNEnrollBottomSheetBridge> self);
 
-        void onDismiss(long nativeAutofillVCNEnrollBottomSheetBridge);
+        void onDismiss(JniPtr<NativeAutofillVCNEnrollBottomSheetBridge> self);
 
-        void recordLinkClickMetric(long nativeAutofillVCNEnrollBottomSheetBridge, int linkType);
+        void recordLinkClickMetric(
+                JniPtr<NativeAutofillVCNEnrollBottomSheetBridge> self, int linkType);
     }
 }

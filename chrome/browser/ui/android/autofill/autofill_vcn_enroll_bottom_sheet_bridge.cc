@@ -16,6 +16,7 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia.h"
@@ -66,7 +67,7 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
   }
 
   return Java_AutofillVcnEnrollBottomSheetBridge_requestShowContent(
-      env, java_bridge_, reinterpret_cast<int64_t>(this), java_web_contents,
+      env, java_bridge_, jni_zero::MakeRaw(this), java_web_contents,
       delegate_->GetMessageText(), delegate_->GetDescriptionText(),
       delegate_->GetLearnMoreLinkText(), issuer_icon_bitmap,
       network_icon_resource_id, std::move(issuer_icon_url),

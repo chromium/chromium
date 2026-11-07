@@ -8,11 +8,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -26,6 +28,7 @@ import android.net.Uri;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,6 +51,7 @@ import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetBridge.NativeAutofillVCNEnrollBottomSheetBridge;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -72,11 +76,13 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
 public final class AutofillVcnEnrollBottomSheetBridgeTest {
-    private static final long NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE = 0xa1fabe7a;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutofillVcnEnrollBottomSheetBridge.Natives mBridgeNatives;
+
+    private JniRawPtr<NativeAutofillVCNEnrollBottomSheetBridge>
+            mNativeAutofillVcnEnrollBottomSheetBridge;
+
     @Mock private Profile.Natives mProfileNatives;
     @Mock private WebContents mWebContents;
     @Mock private ManagedBottomSheetController mBottomSheetController;
@@ -129,19 +135,21 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
 
     @After
     public void tearDown() {
+        mBridge.hide();
         BottomSheetControllerFactory.detach(mBottomSheetController);
         AnchoredDialogCoordinatorProvider.detach(mAnchoredDialogCoordinator);
         mWindow.destroy();
     }
 
-    private void requestShowContent(WebContents webContents) {
+    private boolean requestShowContent(WebContents webContents) {
+        mNativeAutofillVcnEnrollBottomSheetBridge = spy(JniRawPtr.createForTesting(1L));
         ArrayList<LegalMessageLine> googleLegalMessages = new ArrayList<>();
         googleLegalMessages.add(new LegalMessageLine("Google legal messages."));
         ArrayList<LegalMessageLine> issuerLegalMessages = new ArrayList<>();
         issuerLegalMessages.add(new LegalMessageLine("Issuer legal messages."));
 
-        mBridge.requestShowContent(
-                NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE,
+        return mBridge.requestShowContent(
+                mNativeAutofillVcnEnrollBottomSheetBridge,
                 webContents,
                 "Message text",
                 "Description text. Learn more",
@@ -184,6 +192,18 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         requestShowContent(mWebContents);
 
         verifyNoInteractions(mBottomSheetController);
+    }
+
+    @Test
+    public void testCannotShowWhenBottomSheetControllerReturnsFalse() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+
+        assertFalse(requestShowContent(mWebContents));
+
+        assertNull(mBridge.getCoordinatorForTesting());
+        verify(mNativeAutofillVcnEnrollBottomSheetBridge).release();
     }
 
     @Test
@@ -328,7 +348,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
 
         mBridge.onAccept();
 
-        verify(mBridgeNatives).onAccept(eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE));
+        verify(mBridgeNatives).onAccept(eq(mNativeAutofillVcnEnrollBottomSheetBridge));
     }
 
     @Test
@@ -372,7 +392,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
 
         mBridge.onCancel();
 
-        verify(mBridgeNatives).onCancel(eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE));
+        verify(mBridgeNatives).onCancel(eq(mNativeAutofillVcnEnrollBottomSheetBridge));
     }
 
     @Test
@@ -416,7 +436,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
 
         mBridge.onDismiss();
 
-        verify(mBridgeNatives).onDismiss(eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE));
+        verify(mBridgeNatives).onDismiss(eq(mNativeAutofillVcnEnrollBottomSheetBridge));
     }
 
     @Test
@@ -450,7 +470,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 equalTo(CustomTabsIntent.SHOW_PAGE_TITLE));
         verify(mBridgeNatives)
                 .recordLinkClickMetric(
-                        eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE),
+                        eq(mNativeAutofillVcnEnrollBottomSheetBridge),
                         eq(
                                 VirtualCardEnrollmentLinkType
                                         .VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK));
