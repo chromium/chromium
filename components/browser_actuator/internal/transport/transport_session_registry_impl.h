@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TRANSPORT_SESSION_REGISTRY_IMPL_H_
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_TRANSPORT_SESSION_REGISTRY_IMPL_H_
 
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>
@@ -27,6 +28,10 @@ class TransportChannel;
 // TransportChannel.
 class TransportSessionRegistryImpl : public TransportSessionRegistry {
  public:
+  // Maximum length in bytes of a valid `session_id` accepted by
+  // `CreateSession()`.
+  static constexpr size_t kMaxSessionIdLength = 128;
+
   // `on_downstream_message` is handed to every session this registry creates.
   // See TransportSessionImpl::DownstreamMessageCallback.
   explicit TransportSessionRegistryImpl(
@@ -64,6 +69,9 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Evicts sessions that have been idle longer than the configured timeout.
+  void EvictIdleSessions();
 
   base::WeakPtr<TransportChannel> channel_;
   const size_t max_concurrent_sessions_;

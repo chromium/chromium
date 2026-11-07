@@ -4,11 +4,14 @@
 
 #include "components/browser_actuator/internal/transport/transport_session_registry_impl.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/transport_session_impl.h"
 
@@ -16,11 +19,8 @@ namespace browser_actuator::transport {
 namespace {
 
 size_t GetMaxConcurrentSessionsLimit() {
-  static const size_t limit = []() {
-    const int l = kMaxTransportSessions.Get();
-    return l > 0 ? static_cast<size_t>(l) : 0;
-  }();
-  return limit;
+  const int l = kMaxTransportSessions.Get();
+  return l > 0 ? static_cast<size_t>(l) : 0;
 }
 
 }  // namespace
@@ -95,9 +95,42 @@ void TransportSessionRegistryImpl::DestroySession(std::string_view session_id) {
   }
 }
 
+void TransportSessionRegistryImpl::EvictIdleSessions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const base::TimeDelta idle_timeout = kTransportSessionIdleTimeout.Get();
+  if (!idle_timeout.is_positive()) {
+    return;
+  }
+  const base::TimeTicks now = base::TimeTicks::Now();
+  std::vector<std::string> expired_ids;
+  for (const auto& [id, session] : sessions_) {
+    if (now - session->last_activity_time() >= idle_timeout) {
+      expired_ids.push_back(id);
+    }
+  }
+  // Erase all expired sessions before notifying observers so that
+  // `TransportChannelImpl::OnSessionRemoved()` observes the post-eviction
+  // active session set rather than reconnecting the stream with still-expired
+  // sessions in `WatchSessionsRequest`.
+  for (const std::string& id : expired_ids) {
+    sessions_.erase(id);
+  }
+  for (const std::string& id : expired_ids) {
+    for (auto& observer : observers_) {
+      observer.OnSessionRemoved(id);
+    }
+  }
+}
+
 TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (session_id.empty() || session_id.size() > kMaxSessionIdLength) {
+    DLOG(WARNING) << "Rejecting CreateSession with invalid session_id length ("
+                  << session_id.size() << ")";
+    return nullptr;
+  }
+  EvictIdleSessions();
   if (GetSessionImpl(session_id)) {
     DVLOG(1) << "Ignoring CreateSession for already-active session: "
              << session_id;

@@ -30,7 +30,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE_PARAM(int,
                    kMaxTransportSessions,
                    &kBrowserActuatorProtoStreamTransport,
-                   3);
+                   10);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTransportSessionIdleTimeout,
+                   &kBrowserActuatorProtoStreamTransport,
+                   base::Minutes(30));
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kBrowserActuatorUpstreamTimeout,

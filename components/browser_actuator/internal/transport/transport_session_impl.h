@@ -96,6 +96,11 @@ class TransportSessionImpl : public TransportSession,
     return start_time_;
   }
 
+  base::TimeTicks last_activity_time() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return last_activity_time_;
+  }
+
   int64_t client_sequence_number() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return client_sequence_number_;
@@ -182,6 +187,7 @@ class TransportSessionImpl : public TransportSession,
   const DownstreamMessageCallback on_downstream_message_;
 
   const base::TimeTicks start_time_;
+  base::TimeTicks last_activity_time_ GUARDED_BY_CONTEXT(sequence_checker_);
   DownstreamMessageSequencer sequencer_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Tracks the sequence number of the most recently dispatched downstream
   // message (>= 0), or -1 before any message is dispatched. Unlike

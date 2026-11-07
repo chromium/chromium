@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/browser_actuator/internal/transport/downstream_message_sequencer.h"
 #include "components/browser_actuator/internal/transport/metrics_utils.h"
@@ -72,7 +73,8 @@ TransportSessionImpl::TransportSessionImpl(
     : session_id_(session_id),
       channel_(std::move(channel)),
       on_downstream_message_(std::move(on_downstream_message)),
-      start_time_(base::TimeTicks::Now()) {
+      start_time_(base::TimeTicks::Now()),
+      last_activity_time_(start_time_) {
   DCHECK(channel_);
 }
 
@@ -90,6 +92,7 @@ TransportSessionImpl::SendUpstreamMessage(
     PayloadType payload_type,
     const google::protobuf::MessageLite& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  last_activity_time_ = base::TimeTicks::Now();
   if (channel_) {
     std::optional<int64_t> responding_to_sequence_number =
         (payload_type == PayloadType::kControl ||
@@ -106,6 +109,7 @@ TransportSessionImpl::SendUpstreamMessage(
 void TransportSessionImpl::OnMessage(PayloadType payload_type,
                                      std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  last_activity_time_ = base::TimeTicks::Now();
   // This entry point exists for the out-of-band FCM wake-up path, which
   // carries `sequence_number = 0`. Setting `dispatching_sequence_number_ = 0`
   // ensures synchronous control replies (e.g. `StartSessionAck`) populate
@@ -295,6 +299,9 @@ base::expected<void, DownstreamMessageSequencer::Error>
 TransportSessionImpl::ProcessDownstreamMessage(
     ActuatorDownstreamMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/563605505): Consider whether server heartbeat messages
+  // should count as session activity.
+  last_activity_time_ = base::TimeTicks::Now();
   const bool is_new_terminating_command =
       DownstreamMessageSequencer::IsValidSequenceNumber(
           message.sequence_number()) &&

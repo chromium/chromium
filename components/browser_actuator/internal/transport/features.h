@@ -37,12 +37,15 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kProtoStreamStallTimeout);
 // Maximum number of concurrent active transport sessions.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxTransportSessions);
 
+// Idle timeout after which an inactive transport session may be evicted when
+// creating a new session. Zero disables idle eviction.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTransportSessionIdleTimeout);
+
 // Timeout for an upstream `SendSessionMessage` HTTP POST request.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBrowserActuatorUpstreamTimeout);
 
 // Maximum number of concurrent in-flight upstream HTTP POST requests.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxPendingUpstreamRequests);
-
 }  // namespace browser_actuator::transport
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_FEATURES_H_
