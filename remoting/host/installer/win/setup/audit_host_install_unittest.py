@@ -5,8 +5,11 @@
 
 """Unit tests for audit_host_install.py."""
 
+import io
+import json
 from typing import Any, Optional
 import unittest
+from unittest import mock
 
 import audit_host_install
 
@@ -16,6 +19,11 @@ PROGRAM_FILES_SDDL = (
   '(A;OICI;GA;;;SY)(A;OICI;GA;;;BA)'
   '(A;OICI;GRGX;;;BU)'
   '(A;OICIIO;GXGR;;;AC)(A;;0x1200a9;;;AC)'
+)
+LEAF_PAYLOAD_SDDL = (
+  f'O:{audit_host_install.TRUSTED_INSTALLER_SID}G:BAD:AI'
+  '(A;ID;FA;;;SY)(A;ID;FA;;;BA)'
+  '(A;ID;0x1200a9;;;BU)(A;ID;0x1200a9;;;AC)'
 )
 HKLM_DEFAULT_SDDL = (
   'O:BAG:BAD:(A;CI;KA;;;SY)(A;CI;KA;;;BA)(A;CI;KR;;;BU)(A;CIIO;KA;;;CO)'
@@ -62,9 +70,13 @@ class FakeSystemProbe(audit_host_install.SystemProbe):
   def _norm(self, path: str) -> str:
     return path.rstrip('\\/').lower()
 
-  def add_dir(self, path: str, sddl: Optional[str] = None) -> None:
+  def add_dir(
+    self, path: str, sddl: Optional[str] = None, reparse: bool = False
+  ) -> None:
     norm = self._norm(path)
     self.dirs.setdefault(norm, set())
+    if reparse:
+      self.reparse_points.add(norm)
     if sddl is not None:
       self.file_sddls[norm] = sddl
     if '\\' in norm:
@@ -172,6 +184,33 @@ class FakeSystemProbe(audit_host_install.SystemProbe):
     return list(self.msi_products)
 
 
+def _populate_fs_and_service_install(probe: FakeSystemProbe) -> None:
+  install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
+  config_dir = r'C:\ProgramData\Google\Chrome Remote Desktop'
+  probe.add_dir(install_dir, sddl=PROGRAM_FILES_SDDL)
+  for fname in audit_host_install.EXPECTED_PAYLOAD_FILES:
+    probe.add_file(rf'{install_dir}\{fname}', sddl=LEAF_PAYLOAD_SDDL)
+
+  probe.add_dir(config_dir, sddl=CONFIG_DIR_SDDL)
+  probe.add_file(rf'{config_dir}\host.json', sddl=HOST_JSON_SDDL)
+  probe.add_file(rf'{config_dir}\host_unprivileged.json', sddl=UNPRIV_JSON_SDDL)
+
+  svc_key = (
+    rf'SYSTEM\CurrentControlSet\Services\{audit_host_install.SERVICE_NAME}'
+  )
+  probe.set_reg_key(svc_key, view=64)
+  probe.service = audit_host_install.ServiceInfo(
+    exists=True,
+    state='RUNNING',
+    start_type='AUTO_START',
+    account='LocalSystem',
+    binary_path=(
+      rf'"{install_dir}\remoting_host.exe" --type=daemon '
+      rf'--host-config="{config_dir}\host.json"'
+    ),
+  )
+
+
 class AuditValidatorsTest(unittest.TestCase):
   def test_extract_executable_path_handles_quoted_and_unquoted_commands(
     self,
@@ -184,7 +223,13 @@ class AuditValidatorsTest(unittest.TestCase):
     )
     self.assertEqual(
       audit_host_install.extract_executable_path(
-        r'C:\Chromoting\remoting_host.exe --type=daemon'
+        r'C:\Program Files\Google\remoting_host.exe --type=daemon'
+      ),
+      r'C:\Program Files\Google\remoting_host.exe',
+    )
+    self.assertEqual(
+      audit_host_install.extract_executable_path(
+        r'C:\Chromoting\remoting_host.exe --config=C:\foo.exe'
       ),
       r'C:\Chromoting\remoting_host.exe',
     )
@@ -263,6 +308,25 @@ class AuditValidatorsTest(unittest.TestCase):
         icacls_sddl, object_type='file', require_appcontainer_rx=True
       ),
       [],
+    )
+    self.assertEqual(
+      audit_host_install.validate_sddl(
+        LEAF_PAYLOAD_SDDL,
+        object_type='file',
+        require_appcontainer_rx=True,
+        is_container=False,
+      ),
+      [],
+    )
+    leaf_no_ac = 'O:BAG:BAD:AI(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;0x1200a9;;;BU)'
+    self.assertEqual(
+      audit_host_install.validate_sddl(
+        leaf_no_ac,
+        object_type='file',
+        require_appcontainer_rx=True,
+        is_container=False,
+      ),
+      ['Missing AppContainer (AC / S-1-15-2-1) Read+Execute ACE'],
     )
 
   def test_sddl_hardening_rejects_delete_child_null_dacl_and_callback_aces(
@@ -358,6 +422,249 @@ class AuditValidatorsTest(unittest.TestCase):
     audit_host_install._evaluate_acl(entry, None)
     self.assertEqual(entry.acl_status, 'UNAVAILABLE')
     self.assertIn('Security descriptor unavailable', entry.issues[0])
+
+
+class AuditHostInstallTest(unittest.TestCase):
+  def test_clean_machine_has_zero_present_and_zero_issues(self) -> None:
+    probe = FakeSystemProbe()
+    report = audit_host_install.audit_host_install(probe)
+    self.assertEqual(report.present_count, 0)
+    self.assertEqual(report.issue_count, 0)
+    self.assertEqual(report.acl_invalid_count, 0)
+    self.assertEqual(report.detected_branding, [])
+    with mock.patch('sys.stdout', new_callable=io.StringIO) as out:
+      rc = audit_host_install.main(['--all'], probe=probe)
+    self.assertEqual(rc, 0)
+    self.assertIn('[ABSENT ]', out.getvalue())
+
+  def test_filesystem_and_service_install_passes_checks(self) -> None:
+    probe = FakeSystemProbe()
+    _populate_fs_and_service_install(probe)
+    install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
+    runtime_dir_sddl = (
+      'O:SYG:SYD:AI(A;OICIIOID;GA;;;CO)(A;OICIID;FA;;;SY)'
+      '(A;OICIID;FA;;;BA)(A;OICIID;0x1200a9;;;BU)'
+    )
+    probe.add_dir(rf'{install_dir}\minidumps', sddl=runtime_dir_sddl)
+    probe.add_dir(rf'{install_dir}\crashpad', sddl=runtime_dir_sddl)
+    probe.add_file(
+      rf'{install_dir}\chrome_remote_desktop_20261106_140000_000.log',
+      sddl=LEAF_PAYLOAD_SDDL,
+    )
+    probe.add_file(
+      rf'{install_dir}\latest.log', sddl=LEAF_PAYLOAD_SDDL, reparse=True
+    )
+    report = audit_host_install.audit_host_install(probe)
+    self.assertEqual(report.detected_branding, ['chrome'])
+    self.assertEqual(
+      report.issue_count, 0, msg=audit_host_install.format_report(report)
+    )
+    self.assertEqual(report.acl_invalid_count, 0)
+    self.assertEqual(report.acl_ok_count, 6)
+    with mock.patch('sys.stdout', new_callable=io.StringIO):
+      self.assertEqual(audit_host_install.main([], probe=probe), 0)
+
+  def test_legacy_msi_locations_and_firewall_rules_are_inventoried(
+    self,
+  ) -> None:
+    probe = FakeSystemProbe()
+    msi_dir = r'C:\Program Files (x86)\Google\Chrome Remote Desktop'
+    probe.add_dir(rf'{msi_dir}\145.0.7600.0', sddl=PROGRAM_FILES_SDDL)
+    probe.file_sddls[probe._norm(msi_dir)] = PROGRAM_FILES_SDDL
+    probe.msi_products.append('{AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE}')
+    probe.set_reg_value(
+      r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
+      r'\{aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee}',
+      'DisplayName',
+      'Legacy MSI Product',
+      view=64,
+    )
+    probe.set_reg_value(
+      r'SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters'
+      r'\FirewallPolicy\FirewallRules',
+      '{RULE-1}',
+      rf'v2.30|Action=Allow|App={msi_dir}\145.0.7600.0\remoting_network.exe|',
+      view=64,
+    )
+
+    report = audit_host_install.audit_host_install(probe)
+    msi_present = [e for e in report.entries if e.present and e.source == 'msi']
+    categories = {e.category for e in msi_present}
+    self.assertEqual(categories, {'Filesystem', 'MSI', 'Firewall', 'Registry'})
+    self.assertEqual(report.issue_count, 0)
+
+  def test_programdata_acl_and_reparse_violations_detected(self) -> None:
+    probe = FakeSystemProbe()
+    cfg_dir = r'C:\ProgramData\Google\Chrome Remote Desktop'
+    probe.add_dir(
+      cfg_dir,
+      sddl='O:S-1-5-21-1000-2000-3000-1001G:BAD:AI(A;OICI;FA;;;BU)',
+    )
+    probe.add_file(
+      rf'{cfg_dir}\host.json',
+      sddl='O:BAG:BAD:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GR;;;AU)',
+    )
+    probe.add_file(
+      rf'{cfg_dir}\temp.json~',
+      sddl=HOST_JSON_SDDL,
+      reparse=True,
+    )
+
+    report = audit_host_install.audit_host_install(probe)
+    self.assertGreaterEqual(report.acl_invalid_count, 2)
+    all_issues = '\n'.join(i for e in report.entries for i in e.issues)
+    self.assertIn('Untrusted owner S-1-5-21-1000-2000-3000-1001', all_issues)
+    self.assertIn('Unprotected DACL', all_issues)
+    self.assertIn('Non-admin principal BU has write/control rights', all_issues)
+    self.assertIn('Non-admin principal AU has access', all_issues)
+    self.assertIn('reparse point/symlink', all_issues)
+    self.assertIn('.json~', all_issues)
+
+  def test_ancestor_reparse_unquoted_cmd_service_acl_and_old_files(
+    self,
+  ) -> None:
+    probe = FakeSystemProbe()
+    _populate_fs_and_service_install(probe)
+    install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
+    probe.reparse_points.add(probe._norm(r'C:\ProgramData\Google'))
+    probe.service.account = ''
+    probe.service.binary_path = (
+      rf'{install_dir}\remoting_host.exe --type=daemon'
+    )
+    probe.service_sddl = 'O:SYG:SYD:(A;;GA;;;SY)(A;;GA;;;BA)(A;;CCDCRP;;;IU)'
+    probe.add_file(
+      rf'{install_dir}\remoting_host.exe.OLD',
+      sddl=LEAF_PAYLOAD_SDDL,
+      reparse=True,
+    )
+    probe.set_reg_value(
+      r'SYSTEM\CurrentControlSet\Control\Session Manager',
+      'PendingFileRenameOperations',
+      [rf'\??\{install_dir}\remoting_host.exe.OLD', ''],
+      view=64,
+    )
+
+    with mock.patch('sys.stdout', new_callable=io.StringIO) as out:
+      rc = audit_host_install.main(['--json'], probe=probe)
+    self.assertEqual(rc, 1)
+    payload = json.loads(out.getvalue())
+    all_issues = '\n'.join(i for e in payload['entries'] for i in e['issues'])
+    self.assertIn('Path or ancestor is a reparse point/symlink', all_issues)
+    self.assertIn('Unquoted command path with spaces', all_issues)
+    self.assertNotIn('Target file missing', all_issues)
+    self.assertIn("Unexpected service account: ''", all_issues)
+    self.assertIn('Non-admin principal IU has write/control rights', all_issues)
+    self.assertIn(
+      'Unexpected reparse point/symlink: remoting_host.exe.OLD', all_issues
+    )
+    self.assertIn(
+      'Staged .old binary pending cleanup: remoting_host.exe.OLD', all_issues
+    )
+    reboot_entries = [
+      e for e in payload['entries'] if e['category'] == 'RebootPending'
+    ]
+    self.assertTrue(reboot_entries[0]['present'])
+
+  def test_space_free_cmd_with_exe_arg_and_dir_vs_file_and_payload_acls(
+    self,
+  ) -> None:
+    probe = FakeSystemProbe()
+    _populate_fs_and_service_install(probe)
+    install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
+    cfg_dir = r'C:\ProgramData\Google\Chrome Remote Desktop'
+
+    # Unquoted space-free command with .exe flag argument must not be flagged
+    # as an unquoted path with spaces.
+    probe.add_file(r'C:\Chromoting\remoting_host.exe', sddl=LEAF_PAYLOAD_SDDL)
+    probe.service.binary_path = (
+      r'C:\Chromoting\remoting_host.exe --config=C:\Program Files\foo.exe'
+    )
+
+    # Planted sideload DLL, directory impersonating a payload binary, and
+    # payload binary missing AppContainer Read+Execute must all be flagged and
+    # propagate acl_status == 'INVALID' to the install directory entry.
+    probe.add_file(rf'{install_dir}\version.dll', sddl=LEAF_PAYLOAD_SDDL)
+    probe.files.remove(probe._norm(rf'{install_dir}\remoting_desktop.exe'))
+    probe.add_dir(
+      rf'{install_dir}\remoting_desktop.exe', sddl=PROGRAM_FILES_SDDL
+    )
+    probe.file_sddls[probe._norm(rf'{install_dir}\remoting_core.dll')] = (
+      'O:BAG:BAD:AI(A;ID;FA;;;SY)(A;ID;FA;;;BA)(A;ID;0x1200a9;;;BU)'
+    )
+
+    # Directory named host.json in ProgramData and regular file at Chromium
+    # install_dir / ProgramData location must be flagged.
+    probe.files.remove(probe._norm(rf'{cfg_dir}\host.json'))
+    probe.add_dir(rf'{cfg_dir}\host.json', sddl=HOST_JSON_SDDL)
+    probe.add_file(r'C:\Program Files\Chromoting', sddl=LEAF_PAYLOAD_SDDL)
+    probe.add_file(r'C:\ProgramData\Chromoting', sddl=CONFIG_DIR_SDDL)
+
+    report = audit_host_install.audit_host_install(probe)
+    all_issues = '\n'.join(i for e in report.entries for i in e.issues)
+    self.assertNotIn('Unquoted command path with spaces', all_issues)
+    self.assertNotIn('Target file missing', all_issues)
+    self.assertIn(
+      'Unexpected file/directory in install folder: version.dll', all_issues
+    )
+    self.assertIn('Missing 1 payload file(s): remoting_desktop.exe', all_issues)
+    self.assertIn(
+      'Unexpected file/directory in install folder: remoting_desktop.exe',
+      all_issues,
+    )
+    self.assertIn(
+      'Payload ACL (remoting_core.dll): Missing AppContainer '
+      '(AC / S-1-15-2-1) Read+Execute ACE',
+      all_issues,
+    )
+    pf_entry = next(e for e in report.entries if e.location == install_dir)
+    self.assertEqual(pf_entry.acl_status, 'INVALID')
+    self.assertGreaterEqual(report.acl_invalid_count, 1)
+    self.assertIn('Unexpected file/directory in ProgramData folder', all_issues)
+    self.assertIn('Install path is not a directory', all_issues)
+    self.assertIn('ProgramData config location is not a directory', all_issues)
+
+  def test_runtime_artifacts_reparse_attacks_and_post_uninstall_leftovers(
+    self,
+  ) -> None:
+    probe = FakeSystemProbe()
+    _populate_fs_and_service_install(probe)
+    install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
+
+    # On an active host (present_n > 0), a minidumps junction, a non-latest.log
+    # symlink, and a regular file named crashpad must still be flagged.
+    probe.add_dir(
+      rf'{install_dir}\minidumps', sddl=PROGRAM_FILES_SDDL, reparse=True
+    )
+    probe.add_file(
+      rf'{install_dir}\evil.log', sddl=LEAF_PAYLOAD_SDDL, reparse=True
+    )
+    probe.add_file(rf'{install_dir}\crashpad', sddl=LEAF_PAYLOAD_SDDL)
+
+    # On an uninstalled host folder (present_n == 0), leftover minidumps,
+    # crashpad, and .log entries must be flagged as leftover runtime artifacts.
+    leftover_dir = r'C:\Program Files\Chromoting'
+    probe.add_dir(leftover_dir, sddl=PROGRAM_FILES_SDDL)
+    probe.add_dir(rf'{leftover_dir}\minidumps', sddl=PROGRAM_FILES_SDDL)
+    probe.add_dir(rf'{leftover_dir}\crashpad', sddl=PROGRAM_FILES_SDDL)
+    probe.add_file(rf'{leftover_dir}\host.log', sddl=LEAF_PAYLOAD_SDDL)
+
+    report = audit_host_install.audit_host_install(probe)
+    chrome_entry = next(e for e in report.entries if e.location == install_dir)
+    chrome_issues = '\n'.join(chrome_entry.issues)
+    self.assertIn('Unexpected reparse point/symlink: minidumps', chrome_issues)
+    self.assertIn('Unexpected reparse point/symlink: evil.log', chrome_issues)
+    self.assertIn(
+      'Unexpected file/directory in install folder: crashpad', chrome_issues
+    )
+    self.assertNotIn('Leftover runtime artifact', chrome_issues)
+
+    chromium_entry = next(
+      e for e in report.entries if e.location == leftover_dir
+    )
+    chromium_issues = '\n'.join(chromium_entry.issues)
+    self.assertIn('Leftover runtime artifact: minidumps', chromium_issues)
+    self.assertIn('Leftover runtime artifact: crashpad', chromium_issues)
+    self.assertIn('Leftover runtime artifact: host.log', chromium_issues)
 
 
 if __name__ == '__main__':

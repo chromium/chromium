@@ -3,20 +3,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""OS probe and SDDL security descriptor validators for CRD Windows audits."""
+"""Inventories Chrome Remote Desktop Windows host locations and validates ACLs.
 
+Audits the filesystem directories/files, Windows Service, MSI UpgradeCode,
+Windows Firewall rules, and uninstall/pending-rename locations modified by
+the legacy WiX MSI (`chromoting.wxs`) and `remoting_setup.exe`, reporting
+presence, target file validity, and security descriptors/ACLs.
+"""
+
+import argparse
 from contextlib import contextmanager
 import ctypes
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
+import json
 import os
 import re
 import sys
-from typing import Any, Iterator, Optional
+from typing import Any, Iterator, Optional, Sequence
 
 if sys.platform == 'win32':
   import winreg
 
-# Keep SIDs and rights in sync with security_descriptor.h and chromoting.wxs.
+# Keep constants in sync with installer_constants.h, host_payload_files.gni,
+# security_descriptor.h, and chromoting.wxs.
+SERVICE_NAME = 'chromoting'
+LEGACY_MSI_UPGRADE_CODE = '{2b21f767-e157-4fa6-963c-55834c1433a6}'
+
+HOST_CONFIG_FILENAME = 'host.json'
+UNPRIVILEGED_CONFIG_FILENAME = 'host_unprivileged.json'
+
 ADMIN_SIDS = frozenset({'BA', 'SY', 'S-1-5-32-544', 'S-1-5-18'})
 TRUSTED_INSTALLER_SID = (
   'S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464'
@@ -41,6 +56,38 @@ SAFE_RIGHTS_BY_TYPE: dict[str, tuple[frozenset[str], int]] = {
     0x8012018D,
   ),
 }
+
+EXPECTED_PAYLOAD_FILES = (
+  'remote_assistance_host.exe',
+  'remote_assistance_host_uiaccess.exe',
+  'remote_open_url.exe',
+  'remote_security_key.exe',
+  'remote_webauthn.exe',
+  'remoting_core.dll',
+  'remoting_crashpad_handler.exe',
+  'remoting_curtain.exe',
+  'remoting_desktop.exe',
+  'remoting_host.exe',
+  'remoting_native_messaging_host.exe',
+  'remoting_network.exe',
+  'remoting_peer_connection.exe',
+  'remoting_start_host.exe',
+  'CREDITS.txt',
+  'chromoting.ico',
+  'icudtl.dat',
+  'com.google.chrome.remote_assistance.json',
+  'com.google.chrome.remote_assistance-firefox.json',
+  'com.google.chrome.remote_desktop.json',
+  'com.google.chrome.remote_desktop-firefox.json',
+  'com.google.chrome.remote_webauthn.json',
+)
+
+EXPECTED_PAYLOAD_LOWER = frozenset(f.lower() for f in EXPECTED_PAYLOAD_FILES)
+
+VERSION_DIR_RE = re.compile(r'^\d+\.\d+\.\d+\.\d+$')
+UNQUOTED_CMD_EXE_RE = re.compile(
+  r'^([^"]+?\.(?:exe|dll))(?=\s|$)', re.IGNORECASE
+)
 
 
 @dataclass(frozen=True)
@@ -104,6 +151,8 @@ def extract_executable_path(command_line: str) -> str:
     return ''
   if cmd.startswith('"') and (end := cmd.find('"', 1)) != -1:
     return cmd[1:end]
+  if match := UNQUOTED_CMD_EXE_RE.match(cmd):
+    return match.group(1)
   return cmd.split()[0]
 
 
@@ -246,6 +295,7 @@ def validate_sddl(
   allow_non_admin_read: bool = True,
   allow_trusted_installer: bool = True,
   require_appcontainer_rx: bool = False,
+  is_container: bool = True,
 ) -> list[str]:
   """Validates an SDDL string for owner, DACL protection, and ACE safety."""
   sections, violations = _parse_sddl_sections(sddl)
@@ -315,10 +365,15 @@ def validate_sddl(
         f'Non-admin principal {trustee} has write/control rights ({rights})'
       )
 
-  if require_appcontainer_rx and not (ac_self_rx and ac_inherit_rx):
-    violations.append(
-      'Missing AppContainer (AC / S-1-15-2-1) inheritable Read+Execute ACE'
-    )
+  if require_appcontainer_rx:
+    if is_container and not (ac_self_rx and ac_inherit_rx):
+      violations.append(
+        'Missing AppContainer (AC / S-1-15-2-1) inheritable Read+Execute ACE'
+      )
+    elif not is_container and not ac_self_rx:
+      violations.append(
+        'Missing AppContainer (AC / S-1-15-2-1) Read+Execute ACE'
+      )
   return violations
 
 
@@ -663,3 +718,389 @@ def _evaluate_acl(
     entry.issues.extend(f'ACL: {v}' for v in violations)
   else:
     entry.acl_status = 'OK'
+
+
+def audit_host_install(
+  probe: SystemProbe,
+  branding_filter: str = 'auto',
+  explicit_version: Optional[str] = None,
+) -> AuditReport:
+  """Inventories CRD MSI/EXE locations and validates their ACLs."""
+  report = AuditReport()
+  specs = (
+    [BRANDING_SPECS[branding_filter]]
+    if branding_filter in BRANDING_SPECS
+    else [CHROME_BRANDING, CHROMIUM_BRANDING]
+  )
+  versions: list[str] = [explicit_version] if explicit_version else []
+
+  def add_item(
+    cat: str,
+    loc: str,
+    src: str,
+    present: bool,
+    detail: str = '',
+    brand: Optional[str] = None,
+  ) -> InventoryEntry:
+    if present and brand and brand not in report.detected_branding:
+      report.detected_branding.append(brand)
+    entry = InventoryEntry(cat, loc, src, present, detail)
+    report.entries.append(entry)
+    return entry
+
+  def check_target(raw: str, is_command: bool, issues: list[str]) -> None:
+    cmd = raw.strip()
+    target = extract_executable_path(cmd) if is_command else cmd
+    if (
+      is_command
+      and not cmd.startswith('"')
+      and any(c.isspace() for c in target)
+    ):
+      issues.append(f'Unquoted command path with spaces: {raw!r}')
+    if not target or not probe.path_exists(target) or probe.is_dir(target):
+      issues.append(f'Target file missing or invalid on disk: {raw!r}')
+
+  def check_reparse_ancestors(
+    base: str, rel_dir: str, issues: list[str]
+  ) -> None:
+    cur = base.rstrip('\\/')
+    for part in rel_dir.strip('\\/').split('\\'):
+      cur = f'{cur}\\{part}'
+      if probe.path_exists(cur) and probe.is_reparse_point(cur):
+        issues.append(f'Path or ancestor is a reparse point/symlink: {cur}')
+
+  def audit_reg(
+    subkey: str,
+    view: int,
+    source: str,
+    brand: Optional[str] = None,
+    val_name: Optional[str] = None,
+    path_value: Optional[str] = None,
+    is_command: bool = False,
+    **acl_kwargs: Any,
+  ) -> InventoryEntry:
+    if val_name is not None:
+      val = probe.reg_get_value(subkey, val_name, view=view)
+      loc = rf'HKLM\{subkey}\{val_name} [{view}-bit]'
+      entry = add_item(
+        'Registry', loc, source, val is not None, str(val or ''), brand
+      )
+    else:
+      loc = rf'HKLM\{subkey} [{view}-bit]'
+      present = probe.reg_key_exists(subkey, view=view)
+      entry = add_item('Registry', loc, source, present, brand=brand)
+    if entry.present:
+      _evaluate_acl(
+        entry,
+        probe.get_reg_sddl(subkey, view=view),
+        object_type='reg',
+        **acl_kwargs,
+      )
+      if path_value is not None:
+        raw = str(probe.reg_get_value(subkey, path_value, view=view) or '')
+        if val_name is None:
+          entry.detail = raw
+        check_target(raw, is_command, entry.issues)
+    return entry
+
+  def audit_install_dir(
+    base_dir: str, rel_dir: str, source: str, brand: str, check_payload: bool
+  ) -> None:
+    dir_path = _join_win_path(base_dir, rel_dir)
+    entry = add_item(
+      'Filesystem', dir_path, source, probe.path_exists(dir_path), brand=brand
+    )
+    if not entry.present:
+      return
+    check_reparse_ancestors(base_dir, rel_dir, entry.issues)
+    if not probe.is_dir(dir_path):
+      entry.issues.append('Install path is not a directory')
+      _evaluate_acl(entry, probe.get_file_sddl(dir_path), object_type='file')
+      return
+    _evaluate_acl(
+      entry,
+      probe.get_file_sddl(dir_path),
+      object_type='file',
+      require_appcontainer_rx=True,
+    )
+    items = probe.list_dir(dir_path)
+    for name in items:
+      if (
+        VERSION_DIR_RE.match(name)
+        and probe.is_dir(_join_win_path(dir_path, name))
+        and name not in versions
+      ):
+        versions.append(name)
+    if not check_payload:
+      entry.detail = f'entries: {", ".join(items)}' if items else '(empty)'
+      return
+    file_items = {
+      i.lower() for i in items if not probe.is_dir(_join_win_path(dir_path, i))
+    }
+    missing = [f for f in EXPECTED_PAYLOAD_FILES if f.lower() not in file_items]
+    present_n = len(EXPECTED_PAYLOAD_FILES) - len(missing)
+    entry.detail = f'{present_n}/{len(EXPECTED_PAYLOAD_FILES)} payload files'
+    if missing:
+      entry.issues.append(
+        f'Missing {len(missing)} payload file(s): {", ".join(missing)}'
+      )
+    for name in items:
+      full, low = _join_win_path(dir_path, name), name.lower()
+      is_sub_dir = probe.is_dir(full)
+      is_reparse = probe.is_reparse_point(full)
+      is_latest_log_symlink = (
+        present_n > 0 and low == 'latest.log' and not is_sub_dir and is_reparse
+      )
+      is_runtime_artifact = (
+        low in ('minidumps', 'crashpad') and is_sub_dir
+      ) or (low.endswith('.log') and not is_sub_dir)
+      if is_reparse and not is_latest_log_symlink:
+        entry.issues.append(f'Unexpected reparse point/symlink: {name}')
+      if low.endswith('.old'):
+        entry.issues.append(f'Staged .old binary pending cleanup: {name}')
+      elif low == 'currentversion':
+        if not is_reparse:
+          entry.issues.append(f'Unexpected CurrentVersion entry: {name}')
+      elif VERSION_DIR_RE.match(name) and is_sub_dir:
+        entry.issues.append(f'Legacy MSI versioned directory present: {name}')
+      elif is_runtime_artifact:
+        if present_n == 0:
+          entry.issues.append(f'Leftover runtime artifact: {name}')
+      elif is_sub_dir or low not in EXPECTED_PAYLOAD_LOWER:
+        entry.issues.append(
+          f'Unexpected file/directory in install folder: {name}'
+        )
+      f_sddl = probe.get_file_sddl(full)
+      if f_sddl is None:
+        if entry.acl_status == 'OK':
+          entry.acl_status = 'UNAVAILABLE'
+        entry.issues.append(f'Payload ACL unavailable: {name}')
+      elif f_viol := validate_sddl(
+        f_sddl,
+        object_type='file',
+        require_appcontainer_rx=(
+          not is_sub_dir and low in EXPECTED_PAYLOAD_LOWER
+        ),
+        is_container=is_sub_dir,
+      ):
+        entry.acl_status = 'INVALID'
+        entry.issues.extend(f'Payload ACL ({name}): {v}' for v in f_viol)
+
+  pf64 = (
+    probe.get_env('ProgramW6432')
+    or probe.get_env('ProgramFiles')
+    or r'C:\Program Files'
+  )
+  pfx86 = probe.get_env('ProgramFiles(x86)') or r'C:\Program Files (x86)'
+  program_data = probe.get_env('ProgramData') or r'C:\ProgramData'
+
+  # Filesystem Install Directories & ProgramData Configuration.
+  for spec in specs:
+    audit_install_dir(pf64, spec.rel_dir, 'exe', spec.name, True)
+    if pfx86.lower() != pf64.lower():
+      audit_install_dir(pfx86, spec.rel_dir, 'msi', spec.name, False)
+
+    cfg_dir = _join_win_path(program_data, spec.rel_dir)
+    ecfg = add_item(
+      'ProgramData',
+      cfg_dir,
+      'both',
+      probe.path_exists(cfg_dir),
+      brand=spec.name,
+    )
+    if not ecfg.present:
+      continue
+    check_reparse_ancestors(program_data, spec.rel_dir, ecfg.issues)
+    _evaluate_acl(
+      ecfg,
+      probe.get_file_sddl(cfg_dir),
+      object_type='file',
+      require_protected_dacl=True,
+      allow_non_admin_read=True,
+      allow_trusted_installer=False,
+    )
+    if not probe.is_dir(cfg_dir):
+      ecfg.issues.append('ProgramData config location is not a directory')
+      continue
+    cfg_items = probe.list_dir(cfg_dir)
+    ecfg.detail = f'files: {", ".join(cfg_items)}' if cfg_items else '(empty)'
+    for name in cfg_items:
+      full_cfg = _join_win_path(cfg_dir, name)
+      fentry = add_item('ProgramData', full_cfg, 'both', True, brand=spec.name)
+      is_cfg_dir = probe.is_dir(full_cfg)
+      if probe.is_reparse_point(full_cfg):
+        fentry.issues.append('ProgramData entry is a reparse point/symlink')
+      lower = name.lower()
+      if not is_cfg_dir and lower.endswith('.json~'):
+        fentry.issues.append('Leftover temporary config file (.json~)')
+      elif is_cfg_dir or lower not in (
+        HOST_CONFIG_FILENAME,
+        UNPRIVILEGED_CONFIG_FILENAME,
+      ):
+        fentry.issues.append('Unexpected file/directory in ProgramData folder')
+      _evaluate_acl(
+        fentry,
+        probe.get_file_sddl(full_cfg),
+        object_type='file',
+        allow_non_admin_read=(not is_cfg_dir and lower != HOST_CONFIG_FILENAME),
+        allow_trusted_installer=False,
+      )
+
+  # Windows Service (`chromoting`), MSI UpgradeCode, Uninstall, Firewall.
+  svc = probe.query_service(SERVICE_NAME)
+  svc_entry = add_item('Service', rf'SCM\{SERVICE_NAME}', 'both', svc.exists)
+  if svc.exists:
+    svc_exe = extract_executable_path(svc.binary_path)
+    svc_entry.detail = (
+      f'state={svc.state}, start={svc.start_type}, account={svc.account}, '
+      f'binary={svc_exe}'
+    )
+    check_target(svc.binary_path, True, svc_entry.issues)
+    if svc.account.lower() not in (
+      'localsystem',
+      r'.\localsystem',
+      r'nt authority\system',
+    ):
+      svc_entry.issues.append(f'Unexpected service account: {svc.account!r}')
+    _evaluate_acl(
+      svc_entry, probe.get_service_sddl(SERVICE_NAME), object_type='service'
+    )
+  audit_reg(rf'SYSTEM\CurrentControlSet\Services\{SERVICE_NAME}', 64, 'both')
+
+  msi_products = probe.enum_msi_products(LEGACY_MSI_UPGRADE_CODE)
+  msi_products_lower = {p.lower() for p in msi_products}
+  add_item(
+    'MSI',
+    f'UpgradeCode {LEGACY_MSI_UPGRADE_CODE}',
+    'msi',
+    bool(msi_products),
+    ', '.join(msi_products),
+  )
+
+  uninstall_root = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
+  for view in (64, 32):
+    for sub in probe.reg_list_subkeys(uninstall_root, view=view):
+      sub_path = rf'{uninstall_root}\{sub}'
+      sub_low = sub.lower()
+      disp = str(probe.reg_get_value(sub_path, 'DisplayName', view=view) or '')
+      if (
+        sub_low in msi_products_lower
+        or 'chrome remote desktop' in disp.lower()
+        or 'chromoting' in disp.lower()
+      ):
+        src = 'msi' if (view == 32 or sub_low in msi_products_lower) else 'both'
+        audit_reg(sub_path, view, src).detail = f'DisplayName={disp!r}'
+
+  fw_subkey = (
+    r'SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters'
+    r'\FirewallPolicy\FirewallRules'
+  )
+  fw_tokens = (
+    'remoting_network.exe',
+    'remoting_peer_connection.exe',
+    'chrome remote desktop',
+    'chromoting',
+  )
+  fw_hits = [
+    name
+    for name in probe.reg_list_values(fw_subkey, view=64)
+    if any(
+      t in str(probe.reg_get_value(fw_subkey, name, view=64) or '').lower()
+      for t in fw_tokens
+    )
+  ]
+  fw_detail = f'{len(fw_hits)} rule(s): {", ".join(fw_hits)}' if fw_hits else ''
+  add_item('Firewall', rf'HKLM\{fw_subkey}', 'msi', bool(fw_hits), fw_detail)
+
+  sm_key = r'SYSTEM\CurrentControlSet\Control\Session Manager'
+  pending_ops = probe.reg_get_value(sm_key, 'PendingFileRenameOperations', 64)
+  crd_pending = [
+    str(op)
+    for op in (pending_ops if isinstance(pending_ops, (list, tuple)) else ())
+    if any(
+      t in str(op).lower()
+      for t in ('chrome remote desktop', 'chromoting', 'remoting_')
+    )
+  ]
+  add_item(
+    'RebootPending',
+    rf'HKLM\{sm_key}\PendingFileRenameOperations',
+    'both',
+    bool(crd_pending),
+    '; '.join(crd_pending),
+  )
+
+  report.present_count = sum(1 for e in report.entries if e.present)
+  report.acl_ok_count = sum(1 for e in report.entries if e.acl_status == 'OK')
+  report.acl_invalid_count = sum(
+    1 for e in report.entries if e.acl_status == 'INVALID'
+  )
+  report.issue_count = sum(len(e.issues) for e in report.entries)
+  return report
+
+
+def format_report(report: AuditReport, show_absent: bool = False) -> str:
+  """Formats an `AuditReport` as a human-readable inventory summary."""
+  branding = ', '.join(report.detected_branding) or 'none'
+  lines = [
+    f'Detected Branding:  {branding}',
+    f'Locations Present:  {report.present_count} / {len(report.entries)}',
+    f'ACLs Validated OK:  {report.acl_ok_count}',
+    f'ACL Violations:     {report.acl_invalid_count}',
+    f'Total Issues:       {report.issue_count}',
+  ]
+  shown = [e for e in report.entries if show_absent or e.present or e.issues]
+  if shown:
+    lines.append('\nInventory:')
+    for e in shown:
+      state = 'PRESENT' if e.present else 'ABSENT '
+      acl = f' [ACL:{e.acl_status}]' if e.acl_status != 'N/A' else ''
+      suffix = f' -> {e.detail}' if e.detail else ''
+      lines.append(
+        f'  [{state}] ({e.source:4s}) [{e.category}] {e.location}{acl}{suffix}'
+      )
+      lines.extend(f'      ! {issue}' for issue in e.issues)
+  return '\n'.join(lines)
+
+
+def main(
+  argv: Optional[Sequence[str]] = None, probe: Optional[SystemProbe] = None
+) -> int:
+  parser = argparse.ArgumentParser(
+    description='Inventory CRD Windows MSI/EXE locations and validate ACLs.'
+  )
+  parser.add_argument(
+    '--branding',
+    choices=('auto', 'chrome', 'chromium'),
+    default='auto',
+    help='Branding configuration to audit (default: auto).',
+  )
+  parser.add_argument(
+    '--version', help='Optional host version for CLSID lookup.'
+  )
+  parser.add_argument(
+    '--all',
+    action='store_true',
+    help='Include absent inventory locations in text output.',
+  )
+  parser.add_argument(
+    '--json', action='store_true', help='Output audit report in JSON format.'
+  )
+  args = parser.parse_args(argv)
+
+  if probe is None:
+    if sys.platform != 'win32':
+      print('Error: Live probing requires Windows (win32).', file=sys.stderr)
+      return 2
+    probe = WindowsSystemProbe()
+
+  report = audit_host_install(probe, args.branding, args.version)
+  if args.json:
+    print(json.dumps(asdict(report), indent=2))
+  else:
+    print(format_report(report, show_absent=args.all))
+  return 0 if report.issue_count == 0 else 1
+
+
+if __name__ == '__main__':
+  sys.exit(main())
