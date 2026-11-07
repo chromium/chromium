@@ -16,6 +16,7 @@
 #include "services/media_session/public/cpp/media_image.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -39,8 +40,7 @@ MediaSessionAndroid::MediaSessionAndroid(MediaSessionImpl* session)
   CHECK(media_session_, base::NotFatalUntil::M160);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  j_media_session_ =
-      Java_MediaSessionImpl_create(env, reinterpret_cast<intptr_t>(this));
+  j_media_session_ = Java_MediaSessionImpl_create(env, jni_zero::MakeRaw(this));
 
   session->AddObserver(observer_receiver_.BindNewPipeAndPassRemote());
 }

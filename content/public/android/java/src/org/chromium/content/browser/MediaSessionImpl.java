@@ -4,11 +4,16 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -37,7 +42,10 @@ import java.util.List;
 @JNINamespace("content")
 @NullMarked
 public class MediaSessionImpl extends MediaSession {
-    private long mNativeMediaSessionAndroid;
+    @JniType("::content::MediaSessionAndroid")
+    interface NativeMediaSessionAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeMediaSessionAndroid> mNativeMediaSessionAndroid;
 
     private final ObserverList<MediaSessionObserver> mObservers;
     private final ObserverList.RewindableIterator<MediaSessionObserver> mObserversIterator;
@@ -85,39 +93,41 @@ public class MediaSessionImpl extends MediaSession {
 
     @Override
     public void resume(@SuspendType.EnumType int suspendType) {
-        MediaSessionImplJni.get().resume(mNativeMediaSessionAndroid, suspendType);
+        MediaSessionImplJni.get().resume(assumeNonNull(mNativeMediaSessionAndroid), suspendType);
     }
 
     @Override
     public void suspend(@SuspendType.EnumType int suspendType) {
-        MediaSessionImplJni.get().suspend(mNativeMediaSessionAndroid, suspendType);
+        MediaSessionImplJni.get().suspend(assumeNonNull(mNativeMediaSessionAndroid), suspendType);
     }
 
     @Override
     public void stop() {
-        MediaSessionImplJni.get().stop(mNativeMediaSessionAndroid);
+        MediaSessionImplJni.get().stop(assumeNonNull(mNativeMediaSessionAndroid));
     }
 
     @Override
     public void seek(long millis) {
         assert millis != 0 : "Attempted to seek by an unspecified number of milliseconds";
-        MediaSessionImplJni.get().seek(mNativeMediaSessionAndroid, millis);
+        MediaSessionImplJni.get().seek(assumeNonNull(mNativeMediaSessionAndroid), millis);
     }
 
     @Override
     public void seekTo(long millis) {
         assert millis >= 0 : "Attempted to seek to a negative posision";
-        MediaSessionImplJni.get().seekTo(mNativeMediaSessionAndroid, millis);
+        MediaSessionImplJni.get().seekTo(assumeNonNull(mNativeMediaSessionAndroid), millis);
     }
 
     @Override
     public void didReceiveAction(int action) {
-        MediaSessionImplJni.get().didReceiveAction(mNativeMediaSessionAndroid, action);
+        MediaSessionImplJni.get()
+                .didReceiveAction(assumeNonNull(mNativeMediaSessionAndroid), action);
     }
 
     @Override
     public void requestSystemAudioFocus() {
-        MediaSessionImplJni.get().requestSystemAudioFocus(mNativeMediaSessionAndroid);
+        MediaSessionImplJni.get()
+                .requestSystemAudioFocus(assumeNonNull(mNativeMediaSessionAndroid));
     }
 
     @Override
@@ -131,7 +141,7 @@ public class MediaSessionImpl extends MediaSession {
             int minimumSizePx,
             int desiredSizePx,
             Callback<@Nullable Bitmap> callback) {
-        if (mNativeMediaSessionAndroid == 0) {
+        if (mNativeMediaSessionAndroid == null) {
             callback.onResult(null);
             return;
         }
@@ -149,7 +159,10 @@ public class MediaSessionImpl extends MediaSession {
             mObserversIterator.next().stopObserving();
         }
         mObservers.clear();
-        mNativeMediaSessionAndroid = 0;
+        if (mNativeMediaSessionAndroid != null) {
+            mNativeMediaSessionAndroid.release();
+            mNativeMediaSessionAndroid = null;
+        }
     }
 
     @CalledByNative
@@ -199,11 +212,11 @@ public class MediaSessionImpl extends MediaSession {
     }
 
     @CalledByNative
-    private static MediaSessionImpl create(long nativeMediaSession) {
+    static MediaSessionImpl create(JniRawPtr<NativeMediaSessionAndroid> nativeMediaSession) {
         return new MediaSessionImpl(nativeMediaSession);
     }
 
-    private MediaSessionImpl(long nativeMediaSession) {
+    private MediaSessionImpl(JniRawPtr<NativeMediaSessionAndroid> nativeMediaSession) {
         mNativeMediaSessionAndroid = nativeMediaSession;
         mObservers = new ObserverList<MediaSessionObserver>();
         mObserversIterator = mObservers.rewindableIterator();
@@ -212,25 +225,25 @@ public class MediaSessionImpl extends MediaSession {
     @NativeMethods
     public interface Natives {
         void resume(
-                long nativeMediaSessionAndroid,
+                JniPtr<NativeMediaSessionAndroid> self,
                 @JniType("media_session::mojom::MediaSession::SuspendType") int suspendType);
 
         void suspend(
-                long nativeMediaSessionAndroid,
+                JniPtr<NativeMediaSessionAndroid> self,
                 @JniType("media_session::mojom::MediaSession::SuspendType") int suspendType);
 
-        void stop(long nativeMediaSessionAndroid);
+        void stop(JniPtr<NativeMediaSessionAndroid> self);
 
-        void seek(long nativeMediaSessionAndroid, long millis);
+        void seek(JniPtr<NativeMediaSessionAndroid> self, long millis);
 
-        void seekTo(long nativeMediaSessionAndroid, long millis);
+        void seekTo(JniPtr<NativeMediaSessionAndroid> self, long millis);
 
-        void didReceiveAction(long nativeMediaSessionAndroid, int action);
+        void didReceiveAction(JniPtr<NativeMediaSessionAndroid> self, int action);
 
-        void requestSystemAudioFocus(long nativeMediaSessionAndroid);
+        void requestSystemAudioFocus(JniPtr<NativeMediaSessionAndroid> self);
 
         void getMediaImageBitmap(
-                long nativeMediaSessionAndroid,
+                JniPtr<NativeMediaSessionAndroid> self,
                 MediaImage image,
                 int minimumSizePx,
                 int desiredSizePx,
