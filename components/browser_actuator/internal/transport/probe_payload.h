@@ -10,7 +10,9 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/types/expected.h"
+#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 
 namespace browser_actuator::transport {
 
@@ -61,6 +63,8 @@ namespace browser_actuator::transport {
 // cross-endpoint payload verification remains bit-for-bit deterministic.
 inline constexpr int32_t kMaxProbePayloadBytes = 10'000'000;
 inline constexpr int32_t kMaxProbeResponses = 16;
+inline constexpr int64_t kMaxTotalProbeResponseBytes = 20'000'000;
+inline constexpr int32_t kMaxProbeDelayMs = 30'000;
 inline constexpr size_t kMaxProbeIdBytes = 256;
 inline constexpr size_t kMaxSanitizedProbeIdChars = 32;
 inline constexpr size_t kMinProbeEntropyChars = 8;
@@ -69,6 +73,20 @@ inline constexpr size_t kMinProbeEntropyChars = 8;
 // character is a single UTF-8 byte, so character count equals wire byte length.
 inline constexpr std::string_view kProbeBase32Alphabet =
     "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+
+// Describes one requested upstream response when constructing a `ProbeRequest`
+// via `BuildProbeRequest()`.
+struct ProbeResponseSpecInput {
+  int32_t payload_size_bytes = 0;
+  int32_t delay_ms = 0;
+};
+
+// Validates `request` against all transport safety caps (`kMaxProbeIdBytes`,
+// `kMaxProbePayloadBytes`, `kMaxProbeResponses`, `kMaxTotalProbeResponseBytes`,
+// and `kMaxProbeDelayMs`). Returns an error message on the first violated
+// bound.
+base::expected<void, std::string> ValidateProbeRequest(
+    const TransportProbe::ProbeRequest& request);
 
 // Generates the deterministic ASCII payload of exact byte length
 // `payload_size_bytes` for a `ProbeRequest` identified by `probe_id`.
@@ -94,6 +112,26 @@ base::expected<std::string, std::string> GenerateProbeResponsePayload(
     int32_t response_index,
     int32_t total_responses,
     int32_t payload_size_bytes);
+
+// Builds and validates a ready-to-send `TransportProbe::ProbeRequest` with a
+// deterministic request payload of `request_payload_size_bytes` and the
+// requested `response_specs`.
+base::expected<TransportProbe::ProbeRequest, std::string> BuildProbeRequest(
+    std::string_view probe_id,
+    int32_t request_payload_size_bytes = 0,
+    base::span<const ProbeResponseSpecInput> response_specs = {});
+
+// Returns true if `actual_payload` matches the deterministic request payload
+// expected for `(probe_id, expected_payload_size_bytes)`.
+bool VerifyProbeRequestPayload(std::string_view probe_id,
+                               int32_t expected_payload_size_bytes,
+                               std::string_view actual_payload);
+
+// Returns true if `response` carries a valid index, matching `probe_id` and
+// `total_responses`, and the exact deterministic payload requested by the
+// corresponding entry in `request.response_specs()`.
+bool VerifyProbeResponsePayload(const TransportProbe::ProbeRequest& request,
+                                const TransportProbe::ProbeResponse& response);
 
 }  // namespace browser_actuator::transport
 

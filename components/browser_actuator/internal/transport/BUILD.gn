@@ -59,7 +59,10 @@ source_set("probe_payload") {
     "probe_payload.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/internal/transport/proto",
+  ]
 }
 
 source_set("session_stream_recorder") {

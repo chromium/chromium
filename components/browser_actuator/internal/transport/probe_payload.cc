@@ -10,12 +10,15 @@
 #include <limits>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 
 namespace browser_actuator::transport {
 namespace {
@@ -88,6 +91,21 @@ base::expected<void, std::string> ValidateInclusiveBounds(
         base::StrCat({label, " (", base::NumberToString(value),
                       ") must be in [", base::NumberToString(minimum), ", ",
                       base::NumberToString(maximum), "]."}));
+  }
+  return base::ok();
+}
+
+base::expected<void, std::string> ValidateResponseSpecFieldBounds(
+    int index,
+    std::string_view field_name,
+    int64_t value,
+    int64_t minimum,
+    int64_t maximum) {
+  if (value < minimum || value > maximum) {
+    return ValidateInclusiveBounds(
+        value, minimum, maximum,
+        base::StrCat({"ProbeRequest response_specs[",
+                      base::NumberToString(index), "] ", field_name}));
   }
   return base::ok();
 }
@@ -211,6 +229,36 @@ std::string BuildDeterministicPayload(std::string_view probe_id,
 
 }  // namespace
 
+base::expected<void, std::string> ValidateProbeRequest(
+    const TransportProbe::ProbeRequest& request) {
+  RETURN_IF_ERROR(ValidateMaxCount(request.probe_id().size(), kMaxProbeIdBytes,
+                                   "ProbeRequest probe_id length"));
+  RETURN_IF_ERROR(ValidateMaxCount(request.payload().size(),
+                                   static_cast<uint64_t>(kMaxProbePayloadBytes),
+                                   "ProbeRequest payload size"));
+  RETURN_IF_ERROR(
+      ValidateMaxCount(static_cast<uint64_t>(request.response_specs_size()),
+                       static_cast<uint64_t>(kMaxProbeResponses),
+                       "ProbeRequest response_specs count"));
+
+  int64_t total_response_bytes = 0;
+  for (int i = 0; i < request.response_specs_size(); ++i) {
+    const TransportProbe::ProbeRequest::ResponseSpec& spec =
+        request.response_specs(i);
+    RETURN_IF_ERROR(ValidateResponseSpecFieldBounds(i, "payload_size_bytes",
+                                                    spec.payload_size_bytes(),
+                                                    0, kMaxProbePayloadBytes));
+    RETURN_IF_ERROR(ValidateResponseSpecFieldBounds(
+        i, "delay_ms", spec.delay_ms(), 0, kMaxProbeDelayMs));
+    total_response_bytes += spec.payload_size_bytes();
+    RETURN_IF_ERROR(
+        ValidateMaxCount(static_cast<uint64_t>(total_response_bytes),
+                         static_cast<uint64_t>(kMaxTotalProbeResponseBytes),
+                         "ProbeRequest total requested response bytes"));
+  }
+  return base::ok();
+}
+
 base::expected<std::string, std::string> GenerateProbeRequestPayload(
     std::string_view probe_id,
     int32_t payload_size_bytes) {
@@ -254,6 +302,67 @@ base::expected<std::string, std::string> GenerateProbeResponsePayload(
   return base::ok(
       BuildDeterministicPayload(probe_id, static_cast<uint64_t>(response_index),
                                 prefix, payload_size_bytes));
+}
+
+base::expected<TransportProbe::ProbeRequest, std::string> BuildProbeRequest(
+    std::string_view probe_id,
+    int32_t request_payload_size_bytes,
+    base::span<const ProbeResponseSpecInput> response_specs) {
+  ASSIGN_OR_RETURN(
+      std::string payload,
+      GenerateProbeRequestPayload(probe_id, request_payload_size_bytes));
+
+  TransportProbe::ProbeRequest request;
+  request.set_probe_id(std::string(probe_id));
+  request.set_payload(std::move(payload));
+  for (const ProbeResponseSpecInput& spec_input : response_specs) {
+    TransportProbe::ProbeRequest::ResponseSpec* spec =
+        request.add_response_specs();
+    spec->set_payload_size_bytes(spec_input.payload_size_bytes);
+    spec->set_delay_ms(spec_input.delay_ms);
+  }
+
+  RETURN_IF_ERROR(ValidateProbeRequest(request));
+  return request;
+}
+
+bool VerifyProbeRequestPayload(std::string_view probe_id,
+                               int32_t expected_payload_size_bytes,
+                               std::string_view actual_payload) {
+  if (expected_payload_size_bytes < 0 ||
+      actual_payload.size() !=
+          static_cast<size_t>(expected_payload_size_bytes)) {
+    return false;
+  }
+  base::expected<std::string, std::string> expected_payload =
+      GenerateProbeRequestPayload(probe_id, expected_payload_size_bytes);
+  return expected_payload.has_value() && *expected_payload == actual_payload;
+}
+
+bool VerifyProbeResponsePayload(const TransportProbe::ProbeRequest& request,
+                                const TransportProbe::ProbeResponse& response) {
+  if (response.probe_id() != request.probe_id()) {
+    return false;
+  }
+  const int32_t total_responses = request.response_specs_size();
+  if (total_responses <= 0 || response.total_responses() != total_responses) {
+    return false;
+  }
+  const int32_t index = response.response_index();
+  if (index < 0 || index >= total_responses) {
+    return false;
+  }
+  const int32_t expected_size =
+      request.response_specs(index).payload_size_bytes();
+  if (expected_size < 0 ||
+      response.payload().size() != static_cast<size_t>(expected_size)) {
+    return false;
+  }
+  base::expected<std::string, std::string> expected_payload =
+      GenerateProbeResponsePayload(request.probe_id(), index, total_responses,
+                                   expected_size);
+  return expected_payload.has_value() &&
+         *expected_payload == response.payload();
 }
 
 }  // namespace browser_actuator::transport
