@@ -21,6 +21,8 @@ TEST(PayloadTypeMappingTest, MapsPayloadTypeToWireEnum) {
             ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION);
   EXPECT_EQ(ToDownstreamProtoPayloadType(PayloadType::kTaskIngress),
             ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
+  EXPECT_EQ(ToDownstreamProtoPayloadType(PayloadType::kProbe),
+            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
 }
 
 TEST(PayloadTypeMappingTest, RoundTripsEveryRoutablePayloadType) {
@@ -44,6 +46,9 @@ TEST(PayloadTypeMappingTest, MapsWireEnumToPayloadType) {
   EXPECT_EQ(FromDownstreamProtoPayloadType(
                 ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS),
             PayloadType::kTaskIngress);
+  EXPECT_EQ(
+      FromDownstreamProtoPayloadType(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE),
+      PayloadType::kProbe);
 }
 
 TEST(PayloadTypeMappingTest, RejectsUnspecifiedWireEnum) {

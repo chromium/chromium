@@ -144,6 +144,47 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
       "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
 }
 
+TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageProbeSuccess) {
+  base::HistogramTester histogram_tester;
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
+
+  TransportProbe probe;
+  probe.mutable_response()->set_probe_id("probe_1");
+
+  base::test::TestFuture<bool, int> future;
+  client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
+                             /*responding_to_sequence_number=*/std::nullopt,
+                             PayloadType::kProbe, probe, future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+
+  ASSERT_EQ(1u, requests_.size());
+  SendSessionMessageRequest request_proto;
+  ASSERT_TRUE(
+      request_proto.ParseFromString(network::GetUploadData(requests_[0])));
+
+  const auto& upstream = request_proto.actuator_upstream_message();
+  ASSERT_EQ(1, upstream.typed_payloads_size());
+  const auto& typed_payload = upstream.typed_payloads(0);
+  EXPECT_EQ(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE, typed_payload.payload_type());
+  EXPECT_EQ("type.googleapis.com/browser_actuator.TransportProbe",
+            typed_payload.proto_payload().type_url());
+  EXPECT_EQ(probe.SerializeAsString(), typed_payload.proto_payload().value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Transport.Upstream.PayloadSize.Probe",
+      probe.ByteSizeLong(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Browser.Actuator.Transport.Upstream.UploadLatency.Probe", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
+}
+
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
        SendMessageTaskIngressSuccess) {
   base::HistogramTester histogram_tester;

@@ -36,6 +36,9 @@ chromium-metrics-reviews@google.com.
     <owner>qinmin@chromium.org</owner>
     <owner>src/chrome/browser/glic/OWNERS</owner>
   </variant>
+  <variant name="Probe" summary="Synthetic transport probe messages">
+    <owner>src/components/browser_actuator/OWNERS</owner>
+  </variant>
   <variant name="TaskIngress" summary="Task ingress messages">
     <owner>wenyufu@chromium.org</owner>
     <owner>src/components/browser_actuator/OWNERS</owner>

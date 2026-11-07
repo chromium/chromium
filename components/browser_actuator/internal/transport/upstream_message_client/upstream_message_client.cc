@@ -44,6 +44,8 @@ ActuatorUpstreamPayloadType ToProtoPayloadType(PayloadType payload_type) {
       return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION;
     case PayloadType::kTaskIngress:
       return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS;
+    case PayloadType::kProbe:
+      return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE;
   }
   NOTREACHED();
 }

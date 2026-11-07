@@ -18,6 +18,7 @@ enum class PayloadType {
   kExperimentalTriggering = 2,
   kActuation = 3,
   kTaskIngress = 4,
+  kProbe = 5,
 };
 // LINT.ThenChange(
 //     //components/browser_actuator/internal/transport/metrics_utils.h:PayloadTypeToMetricSuffix,
@@ -34,6 +35,7 @@ enum class FactoryId {
   kSessionStreamRecorder = 3,
   kActuation = 4,
   kTaskIngress = 5,
+  kProbe = 6,
 };
 
 enum class SendUpstreamMessageError {

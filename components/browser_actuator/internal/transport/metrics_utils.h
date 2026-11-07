@@ -29,6 +29,8 @@ inline std::string_view PayloadTypeToMetricSuffix(PayloadType payload_type) {
       return "Actuation";
     case PayloadType::kTaskIngress:
       return "TaskIngress";
+    case PayloadType::kProbe:
+      return "Probe";
     case PayloadType::kUnspecified:
       NOTREACHED();
   }

@@ -26,6 +26,8 @@ enum ActuatorDownstreamPayloadType {
   ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION = 3;
   // Agentic task use case message.
   ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS = 4;
+  // Synthetic end-to-end transport probe payload (`TransportProbe`).
+  ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE = 5;
 }
 
 // Wrapper that pairs a payload with its routing type.

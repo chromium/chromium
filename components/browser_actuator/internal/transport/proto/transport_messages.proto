@@ -16,6 +16,7 @@ import "components/sharing_message/proto/actuator_downstream_message.proto";
 
 // Payload for a control command that is processed internally by the channel
 // (when the PayloadType is `..._CONTROL_COMMAND` typed).
+// Next ID: 5
 message ControlCommand {
   oneof command {
     CloseChannel close_channel = 1;
@@ -39,6 +40,53 @@ message ControlCommand {
   message StartSessionAck {}
 }
 
+// Synthetic end-to-end transport probe payload (when the PayloadType is
+// `..._PROBE` typed).
+// Next ID: 3
+message TransportProbe {
+  oneof payload {
+    ProbeRequest request = 1;
+    ProbeResponse response = 2;
+  }
+
+  // Synthetic end-to-end transport probe request for latency, RTT, throughput,
+  // and multi-payload fan-out testing.
+  // Next ID: 4
+  message ProbeRequest {
+    // Caller-supplied correlation identifier echoed in every ProbeResponse.
+    string probe_id = 1;
+
+    // Describes a single synthetic upstream response requested from the peer.
+    // Next ID: 3
+    message ResponseSpec {
+      // Exact UTF-8 byte length of ProbeResponse.payload to generate
+      // (0..10 MB).
+      int32 payload_size_bytes = 1;
+      // Optional delay in milliseconds before transmitting this response.
+      int32 delay_ms = 2;
+    }
+    // Ordered list of responses the recipient should emit (0 = one-way sink).
+    repeated ResponseSpec response_specs = 2;
+
+    // Synthetic ASCII payload of exact requested byte size (default "").
+    string payload = 3;
+  }
+
+  // Synthetic response emitted for each entry in ProbeRequest.response_specs.
+  // Next ID: 5
+  message ProbeResponse {
+    // Correlation identifier copied from the originating ProbeRequest.
+    string probe_id = 1;
+    // Zero-based index into ProbeRequest.response_specs
+    // (0 .. total_responses - 1).
+    int32 response_index = 2;
+    // Total number of responses scheduled for this ProbeRequest.
+    int32 total_responses = 3;
+    // Synthetic ASCII payload of exact ResponseSpec.payload_size_bytes length.
+    string payload = 4;
+  }
+}
+
 // Identifies the routing destination in the server of an
 // ActuatorUpstreamMessage.
 enum ActuatorUpstreamPayloadType {
@@ -52,6 +100,8 @@ enum ActuatorUpstreamPayloadType {
   ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION = 3;
   // Agentic task use case message.
   ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS = 4;
+  // Synthetic end-to-end transport probe payload (`TransportProbe`).
+  ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE = 5;
 }
 
 // Wrapper that pairs a payload with its routing type.
