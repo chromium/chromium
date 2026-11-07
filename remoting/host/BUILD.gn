@@ -778,6 +778,8 @@ static_library("common") {
       "input_injector_mac.h",
       "keyboard_layout_monitor_mac.cc",
       "pairing_registry_delegate_mac.cc",
+      "privacy_overlay_mac.h",
+      "privacy_overlay_mac.mm",
       "usage_stats_consent_mac.cc",
     ]
     frameworks = [
@@ -1070,9 +1072,11 @@ source_set("unit_tests") {
     sources += [
       "input_injector_mac_unittest.cc",
       "input_monitor/local_keyboard_input_monitor_mac_unittest.cc",
+      "privacy_overlay_mac_unittest.mm",
     ]
     data = [ "$root_out_dir/remoting/resources/en.lproj/locale.pak" ]
     deps += [
+      "//base/test:test_support",
       "//remoting/host/mac:unit_tests",
       "//ui/events:dom_keycode_converter",
     ]
