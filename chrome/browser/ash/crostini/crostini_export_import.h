@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -31,36 +30,11 @@ class WebContents;
 
 namespace crostini {
 
-enum class ExportContainerResult;
-enum class ImportContainerResult;
-
 enum class ExportImportType {
   EXPORT,
   IMPORT,
   EXPORT_DISK_IMAGE,
   IMPORT_DISK_IMAGE
-};
-
-// ExportContainerResult is used for UMA, if you update this make sure to update
-// CrostiniExportContainerResult in enums.xml
-enum class ExportContainerResult {
-  kSuccess = 0,
-  kFailed = 1,
-  kFailedVmStopped = 2,
-  kFailedVmStarted = 3,
-  kMaxValue = kFailedVmStarted,
-};
-
-// ImportContainerResult is used for UMA, if you update this make sure to update
-// CrostiniImportContainerResult in enums.xml
-enum class ImportContainerResult {
-  kSuccess = 0,
-  kFailed = 1,
-  kFailedVmStopped = 2,
-  kFailedVmStarted = 3,
-  kFailedArchitecture = 4,
-  kFailedSpace = 5,
-  kMaxValue = kFailedSpace,
 };
 
 // CrostiniExportImport is a keyed profile service to manage exporting and
@@ -81,17 +55,6 @@ class CrostiniExportImport : public KeyedService,
     // again immediately after the operation completes with |in_progress|=false.
     virtual void OnCrostiniExportImportOperationStatusChanged(
         bool in_progress) = 0;
-  };
-
-  struct OperationData {
-    OperationData(ExportImportType type,
-                  guest_os::GuestId id,
-                  std::string notification_id);
-    ~OperationData();
-
-    ExportImportType type;
-    guest_os::GuestId container_id;
-    std::string notification_id;
   };
 
   explicit CrostiniExportImport(Profile* profile);
@@ -147,30 +110,16 @@ class CrostiniExportImport : public KeyedService,
       base::FilePath path,
       CrostiniManager::CrostiniResultCallback callback);
 
-  // Create a new container with |container_id| from |path| and invoke
-  // |callback| when complete.
-  void CreateContainerFromImport(
-      guest_os::GuestId container_id,
-      base::FilePath path,
-      CrostiniManager::CrostiniResultCallback callback);
-
   // Cancel currently running export/import.
-  void CancelOperation(ExportImportType type, guest_os::GuestId id);
+  void CancelOperation(guest_os::GuestId id);
 
   // Whether an export or import is currently in progress.
   bool GetExportImportOperationStatus() const;
-
-  // Returns the default location to export the container to.
-  base::FilePath GetDefaultBackupPath() const;
-  // Returns the default location to export the disk image to.
-  base::FilePath GetDefaultImageBackupPath() const;
 
   base::WeakPtr<CrostiniExportImportNotificationController>
   GetNotificationControllerForTesting(guest_os::GuestId container_id);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
-                           TestDeprecatedExportSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestExportCustomVmContainerSuccess);
@@ -204,6 +153,19 @@ class CrostiniExportImport : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportDiskImageCancelled);
 
+  struct OperationData {
+    OperationData(ExportImportType type, guest_os::GuestId id);
+    ~OperationData();
+
+    ExportImportType type;
+    guest_os::GuestId container_id;
+  };
+
+  // Returns the default location to export the container to.
+  base::FilePath GetDefaultBackupPath() const;
+  // Returns the default location to export the disk image to.
+  base::FilePath GetDefaultImageBackupPath() const;
+
   void FillOperationData(ExportImportType type, guest_os::GuestId id);
   void FillOperationData(ExportImportType type);
 
@@ -212,15 +174,12 @@ class CrostiniExportImport : public KeyedService,
   void FileSelectionCanceled() override;
 
   void Start(base::FilePath path,
-             bool create_new_container,
              CrostiniManager::CrostiniResultCallback callback);
 
   // Restart VM with LXD if required and share the file path with VM.
   void EnsureLxdStartedThenSharePath(
       const guest_os::GuestId& container_id,
       const base::FilePath& path,
-      bool persist,
-      bool create_new_container,
       guest_os::GuestOsSharePath::SharePathCallback callback);
 
   // Share the file path with VM after VM has been restarted.

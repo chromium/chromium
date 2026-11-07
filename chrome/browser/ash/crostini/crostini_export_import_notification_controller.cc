@@ -142,8 +142,7 @@ void CrostiniExportImportNotificationController::SetStatusDone() {
 }
 
 void CrostiniExportImportNotificationController::SetStatusCancelled() {
-  CHECK(status_ == Status::NONE || status_ == Status::CANCELLING,
-        base::NotFatalUntil::M160);
+  CHECK(status_ == Status::CANCELLING, base::NotFatalUntil::M160);
 
   status_ = Status::CANCELLED;
   SetStatusCancelledUI();
@@ -230,16 +229,16 @@ void CrostiniExportImportNotificationController::SetStatusRunningUI(
   }
 
   delegate_->SetCallback(base::BindRepeating(
-      [](Profile* profile, ExportImportType type,
-         guest_os::GuestId container_id, std::optional<int> button_index) {
+      [](Profile* profile, guest_os::GuestId container_id,
+         std::optional<int> button_index) {
         if (!button_index.has_value()) {
           return;
         }
         CHECK_EQ(0, *button_index, base::NotFatalUntil::M160);
         CrostiniExportImportFactory::GetForProfile(profile)->CancelOperation(
-            type, container_id);
+            container_id);
       },
-      profile_, type(), container_id_));
+      profile_, container_id_));
 
   notification_->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
@@ -297,22 +296,22 @@ void CrostiniExportImportNotificationController::SetStatusDoneUI() {
   }
 
   notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
-    notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
-    notification_->set_title(l10n_util::GetStringUTF16(
-        (type() == ExportImportType::EXPORT ||
-         type() == ExportImportType::EXPORT_DISK_IMAGE)
-            ? IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_DONE
-            : IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_DONE));
-    notification_->set_message(l10n_util::GetStringUTF16(
-        (type() == ExportImportType::EXPORT ||
-         type() == ExportImportType::EXPORT_DISK_IMAGE)
-            ? IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_DONE
-            : IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_DONE));
-    notification_->set_buttons({});
-    notification_->set_never_timeout(false);
-    notification_->set_pinned(false);
+  notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
+  notification_->set_title(l10n_util::GetStringUTF16(
+      (type() == ExportImportType::EXPORT ||
+       type() == ExportImportType::EXPORT_DISK_IMAGE)
+          ? IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_DONE
+          : IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_DONE));
+  notification_->set_message(l10n_util::GetStringUTF16(
+      (type() == ExportImportType::EXPORT ||
+       type() == ExportImportType::EXPORT_DISK_IMAGE)
+          ? IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_DONE
+          : IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_DONE));
+  notification_->set_buttons({});
+  notification_->set_never_timeout(false);
+  notification_->set_pinned(false);
 
-    ForceRedisplay();
+  ForceRedisplay();
 }
 
 void CrostiniExportImportNotificationController::SetStatusCancelledUI() {
@@ -366,6 +365,11 @@ void CrostiniExportImportNotificationController::SetStatusFailedWithMessageUI(
                 {.sub_page = chromeos::settings::mojom::kStorageSubpagePath});
           },
           profile_));
+      break;
+    case Status::FAILED_CONCURRENT_OPERATION:
+    case Status::FAILED_BAD_IMAGE:
+      delegate_->SetCallback(
+          CrostiniExportImportClickCloseDelegate::ButtonClickCallback());
       break;
     default:
       LOG(ERROR) << "Unexpected failure status "

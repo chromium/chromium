@@ -30,12 +30,37 @@
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace crostini {
+
+namespace {
+
+// ExportContainerResult is used for UMA, if you update this make sure to update
+// CrostiniExportContainerResult in enums.xml
+enum class ExportContainerResult {
+  kSuccess = 0,
+  kFailed = 1,
+  kFailedVmStopped = 2,
+  kFailedVmStarted = 3,
+  kMaxValue = kFailedVmStarted,
+};
+
+// ImportContainerResult is used for UMA, if you update this make sure to update
+// CrostiniImportContainerResult in enums.xml
+enum class ImportContainerResult {
+  kSuccess = 0,
+  kFailed = 1,
+  kFailedVmStopped = 2,
+  kFailedVmStarted = 3,
+  kFailedArchitecture = 4,
+  kFailedSpace = 5,
+  kMaxValue = kFailedSpace,
+};
+
+}  // namespace
 
 using Status = CrostiniExportImportNotificationController::Status;
 
@@ -63,19 +88,16 @@ void CrostiniExportImport::Shutdown() {
 
 CrostiniExportImport::OperationData::OperationData(
     ExportImportType type,
-    guest_os::GuestId container_id,
-    std::string notification_id)
-    : type(type),
-      container_id(std::move(container_id)),
-      notification_id(std::move(notification_id)) {}
+    guest_os::GuestId container_id)
+    : type(type), container_id(std::move(container_id)) {}
 
 CrostiniExportImport::OperationData::~OperationData() = default;
 
 void CrostiniExportImport::FillOperationData(ExportImportType type,
                                              guest_os::GuestId container_id) {
   CHECK(!operation_data_);
-  operation_data_ = std::make_unique<OperationData>(
-      type, std::move(container_id), GetUniqueNotificationId());
+  operation_data_ =
+      std::make_unique<OperationData>(type, std::move(container_id));
 }
 
 void CrostiniExportImport::FillOperationData(ExportImportType type) {
@@ -156,7 +178,7 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
       default_path = GetDefaultBackupPath();
       break;
     case ExportImportType::IMPORT:
-      file_selector_mode = ui::SelectFileDialog::SELECT_OPEN_FILE,
+      file_selector_mode = ui::SelectFileDialog::SELECT_OPEN_FILE;
       title = IDS_SETTINGS_CROSTINI_IMPORT;
       default_path = file_manager::util::GetMyFilesFolderForProfile(profile_);
       break;
@@ -166,7 +188,7 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
       default_path = GetDefaultImageBackupPath();
       break;
     case ExportImportType::IMPORT_DISK_IMAGE:
-      file_selector_mode = ui::SelectFileDialog::SELECT_OPEN_FILE,
+      file_selector_mode = ui::SelectFileDialog::SELECT_OPEN_FILE;
       title = IDS_SETTINGS_CROSTINI_IMPORT;
       default_path = file_manager::util::GetMyFilesFolderForProfile(profile_);
       break;
@@ -189,18 +211,11 @@ void CrostiniExportImport::FileSelected(const ui::SelectedFileInfo& file,
       file.path().Extension().ends_with("img.zst")) {
     operation_data_->type = ExportImportType::IMPORT_DISK_IMAGE;
   }
-  Start(file.path(), /* create_new_container= */ false, base::DoNothing());
+  Start(file.path(), base::DoNothing());
   select_folder_dialog_.reset();
 }
 
 void CrostiniExportImport::FileSelectionCanceled() {
-  // Create the notification controller so we can let it know the operation was
-  // canceled.
-  auto controller =
-      std::make_unique<CrostiniExportImportNotificationController>(
-          profile_, operation_data_->type, operation_data_->notification_id,
-          base::FilePath(), operation_data_->container_id);
-  controller->SetStatusCancelled();
   operation_data_.reset();
   select_folder_dialog_.reset();
 }
@@ -210,7 +225,7 @@ void CrostiniExportImport::ExportContainer(
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
   FillOperationData(ExportImportType::EXPORT, std::move(container_id));
-  Start(path, /* create_new_container= */ false, std::move(callback));
+  Start(path, std::move(callback));
 }
 
 void CrostiniExportImport::ImportContainer(
@@ -225,7 +240,7 @@ void CrostiniExportImport::ImportContainer(
                << container_id;
   }
   FillOperationData(ExportImportType::IMPORT, std::move(container_id));
-  Start(path, /* create_new_container= */ false, std::move(callback));
+  Start(path, std::move(callback));
 }
 
 void CrostiniExportImport::ExportDiskImageWithCallback(
@@ -234,7 +249,7 @@ void CrostiniExportImport::ExportDiskImageWithCallback(
     CrostiniManager::CrostiniResultCallback callback) {
   FillOperationData(ExportImportType::EXPORT_DISK_IMAGE,
                     std::move(container_id));
-  Start(path, /* create_new_container= */ false, std::move(callback));
+  Start(path, std::move(callback));
 }
 
 void CrostiniExportImport::ImportDiskImageWithCallback(
@@ -243,20 +258,11 @@ void CrostiniExportImport::ImportDiskImageWithCallback(
     CrostiniManager::CrostiniResultCallback callback) {
   FillOperationData(ExportImportType::IMPORT_DISK_IMAGE,
                     std::move(container_id));
-  Start(path, /* create_new_container= */ false, std::move(callback));
-}
-
-void CrostiniExportImport::CreateContainerFromImport(
-    guest_os::GuestId container_id,
-    base::FilePath path,
-    CrostiniManager::CrostiniResultCallback callback) {
-  FillOperationData(ExportImportType::IMPORT, std::move(container_id));
-  Start(path, /* create_new_container= */ true, std::move(callback));
+  Start(path, std::move(callback));
 }
 
 void CrostiniExportImport::Start(
     base::FilePath path,
-    bool create_new_container,
     CrostiniManager::CrostiniResultCallback callback) {
   auto operation_data = std::move(operation_data_);
   if (!crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile_)) {
@@ -265,7 +271,7 @@ void CrostiniExportImport::Start(
 
   auto controller =
       std::make_unique<CrostiniExportImportNotificationController>(
-          profile_, operation_data->type, operation_data->notification_id, path,
+          profile_, operation_data->type, GetUniqueNotificationId(), path,
           operation_data->container_id);
   controller->SetStatusRunning(0);
 
@@ -300,7 +306,7 @@ void CrostiniExportImport::Start(
           base::BindOnce(
               &CrostiniExportImport::EnsureLxdStartedThenSharePath,
               weak_ptr_factory_.GetWeakPtr(), operation_data->container_id,
-              path, false, create_new_container,
+              path,
               base::BindOnce(&CrostiniExportImport::ExportAfterSharing,
                              weak_ptr_factory_.GetWeakPtr(),
                              operation_data->container_id, path,
@@ -308,8 +314,7 @@ void CrostiniExportImport::Start(
       break;
     case ExportImportType::IMPORT:
       CrostiniExportImport::EnsureLxdStartedThenSharePath(
-          operation_data->container_id, path, /*persist=*/false,
-          create_new_container,
+          operation_data->container_id, path,
           base::BindOnce(&CrostiniExportImport::ImportAfterSharing,
                          weak_ptr_factory_.GetWeakPtr(),
                          operation_data->container_id, path,
@@ -476,8 +481,6 @@ void CrostiniExportImport::AfterDiskImageOperation(
 void CrostiniExportImport::EnsureLxdStartedThenSharePath(
     const guest_os::GuestId& container_id,
     const base::FilePath& path,
-    bool persist,
-    bool create_new_container,
     guest_os::GuestOsSharePath::SharePathCallback callback) {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
   crostini::CrostiniManager::RestartOptions options;
@@ -845,8 +848,7 @@ CrostiniExportImport::RemoveNotificationController(
   return controller;
 }
 
-void CrostiniExportImport::CancelOperation(ExportImportType type,
-                                           guest_os::GuestId container_id) {
+void CrostiniExportImport::CancelOperation(guest_os::GuestId container_id) {
   auto it = notification_controllers_.find(container_id);
   if (it == notification_controllers_.end()) {
     NOTREACHED() << container_id << " has no notification controller to cancel";
@@ -856,7 +858,7 @@ void CrostiniExportImport::CancelOperation(ExportImportType type,
 
   auto& manager = *CrostiniManager::GetForProfile(profile_);
 
-  switch (type) {
+  switch (it->second->type()) {
     case ExportImportType::EXPORT:
       manager.CancelExportLxdContainer(std::move(container_id));
       return;

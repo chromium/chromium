@@ -461,8 +461,7 @@ TEST_F(CrostiniExportImportTest, TestExportDiskImageCancelled) {
   }
 
   // CANCEL:
-  crostini_export_import_->CancelOperation(ExportImportType::EXPORT_DISK_IMAGE,
-                                           custom_container_id_);
+  crostini_export_import_->CancelOperation(custom_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(), Status::CANCELLING);
   {
@@ -742,8 +741,7 @@ TEST_F(CrostiniExportImportTest, TestImportDiskImageCancelled) {
   }
 
   // CANCEL:
-  crostini_export_import_->CancelOperation(ExportImportType::IMPORT_DISK_IMAGE,
-                                           custom_container_id_);
+  crostini_export_import_->CancelOperation(custom_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(), Status::CANCELLING);
   {
@@ -1019,8 +1017,7 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
   }
 
   // CANCELLING:
-  crostini_export_import_->CancelOperation(ExportImportType::EXPORT,
-                                           custom_container_id_);
+  crostini_export_import_->CancelOperation(custom_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(), Status::CANCELLING);
   {
@@ -1089,8 +1086,7 @@ TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
   }
 
   // CANCELLING:
-  crostini_export_import_->CancelOperation(ExportImportType::EXPORT,
-                                           default_container_id_);
+  crostini_export_import_->CancelOperation(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(), Status::CANCELLING);
   {
@@ -1330,8 +1326,7 @@ TEST_F(CrostiniExportImportTest, TestImportCancelled) {
   }
 
   // CANCELLING:
-  crostini_export_import_->CancelOperation(ExportImportType::IMPORT,
-                                           default_container_id_);
+  crostini_export_import_->CancelOperation(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(), Status::CANCELLING);
   {
@@ -1392,8 +1387,7 @@ TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
   }
 
   // CANCELLING:
-  crostini_export_import_->CancelOperation(ExportImportType::IMPORT,
-                                           default_container_id_);
+  crostini_export_import_->CancelOperation(default_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(), Status::CANCELLING);
   {

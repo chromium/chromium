@@ -49,9 +49,7 @@ enum class ExportImportType;
 
 // Controller for Crostini's Export Import notification UI. It also tracks the
 // status of the export/import operation, which CrostiniExportImport updates via
-// the SetStatus*() methods.
-// Upon construction the Controller will create a new notification, displaying
-// the StatusRunning UI. If the controller is freed the notification will
+// the SetStatus*() methods. If the controller is freed the notification will
 // continue to be shown and handle click events until the user closes it.
 class CrostiniExportImportNotificationController {
  public:
