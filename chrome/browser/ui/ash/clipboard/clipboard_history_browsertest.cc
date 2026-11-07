@@ -30,6 +30,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -1435,6 +1436,10 @@ class FakeDataTransferPolicyController
   FakeDataTransferPolicyController() : allowed_url_(GURL(kUrlString)) {}
   ~FakeDataTransferPolicyController() override = default;
 
+  void SetReadBlockedCallback(base::OnceClosure callback) {
+    read_blocked_callback_ = std::move(callback);
+  }
+
   // ui::DataTransferPolicyController:
   bool IsClipboardReadAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
@@ -1448,8 +1453,12 @@ class FakeDataTransferPolicyController
 
     // For other data destinations, only the data from `allowed_url_`
     // should be accessible.
-    return data_src.has_value() && data_src->IsUrlType() &&
-           (*data_src->GetURL() == allowed_url_);
+    const bool allowed = data_src.has_value() && data_src->IsUrlType() &&
+                         (*data_src->GetURL() == allowed_url_);
+    if (!allowed && read_blocked_callback_) {
+      std::move(read_blocked_callback_).Run();
+    }
+    return allowed;
   }
 
   void PasteIfAllowed(
@@ -1466,6 +1475,7 @@ class FakeDataTransferPolicyController
 
  private:
   const GURL allowed_url_;
+  base::OnceClosure read_blocked_callback_;
 };
 
 // The browser test equipped with the custom policy controller.
@@ -1476,6 +1486,11 @@ class ClipboardHistoryWithMockDLPBrowserTest
       : data_transfer_policy_controller_(
             std::make_unique<FakeDataTransferPolicyController>()) {}
   ~ClipboardHistoryWithMockDLPBrowserTest() override = default;
+
+  void SetReadBlockedCallback(base::OnceClosure callback) {
+    data_transfer_policy_controller_->SetReadBlockedCallback(
+        std::move(callback));
+  }
 
   // Write text into the clipboard buffer and it should be inaccessible from
   // the multipaste menu, meaning that the clipboard data item created from
@@ -1538,8 +1553,10 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest, Basics) {
       GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u);
   GetEventGenerator()->MoveMouseTo(
       inaccessible_menu_item_view->GetBoundsInScreen().CenterPoint());
+  base::test::TestFuture<void> read_blocked;
+  SetReadBlockedCallback(read_blocked.GetCallback());
   GetEventGenerator()->ClickLeftButton();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(read_blocked.Wait());
 
   // Verify that the text is not pasted and menu is closed after click.
   EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
