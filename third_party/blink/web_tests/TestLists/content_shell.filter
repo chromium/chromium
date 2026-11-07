@@ -78,15 +78,9 @@ external/wpt/css/css-text/white-space/control-chars-080.html
 external/wpt/css/css-text/white-space/eol-spaces-bidi-003.html
 external/wpt/css/css-text/white-space/trailing-other-space-separators-001.html
 external/wpt/css/css-text/white-space/white-space-vs-joiners-002.html
-external/wpt/css/css-transitions/transition-behavior.html
-external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html
-external/wpt/css/css-ui/outline-020.html
 external/wpt/css/css-values/viewport-units-scrollbars*
 external/wpt/css/css-variables/variable-presentation-attribute.html
-external/wpt/css/css-will-change/will-change-fixedpos-cb-*
-external/wpt/css/css-will-change/will-change-transform-zero-size-child-overflow-visible.html
 external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html
-external/wpt/css/mediaqueries/test_media_queries.html
 external/wpt/css/selectors/focus-visible-024.html
 external/wpt/css/selectors/focus-visible-025.html
 external/wpt/css/selectors/user-invalid-form-submission-invalidation.html
@@ -396,8 +390,6 @@ external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-002.ht
 external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-004.html
 external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-baseline-001.html
 external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-baseline-002.html
-external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-001.xht
-external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-004.xht
 
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation*
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-transition*
