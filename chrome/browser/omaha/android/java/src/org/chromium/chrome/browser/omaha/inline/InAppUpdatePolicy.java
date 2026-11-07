@@ -70,6 +70,9 @@ public final class InAppUpdatePolicy {
 
     @VisibleForTesting static final String PARAM_FAILURE_BACKOFF_HOURS = "failure_backoff_hours";
 
+    @VisibleForTesting
+    static final String PARAM_DISCOVERY_MIN_STALENESS_DAYS = "prompt_min_staleness_days";
+
     /** How long to wait before re-offering a download the user declined. */
     @VisibleForTesting static final int DEFAULT_DISCOVERY_BACKOFF_HOURS = 24;
 
@@ -81,6 +84,13 @@ public final class InAppUpdatePolicy {
      * backoffs, because a failure is a transient system condition rather than a stated preference.
      */
     @VisibleForTesting static final int DEFAULT_FAILURE_BACKOFF_HOURS = 6;
+
+    /**
+     * Minimum number of days an update must have been available before Chrome offers it. Zero keeps
+     * the prompt eligible as soon as Play reports an update, which preserves the behavior from
+     * before this threshold existed.
+     */
+    @VisibleForTesting static final int DEFAULT_DISCOVERY_MIN_STALENESS_DAYS = 0;
 
     private static @Nullable Boolean sIsOfficialBuildForTesting;
 
@@ -166,6 +176,47 @@ public final class InAppUpdatePolicy {
                 PARAM_RESTART_BACKOFF_HOURS,
                 DEFAULT_RESTART_BACKOFF_HOURS)) {
             Log.i(TAG, "Restart prompt suppressed: user recently declined a relaunch.");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns whether an available update has been available long enough for Chrome to offer it.
+     *
+     * <p>Users with Play auto-update enabled usually receive an update within a few days, so
+     * prompting them adds friction without closing the patch gap. Requiring a minimum age keeps the
+     * discovery prompt focused on devices that would otherwise stay on the old version.
+     *
+     * <p>When the threshold is positive and Play does not report a staleness value, the prompt is
+     * skipped, because the update's age cannot be shown to meet the threshold. This only gates the
+     * automatic discovery prompt; the restart prompt and the app menu entry point are unaffected.
+     *
+     * @param stalenessDays Days since Play first reported the update to this device, as returned by
+     *     {@code AppUpdateInfo#clientVersionStalenessDays()}, or null if Play did not report it.
+     */
+    public static boolean isStalenessThresholdMet(@Nullable Integer stalenessDays) {
+        if (isForceUpdate()) {
+            return true;
+        }
+        int minStalenessDays =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.IN_APP_UPDATE_FLOW,
+                        PARAM_DISCOVERY_MIN_STALENESS_DAYS,
+                        DEFAULT_DISCOVERY_MIN_STALENESS_DAYS);
+        if (minStalenessDays <= 0) {
+            return true;
+        }
+        if (stalenessDays == null) {
+            Log.i(TAG, "Discovery prompt suppressed: update staleness unknown.");
+            return false;
+        }
+        if (stalenessDays < minStalenessDays) {
+            Log.i(
+                    TAG,
+                    "Discovery prompt suppressed: update available for %d of %d days.",
+                    stalenessDays,
+                    minStalenessDays);
             return false;
         }
         return true;

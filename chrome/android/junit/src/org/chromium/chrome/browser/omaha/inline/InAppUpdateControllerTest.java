@@ -73,6 +73,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class InAppUpdateControllerTest {
+    private static final String ENABLE_WITH_MIN_STALENESS_3_DAYS =
+            ChromeFeatureList.IN_APP_UPDATE_FLOW
+                    + ":"
+                    + InAppUpdatePolicy.PARAM_DISCOVERY_MIN_STALENESS_DAYS
+                    + "/3";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SnackbarManager mSnackbarManager;
@@ -246,6 +252,86 @@ public class InAppUpdateControllerTest {
                         .build();
 
         snackbar.getController().onAction(null);
+        ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
+        assertEquals(
+                Integer.valueOf(AppUpdateType.FLEXIBLE),
+                mFakeAppUpdateManager.getTypeForUpdateInProgress());
+    }
+
+    // The staleness threshold only gates the automatic discovery prompt. These tests use a 3-day
+    // threshold to check the controller wiring: the boundary, and that the restart prompt and the
+    // user-initiated app menu path are not gated. Threshold rules, including the unknown-staleness
+    // case, are covered in InAppUpdatePolicyTest.
+
+    @Test
+    @EnableFeatures(ENABLE_WITH_MIN_STALENESS_3_DAYS)
+    public void testCheckAndStartUpdateFlow_belowStalenessThreshold_doesNotShowSnackbar() {
+        setupUpdateAvailable();
+        mFakeAppUpdateManager.setClientVersionStalenessDays(2);
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        verify(mSnackbarManager, never()).showSnackbar(any());
+    }
+
+    @Test
+    @EnableFeatures(ENABLE_WITH_MIN_STALENESS_3_DAYS)
+    public void testCheckAndStartUpdateFlow_atStalenessThreshold_showsSnackbar() {
+        setupUpdateAvailable();
+        mFakeAppUpdateManager.setClientVersionStalenessDays(3);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        InAppUpdateSnackbarController.HISTOGRAM_DISCOVERY_SNACKBAR_EVENT,
+                        InAppUpdateSnackbarEvent.IMPRESSION);
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        assertEquals(
+                Snackbar.UMA_IN_APP_UPDATE_DISCOVERY,
+                mSnackbarCaptor.getValue().getIdentifierForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ENABLE_WITH_MIN_STALENESS_3_DAYS)
+    public void
+            testCheckAndStartUpdateFlow_downloadedBelowStalenessThreshold_showsRestartSnackbar() {
+        // An update that is already downloaded should always be offered for relaunch.
+        setupUpdateDownloaded();
+        mFakeAppUpdateManager.setClientVersionStalenessDays(0);
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        assertEquals(
+                Snackbar.UMA_IN_APP_UPDATE_RESTART,
+                mSnackbarCaptor.getValue().getIdentifierForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ENABLE_WITH_MIN_STALENESS_3_DAYS)
+    public void testOnMenuItemClicked_belowStalenessThreshold_startsFlexibleFlow() {
+        // The user asked for the update explicitly, so the threshold does not apply.
+        setupUpdateAvailable();
+        mFakeAppUpdateManager.setClientVersionStalenessDays(0);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        InAppUpdateController.HISTOGRAM_APP_MENU_ACTION,
+                        InAppUpdateController.AppMenuAction.TRIGGER_DOWNLOAD);
+
+        InAppUpdateController controller = createController();
+        controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
 
         watcher.assertExpected();

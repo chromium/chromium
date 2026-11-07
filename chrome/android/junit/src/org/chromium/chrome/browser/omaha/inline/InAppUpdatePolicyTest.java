@@ -302,4 +302,54 @@ public class InAppUpdatePolicyTest {
         mFakeTimeRule.advanceMillis(1);
         assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mContext));
     }
+
+    // Discovery staleness threshold.
+
+    @Test
+    public void testStalenessThreshold_defaultAllowsAnyStaleness() {
+        // The default threshold of 0 keeps the prompt eligible as soon as Play reports an update,
+        // including when Play does not report staleness at all.
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(null));
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(0));
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(30));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.IN_APP_UPDATE_FLOW
+                    + ":"
+                    + InAppUpdatePolicy.PARAM_DISCOVERY_MIN_STALENESS_DAYS
+                    + "/3")
+    public void testStalenessThreshold_customParam() {
+        assertFalse(InAppUpdatePolicy.isStalenessThresholdMet(0));
+        assertFalse(InAppUpdatePolicy.isStalenessThresholdMet(2));
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(3));
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(10));
+
+        // Without a staleness value the update cannot be shown to meet the threshold.
+        assertFalse(InAppUpdatePolicy.isStalenessThresholdMet(null));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.IN_APP_UPDATE_FLOW
+                    + ":"
+                    + InAppUpdatePolicy.PARAM_DISCOVERY_MIN_STALENESS_DAYS
+                    + "/-1")
+    public void testStalenessThreshold_negativeParamTreatedAsDisabled() {
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(null));
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(0));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.IN_APP_UPDATE_FLOW
+                    + ":"
+                    + InAppUpdatePolicy.PARAM_DISCOVERY_MIN_STALENESS_DAYS
+                    + "/7")
+    @CommandLineFlags.Add({InAppUpdatePolicy.FORCE_IN_APP_UPDATE})
+    public void testStalenessThreshold_forceUpdateBypassesThreshold() {
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(null));
+        assertTrue(InAppUpdatePolicy.isStalenessThresholdMet(0));
+    }
 }

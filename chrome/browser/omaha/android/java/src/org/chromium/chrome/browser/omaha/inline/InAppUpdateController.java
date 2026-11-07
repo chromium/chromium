@@ -328,8 +328,10 @@ public class InAppUpdateController {
      *       displays the restart snackbar if allowed. Notice that discovery throttle is NOT checked
      *       here; declining a download does not suppress restarting an already staged update.
      *   <li>If an update is available: Verifies that {@link AppUpdateType#FLEXIBLE} is allowed by
-     *       Play Core and that discovery is not throttled via {@link
-     *       InAppUpdatePolicy#isDiscoveryPromptAllowed}, then displays the discovery snackbar.
+     *       Play Core, that discovery is not throttled via {@link
+     *       InAppUpdatePolicy#isDiscoveryPromptAllowed}, and that the update has been available
+     *       long enough via {@link InAppUpdatePolicy#isStalenessThresholdMet}, then displays the
+     *       discovery snackbar.
      * </ul>
      */
     public void checkAndStartUpdateFlow() {
@@ -408,8 +410,12 @@ public class InAppUpdateController {
                                         flexAllowedByPlayCore || InAppUpdatePolicy.isForceUpdate();
                                 if (isFlexAllowed) {
                                     // Check discovery throttle: suppressed if user declined a
-                                    // recent prompt or if a recent download failed.
-                                    if (InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity)) {
+                                    // recent prompt or if a recent download failed. Also skip
+                                    // updates younger than the staleness threshold, since Play
+                                    // auto-update usually installs those without a prompt.
+                                    if (InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity)
+                                            && InAppUpdatePolicy.isStalenessThresholdMet(
+                                                    appUpdateInfo.clientVersionStalenessDays())) {
                                         Log.i(
                                                 TAG,
                                                 "checkAndStartUpdateFlow: Flexible update available"
