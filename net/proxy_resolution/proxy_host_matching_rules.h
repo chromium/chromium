@@ -95,9 +95,9 @@ class NET_EXPORT ProxyHostMatchingRules {
   // Returns a list of bypass rules that "cancels out" the implicit bypass
   // rules.
   //
-  // The current set of implicit bypass rules are localhost and link-local
-  // addresses, and are subtracted using <-loopback> (an idiom from Windows),
-  // however this could change.
+  // The current set of implicit bypass rules are localhost, link-local, and
+  // unspecified IP addresses, and are subtracted using <-loopback> (an idiom
+  // from Windows), however this could change.
   //
   // If using this for tests, see https://crbug.com/901896.
   static std::string GetRulesToSubtractImplicit();
@@ -109,7 +109,7 @@ class NET_EXPORT ProxyHostMatchingRules {
   void Clear();
 
   // Returns true if |url| matches one of the implicit proxy bypass rules
-  // (localhost or link local).
+  // (localhost, link-local, or unspecified IP).
   static bool MatchesImplicitRules(const GURL& url);
 
   // The delimiter used by |ToString()| for the string representation of the

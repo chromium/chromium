@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/proxy_host_matching_rules.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -13,6 +14,9 @@
 namespace net {
 
 namespace {
+
+BASE_FEATURE(kBypassProxyForUnspecifiedIpAddresses,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The <-loopback> rule corresponds with "remove the implicitly added bypass
 // rules".
@@ -68,6 +72,29 @@ bool IsIPv4MappedLoopback(const GURL& url) {
   }
 
   return ip_address.bytes()[12] == 127;
+}
+
+// Returns true if the URL's host is an unspecified IP address (e.g., 0.0.0.0,
+// [::], or [::ffff:0.0.0.0]). These route to loopback on POSIX systems and
+// should implicitly bypass proxy resolution.
+bool IsUnspecifiedIP(const GURL& url) {
+  // Quick fail if definitely not an unspecified IP, to avoid doing unnecessary
+  // work in the common case.
+  if (!url.host().starts_with("0.") && !url.host().starts_with("[")) {
+    return false;
+  }
+
+  IPAddress ip_address;
+  if (!ip_address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
+    return false;
+  }
+
+  if (ip_address.IsZero()) {
+    return true;
+  }
+
+  return ip_address.IsIPv4MappedIPv6() &&
+         ConvertIPv4MappedIPv6ToIPv4(ip_address).IsZero();
 }
 
 class BypassSimpleHostnamesRule : public SchemeHostPortMatcherRule {
@@ -261,8 +288,10 @@ bool ProxyHostMatchingRules::MatchesImplicitRules(const GURL& url) {
   //     127.0.0.1/8
   //     169.254/16
   //     [FE80::]/10
-  return IsLocalhost(url) || IsIPv4MappedLoopback(url) ||
-         IsLinkLocalIP(url)
+  //     0.0.0.0/32, [::]/128, [::ffff:0.0.0.0]/128
+  return IsLocalhost(url) || IsIPv4MappedLoopback(url) || IsLinkLocalIP(url) ||
+         (IsUnspecifiedIP(url) &&
+          base::FeatureList::IsEnabled(kBypassProxyForUnspecifiedIpAddresses))
 #if BUILDFLAG(IS_WIN)
          // See http://crbug.com/904889
          || (url.host() == "loopback") || (url.host() == "loopback.")

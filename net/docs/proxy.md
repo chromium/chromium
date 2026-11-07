@@ -454,8 +454,9 @@ implicitly](#Implicit-bypass-rules).
 ```
 
 *Subtracts* the [implicit proxy bypass rules](#Implicit-bypass-rules)
-(localhost and link local addresses). This is generally only needed for test
-setups. Beware of the security implications to proxying localhost.
+(localhost, link-local, and unspecified IP addresses). This is generally only
+needed for test setups. Beware of the security implications to proxying
+localhost.
 
 Whereas regular bypass rules instruct the browser about URLs that should *not*
 use the proxy, this rule has the opposite effect and tells the browser to
@@ -496,8 +497,8 @@ Requests to certain hosts will not be sent through a proxy, and will instead be
 sent directly.
 
 We call these the _implicit bypass rules_. The implicit bypass rules match URLs
-whose host portion is either a localhost name or a link-local IP literal.
-Essentially it matches:
+whose host portion is a localhost name, a link-local IP literal, or an
+unspecified IP literal. Essentially it matches:
 
 ```
 localhost
@@ -506,6 +507,9 @@ localhost
 127.0.0.1/8
 169.254/16
 [FE80::]/10
+0.0.0.0/32
+[::]/128
+[::ffff:0.0.0.0]/128
 ```
 
 The complete rules are slightly more complicated. For instance on

@@ -81,13 +81,27 @@ void ExpectMatchesLinkLocal(const ProxyHostMatchingRules& rules, bool matches) {
   ExpectRulesMatch(rules, kHosts, matches, {});
 }
 
-// Tests calling |rules.Matches()| with miscelaneous URLs that are neither
-// localhost or link local IPs, returns |matches|.
+// Tests calling `rules.Matches()` for unspecified URLs returns `matches`.
+void ExpectMatchesUnspecified(const ProxyHostMatchingRules& rules,
+                              bool matches) {
+  std::string_view kHosts[] = {
+      "0.0.0.0",
+      "[::]",
+      "[::ffff:0.0.0.0]",
+      "[::ffff:0:0]",
+  };
+
+  ExpectRulesMatch(rules, kHosts, matches, {});
+}
+
+// Tests calling `rules.Matches()` with miscellaneous URLs that are neither
+// localhost, link-local, nor unspecified IPs, returns `matches`.
 void ExpectMatchesMisc(
     const ProxyHostMatchingRules& rules,
     bool matches,
     const std::set<std::string>& inverted_hosts = std::set<std::string>()) {
   std::string_view kHosts[] = {
+      "0.0.0.1",
       "192.168.0.1",
       "170.254.0.0",
       "128.0.0.1",
@@ -95,6 +109,8 @@ void ExpectMatchesMisc(
       "[FD80::1]",
       "foo",
       "www.example3.com",
+      "[::ffff:0.0.0.1]",
+      "[::ffff:0:0.0.0.0]",
       "[::ffff:128.0.0.1]",
       "[::ffff:126.100.0.0]",
       "[::ffff::ffff:127.0.0.1]",
@@ -369,6 +385,9 @@ TEST(ProxyHostMatchingRulesTest, MatchSimpleHostnames) {
   // Should NOT match link-local addresses.
   ExpectMatchesLinkLocal(rules, false);
 
+  // Should NOT match unspecified addresses.
+  ExpectMatchesUnspecified(rules, false);
+
   // Should not match other names either (except for the ones with no dot).
   ExpectMatchesMisc(rules, false, {"foo", "loopback"});
 }
@@ -440,6 +459,9 @@ TEST(ProxyHostMatchingRulesTest, DefaultImplicitRules) {
   // Should match all link-local addresses.
   ExpectMatchesLinkLocal(rules, true);
 
+  // Should match all unspecified addresses.
+  ExpectMatchesUnspecified(rules, true);
+
   // Should not match other names.
   ExpectMatchesMisc(rules, false);
 }
@@ -458,6 +480,9 @@ TEST(ProxyHostMatchingRulesTest, NegativeWinLoopback) {
 
   // Should NOT match link-local addresses.
   ExpectMatchesLinkLocal(rules, false);
+
+  // Should NOT match unspecified addresses.
+  ExpectMatchesUnspecified(rules, false);
 
   // Should not match other names either.
   ExpectMatchesMisc(rules, false);
@@ -483,6 +508,9 @@ TEST(ProxyHostMatchingRulesTest, RemoveImplicitAndAddLocalhost) {
   // Should NOT match link-local addresses.
   ExpectMatchesLinkLocal(rules, false);
 
+  // Should NOT match unspecified addresses.
+  ExpectMatchesUnspecified(rules, false);
+
   // Should not match other names either.
   ExpectMatchesMisc(rules, false);
 }
@@ -503,6 +531,9 @@ TEST(ProxyHostMatchingRulesTest, AddLocalhostThenRemoveImplicit) {
 
   // Should NOT match link-local addresses.
   ExpectMatchesLinkLocal(rules, false);
+
+  // Should NOT match unspecified addresses.
+  ExpectMatchesUnspecified(rules, false);
 
   // Should not match other names either.
   ExpectMatchesMisc(rules, false);
