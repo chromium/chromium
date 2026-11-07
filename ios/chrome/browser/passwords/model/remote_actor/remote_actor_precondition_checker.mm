@@ -9,6 +9,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_policy_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
@@ -34,6 +35,10 @@ CheckRemoteActorPreconditions(ProfileIOS* profile,
     return base::unexpected(RemoteActorPreconditionError::kProfileMismatch);
   }
 
+  if (!IsRemoteActorCredentialSharingAllowedByPolicy(profile)) {
+    return base::unexpected(RemoteActorPreconditionError::kBlockedByPolicy);
+  }
+
   return base::ok();
 }
 
@@ -47,5 +52,8 @@ RemoteActorPreconditionCallbackParams GetPreconditionFailureCallbackParams(
     case RemoteActorPreconditionError::kProfileMismatch:
       return {.status = RemoteActorCallbackStatus::kFailed,
               .reason = RemoteActorCallbackReason::kProfileMismatch};
+    case RemoteActorPreconditionError::kBlockedByPolicy:
+      return {.status = RemoteActorCallbackStatus::kFailed,
+              .reason = RemoteActorCallbackReason::kUploadFailed};
   }
 }
