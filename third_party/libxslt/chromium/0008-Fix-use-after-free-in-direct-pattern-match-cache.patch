@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Joey Arhar <jarhar@chromium.org>
+Date: Fri, 6 Nov 2026 14:45:00 -0800
+Subject: [PATCH] Fix use-after-free in direct pattern match cache
+
+xsltTestCompMatchDirect reads the cached node-set for a pattern from the
+transformation context's runtime extras before calling xmlXPathEval.
+The evaluation can re-enter xsltTestCompMatchDirect for the same cache
+slot, for example when a predicate references a global variable whose
+lazily evaluated value runs xsl:number. The nested call can free and
+replace the cached object, after which the outer call freed its stale
+pointer again.
+
+Re-read the cached object from the runtime extras after the evaluation
+instead of using the value read before it.
+---
+ libxslt/pattern.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/libxslt/pattern.c b/libxslt/pattern.c
+index 581f17919fe3a..019a5cebbb31e 100644
+--- a/libxslt/pattern.c
++++ b/libxslt/pattern.c
+@@ -581,6 +581,15 @@ xsltTestCompMatchDirect(xsltTransformContextPtr ctxt, xsltCompMatchPtr comp,
+ 	    nocache = 1;
+ 
+ 	if (nocache == 0) {
++	    /*
++	     * xmlXPathEval can re-enter this function for the same cache
++	     * slot, e.g. through a lazily evaluated global variable whose
++	     * value runs xsl:number. The nested call may free or replace
++	     * the cached object, so re-read it instead of using the value
++	     * read before the evaluation.
++	     */
++	    list = (xmlXPathObjectPtr)
++		XSLT_RUNTIME_EXTRA_LST(ctxt, sel->lenExtra);
+ 	    if (list != NULL)
+ 		xmlXPathFreeObject(list);
+ 	    list = newlist;
+--
