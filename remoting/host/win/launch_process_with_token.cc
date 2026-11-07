@@ -121,7 +121,8 @@ bool LaunchProcessWithToken(
     DWORD creation_flags,
     const wchar_t* desktop_name,
     ScopedHandle* process_out,
-    ScopedHandle* thread_out) {
+    ScopedHandle* thread_out,
+    DWORD* last_error_out) {
   base::FilePath::StringType application_name = binary.value();
 
   base::win::StartupInformation startup_info_wrapper;
@@ -136,6 +137,9 @@ bool LaunchProcessWithToken(
     if (handles_to_inherit.size() >
         std::numeric_limits<DWORD>::max() / sizeof(HANDLE)) {
       DLOG(ERROR) << "Too many handles to inherit.";
+      if (last_error_out) {
+        *last_error_out = ERROR_INVALID_PARAMETER;
+      }
       return false;
     }
 
@@ -155,7 +159,11 @@ bool LaunchProcessWithToken(
   if (attribute_count > 0) {
     if (!startup_info_wrapper.InitializeProcThreadAttributeList(
             attribute_count)) {
+      DWORD last_error = ::GetLastError();
       PLOG(ERROR) << "InitializeProcThreadAttributeList()";
+      if (last_error_out) {
+        *last_error_out = last_error;
+      }
       return false;
     }
 
@@ -164,8 +172,12 @@ bool LaunchProcessWithToken(
               PROC_THREAD_ATTRIBUTE_HANDLE_LIST,
               const_cast<HANDLE*>(&handles_to_inherit.at(0)),
               static_cast<DWORD>(handles_to_inherit.size() * sizeof(HANDLE)))) {
+        DWORD last_error = ::GetLastError();
         PLOG(ERROR)
             << "UpdateProcThreadAttribute(PROC_THREAD_ATTRIBUTE_HANDLE_LIST)";
+        if (last_error_out) {
+          *last_error_out = last_error;
+        }
         return false;
       }
     }
@@ -174,8 +186,12 @@ bool LaunchProcessWithToken(
       if (!startup_info_wrapper.UpdateProcThreadAttribute(
               PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
               security_capabilities, sizeof(*security_capabilities))) {
+        DWORD last_error = ::GetLastError();
         PLOG(ERROR) << "UpdateProcThreadAttribute(PROC_THREAD_ATTRIBUTE_"
                        "SECURITY_CAPABILITIES)";
+        if (last_error_out) {
+          *last_error_out = last_error;
+        }
         return false;
       }
     }
@@ -190,7 +206,11 @@ bool LaunchProcessWithToken(
                                     nullptr, startup_info, &temp_process_info);
 
   if (!result) {
+    DWORD last_error = ::GetLastError();
     PLOG(ERROR) << "Failed to launch a process with a user token";
+    if (last_error_out) {
+      *last_error_out = last_error;
+    }
     return false;
   }
 
@@ -199,6 +219,9 @@ bool LaunchProcessWithToken(
   CHECK(process_info.IsValid());
   process_out->Set(process_info.TakeProcessHandle());
   thread_out->Set(process_info.TakeThreadHandle());
+  if (last_error_out) {
+    *last_error_out = ERROR_SUCCESS;
+  }
   return true;
 }
 

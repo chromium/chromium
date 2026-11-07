@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -105,6 +106,7 @@ class MockDaemonProcess : public DaemonProcess {
               (override));
 
   MOCK_METHOD(void, OnSessionCountChanged, (size_t), (override));
+  MOCK_METHOD(void, OnPeerSessionManagerBound, (), (override));
 
   using DaemonProcess::Stop;
 };
@@ -196,6 +198,7 @@ void DaemonProcessTest::SetUp() {
   EXPECT_CALL(*daemon_process_, LaunchNetworkProcess())
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this, &DaemonProcessTest::LaunchNetworkProcess));
+  EXPECT_CALL(*daemon_process_, OnPeerSessionManagerBound()).Times(AnyNumber());
 }
 
 void DaemonProcessTest::TearDown() {
@@ -497,6 +500,18 @@ TEST_F(DaemonProcessTest, DesktopSessionsPersistAcrossCrashNetworkProcess) {
   daemon_process_->CrashNetworkProcess(FROM_HERE);
   EXPECT_EQ(desktop_sessions().size(), 1u);
   EXPECT_EQ(id, desktop_sessions().begin()->second->id());
+}
+
+TEST_F(DaemonProcessTest, CallsOnPeerSessionManagerBoundWhenRequested) {
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
+  StartDaemonProcess();
+
+  EXPECT_CALL(*daemon_process_, OnPeerSessionManagerBound()).Times(1);
+  mojo::AssociatedRemote<mojom::PeerSessionManager> peer_session_manager;
+  daemon_process_->OnAssociatedInterfaceRequest(
+      mojom::PeerSessionManager::Name_,
+      peer_session_manager.BindNewEndpointAndPassDedicatedReceiver()
+          .PassHandle());
 }
 
 }  // namespace remoting

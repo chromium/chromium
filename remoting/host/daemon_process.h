@@ -221,6 +221,10 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // Called when the count of active desktop sessions changes.
   virtual void OnSessionCountChanged(size_t session_count);
 
+  // Called when the network process binds `mojom::PeerSessionManager` at
+  // startup on hosts where the PeerConnection process is enabled.
+  virtual void OnPeerSessionManagerBound();
+
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner() {
     return caller_task_runner_;
   }

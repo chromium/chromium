@@ -32,7 +32,10 @@ bool CreateSessionToken(uint32_t session_id,
 // `PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES`. This parameter should only
 // be provided (non-null) iff the process is being launched in an AppContainer.
 // If null, the process launches as a standard non-AppContainer process.
-// The other parameters are passed directly to CreateProcessAsUser().
+// The other parameters are passed directly to `CreateProcessAsUser()`. If
+// `last_error_out` is non-null, it receives the Win32 error code captured
+// immediately from the failing API call (or `ERROR_SUCCESS` on success) before
+// cleanup destructors run.
 bool LaunchProcessWithToken(
     const base::FilePath& binary,
     const base::CommandLine::StringType& command_line,
@@ -44,7 +47,8 @@ bool LaunchProcessWithToken(
     DWORD creation_flags,
     const wchar_t* desktop_name,
     base::win::ScopedHandle* process_out,
-    base::win::ScopedHandle* thread_out);
+    base::win::ScopedHandle* thread_out,
+    DWORD* last_error_out = nullptr);
 
 }  // namespace remoting
 

@@ -103,6 +103,8 @@ constexpr wchar_t kPeerConnectionRegistryKeyName[] =
 
 constexpr wchar_t kUsePeerConnectionProcessRegistryValue[] =
     L"UsePeerConnectionProcess";
+constexpr wchar_t kPeerConnectionAppContainerProfileName[] =
+    L"chromoting.peer_connection";
 
 }  // namespace
 
@@ -158,6 +160,7 @@ class DaemonProcessWin : public DaemonProcess,
   bool OpenPairingRegistry();
 
   void OnSessionCountChanged(size_t session_count) override;
+  void OnPeerSessionManagerBound() override;
 
   // base::win::ObjectWatcher::Delegate implementation.
   void OnObjectSignaled(HANDLE object) override;
@@ -179,6 +182,11 @@ class DaemonProcessWin : public DaemonProcess,
   base::SequenceBound<MinidumpHandler> minidump_handler_;
 
   std::optional<bool> use_peer_connection_process_;
+
+  // Holds an open LowBox token handle for `chromoting.peer_connection` so its
+  // Session 0 LowBox table slot remains pinned for the daemon's lifetime.
+  ScopedHandle prewarmed_app_container_token_;
+  bool prewarm_attempted_ = false;
 
   // Global named events used for coordination with the installer.
   ScopedHandle session_active_event_;
@@ -290,7 +298,7 @@ DaemonProcessWin::CreatePeerConnectionProcessLauncherDelegate() {
   auto delegate = std::make_unique<UnprivilegedProcessDelegate>(
       io_task_runner(), std::move(target),
       UnprivilegedProcessDelegate::IntegrityLevel::kUntrusted);
-  delegate->UseAppContainer(L"chromoting.peer_connection");
+  delegate->UseAppContainer(kPeerConnectionAppContainerProfileName);
   return delegate;
 }
 
@@ -537,6 +545,20 @@ void DaemonProcessWin::ConfigurePeerConnectionProcess() {
   use_peer_connection_process_ = (enabled != 0);
   HOST_LOG << (*use_peer_connection_process_ ? "Enabling" : "Disabling")
            << " PeerConnection process via registry configuration.";
+}
+
+void DaemonProcessWin::OnPeerSessionManagerBound() {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  if (prewarm_attempted_) {
+    return;
+  }
+  prewarm_attempted_ = true;
+
+  // Reserve and pin the `chromoting.peer_connection` LowBox slot once at
+  // startup before any PeerConnection session launches (crbug.com/582900491).
+  prewarmed_app_container_token_ =
+      UnprivilegedProcessDelegate::PrewarmAppContainer(
+          kPeerConnectionAppContainerProfileName);
 }
 
 void DaemonProcessWin::InitializeUpdateEvents() {

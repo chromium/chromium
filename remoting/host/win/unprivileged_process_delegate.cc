@@ -17,6 +17,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -28,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
 #include "ipc/ipc_channel.h"
@@ -309,6 +311,25 @@ bool CreateWindowStationAndDesktop(
   return true;
 }
 
+std::vector<base::win::Sid> GetAppContainerCapabilitySids() {
+  // Well-known AppContainer capabilities required for unprivileged network
+  // worker processes:
+  // kInternetClient / kInternetClientServer / kPrivateNetworkClientServer:
+  //   Allow outbound/inbound connections across Internet and private LANs
+  //   for WebRTC signaling and direct/STUN/TURN connections.
+  // kSharedUserCertificates / kEnterpriseAuthentication:
+  //   Allow reading client certificates and CNG private keys for mTLS
+  //   and authenticating against enterprise endpoints.
+  const base::win::WellKnownCapability kCapabilities[] = {
+      base::win::WellKnownCapability::kInternetClient,
+      base::win::WellKnownCapability::kInternetClientServer,
+      base::win::WellKnownCapability::kPrivateNetworkClientServer,
+      base::win::WellKnownCapability::kSharedUserCertificates,
+      base::win::WellKnownCapability::kEnterpriseAuthentication,
+  };
+  return base::win::Sid::FromKnownCapabilityVector(kCapabilities);
+}
+
 }  // namespace
 
 UnprivilegedProcessDelegate::AppContainer::AppContainer() = default;
@@ -390,23 +411,7 @@ UnprivilegedProcessDelegate::CreateAppContainer(
   ::CopySid(sid_length, app_container.package_sid.get(), sid_ptr);
   ::FreeSid(sid_ptr);
 
-  // Well-known AppContainer capabilities required for unprivileged network
-  // worker processes:
-  // kInternetClient / kInternetClientServer / kPrivateNetworkClientServer:
-  //   Allow outbound/inbound connections across Internet and private LANs
-  //   for WebRTC signaling and direct/STUN/TURN connections.
-  // kSharedUserCertificates / kEnterpriseAuthentication:
-  //   Allow reading client certificates and CNG private keys for mTLS
-  //   and authenticating against enterprise endpoints.
-  const base::win::WellKnownCapability kCapabilities[] = {
-      base::win::WellKnownCapability::kInternetClient,
-      base::win::WellKnownCapability::kInternetClientServer,
-      base::win::WellKnownCapability::kPrivateNetworkClientServer,
-      base::win::WellKnownCapability::kSharedUserCertificates,
-      base::win::WellKnownCapability::kEnterpriseAuthentication,
-  };
-  app_container.capability_sids =
-      base::win::Sid::FromKnownCapabilityVector(kCapabilities);
+  app_container.capability_sids = GetAppContainerCapabilitySids();
 
   app_container.capabilities.reserve(app_container.capability_sids.size());
   for (const auto& sid : app_container.capability_sids) {
@@ -414,6 +419,64 @@ UnprivilegedProcessDelegate::CreateAppContainer(
   }
 
   return app_container;
+}
+
+// static
+ScopedHandle UnprivilegedProcessDelegate::PrewarmAppContainer(
+    const std::wstring& profile_name) {
+  ScopedHandle restricted_token;
+  if (!CreateRestrictedToken(IntegrityLevel::kUntrusted, &restricted_token)) {
+    PLOG(WARNING)
+        << "Failed to create restricted token for AppContainer pre-warm";
+    return ScopedHandle();
+  }
+
+  std::optional<base::win::AccessToken> base_token =
+      base::win::AccessToken::FromToken(std::move(restricted_token));
+  if (!base_token.has_value()) {
+    PLOG(WARNING)
+        << "Failed to wrap restricted token for AppContainer pre-warm";
+    return ScopedHandle();
+  }
+
+  return PrewarmAppContainerForToken(profile_name, *base_token);
+}
+
+// static
+ScopedHandle UnprivilegedProcessDelegate::PrewarmAppContainerForToken(
+    const std::wstring& profile_name,
+    const base::win::AccessToken& base_token) {
+  // Kernel LowBox entries ('SeLs') are keyed solely by the deterministic
+  // `AppContainerSid` derived from `profile_name` and refcounted by open LowBox
+  // token handles. Deriving the SID directly without calling
+  // `CreateAppContainerProfile()` avoids leaving an orphaned on-disk/registry
+  // profile behind if no worker ever launches before the daemon exits.
+  PSID raw_package_sid = nullptr;
+  HRESULT hr = ::DeriveAppContainerSidFromAppContainerName(profile_name.c_str(),
+                                                           &raw_package_sid);
+  if (FAILED(hr)) {
+    LOG(WARNING) << "DeriveAppContainerSidFromAppContainerName failed: "
+                 << std::hex << hr;
+    return ScopedHandle();
+  }
+
+  std::optional<Sid> package_sid = Sid::FromPSID(raw_package_sid);
+  ::FreeSid(raw_package_sid);
+  if (!package_sid.has_value()) {
+    LOG(WARNING) << "Failed to parse AppContainer SID for pre-warm";
+    return ScopedHandle();
+  }
+
+  std::vector<Sid> capability_sids = GetAppContainerCapabilitySids();
+  std::optional<base::win::AccessToken> lowbox_token =
+      base_token.CreateAppContainer(*package_sid, capability_sids);
+  if (!lowbox_token.has_value()) {
+    PLOG(WARNING) << "Failed to pre-warm AppContainer token for "
+                  << base::WideToUTF8(profile_name);
+    return ScopedHandle();
+  }
+
+  return lowbox_token->release();
 }
 
 UnprivilegedProcessDelegate::UnprivilegedProcessDelegate(
@@ -542,14 +605,16 @@ void UnprivilegedProcessDelegate::LaunchProcess(
 
   // Try to launch the worker process. The launched process inherits
   // the window station, desktop, and pipe handles, created above.
+  // Note: `capabilities_struct` borrows buffers owned by `app_container_` and
+  // must not be used after `LaunchWorkerProcessWithFallback()`, which may reset
+  // `app_container_` on fallback.
   ScopedHandle worker_process;
   ScopedHandle worker_thread;
-  if (!LaunchProcessWithToken(
-          command_line.GetProgram(), command_line.GetCommandLineString(),
-          token.Get(), &process_attributes, &thread_attributes,
-          handles_to_inherit, app_container_ ? &capabilities_struct : nullptr,
-          /* creation_flags= */ 0,
-          /* desktop_name= */ nullptr, &worker_process, &worker_thread)) {
+  if (!LaunchWorkerProcessWithFallback(
+          command_line, token.Get(), &process_attributes, &thread_attributes,
+          handles_to_inherit,
+          app_container_.has_value() ? &capabilities_struct : nullptr,
+          &worker_process, &worker_thread)) {
     ReportFatalError();
     return;
   }
@@ -633,6 +698,63 @@ void UnprivilegedProcessDelegate::ReportFatalError() {
   WorkerProcessLauncher* event_handler = event_handler_;
   event_handler_ = nullptr;
   event_handler->OnFatalError();
+}
+
+bool UnprivilegedProcessDelegate::DoLaunchProcessWithToken(
+    const base::FilePath& binary,
+    const base::CommandLine::StringType& command_line,
+    HANDLE user_token,
+    SECURITY_ATTRIBUTES* process_attributes,
+    SECURITY_ATTRIBUTES* thread_attributes,
+    const base::HandlesToInheritVector& handles_to_inherit,
+    SECURITY_CAPABILITIES* security_capabilities,
+    DWORD creation_flags,
+    const wchar_t* desktop_name,
+    ScopedHandle* process_out,
+    ScopedHandle* thread_out,
+    DWORD* last_error_out) {
+  return LaunchProcessWithToken(
+      binary, command_line, user_token, process_attributes, thread_attributes,
+      handles_to_inherit, security_capabilities, creation_flags, desktop_name,
+      process_out, thread_out, last_error_out);
+}
+
+bool UnprivilegedProcessDelegate::LaunchWorkerProcessWithFallback(
+    const base::CommandLine& command_line,
+    HANDLE user_token,
+    SECURITY_ATTRIBUTES* process_attributes,
+    SECURITY_ATTRIBUTES* thread_attributes,
+    const base::HandlesToInheritVector& handles_to_inherit,
+    SECURITY_CAPABILITIES* security_capabilities,
+    ScopedHandle* worker_process_out,
+    ScopedHandle* worker_thread_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DWORD last_error = ERROR_SUCCESS;
+  if (DoLaunchProcessWithToken(
+          command_line.GetProgram(), command_line.GetCommandLineString(),
+          user_token, process_attributes, thread_attributes, handles_to_inherit,
+          security_capabilities, /*creation_flags=*/0, /*desktop_name=*/nullptr,
+          worker_process_out, worker_thread_out, &last_error)) {
+    return true;
+  }
+
+  if (!app_container_.has_value() || !security_capabilities ||
+      last_error != ERROR_NO_SYSTEM_RESOURCES) {
+    return false;
+  }
+
+  LOG(WARNING) << "AppContainer process launch failed with "
+                  "ERROR_NO_SYSTEM_RESOURCES; retrying without AppContainer.";
+  // `security_capabilities` points into `app_container_` storage; clear the
+  // pointer immediately when resetting `app_container_`.
+  app_container_.reset();
+  security_capabilities = nullptr;
+  return DoLaunchProcessWithToken(
+      command_line.GetProgram(), command_line.GetCommandLineString(),
+      user_token, process_attributes, thread_attributes, handles_to_inherit,
+      security_capabilities, /*creation_flags=*/0, /*desktop_name=*/nullptr,
+      worker_process_out, worker_thread_out, &last_error);
 }
 
 void UnprivilegedProcessDelegate::ReportProcessLaunched(

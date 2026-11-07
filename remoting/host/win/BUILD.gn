@@ -250,6 +250,7 @@ source_set("unit_tests") {
     "hang_watchdog_unittest.cc",
     "host_window_win_util_unittest.cc",
     "input_extra_info_unittest.cc",
+    "launch_process_with_token_unittest.cc",
     "mouse_cursor_monitor_win_unittest.cc",
     "rdp_client_unittest.cc",
     "unprivileged_process_delegate_unittest.cc",

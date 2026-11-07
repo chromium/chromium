@@ -143,6 +143,7 @@ void DaemonProcess::OnAssociatedInterfaceRequest(
     mojo::PendingAssociatedReceiver<mojom::PeerSessionManager> pending_receiver(
         std::move(handle));
     peer_session_manager_.Bind(std::move(pending_receiver));
+    OnPeerSessionManagerBound();
   } else if (interface_name == mojom::HostStatusObserver::Name_) {
     LOG_IF(WARNING, host_status_observer_)
         << "Associated interface requested "
@@ -581,6 +582,8 @@ void DaemonProcess::OnHostShutdown() {
 }
 
 void DaemonProcess::OnSessionCountChanged(size_t session_count) {}
+
+void DaemonProcess::OnPeerSessionManagerBound() {}
 
 void DaemonProcess::DeleteAllDesktopSessions() {
   for (auto& [id, session] : desktop_sessions_) {
