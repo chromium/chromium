@@ -828,6 +828,169 @@ public class TabDragDropTest extends TabStripDragDropTestBase {
                 });
     }
 
+    @Test
+    @LargeTest
+    public void testDragDrop_PinnedTab_DroppedOverPinnedTab() throws Exception {
+        ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel sourceModel = sourceActivity.getCurrentTabModel();
+                    sourceModel.pinTab(
+                            sourceModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
+                });
+        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+
+        ChromeTabbedActivity destActivity =
+                setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
+        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel destModel = destActivity.getCurrentTabModel();
+                    int tab0Id = destModel.getTabAt(0).getId();
+                    int tab1Id = destModel.getTabAt(1).getId();
+                    destModel.pinTab(tab0Id, /* showUngroupDialog= */ false);
+                    destModel.pinTab(tab1Id, /* showUngroupDialog= */ false);
+                });
+        TabStripUtils.settleDownCompositor(destHelper);
+
+        int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
+        int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
+
+        // 1. Simulate active drag of pinned tab 0 from source window.
+        int draggedTabId = startSimulatedDragForTab(sourceActivity, /* tabIndex= */ 0);
+
+        // 2. Hover and drop between destination pinned tabs (index 1).
+        float dropXPx = getDropXPxForIndex(destActivity, /* index= */ 1);
+        dispatchDragHover(destActivity, dropXPx, MimeTypeUtils.CHROME_MIMETYPE_TAB);
+        dispatchDropAndEnd(
+                sourceActivity, destActivity, dropXPx, MimeTypeUtils.CHROME_MIMETYPE_TAB);
+
+        // 3. Verify the tab lands at index 1 in the pinned section and remains pinned.
+        Tab destTab =
+                verifyTabDroppedAtIndex(
+                        sourceActivity,
+                        destActivity,
+                        draggedTabId,
+                        initialSourceCount,
+                        initialDestCount,
+                        /* expectedIndex= */ 1);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            "Dropped pinned tab should remain pinned in destination window",
+                            destTab.getIsPinned());
+                });
+    }
+
+    @Test
+    @LargeTest
+    public void testDragDrop_PinnedTab_DroppedOverUnpinnedTab_ClampedToPinnedSection()
+            throws Exception {
+        ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel sourceModel = sourceActivity.getCurrentTabModel();
+                    sourceModel.pinTab(
+                            sourceModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
+                });
+        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+
+        ChromeTabbedActivity destActivity =
+                setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
+        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel destModel = destActivity.getCurrentTabModel();
+                    destModel.pinTab(destModel.getTabAt(0).getId(), /* showUngroupDialog= */ false);
+                });
+        TabStripUtils.settleDownCompositor(destHelper);
+
+        int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
+        int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
+
+        // 1. Simulate active drag of pinned tab 0 from source window.
+        int draggedTabId = startSimulatedDragForTab(sourceActivity, /* tabIndex= */ 0);
+
+        // 2. Hover and drop over destination unpinned tab 2.
+        float dropXPx = getDropXPxForIndex(destActivity, /* index= */ 2);
+        dispatchDragHover(destActivity, dropXPx, MimeTypeUtils.CHROME_MIMETYPE_TAB);
+        dispatchDropAndEnd(
+                sourceActivity, destActivity, dropXPx, MimeTypeUtils.CHROME_MIMETYPE_TAB);
+
+        // 3. Verify drop index is clamped to the end of the pinned section (index 1) and tab
+        // remains pinned.
+        Tab destTab =
+                verifyTabDroppedAtIndex(
+                        sourceActivity,
+                        destActivity,
+                        draggedTabId,
+                        initialSourceCount,
+                        initialDestCount,
+                        /* expectedIndex= */ 1);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            "Dropped pinned tab should remain pinned in destination window",
+                            destTab.getIsPinned());
+                });
+    }
+
+    @Test
+    @LargeTest
+    public void testDragDrop_UnpinnedTab_DroppedOverPinnedTab_ClampedAfterPinnedSection()
+            throws Exception {
+        ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
+        ChromeTabbedActivity destActivity =
+                setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
+        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel destModel = destActivity.getCurrentTabModel();
+                    int tab0Id = destModel.getTabAt(0).getId();
+                    int tab1Id = destModel.getTabAt(1).getId();
+                    destModel.pinTab(tab0Id, /* showUngroupDialog= */ false);
+                    destModel.pinTab(tab1Id, /* showUngroupDialog= */ false);
+                });
+        TabStripUtils.settleDownCompositor(destHelper);
+
+        int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
+        int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
+
+        // 1. Simulate active drag of unpinned tab 0 from source window.
+        int draggedTabId = startSimulatedDragForTab(sourceActivity, /* tabIndex= */ 0);
+
+        // 2. Hover and drop at the start of the destination strip (x = 0f, over pinned tab 0).
+        dispatchDragHover(destActivity, /* hoverXPx= */ 0f, MimeTypeUtils.CHROME_MIMETYPE_TAB);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            "Start margin should remain 0 when hovering unpinned tab over pinned"
+                                    + " tab",
+                            0f,
+                            destHelper.getReorderStartMarginForTesting(),
+                            0.01f);
+                });
+        dispatchDropAndEnd(
+                sourceActivity, destActivity, /* dropXPx= */ 0f, MimeTypeUtils.CHROME_MIMETYPE_TAB);
+
+        // 3. Verify drop index is clamped immediately after the 2 pinned tabs (index 2) and tab
+        // remains unpinned.
+        Tab destTab =
+                verifyTabDroppedAtIndex(
+                        sourceActivity,
+                        destActivity,
+                        draggedTabId,
+                        initialSourceCount,
+                        initialDestCount,
+                        /* expectedIndex= */ 2);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(
+                            "Dropped unpinned tab should remain unpinned in destination window",
+                            destTab.getIsPinned());
+                });
+    }
+
     private int startSimulatedDragForTab(ChromeTabbedActivity sourceActivity, int tabIndex) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
