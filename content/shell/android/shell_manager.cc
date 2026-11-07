@@ -13,6 +13,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -37,9 +38,8 @@ namespace content {
 
 ScopedJavaLocalRef<jobject> CreateShellView(Shell* shell) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_ShellManager_createShell(env,
-                                       g_global_state.Get().j_shell_manager,
-                                       reinterpret_cast<intptr_t>(shell));
+  return Java_ShellManager_createShell(
+      env, g_global_state.Get().j_shell_manager, jni_zero::MakeRaw(shell));
 }
 
 void RemoveShellView(const JavaRef<jobject>& shell_view) {

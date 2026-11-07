@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -83,7 +84,7 @@ public class ShellManager extends FrameLayout {
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private Object createShell(long nativeShellPtr) {
+    Object createShell(JniRawPtr<Shell.NativeShell> nativeShellPtr) {
         if (mContentViewRenderView == null) {
             mContentViewRenderView = new ContentViewRenderView(getContext());
             mContentViewRenderView.onNativeLibraryLoaded(mWindow);

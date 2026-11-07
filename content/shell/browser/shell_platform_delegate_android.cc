@@ -15,6 +15,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/android/shell_manager.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/shell/android/content_shell_jni_headers/Shell_jni.h"
@@ -158,9 +159,8 @@ void ShellPlatformDelegate::LoadProgressChanged(Shell* shell, double progress) {
 }
 
 // static
-static void JNI_Shell_CloseShell(JNIEnv* env, int64_t shellPtr) {
-  Shell* shell = reinterpret_cast<Shell*>(shellPtr);
-  shell->Close();
+static void JNI_Shell_CloseShell(JNIEnv* env, Shell* shellPtr) {
+  shellPtr->Close();
 }
 
 }  // namespace content

@@ -28,6 +28,10 @@ import android.widget.TextView.OnEditorActionListener;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -79,7 +83,10 @@ public class Shell extends LinearLayout {
 
     private ClipDrawable mProgressDrawable;
 
-    private long mNativeShell;
+    @JniType("::content::Shell")
+    interface NativeShell extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeShell> mNativeShell;
     private @Nullable ContentViewRenderView mContentViewRenderView;
     private @Nullable WindowAndroid mWindow;
     private @Nullable ShellViewAndroidDelegate mViewAndroidDelegate;
@@ -117,7 +124,7 @@ public class Shell extends LinearLayout {
      * @param nativeShell The pointer to the native Shell object.
      * @param window The owning window for this shell.
      */
-    public void initialize(long nativeShell, WindowAndroid window) {
+    public void initialize(JniRawPtr<NativeShell> nativeShell, WindowAndroid window) {
         mNativeShell = nativeShell;
         mWindow = window;
     }
@@ -127,15 +134,18 @@ public class Shell extends LinearLayout {
      * dependencies.
      */
     public void close() {
-        if (mNativeShell == 0) return;
+        if (mNativeShell == null) return;
         ShellJni.get().closeShell(mNativeShell);
     }
 
     @SuppressWarnings("NullAway")
     @CalledByNative
-    private void onNativeDestroyed() {
+    void onNativeDestroyed() {
         mWindow = null;
-        mNativeShell = 0;
+        if (mNativeShell != null) {
+            mNativeShell.release();
+            mNativeShell = null;
+        }
         mWebContents = null;
     }
 
@@ -144,7 +154,7 @@ public class Shell extends LinearLayout {
      * @see #onNativeDestroyed()
      */
     public boolean isDestroyed() {
-        return mNativeShell == 0;
+        return mNativeShell == null;
     }
 
     /**
@@ -437,6 +447,6 @@ public class Shell extends LinearLayout {
 
     @NativeMethods
     interface Natives {
-        void closeShell(long shellPtr);
+        void closeShell(JniPtr<NativeShell> shellPtr);
     }
 }
