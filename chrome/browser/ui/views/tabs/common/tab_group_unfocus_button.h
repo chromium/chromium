@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_focus_animation_state.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -36,12 +37,9 @@ class TabGroupUnfocusButton : public views::LabelButton {
   void SetGroupColorData(tab_groups::TabGroupColorId color_id,
                          bool is_ephemeral);
 
-  // Sets the focus transition state. `corner_progress` goes from 0.0 (corners
-  // abutting the header fully rounded) to 1.0 (flattened, as when focused);
-  // `nullopt` restores the resting focused shape. `label_opacity` is applied
-  // to the text and collapsed icon color.
-  void SetFocusAnimationState(std::optional<float> corner_progress,
-                              float label_opacity);
+  // `state.progress` drives the corners abutting the header, from 0.0 (fully
+  // rounded) to 1.0 (flattened, as when focused).
+  void SetFocusAnimationState(const TabGroupFocusAnimationState& state);
   void UpdateColors();
   void UpdateAccessibleName();
 
@@ -56,10 +54,12 @@ class TabGroupUnfocusButton : public views::LabelButton {
   void RemovedFromWidget() override;
 
  private:
+  SkColor GetBaseBackgroundColor() const;
   SkColor GetBackgroundColor() const;
   SkColor GetForegroundColor() const;
-  // Foreground color with `label_opacity_` applied.
+  // Foreground color with the focus state's content opacity applied.
   SkColor GetTextColor() const;
+  void UpdateBorder();
   void UpdateCollapsedState();
   void UpdateTextAndIcon();
 
@@ -68,8 +68,7 @@ class TabGroupUnfocusButton : public views::LabelButton {
   tab_groups::TabGroupColorId color_id_ = tab_groups::TabGroupColorId::kGrey;
   bool is_ephemeral_ = false;
   bool is_collapsed_ = false;
-  std::optional<float> focus_corner_progress_;
-  float label_opacity_ = 1.0f;
+  TabGroupFocusAnimationState focus_animation_state_;
   base::CallbackListSubscription paint_as_active_subscription_;
 };
 

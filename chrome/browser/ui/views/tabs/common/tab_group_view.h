@@ -41,6 +41,8 @@ class TabGroupView : public TabCollectionZOrderManager,
 
  public:
   static constexpr int kTabLeadingPadding = 10;
+  static constexpr int kFocusSwitchSlideOffset = 12;
+  static constexpr float kFocusSwitchHandoffProgress = 0.75f;
 
   explicit TabGroupView(TabCollectionNode* collection_node);
   TabGroupView(const TabGroupView&) = delete;
@@ -106,6 +108,10 @@ class TabGroupView : public TabCollectionZOrderManager,
   float GetFocusProgress() const;
   bool ShouldShowGroupLine() const;
   bool ShouldShowUnfocusButton() const;
+
+  // Horizontal offset applied to the Unfocus label, header content, and
+  // grouped tabs during a direct switch between two focused groups.
+  int GetFocusSwitchSlideOffset() const;
 
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
       const gfx::Point& point_in_local_coords);

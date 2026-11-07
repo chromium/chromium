@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/models/list_selection_model.h"
 
@@ -69,6 +70,9 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   struct FocusTransition {
     tab_groups::TabGroupId target_group;
     std::optional<tab_groups::TabGroupId> previous_group;
+    std::optional<tab_groups::TabGroupColorId> previous_group_color;
+    std::optional<tab_groups::TabGroupColorId> target_group_color;
+    bool target_follows_previous = false;
     bool is_starting_focus_motion = false;
   };
   std::optional<FocusTransition> GetFocusTransition() const;

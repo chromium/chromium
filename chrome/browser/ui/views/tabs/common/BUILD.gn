@@ -15,6 +15,7 @@ source_set("common") {
     "tab_collection_node.h",
     "tab_collection_z_order_manager.h",
     "tab_drag_scroll_handler.h",
+    "tab_group_focus_animation_state.h",
     "tab_group_style.h",
     "tab_group_unfocus_button.h",
     "tab_strip_layout_utils.h",

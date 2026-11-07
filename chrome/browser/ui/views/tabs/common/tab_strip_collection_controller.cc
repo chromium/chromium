@@ -614,16 +614,35 @@ void TabStripCollectionController::TabGroupFocusChanged(
 
   // Each sequence of `kEnter` starts from its persisted value. After a direct
   // switch between groups that value is the focused resting state, so reset
-  // to the unfocused resting values first.
+  // to the unfocused resting values first. The layouts invalidated by that
+  // reset must snap: this runs inside the model notification's
+  // `ScopedAnimateLayout()`, and the real motion starts right below.
   if (is_entering && old_focused_group_id.has_value()) {
+    base::AutoReset<bool> snap_layout(&is_animating_layout_change_, false);
     anim_controller->Reset(FocusModeAnimations::kFocusMode,
                            FocusModeAnimations::kExit);
   }
 
-  focus_transition_ = FocusTransition{
-      .target_group =
-          is_entering ? *new_focused_group_id : *old_focused_group_id,
-      .previous_group = is_entering ? old_focused_group_id : std::nullopt};
+  focus_transition_ =
+      FocusTransition{.target_group = is_entering ? *new_focused_group_id
+                                                  : *old_focused_group_id};
+  if (is_entering && old_focused_group_id.has_value()) {
+    TabGroupModel* const group_model = model_->group_model();
+    const TabGroup* const previous_group =
+        group_model->GetTabGroup(*old_focused_group_id);
+    const TabGroup* const target_group =
+        group_model->GetTabGroup(*new_focused_group_id);
+    focus_transition_->previous_group = *old_focused_group_id;
+    if (!previous_group->is_ephemeral()) {
+      focus_transition_->previous_group_color =
+          previous_group->visual_data()->color();
+    }
+    focus_transition_->target_group_color =
+        target_group->visual_data()->color();
+    focus_transition_->target_follows_previous =
+        model_->GetIndexOfTab(target_group->GetFirstTab()) >
+        model_->GetIndexOfTab(previous_group->GetFirstTab());
+  }
 
   const auto motion =
       is_entering ? FocusModeAnimations::kEnter : FocusModeAnimations::kExit;

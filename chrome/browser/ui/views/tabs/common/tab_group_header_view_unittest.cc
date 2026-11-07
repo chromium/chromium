@@ -1145,16 +1145,16 @@ TEST_F(TabGroupHeaderViewTest, FocusAnimationInsetsMatchRestingInsets) {
       delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data);
   const gfx::Insets unfocused_insets = header->GetInteriorMargin();
 
-  header->SetFocusAnimationProgress(1.0f);
+  header->SetFocusAnimationState({.progress = 1.0f});
   EXPECT_EQ(header->GetInteriorMargin(),
             TabGroupStyle::GetInsetsForFocusedHeaderChip());
 
-  header->SetFocusAnimationProgress(0.0f);
+  header->SetFocusAnimationState({.progress = 0.0f});
   EXPECT_EQ(header->GetInteriorMargin(), unfocused_insets);
 
   // Midway, each edge lies strictly between the two resting values (or equals
   // them when they coincide), so the insets really interpolate.
-  header->SetFocusAnimationProgress(0.5f);
+  header->SetFocusAnimationState({.progress = 0.5f});
   const gfx::Insets focused_insets =
       TabGroupStyle::GetInsetsForFocusedHeaderChip();
   const gfx::Insets mid_insets = header->GetInteriorMargin();
@@ -1184,7 +1184,7 @@ TEST_F(TabGroupHeaderViewTest, FocusAnimationLeavesVerticalInsetsUnchanged) {
   const gfx::Insets resting_insets = header->GetInteriorMargin();
 
   for (float progress : {0.0f, 0.5f, 1.0f}) {
-    header->SetFocusAnimationProgress(progress);
+    header->SetFocusAnimationState({.progress = progress});
     EXPECT_EQ(header->GetInteriorMargin(), resting_insets) << progress;
   }
 }
@@ -1203,11 +1203,11 @@ TEST_F(TabGroupHeaderViewTest, FocusAnimationDoesNotChangePreferredSize) {
     const gfx::Size resting_size = header->GetPreferredSize();
 
     for (float progress : {0.0f, 0.5f, 1.0f}) {
-      header->SetFocusAnimationProgress(progress);
+      header->SetFocusAnimationState({.progress = progress});
       EXPECT_EQ(header->GetPreferredSize(), resting_size)
           << static_cast<int>(orientation) << " " << progress;
     }
-    header->SetFocusAnimationProgress(std::nullopt);
+    header->SetFocusAnimationState({});
     EXPECT_EQ(header->GetPreferredSize(), resting_size)
         << static_cast<int>(orientation);
   }
@@ -1231,7 +1231,7 @@ class TabGroupHeaderViewFocusRadiiTest
   }
 
   // Returns the header's background corner radii after
-  // `SetFocusAnimationProgress(progress)` for a header whose delegate reports
+  // `SetFocusAnimationState()` for a header whose delegate reports
   // `is_focused`.
   gfx::RoundedCornersF GetRadii(bool is_focused,
                                 std::optional<float> progress) {
@@ -1245,9 +1245,9 @@ class TabGroupHeaderViewFocusRadiiTest
     auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
         delegate, orientation(), nullptr, &visual_data));
     // Force a background rebuild via a distinct intermediate value so the
-    // early-return in `SetFocusAnimationProgress()` does not skip the update.
-    header->SetFocusAnimationProgress(0.5f);
-    header->SetFocusAnimationProgress(progress);
+    // early-return in `SetFocusAnimationState()` does not skip the update.
+    header->SetFocusAnimationState({.progress = 0.5f});
+    header->SetFocusAnimationState({.progress = progress});
     return header->GetBackground()->GetRoundedCornerRadii().value();
   }
 
@@ -1295,25 +1295,25 @@ TEST_F(TabGroupHeaderViewTest, UnfocusButtonFocusAnimationState) {
       widget->SetContentsView(std::make_unique<TabGroupUnfocusButton>(
           delegate, TabStripOrientation::kHorizontal));
 
-  button->SetFocusAnimationState(std::nullopt, 1.0f);
+  button->SetFocusAnimationState({});
   const gfx::RoundedCornersF resting_radii =
       button->GetBackground()->GetRoundedCornerRadii().value();
   const SkColor resting_text_color = button->GetCurrentTextColor();
   ASSERT_EQ(SkColorGetA(resting_text_color), SK_AlphaOPAQUE);
 
-  button->SetFocusAnimationState(1.0f, 1.0f);
+  button->SetFocusAnimationState({.progress = 1.0f, .content_opacity = 1.0f});
   EXPECT_EQ(button->GetBackground()->GetRoundedCornerRadii().value(),
             resting_radii);
 
-  button->SetFocusAnimationState(0.5f, 0.0f);
+  button->SetFocusAnimationState({.progress = 0.5f, .content_opacity = 0.0f});
   EXPECT_NE(button->GetBackground()->GetRoundedCornerRadii().value(),
             resting_radii);
   EXPECT_EQ(SkColorGetA(button->GetCurrentTextColor()), 0u);
 
-  button->SetFocusAnimationState(0.5f, 0.5f);
+  button->SetFocusAnimationState({.progress = 0.5f, .content_opacity = 0.5f});
   EXPECT_EQ(SkColorGetA(button->GetCurrentTextColor()), 128u);
 
-  button->SetFocusAnimationState(std::nullopt, 1.0f);
+  button->SetFocusAnimationState({});
   EXPECT_EQ(button->GetBackground()->GetRoundedCornerRadii().value(),
             resting_radii);
   EXPECT_EQ(button->GetCurrentTextColor(), resting_text_color);
@@ -1334,7 +1334,7 @@ TEST_F(TabGroupHeaderViewTest, UnfocusButtonCollapsedIconHonoursLabelOpacity) {
 
   // Opacity set first, then collapse.
   button->SetBounds(0, 0, collapsed_width + 20, 24);
-  button->SetFocusAnimationState(0.5f, 0.0f);
+  button->SetFocusAnimationState({.progress = 0.5f, .content_opacity = 0.0f});
   button->SetBounds(0, 0, collapsed_width, 24);
   ASSERT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
   EXPECT_EQ(SkColorGetA(button->GetImageModel(views::Button::STATE_NORMAL)
@@ -1344,13 +1344,13 @@ TEST_F(TabGroupHeaderViewTest, UnfocusButtonCollapsedIconHonoursLabelOpacity) {
             0u);
 
   // Collapse first, then opacity.
-  button->SetFocusAnimationState(std::nullopt, 1.0f);
+  button->SetFocusAnimationState({});
   EXPECT_EQ(SkColorGetA(button->GetImageModel(views::Button::STATE_NORMAL)
                             ->GetVectorIcon()
                             .color()
                             .ResolveToSkColor(button->GetColorProvider())),
             SK_AlphaOPAQUE);
-  button->SetFocusAnimationState(0.5f, 0.0f);
+  button->SetFocusAnimationState({.progress = 0.5f, .content_opacity = 0.0f});
   EXPECT_EQ(SkColorGetA(button->GetImageModel(views::Button::STATE_NORMAL)
                             ->GetVectorIcon()
                             .color()
@@ -1563,10 +1563,10 @@ TEST_F(TabGroupHeaderViewTest,
   header->OnDataChanged(delegate.default_tab_group_data_);
   const gfx::Insets focused_insets = header->GetInteriorMargin();
 
-  header->SetFocusAnimationProgress(0.0f);
+  header->SetFocusAnimationState({.progress = 0.0f});
   EXPECT_EQ(header->GetInteriorMargin(), unfocused_insets);
 
-  header->SetFocusAnimationProgress(1.0f);
+  header->SetFocusAnimationState({.progress = 1.0f});
   EXPECT_EQ(header->GetInteriorMargin(), focused_insets);
 }
 #endif
@@ -1604,17 +1604,17 @@ TEST_F(TabGroupHeaderViewTest, EphemeralHeaderFocusContentOpacity) {
                            .ResolveToSkColor(header->GetColorProvider()));
   };
 
-  header->SetFocusAnimationProgress(1.0f, 1.0f);
+  header->SetFocusAnimationState({.progress = 1.0f, .content_opacity = 1.0f});
   EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
             SK_AlphaOPAQUE);
   EXPECT_EQ(get_editor_icon_alpha(), SK_AlphaOPAQUE);
 
-  header->SetFocusAnimationProgress(0.5f, 0.0f);
+  header->SetFocusAnimationState({.progress = 0.5f, .content_opacity = 0.0f});
   EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
             0u);
   EXPECT_EQ(get_editor_icon_alpha(), 0u);
 
-  header->SetFocusAnimationProgress(0.5f, 0.5f);
+  header->SetFocusAnimationState({.progress = 0.5f, .content_opacity = 0.5f});
   EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
             128u);
   EXPECT_EQ(get_editor_icon_alpha(), 128u);
@@ -1622,7 +1622,7 @@ TEST_F(TabGroupHeaderViewTest, EphemeralHeaderFocusContentOpacity) {
   // Persistent group headers ignore `content_opacity`.
   mock_tab_group.SetIsEphemeral(false);
   header->OnDataChanged(data);
-  header->SetFocusAnimationProgress(0.5f, 0.0f);
+  header->SetFocusAnimationState({.progress = 0.5f, .content_opacity = 0.0f});
   EXPECT_EQ(SkColorGetA(header->title_label_for_testing()->GetEnabledColor()),
             SK_AlphaOPAQUE);
   EXPECT_EQ(get_editor_icon_alpha(), SK_AlphaOPAQUE);

@@ -42,6 +42,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
@@ -69,6 +70,16 @@ std::unique_ptr<TabGroupView::LayoutManager> CreateTabGroupViewLayout(
     return std::make_unique<TabGroupViewVerticalLayout>();
   }
   return std::make_unique<TabGroupViewHorizontalLayout>();
+}
+
+// Progress of one group's half of a direct switch between focused groups. The
+// outgoing group plays over [0, kFocusSwitchHandoffProgress] of the motion and
+// the incoming group over [kFocusSwitchHandoffProgress, 1].
+float GetFocusSwitchPhaseProgress(float progress, bool is_incoming) {
+  constexpr float kHandoff = TabGroupView::kFocusSwitchHandoffProgress;
+  return is_incoming
+             ? std::clamp((progress - kHandoff) / (1.0f - kHandoff), 0.0f, 1.0f)
+             : std::clamp(progress / kHandoff, 0.0f, 1.0f);
 }
 
 }  // namespace
@@ -413,20 +424,36 @@ void TabGroupView::OnFocusAnimationUpdated(
 
   is_focus_animating_ = true;
 
+  const auto value = [&](BrowserAnimationSequence sequence) {
+    return static_cast<float>(
+        controller->GetCurrentValue(FocusModeAnimations::kFocusMode, sequence)
+            .value());
+  };
+  const float progress = value(FocusModeAnimations::kProgress);
+
   if (role == FocusTransitionRole::kSwitchingFocus) {
-    group_header_->SetFocusAnimationProgress(1.0f);
-    unfocus_header_->SetFocusAnimationState(1.0f, 1.0f);
+    const auto transition =
+        collection_node_->GetController()->GetFocusTransition();
+    const bool is_incoming = GetTabGroup().id() == transition->target_group;
+    const float phase_progress =
+        GetFocusSwitchPhaseProgress(progress, is_incoming);
+    const TabGroupFocusAnimationState state{
+        .progress = 1.0f,
+        .content_opacity = is_incoming ? phase_progress : 1.0f - phase_progress,
+        .content_horizontal_offset = GetFocusSwitchSlideOffset(),
+        .blend_color_id = is_incoming ? transition->previous_group_color
+                                      : transition->target_group_color,
+        .color_blend = is_incoming ? 1.0f - progress : progress};
+    group_header_->SetFocusAnimationState(state);
+    unfocus_header_->SetFocusAnimationState(state);
   } else {
-    const auto value = [&](BrowserAnimationSequence sequence) {
-      return static_cast<float>(
-          controller->GetCurrentValue(FocusModeAnimations::kFocusMode, sequence)
-              .value());
-    };
-    const float progress = value(FocusModeAnimations::kProgress);
     const float label_opacity =
         value(FocusModeAnimations::kUnfocusLabelOpacity);
-    group_header_->SetFocusAnimationProgress(progress, label_opacity);
-    unfocus_header_->SetFocusAnimationState(progress, label_opacity);
+    group_header_->SetFocusAnimationState(
+        {.progress = progress,
+         .content_opacity = is_ephemeral_ ? label_opacity : 1.0f});
+    unfocus_header_->SetFocusAnimationState(
+        {.progress = progress, .content_opacity = label_opacity});
     group_line_->SetOpacity(value(FocusModeAnimations::kUnrelatedTabsOpacity));
   }
 
@@ -456,8 +483,8 @@ TabGroupView::FocusTransitionRole TabGroupView::GetFocusTransitionRole() const {
 
 void TabGroupView::FinishFocusAnimation() {
   is_focus_animating_ = false;
-  group_header_->SetFocusAnimationProgress(std::nullopt);
-  unfocus_header_->SetFocusAnimationState(std::nullopt, 1.0f);
+  group_header_->SetFocusAnimationState({});
+  unfocus_header_->SetFocusAnimationState({});
   group_line_->SetOpacity(1.0f);
   OnDataChanged();
 }
@@ -721,6 +748,38 @@ bool TabGroupView::ShouldShowGroupLine() const {
 
 bool TabGroupView::ShouldShowUnfocusButton() const {
   return IsGroupFocused() || is_focus_animating_;
+}
+
+int TabGroupView::GetFocusSwitchSlideOffset() const {
+  if (GetFocusTransitionRole() != FocusTransitionRole::kSwitchingFocus ||
+      (orientation_ == TabStripOrientation::kVertical &&
+       GetTabStripCollapseState() !=
+           tabs::VerticalTabStripCollapseState::kExpanded)) {
+    return 0;
+  }
+  const TabStripCollectionController* const controller =
+      collection_node_->GetController();
+  const auto transition = controller->GetFocusTransition();
+  // `kSwitchingFocus` implies a transition between two groups.
+  CHECK(transition.has_value() && transition->previous_group.has_value());
+  const float progress =
+      static_cast<float>(controller->GetBrowserAnimationController()
+                             ->GetCurrentValue(FocusModeAnimations::kFocusMode,
+                                               FocusModeAnimations::kProgress)
+                             .value());
+
+  const bool is_incoming = GetTabGroup().id() == transition->target_group;
+  // Content slides toward the side the incoming group is on: when the outgoing
+  // group precedes the incoming one in the strip, the outgoing content slides
+  // out to the left and the incoming content slides in from the right.
+  const int direction = transition->target_follows_previous ? 1 : -1;
+  const float phase_progress =
+      GetFocusSwitchPhaseProgress(progress, is_incoming);
+  return is_incoming
+             ? gfx::Tween::LinearIntValueBetween(
+                   phase_progress, direction * kFocusSwitchSlideOffset, 0)
+             : gfx::Tween::LinearIntValueBetween(
+                   phase_progress, 0, -direction * kFocusSwitchSlideOffset);
 }
 
 bool TabGroupView::IsUnfocusButtonFocused() const {

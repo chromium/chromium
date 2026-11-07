@@ -112,7 +112,7 @@ views::ProposedLayout TabGroupViewVerticalLayout::CalculateProposedLayout(
   // unfocused state and slide to `x = 0` as the group gains focus; the group
   // line keeps its constant offset to the left of the tabs so it slides out
   // with them rather than fading over their leading edge.
-  const int child_x =
+  const int base_child_x =
       tab_strip_collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
           ? GetLayoutConstant(
                 LayoutConstant::kVerticalTabStripHorizontalPadding)
@@ -120,11 +120,13 @@ views::ProposedLayout TabGroupViewVerticalLayout::CalculateProposedLayout(
                  ? 0
                  : gfx::Tween::LinearIntValueBetween(
                        focus_progress, TabGroupView::kTabLeadingPadding, 0));
+  const int child_x = base_child_x + TabGroupView().GetFocusSwitchSlideOffset();
 
   if (tab_strip_collapse_state ==
       tabs::VerticalTabStripCollapseState::kExpanded) {
     group_line_bounds.set_x(
-        child_x - (TabGroupView::kTabLeadingPadding + kGroupLineWidth) / 2);
+        base_child_x -
+        (TabGroupView::kTabLeadingPadding + kGroupLineWidth) / 2);
     group_line_bounds.set_y(height);
   }
 
@@ -145,11 +147,11 @@ views::ProposedLayout TabGroupViewVerticalLayout::CalculateProposedLayout(
     // If width is bounded, child views should respect the width constraints
     // and take up the available width excluding trailing horizontal padding.
     if (size_bounds.width().is_bounded()) {
-      bounds.set_width(size_bounds.width().value() - bounds.x());
+      bounds.set_width(size_bounds.width().value() - base_child_x);
     }
     layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     height += bounds.height() + kTabVerticalPadding;
-    width = std::max(width, bounds.width() + bounds.x());
+    width = std::max(width, bounds.width() + base_child_x);
   }
   // Remove excess padding.
   height -= kTabVerticalPadding;

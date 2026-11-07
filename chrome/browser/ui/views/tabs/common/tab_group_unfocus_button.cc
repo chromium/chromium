@@ -49,12 +49,7 @@ TabGroupUnfocusButton::TabGroupUnfocusButton(Delegate& delegate,
   SetProperty(views::kElementIdentifierKey, kUnfocusTabGroupButtonElementId);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label()->SetElideBehavior(gfx::NO_ELIDE);
-  const gfx::Insets insets =
-      orientation_ == TabStripOrientation::kHorizontal
-          ? TabGroupStyle::GetInsetsForFocusedUnfocusChip()
-          : gfx::Insets::VH(
-                0, TabGroupStyle::GetInsetsForHeaderChip(orientation_).left());
-  SetBorder(views::CreateEmptyBorder(insets));
+  UpdateBorder();
   views::FocusRing::Install(this);
   UpdateAccessibleName();
 }
@@ -84,15 +79,32 @@ void TabGroupUnfocusButton::SetGroupColorData(
 }
 
 void TabGroupUnfocusButton::SetFocusAnimationState(
-    std::optional<float> corner_progress,
-    float label_opacity) {
-  if (focus_corner_progress_ == corner_progress &&
-      label_opacity_ == label_opacity) {
+    const TabGroupFocusAnimationState& state) {
+  if (focus_animation_state_ == state) {
     return;
   }
-  focus_corner_progress_ = corner_progress;
-  label_opacity_ = label_opacity;
+  const bool offset_changed =
+      focus_animation_state_.content_horizontal_offset !=
+      state.content_horizontal_offset;
+  focus_animation_state_ = state;
+  if (offset_changed) {
+    UpdateBorder();
+  }
   UpdateColors();
+}
+
+void TabGroupUnfocusButton::UpdateBorder() {
+  gfx::Insets insets =
+      orientation_ == TabStripOrientation::kHorizontal
+          ? TabGroupStyle::GetInsetsForFocusedUnfocusChip()
+          : gfx::Insets::VH(
+                0, TabGroupStyle::GetInsetsForHeaderChip(orientation_).left());
+  if (orientation_ == TabStripOrientation::kVertical && !is_collapsed_ &&
+      focus_animation_state_.content_horizontal_offset != 0) {
+    insets.set_left(std::max(
+        0, insets.left() + focus_animation_state_.content_horizontal_offset));
+  }
+  SetBorder(views::CreateEmptyBorder(insets));
 }
 
 void TabGroupUnfocusButton::UpdateColors() {
@@ -104,16 +116,21 @@ void TabGroupUnfocusButton::UpdateColors() {
 
   if (is_collapsed_) {
     SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(kFilterTiltShiftIcon,
-                                                 text_color, kIconSize));
+                  ui::ImageModel::FromVectorIcon(
+                      kFilterTiltShiftIcon,
+                      focus_animation_state_.blend_color_id.has_value()
+                          ? GetForegroundColor()
+                          : text_color,
+                      kIconSize));
   }
 
   SetBackground(views::CreateRoundedRectBackground(
-      GetBackgroundColor(), TabGroupStyle::GetUnfocusButtonCornerRadii(
-                                orientation_, focus_corner_progress_)));
+      GetBackgroundColor(),
+      TabGroupStyle::GetUnfocusButtonCornerRadii(
+          orientation_, focus_animation_state_.progress)));
 }
 
-SkColor TabGroupUnfocusButton::GetBackgroundColor() const {
+SkColor TabGroupUnfocusButton::GetBaseBackgroundColor() const {
   if (!GetColorProvider()) {
     return gfx::kPlaceholderColor;
   }
@@ -126,6 +143,22 @@ SkColor TabGroupUnfocusButton::GetBackgroundColor() const {
                     : kColorTabGroupEphemeralHeaderBackgroundFrameInactive)
           : GetColorProvider()->GetColor(
                 GetTabGroupTabStripColorId(color_id_, frame_active));
+  if (!is_ephemeral_ && focus_animation_state_.blend_color_id.has_value() &&
+      focus_animation_state_.color_blend > 0.0f) {
+    const SkColor target_bg_color =
+        GetColorProvider()->GetColor(GetTabGroupTabStripColorId(
+            *focus_animation_state_.blend_color_id, frame_active));
+    bg_color = color_utils::AlphaBlend(target_bg_color, bg_color,
+                                       focus_animation_state_.color_blend);
+  }
+  return bg_color;
+}
+
+SkColor TabGroupUnfocusButton::GetBackgroundColor() const {
+  if (!GetColorProvider()) {
+    return gfx::kPlaceholderColor;
+  }
+  SkColor bg_color = GetBaseBackgroundColor();
   if (IsMouseHovered()) {
     const SkColor hover_ink =
         GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
@@ -138,24 +171,23 @@ SkColor TabGroupUnfocusButton::GetForegroundColor() const {
   if (!GetColorProvider()) {
     return gfx::kPlaceholderColor;
   }
-  const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
   if (is_ephemeral_) {
+    const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
     return GetColorProvider()->GetColor(
         frame_active ? kColorTabGroupEphemeralHeaderForegroundFrameActive
                      : kColorTabGroupEphemeralHeaderForegroundFrameInactive);
   }
-  const SkColor bg = GetColorProvider()->GetColor(
-      GetTabGroupTabStripColorId(color_id_, frame_active));
-  return color_utils::GetColorWithMaxContrast(bg);
+  return color_utils::GetColorWithMaxContrast(GetBaseBackgroundColor());
 }
 
 SkColor TabGroupUnfocusButton::GetTextColor() const {
-  const SkColor fg = GetForegroundColor();
-  if (label_opacity_ >= 1.0f) {
-    return fg;
+  const SkColor fg_color = GetForegroundColor();
+  const float content_opacity = focus_animation_state_.content_opacity;
+  if (content_opacity >= 1.0f) {
+    return fg_color;
   }
-  return SkColorSetA(fg,
-                     base::ClampRound<U8CPU>(SkColorGetA(fg) * label_opacity_));
+  return SkColorSetA(fg_color, base::ClampRound<U8CPU>(SkColorGetA(fg_color) *
+                                                       content_opacity));
 }
 
 void TabGroupUnfocusButton::UpdateCollapsedState() {

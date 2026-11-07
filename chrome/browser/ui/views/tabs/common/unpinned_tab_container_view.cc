@@ -187,6 +187,12 @@ UnpinnedTabContainerView::LayoutManager::CalculateProposedLayout(
                              ->GetCurrentValue(FocusModeAnimations::kFocusMode,
                                                FocusModeAnimations::kProgress)
                              .value());
+  if (transition->previous_group.has_value()) {
+    return CalculateProposedLayout(
+        size_bounds, progress < TabGroupView::kFocusSwitchHandoffProgress
+                         ? transition->previous_group
+                         : transition->target_group);
+  }
   if (progress <= 0.0f) {
     return CalculateProposedLayout(size_bounds, transition->previous_group);
   }

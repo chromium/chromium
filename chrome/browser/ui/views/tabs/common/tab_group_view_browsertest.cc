@@ -981,6 +981,69 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_EQ(unrelated_tab_view->height(), unrelated_tab_height);
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
+                       FocusModeSwitchGroupsMidAnimation) {
+  DisableFocusAnimations();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_a = model->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_b = model->AddToNewGroup({3});
+  ActivateTab(model->GetTabAtIndex(2));
+
+  TabGroupView* const group_view_a = GetTabGroupView(group_a);
+  TabGroupView* const group_view_b = GetTabGroupView(group_b);
+  ASSERT_NE(group_view_a, nullptr);
+  ASSERT_NE(group_view_b, nullptr);
+  views::View* const unrelated_tab_view =
+      unpinned_collection_node()->children()[0]->view();
+
+  EnableFocusAnimations();
+  model->EnterFocusMode(group_a);
+  AdvanceFocusMotion(base::Milliseconds(150));
+  ASSERT_TRUE(group_view_a->unfocus_header()->GetVisible());
+  ASSERT_GT(group_view_a->unfocus_header()->height(), 0);
+
+  model->EnterFocusMode(group_b);
+  RunScheduledLayouts();
+
+  EXPECT_FALSE(unrelated_tab_view->GetVisible());
+  EXPECT_TRUE(group_view_a->unfocus_header()->GetVisible());
+  EXPECT_FALSE(group_view_a->group_line()->GetVisible());
+
+  // The enter curve is front-loaded, so kFocusSwitchHandoffProgress (0.75) is
+  // reached around 50 ms into the 300 ms motion. Before the handoff the
+  // outgoing group holds the top of the container and slides out.
+  AdvanceFocusMotion(base::Milliseconds(25));
+  EXPECT_TRUE(group_view_a->GetVisible());
+  EXPECT_FALSE(group_view_b->GetVisible());
+  EXPECT_LT(group_view_a->GetFocusSwitchSlideOffset(), 0);
+  EXPECT_FALSE(unrelated_tab_view->GetVisible());
+  EXPECT_EQ(group_view_a->y(), 0);
+
+  // After the handoff (100 ms in) the incoming group takes its place and
+  // slides in.
+  AdvanceFocusMotion(base::Milliseconds(75));
+  EXPECT_FALSE(group_view_a->GetVisible());
+  EXPECT_TRUE(group_view_b->GetVisible());
+  EXPECT_GT(group_view_b->GetFocusSwitchSlideOffset(), 0);
+  EXPECT_FALSE(unrelated_tab_view->GetVisible());
+  EXPECT_EQ(group_view_b->y(), 0);
+  EXPECT_TRUE(group_view_b->unfocus_header()->GetVisible());
+  EXPECT_FALSE(group_view_b->group_line()->GetVisible());
+
+  FinishFocusMotion();
+
+  EXPECT_FALSE(unrelated_tab_view->GetVisible());
+  EXPECT_FALSE(group_view_a->GetVisible());
+  EXPECT_FALSE(group_view_a->unfocus_header()->GetVisible());
+  EXPECT_TRUE(group_view_b->GetVisible());
+  EXPECT_TRUE(group_view_b->unfocus_header()->GetVisible());
+  EXPECT_EQ(group_view_a->GetFocusSwitchSlideOffset(), 0);
+  EXPECT_EQ(group_view_b->GetFocusSwitchSlideOffset(), 0);
+}
+
 // Exiting focus on an ephemeral (non-group focus) group defers dissolving the
 // group in the model until the exit motion finishes, so the group view stays
 // alive and shrinks both its unfocus button and header away while the
