@@ -62,6 +62,8 @@ BASE_FEATURE(kEnforceSharedImageAccessForGLReads,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRestrictSharedImageAttachmentsToColorAttachments,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRejectUnclearedSharedImageOnClearFailure,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -763,79 +765,87 @@ void PassthroughResources::SharedImageData::EnsureClear(
       return;
     }
 
-    // Allow uncleared access as we're going to clear the image.
-    auto scoped_access = representation_->BeginScopedAccess(
-        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
-        SharedImageRepresentation::AllowUnclearedAccess::kYes);
-
-    if (!scoped_access) {
-      impl->FlushErrors();
-      return;
-    }
-
-    auto texture = representation_->GetTexturePassthrough();
-    const bool use_oes_draw_buffers_indexed =
-        impl->features().oes_draw_buffers_indexed;
-    bool has_rasterizer_discard =
-        impl->GetFeatureInfo()->gl_version_info().IsAtLeastGLES(3, 0);
-
-    // Back up all state we are about to change.
-    gl::GLApi* api = impl->api();
-    GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt
-        scoped_pls_interrupt(impl);
-    ScopedFramebufferBindingReset fbo_reset(
-        api, false /* supports_seperate_fbo_bindings */);
-    ScopedTextureBindingReset texture_reset(api, texture->target());
-    ScopedClearColorReset clear_color_reset(api);
-    ScopedColorMaskZeroReset color_mask_reset(api,
-                                              use_oes_draw_buffers_indexed);
-    ScopedScissorTestReset scissor_test_reset(api);
-    ScopedRasterizerDiscardReset rasterizer_discard_reset(
-        api, has_rasterizer_discard);
-
-    // Generate a new framebuffer and bind the shared image's uncleared texture
-    // to it.
-    GLuint fbo = 0;
-    api->glGenFramebuffersEXTFn(1, &fbo);
-    api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo);
-    api->glBindTextureFn(texture->target(), texture->service_id());
-
-    // Clear the bound framebuffer.
-    api->glClearColorFn(0, 0, 0, 0);
-    if (use_oes_draw_buffers_indexed)
-      api->glColorMaskiOESFn(0, true, true, true, true);
-    else
-      api->glColorMaskFn(true, true, true, true);
-    api->glDisableFn(GL_SCISSOR_TEST);
-    if (has_rasterizer_discard) {
-      api->glDisableFn(GL_RASTERIZER_DISCARD);
-    }
-
     bool all_layers_cleared = true;
-    if (texture->target() == GL_TEXTURE_2D_ARRAY) {
-      const uint32_t layers = representation_->array_layers();
-      for (uint32_t layer = 0; layer < layers; ++layer) {
+    {
+      // Allow uncleared access as we're going to clear the image.
+      auto scoped_access = representation_->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+      if (!scoped_access) {
+        impl->FlushErrors();
+        return;
+      }
+
+      auto texture = representation_->GetTexturePassthrough();
+      const bool use_oes_draw_buffers_indexed =
+          impl->features().oes_draw_buffers_indexed;
+      bool has_rasterizer_discard =
+          impl->GetFeatureInfo()->gl_version_info().IsAtLeastGLES(3, 0);
+
+      // Back up all state we are about to change.
+      gl::GLApi* api = impl->api();
+      GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt
+          scoped_pls_interrupt(impl);
+      ScopedFramebufferBindingReset fbo_reset(
+          api, false /* supports_seperate_fbo_bindings */);
+      ScopedTextureBindingReset texture_reset(api, texture->target());
+      ScopedClearColorReset clear_color_reset(api);
+      ScopedColorMaskZeroReset color_mask_reset(api,
+                                                use_oes_draw_buffers_indexed);
+      ScopedScissorTestReset scissor_test_reset(api);
+      ScopedRasterizerDiscardReset rasterizer_discard_reset(
+          api, has_rasterizer_discard);
+
+      // Generate a new framebuffer and bind the shared image's uncleared
+      // texture to it.
+      GLuint fbo = 0;
+      api->glGenFramebuffersEXTFn(1, &fbo);
+      api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo);
+      api->glBindTextureFn(texture->target(), texture->service_id());
+
+      // Clear the bound framebuffer.
+      api->glClearColorFn(0, 0, 0, 0);
+      if (use_oes_draw_buffers_indexed) {
+        api->glColorMaskiOESFn(0, true, true, true, true);
+      } else {
+        api->glColorMaskFn(true, true, true, true);
+      }
+      api->glDisableFn(GL_SCISSOR_TEST);
+      if (has_rasterizer_discard) {
+        api->glDisableFn(GL_RASTERIZER_DISCARD);
+      }
+
+      if (texture->target() == GL_TEXTURE_2D_ARRAY) {
+        const uint32_t layers = representation_->array_layers();
+        for (uint32_t layer = 0; layer < layers; ++layer) {
+          api->glFramebufferTextureLayerFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                           texture->service_id(), 0, layer);
+          if (api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) !=
+              GL_FRAMEBUFFER_COMPLETE) {
+            all_layers_cleared = false;
+            break;
+          }
+          api->glClearFn(GL_COLOR_BUFFER_BIT);
+        }
         api->glFramebufferTextureLayerFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                         texture->service_id(), 0, layer);
-        api->glClearFn(GL_COLOR_BUFFER_BIT);
+                                         0, 0, 0);
+      } else {
+        api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                         texture->target(),
+                                         texture->service_id(), 0);
         if (api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) !=
             GL_FRAMEBUFFER_COMPLETE) {
           all_layers_cleared = false;
+        } else {
+          api->glClearFn(GL_COLOR_BUFFER_BIT);
         }
+        api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                         texture->target(), 0, 0);
       }
-      api->glFramebufferTextureLayerFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0,
-                                       0, 0);
-    } else {
-      api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                       texture->target(), texture->service_id(),
-                                       0);
-      api->glClearFn(GL_COLOR_BUFFER_BIT);
-      if (api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) !=
-          GL_FRAMEBUFFER_COMPLETE) {
-        all_layers_cleared = false;
-      }
-      api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                       texture->target(), 0, 0);
+
+      // Delete the generated framebuffer before restoring bindings.
+      api->glDeleteFramebuffersEXTFn(1, &fbo);
     }
 
     // Don't mark the image cleared if the driver reported an error. Errors
@@ -848,9 +858,6 @@ void PassthroughResources::SharedImageData::EnsureClear(
       // Mark the shared image as cleared.
       representation_->SetCleared();
     }
-
-    // Delete the generated framebuffer.
-    api->glDeleteFramebuffersEXTFn(1, &fbo);
   }
 }
 

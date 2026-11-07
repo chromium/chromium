@@ -4831,17 +4831,28 @@ GLES2DecoderPassthroughImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
     return error::kNoError;
   }
 
-  auto texture = shared_image->GetTexturePassthrough();
+  PassthroughResources::SharedImageData shared_image_data(
+      this, std::move(shared_image));
+  if (!shared_image_data.representation()->IsCleared() &&
+      base::FeatureList::IsEnabled(kRejectUnclearedSharedImageOnClearFailure)) {
+    // Create a placeholder texture (see http://crbug.com/472465 and
+    // http://crbug.com/851878) and do not expose the uncleared shared image.
+    DoGenTextures(1, &texture_client_id);
+    InsertError(GL_INVALID_OPERATION,
+                "shared image could not be initialized before use");
+    return error::kNoError;
+  }
+
+  auto texture = shared_image_data.representation()->GetTexturePassthrough();
 
   // Update id mappings
   resources_->texture_id_map.RemoveClientID(texture_client_id);
   resources_->texture_id_map.SetIDMapping(texture_client_id,
                                           texture->service_id());
   resources_->texture_object_map.RemoveClientID(texture_client_id);
-  resources_->texture_object_map.SetIDMapping(texture_client_id, texture);
-  resources_->AddSharedImage(
-      texture_client_id,
-      PassthroughResources::SharedImageData(this, std::move(shared_image)));
+  resources_->texture_object_map.SetIDMapping(texture_client_id,
+                                              std::move(texture));
+  resources_->AddSharedImage(texture_client_id, std::move(shared_image_data));
 
   return error::kNoError;
 }

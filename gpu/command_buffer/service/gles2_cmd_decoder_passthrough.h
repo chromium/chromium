@@ -62,6 +62,12 @@ GPU_GLES2_EXPORT BASE_DECLARE_FEATURE(kEnforceSharedImageAccessForGLReads);
 GPU_GLES2_EXPORT BASE_DECLARE_FEATURE(
     kRestrictSharedImageAttachmentsToColorAttachments);
 
+// Kill switch for rejecting shared image imports when lazy clearing fails in
+// CreateAndTexStorage2DSharedImageINTERNAL.
+// TODO(crbug.com/577339422): Remove after a safe rollout.
+GPU_GLES2_EXPORT BASE_DECLARE_FEATURE(
+    kRejectUnclearedSharedImageOnClearFailure);
+
 class ContextGroup;
 class GPUTracer;
 class MultiDrawManager;

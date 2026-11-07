@@ -108,6 +108,8 @@ class GLManager : private GpuControl {
 
   gl::GLContext* context() { return context_.get(); }
 
+  SharedImageManager* shared_image_manager() { return &shared_image_manager_; }
+
   const GpuDriverBugWorkarounds& workarounds() const;
   const gpu::GpuPreferences& gpu_preferences() const {
     return gpu_preferences_;
