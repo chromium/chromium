@@ -41,7 +41,6 @@ import org.chromium.ui.util.MotionEventUtils;
 public class ContentUiEventHandler implements UserData {
     private final WebContentsImpl mWebContents;
     private InternalAccessDelegate mEventDelegate;
-    private long mNativeContentUiEventHandler;
 
     private static final class UserDataFactoryLazyHolder {
         private static final UserDataFactory<ContentUiEventHandler> INSTANCE =
@@ -66,14 +65,7 @@ public class ContentUiEventHandler implements UserData {
 
     private ContentUiEventHandler(WebContents webContents) {
         mWebContents = (WebContentsImpl) webContents;
-        mNativeContentUiEventHandler = ContentUiEventHandlerJni.get().init(webContents);
-    }
-
-    static ContentUiEventHandler createForTesting(
-            WebContents webContents, long nativeContentUiEventHandler) {
-        ContentUiEventHandler contentUiEventHandler = new ContentUiEventHandler(webContents);
-        contentUiEventHandler.mNativeContentUiEventHandler = nativeContentUiEventHandler;
-        return contentUiEventHandler;
+        ContentUiEventHandlerJni.get().init(webContents);
     }
 
     @Initializer
@@ -112,16 +104,14 @@ public class ContentUiEventHandler implements UserData {
     }
 
     private void onMouseWheelEvent(MotionEvent event) {
-        assert mNativeContentUiEventHandler != 0;
+        if (mWebContents.isDestroyed()) return;
         ContentUiEventHandlerJni.get()
                 .sendMouseWheelEvent(
-                        mNativeContentUiEventHandler,
-                        event,
-                        MotionEventUtils.getEventTimeNanos(event));
+                        mWebContents, event, MotionEventUtils.getEventTimeNanos(event));
     }
 
     private boolean onMouseEvent(MotionEvent event, boolean shouldConvertToMouseEvent) {
-        assert mNativeContentUiEventHandler != 0;
+        if (mWebContents.isDestroyed()) return false;
         EventForwarder eventForwarder = mWebContents.getEventForwarder();
         boolean didOffsetEvent = false;
         MotionEvent newEvent = eventForwarder.createOffsetMotionEventIfNeeded(event);
@@ -131,7 +121,7 @@ public class ContentUiEventHandler implements UserData {
         }
         ContentUiEventHandlerJni.get()
                 .sendMouseEvent(
-                        mNativeContentUiEventHandler,
+                        mWebContents,
                         event,
                         MotionEventUtils.getEventTimeNanos(event),
                         EventForwarder.getMouseEventActionButton(event),
@@ -201,14 +191,15 @@ public class ContentUiEventHandler implements UserData {
     }
 
     /**
+     * Currently the ContentView scrolling happens in the native side. In the Java view system, it
+     * is always pinned at (0, 0). scrollBy() and scrollTo() are overridden, so that View's mScrollX
+     * and mScrollY will be unchanged at (0, 0). This is critical for drawing ContentView correctly.
+     *
      * @see View#scrollBy(int, int)
-     * Currently the ContentView scrolling happens in the native side. In
-     * the Java view system, it is always pinned at (0, 0). scrollBy() and scrollTo()
-     * are overridden, so that View's mScrollX and mScrollY will be unchanged at
-     * (0, 0). This is critical for drawing ContentView correctly.
      */
     @CalledByNative
     private void scrollBy(float dxPix, float dyPix) {
+        if (mWebContents.isDestroyed()) return;
         if (dxPix == 0 && dyPix == 0) return;
         long time = SystemClock.uptimeMillis();
         // It's a very real (and valid) possibility that a fling may still
@@ -218,10 +209,9 @@ public class ContentUiEventHandler implements UserData {
                 GestureListenerManagerImpl.fromWebContents(mWebContents);
         assumeNonNull(gestureManager);
         if (gestureManager.hasActiveFlingScroll()) {
-            ContentUiEventHandlerJni.get().cancelFling(mNativeContentUiEventHandler, time);
+            ContentUiEventHandlerJni.get().cancelFling(mWebContents, time);
         }
-        ContentUiEventHandlerJni.get()
-                .sendScrollEvent(mNativeContentUiEventHandler, time, dxPix, dyPix);
+        ContentUiEventHandlerJni.get().sendScrollEvent(mWebContents, time, dxPix, dyPix);
     }
 
     @CalledByNative
@@ -235,20 +225,26 @@ public class ContentUiEventHandler implements UserData {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("content::WebContents*") WebContents webContents);
+        void init(@JniType("content::WebContents*") WebContents webContents);
 
-        void sendMouseWheelEvent(long nativeContentUiEventHandler, MotionEvent event, long timeNs);
+        void sendMouseWheelEvent(
+                @JniType("content::WebContents*") WebContents webContents,
+                MotionEvent event,
+                long timeNs);
 
         void sendMouseEvent(
-                long nativeContentUiEventHandler,
+                @JniType("content::WebContents*") WebContents webContents,
                 MotionEvent event,
                 long timeNs,
                 int changedButton,
                 int toolType);
 
         void sendScrollEvent(
-                long nativeContentUiEventHandler, long timeMs, float deltaX, float deltaY);
+                @JniType("content::WebContents*") WebContents webContents,
+                long timeMs,
+                float deltaX,
+                float deltaY);
 
-        void cancelFling(long nativeContentUiEventHandler, long timeMs);
+        void cancelFling(@JniType("content::WebContents*") WebContents webContents, long timeMs);
     }
 }

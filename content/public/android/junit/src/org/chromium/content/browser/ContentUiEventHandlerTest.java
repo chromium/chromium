@@ -45,7 +45,6 @@ import org.chromium.ui.util.MotionEventUtils;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContentUiEventHandlerTest {
     private static final long NATIVE_WEB_CONTENTS_ANDROID = 1;
-    private static final long NATIVE_CONTENT_UI_EVENT_HANDLER = 2;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -85,9 +84,7 @@ public class ContentUiEventHandlerTest {
                                 });
         doReturn(mEventForwarder).when(mWebContentsImpl).getEventForwarder();
 
-        mContentUiEventHandler =
-                ContentUiEventHandler.createForTesting(
-                        mWebContentsImpl, NATIVE_CONTENT_UI_EVENT_HANDLER);
+        mContentUiEventHandler = ContentUiEventHandler.fromWebContents(mWebContentsImpl);
     }
 
     @After
@@ -105,7 +102,7 @@ public class ContentUiEventHandlerTest {
 
         verify(mContentUiEventHandlerJniMock, times(2))
                 .sendMouseEvent(
-                        eq(NATIVE_CONTENT_UI_EVENT_HANDLER),
+                        eq(mWebContentsImpl),
                         mMotionEventCaptor.capture(),
                         eq(MotionEventUtils.getEventTimeNanos(trackpadLeftClickEvent)),
                         eq(EventForwarder.getMouseEventActionButton(trackpadLeftClickEvent)),

@@ -227,17 +227,68 @@ void ContentUiEventHandler::CancelFling(JNIEnv* env, int64_t time_ms) {
       /*synthetic_scroll*/ false, true));
 }
 
-static int64_t JNI_ContentUiEventHandler_Init(JNIEnv* env,
-                                              WebContents* web_contents) {
+namespace {
+
+ContentUiEventHandler* FromWebContents(WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  auto* view = static_cast<WebContentsViewAndroid*>(
+      static_cast<WebContentsImpl*>(web_contents)->GetView());
+  return view ? view->content_ui_event_handler() : nullptr;
+}
+
+}  // namespace
+
+static void JNI_ContentUiEventHandler_Init(JNIEnv* env,
+                                           WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   CHECK(web_contents_impl)
       << "A ContentUiEventHandler should be created with a valid WebContents.";
-  auto handler = std::make_unique<ContentUiEventHandler>(web_contents_impl);
-  auto* handler_ptr = handler.get();
   static_cast<WebContentsViewAndroid*>(web_contents_impl->GetView())
-      ->SetContentUiEventHandler(std::move(handler));
-  return reinterpret_cast<intptr_t>(handler_ptr);
+      ->SetContentUiEventHandler(
+          std::make_unique<ContentUiEventHandler>(web_contents_impl));
+}
+
+static void JNI_ContentUiEventHandler_SendMouseWheelEvent(
+    JNIEnv* env,
+    WebContents* web_contents,
+    const JavaRef<jobject>& event,
+    int64_t time_ns) {
+  if (auto* handler = FromWebContents(web_contents)) {
+    handler->SendMouseWheelEvent(env, event, time_ns);
+  }
+}
+
+static void JNI_ContentUiEventHandler_SendMouseEvent(
+    JNIEnv* env,
+    WebContents* web_contents,
+    const JavaRef<jobject>& event,
+    int64_t time_ns,
+    int32_t changed_button,
+    int32_t tool_type) {
+  if (auto* handler = FromWebContents(web_contents)) {
+    handler->SendMouseEvent(env, event, time_ns, changed_button, tool_type);
+  }
+}
+
+static void JNI_ContentUiEventHandler_SendScrollEvent(JNIEnv* env,
+                                                      WebContents* web_contents,
+                                                      int64_t time_ms,
+                                                      float delta_x,
+                                                      float delta_y) {
+  if (auto* handler = FromWebContents(web_contents)) {
+    handler->SendScrollEvent(env, time_ms, delta_x, delta_y);
+  }
+}
+
+static void JNI_ContentUiEventHandler_CancelFling(JNIEnv* env,
+                                                  WebContents* web_contents,
+                                                  int64_t time_ms) {
+  if (auto* handler = FromWebContents(web_contents)) {
+    handler->CancelFling(env, time_ms);
+  }
 }
 
 }  // namespace content
