@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -498,11 +499,19 @@ void BaseTabStripRegionView::OnChildrenAdded(
   const bool has_tab = std::ranges::any_of(handles, [](const auto& handle) {
     return std::holds_alternative<tabs::TabHandle>(handle);
   });
-  if (has_tab && new_tab_button_pressed_start_time_.has_value()) {
-    base::UmaHistogramTimes(
-        "TabStrip.TimeToCreateNewTabFromPress",
-        base::TimeTicks::Now() - new_tab_button_pressed_start_time_.value());
-    new_tab_button_pressed_start_time_.reset();
+  if (has_tab) {
+    Profile* const profile =
+        browser_view_ ? browser_view_->GetProfile() : nullptr;
+    if (profile && profile->IsGuestSession()) {
+      base::UmaHistogramCounts100("Tab.Count.Guest", tab_strip_model_->count());
+    }
+
+    if (new_tab_button_pressed_start_time_.has_value()) {
+      base::UmaHistogramTimes(
+          "TabStrip.TimeToCreateNewTabFromPress",
+          base::TimeTicks::Now() - new_tab_button_pressed_start_time_.value());
+      new_tab_button_pressed_start_time_.reset();
+    }
   }
   hover_tab_selector_->CancelTabTransition();
   tab_strip_view_->OnChildrenAdded(handles);
