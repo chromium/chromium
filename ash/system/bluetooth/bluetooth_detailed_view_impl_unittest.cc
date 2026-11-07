@@ -14,11 +14,8 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -60,16 +57,8 @@ class FakeBluetoothDetailedViewDelegate
 
 }  // namespace
 
-class BluetoothDetailedViewImplTest : public AshTestBase,
-                                      public testing::WithParamInterface<bool> {
+class BluetoothDetailedViewImplTest : public AshTestBase {
  public:
-  BluetoothDetailedViewImplTest() {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(
-        chromeos::features::kBluetoothWifiQSPodRefresh,
-        IsBluetoothWifiQSPodRefreshEnabled());
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -94,8 +83,6 @@ class BluetoothDetailedViewImplTest : public AshTestBase,
     return bluetooth_detailed_view_->settings_button_;
   }
 
-  bool IsBluetoothWifiQSPodRefreshEnabled() { return GetParam(); }
-
   HoverHighlightView* GetToggleRow() {
     return bluetooth_detailed_view_->toggle_row_;
   }
@@ -114,15 +101,9 @@ class BluetoothDetailedViewImplTest : public AshTestBase,
   FakeBluetoothDetailedViewDelegate bluetooth_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
   raw_ptr<BluetoothDetailedViewImpl> bluetooth_detailed_view_ = nullptr;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BluetoothDetailedViewImplTest,
-    /*IsBluetoothWifiQSPodRefreshEnabled()=*/testing::Bool());
-
-TEST_P(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {
+TEST_F(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {
   views::Button* settings_button = GetSettingsButton();
 
   // Clicking the button at the lock screen does nothing.
@@ -140,7 +121,7 @@ TEST_P(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {
   EXPECT_EQ(1u, detailed_view_delegate_.close_bubble_call_count());
 }
 
-TEST_P(BluetoothDetailedViewImplTest,
+TEST_F(BluetoothDetailedViewImplTest,
        UpdateBluetoothEnabledStateChangesUIState) {
   HoverHighlightView* toggle_row = GetToggleRow();
   Switch* toggle_button = GetToggleButton();
@@ -158,12 +139,6 @@ TEST_P(BluetoothDetailedViewImplTest,
             toggle_button->GetTooltipText());
   EXPECT_TRUE(main_container->GetVisible());
   EXPECT_TRUE(pair_new_device_view->GetVisible());
-  if (IsBluetoothWifiQSPodRefreshEnabled()) {
-    EXPECT_FALSE(
-        bluetooth_detailed_view_->zero_state_view_for_testing()->GetVisible());
-  }
-  EXPECT_TRUE(
-      bluetooth_detailed_view_->scroll_view_for_testing()->GetVisible());
 
   bluetooth_detailed_view_->UpdateBluetoothEnabledState(
       BluetoothSystemState::kDisabled);
@@ -175,12 +150,7 @@ TEST_P(BluetoothDetailedViewImplTest,
   EXPECT_EQ(u"Toggle Bluetooth. Bluetooth is off.",
             toggle_button->GetTooltipText());
   EXPECT_FALSE(main_container->GetVisible());
-  if (IsBluetoothWifiQSPodRefreshEnabled()) {
-    EXPECT_FALSE(
-        bluetooth_detailed_view_->zero_state_view_for_testing()->GetVisible());
-  }
-  EXPECT_TRUE(
-      bluetooth_detailed_view_->scroll_view_for_testing()->GetVisible());
+
   bluetooth_detailed_view_->UpdateBluetoothEnabledState(
       BluetoothSystemState::kEnabling);
   EXPECT_EQ(u"On", toggle_row->text_label()->GetText());
@@ -191,24 +161,9 @@ TEST_P(BluetoothDetailedViewImplTest,
             toggle_button->GetTooltipText());
   EXPECT_TRUE(main_container->GetVisible());
   EXPECT_FALSE(pair_new_device_view->GetVisible());
-  if (IsBluetoothWifiQSPodRefreshEnabled()) {
-    EXPECT_FALSE(
-        bluetooth_detailed_view_->zero_state_view_for_testing()->GetVisible());
-  }
-  EXPECT_TRUE(
-      bluetooth_detailed_view_->scroll_view_for_testing()->GetVisible());
-
-  bluetooth_detailed_view_->UpdateBluetoothEnabledState(
-      BluetoothSystemState::kUnavailable);
-  if (IsBluetoothWifiQSPodRefreshEnabled()) {
-    EXPECT_TRUE(
-        bluetooth_detailed_view_->zero_state_view_for_testing()->GetVisible());
-    EXPECT_FALSE(
-        bluetooth_detailed_view_->scroll_view_for_testing()->GetVisible());
-  }
 }
 
-TEST_P(BluetoothDetailedViewImplTest, PressingToggleRowNotifiesDelegate) {
+TEST_F(BluetoothDetailedViewImplTest, PressingToggleRowNotifiesDelegate) {
   HoverHighlightView* toggle_row = GetToggleRow();
   EXPECT_FALSE(bluetooth_detailed_view_delegate_.last_toggle_state_);
 
@@ -217,7 +172,7 @@ TEST_P(BluetoothDetailedViewImplTest, PressingToggleRowNotifiesDelegate) {
   EXPECT_TRUE(bluetooth_detailed_view_delegate_.last_toggle_state_);
 }
 
-TEST_P(BluetoothDetailedViewImplTest, PressingToggleButtonNotifiesDelegate) {
+TEST_F(BluetoothDetailedViewImplTest, PressingToggleButtonNotifiesDelegate) {
   Switch* toggle_button = GetToggleButton();
   views::Button* pair_new_device_view = GetPairNewDeviceView();
 
@@ -232,7 +187,7 @@ TEST_P(BluetoothDetailedViewImplTest, PressingToggleButtonNotifiesDelegate) {
   EXPECT_FALSE(pair_new_device_view->GetVisible());
 }
 
-TEST_P(BluetoothDetailedViewImplTest, PressingPairNewDeviceNotifiesDelegate) {
+TEST_F(BluetoothDetailedViewImplTest, PressingPairNewDeviceNotifiesDelegate) {
   bluetooth_detailed_view_->UpdateBluetoothEnabledState(
       BluetoothSystemState::kEnabled);
   views::test::RunScheduledLayout(bluetooth_detailed_view_);
@@ -244,7 +199,7 @@ TEST_P(BluetoothDetailedViewImplTest, PressingPairNewDeviceNotifiesDelegate) {
             bluetooth_detailed_view_delegate_.pair_new_device_requested_count_);
 }
 
-TEST_P(BluetoothDetailedViewImplTest, SelectingDeviceListItemNotifiesDelegate) {
+TEST_F(BluetoothDetailedViewImplTest, SelectingDeviceListItemNotifiesDelegate) {
   bluetooth_detailed_view_->UpdateBluetoothEnabledState(
       BluetoothSystemState::kEnabled);
 

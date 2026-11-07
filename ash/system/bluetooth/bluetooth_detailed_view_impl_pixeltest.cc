@@ -5,8 +5,6 @@
 #include <string>
 
 #include "ash/public/cpp/bluetooth_config_service.h"
-#include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
-#include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -20,19 +18,15 @@
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 namespace {
 
 using bluetooth_config::ScopedBluetoothConfigTestHelper;
 using bluetooth_config::mojom::BluetoothDeviceProperties;
-using bluetooth_config::mojom::BluetoothSystemState;
 using bluetooth_config::mojom::DeviceConnectionState;
 using bluetooth_config::mojom::PairedBluetoothDeviceProperties;
 using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
@@ -81,36 +75,14 @@ class SystemPropertiesUpdateWaiter
 // Pixel tests for the quick settings Bluetooth detailed view.
 class BluetoothDetailedViewImplPixelTest
     : public AshTestBase,
-      public testing::WithParamInterface<
-          std::tuple</*IsBluetoothWifiQSPodRefreshEnabled()=*/bool,
-                     /*IsSystemBlurEnabled()=*/bool>> {
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
-  BluetoothDetailedViewImplPixelTest() {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(
-        chromeos::features::kBluetoothWifiQSPodRefresh,
-        IsBluetoothWifiQSPodRefreshEnabled());
-  }
-
-  bool IsBluetoothWifiQSPodRefreshEnabled() const {
-    return std::get<0>(GetParam());
-  }
-  bool IsSystemBlurEnabled() const { return std::get<1>(GetParam()); }
-
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
-    init_params.system_blur_enabled = IsSystemBlurEnabled();
+    init_params.system_blur_enabled = GetParam();
     return init_params;
-  }
-
-  // AshTestBase:
-  std::string GenerateScreenshotName(const std::string& title) override {
-    return pixel_test_helper()->GenerateScreenshotName(
-        title + (IsBluetoothWifiQSPodRefreshEnabled()
-                     ? "_unavailable_state_enabled"
-                     : "_unavailable_state_disabled"));
   }
 
   // Sets the list of paired devices in the device cache.
@@ -121,23 +93,11 @@ class BluetoothDetailedViewImplPixelTest
         ->fake_device_cache()
         ->SetPairedDevices(std::move(paired_devices));
   }
-
-  void SetBluetoothSystemState(BluetoothSystemState system_state) {
-    ash_test_helper()
-        ->bluetooth_config_test_helper()
-        ->fake_adapter_state_controller()
-        ->SetSystemState(system_state);
-  }
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BluetoothDetailedViewImplPixelTest,
-    testing::Combine(/*IsBluetoothWifiQSPodRefreshEnabled()=*/testing::Bool(),
-                     /*IsSystemBlurEnabled()=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         BluetoothDetailedViewImplPixelTest,
+                         /*enable_system_blur=*/testing::Bool());
 
 TEST_P(BluetoothDetailedViewImplPixelTest, Basics) {
   // Create test devices.
@@ -177,35 +137,6 @@ TEST_P(BluetoothDetailedViewImplPixelTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("check_view"),
       /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 1,
-      detailed_view));
-}
-
-TEST_P(BluetoothDetailedViewImplPixelTest, BluetoothUnavailable) {
-  if (!IsBluetoothWifiQSPodRefreshEnabled()) {
-    GTEST_SKIP() << "If Bluetooth is unavailable the BluetoothDetailedView is "
-                    "not accessible";
-  }
-  SetBluetoothSystemState(BluetoothSystemState::kUnavailable);
-
-  // Show the system tray bubble.
-  UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
-  system_tray->ShowBubble();
-  ASSERT_TRUE(system_tray->bubble());
-
-  // Show the Bluetooth detailed view.
-  system_tray->bubble()
-      ->unified_system_tray_controller()
-      ->ShowBluetoothDetailedView();
-  TrayDetailedView* detailed_view =
-      system_tray->bubble()
-          ->quick_settings_view()
-          ->GetDetailedViewForTest<TrayDetailedView>();
-  ASSERT_TRUE(detailed_view);
-
-  // Compare pixels.
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName("bluetooth_unavailable_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 1,
       detailed_view));
 }
 

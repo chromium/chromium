@@ -9,7 +9,6 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_utils.h"
-#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -27,7 +26,6 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,13 +67,6 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
   CreateScrollableList();
   CreateTopContainer();
   CreateMainContainer();
-  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled()) {
-    CreateZeroStateView(std::make_unique<ZeroStateView>(
-        /*image_id=*/IDR_TRAY_BLUETOOTH_UNAVAILABLE_STATE_IMAGE,
-        /*title_id=*/IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_TITLE,
-        /*subtitle_id=*/
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_SUBTITLE));
-  }
   UpdateBluetoothEnabledState(BluetoothSystemState::kDisabled);
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kBluetoothQuickSettings);
@@ -89,15 +80,6 @@ views::View* BluetoothDetailedViewImpl::GetAsView() {
 
 void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(
     const BluetoothSystemState system_state) {
-  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
-      system_state == BluetoothSystemState::kUnavailable) {
-    SetZeroStateViewVisibility(true);
-    return;
-  }
-  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled()) {
-    SetZeroStateViewVisibility(false);
-  }
-
   bool is_enabled_or_enabling = IsBluetoothEnabledOrEnabling(system_state);
 
   // Use square corners on the bottom edge when Bluetooth is enabled.
