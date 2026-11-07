@@ -1801,12 +1801,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         profile,
                         menuButtonView,
                         mAppMenuCoordinator.getAppMenuHandler());
-        mSendTabToSelfOmniboxIphController =
-                new SendTabToSelfOmniboxIphController(
-                        mActivity,
-                        profile,
-                        mActivityTabProvider,
-                        toolbarManager.getLocationBar().getContainerView());
         mReaderModeIphControllerSupplier.set(
                 new ReaderModeIphController(
                         mActivity,
@@ -1829,7 +1823,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         } else {
             mToolbarButtonInProductHelpController.showColdStartIph();
             mReadLaterIphController.showColdStartIph();
-            mSendTabToSelfOmniboxIphController.maybeShowIph();
             String featureName = null;
             int stringId = 0;
             int menuId = 0;
@@ -1875,6 +1868,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             menuButtonView,
                             mAppMenuCoordinator.getAppMenuHandler(),
                             /* isBrowserApp= */ true);
+            mSendTabToSelfOmniboxIphController =
+                    SendTabToSelfOmniboxIphController.create(
+                            mActivity,
+                            profile,
+                            mActivityTabProvider.asObservable(),
+                            toolbarManager.getLocationBar().getContainerView());
             if (ChromeFeatureList.sGestureUserEducationBackSwipe.isEnabled()
                     && !DeviceInfo.isAutomotive()
                     && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)

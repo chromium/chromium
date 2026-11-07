@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -45,6 +46,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -83,6 +85,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -1052,40 +1055,53 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testSendTabToSelfOmniboxIphOnStartup() {
-        doAnswer(
-                        invocation -> {
-                            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
-                            return null;
-                        })
-                .when(mTracker)
-                .addOnInitializedCallback(any());
-        TrackerFactory.setTrackerForTests(mTracker);
+    public void testSendTabToSelfOmniboxIphOnNavigation() {
+        String url = mActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE);
+        setUpSendTabToSelfOmniboxIph(url);
 
-        SendTabToSelfAndroidBridge.Natives bridgeMock =
-                mock(SendTabToSelfAndroidBridge.Natives.class);
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
-        doReturn(true).when(bridgeMock).isModelReady(any());
-        doReturn(EntryPointDisplayReason.OFFER_FEATURE)
-                .when(bridgeMock)
-                .getEntryPointDisplayReason(any(), any());
+        mPage = mActivityTestRule.startOnBlankPage();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(mTracker).wouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
+                    verify(mTracker, never())
+                            .shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
+                });
 
-        try {
-            mPage = mActivityTestRule.startOnBlankPage();
-
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        verify(mTracker)
-                                .shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
-                    });
-        } finally {
-            SendTabToSelfAndroidBridgeJni.setInstanceForTesting(null);
-        }
+        mPage = mPage.loadWebPageProgrammatically(url);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(mTracker).shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
+                });
     }
 
     @Test
     @MediumTest
-    public void testSendTabToSelfOmniboxIphOnStartup_notEligible() {
+    public void testSendTabToSelfOmniboxIphOnTabSwitch() {
+        String url = mActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE);
+        setUpSendTabToSelfOmniboxIph(url);
+
+        mPage = mActivityTestRule.startOnUrl(url);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(mTracker, never())
+                            .shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
+                });
+
+        RegularNewTabPageStation ntp = mPage.openNewTabFast();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(mTracker, never())
+                            .shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
+                });
+
+        mPage = ntp.openRegularTabSwitcher().selectTabAtIndex(0, WebPageStation.newBuilder());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    verify(mTracker).shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
+                });
+    }
+
+    private void setUpSendTabToSelfOmniboxIph(String url) {
         doAnswer(
                         invocation -> {
                             invocation.<Callback<Boolean>>getArgument(0).onResult(true);
@@ -1093,25 +1109,17 @@ public class TabbedRootUiCoordinatorTest {
                         })
                 .when(mTracker)
                 .addOnInitializedCallback(any());
+        doReturn(true).when(mTracker).wouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
         TrackerFactory.setTrackerForTests(mTracker);
 
         SendTabToSelfAndroidBridge.Natives bridgeMock =
                 mock(SendTabToSelfAndroidBridge.Natives.class);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
-        doReturn(true).when(bridgeMock).isModelReady(any());
-        doReturn(EntryPointDisplayReason.OFFER_SIGN_IN)
+        ResettersForTesting.register(
+                () -> SendTabToSelfAndroidBridgeJni.setInstanceForTesting(null));
+        doReturn(null).when(bridgeMock).getEntryPointDisplayReason(any(), any());
+        doReturn(EntryPointDisplayReason.OFFER_FEATURE)
                 .when(bridgeMock)
-                .getEntryPointDisplayReason(any(), any());
-        try {
-            mPage = mActivityTestRule.startOnBlankPage();
-
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        verify(mTracker, never())
-                                .shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
-                    });
-        } finally {
-            SendTabToSelfAndroidBridgeJni.setInstanceForTesting(null);
-        }
+                .getEntryPointDisplayReason(any(), eq(url));
     }
 }
