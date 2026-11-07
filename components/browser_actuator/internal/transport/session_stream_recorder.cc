@@ -23,6 +23,8 @@
 #include "base/json/values_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -102,6 +104,83 @@ std::string_view PayloadTypeName(ActuatorUpstreamPayloadType type) {
 bool HasExpectedPayloadTypeUrl(std::string_view type_url,
                                PayloadType payload_type) {
   return type_url.empty() || type_url == ExpectedTypeUrl(payload_type);
+}
+
+std::string FormatScrubbedProbePayload(std::string_view payload) {
+  static constexpr size_t kScrubbedProbePayloadPreviewBytes = 40;
+  return base::StrCat(
+      {"[<", base::NumberToString(payload.size()),
+       " synthetic bytes elided; head=",
+       base::TruncateUTF8ToByteSize(payload, kScrubbedProbePayloadPreviewBytes),
+       "...>]"});
+}
+
+// Synthetic `ProbeRequest` and `ProbeResponse` payloads can be up to 10 MB.
+// Because `SessionStreamRecorder` retains recorded entries in memory for the
+// lifetime of the profile, payloads larger than 128 bytes are replaced on
+// ingest with a compact summary marker preserving the original byte length and
+// leading `PROBE:...` header prefix. The 128-byte threshold exceeds the maximum
+// summary marker length (~97 bytes), keeping scrubbing strictly size-reducing
+// and idempotent.
+std::optional<std::string> TryScrubTransportProbePayload(
+    std::string_view serialized_probe) {
+  static constexpr size_t kMaxRecordedProbePayloadBytes = 128;
+  TransportProbe probe;
+  if (!probe.ParseFromString(serialized_probe)) {
+    return std::nullopt;
+  }
+  switch (probe.payload_case()) {
+    case TransportProbe::kRequest:
+      if (probe.request().payload().size() > kMaxRecordedProbePayloadBytes) {
+        probe.mutable_request()->set_payload(
+            FormatScrubbedProbePayload(probe.request().payload()));
+        return probe.SerializeAsString();
+      }
+      break;
+    case TransportProbe::kResponse:
+      if (probe.response().payload().size() > kMaxRecordedProbePayloadBytes) {
+        probe.mutable_response()->set_payload(
+            FormatScrubbedProbePayload(probe.response().payload()));
+        return probe.SerializeAsString();
+      }
+      break;
+    case TransportProbe::PAYLOAD_NOT_SET:
+      break;
+  }
+  return std::nullopt;
+}
+
+void MaybeScrubTransportProbePayload(std::string& serialized_probe) {
+  if (std::optional<std::string> scrubbed =
+          TryScrubTransportProbePayload(serialized_probe)) {
+    // Move-assign a fresh string rather than calling `SerializeToString()` in
+    // place, which would call `clear()`/`resize()` and retain the multi-MB
+    // heap `capacity()` for the lifetime of the profile.
+    serialized_probe = *std::move(scrubbed);
+  }
+}
+
+template <typename EnvelopeProto, typename ToPayloadTypeFn>
+void ScrubEnvelopeProbePayloads(EnvelopeProto& envelope,
+                                ToPayloadTypeFn to_payload_type) {
+  for (auto& typed_payload : *envelope.mutable_typed_payloads()) {
+    if (to_payload_type(typed_payload.payload_type()) == PayloadType::kProbe &&
+        typed_payload.has_proto_payload() &&
+        HasExpectedPayloadTypeUrl(typed_payload.proto_payload().type_url(),
+                                  PayloadType::kProbe) &&
+        !typed_payload.proto_payload().value().empty()) {
+      MaybeScrubTransportProbePayload(
+          *typed_payload.mutable_proto_payload()->mutable_value());
+    }
+  }
+}
+
+void ScrubLargeProbePayloads(ActuatorDownstreamMessage& message) {
+  ScrubEnvelopeProbePayloads(message, &FromDownstreamProtoPayloadType);
+}
+
+void ScrubLargeProbePayloads(ActuatorUpstreamMessage& message) {
+  ScrubEnvelopeProbePayloads(message, &FromUpstreamProtoPayloadType);
 }
 
 template <typename EnvelopeProto, typename ToPayloadTypeFn>
@@ -319,6 +398,7 @@ void SessionStreamRecorder::RecordDownstreamMessage(
     ActuatorDownstreamMessage message,
     DownstreamDeliveryStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScrubLargeProbePayloads(message);
   metadata_.total_downstream_messages++;
   for (ActuatorDownstreamTypedPayload& typed_payload :
        *message.mutable_typed_payloads()) {
@@ -372,6 +452,7 @@ void SessionStreamRecorder::RecordUpstreamMessage(
     ActuatorUpstreamMessage message,
     int http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScrubLargeProbePayloads(message);
   metadata_.total_upstream_messages++;
   if (entries_.size() >= kMaxEntriesPerSession) {
     entries_.pop_front();
