@@ -1011,6 +1011,10 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
 
   uint32_t immediate_buffer_[64];
 
+  // Consumed at FeatureInfo construction in SetUp(); tests that need a
+  // driver-bug workaround set this in their constructor, before SetUp runs.
+  GpuDriverBugWorkarounds workarounds_for_test_;
+
  private:
   ContextType context_type_;
   GpuPreferences gpu_preferences_;
