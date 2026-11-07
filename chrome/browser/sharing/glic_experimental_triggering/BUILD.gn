@@ -31,6 +31,33 @@ source_set("impl") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_experimental_triggering_message_handler_unittest.cc" ]
+  deps = [
+    ":glic_experimental_triggering",
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/signin",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_profile",
+    "//components/policy/core/common:test_support",
+    "//components/sharing_message:test_support",
+    "//components/sharing_message/proto",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/events/devices",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

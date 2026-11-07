@@ -98,6 +98,7 @@ source_set("unit_tests") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/sharing/browser_actuator:unit_tests",
+    "//chrome/browser/sharing/glic_experimental_triggering:unit_tests",
     "//chrome/browser/signin",
     "//chrome/common:chrome_features",
     "//chrome/test/base:testing_browser_process",

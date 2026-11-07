@@ -46,8 +46,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 namespace glic {
@@ -145,10 +143,6 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
         {});
   }
   ~GlicExperimentalTriggeringMessageHandlerBrowserTest() override = default;
-
-#if !BUILDFLAG(IS_ANDROID)
-  using PlatformBrowserTest::browser;
-#endif
 
  protected:
   void SetUpOnMainThread() override {
@@ -390,50 +384,6 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMetadataDisabledBrowserTest,
   // Verify that metadata is empty.
   EXPECT_EQ(task_update.metadata_size(), 0);
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
-                       testLatestServerChannelConfigurationWinsForUpdates) {
-  OptIn();
-
-  auto message1 = CreateTriggeringMessage(42, "config_1");
-  auto* triggering1 = message1.mutable_glic_experimental_triggering();
-  triggering1->set_context_id("test-context-id");
-  triggering1->mutable_request()->mutable_device_opt_in_request();
-
-  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
-                         components_sharing_message::SharingMessage>
-      update_future;
-
-  EXPECT_CALL(mock_sharing_message_sender_,
-              SendMessageToServerTarget(_, _, _, _))
-      .WillRepeatedly(
-          [&](const components_sharing_message::ServerChannelConfiguration&
-                  server_channel,
-              base::TimeDelta,
-              components_sharing_message::SharingMessage message,
-              SharingMessageSender::ResponseCallback) {
-            update_future.SetValue(server_channel, std::move(message));
-            return base::OnceClosure();
-          });
-
-  handler_->OnMessage(std::move(message1), base::DoNothing());
-
-  auto message2 = CreateTriggeringMessage(43, "config_2");
-  auto* triggering2 = message2.mutable_glic_experimental_triggering();
-  triggering2->set_context_id("test-context-id");
-  triggering2->mutable_request()->mutable_device_opt_in_request();
-
-  handler_->OnMessage(std::move(message2), base::DoNothing());
-
-  // Close the active tab to trigger dialog teardown/rejection.
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      0, TabCloseTypes::CLOSE_USER_GESTURE);
-
-  auto [server_channel, received_message] = update_future.Take();
-  EXPECT_EQ(server_channel.configuration(), "config_2");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                        testRelaysUpdatesWithSequenceNumbers) {
@@ -1104,94 +1054,6 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringOpenWindowTest,
 
   // Verify that a new window was created.
   EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), initial_browser_count + 1);
-}
-
-IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
-                       AutoGeneratesContextIdWhenAbsent) {
-  OptIn();
-
-  components_sharing_message::SharingMessage message =
-      CreateTriggeringMessage();
-  message.mutable_glic_experimental_triggering()->clear_context_id();
-  message.mutable_glic_experimental_triggering()
-      ->mutable_request()
-      ->mutable_trigger_actuation_request();
-
-  base::test::TestFuture<
-      std::unique_ptr<components_sharing_message::ResponseMessage>>
-      done_future;
-  handler_->OnMessage(std::move(message), done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Wait());
-  auto response = done_future.Take();
-  ASSERT_TRUE(response);
-  ASSERT_TRUE(response->has_glic_experimental_triggering());
-
-  std::string generated_context_id =
-      response->glic_experimental_triggering().context_id();
-  EXPECT_FALSE(generated_context_id.empty());
-  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 1u);
-
-  components_sharing_message::SharingMessage stop_message =
-      CreateTriggeringMessage();
-  stop_message.mutable_glic_experimental_triggering()->set_context_id(
-      generated_context_id);
-  stop_message.mutable_glic_experimental_triggering()
-      ->mutable_request()
-      ->mutable_stop_actuation_request()
-      ->set_stop_reason("STOPPED_BY_USER");
-
-  base::test::TestFuture<
-      std::unique_ptr<components_sharing_message::ResponseMessage>>
-      stop_future;
-  handler_->OnMessage(std::move(stop_message), stop_future.GetCallback());
-
-  EXPECT_TRUE(stop_future.Wait());
-  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
-}
-
-IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
-                       AutoGeneratesContextIdWhenEmpty) {
-  OptIn();
-
-  components_sharing_message::SharingMessage message =
-      CreateTriggeringMessage();
-  message.mutable_glic_experimental_triggering()->set_context_id("");
-  message.mutable_glic_experimental_triggering()
-      ->mutable_request()
-      ->mutable_trigger_actuation_request();
-
-  base::test::TestFuture<
-      std::unique_ptr<components_sharing_message::ResponseMessage>>
-      done_future;
-  handler_->OnMessage(std::move(message), done_future.GetCallback());
-
-  EXPECT_TRUE(done_future.Wait());
-  auto response = done_future.Take();
-  ASSERT_TRUE(response);
-  ASSERT_TRUE(response->has_glic_experimental_triggering());
-
-  std::string generated_context_id =
-      response->glic_experimental_triggering().context_id();
-  EXPECT_FALSE(generated_context_id.empty());
-  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 1u);
-
-  components_sharing_message::SharingMessage stop_message =
-      CreateTriggeringMessage();
-  stop_message.mutable_glic_experimental_triggering()->set_context_id(
-      generated_context_id);
-  stop_message.mutable_glic_experimental_triggering()
-      ->mutable_request()
-      ->mutable_stop_actuation_request()
-      ->set_stop_reason("STOPPED_BY_USER");
-
-  base::test::TestFuture<
-      std::unique_ptr<components_sharing_message::ResponseMessage>>
-      stop_future;
-  handler_->OnMessage(std::move(stop_message), stop_future.GetCallback());
-
-  EXPECT_TRUE(stop_future.Wait());
-  EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
