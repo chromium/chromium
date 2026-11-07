@@ -47,8 +47,9 @@ class CORE_EXPORT RenderBlockingElementLinkMap
                                 const HTMLLinkElement* link,
                                 RenderBlockingLevel level);
   // Remove the #target_element_id element, all the related links will be
-  // removed.
-  void RemoveTargetElement(const AtomicString& target_element_id);
+  // removed. Returns true if |target_element_id| (or its URL-escaped form) had
+  // pending links at any blocking level, which have now been removed.
+  bool RemoveTargetElement(const AtomicString& target_element_id);
   // Remove the <link rel="expect" href="#target_element_id" blocking="level"/>,
   // the #target_element_id will be removed only when there are no other
   // blocking links referring to the same id.
@@ -73,7 +74,7 @@ class CORE_EXPORT RenderBlockingElementLinkMap
   void AddToElementLinkMap(ElementLinkMap* element_link_map,
                            const AtomicString& target_element_id,
                            const HTMLLinkElement* link);
-  void RemoveTargetElementFromElementLinkMap(
+  bool RemoveTargetElementFromElementLinkMap(
       ElementLinkMap* element_link_map,
       RenderBlockingLevel level,
       const AtomicString& target_element_id);

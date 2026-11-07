@@ -7,7 +7,9 @@
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -157,7 +159,11 @@ void RenderBlockingResourceManager::RemovePendingParsingElement(
   if (element->IsInShadowTree() || !element->isConnected()) {
     return;
   }
-  element_render_blocking_links_->RemoveTargetElement(id);
+  if (element_render_blocking_links_->RemoveTargetElement(id) &&
+      IsA<HTMLFrameOwnerElement>(element)) {
+    document_->CountUse(
+        WebFeature::kRenderBlockingAttributeTargetingFrameOwner);
+  }
 }
 
 void RenderBlockingResourceManager::RemovePendingParsingElementLink(

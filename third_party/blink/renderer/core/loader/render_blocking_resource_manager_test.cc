@@ -1009,4 +1009,147 @@ TEST_F(RenderBlockingResourceManagerTest,
                   ->IsTrue());
 }
 
+TEST_F(RenderBlockingResourceManagerTest,
+       RenderBlockingAttributeTargetingIframeUseCounter) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <link rel="expect" href="#target-iframe" blocking="render">
+    </head>
+    <body>
+      <iframe id="target-iframe"></iframe>
+    </body>
+  )HTML");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kRenderBlockingAttributeTargetingFrameOwner));
+}
+
+TEST_F(RenderBlockingResourceManagerTest,
+       RenderBlockingAttributeTargetingObjectUseCounter) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <link rel="expect" href="#target-object" blocking="render">
+    </head>
+    <body>
+      <object id="target-object"></object>
+    </body>
+  )HTML");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kRenderBlockingAttributeTargetingFrameOwner));
+}
+
+TEST_F(RenderBlockingResourceManagerTest,
+       RenderBlockingAttributeUntargetedIframeWithIdDoesNotCount) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  // The order matters here: the untargeted iframe must be parsed before
+  // #target-div so that the expect link is still pending when the iframe
+  // finishes parsing. RemovePendingParsingElement is called for every element
+  // with an id while a link is pending, so this verifies that we only count
+  // elements which are actually targeted by a link.
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <link rel="expect" href="#target-div" blocking="render">
+    </head>
+    <body>
+      <iframe id="unrelated-iframe"></iframe>
+      <div id="target-div"></div>
+    </body>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kRenderBlockingAttributeTargetingFrameOwner));
+}
+
+TEST_F(RenderBlockingResourceManagerTest,
+       RenderBlockingAttributeTargetingNonFrameOwnerDoesNotCount) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <link rel="expect" href="#target-div" blocking="render">
+    </head>
+    <body>
+      <div id="target-div"></div>
+    </body>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kRenderBlockingAttributeTargetingFrameOwner));
+}
+
+TEST_F(RenderBlockingResourceManagerTest,
+       RenderBlockingAttributeTargetingScriptInsertedIframeUseCounter) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <link rel="expect" href="#target-iframe" blocking="render">
+    </head>
+    <body>
+      <script>
+        const iframe = document.createElement('iframe');
+        iframe.id = 'target-iframe';
+        document.body.appendChild(iframe);
+      </script>
+    </body>
+  )HTML");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kRenderBlockingAttributeTargetingFrameOwner));
+}
+
+TEST_F(RenderBlockingResourceManagerTest,
+       RenderBlockingAttributeTargetingIframeIdSetAfterInsertionUseCounter) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <link rel="expect" href="#target-iframe" blocking="render">
+    </head>
+    <body>
+      <script>
+        const iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
+        iframe.id = 'target-iframe';
+      </script>
+    </body>
+  )HTML");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kRenderBlockingAttributeTargetingFrameOwner));
+}
+
+TEST_F(RenderBlockingResourceManagerTest,
+       RenderBlockingAttributeTargetingIframeUrlEscapedIdUseCounter) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  // The link's href is URL-escaped, so the iframe is matched via the second
+  // erase in RemoveTargetElementFromElementLinkMap.
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <meta charset="utf-8">
+      <link rel="expect" href="#caf%C3%A9" blocking="render">
+    </head>
+    <body>
+      <iframe id="caf&#xE9;"></iframe>
+    </body>
+  )HTML");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kRenderBlockingAttributeTargetingFrameOwner));
+}
+
 }  // namespace blink

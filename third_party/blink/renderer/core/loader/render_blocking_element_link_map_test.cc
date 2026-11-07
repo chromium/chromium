@@ -86,7 +86,10 @@ TEST_F(RenderBlockingElementLinkMapTest, RemoveTargetElement) {
   element_link_map_->AddLinkWithTargetElement(
       AtomicString("id2"), link_element3, RenderBlockingLevel::kBlock);
 
-  element_link_map_->RemoveTargetElement(AtomicString("id1"));
+  EXPECT_TRUE(element_link_map_->RemoveTargetElement(AtomicString("id1")));
+  EXPECT_FALSE(element_link_map_->RemoveTargetElement(AtomicString("id1")));
+  EXPECT_FALSE(
+      element_link_map_->RemoveTargetElement(AtomicString("nonexistent")));
 
   EXPECT_TRUE(element_link_map_->HasElement(RenderBlockingLevel::kBlock));
 

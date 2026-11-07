@@ -51,32 +51,37 @@ void RenderBlockingElementLinkMap::AddToElementLinkMap(
   }
 }
 
-void RenderBlockingElementLinkMap::RemoveTargetElement(
+bool RenderBlockingElementLinkMap::RemoveTargetElement(
     const AtomicString& target_element_id) {
   // We don't add empty ids.
   if (target_element_id.empty()) {
-    return;
+    return false;
   }
+  bool removed = false;
   for (auto& [level, element_link_map] : element_render_blocking_links_) {
-    RemoveTargetElementFromElementLinkMap(element_link_map.Get(), level,
-                                          target_element_id);
+    removed |= RemoveTargetElementFromElementLinkMap(element_link_map.Get(),
+                                                     level, target_element_id);
   }
+  return removed;
 }
 
-void RenderBlockingElementLinkMap::RemoveTargetElementFromElementLinkMap(
+bool RenderBlockingElementLinkMap::RemoveTargetElementFromElementLinkMap(
     ElementLinkMap* element_link_map,
     RenderBlockingLevel level,
     const AtomicString& target_element_id) {
   if (element_link_map->empty() || target_element_id.empty()) {
-    return;
+    return false;
   }
 
+  wtf_size_t previous_size = element_link_map->size();
   element_link_map->erase(target_element_id);
   element_link_map->erase(
       AtomicString(EncodeWithUrlEscapeSequences(target_element_id)));
+  bool removed = element_link_map->size() < previous_size;
   if (element_link_map->empty()) {
     on_blocking_elements_empty_.Run(level);
   }
+  return removed;
 }
 
 void RenderBlockingElementLinkMap::RemoveLinkWithTargetElement(
