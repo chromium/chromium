@@ -5864,4 +5864,42 @@ TEST_F(SourceBufferStreamTest,
   EXPECT_FALSE(GarbageCollect(base::Milliseconds(0), 0));
 }
 
+TEST_F(SourceBufferStreamTest,
+       MergedRangeSplitBeforeBufferedEndTimeOnContinuationAppend) {
+  // 1. Append a range at [25ms, 35ms).
+  NewCodedFrameGroupAppend("25|10D10K");
+  CheckExpectedRangesByTimestamp("{ [25,35) }");
+
+  // 2. Append a new coded frame group starting at 5ms with an estimated 45ms
+  // duration keyframe at 5ms and a non-keyframe at 5ms ([5ms, 50ms)). Because
+  // GetTimestampInterval() uses 1us for estimated durations,
+  // RemoveInternal(5ms, 6ms) preserves [25ms, 35ms). Append() records
+  // highest_timestamp_in_append_sequence_ = 5ms and
+  // highest_buffered_end_time_in_append_sequence_ = 50ms, and then merges
+  // [25ms, 35ms) into range_for_next_append_ (updating the merged range's
+  // highest_frame_ to 25|10D10K, so the buffered range is [5ms, 35ms)).
+  NewCodedFrameGroupAppend("5|0D45EK 5|5D1");
+  CheckExpectedRangesByTimestamp("{ [5,35) }");
+
+  // 3. Continue the coded frame group with a SAP-Type-2 non-keyframe at
+  // PTS=0ms (< 5ms) ending at 5ms (exercising the early-return SplitRange()
+  // path), followed by another continuation starting at PTS=0ms with keyframes
+  // at 15ms and 20ms (exercising the overlap removal path). In both cases, the
+  // merged 25ms GOP must be split off before appending so that keyframes in
+  // the range remain in non-decreasing PTS order.
+  AppendBuffers("0|10D5");
+  CheckExpectedRangesByTimestamp("{ [5,35) }");
+  AppendBuffers("0|12D5 15|15D5K 20|20D5K");
+  CheckExpectedRangesByTimestamp("{ [5,35) }");
+
+  // 4. Seek to 15ms, evict the front GOP via GC, and remove [0ms, 22ms)
+  // (which rounds up to the 25ms keyframe and calls SplitRange(25ms) after
+  // DeleteGOPFromFront()).
+  SeekToTimestampMs(15);
+  SetMemoryLimit(3);
+  EXPECT_TRUE(GarbageCollect(base::Milliseconds(15), 0));
+  RemoveInMs(0, 22, 50);
+  CheckExpectedRangesByTimestamp("{ [25,35) }");
+}
+
 }  // namespace media
