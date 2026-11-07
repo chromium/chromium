@@ -115,7 +115,7 @@ public class BaseSuggestionViewBinderUnitTest {
                 new OmniboxDrawableState(
                         new ColorDrawable(0),
                         /* useRoundedCorners= */ false,
-                        /* isLarge= */ false,
+                        OmniboxDrawableState.IconSize.SMALL,
                         /* allowTint= */ false);
         mModel.set(BaseSuggestionViewProperties.ICON, state);
 

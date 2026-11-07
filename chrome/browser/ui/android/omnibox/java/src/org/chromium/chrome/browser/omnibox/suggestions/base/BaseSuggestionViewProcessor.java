@@ -228,7 +228,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         return new OmniboxDrawableState(
                 layerDrawable,
                 /* useRoundedCorners= */ false,
-                /* isLarge= */ false,
+                OmniboxDrawableState.IconSize.SMALL,
                 /* allowTint= */ true);
     }
 

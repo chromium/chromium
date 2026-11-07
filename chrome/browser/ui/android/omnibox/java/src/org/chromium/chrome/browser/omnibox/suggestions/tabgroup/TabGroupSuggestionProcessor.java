@@ -73,7 +73,7 @@ public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
                 new OmniboxDrawableState(
                         ContextCompat.getDrawable(mContext, R.drawable.ic_grid_view_24dp),
                         /* useRoundedCorners= */ false,
-                        /* isLarge= */ false,
+                        OmniboxDrawableState.IconSize.SMALL,
                         /* allowTint= */ true);
         OmniboxResourceProvider resourceProvider = mUiContext.resourceProvider;
         model.set(BaseSuggestionViewProperties.ICON, state);

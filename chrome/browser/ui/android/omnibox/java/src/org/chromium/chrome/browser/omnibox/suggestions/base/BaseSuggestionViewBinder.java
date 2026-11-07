@@ -305,10 +305,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
 
         if (sds != null) {
             // Ensure the decoration icon size does not exceed the maximum edge size.
-            int edgeSize =
-                    sds.isLarge
-                            ? resourceProvider.getEdgeSizeLargeIcon()
-                            : resourceProvider.getEdgeSize();
+            int edgeSize = resourceProvider.getEdgeSize(sds.size);
             boolean isTall = sds.drawable.getIntrinsicHeight() > sds.drawable.getIntrinsicWidth();
             rciv.getLayoutParams().width = isTall ? ViewGroup.LayoutParams.WRAP_CONTENT : edgeSize;
             rciv.getLayoutParams().height = isTall ? edgeSize : ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -323,9 +320,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
 
             rciv.setClipToOutline(sds.useRoundedCorners);
             baseView.decorationIconOutline.setRadius(
-                    sds.isLarge
-                            ? resourceProvider.getLargeIconRoundingRadius()
-                            : resourceProvider.getSmallIconRoundingRadius());
+                    resourceProvider.getIconRoundingRadius(sds.size));
         }
 
         rciv.setVisibility(sds == null ? View.GONE : View.VISIBLE);

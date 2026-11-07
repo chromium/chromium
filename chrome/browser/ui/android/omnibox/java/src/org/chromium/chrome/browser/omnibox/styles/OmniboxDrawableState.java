@@ -10,13 +10,30 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Represents graphical decoration for the suggestion components. */
 @NullMarked
 public class OmniboxDrawableState {
+    /** Edge size the decoration should be presented at. */
+    @IntDef({IconSize.SMALL, IconSize.MEDIUM, IconSize.LARGE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IconSize {
+        /** Small icons (e.g. XML fallback icons, favicons). */
+        int SMALL = 0;
+
+        /** Medium icons (e.g. natively rasterized vector icons with built-in padding). */
+        int MEDIUM = 1;
+
+        /** Large icons (e.g. entity images, answer images). */
+        int LARGE = 2;
+    }
 
     /** Embedded drawable object. */
     public final Drawable drawable;
@@ -27,8 +44,8 @@ public class OmniboxDrawableState {
     /** Whether drawable should be rounded. */
     public final boolean useRoundedCorners;
 
-    /** Whether drawable should be displayed as large. */
-    public final boolean isLarge;
+    /** Edge size the drawable should be displayed at. */
+    public final @IconSize int size;
 
     /** Resource ID of the drawable, if known. Used for testing. */
     public final @DrawableRes int resourceIdForTesting;
@@ -43,7 +60,7 @@ public class OmniboxDrawableState {
         return new OmniboxDrawableState(
                 new ColorDrawable(color),
                 /* useRoundedCorners= */ true,
-                /* isLarge= */ true,
+                IconSize.LARGE,
                 /* allowTint= */ false,
                 Resources.ID_NULL);
     }
@@ -63,7 +80,7 @@ public class OmniboxDrawableState {
         return new OmniboxDrawableState(
                 resourceProvider.getDrawable(resourceId),
                 /* useRoundedCorners= */ false,
-                /* isLarge= */ false,
+                IconSize.SMALL,
                 allowTint,
                 resourceId);
     }
@@ -83,7 +100,7 @@ public class OmniboxDrawableState {
         return new OmniboxDrawableState(
                 resourceProvider.getDrawable(resourceId),
                 /* useRoundedCorners= */ false,
-                /* isLarge= */ true,
+                IconSize.LARGE,
                 allowTint,
                 resourceId);
     }
@@ -98,7 +115,7 @@ public class OmniboxDrawableState {
         return new OmniboxDrawableState(
                 drawable,
                 /* useRoundedCorners= */ true,
-                /* isLarge= */ false,
+                IconSize.SMALL,
                 /* allowTint= */ false,
                 Resources.ID_NULL);
     }
@@ -113,7 +130,7 @@ public class OmniboxDrawableState {
         return new OmniboxDrawableState(
                 drawable,
                 /* useRoundedCorners= */ true,
-                /* isLarge= */ true,
+                IconSize.LARGE,
                 /* allowTint= */ false,
                 Resources.ID_NULL);
     }
@@ -123,19 +140,19 @@ public class OmniboxDrawableState {
      *
      * @param drawable the object to draw
      * @param useRoundedCorners whether to round drawable's corners
-     * @param isLarge whether the drawable should be shown as large item
+     * @param size edge size the drawable should be shown at
      * @param allowTint whether the icon should be tinted with text color
      * @param resourceId resource ID of the drawable, if known
      */
     private OmniboxDrawableState(
             Drawable drawable,
             boolean useRoundedCorners,
-            boolean isLarge,
+            @IconSize int size,
             boolean allowTint,
             @DrawableRes int resourceId) {
         this.drawable = drawable;
         this.useRoundedCorners = useRoundedCorners;
-        this.isLarge = isLarge;
+        this.size = size;
         this.allowTint = allowTint;
         this.resourceIdForTesting = resourceId;
     }
@@ -145,12 +162,12 @@ public class OmniboxDrawableState {
      *
      * @param drawable the object to draw
      * @param useRoundedCorners whether to round drawable's corners
-     * @param isLarge whether the drawable should be shown as large item
+     * @param size edge size the drawable should be shown at
      * @param allowTint whether the icon should be tinted with text color
      */
     @VisibleForTesting
     public OmniboxDrawableState(
-            Drawable drawable, boolean useRoundedCorners, boolean isLarge, boolean allowTint) {
-        this(drawable, useRoundedCorners, isLarge, allowTint, Resources.ID_NULL);
+            Drawable drawable, boolean useRoundedCorners, @IconSize int size, boolean allowTint) {
+        this(drawable, useRoundedCorners, size, allowTint, Resources.ID_NULL);
     }
 }

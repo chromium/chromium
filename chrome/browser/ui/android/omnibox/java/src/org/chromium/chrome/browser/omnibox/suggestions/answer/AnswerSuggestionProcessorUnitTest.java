@@ -124,7 +124,7 @@ public class AnswerSuggestionProcessorUnitTest {
 
         Drawable getIcon() {
             final OmniboxDrawableState state = mModel.get(BaseSuggestionViewProperties.ICON);
-            assertTrue(state.isLarge);
+            assertEquals(OmniboxDrawableState.IconSize.LARGE, state.size);
             return state == null ? null : state.drawable;
         }
 
