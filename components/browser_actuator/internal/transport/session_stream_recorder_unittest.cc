@@ -4,10 +4,12 @@
 
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -16,9 +18,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "components/browser_actuator/internal/transport/probe_payload.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport/common.h"
+#include "components/browser_actuator/public/transport/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1125,6 +1130,190 @@ TEST(SessionStreamRecorderTest,
   EXPECT_EQ(sessions[0].total_upstream_messages, 5u);
   EXPECT_EQ(sessions[0].total_events, sessions[0].total_downstream_messages +
                                           sessions[0].total_upstream_messages);
+}
+
+TEST(SessionStreamRecorderFactoryTest,
+     DecodesControlCommandAndTransportProbePayloadsInLiveSnapshots) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_small");
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
+
+  ControlCommand start_command;
+  start_command.mutable_start_session();
+
+  base::expected<TransportProbe::ProbeRequest, std::string> req =
+      BuildProbeRequest("p-42", /*request_payload_size_bytes=*/128);
+  ASSERT_TRUE(req.has_value()) << req.error();
+  const std::string expected_req_payload = req->payload();
+  ASSERT_EQ(expected_req_payload.size(), 128u);
+
+  TransportProbe downstream_probe;
+  *downstream_probe.mutable_request() = *std::move(req);
+  ActuatorDownstreamMessage downstream;
+  downstream.set_session_id("session_small");
+  ActuatorDownstreamTypedPayload* down_control =
+      downstream.add_typed_payloads();
+  down_control->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  down_control->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kControl)));
+  down_control->mutable_proto_payload()->set_value(
+      start_command.SerializeAsString());
+  ActuatorDownstreamTypedPayload* down_typed = downstream.add_typed_payloads();
+  down_typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  down_typed->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kProbe)));
+  down_typed->mutable_proto_payload()->set_value(
+      downstream_probe.SerializeAsString());
+  recorder->RecordDownstreamMessage(std::move(downstream),
+                                    DownstreamDeliveryStatus::kSuccess);
+
+  ControlCommand ack_command;
+  ack_command.mutable_start_session_ack();
+
+  base::expected<std::string, std::string> expected_resp_payload =
+      GenerateProbeResponsePayload("p-42", 0, 2, 128);
+  ASSERT_TRUE(expected_resp_payload.has_value())
+      << expected_resp_payload.error();
+  TransportProbe upstream_probe;
+  upstream_probe.mutable_response()->set_probe_id("p-42");
+  upstream_probe.mutable_response()->set_response_index(0);
+  upstream_probe.mutable_response()->set_total_responses(2);
+  upstream_probe.mutable_response()->set_payload(*expected_resp_payload);
+  ActuatorUpstreamMessage upstream;
+  upstream.set_session_id("session_small");
+  ActuatorUpstreamTypedPayload* up_control = upstream.add_typed_payloads();
+  up_control->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  up_control->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kControl)));
+  up_control->mutable_proto_payload()->set_value(
+      ack_command.SerializeAsString());
+  ActuatorUpstreamTypedPayload* up_typed = upstream.add_typed_payloads();
+  up_typed->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
+  up_typed->mutable_proto_payload()->set_value(
+      upstream_probe.SerializeAsString());
+  factory.OnUpstreamMessage("session_small", upstream, 0);
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/8192);
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_EQ(sessions[0].events.size(), 2u);
+
+  std::optional<base::DictValue> down_json = base::JSONReader::ReadDict(
+      sessions[0].events[0].message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(down_json.has_value());
+  const base::ListValue* down_payloads = down_json->FindList("typed_payloads");
+  ASSERT_NE(down_payloads, nullptr);
+  ASSERT_EQ(down_payloads->size(), 2u);
+  EXPECT_NE((*down_payloads)[0].GetDict().FindDictByDottedPath(
+                "decoded_control_command.start_session"),
+            nullptr);
+  EXPECT_EQ(*(*down_payloads)[1].GetDict().FindStringByDottedPath(
+                "decoded_transport_probe.request.payload"),
+            expected_req_payload);
+
+  std::optional<base::DictValue> up_json = base::JSONReader::ReadDict(
+      sessions[0].events[1].message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(up_json.has_value());
+  const base::ListValue* up_payloads = up_json->FindList("typed_payloads");
+  ASSERT_NE(up_payloads, nullptr);
+  ASSERT_EQ(up_payloads->size(), 2u);
+  EXPECT_NE((*up_payloads)[0].GetDict().FindDictByDottedPath(
+                "decoded_control_command.start_session_ack"),
+            nullptr);
+  EXPECT_EQ(*(*up_payloads)[1].GetDict().FindStringByDottedPath(
+                "decoded_transport_probe.response.payload"),
+            *expected_resp_payload);
+}
+
+TEST(SessionStreamRecorderFactoryTest,
+     OmitsDecodedPayloadWithMismatchedTypeUrl) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_mismatch");
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
+
+  base::expected<TransportProbe::ProbeRequest, std::string> req =
+      BuildProbeRequest("p-42", /*request_payload_size_bytes=*/256);
+  ASSERT_TRUE(req.has_value()) << req.error();
+  TransportProbe probe;
+  *probe.mutable_request() = *std::move(req);
+  const std::string raw_serialized = probe.SerializeAsString();
+
+  ActuatorDownstreamMessage downstream;
+  downstream.set_session_id("session_mismatch");
+  ActuatorDownstreamTypedPayload* typed = downstream.add_typed_payloads();
+  typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  typed->mutable_proto_payload()->set_type_url(
+      "type.googleapis.com/example.OtherMessage");
+  typed->mutable_proto_payload()->set_value(raw_serialized);
+  recorder->RecordDownstreamMessage(std::move(downstream),
+                                    DownstreamDeliveryStatus::kSuccess);
+
+  ASSERT_EQ(recorder->entries().size(), 1u);
+  EXPECT_EQ(std::get<ActuatorDownstreamMessage>(recorder->entries()[0].message)
+                .typed_payloads(0)
+                .proto_payload()
+                .value(),
+            raw_serialized);
+
+  base::DictValue exported = factory.ExportAllSessionsAsValue();
+  const base::ListValue* exported_sessions = exported.FindList("sessions");
+  ASSERT_NE(exported_sessions, nullptr);
+  ASSERT_EQ(exported_sessions->size(), 1u);
+  const base::ListValue* exported_events =
+      exported_sessions->front().GetDict().FindList("events");
+  ASSERT_NE(exported_events, nullptr);
+  ASSERT_EQ(exported_events->size(), 1u);
+  const base::DictValue& exported_payload = exported_events->front()
+                                                .GetDict()
+                                                .FindDict("message")
+                                                ->FindList("typed_payloads")
+                                                ->front()
+                                                .GetDict();
+  EXPECT_EQ(exported_payload.Find("decoded_control_command"), nullptr);
+  EXPECT_EQ(exported_payload.Find("decoded_transport_probe"), nullptr);
+
+  // Also verify that malformed serialized wire bytes ("\xff", a truncated
+  // varint tag) with a valid/empty `type_url` for both `kControl` and `kProbe`
+  // record the raw entry while omitting `decoded_control_command` and
+  // `decoded_transport_probe`.
+  ActuatorDownstreamMessage malformed;
+  malformed.set_session_id("session_mismatch");
+  ActuatorDownstreamTypedPayload* malformed_control =
+      malformed.add_typed_payloads();
+  malformed_control->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  malformed_control->mutable_proto_payload()->set_value("\xff");
+  ActuatorDownstreamTypedPayload* malformed_probe =
+      malformed.add_typed_payloads();
+  malformed_probe->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  malformed_probe->mutable_proto_payload()->set_value("\xff");
+  recorder->RecordDownstreamMessage(std::move(malformed),
+                                    DownstreamDeliveryStatus::kSuccess);
+
+  ASSERT_EQ(recorder->entries().size(), 2u);
+  base::DictValue exported_after = factory.ExportAllSessionsAsValue();
+  const base::ListValue* malformed_payloads =
+      exported_after.FindList("sessions")
+          ->front()
+          .GetDict()
+          .FindList("events")
+          ->back()
+          .GetDict()
+          .FindDict("message")
+          ->FindList("typed_payloads");
+  ASSERT_NE(malformed_payloads, nullptr);
+  ASSERT_EQ(malformed_payloads->size(), 2u);
+  EXPECT_EQ((*malformed_payloads)[0].GetDict().Find("decoded_control_command"),
+            nullptr);
+  EXPECT_EQ((*malformed_payloads)[1].GetDict().Find("decoded_transport_probe"),
+            nullptr);
 }
 
 }  // namespace

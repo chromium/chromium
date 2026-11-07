@@ -5,6 +5,7 @@
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -95,6 +96,76 @@ std::string_view PayloadTypeName(ActuatorUpstreamPayloadType type) {
   return PayloadTypeName(FromUpstreamProtoPayloadType(type));
 }
 
+// `Any::Is<T>()` is unavailable for LITE_RUNTIME protos, so `type_url` is
+// compared by hand. An empty value is accepted because the server does not
+// always populate it (crbug.com/572804026).
+bool HasExpectedPayloadTypeUrl(std::string_view type_url,
+                               PayloadType payload_type) {
+  return type_url.empty() || type_url == ExpectedTypeUrl(payload_type);
+}
+
+template <typename EnvelopeProto, typename ToPayloadTypeFn>
+base::DictValue SerializeEnvelopeWithDecodedPayloads(
+    const EnvelopeProto& envelope,
+    ToPayloadTypeFn to_payload_type) {
+  base::DictValue dict = browser_actuator::ToValue(envelope).TakeDict();
+  base::ListValue* payloads_list = dict.FindList("typed_payloads");
+  if (!payloads_list) {
+    return dict;
+  }
+  const size_t count =
+      std::min(payloads_list->size(),
+               static_cast<size_t>(envelope.typed_payloads_size()));
+  for (size_t i = 0; i < count; ++i) {
+    const auto& typed_payload = envelope.typed_payloads(static_cast<int>(i));
+    if (!typed_payload.has_proto_payload() ||
+        typed_payload.proto_payload().value().empty()) {
+      continue;
+    }
+    const std::optional<PayloadType> payload_type =
+        to_payload_type(typed_payload.payload_type());
+    if (!payload_type.has_value() || (*payload_type != PayloadType::kControl &&
+                                      *payload_type != PayloadType::kProbe)) {
+      continue;
+    }
+    if (!HasExpectedPayloadTypeUrl(typed_payload.proto_payload().type_url(),
+                                   *payload_type)) {
+      continue;
+    }
+    base::DictValue* payload_dict = (*payloads_list)[i].GetIfDict();
+    if (!payload_dict) {
+      continue;
+    }
+    if (*payload_type == PayloadType::kControl) {
+      ControlCommand parsed_command;
+      if (parsed_command.ParseFromString(
+              typed_payload.proto_payload().value())) {
+        payload_dict->Set("decoded_control_command",
+                          browser_actuator::ToValue(parsed_command));
+      }
+    } else if (*payload_type == PayloadType::kProbe) {
+      TransportProbe parsed_probe;
+      if (parsed_probe.ParseFromString(typed_payload.proto_payload().value())) {
+        payload_dict->Set("decoded_transport_probe",
+                          browser_actuator::ToValue(parsed_probe));
+      }
+    }
+  }
+  return dict;
+}
+
+base::DictValue SerializeMessageForDiagnostics(
+    const ActuatorDownstreamMessage& message) {
+  return SerializeEnvelopeWithDecodedPayloads(message,
+                                              &FromDownstreamProtoPayloadType);
+}
+
+base::DictValue SerializeMessageForDiagnostics(
+    const ActuatorUpstreamMessage& message) {
+  return SerializeEnvelopeWithDecodedPayloads(message,
+                                              &FromUpstreamProtoPayloadType);
+}
+
 SessionEventSnapshot BuildEventSnapshot(
     const SessionMetadata& metadata,
     const SessionStreamRecorder::Entry& entry,
@@ -126,11 +197,11 @@ SessionEventSnapshot BuildEventSnapshot(
             }
           }
           event.message =
-              base::WriteJson(browser_actuator::ToValue(truncated_msg))
+              base::WriteJson(SerializeMessageForDiagnostics(truncated_msg))
                   .value_or("");
         } else {
           event.message =
-              base::WriteJson(browser_actuator::ToValue(msg)).value_or("");
+              base::WriteJson(SerializeMessageForDiagnostics(msg)).value_or("");
         }
       },
       entry.message);
@@ -207,7 +278,7 @@ base::DictValue SessionStreamRecorder::Entry::ToValue() const {
   if (const auto* downstream =
           std::get_if<ActuatorDownstreamMessage>(&message)) {
     dict.Set("direction", "Downstream");
-    dict.Set("message", browser_actuator::ToValue(*downstream));
+    dict.Set("message", SerializeMessageForDiagnostics(*downstream));
     switch (downstream_status) {
       case DownstreamDeliveryStatus::kSuccess:
         dict.Set("downstream_status", "Success");
@@ -222,7 +293,7 @@ base::DictValue SessionStreamRecorder::Entry::ToValue() const {
     }
   } else {
     dict.Set("direction", "Upstream");
-    dict.Set("message", browser_actuator::ToValue(
+    dict.Set("message", SerializeMessageForDiagnostics(
                             std::get<ActuatorUpstreamMessage>(message)));
     dict.Set("http_response_code", http_response_code);
   }
