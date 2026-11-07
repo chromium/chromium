@@ -149,21 +149,44 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
     entry->SetReferrer(temporary_referrer);
   } else {
     // Note that PageState covers some of the values inside |navigation| (e.g.
-    // URL, Referrer).  Calling SetPageState will clobber these values in
+    // URL, Referrer). Calling SetPageState will clobber these values in
     // content::NavigationEntry (and FrameNavigationEntry(s) below), as long as
     // the PageState successfully decodes.
     const GURL rewritten_url = entry->GetURL();
-    entry->SetPageState(blink::PageState::CreateFromEncodedData(
-                            navigation->encoded_page_state_),
-                        restore_context);
-    // BrowserURLHandler applies the current browser and profile-specific
-    // rewrite before restoration. Preserve that decision if PageState changed
-    // the actual URL back to the virtual URL. A different PageState URL may
-    // represent a redirect and remains authoritative.
+    const blink::PageState decoded_page_state =
+        blink::PageState::CreateFromEncodedData(
+            navigation->encoded_page_state_);
     if (!rewritten_url.is_empty() &&
-        rewritten_url != navigation->virtual_url_ &&
-        entry->GetURL() == navigation->virtual_url_) {
-      entry->SetURL(rewritten_url);
+        rewritten_url != navigation->virtual_url_) {
+      // Decode into a temporary restore context so any intermediate throwaway
+      // FrameNavigationEntry does not pollute `restore_context` with dangling
+      // pointers if PageState is set again below.
+      std::unique_ptr<content::NavigationEntryRestoreContext> temp_context =
+          content::NavigationEntryRestoreContext::Create();
+      entry->SetPageState(decoded_page_state, temp_context.get());
+      if (entry->GetURL() == navigation->virtual_url_) {
+        entry->SetURL(rewritten_url);
+        if (rewritten_url.scheme() != navigation->virtual_url_.scheme()) {
+          // If the scheme changed during rewrite (e.g. migrating
+          // chrome-native:// to chrome://), the deserialized PageState contains
+          // frame state and origins from the old scheme. Synthesize a clean
+          // PageState for the new scheme and explicitly restore the referrer.
+          entry->SetPageState(blink::PageState::CreateFromURL(rewritten_url),
+                              restore_context);
+          entry->SetReferrer(temporary_referrer);
+        } else {
+          // NavigationEntryImpl::GetPageState() re-encodes the PageState with
+          // frame_entry->url() (i.e. `rewritten_url`) while preserving sequence
+          // numbers, form data, scroll positions, and referrer.
+          entry->SetPageState(entry->GetPageState(), restore_context);
+        }
+      } else {
+        // PageState contained a redirect to a different URL; register it in
+        // `restore_context`.
+        entry->SetPageState(decoded_page_state, restore_context);
+      }
+    } else {
+      entry->SetPageState(decoded_page_state, restore_context);
     }
 
     // In theory the referrer information in the PageState should exactly match

@@ -5582,6 +5582,7 @@ namespace {
 // The caller is responsible for ensuring the entry is same-origin to the
 // origin to be committed.
 blink::mojom::NavigationApiHistoryEntryPtr ToNavigationApiHistoryEntry(
+    const url::Origin& pending_origin,
     FrameNavigationEntry* frame_entry,
     int64_t pending_document_sequence_number) {
   blink::ExplodedPageState exploded_state;
@@ -5599,6 +5600,10 @@ blink::mojom::NavigationApiHistoryEntryPtr ToNavigationApiHistoryEntry(
           frame_entry->document_sequence_number() ||
       !frame_entry->protect_url_in_navigation_api()) {
     url = frame_state.url_string.value_or(std::u16string());
+  }
+
+  if (!url.empty() && !pending_origin.CanBeDerivedFrom(GURL(url))) {
+    return nullptr;
   }
 
   return blink::mojom::NavigationApiHistoryEntry::New(
@@ -5652,14 +5657,14 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
     if (previous_item_sequence_number == frame_entry->item_sequence_number()) {
       continue;
     }
-    if (blink::mojom::NavigationApiHistoryEntryPtr entry =
-            ToNavigationApiHistoryEntry(frame_entry,
-                                        pending_document_sequence_number)) {
-      DCHECK(entry->url.empty() ||
-             pending_origin.CanBeDerivedFrom(GURL(entry->url)));
-      entries.push_back(std::move(entry));
-      previous_item_sequence_number = frame_entry->item_sequence_number();
+    blink::mojom::NavigationApiHistoryEntryPtr entry =
+        ToNavigationApiHistoryEntry(pending_origin, frame_entry,
+                                    pending_document_sequence_number);
+    if (!entry) {
+      break;
     }
+    entries.push_back(std::move(entry));
+    previous_item_sequence_number = frame_entry->item_sequence_number();
   }
   // If |entries| was constructed by iterating backwards from
   // |entry_index|, it's latest-at-the-front, but the renderer will want it
@@ -5779,7 +5784,7 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
     // cross-origin.
     if (pending_origin.IsSameOriginWith(previous_entry_origin)) {
       entry_arrays->previous_entry = ToNavigationApiHistoryEntry(
-          previous_entry, pending_document_sequence_number);
+          pending_origin, previous_entry, pending_document_sequence_number);
     }
   }
 

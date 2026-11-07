@@ -116,6 +116,11 @@ void SetExtendedInfoForTest(content::NavigationEntry* entry) {
 constexpr char kRewriteFromUrl[] = "https://sentinel.example.test/";
 constexpr char kRewriteToUrl[] = "https://rewritten.example.test/target";
 
+constexpr char kRewriteCrossSchemeFromUrl[] =
+    "chrome-native://sentinel-cross-scheme/";
+constexpr char kRewriteCrossSchemeToUrl[] =
+    "chrome://rewritten-cross-scheme/target";
+
 // A second sentinel whose handler rewrites to an empty GURL, to exercise the
 // fallback for that case.
 constexpr char kRewriteToEmptyFromUrl[] =
@@ -125,6 +130,10 @@ bool RewriteSentinelUrlForTest(GURL* url,
                                content::BrowserContext* browser_context) {
   if (*url == GURL(kRewriteFromUrl)) {
     *url = GURL(kRewriteToUrl);
+    return true;
+  }
+  if (*url == GURL(kRewriteCrossSchemeFromUrl)) {
+    *url = GURL(kRewriteCrossSchemeToUrl);
     return true;
   }
   if (*url == GURL(kRewriteToEmptyFromUrl)) {
@@ -188,7 +197,7 @@ class ContentSerializedNavigationBuilderRewriteTest
         &navigation, &browser_context_, restore_context.get());
   }
 
- private:
+ protected:
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
 };
@@ -522,6 +531,45 @@ TEST_F(ContentSerializedNavigationBuilderRewriteTest,
   const std::unique_ptr<content::NavigationEntry> entry = Restore(navigation);
 
   EXPECT_EQ(GURL(kRewriteToEmptyFromUrl), entry->GetURL());
+}
+
+// Verify that restoring multiple entries with a shared item sequence number
+// across a cross-scheme rewrite does not crash due to a dangling
+// FrameNavigationEntry in NavigationEntryRestoreContext.
+TEST_F(ContentSerializedNavigationBuilderRewriteTest,
+       ToNavigationEntriesWithCrossSchemeRewriteAndSharedSequenceNumbers) {
+  const int64_t kSharedItemSequenceNumber = 12345;
+  const int64_t kDocumentSequenceNumber1 = 67890;
+  const int64_t kDocumentSequenceNumber2 = 67891;
+
+  SerializedNavigationEntry nav1 =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  nav1.set_virtual_url(GURL(kRewriteCrossSchemeFromUrl));
+  nav1.set_encoded_page_state(
+      blink::PageState::CreateForTestingWithSequenceNumbers(
+          GURL(kRewriteCrossSchemeFromUrl), kSharedItemSequenceNumber,
+          kDocumentSequenceNumber1)
+          .ToEncodedData());
+
+  SerializedNavigationEntry nav2 =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  nav2.set_virtual_url(GURL(kRewriteCrossSchemeFromUrl));
+  nav2.set_encoded_page_state(
+      blink::PageState::CreateForTestingWithSequenceNumbers(
+          GURL(kRewriteCrossSchemeFromUrl), kSharedItemSequenceNumber,
+          kDocumentSequenceNumber2)
+          .ToEncodedData());
+
+  std::vector<SerializedNavigationEntry> navigations = {nav1, nav2};
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries =
+      ContentSerializedNavigationBuilder::ToNavigationEntries(
+          navigations, &browser_context_);
+
+  ASSERT_EQ(2u, entries.size());
+  EXPECT_EQ(GURL(kRewriteCrossSchemeToUrl), entries[0]->GetURL());
+  EXPECT_EQ(GURL(kRewriteCrossSchemeFromUrl), entries[0]->GetVirtualURL());
+  EXPECT_EQ(GURL(kRewriteCrossSchemeToUrl), entries[1]->GetURL());
+  EXPECT_EQ(GURL(kRewriteCrossSchemeFromUrl), entries[1]->GetVirtualURL());
 }
 
 }  // namespace sessions

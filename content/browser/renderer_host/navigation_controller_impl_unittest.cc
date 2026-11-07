@@ -4918,4 +4918,30 @@ TEST_F(NavigationControllerTest, NavigationApiHistoryEntries_OpaqueOrigin) {
   EXPECT_TRUE(arrays->forward_entries.empty());
 }
 
+TEST_F(NavigationControllerTest,
+       NavigationApiHistoryEntries_UrlOriginMismatch) {
+  NavigationControllerImpl& controller = controller_impl();
+
+  const GURL url_a1("http://a.com/1");
+  const GURL url_a2("http://a.com/2");
+  NavigationSimulator::NavigateAndCommitFromDocument(url_a1, main_test_rfh());
+  NavigationSimulator::NavigateAndCommitFromDocument(url_a2, main_test_rfh());
+
+  // Simulate an entry whose PageState URL cannot be derived from the pending
+  // origin, even if the FrameNavigationEntry URL was same-origin.
+  NavigationEntryImpl* entry1 = controller.GetEntryAtIndex(0);
+  blink::PageState mismatched_state =
+      blink::PageState::CreateFromURL(GURL("http://b.com/mismatched"));
+  entry1->GetFrameEntry(main_test_rfh()->frame_tree_node())
+      ->SetPageState(mismatched_state);
+
+  blink::mojom::NavigationApiHistoryEntryArraysPtr arrays =
+      controller.GetNavigationApiHistoryEntryVectors(
+          main_test_rfh()->frame_tree_node(), nullptr);
+
+  // The mismatched back entry should be excluded from back_entries without
+  // crashing.
+  EXPECT_TRUE(arrays->back_entries.empty());
+}
+
 }  // namespace content
