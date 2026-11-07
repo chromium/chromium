@@ -77,6 +77,9 @@ struct OS {
 struct Updater {
   Updater();
   Updater(const Updater&);
+  Updater& operator=(const Updater&);
+  Updater(Updater&&) noexcept;
+  Updater& operator=(Updater&&) noexcept;
   ~Updater();
 
   std::string name;
@@ -90,6 +93,10 @@ struct Updater {
 
 struct UpdateCheck {
   UpdateCheck();
+  UpdateCheck(const UpdateCheck&);
+  UpdateCheck& operator=(const UpdateCheck&);
+  UpdateCheck(UpdateCheck&&) noexcept;
+  UpdateCheck& operator=(UpdateCheck&&) noexcept;
   ~UpdateCheck();
 
   bool is_update_disabled = false;
@@ -103,6 +110,8 @@ struct Data {
   Data();
   Data(const Data& other);
   Data& operator=(const Data& other);
+  Data(Data&& other) noexcept;
+  Data& operator=(Data&& other) noexcept;
   Data(const std::string& name,
        const std::string& install_data_index,
        const std::string& untrusted_data);
@@ -119,6 +128,9 @@ struct Data {
 struct Ping {
   Ping();
   Ping(const Ping&);
+  Ping& operator=(const Ping&);
+  Ping(Ping&&) noexcept;
+  Ping& operator=(Ping&&) noexcept;
   ~Ping();
 
   // Preferred user count metrics ("ad" and "rd").
