@@ -225,7 +225,6 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/browser/file_system_access",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/dbus/dlp",
     "//chromeos/dbus/dlp:dlp_proto",

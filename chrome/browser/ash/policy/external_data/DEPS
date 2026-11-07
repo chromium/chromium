@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
-  "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
 ]
 
@@ -35,5 +34,8 @@ specific_include_rules = {
   ".*browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
+  ],
+  ".*(unittest|browsertest|test_util)\\.cc": [
+    "+chrome/common/chrome_paths.h",
   ],
 }

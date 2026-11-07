@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
-  "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
 ]
 
@@ -37,6 +36,7 @@ specific_include_rules = {
     "+chrome/browser/profiles",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public",
+    "+chrome/common/chrome_paths.h",
   ],
   "login_policy_test_base\\.cc": [
     "+chrome/browser/profiles",

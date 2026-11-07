@@ -26,7 +26,6 @@ specific_include_rules = {
   # Only tests need these //chrome dependencies.
   "device_storage_handler_unittest\\.cc": [
     "+chrome/browser/ash/borealis",
-    "+chrome/common",
     "+chrome/test",
   ],
 }

@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 

@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"

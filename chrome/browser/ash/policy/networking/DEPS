@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/login",
   "+chrome/browser/ash/settings",
-  "+chrome/common/chrome_paths.h",
   "+chrome/grit",
 ]
 
@@ -27,6 +26,7 @@ specific_include_rules = {
   "policy_certs_browsertest\\.cc": [
     "+chrome/browser/net",
     "+chrome/browser/profiles",
+    "+chrome/common/chrome_paths.h",
   ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/browser_process.h",

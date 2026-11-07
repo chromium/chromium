@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/spellchecker",
   "+chrome/browser/ui/ash",
   "+chrome/browser/web_applications/policy/app_service_web_app_policy.h",
-  "+chrome/common/chrome_paths.h",
   "+chrome/common/extensions",
   "+chrome/grit",
 ]
@@ -45,6 +44,7 @@ specific_include_rules = {
     "+chrome/browser/extensions/mock_crx_installer.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/common/chrome_paths.h",
     "+chrome/test/base",
   ],
 }

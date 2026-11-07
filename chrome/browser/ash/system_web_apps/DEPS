@@ -45,7 +45,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_tab_helper.h",
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/browser/web_applications/web_app_utils.h",
-  "+chrome/common/chrome_paths.h",
   "+chrome/common/url_constants.h",
   "+chrome/grit",
   "+chrome/test/base",
@@ -66,6 +65,7 @@ specific_include_rules = {
   ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/web_applications/test",
+    "+chrome/common/chrome_paths.h",
   ],
   ".*_browsertest\\.cc": [
     "+chrome/browser/ui/browser_commands.h",

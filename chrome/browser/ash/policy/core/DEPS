@@ -51,7 +51,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_content_client.h",
-  "+chrome/common/chrome_paths.h",
 ]
 
 specific_include_rules = {
@@ -88,6 +87,7 @@ specific_include_rules = {
     "+chrome/browser/ui/tabs",
     "+chrome/browser/ui/webui/ash/login",
     "+chrome/browser/ui/webui/certificates_handler.h",
+    "+chrome/common/chrome_paths.h",
     "+chrome/test/base",
   ],
   "browser_policy_connector_ash_unittest\\.cc": [
