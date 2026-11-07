@@ -1428,7 +1428,6 @@ TEST_F(
   // but we test to ensure that no control-frame logic is exercised. Expect that
   // a status update is only sent for the first payload failure because the
   // listener does not exist afterwards.
-  base::RunLoop payload_run_loop;
   EXPECT_CALL(*payload_listener, OnStatusUpdate(testing::_, testing::_))
       .Times(1)
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
@@ -1458,7 +1457,7 @@ TEST_F(
       kRemoteEndpointId,
       PayloadTransferUpdate::New(kPayloadId3, PayloadStatus::kSuccess,
                                  kTotalSize, /*bytes_transferred=*/0u));
-  payload_run_loop.RunUntilIdle();
+  payload_listener_remote.FlushForTesting();
 
   // Ensure that no control-frame logic was run, notably that no bytes were
   // written to the connection. Closing the connection will invoke any
@@ -1469,8 +1468,20 @@ TEST_F(
         EXPECT_FALSE(bytes);
         read_run_loop.Quit();
       }));
+  // Wait for the later disconnect request so any cancellation caused by the
+  // payload updates also reaches the mock.
+  base::RunLoop disconnect_run_loop;
+  EXPECT_CALL(nearby_connections_, DisconnectFromEndpoint)
+      .WillOnce(
+          [&disconnect_run_loop](
+              const std::string&, const std::string&,
+              NearbyConnectionsMojom::DisconnectFromEndpointCallback callback) {
+            std::move(callback).Run(Status::kSuccess);
+            disconnect_run_loop.Quit();
+          });
   connection->Close();
   read_run_loop.Run();
+  disconnect_run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, IncomingRegisterPayloadPath) {
