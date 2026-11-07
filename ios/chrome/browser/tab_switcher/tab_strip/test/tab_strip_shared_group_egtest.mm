@@ -237,15 +237,7 @@ void AddSharedGroup(BOOL owner,
 
 // Tests that when closing the last tab of shared group as an member of the
 // group, an alert is displayed and works.
-// TODO(crbug.com/415929742): Test fails on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsMember \
-  DISABLED_testTabStripLastTabCloseInSharedGroupAlertAsMember
-#else
-#define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsMember \
-  testTabStripLastTabCloseInSharedGroupAlertAsMember
-#endif
-- (void)MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsMember {
+- (void)testTabStripLastTabCloseInSharedGroupAlertAsMember {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
@@ -322,15 +314,7 @@ void AddSharedGroup(BOOL owner,
 
 // Tests that when closing the last tab of shared group as owner of the group,
 // an alert is displayed and works.
-// TODO(crbug.com/415929742): Test fails on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsOwner \
-  DISABLED_testTabStripLastTabCloseInSharedGroupAlertAsOwner
-#else
-#define MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsOwner \
-  testTabStripLastTabCloseInSharedGroupAlertAsOwner
-#endif
-- (void)MAYBE_testTabStripLastTabCloseInSharedGroupAlertAsOwner {
+- (void)testTabStripLastTabCloseInSharedGroupAlertAsOwner {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }

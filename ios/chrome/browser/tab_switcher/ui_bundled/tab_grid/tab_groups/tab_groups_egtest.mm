@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/data_sharing/public/features.h"
@@ -698,20 +697,11 @@ TAG_SMOKE_TEST(TabGroupsTestCase, testCompleteTabGroupCreation);
   }
 }
 
-// TODO(crbug.com/378900884): Flaky on ios simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid \
-  DISABLED_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid
-#else
-#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid \
-  testMovingBetweenGroupsUsingGridContextMenuInRegularGrid
-#endif
-- (void)MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid {
+- (void)testMovingBetweenGroupsUsingGridContextMenuInRegularGrid {
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
-// TODO(crbug.com/460748104): Test is flaky.
-- (void)FLAKY_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
+- (void)testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ YES];
 }
 
@@ -1280,15 +1270,9 @@ TAG_SMOKE_TEST(TabGroupsTestCase, testCompleteTabGroupCreation);
 }
 
 // Tests drag and drop the last tab from a group to another window.
-// TODO(crbug.com/524679738): Re-enable this test.
-- (void)DISABLED_testDragAndDropLastTabToOtherWindow {
+- (void)testDragAndDropLastTabToOtherWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
-  }
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // Fails to interact with new window.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
   // Create a group and open it.
@@ -1314,11 +1298,6 @@ TAG_SMOKE_TEST(TabGroupsTestCase, testCompleteTabGroupCreation);
 - (void)testReopenGroupFromAnotherWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
-  }
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // Fails to interact with new window.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
   // Create a first group.
@@ -1481,10 +1460,6 @@ TAG_SMOKE_TEST(TabGroupsTestCase, testCompleteTabGroupCreation);
 
 // Tests opening a tab from the group view.
 - (void)testOpenTabFromGroupView {
-  // TODO(crbug.com/429593547): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
   std::string URL1 = "chrome://version";
   std::string URL2 = "chrome://about";
   std::string content1 = "Revision";
@@ -1660,12 +1635,6 @@ TAG_SMOKE_TEST(TabGroupsTestCase, testCompleteTabGroupCreation);
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
-
-  // TODO(crbug.com/456744844): Re-enable the test on iOS simulator. See also:
-  // crbug.com/518530903.
-#if TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Test disabled on simulator.");
-#endif
 
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
 

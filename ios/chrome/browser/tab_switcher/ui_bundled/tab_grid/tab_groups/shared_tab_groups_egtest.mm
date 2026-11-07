@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#import <TargetConditionals.h>
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
-#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/collaboration/public/features.h"
@@ -279,13 +277,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Tests that the user education is shown in the grid only once.
 - (void)testUserEducationInGrid {
-#if TARGET_OS_SIMULATOR
-  // TODO(crbug.com/515080596): Re-enable this flaky test on iPhone simulator.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iPhone simulator.");
-  }
-#endif
-
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey];
 
@@ -325,13 +316,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Checks opening the Share flow from the Tab Grid and cancelling.
 - (void)testShareGroupButCancel {
-  // TODO(crbug.com/515680760): Re-enable this flaky test on iPhone simulator.
-#if TARGET_OS_SIMULATOR
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iPhone simulator.");
-  }
-#endif
-
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -365,8 +349,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using the face pile.
-// TODO(crbug.com/468318824): This test is flaky.
-- (void)FLAKY_testShareGroupAndManageGroupUsingFacePile {
+- (void)testShareGroupAndManageGroupUsingFacePile {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -508,8 +491,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Checks that the IPH is presented when the user foreground the app with a
 // shared tab group active.
-// TODO(crbug.com/411064928): Re-enable this test.
-- (void)DISABLED_testForegroundIPH {
+- (void)testForegroundIPH {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Not available on iPad.
     return;
@@ -553,8 +535,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // deleting the shared group as owner.
-// TODO(crbug.com/489048084): Test is flaky.
-- (void)FLAKY_testShareGroupAndDeleteUsingContextMenus {
+- (void)testShareGroupAndDeleteUsingContextMenus {
   AddSharedGroup(/*owner=*/YES, self.testServer);
 
   // Long press the group.
@@ -577,8 +558,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 }
 
 // Checks joining a group. Then leaving the shared group as member.
-// TODO(crbug.com/489048084): Test is flaky.
-- (void)FLAKY_testJoinGroupAndLeaveUsingContextMenus {
+- (void)testJoinGroupAndLeaveUsingContextMenus {
   AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Long press the group.
@@ -732,12 +712,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 //     - Cross button
 //     - Context menu and then 'Close Tab'
 // * Close from the navigating view, long press on the tab grid icon.
-// TODO(crbug.com/510742361): Disable this test on iPad due to flakiness.
 - (void)testLastTabClosedAlerts {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad.");
-  }
-
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
   // Open the group view.
@@ -795,8 +770,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Ensures the last tab close alert as a member is displayed when the group is
 // shared.
-// TODO(crbug.com/460745987): Test is flaky.
-- (void)FLAKY_testLastTabClosedMemberAlert {
+- (void)testLastTabClosedMemberAlert {
   AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Open the group view.
@@ -847,8 +821,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 }
 
 // Ensures the Recent Activity panel is showing the right information.
-// TODO(crbug.com/460746048): Test is flaky.
-- (void)FLAKY_testRecentActivity {
+- (void)testRecentActivity {
   AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Open the group view.
@@ -871,11 +844,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 - (void)testLastTabMovedOutOfWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // Fails to interact with new window.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
   // Load regular tab 1 on the first window.
   AddSharedGroup(/*owner=*/NO, self.testServer);
@@ -930,8 +898,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 }
 
 // Ensures new tab is added when closing the last tab of a shared group.
-// TODO(crbug.com/454567832): Re-enable this test.
-- (void)FLAKY_testCloseLastTabInSharedGroup {
+- (void)testCloseLastTabInSharedGroup {
   AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -1021,8 +988,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 }
 
 // Ensures new tab is added when moving the last tab of a shared group.
-// TODO(crbug.com/442448866): Re-enable this test.
-- (void)FLAKY_testMoveLastTabInSharedGroup {
+- (void)testMoveLastTabInSharedGroup {
   // Create 2 groups, one shared and one local.
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
@@ -1059,8 +1025,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 }
 
 // Ensures new tab is added when moving the last tab of a shared group.
-// TODO(crbug.com/489048084): Test is flaky.
-- (void)FLAKY_testLastTabCloseWithClearBrowsingData {
+- (void)testLastTabCloseWithClearBrowsingData {
   AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -1100,8 +1065,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Ensures that adding a tab from another account reflects correctly in a shared
 // group.
-// TODO(crbug.com/435327953): Reenable this test.
-- (void)FLAKY_testAddNewTabFromAnotherAccount {
+- (void)testAddNewTabFromAnotherAccount {
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -1249,8 +1213,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Tests that tapping items on Recent Activity takes an action corresponded to
 // the item.
-// TODO(crbug.com/440612088): This test is flaky.
-- (void)FLAKY_testTapRecentActivityItems {
+- (void)testTapRecentActivityItems {
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -1342,13 +1305,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 // Tests that the activity summary is displayed when a tab is added from sync to
 // a shared tab group.
 - (void)testActivitySummary {
-#if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/456719999): Re-enable the test on simulators.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on simulators.");
-  }
-#endif
-
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -1385,12 +1341,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 // Tests that the activity label on a group cell and a grid cell is updated when
 // a shared group is updated.
 - (void)testActivityLabel {
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/470347303): Reenable this test.
-    EARL_GREY_TEST_DISABLED(@"Failing on iPad device.");
-  }
-#endif
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -1438,12 +1388,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 // Tests that the badge on the tab switcher appears when a shared group is
 // updated and disappears when a user visits the updated page.
 - (void)testTabSwitcherBadge {
-#if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/449204815): Re-enable the test on iPad device.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-#endif
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -1508,8 +1452,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Tests that the activity indicators (blue dot and notification dot) on the
 // toolbar are updated when a shared group is updated.
-// TODO(crbug.com/454262963): test is flaky, disable it.
-- (void)DISABLED_testActivityIndicatorsOnToolbar {
+- (void)testActivityIndicatorsOnToolbar {
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 

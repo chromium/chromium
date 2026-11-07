@@ -198,8 +198,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 
 // Tests that signing out keeps groups created before syncing and deletes groups
 // created since.
-// TODO(crbug.com/520299135): Test is flaky.
-- (void)FLAKY_testSignOutKeepsPreviousGroupDeletesNewGroup {
+- (void)testSignOutKeepsPreviousGroupDeletesNewGroup {
   [ChromeEarlGreyUI openTabGrid];
 
   // Switch over to the tab groups page and delete existing saved groups.
@@ -259,15 +258,7 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 
 // Tests that stopping syncing tabs keeps groups created before syncing and
 // deletes groups created since.
-// TODO(crbug.com/419246344): Test is flaky.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup \
-  DISABLED_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup
-#else
-#define MAYBE_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup \
-  testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup
-#endif
-- (void)MAYBE_testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup {
+- (void)testStopSyncingTabsKeepsPreviousGroupDeletesNewGroup {
   [ChromeEarlGreyUI openTabGrid];
 
   // Switch over to the tab groups page and delete existing saved groups.

@@ -982,11 +982,6 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
 
-  // TODO(crbug.com/40752508): Test is failing on iPad devices and simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test is failing.");
-  }
-
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
   [ChromeEarlGrey loadURL:_URL3];
@@ -1035,11 +1030,6 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // Drag creates new window, but test fails to interact with it.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
 
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewIncognitoTab];
@@ -1086,8 +1076,7 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
 }
 
 // Tests dragging all tab grid items to another window.
-// TODO(crbug.com/431223435): Re-enable test.
-- (void)DISABLED_testDragAndDropAllItemsToOtherWindow {
+- (void)testDragAndDropAllItemsToOtherWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
@@ -1163,8 +1152,7 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
 }
 
 // Tests dragging tab grid item as URL between windows.
-// TODO(crbug.com/40864920): Re-enable this test.
-- (void)DISABLED_testDragAndDropURLBetweenWindows {
+- (void)testDragAndDropURLBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
@@ -1230,11 +1218,6 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
 
-  // TODO(crbug.com/40868899): Test is failing on iPad devices and simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   // Setup first window with one incognito tab 1.
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewIncognitoTab];
@@ -1294,8 +1277,7 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
 }
 
 // Tests dragging tab grid main item as URL to an incognito windows.
-// TODO(crbug.com/40240640): Re-enable this test.
-- (void)DISABLED_testDragAndDropMainURLInIncognitoWindow {
+- (void)testDragAndDropMainURLInIncognitoWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
@@ -1566,8 +1548,7 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
 }
 
 // Tests adding items to the Reading List from the tab grid edit mode.
-// TODO(crbug.com/40900596): Test flakes.
-- (void)FLAKY_testTabGridBulkActionAddToReadingList {
+- (void)testTabGridBulkActionAddToReadingList {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -1756,8 +1737,7 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
 
 // Tests that searching in open tabs in the regular mode will filter the tabs
 // correctly.
-// TODO(crbug.com/332714545): Test is flaky.
-- (void)FLAKY_testSearchRegularOpenTabs {
+- (void)testSearchRegularOpenTabs {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -2500,8 +2480,7 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
 
 // Ensures that when users tap on a tab from tab search result and this tab is
 // in another window currently displaying tab grid, the tab is opened.
-// TODO(crbug.com/448400563): Re-enable this test.
-- (void)DISABLED_testOpenSearchedTabFromAnotherWindowWhenTabGridIsVisible {
+- (void)testOpenSearchedTabFromAnotherWindowWhenTabGridIsVisible {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

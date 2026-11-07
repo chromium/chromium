@@ -122,8 +122,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 }
 
 // Tests that there is only one active (selected) tab at a time.
-// TODO(crbug.com/440615724): This test is flaky.
-- (void)FLAKY_testOneActiveTabAtATime {
+- (void)testOneActiveTabAtATime {
   if (![ChromeEarlGrey isPinnedTabsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"The Pinned Tabs feature is not enabled.");
   }
@@ -488,9 +487,8 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 }
 
 
-// TODO(crbug.com/441313129): This test is disabled because of its flakiness.
 // Tests scrolling of the pinned tabs collection.
-- (void)DISABLED_testPinnedTabsScrolling {
+- (void)testPinnedTabsScrolling {
   if (![ChromeEarlGrey isPinnedTabsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"The Pinned Tabs feature is not enabled.");
   }
