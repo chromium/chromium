@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/browser_actuator/internal/transport/features.h"
+#include "components/browser_actuator/internal/transport/probe_payload.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 #include "components/browser_actuator/internal/transport/test_support/fake_proto_stream_server.h"
@@ -65,6 +66,21 @@ ActuatorDownstreamMessage BuildDownstreamControlMessage(
   typed->mutable_proto_payload()->set_type_url(
       std::string(ExpectedTypeUrl(PayloadType::kControl)));
   typed->mutable_proto_payload()->set_value(command.SerializeAsString());
+  return msg;
+}
+
+ActuatorDownstreamMessage BuildDownstreamProbeMessage(
+    std::string_view session_id,
+    int64_t sequence_number,
+    const TransportProbe& probe) {
+  ActuatorDownstreamMessage msg;
+  msg.set_session_id(std::string(session_id));
+  msg.set_sequence_number(sequence_number);
+  auto* typed = msg.add_typed_payloads();
+  typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  typed->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kProbe)));
+  typed->mutable_proto_payload()->set_value(probe.SerializeAsString());
   return msg;
 }
 
@@ -646,6 +662,94 @@ TEST_F(TransportServiceIntegrationTest,
   EXPECT_EQ(req_2.actuator_upstream_message().client_sequence_number(), 2);
   EXPECT_FALSE(
       req_2.actuator_upstream_message().has_responding_to_sequence_number());
+}
+
+TEST_F(
+    TransportServiceIntegrationTest,
+    DownstreamProbeRequestStreamsLargePayloadAndEmitsImmediateAndDelayedFanOut) {
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
+
+  TransportSession* session = service_->CreateSession("session-probe-e2e");
+  ASSERT_NE(session, nullptr);
+  stream_server.WaitForConnection();
+
+  // Establish sequence 1 (`StartSession`) so the probe runs at sequence 2 and
+  // exercises non-1 `responding_to_sequence_number` correlation.
+  ControlCommand start_cmd;
+  start_cmd.mutable_start_session();
+  stream_server.PushMessage(BuildDownstreamControlMessage(
+      "session-probe-e2e", /*sequence_number=*/1, start_cmd));
+  SendSessionMessageRequest start_ack = WaitForUpstreamRequest();
+  EXPECT_EQ(start_ack.actuator_upstream_message().client_sequence_number(), 1);
+  EXPECT_EQ(
+      start_ack.actuator_upstream_message().responding_to_sequence_number(), 1);
+
+  const ProbeResponseSpecInput specs[] = {
+      {.payload_size_bytes = 128, .delay_ms = 0},
+      {.payload_size_bytes = 4096, .delay_ms = 150},
+  };
+  base::expected<TransportProbe::ProbeRequest, std::string> probe_request =
+      BuildProbeRequest("e2e-probe-1", /*request_payload_size_bytes=*/20'000,
+                        specs);
+  ASSERT_TRUE(probe_request.has_value());
+
+  TransportProbe probe;
+  *probe.mutable_request() = *probe_request;
+  stream_server.PushMessage(BuildDownstreamProbeMessage(
+      "session-probe-e2e", /*sequence_number=*/2, probe));
+
+  // First response (`delay_ms = 0`) is sent immediately with
+  // `responding_to_sequence_number = 2`.
+  SendSessionMessageRequest req_0 = WaitForUpstreamRequest();
+  const ActuatorUpstreamMessage& msg_0 = req_0.actuator_upstream_message();
+  EXPECT_EQ(msg_0.session_id(), "session-probe-e2e");
+  EXPECT_EQ(msg_0.client_sequence_number(), 2);
+  ASSERT_TRUE(msg_0.has_responding_to_sequence_number());
+  EXPECT_EQ(msg_0.responding_to_sequence_number(), 2);
+  ASSERT_EQ(msg_0.typed_payloads_size(), 1);
+  EXPECT_EQ(msg_0.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
+  EXPECT_EQ(msg_0.typed_payloads(0).proto_payload().type_url(),
+            ExpectedTypeUrl(PayloadType::kProbe));
+
+  TransportProbe reply_0;
+  ASSERT_TRUE(
+      reply_0.ParseFromString(msg_0.typed_payloads(0).proto_payload().value()));
+  ASSERT_TRUE(reply_0.has_response());
+  EXPECT_EQ(reply_0.response().response_index(), 0);
+  EXPECT_EQ(reply_0.response().total_responses(), 2);
+  EXPECT_TRUE(VerifyProbeResponsePayload(*probe_request, reply_0.response()));
+
+  // Second response (`delay_ms = 150`) must not fire early.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  for (const network::TestURLLoaderFactory::PendingRequest& pending :
+       *test_url_loader_factory_.pending_requests()) {
+    EXPECT_NE(pending.request.url, GURL(kTestSendSessionMessageEndpoint));
+  }
+
+  // Advancing past 150 ms dispatches the delayed response while still
+  // preserving `responding_to_sequence_number = 2`.
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  SendSessionMessageRequest req_1 = WaitForUpstreamRequest();
+  const ActuatorUpstreamMessage& msg_1 = req_1.actuator_upstream_message();
+  EXPECT_EQ(msg_1.session_id(), "session-probe-e2e");
+  EXPECT_EQ(msg_1.client_sequence_number(), 3);
+  ASSERT_TRUE(msg_1.has_responding_to_sequence_number());
+  EXPECT_EQ(msg_1.responding_to_sequence_number(), 2);
+  ASSERT_EQ(msg_1.typed_payloads_size(), 1);
+  EXPECT_EQ(msg_1.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
+  EXPECT_EQ(msg_1.typed_payloads(0).proto_payload().type_url(),
+            ExpectedTypeUrl(PayloadType::kProbe));
+
+  TransportProbe reply_1;
+  ASSERT_TRUE(
+      reply_1.ParseFromString(msg_1.typed_payloads(0).proto_payload().value()));
+  ASSERT_TRUE(reply_1.has_response());
+  EXPECT_EQ(reply_1.response().response_index(), 1);
+  EXPECT_EQ(reply_1.response().total_responses(), 2);
+  EXPECT_TRUE(VerifyProbeResponsePayload(*probe_request, reply_1.response()));
 }
 
 }  // namespace

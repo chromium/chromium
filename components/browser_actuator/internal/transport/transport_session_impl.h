@@ -124,6 +124,16 @@ class TransportSessionImpl : public TransportSession,
     return last_seen_sequence_number_ >= 0;
   }
 
+  // Sequence number of the downstream message currently being dispatched on
+  // the session's sequence (`0` on the out-of-band FCM wake-up path), or
+  // `std::nullopt` outside an active `OnMessage()` /
+  // `ProcessDownstreamMessage()` frame. Used by `ProbeTransportHandler` to
+  // preserve `responding_to_sequence_number` across delayed probe replies.
+  std::optional<int64_t> dispatching_sequence_number() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return dispatching_sequence_number_;
+  }
+
   size_t consecutive_invalid_sequence_numbers() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return consecutive_invalid_sequence_numbers_;

@@ -58,7 +58,27 @@ TransportChannelImpl::TransportChannelImpl(
                           session_registry_->GetWeakPtr()));
   handler_registry_->RegisterFactory(control_handler_factory_.get());
 
-  probe_handler_factory_ = std::make_unique<ProbeTransportHandlerFactory>();
+  probe_handler_factory_ = std::make_unique<ProbeTransportHandlerFactory>(
+      base::BindRepeating(
+          [](base::WeakPtr<TransportChannelImpl> self,
+             std::string_view session_id) -> std::optional<int64_t> {
+            return self ? self->GetDispatchingSequenceNumber(session_id)
+                        : std::nullopt;
+          },
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          [](base::WeakPtr<TransportChannelImpl> self,
+             std::string_view session_id, const TransportProbe& probe,
+             std::optional<int64_t> responding_to_sequence_number)
+              -> base::expected<void, SendUpstreamMessageError> {
+            if (!self) {
+              return base::unexpected(
+                  SendUpstreamMessageError::kChannelDisconnected);
+            }
+            return self->SendProbeReply(session_id, probe,
+                                        responding_to_sequence_number);
+          },
+          weak_ptr_factory_.GetWeakPtr()));
   handler_registry_->RegisterFactory(probe_handler_factory_.get());
 
   // The resume delegate carries no state: on every connection attempt it asks
@@ -355,6 +375,27 @@ std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {
 
 std::string TransportChannelImpl::BuildWatchSessionsRequestBodyForTesting() {
   return BuildWatchSessionsRequestBody();
+}
+
+std::optional<int64_t> TransportChannelImpl::GetDispatchingSequenceNumber(
+    std::string_view session_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TransportSessionImpl* session = session_registry_->GetSessionImpl(session_id);
+  return session ? session->dispatching_sequence_number() : std::nullopt;
+}
+
+base::expected<void, SendUpstreamMessageError>
+TransportChannelImpl::SendProbeReply(
+    std::string_view session_id,
+    const TransportProbe& probe,
+    std::optional<int64_t> responding_to_sequence_number) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!session_registry_->GetSessionImpl(session_id)) {
+    return base::unexpected(SendUpstreamMessageError::kChannelDisconnected);
+  }
+  SendUpstreamMessage(session_id, PayloadType::kProbe, probe,
+                      responding_to_sequence_number);
+  return {};
 }
 
 }  // namespace browser_actuator::transport

@@ -6,12 +6,16 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/browser_actuator/internal/transport/probe_payload.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
@@ -44,6 +48,39 @@ class MockTransportSession : public TransportSession {
 
  private:
   std::string session_id_;
+};
+
+struct ProbeReplyCapture {
+  struct CapturedProbeReply {
+    std::string session_id;
+    TransportProbe probe;
+    std::optional<int64_t> responding_to_sequence_number;
+  };
+
+  std::optional<int64_t> dispatching_sequence_number;
+  std::vector<CapturedProbeReply> replies;
+
+  ProbeTransportHandler::GetDispatchingSequenceCallback
+  MakeGetSequenceCallback() {
+    return base::BindLambdaForTesting(
+        [this](std::string_view /*session_id*/) -> std::optional<int64_t> {
+          return dispatching_sequence_number;
+        });
+  }
+
+  ProbeTransportHandler::SendProbeReplyCallback MakeSendReplyCallback() {
+    return base::BindLambdaForTesting(
+        [this](std::string_view session_id, const TransportProbe& probe,
+               std::optional<int64_t> responding_to_sequence_number)
+            -> base::expected<void, SendUpstreamMessageError> {
+          replies.push_back(CapturedProbeReply{
+              .session_id = std::string(session_id),
+              .probe = probe,
+              .responding_to_sequence_number = responding_to_sequence_number,
+          });
+          return {};
+        });
+  }
 };
 
 TEST(ProbeTransportHandlerTest, FactoryGetFactoryId) {
@@ -125,7 +162,9 @@ TEST(ProbeTransportHandlerTest, OnMessageUnexpectedProbeResponseIsIgnored) {
 }
 
 TEST(ProbeTransportHandlerTest, ProbeRequestWithNullSessionNoops) {
-  ProbeTransportHandler handler(nullptr);
+  ProbeReplyCapture capture;
+  ProbeTransportHandler handler(nullptr, capture.MakeGetSequenceCallback(),
+                                capture.MakeSendReplyCallback());
 
   const ProbeResponseSpecInput specs[] = {
       {.payload_size_bytes = 32, .delay_ms = 0},
@@ -138,6 +177,7 @@ TEST(ProbeTransportHandlerTest, ProbeRequestWithNullSessionNoops) {
   TransportProbe probe;
   *probe.mutable_request() = *std::move(request);
   handler.OnMessage(PayloadType::kProbe, probe.SerializeAsString());
+  EXPECT_TRUE(capture.replies.empty());
 }
 
 TEST(ProbeTransportHandlerTest, ProbeRequestWithZeroSpecsActsAsOneWaySink) {
@@ -196,25 +236,161 @@ TEST(ProbeTransportHandlerTest,
   }
 }
 
-TEST(ProbeTransportHandlerTest,
-     DelayedProbeRequestIsDroppedWithoutEmittingPartialResponses) {
-  MockTransportSession session("session_delayed_unsupported");
-  ProbeTransportHandler handler(&session);
+TEST(
+    ProbeTransportHandlerTest,
+    ProbeRequestSchedulesDelayedResponsesAndPreservesDispatchingSequenceNumber) {
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  EXPECT_CALL(session, SendUpstreamMessage(testing::_, testing::_)).Times(0);
+  MockTransportSession session("session_delayed");
+  ProbeReplyCapture capture;
+  ProbeTransportHandler handler(&session, capture.MakeGetSequenceCallback(),
+                                capture.MakeSendReplyCallback());
 
   const ProbeResponseSpecInput specs[] = {
       {.payload_size_bytes = 64, .delay_ms = 0},
-      {.payload_size_bytes = 64, .delay_ms = 50},
+      {.payload_size_bytes = 128, .delay_ms = 250},
+      {.payload_size_bytes = 32, .delay_ms = 50},
   };
   base::expected<TransportProbe::ProbeRequest, std::string> request =
-      BuildProbeRequest("delayed-unsupported", /*request_payload_size_bytes=*/0,
+      BuildProbeRequest("delayed-probe", /*request_payload_size_bytes=*/0,
+                        specs);
+  ASSERT_TRUE(request.has_value());
+
+  TransportProbe probe;
+  *probe.mutable_request() = *request;
+
+  capture.dispatching_sequence_number = 17;
+  handler.OnMessage(PayloadType::kProbe, probe.SerializeAsString());
+  // Simulate `TransportSessionImpl` unwinding its synchronous dispatch frame.
+  capture.dispatching_sequence_number.reset();
+
+  ASSERT_EQ(capture.replies.size(), 1u);
+  EXPECT_EQ(capture.replies[0].session_id, "session_delayed");
+  EXPECT_EQ(capture.replies[0].responding_to_sequence_number, 17);
+  EXPECT_EQ(capture.replies[0].probe.response().response_index(), 0);
+  EXPECT_TRUE(VerifyProbeResponsePayload(*request,
+                                         capture.replies[0].probe.response()));
+
+  task_environment.FastForwardBy(base::Milliseconds(50));
+  ASSERT_EQ(capture.replies.size(), 2u);
+  EXPECT_EQ(capture.replies[1].responding_to_sequence_number, 17);
+  EXPECT_EQ(capture.replies[1].probe.response().response_index(), 2);
+  EXPECT_TRUE(VerifyProbeResponsePayload(*request,
+                                         capture.replies[1].probe.response()));
+
+  task_environment.FastForwardBy(base::Milliseconds(200));
+  ASSERT_EQ(capture.replies.size(), 3u);
+  EXPECT_EQ(capture.replies[2].responding_to_sequence_number, 17);
+  EXPECT_EQ(capture.replies[2].probe.response().response_index(), 1);
+  EXPECT_TRUE(VerifyProbeResponsePayload(*request,
+                                         capture.replies[2].probe.response()));
+}
+
+TEST(ProbeTransportHandlerTest,
+     DestroyingHandlerCancelsPendingDelayedProbeResponses) {
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  MockTransportSession session("session_closing");
+  ProbeReplyCapture capture;
+  auto handler = std::make_unique<ProbeTransportHandler>(
+      &session, capture.MakeGetSequenceCallback(),
+      capture.MakeSendReplyCallback());
+
+  const ProbeResponseSpecInput specs[] = {
+      {.payload_size_bytes = 1024, .delay_ms = 500},
+  };
+  base::expected<TransportProbe::ProbeRequest, std::string> request =
+      BuildProbeRequest("cancel-probe", /*request_payload_size_bytes=*/0,
                         specs);
   ASSERT_TRUE(request.has_value());
 
   TransportProbe probe;
   *probe.mutable_request() = *std::move(request);
-  handler.OnMessage(PayloadType::kProbe, probe.SerializeAsString());
+  handler->OnMessage(PayloadType::kProbe, probe.SerializeAsString());
+  EXPECT_TRUE(capture.replies.empty());
+
+  handler.reset();
+  task_environment.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(capture.replies.empty());
+}
+
+TEST(
+    ProbeTransportHandlerTest,
+    OverlappingDelayedProbeRequestsExceedingSessionBudgetAreRejectedAtomically) {
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  MockTransportSession session("session_budget");
+  ProbeReplyCapture capture;
+  ProbeTransportHandler handler(&session, capture.MakeGetSequenceCallback(),
+                                capture.MakeSendReplyCallback());
+
+  // 1. Saturate the session's 20 MB delayed byte budget with two 10 MB delayed
+  // responses (`delay_ms = 200`).
+  const ProbeResponseSpecInput full_bytes_specs[] = {
+      {.payload_size_bytes = kMaxProbePayloadBytes, .delay_ms = 200},
+      {.payload_size_bytes = kMaxProbePayloadBytes, .delay_ms = 200},
+  };
+  base::expected<TransportProbe::ProbeRequest, std::string> first_request =
+      BuildProbeRequest("budget-bytes-1", /*request_payload_size_bytes=*/0,
+                        full_bytes_specs);
+  ASSERT_TRUE(first_request.has_value());
+  TransportProbe first_probe;
+  *first_probe.mutable_request() = *first_request;
+  handler.OnMessage(PayloadType::kProbe, first_probe.SerializeAsString());
+  EXPECT_TRUE(capture.replies.empty());
+
+  // 2. An overlapping `ProbeRequest` mixing an immediate (`delay_ms = 0`) reply
+  // and a 1-byte delayed reply exceeds `kMaxTotalProbeResponseBytes` and must
+  // be rejected atomically without emitting even the immediate reply.
+  const ProbeResponseSpecInput over_bytes_specs[] = {
+      {.payload_size_bytes = 64, .delay_ms = 0},
+      {.payload_size_bytes = 1, .delay_ms = 50},
+  };
+  base::expected<TransportProbe::ProbeRequest, std::string> over_bytes_request =
+      BuildProbeRequest("budget-bytes-over", /*request_payload_size_bytes=*/0,
+                        over_bytes_specs);
+  ASSERT_TRUE(over_bytes_request.has_value());
+  TransportProbe over_bytes_probe;
+  *over_bytes_probe.mutable_request() = *over_bytes_request;
+  handler.OnMessage(PayloadType::kProbe, over_bytes_probe.SerializeAsString());
+  EXPECT_TRUE(capture.replies.empty());
+
+  // 3. Once the first probe's delayed timers fire, the session budget is
+  // released and subsequent delayed probes are accepted again.
+  task_environment.FastForwardBy(base::Milliseconds(200));
+  ASSERT_EQ(capture.replies.size(), 2u);
+  capture.replies.clear();
+
+  // 4. Saturate `kMaxProbeResponses` (16) zero-byte delayed responses and
+  // verify a 17th overlapping delayed response is rejected atomically.
+  std::vector<ProbeResponseSpecInput> max_count_specs(
+      kMaxProbeResponses, {.payload_size_bytes = 0, .delay_ms = 100});
+  base::expected<TransportProbe::ProbeRequest, std::string> max_count_request =
+      BuildProbeRequest("budget-count-16", /*request_payload_size_bytes=*/0,
+                        max_count_specs);
+  ASSERT_TRUE(max_count_request.has_value());
+  TransportProbe max_count_probe;
+  *max_count_probe.mutable_request() = *max_count_request;
+  handler.OnMessage(PayloadType::kProbe, max_count_probe.SerializeAsString());
+
+  const ProbeResponseSpecInput extra_delayed_specs[] = {
+      {.payload_size_bytes = 16, .delay_ms = 0},
+      {.payload_size_bytes = 0, .delay_ms = 50},
+  };
+  base::expected<TransportProbe::ProbeRequest, std::string> over_count_request =
+      BuildProbeRequest("budget-count-over", /*request_payload_size_bytes=*/0,
+                        extra_delayed_specs);
+  ASSERT_TRUE(over_count_request.has_value());
+  TransportProbe over_count_probe;
+  *over_count_probe.mutable_request() = *over_count_request;
+  handler.OnMessage(PayloadType::kProbe, over_count_probe.SerializeAsString());
+  EXPECT_TRUE(capture.replies.empty());
+
+  task_environment.FastForwardBy(base::Milliseconds(100));
+  EXPECT_EQ(capture.replies.size(), static_cast<size_t>(kMaxProbeResponses));
 }
 
 TEST(ProbeTransportHandlerTest, InvalidProbeRequestExceedingBoundsIsDropped) {

@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "components/browser_actuator/internal/transport/transport_message_observer.h"
 #include "components/browser_actuator/public/transport/common.h"
@@ -24,6 +25,7 @@
 
 namespace browser_actuator {
 class ActuatorDownstreamMessage;
+class TransportProbe;
 }  // namespace browser_actuator
 
 namespace browser_actuator::transport {
@@ -143,6 +145,18 @@ class TransportChannelImpl : public TransportChannel,
   // resume position, plus a fresh idempotency id. Handed to the resume
   // delegate as its body provider, so it runs once per connection attempt.
   std::string BuildWatchSessionsRequestBody();
+
+  // Returns the sequence number currently being dispatched on `session_id`, or
+  // `std::nullopt` if the session is unknown or idle.
+  std::optional<int64_t> GetDispatchingSequenceNumber(
+      std::string_view session_id) const;
+
+  // Sends an internal `PayloadType::kProbe` reply for `session_id` carrying
+  // `responding_to_sequence_number` (used for immediate and delayed probes).
+  base::expected<void, SendUpstreamMessageError> SendProbeReply(
+      std::string_view session_id,
+      const TransportProbe& probe,
+      std::optional<int64_t> responding_to_sequence_number);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
