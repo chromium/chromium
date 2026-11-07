@@ -19,6 +19,13 @@
 
 namespace browser_actuator::transport {
 
+// static
+bool DownstreamMessageSequencer::IsValidSequenceNumber(
+    int64_t sequence_number) {
+  return sequence_number >= 0 &&
+         sequence_number < std::numeric_limits<int64_t>::max();
+}
+
 DownstreamMessageSequencer::DownstreamMessageSequencer(
     size_t max_buffered_messages)
     : max_buffered_messages_(max_buffered_messages) {}
@@ -32,8 +39,7 @@ base::expected<std::vector<ActuatorDownstreamMessage>,
 DownstreamMessageSequencer::AddMessage(ActuatorDownstreamMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int64_t sequence_number = message.sequence_number();
-  if (sequence_number < 0 ||
-      sequence_number == std::numeric_limits<int64_t>::max()) {
+  if (!IsValidSequenceNumber(sequence_number)) {
     return base::unexpected(Error::kInvalidSequenceNumber);
   }
   if (sequence_number <= last_seen_sequence_number_) {
@@ -107,6 +113,14 @@ std::vector<ActuatorDownstreamMessage> DownstreamMessageSequencer::Flush() {
   last_seen_sequence_number_ = last_flushed;
   buffered_messages_.clear();
   return flushed;
+}
+
+void DownstreamMessageSequencer::AdvanceLastSeenTo(int64_t sequence_number) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsValidSequenceNumber(sequence_number));
+  CHECK(buffered_messages_.empty());
+  last_seen_sequence_number_ =
+      std::max(last_seen_sequence_number_, sequence_number);
 }
 
 }  // namespace browser_actuator::transport

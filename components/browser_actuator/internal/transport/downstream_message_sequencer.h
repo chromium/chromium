@@ -50,6 +50,11 @@ class DownstreamMessageSequencer {
   // Bounds per-session memory while absorbing transient reordering.
   static constexpr size_t kDefaultMaxBufferedMessages = 16;
 
+  // Returns true if `sequence_number` is within the valid wire range
+  // `[0, INT64_MAX)`. `INT64_MAX` is rejected because `last_seen + 1` would
+  // overflow signed 64-bit arithmetic.
+  static bool IsValidSequenceNumber(int64_t sequence_number);
+
   explicit DownstreamMessageSequencer(
       size_t max_buffered_messages = kDefaultMaxBufferedMessages);
   ~DownstreamMessageSequencer();
@@ -67,6 +72,11 @@ class DownstreamMessageSequencer {
   // Returns all buffered messages in order, skipping any gaps. Empties the
   // buffer and advances the cursor to the last returned sequence number.
   [[nodiscard]] std::vector<ActuatorDownstreamMessage> Flush();
+
+  // Advances `last_seen_sequence_number_` to at least `sequence_number` when a
+  // terminating control command bypasses `AddMessage()`. `buffered_messages_`
+  // must be empty (e.g. after `Flush()`) before calling this method.
+  void AdvanceLastSeenTo(int64_t sequence_number);
 
   int64_t last_seen_sequence_number() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

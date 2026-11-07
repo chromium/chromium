@@ -343,7 +343,13 @@ std::string SerializedDownstreamMessage(
     typed->set_payload_type(payload.type);
     typed->mutable_proto_payload()->set_value(payload.value.data(),
                                               payload.value.size());
-    typed->mutable_proto_payload()->set_type_url(payload.type_url);
+    if (!payload.type_url.empty()) {
+      typed->mutable_proto_payload()->set_type_url(payload.type_url);
+    } else if (std::optional<PayloadType> mapped =
+                   FromDownstreamProtoPayloadType(payload.type)) {
+      typed->mutable_proto_payload()->set_type_url(
+          std::string(ExpectedTypeUrl(*mapped)));
+    }
   }
 
   return response.SerializeAsString();
@@ -764,6 +770,8 @@ TEST_F(TransportChannelImplTest,
   auto* typed_payload = downstream->add_typed_payloads();
   typed_payload->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed_payload->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kControl)));
   typed_payload->mutable_proto_payload()->set_value(
       command.SerializeAsString());
 
@@ -812,6 +820,8 @@ TEST_F(TransportChannelImplTest,
   auto* typed_payload = downstream->add_typed_payloads();
   typed_payload->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed_payload->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kControl)));
   typed_payload->mutable_proto_payload()->set_value(
       command.SerializeAsString());
 

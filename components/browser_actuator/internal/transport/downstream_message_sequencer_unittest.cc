@@ -311,5 +311,39 @@ TEST(DownstreamMessageSequencerTest, FlushSkipsGapsAndAdvancesCursor) {
   EXPECT_EQ(sequencer.buffered_message_count(), 0u);
 }
 
+TEST(DownstreamMessageSequencerTest, IsValidSequenceNumber) {
+  EXPECT_FALSE(DownstreamMessageSequencer::IsValidSequenceNumber(
+      std::numeric_limits<int64_t>::min()));
+  EXPECT_FALSE(DownstreamMessageSequencer::IsValidSequenceNumber(-1));
+  EXPECT_TRUE(DownstreamMessageSequencer::IsValidSequenceNumber(0));
+  EXPECT_TRUE(DownstreamMessageSequencer::IsValidSequenceNumber(1));
+  EXPECT_TRUE(DownstreamMessageSequencer::IsValidSequenceNumber(
+      std::numeric_limits<int64_t>::max() - 1));
+  EXPECT_FALSE(DownstreamMessageSequencer::IsValidSequenceNumber(
+      std::numeric_limits<int64_t>::max()));
+}
+
+TEST(DownstreamMessageSequencerTest, AdvanceLastSeenTo) {
+  DownstreamMessageSequencer sequencer;
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), -1);
+
+  sequencer.AdvanceLastSeenTo(0);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 0);
+
+  sequencer.AdvanceLastSeenTo(5);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 5);
+
+  // Passing a smaller sequence number preserves monotonicity.
+  sequencer.AdvanceLastSeenTo(3);
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 5);
+
+  // Sequence numbers at or below the advanced cursor are dropped as duplicates,
+  // while `sequence_number + 1` is delivered immediately without buffering.
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 5), ValueIs(IsEmpty()));
+  EXPECT_THAT(AddAndGetDelivered(sequencer, 6), ValueIs(ElementsAre(6)));
+  EXPECT_EQ(sequencer.last_seen_sequence_number(), 6);
+  EXPECT_EQ(sequencer.buffered_message_count(), 0u);
+}
+
 }  // namespace
 }  // namespace browser_actuator::transport

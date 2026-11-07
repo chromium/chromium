@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
+#include "components/browser_actuator/internal/transport/downstream_message_sequencer.h"
 #include "components/browser_actuator/internal/transport/metrics_utils.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
@@ -31,14 +32,11 @@ namespace browser_actuator::transport {
 namespace {
 
 // `Any::Is<T>()` is unavailable for LITE_RUNTIME protos, so `type_url` is
-// compared by hand. An empty value is accepted; the server does not always
-// populate it.
-// TODO(crbug.com/572804026): Require `type_url` once the server always sets
-// it.
+// compared by hand against `ExpectedTypeUrl(payload_type)`.
 bool HasExpectedTypeUrl(const ActuatorDownstreamTypedPayload& typed_payload,
                         PayloadType payload_type) {
-  const std::string& type_url = typed_payload.proto_payload().type_url();
-  return type_url.empty() || type_url == ExpectedTypeUrl(payload_type);
+  return typed_payload.proto_payload().type_url() ==
+         ExpectedTypeUrl(payload_type);
 }
 
 // Returns true if `message` carries a `ControlCommand` that tears down the
@@ -298,6 +296,8 @@ TransportSessionImpl::ProcessDownstreamMessage(
     ActuatorDownstreamMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool is_new_terminating_command =
+      DownstreamMessageSequencer::IsValidSequenceNumber(
+          message.sequence_number()) &&
       message.sequence_number() > sequencer_.last_seen_sequence_number() &&
       HasTerminatingControlCommand(message);
 
@@ -313,6 +313,7 @@ TransportSessionImpl::ProcessDownstreamMessage(
           return seq < msg.sequence_number();
         });
     deliverable.insert(it, std::move(message));
+    sequencer_.AdvanceLastSeenTo(deliverable.back().sequence_number());
   } else {
     base::expected<std::vector<ActuatorDownstreamMessage>,
                    DownstreamMessageSequencer::Error>
