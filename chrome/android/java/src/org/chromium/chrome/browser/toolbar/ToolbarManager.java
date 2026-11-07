@@ -3117,6 +3117,10 @@ public class ToolbarManager
             mHubExitNavigationHelper.destroy();
             mHubExitNavigationHelper = null;
         }
+        if (mOverscrollGlowCoordinator != null) {
+            mOverscrollGlowCoordinator.destroy();
+            mOverscrollGlowCoordinator = null;
+        }
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
             mLayoutStateProvider = null;

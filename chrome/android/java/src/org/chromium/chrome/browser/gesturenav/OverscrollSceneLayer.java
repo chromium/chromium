@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.gesturenav;
 import android.view.View;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -20,18 +24,19 @@ import org.chromium.ui.resources.ResourceManager;
 @JNINamespace("android")
 @NullMarked
 class OverscrollSceneLayer extends SceneOverlayLayer {
+    @JniType("::android::OverscrollSceneLayer")
+    interface NativeOverscrollSceneLayer extends JniTypeToken {}
+
     private final View mParentView;
 
-    // NOTE: If you use SceneLayer's native pointer here, the JNI generator will try to
-    // downcast using reinterpret_cast<>. We keep a separate pointer to avoid it.
-    private long mNativePtr;
+    // Non-owning typed alias; SceneLayer owns and frees the native object.
+    private final JniRawPtr<NativeOverscrollSceneLayer> mNativePtr;
 
     private float mAccumulatedScroll;
 
     OverscrollSceneLayer(WindowAndroid window, View parentView) {
         mParentView = parentView;
         mNativePtr = OverscrollSceneLayerJni.get().init(this, window);
-        assert mNativePtr != 0;
     }
 
     /** Initialize a new overscroll effect. */
@@ -88,25 +93,29 @@ class OverscrollSceneLayer extends SceneOverlayLayer {
 
     @Override
     public void destroy() {
+        mNativePtr.release();
         super.destroy();
-        mNativePtr = 0;
     }
 
     @NativeMethods
     interface Natives {
-        long init(OverscrollSceneLayer self, WindowAndroid window);
+        JniRawPtr<NativeOverscrollSceneLayer> init(OverscrollSceneLayer self, WindowAndroid window);
 
         void prepare(
-                long nativeOverscrollSceneLayer, float startX, float startY, int width, int height);
+                JniPtr<NativeOverscrollSceneLayer> self,
+                float startX,
+                float startY,
+                int width,
+                int height);
 
-        void setContentTree(long nativeOverscrollSceneLayer, SceneLayer contentTree);
+        void setContentTree(JniPtr<NativeOverscrollSceneLayer> self, SceneLayer contentTree);
 
         boolean update(
-                long nativeOverscrollSceneLayer,
+                JniPtr<NativeOverscrollSceneLayer> self,
                 @Nullable ResourceManager resourceManager,
                 float accumulatedScroll,
                 float delta);
 
-        void onReset(long nativeOverscrollSceneLayer);
+        void onReset(JniPtr<NativeOverscrollSceneLayer> self);
     }
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/compositor/scene_layer/overscroll_scene_layer.h"
 
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/android/window_android.h"
 
@@ -103,13 +104,12 @@ void OverscrollSceneLayer::OnReset(JNIEnv* env) {
   glow_effect_->Reset();
 }
 
-static int64_t JNI_OverscrollSceneLayer_Init(JNIEnv* env,
-                                             const JavaRef<jobject>& jobj,
-                                             const JavaRef<jobject>& jwindow) {
+static jni_zero::JniRawPtr<OverscrollSceneLayer> JNI_OverscrollSceneLayer_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobj,
+    const JavaRef<jobject>& jwindow) {
   // This will automatically bind to the Java object and pass ownership there.
-  OverscrollSceneLayer* tree_provider =
-      new OverscrollSceneLayer(env, jobj, jwindow);
-  return reinterpret_cast<intptr_t>(tree_provider);
+  return jni_zero::MakeRaw(new OverscrollSceneLayer(env, jobj, jwindow));
 }
 
 }  // namespace android

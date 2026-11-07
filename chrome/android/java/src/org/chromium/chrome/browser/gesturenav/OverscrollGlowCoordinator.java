@@ -71,4 +71,8 @@ public class OverscrollGlowCoordinator {
     public static Class getSceneOverlayClass() {
         return OverscrollGlowOverlay.class;
     }
+
+    public void destroy() {
+        mCompositorGlowEffect.destroy();
+    }
 }
