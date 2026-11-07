@@ -311,6 +311,13 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxVoicePlateIntent =
             newFlag(OmniboxFeatureList.OMNIBOX_VOICE_PLATE_INTENT, FeatureState.ENABLED_IN_TEST);
 
+    /**
+     * Sources Omnibox suggestion icons from native vector icon definitions (rasterized SkPaths,
+     * shared with desktop) instead of Android XML drawables.
+     */
+    private static final CachedFlag sOmniboxNativeVectorIcons =
+            newFlag(OmniboxFeatureList.OMNIBOX_NATIVE_VECTOR_ICONS, FeatureState.DISABLED_IN_PROD);
+
     public static final IntCachedFeatureParam sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(
                     sTouchDownTriggerForPrefetch,
@@ -458,6 +465,14 @@ public class OmniboxFeatures {
      */
     public static boolean isPostFrameAutocompleteStartEnabled() {
         return sOmniboxPostFrameAutocompleteStart.isEnabled();
+    }
+
+    /**
+     * Returns whether suggestion icons should be sourced from native vector icon definitions
+     * (rasterized SkPaths) rather than Android XML drawables.
+     */
+    public static boolean isNativeVectorIconsEnabled() {
+        return sOmniboxNativeVectorIcons.isEnabled();
     }
 
     /**

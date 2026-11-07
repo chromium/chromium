@@ -311,6 +311,10 @@ BASE_DECLARE_FEATURE(kOmniboxAndroidIntranetRedirect);
 // If enabled, the Omnibox, New Tab Page and toolbar mic buttons delegate voice
 // capture and transcription to the Android Google App Voice Plate.
 BASE_DECLARE_FEATURE(kOmniboxVoicePlateIntent);
+// If enabled, Omnibox suggestion icons are rasterized from the native
+// gfx::VectorIcon definitions (shared with desktop) instead of being sourced
+// from Android XML drawables.
+BASE_DECLARE_FEATURE(kOmniboxNativeVectorIcons);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If enabled, X-Geo headers are sent for all search navigations on all

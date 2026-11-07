@@ -9494,6 +9494,7 @@ from previous Chrome versions.
   <int value="-1646016597" label="IsolatePrerenders:disabled"/>
   <int value="-1645619731" label="AndroidDocumentPictureInPicture:disabled"/>
   <int value="-1645071473" label="ChromeColors:disabled"/>
+  <int value="-1644723179" label="OmniboxNativeVectorIcons:disabled"/>
   <int value="-1644308778" label="WASAPIRawAudioCapture:disabled"/>
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
   <int value="-1643872451"
@@ -21574,6 +21575,7 @@ from previous Chrome versions.
   <int value="1942911276" label="enable-grouped-history"/>
   <int value="1943083555" label="NotificationScheduleService:enabled"/>
   <int value="1943477177" label="HubSlideAnimation:enabled"/>
+  <int value="1943522339" label="OmniboxNativeVectorIcons:enabled"/>
   <int value="1944156526" label="sync-url"/>
   <int value="1944880313" label="ShimlessRMADynamicDeviceInfoInputs:enabled"/>
   <int value="1945031120" label="LanguageSettingsUpdate2:disabled"/>

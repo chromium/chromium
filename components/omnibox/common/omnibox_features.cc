@@ -733,6 +733,11 @@ BASE_FEATURE(kOmniboxAndroidIntranetRedirect, DISABLED);
 // transcription.
 BASE_FEATURE(kOmniboxVoicePlateIntent, DISABLED);
 
+// If enabled, Omnibox suggestion icons are rasterized from the native
+// gfx::VectorIcon definitions (shared with desktop) instead of being sourced
+// from Android XML drawables.
+BASE_FEATURE(kOmniboxNativeVectorIcons, DISABLED);
+
 namespace android {
 static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
@@ -774,7 +779,8 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kSuppressStatusIconDuringHttpNavigation,
       &kZeroSuggestPrefetchOnPageLoadAndTabSwitch,
       &kAndroidTabSearchCloseTabButton,
-      &kOmniboxVoicePlateIntent};
+      &kOmniboxVoicePlateIntent,
+      &kOmniboxNativeVectorIcons};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());

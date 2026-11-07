@@ -3914,6 +3914,13 @@ inline constexpr char kOmniboxSiteSearchName[] = "Omnibox Site Search";
 inline constexpr char kOmniboxSiteSearchDescription[] =
     "Enables keyword-based site search functionality on Android devices";
 
+inline constexpr char kOmniboxNativeVectorIconsName[] =
+    "Omnibox Native Vector Icons";
+inline constexpr char kOmniboxNativeVectorIconsDescription[] =
+    "Sources Omnibox suggestion icons from the native vector icon definitions "
+    "shared with desktop, rasterized on demand, instead of Android XML "
+    "drawables";
+
 inline constexpr char kOmniboxVoicePlateIntentName[] =
     "Omnibox Voice Plate Intent";
 inline constexpr char kOmniboxVoicePlateIntentDescription[] =
