@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, ContentBrowserProxyImpl, ContentController, ContentType, NodeStore, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, ContentController, NodeStore, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentType, playFromSelectionTimeout, SelectionController, setInstance, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {emitEvent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
+import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
+// Integration tests for Read Aloud playback over real DOM content. Uses the
+// real ReadAloud model so text is segmented from the DOM. Unit tests for the
+// model and SpeechController are in read_aloud_model_test.ts and
+// speech_controller_test.ts.
 suite('Speech', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
-  let voiceLanguageController: VoiceLanguageController;
   let speechController: SpeechController;
   let contentController: ContentController;
   let nodeStore: NodeStore;
@@ -63,38 +63,17 @@ suite('Speech', () => {
   }
 
   setup(async () => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    // Due to timing issues in tests, we need to explicitly set checkVisibility
-    // of the elements to true to ensure they're considered visible and
-    // included in the speech tree.
-    HTMLElement.prototype.checkVisibility = () => true;
-
-    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
-    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
-    VisualBrowserProxyImpl.setInstance(new TestVisualBrowserProxy());
-
-    // Ensure the ReadAloudModel is not shared between tests.
-    setInstance(null);
-    nodeStore = new NodeStore();
-    NodeStore.setInstance(nodeStore);
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
-
-    mockMetrics();
-    voiceLanguageController = new VoiceLanguageController();
-    VoiceLanguageController.setInstance(voiceLanguageController);
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
-    contentController = new ContentController();
-    ContentController.setInstance(contentController);
-
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
-    await microtasksFinished();
+    const result = await setupAppTestEnvironment({useRealReadAloudModel: true});
+    app = result.app;
+    nodeStore = result.nodeStore;
+    speech = result.speech;
+    speechController = result.speechController;
+    contentController = result.contentController;
     setupBasicSpeech(speech);
     buildDOMTree();
     await microtasksFinished();
+    // Text in hidden containers is skipped by Read Aloud.
+    assertTrue(app.$.container.checkVisibility());
     speech.reset();
   });
 

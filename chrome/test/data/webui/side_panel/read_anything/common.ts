@@ -45,6 +45,9 @@ export interface AppTestSetupResult extends TestSetupResult {
 
 export interface AppTestFlags {
   readAnythingImprovedUiEnabled?: boolean;
+  // Uses the real ReadAloud model instead of TestReadAloudModelBrowserProxy.
+  // Only for integration tests that need text segmented from the DOM.
+  useRealReadAloudModel?: boolean;
 }
 
 // Initializes all singletons, mocks, and controllers in their strict
@@ -74,7 +77,8 @@ export function setupTestEnvironment(flags?: AppTestFlags): TestSetupResult {
   const metrics = mockMetrics();
   const logger = ReadAnythingLogger.getInstance();
   const readAloudModel = new TestReadAloudModelBrowserProxy();
-  setInstance(readAloudModel);
+  // A null instance makes getReadAloudModel() lazily create the real model.
+  setInstance(flags?.useRealReadAloudModel ? null : readAloudModel);
   const nodeStore = new NodeStore();
   NodeStore.setInstance(nodeStore);
   const readAloudNodeStore = new ReadAloudNodeStore();
