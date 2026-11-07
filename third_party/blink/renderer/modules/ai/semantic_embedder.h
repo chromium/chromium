@@ -25,6 +25,7 @@
 namespace blink {
 
 class SemanticEmbedderCreateCoreOptions;
+class SemanticEmbedderParams;
 class SemanticEmbedderResult;
 
 class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
@@ -50,6 +51,10 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
   static ScriptPromise<SemanticEmbedder> create(
       ScriptState* script_state,
       SemanticEmbedderCreateOptions* options,
+      ExceptionState& exception_state);
+
+  static ScriptPromise<SemanticEmbedderParams> params(
+      ScriptState* script_state,
       ExceptionState& exception_state);
 
   ScriptPromise<SemanticEmbedderResult> embed(

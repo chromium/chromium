@@ -458,6 +458,89 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderRejectsUnknownSpace) {
   EXPECT_EQ(observer.WaitForBadMessage(), "Unsupported embedding space");
 }
 
+// The reply to GetSupportedEmbeddingSpaces().
+using SupportedSpaces =
+    std::vector<blink::mojom::AISemanticEmbedderSpaceInfoPtr>;
+
+TEST_F(AIManagerTest, GetSupportedEmbeddingSpacesListsServedSpaces) {
+  // No model is installed: discovery does not depend on download state.
+  ASSERT_FALSE(AISemanticEmbedderServiceLauncher::Get()
+                   ->controller()
+                   ->IsModelAvailable());
+
+  base::test::TestFuture<SupportedSpaces> future;
+  ai_manager_->GetSupportedEmbeddingSpaces(future.GetCallback());
+  const SupportedSpaces& spaces = future.Get();
+  ASSERT_EQ(spaces.size(), 1u);
+  EXPECT_EQ(spaces[0]->embedding_space,
+            semantic_embedder::kEmbeddingGemmaV1Space);
+  EXPECT_FALSE(spaces[0]->shutdown_date.has_value());
+}
+
+TEST_F(AIManagerTest, GetSupportedEmbeddingSpacesIgnoresCrashLimit) {
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  service_launcher->OnServiceDisconnected(/*is_idle=*/false);
+  service_launcher->OnServiceDisconnected(/*is_idle=*/false);
+  service_launcher->OnServiceDisconnected(/*is_idle=*/false);
+  ASSERT_FALSE(service_launcher->AllowedToLaunch());
+
+  base::test::TestFuture<SupportedSpaces> future;
+  ai_manager_->GetSupportedEmbeddingSpaces(future.GetCallback());
+  EXPECT_EQ(future.Get().size(), 1u);
+}
+
+TEST_F(AIManagerTest,
+       GetSupportedEmbeddingSpacesEmptyWhenEnterprisePolicyDisabled) {
+  SetBuiltInAIAPIsEnterprisePolicy(false);
+  {
+    base::test::TestFuture<SupportedSpaces> future;
+    ai_manager_->GetSupportedEmbeddingSpaces(future.GetCallback());
+    EXPECT_TRUE(future.Get().empty());
+  }
+  SetBuiltInAIAPIsEnterprisePolicy(true);
+
+  SetGenAILocalEnterprisePolicy(false);
+  {
+    base::test::TestFuture<SupportedSpaces> future;
+    ai_manager_->GetSupportedEmbeddingSpaces(future.GetCallback());
+    EXPECT_TRUE(future.Get().empty());
+  }
+  SetGenAILocalEnterprisePolicy(true);
+}
+
+TEST_F(AIManagerTest, GetSupportedEmbeddingSpacesEmptyWhenUserSettingDisabled) {
+  SetOnDeviceAiUserSetting(false);
+  base::test::TestFuture<SupportedSpaces> future;
+  ai_manager_->GetSupportedEmbeddingSpaces(future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+  SetOnDeviceAiUserSetting(true);
+}
+
+// Blink answers params() itself in a frame the permissions policy blocks, so
+// a call that still arrives is a bad message.
+TEST_F(AIManagerTest, GetSupportedEmbeddingSpacesPermissionsPolicyDisabled) {
+  DisablePolicy(network::mojom::PermissionsPolicyFeature::kSemanticEmbedder);
+  mojo::test::BadMessageObserver observer;
+  GetAIManagerRemote()->GetSupportedEmbeddingSpaces(base::DoNothing());
+  EXPECT_EQ(observer.WaitForBadMessage(), "Permissions policy disabled");
+}
+
+TEST_F(AIManagerTest, GetSupportedEmbeddingSpacesEmptyWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(blink::features::kAIEmbeddingsAPI);
+  base::test::TestFuture<SupportedSpaces> future;
+  ai_manager_->GetSupportedEmbeddingSpaces(future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(AIManagerTest,
+       GetSupportedEmbeddingSpacesEmptyWithoutOptimizationGuide) {
+  SetupNullOptimizationGuideKeyedService();
+  base::test::TestFuture<SupportedSpaces> future;
+  ai_manager_->GetSupportedEmbeddingSpaces(future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+}
+
 // Sign-in, lock-screen and System profiles have no
 // OptimizationGuideKeyedService.
 TEST_F(AIManagerTest, CanCreateSemanticEmbedderWithoutOptimizationGuide) {

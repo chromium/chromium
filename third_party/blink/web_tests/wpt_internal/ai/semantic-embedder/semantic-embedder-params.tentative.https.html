@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<script src="/resources/testdriver.js"></script>
+<script src='/resources/testdriver-vendor.js'></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/ai/resources/util.js"></script>
+<body></body>
+<script>
+'use strict';
+
+const { HTTPS_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN } = get_host_info();
+const PATH = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
+const IFRAME_PATH = PATH + 'resources/params-iframe-helper.html';
+
+// Chrome-specific: external/wpt/ai/semantic_embedder only checks the shape of
+// params(), since other browsers may serve other spaces.
+promise_test(async t => {
+  await ensureEmbedder();
+  const params = await SemanticEmbedder.params();
+  const current = params.supportedSpaces.find(
+      space => space.embeddingSpace === kEmbeddingSpace);
+  assert_not_equals(current, undefined, `${kEmbeddingSpace} is listed`);
+  assert_equals(current.shutdownDate, null);
+}, 'The embedding space Chrome serves is listed without a shutdownDate');
+
+promise_test(async t => {
+  const src = HTTPS_NOTSAMESITE_ORIGIN + IFRAME_PATH;
+  const iframe = await load_iframe(src, /*permissionPolicy=*/'');
+  await promise_rejects_dom(t, 'NotAllowedError', run_iframe_test(iframe, 'SemanticEmbedderParams'));
+  iframe.remove();
+}, 'SemanticEmbedder.params() rejects with NotAllowedError within cross-origin iframe');
+
+promise_test(async t => {
+  await ensureEmbedder();
+  const src = HTTPS_NOTSAMESITE_ORIGIN + IFRAME_PATH;
+  const iframe = await load_iframe(src, /*permissionPolicy=*/'semantic-embedder');
+  assert_equals(await run_iframe_test(iframe, 'SemanticEmbedderParams'), 'listed');
+  iframe.remove();
+}, 'SemanticEmbedder.params() lists spaces within cross-origin iframe with permission policy');
+
+promise_test(async t => {
+  await ensureEmbedder();
+  const src = HTTPS_ORIGIN + IFRAME_PATH;
+  const iframe = await load_iframe(src, /*permissionPolicy=*/'');
+  assert_equals(await run_iframe_test(iframe, 'SemanticEmbedderParams'), 'listed');
+  iframe.remove();
+}, 'SemanticEmbedder.params() lists spaces within same-origin iframe');
+
+</script>

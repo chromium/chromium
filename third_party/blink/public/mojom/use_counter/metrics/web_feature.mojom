@@ -5406,6 +5406,7 @@ enum WebFeature {
   kSemanticEmbedder_EmbeddingSpace = 6087,
   kWindowAlwaysOnTopPopup = 6088,
   kWindowOpenAlwaysOnTop = 6089,
+  kSemanticEmbedder_Params = 6090,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

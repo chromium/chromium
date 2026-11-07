@@ -138,6 +138,8 @@ class AIManager : public base::SupportsUserData::Data,
       blink::mojom::AISemanticEmbedderCreateOptionsPtr options,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor)
       override;
+  void GetSupportedEmbeddingSpaces(
+      GetSupportedEmbeddingSpacesCallback callback) override;
   void CanCreateDecisionModel(
       blink::mojom::AIDecisionModelCreateOptionsPtr options,
       CanCreateDecisionModelCallback callback) override;

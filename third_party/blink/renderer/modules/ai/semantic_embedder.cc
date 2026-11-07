@@ -17,7 +17,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_embed_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_params.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_space_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_semanticembedderinputorstringsequence_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_string.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
@@ -376,6 +379,56 @@ ScriptPromise<SemanticEmbedder> SemanticEmbedder::create(
 
   MakeGarbageCollected<CreateSemanticEmbedderClient>(script_state, resolver,
                                                      options);
+  return promise;
+}
+
+// static
+ScriptPromise<SemanticEmbedderParams> SemanticEmbedder::params(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<SemanticEmbedderParams>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<SemanticEmbedderParams>>(
+          script_state);
+  auto promise = resolver->Promise();
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (!execution_context->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kSemanticEmbedder)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError, kExceptionMessagePermissionPolicy));
+    return promise;
+  }
+
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(execution_context);
+
+  ai_manager_remote->GetSupportedEmbeddingSpaces(
+      BindOnce(
+          [](ScriptPromiseResolver<SemanticEmbedderParams>* resolver,
+             Vector<mojom::blink::AISemanticEmbedderSpaceInfoPtr>
+                 supported_spaces) {
+            HeapVector<Member<SemanticEmbedderSpaceInfo>> spaces;
+            spaces.ReserveInitialCapacity(supported_spaces.size());
+            for (const auto& space : supported_spaces) {
+              auto* info = SemanticEmbedderSpaceInfo::Create();
+              info->setEmbeddingSpace(space->embedding_space);
+              if (space->shutdown_date) {
+                info->setShutdownDate(
+                    ConvertTimeToEpochTimeStamp(*space->shutdown_date));
+              }
+              spaces.push_back(info);
+            }
+            auto* params = SemanticEmbedderParams::Create();
+            params->setSupportedSpaces(std::move(spaces));
+            resolver->Resolve(params);
+          },
+          WrapPersistent(resolver))
+          .Then(RejectOnDestruction(resolver)));
   return promise;
 }
 

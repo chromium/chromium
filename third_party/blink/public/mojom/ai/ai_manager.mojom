@@ -231,6 +231,10 @@ interface AIManager {
     pending_remote<on_device_model.mojom.DownloadObserver>? monitor
   );
 
+  // Returns the supported embedding spaces, or none if the API is turned off.
+  GetSupportedEmbeddingSpaces() =>
+      (array<AISemanticEmbedderSpaceInfo> supported_spaces);
+
   // Returns decision model availability info from the underlying service.
   CanCreateDecisionModel(AIDecisionModelCreateOptions options) =>
       (ModelAvailabilityCheckResult result);

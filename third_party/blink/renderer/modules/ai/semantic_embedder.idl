@@ -51,6 +51,16 @@ dictionary ContentEmbedding {
   required DOMString embeddingSpace;
 };
 
+dictionary SemanticEmbedderSpaceInfo {
+  required DOMString embeddingSpace;
+  // When support for this space ends; null if none is scheduled.
+  EpochTimeStamp? shutdownDate = null;
+};
+
+dictionary SemanticEmbedderParams {
+  required sequence<SemanticEmbedderSpaceInfo> supportedSpaces;
+};
+
 [
   Exposed(Window AIEmbeddingsAPI, Worker AIEmbeddingsAPIForWorkers),
   RuntimeEnabled=AIEmbeddingsAPI,
@@ -74,6 +84,15 @@ interface SemanticEmbedder {
   static Promise<SemanticEmbedder> create(
     SemanticEmbedderCreateOptions options
   );
+
+  // Lists the supported embedding spaces, or none if the API is turned off.
+  // Rejects with NotAllowedError if the permissions policy blocks the API.
+  [
+    MeasureAs=SemanticEmbedder_Params,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<SemanticEmbedderParams> params();
 
   [
     MeasureAs=SemanticEmbedder_Embed,

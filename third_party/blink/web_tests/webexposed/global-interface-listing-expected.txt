@@ -10122,6 +10122,7 @@ interface SelectorDirective : Directive
 interface SemanticEmbedder
     static method availability
     static method create
+    static method params
     attribute @@toStringTag
     getter embeddingSpace
     method constructor

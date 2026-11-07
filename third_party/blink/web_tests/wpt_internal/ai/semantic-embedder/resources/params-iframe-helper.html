@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<body></body>
+<script>
+window.onmessage = async message => {
+  const { id, type } = message.data;
+  try {
+    switch (type) {
+      case 'SemanticEmbedderParams':
+        // run_iframe_test() reads a falsy `success` as failure, so the
+        // list state is reported as a string.
+        const params = await SemanticEmbedder.params();
+        parent.postMessage(
+            {id, success: params.supportedSpaces.length ? 'listed' : 'empty'},
+            '*');
+        break;
+    }
+  } catch (err) {
+    parent.postMessage({id, err: err}, '*');
+  }
+};
+</script>

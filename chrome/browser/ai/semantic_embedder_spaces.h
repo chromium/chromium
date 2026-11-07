@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_AI_SEMANTIC_EMBEDDER_SPACES_H_
 #define CHROME_BROWSER_AI_SEMANTIC_EMBEDDER_SPACES_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/time/time.h"
 
 // The embedding spaces the Semantic Embedder serves.
 namespace semantic_embedder {
@@ -15,6 +17,8 @@ namespace semantic_embedder {
 // One embedding space this browser serves.
 struct EmbeddingSpaceInfo {
   std::string_view name;
+  // When the browser may stop serving this space; null if not scheduled.
+  std::optional<base::Time> shutdown_date;
 };
 
 // The embedding space served by the EmbeddingGemma v1 model.

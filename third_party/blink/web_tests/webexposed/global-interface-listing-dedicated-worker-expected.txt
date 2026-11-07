@@ -2204,6 +2204,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface SemanticEmbedder
 [Worker]     static method availability
 [Worker]     static method create
+[Worker]     static method params
 [Worker]     attribute @@toStringTag
 [Worker]     getter embeddingSpace
 [Worker]     method constructor

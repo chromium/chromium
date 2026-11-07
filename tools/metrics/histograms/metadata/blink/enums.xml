@@ -6926,6 +6926,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6087" label="SemanticEmbedder_EmbeddingSpace"/>
   <int value="6088" label="WindowAlwaysOnTopPopup"/>
   <int value="6089" label="WindowOpenAlwaysOnTop"/>
+  <int value="6090" label="SemanticEmbedder_Params"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

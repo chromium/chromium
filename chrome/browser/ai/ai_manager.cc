@@ -2043,6 +2043,35 @@ void AIManager::OnSemanticEmbedderModelReady(
   client_remote->OnResult(std::move(pending_remote));
 }
 
+void AIManager::GetSupportedEmbeddingSpaces(
+    GetSupportedEmbeddingSpacesCallback callback) {
+  // Unlike CanCreateSemanticEmbedder(), ignores the crash limit and the
+  // download state: they affect availability(), not the list of spaces.
+  if (!base::FeatureList::IsEnabled(blink::features::kAIEmbeddingsAPI)) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  if (IsPermissionsPolicyBlocked(
+          network::mojom::PermissionsPolicyFeature::kSemanticEmbedder)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
+
+  if (GetPrefBlockedResult().has_value() ||
+      !profile_has_optimization_guide_keyed_service_) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::vector<blink::mojom::AISemanticEmbedderSpaceInfoPtr> supported_spaces;
+  for (const auto& space : semantic_embedder::GetSupportedEmbeddingSpaces()) {
+    supported_spaces.push_back(blink::mojom::AISemanticEmbedderSpaceInfo::New(
+        std::string(space.name), space.shutdown_date));
+  }
+  std::move(callback).Run(std::move(supported_spaces));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 base::expected<DecisionModelSchemaCompiler::CompiledSchema,
                blink::mojom::ModelAvailabilityCheckResult>

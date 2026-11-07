@@ -4,11 +4,20 @@
 
 #include "third_party/blink/renderer/modules/ai/semantic_embedder.h"
 
+#include <cstdint>
+#include <optional>
+
+#include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/test/run_until.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-test-utils.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_semantic_embedder.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -18,7 +27,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_embed_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_params.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_space_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_semanticembedderinputorstringsequence_string.h"
@@ -29,6 +40,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -101,6 +113,63 @@ class MockAISemanticEmbedder : public mojom::blink::AISemanticEmbedder {
   mojo::Receiver<mojom::blink::AISemanticEmbedder> receiver_;
 };
 
+namespace {
+
+// Serves AIManager.GetSupportedEmbeddingSpaces() to the static params() entry
+// point. Bound through the execution context's browser interface broker.
+// File-local: other test files in this target define their own AIManager
+// mocks in namespace blink.
+class MockParamsAIManager
+    : public mojom::blink::AIManagerInterceptorForTesting {
+ public:
+  MockParamsAIManager() = default;
+  ~MockParamsAIManager() override = default;
+
+  mojom::blink::AIManager* GetForwardingInterface() override { NOTREACHED(); }
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.reset();
+    receiver_.Bind(
+        mojo::PendingReceiver<mojom::blink::AIManager>(std::move(handle)));
+  }
+
+  void GetSupportedEmbeddingSpaces(
+      GetSupportedEmbeddingSpacesCallback callback) override {
+    params_call_count_++;
+    if (hold_params_callback_) {
+      held_params_callback_ = std::move(callback);
+      return;
+    }
+    Vector<mojom::blink::AISemanticEmbedderSpaceInfoPtr> spaces;
+    for (const auto& space : supported_spaces_) {
+      spaces.push_back(space->Clone());
+    }
+    std::move(callback).Run(std::move(spaces));
+  }
+
+  void AddSupportedSpace(const String& embedding_space,
+                         std::optional<base::Time> shutdown_date) {
+    supported_spaces_.push_back(mojom::blink::AISemanticEmbedderSpaceInfo::New(
+        embedding_space, shutdown_date));
+  }
+  void set_hold_params_callback(bool hold) { hold_params_callback_ = hold; }
+  // Simulates the browser going away with a params() reply outstanding.
+  void Disconnect() {
+    receiver_.reset();
+    held_params_callback_.Reset();
+  }
+  int params_call_count() const { return params_call_count_; }
+
+ private:
+  Vector<mojom::blink::AISemanticEmbedderSpaceInfoPtr> supported_spaces_;
+  bool hold_params_callback_ = false;
+  GetSupportedEmbeddingSpacesCallback held_params_callback_;
+  int params_call_count_ = 0;
+  mojo::Receiver<mojom::blink::AIManager> receiver_{this};
+};
+
+}  // namespace
+
 class EmbedderTest : public testing::Test {
  public:
   static constexpr char kEmbeddingSpace[] = "embeddinggemma-300m";
@@ -117,6 +186,33 @@ class EmbedderTest : public testing::Test {
         ExecutionContext::From(script_state)
             ->GetTaskRunner(TaskType::kInternalDefault),
         std::move(pending_remote), options);
+  }
+
+  // params() talks to AIManager directly; the params tests bind a mock
+  // manager into the execution context's browser interface broker. The
+  // returned runner removes the binder again, also when an ASSERT ends the
+  // test early, so later tests never reach the destroyed mock.
+  [[nodiscard]] base::ScopedClosureRunner BindMockAIManager(
+      V8TestingScope& scope) {
+    const BrowserInterfaceBrokerProxy& broker =
+        scope.GetExecutionContext()->GetBrowserInterfaceBroker();
+    broker.SetBinderForTesting(mojom::blink::AIManager::Name_,
+                               BindRepeating(&MockParamsAIManager::Bind,
+                                             Unretained(&mock_ai_manager_)));
+    return base::ScopedClosureRunner(BindOnce(
+        [](const BrowserInterfaceBrokerProxy* broker) {
+          broker->SetBinderForTesting(mojom::blink::AIManager::Name_, {});
+        },
+        Unretained(&broker)));
+  }
+
+  SemanticEmbedderParams* ParamsFrom(V8TestingScope& scope,
+                                     const ScriptPromiseTester& tester) {
+    DummyExceptionStateForTesting exception_state;
+    auto* params = NativeValueTraits<SemanticEmbedderParams>::NativeValue(
+        scope.GetIsolate(), tester.Value().V8Value(), exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    return params;
   }
 
   // embed() input for one bare string.
@@ -145,6 +241,7 @@ class EmbedderTest : public testing::Test {
  protected:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<MockAISemanticEmbedder> mock_remote_;
+  MockParamsAIManager mock_ai_manager_;
 };
 
 TEST_F(EmbedderTest, EmbedSucceeds) {
@@ -438,6 +535,72 @@ TEST_F(EmbedderTest, AbortedCallsCountUntilTheBrowserReplies) {
   ScriptPromiseTester tester2(scope.GetScriptState(), promise2);
   tester2.WaitUntilSettled();
   EXPECT_TRUE(tester2.IsFulfilled());
+}
+
+TEST_F(EmbedderTest, ParamsListsSupportedSpaces) {
+  constexpr int64_t kShutdownDateMs = 4102444800000;  // 2100-01-01Z
+  V8TestingScope scope;
+  base::ScopedClosureRunner unbind = BindMockAIManager(scope);
+  mock_ai_manager_.AddSupportedSpace(kEmbeddingSpace, std::nullopt);
+  mock_ai_manager_.AddSupportedSpace(
+      "deprecated-space",
+      base::Time::FromMillisecondsSinceUnixEpoch(kShutdownDateMs));
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise =
+      SemanticEmbedder::params(scope.GetScriptState(), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+  EXPECT_EQ(mock_ai_manager_.params_call_count(), 1);
+
+  SemanticEmbedderParams* params = ParamsFrom(scope, tester);
+  ASSERT_TRUE(params);
+  const auto& spaces = params->supportedSpaces();
+  ASSERT_EQ(spaces.size(), 2u);
+  EXPECT_EQ(spaces[0]->embeddingSpace(), kEmbeddingSpace);
+  EXPECT_FALSE(spaces[0]->shutdownDate().has_value());
+  EXPECT_EQ(spaces[1]->embeddingSpace(), "deprecated-space");
+  ASSERT_TRUE(spaces[1]->shutdownDate().has_value());
+  EXPECT_EQ(*spaces[1]->shutdownDate(), static_cast<uint64_t>(kShutdownDateMs));
+}
+
+TEST_F(EmbedderTest, ParamsResolvesEmptyWithoutSpaces) {
+  V8TestingScope scope;
+  base::ScopedClosureRunner unbind = BindMockAIManager(scope);
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise =
+      SemanticEmbedder::params(scope.GetScriptState(), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  SemanticEmbedderParams* params = ParamsFrom(scope, tester);
+  ASSERT_TRUE(params);
+  EXPECT_TRUE(params->supportedSpaces().empty());
+}
+
+TEST_F(EmbedderTest, ParamsRejectsWhenManagerDisconnects) {
+  V8TestingScope scope;
+  base::ScopedClosureRunner unbind = BindMockAIManager(scope);
+  mock_ai_manager_.set_hold_params_callback(true);
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise =
+      SemanticEmbedder::params(scope.GetScriptState(), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return mock_ai_manager_.params_call_count() == 1; }));
+
+  // The browser goes away before replying: the promise rejects instead of
+  // hanging (RejectOnDestruction, as for availability()).
+  mock_ai_manager_.Disconnect();
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
 }
 
 }  // namespace blink

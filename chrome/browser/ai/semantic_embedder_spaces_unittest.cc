@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ai/semantic_embedder_spaces.h"
 
+#include <set>
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace semantic_embedder {
@@ -19,6 +22,14 @@ TEST(SemanticEmbedderSpacesTest, SupportsEmbeddingSpaceDerivesFromTable) {
   EXPECT_TRUE(SupportsEmbeddingSpace(kEmbeddingGemmaV1Space));
   EXPECT_FALSE(SupportsEmbeddingSpace("other"));
   EXPECT_FALSE(SupportsEmbeddingSpace(""));
+}
+
+TEST(SemanticEmbedderSpacesTest, NamesAreUnique) {
+  // params() lists every entry, so a space must not appear twice.
+  std::set<std::string_view> names;
+  for (const EmbeddingSpaceInfo& space : GetSupportedEmbeddingSpaces()) {
+    EXPECT_TRUE(names.insert(space.name).second) << space.name;
+  }
 }
 
 }  // namespace
