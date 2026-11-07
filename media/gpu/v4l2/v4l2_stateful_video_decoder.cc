@@ -1235,8 +1235,15 @@ int V4L2StatefulVideoDecoder::GetMaxNumDecoderInstances() {
     PLOG(ERROR) << "Failed querying caps";
     return std::numeric_limits<int>::max();
   }
-  const bool is_mtk8173 =
-      std::string(reinterpret_cast<const char*>(caps.card)).contains("8173");
+  const std::string card(reinterpret_cast<const char*>(caps.card));
+
+  // bcm2835-codec decodes from a small pool of VPU firmware memory that runs
+  // out quickly, so allow far fewer decoders than other drivers.
+  if (card.contains("bcm2835")) {
+    return 2;
+  }
+
+  const bool is_mtk8173 = card.contains("8173");
   // Experimentally MTK8173 (e.g. Hana) can initialize the driver  up to 30
   // times simultaneously, however legacy code limits this to 10 [1] . All other
   // drivers used to limit this to 32 [2] but in practice I could only open up
