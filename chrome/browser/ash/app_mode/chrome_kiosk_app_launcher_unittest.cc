@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/chrome_switches.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/extensions/scoped_app_window.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
-#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -132,8 +132,9 @@ class ChromeKioskAppLauncherTest : public extensions::ExtensionServiceTestBase,
         {.users = ash::AshTestHelper::InitParams::DefaultUsers()});
 
     command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kForceAppMode);
-    command_line_.GetProcessCommandLine()->AppendSwitch(switches::kAppId);
+        ash::chrome_switches::kForceAppMode);
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::chrome_switches::kAppId);
 
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();

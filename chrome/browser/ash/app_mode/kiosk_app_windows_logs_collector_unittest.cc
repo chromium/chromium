@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/chrome_switches.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/repeating_test_future.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
-#include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -115,8 +115,9 @@ class KioskAppWindowsLogsCollectorTest
         {.users = ash::AshTestHelper::InitParams::DefaultUsers()});
 
     command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kForceAppMode);
-    command_line_.GetProcessCommandLine()->AppendSwitch(switches::kAppId);
+        ash::chrome_switches::kForceAppMode);
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::chrome_switches::kAppId);
 
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();

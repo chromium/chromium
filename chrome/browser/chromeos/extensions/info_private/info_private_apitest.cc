@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/chrome_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/command_line.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -43,9 +43,9 @@ class ChromeOSInfoPrivateTest : public extensions::ExtensionApiTest {
  protected:
   void EnableKioskSession() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kForceAppMode);
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(switches::kAppId,
-                                                              kTestAppId);
+        ash::chrome_switches::kForceAppMode);
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        ash::chrome_switches::kAppId, kTestAppId);
   }
 };
 
