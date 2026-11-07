@@ -14518,24 +14518,6 @@
             ]
         }
     ],
-    "PaymentHandlerCameraAccessUx": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PaymentHandlerCameraAccessUx"
-                    ]
-                }
-            ]
-        }
-    ],
     "PaymentRequestEnforceLNAWithClientSecurityState": [
         {
             "platforms": [

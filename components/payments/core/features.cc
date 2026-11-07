@@ -81,7 +81,7 @@ BASE_FEATURE(kPaymentHandlerHtmlHeadThemeColor,
 BASE_FEATURE(kPaymentRequestMandatoryPaymentAppUi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPaymentHandlerCameraAccessUx, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPaymentHandlerCameraAccessUx, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPaymentHandlerDynamicCustomSize,
              base::FEATURE_DISABLED_BY_DEFAULT);
