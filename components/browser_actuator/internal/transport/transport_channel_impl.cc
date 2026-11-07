@@ -6,6 +6,8 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -183,6 +185,16 @@ void TransportChannelImpl::ReconnectStream() {
   }
 }
 
+void TransportChannelImpl::CloseAndDestroySession(std::string_view session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::string owned_session_id(session_id);
+  ControlCommand command;
+  command.mutable_close_session();
+  SendUpstreamMessage(owned_session_id, PayloadType::kControl, command,
+                      /*responding_to_sequence_number=*/std::nullopt);
+  session_registry_->DestroySession(owned_session_id);
+}
+
 // Downstream: route each message to its session so the *session* advances its
 // own resume position.
 void TransportChannelImpl::OnStreamMessage(const std::string& message) {
@@ -218,6 +230,16 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
   if (!result.has_value()) {
     switch (result.error()) {
       case DownstreamMessageSequencer::Error::kBufferFull:
+        if (session->consecutive_buffer_full_errors() >=
+            TransportSessionImpl::kMaxConsecutiveBufferFullErrors) {
+          DLOG(WARNING) << "Tearing down session " << session->GetSessionId()
+                        << " after receiving "
+                        << session->consecutive_buffer_full_errors()
+                        << " consecutive reorder-buffer overflows without "
+                           "advancing sequence cursor";
+          CloseAndDestroySession(session->GetSessionId());
+          break;
+        }
         DVLOG(1) << "Downstream reorder buffer full for session "
                  << session->GetSessionId()
                  << "; reconnecting stream to request replay from "
@@ -236,16 +258,11 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
                       << session->consecutive_invalid_sequence_numbers() << ")";
         if (session->consecutive_invalid_sequence_numbers() >=
             TransportSessionImpl::kMaxConsecutiveInvalidSequenceNumbers) {
-          const std::string session_id(session->GetSessionId());
-          DLOG(WARNING) << "Tearing down session " << session_id
+          DLOG(WARNING) << "Tearing down session " << session->GetSessionId()
                         << " after receiving "
                         << session->consecutive_invalid_sequence_numbers()
                         << " consecutive invalid sequence numbers";
-          ControlCommand command;
-          command.mutable_close_session();
-          SendUpstreamMessage(session_id, PayloadType::kControl, command,
-                              /*responding_to_sequence_number=*/std::nullopt);
-          session_registry_->DestroySession(session_id);
+          CloseAndDestroySession(session->GetSessionId());
         }
         break;
     }

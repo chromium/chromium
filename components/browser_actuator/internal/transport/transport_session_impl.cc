@@ -304,6 +304,7 @@ TransportSessionImpl::ProcessDownstreamMessage(
   std::vector<ActuatorDownstreamMessage> deliverable;
   if (is_new_terminating_command) {
     consecutive_invalid_sequence_numbers_ = 0;
+    consecutive_buffer_full_errors_ = 0;
     // Flush any buffered messages and bypass capacity-bounded buffering so a
     // full reorder buffer cannot reject session or channel teardown.
     deliverable = sequencer_.Flush();
@@ -319,14 +320,21 @@ TransportSessionImpl::ProcessDownstreamMessage(
                    DownstreamMessageSequencer::Error>
         ready_messages = sequencer_.AddMessage(std::move(message));
     if (!ready_messages.has_value()) {
-      if (ready_messages.error() ==
-          DownstreamMessageSequencer::Error::kInvalidSequenceNumber) {
-        ++consecutive_invalid_sequence_numbers_;
+      switch (ready_messages.error()) {
+        case DownstreamMessageSequencer::Error::kInvalidSequenceNumber:
+          ++consecutive_invalid_sequence_numbers_;
+          break;
+        case DownstreamMessageSequencer::Error::kBufferFull:
+          ++consecutive_buffer_full_errors_;
+          break;
       }
       return base::unexpected(ready_messages.error());
     }
     consecutive_invalid_sequence_numbers_ = 0;
     deliverable = std::move(*ready_messages);
+    if (!deliverable.empty()) {
+      consecutive_buffer_full_errors_ = 0;
+    }
   }
 
   base::WeakPtr<TransportSessionImpl> weak_this = GetWeakPtr();

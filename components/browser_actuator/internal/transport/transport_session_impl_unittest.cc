@@ -1487,6 +1487,73 @@ TEST(TransportSessionImplTest,
   EXPECT_EQ(session.consecutive_invalid_sequence_numbers(), 0u);
 }
 
+TEST(TransportSessionImplTest, TracksAndResetsConsecutiveBufferFullErrors) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+  EXPECT_EQ(session.consecutive_buffer_full_errors(), 0u);
+
+  // Fill the reorder buffer behind missing sequence 1.
+  for (size_t i = 0;
+       i < DownstreamMessageSequencer::kDefaultMaxBufferedMessages; ++i) {
+    EXPECT_OK(session.ProcessDownstreamMessage(
+        MakeSequenceOnlyMessage(static_cast<int64_t>(i + 2))));
+  }
+  EXPECT_EQ(session.consecutive_buffer_full_errors(), 0u);
+
+  const int64_t first_overflow_seq = static_cast<int64_t>(
+      DownstreamMessageSequencer::kDefaultMaxBufferedMessages + 2);
+  EXPECT_THAT(
+      session.ProcessDownstreamMessage(
+          MakeSequenceOnlyMessage(first_overflow_seq)),
+      base::test::ErrorIs(DownstreamMessageSequencer::Error::kBufferFull));
+  EXPECT_EQ(session.consecutive_buffer_full_errors(), 1u);
+
+  EXPECT_THAT(
+      session.ProcessDownstreamMessage(
+          MakeSequenceOnlyMessage(first_overflow_seq + 1)),
+      base::test::ErrorIs(DownstreamMessageSequencer::Error::kBufferFull));
+  EXPECT_EQ(session.consecutive_buffer_full_errors(), 2u);
+
+  // A duplicate of an already-buffered message does not drain the gap and must
+  // not reset the consecutive buffer-full counter.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(2)));
+  EXPECT_EQ(session.consecutive_buffer_full_errors(), 2u);
+
+  // Delivering missing sequence 1 drains the buffer and resets the counter.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(1)));
+  EXPECT_EQ(session.consecutive_buffer_full_errors(), 0u);
+
+  // Fill the reorder buffer again behind missing `first_overflow_seq` and
+  // trigger another overflow.
+  for (size_t i = 0;
+       i < DownstreamMessageSequencer::kDefaultMaxBufferedMessages; ++i) {
+    EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(
+        first_overflow_seq + 1 + static_cast<int64_t>(i))));
+  }
+  const int64_t second_overflow_seq =
+      first_overflow_seq + 1 +
+      static_cast<int64_t>(
+          DownstreamMessageSequencer::kDefaultMaxBufferedMessages);
+  EXPECT_THAT(
+      session.ProcessDownstreamMessage(
+          MakeSequenceOnlyMessage(second_overflow_seq)),
+      base::test::ErrorIs(DownstreamMessageSequencer::Error::kBufferFull));
+  EXPECT_EQ(session.consecutive_buffer_full_errors(), 1u);
+
+  // A terminating `ControlCommand` flushes the buffer and resets the counter.
+  ControlCommand close_cmd;
+  close_cmd.mutable_close_session();
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeDownstreamMessage(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      ExpectedTypeUrl(PayloadType::kControl), close_cmd.SerializeAsString(),
+      second_overflow_seq + 1)));
+  EXPECT_EQ(session.consecutive_buffer_full_errors(), 0u);
+}
+
 TEST(TransportSessionImplTest,
      UnregisterFactoryDestroysHandlerAndStopsRouting) {
   MockTransportChannel channel;

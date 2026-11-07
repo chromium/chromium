@@ -128,6 +128,12 @@ class TransportChannelImpl : public TransportChannel,
   // fresh WatchSessionsRequest is sent with current session resume positions.
   void ReconnectStream();
 
+  // Sends an upstream `ControlCommand::CloseSession` for `session_id` and
+  // destroys the session in `session_registry_`. Copies `session_id` before
+  // mutating state so callers may pass `session->GetSessionId()` directly,
+  // after which the session pointer must not be dereferenced.
+  void CloseAndDestroySession(std::string_view session_id);
+
   // Forwards a downstream envelope that a session is about to dispatch or
   // drop to every TransportMessageObserver.
   void NotifyDownstreamMessage(
