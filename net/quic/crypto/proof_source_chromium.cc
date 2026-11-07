@@ -124,8 +124,6 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
   // As a transitional implementation, just call the synchronous version of
   // GetProof, then invoke the callback with the results and destroy it.
   quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain;
-  string signature;
-  string leaf_cert_sct;
   quic::QuicCryptoProof out_proof;
 
   const bool ok = GetProofInner(server_addr, hostname, server_config,

@@ -268,7 +268,6 @@ std::unique_ptr<HttpResponse> HandleSetInvalidCookie(
     const HttpRequest& request) {
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_content_type("text/html");
-  std::string content;
   GURL request_url = request.GetURL();
 
   http_response->AddCustomHeader("Set-Cookie", "\x01");
@@ -650,7 +649,6 @@ std::unique_ptr<HttpResponse> HandleServerRedirect(HttpStatusCode redirect_code,
                                                    const HttpRequest& request) {
   GURL request_url = request.GetURL();
   std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
-  RequestQuery query = ParseQuery(request_url);
 
   if (request.method == METHOD_OPTIONS) {
     auto http_response = std::make_unique<BasicHttpResponse>();
@@ -681,7 +679,6 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithCookie(
     const HttpRequest& request) {
   GURL request_url = request.GetURL();
   std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
-  RequestQuery query = ParseQuery(request_url);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(redirect_code);
@@ -701,7 +698,6 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithSecureCookie(
     const HttpRequest& request) {
   GURL request_url = request.GetURL();
   std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
-  RequestQuery query = ParseQuery(request_url);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(redirect_code);

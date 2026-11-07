@@ -25,7 +25,6 @@ class HostResolverManagerIPv6ReachabilityOverrideTest
   static constexpr const char kTargetHost[] = "host.test";
 
   HostResolverManagerIPv6ReachabilityOverrideTest() {
-    std::map<std::string, std::string> field_trial_params;
     if (GetParam()) {
       feature_list_.InitAndEnableFeature(
           features::kEnableIPv6ReachabilityOverride);

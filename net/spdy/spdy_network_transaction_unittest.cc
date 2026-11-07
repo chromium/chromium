@@ -4176,7 +4176,6 @@ TEST_P(SpdyNetworkTransactionTest, BufferedClosed) {
   // Read Data
   TestCompletionCallback read_callback;
 
-  std::string content;
   int reads_completed = 0;
   do {
     // Allocate a large buffer to allow buffering. If a single read fills the

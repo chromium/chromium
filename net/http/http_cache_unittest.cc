@@ -3831,7 +3831,6 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationRestartDoneHeaders) {
   }
 
   // Let 1st transaction complete headers phase for ranges 40-59.
-  std::string first_read;
   transaction.request_headers = "Range: bytes = 40-59\r\n" EXTRA_HEADER;
   MockHttpRequest request1(transaction);
   {
@@ -3851,9 +3850,6 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationRestartDoneHeaders) {
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(kBufferSize, cb.GetResult(c->result));
-
-    std::string data_read(buffer->data(), kBufferSize);
-    first_read = data_read;
 
     EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
   }
@@ -10865,7 +10861,6 @@ TEST_F(HttpCacheGetTest, IncompleteResource3) {
   CreateTruncatedEntry(raw_headers, &cache);
 
   // Now make a regular request.
-  std::string headers;
   MockTransaction transaction(kRangeGET_TransactionOK);
   transaction.request_headers = EXTRA_HEADER;
   transaction.data = kFullRangeData;
@@ -12928,7 +12923,6 @@ TEST_F(HttpCacheTest, SetPriorityNewTransaction) {
   CreateTruncatedEntry(raw_headers, &cache);
 
   // Now make a regular request.
-  std::string headers;
   MockTransaction transaction(kRangeGET_TransactionOK);
   transaction.request_headers = EXTRA_HEADER;
   transaction.data = kFullRangeData;

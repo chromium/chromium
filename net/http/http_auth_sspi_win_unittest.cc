@@ -249,7 +249,6 @@ TEST_F(HttpAuthSSPITest, ParseChallenge_NonBase64EncodedToken) {
   // be treated as an invalid challenge.
   auto mock_library = base::MakeRefCounted<MockSSPILibrary>(NEGOSSP_NAME);
   HttpAuthSSPI auth_sspi(mock_library, HttpAuth::AUTH_SCHEME_NEGOTIATE);
-  std::string first_challenge_text = "Negotiate";
   HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_sspi.ParseChallenge(&first_challenge));
@@ -265,7 +264,6 @@ TEST_F(HttpAuthSSPITest, ParseChallenge_NonBase64EncodedToken) {
 TEST_F(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds) {
   auto mock_library = base::MakeRefCounted<MockSSPILibrary>(NEGOSSP_NAME);
   HttpAuthSSPI auth_sspi(mock_library, HttpAuth::AUTH_SCHEME_NEGOTIATE);
-  std::string first_challenge_text = "Negotiate";
   HttpAuthChallengeTokenizer first_challenge("Negotiate");
   ASSERT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_sspi.ParseChallenge(&first_challenge));

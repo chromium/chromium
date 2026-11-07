@@ -69,7 +69,6 @@ TEST(CookiePartitionKeyTest, TestFromStorage) {
 }
 
 TEST(CookiePartitionKeyTest, TestFromUntrustedInput) {
-  const std::string kFullURL = "https://subdomain.toplevelsite.com/index.html";
   const std::string kValidSite = "https://toplevelsite.com";
   struct Output {
     bool third_party;

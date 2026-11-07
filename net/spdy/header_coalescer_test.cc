@@ -34,7 +34,6 @@ class HeaderCoalescerTest : public ::testing::Test {
     EXPECT_EQ(entry_list[0].type,
               NetLogEventType::HTTP2_SESSION_RECV_INVALID_HEADER);
     EXPECT_EQ(entry_list[0].source.id, net_log_with_source_.source().id);
-    std::string value;
     EXPECT_EQ(expected_header_name,
               GetStringValueFromParams(entry_list[0], "header_name"));
     EXPECT_EQ(expected_header_value,

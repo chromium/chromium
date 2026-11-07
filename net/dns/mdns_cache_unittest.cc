@@ -232,7 +232,6 @@ TEST_F(MDnsCacheTest, RecordChange) {
 
   std::unique_ptr<const RecordParsed> record1;
   std::unique_ptr<const RecordParsed> record2;
-  std::vector<const RecordParsed*> results;
 
   record1 = RecordParsed::CreateFrom(&parser, default_time_);
   record2 = RecordParsed::CreateFrom(&parser, default_time_);
@@ -250,7 +249,6 @@ TEST_F(MDnsCacheTest, RecordNoChange) {
 
   std::unique_ptr<const RecordParsed> record1;
   std::unique_ptr<const RecordParsed> record2;
-  std::vector<const RecordParsed*> results;
 
   record1 = RecordParsed::CreateFrom(&parser, default_time_);
   record2 = RecordParsed::CreateFrom(&parser, default_time_ + base::Seconds(1));
@@ -267,7 +265,6 @@ TEST_F(MDnsCacheTest, RecordPreemptExpirationTime) {
 
   std::unique_ptr<const RecordParsed> record1;
   std::unique_ptr<const RecordParsed> record2;
-  std::vector<const RecordParsed*> results;
 
   record1 = RecordParsed::CreateFrom(&parser, default_time_);
   record2 = RecordParsed::CreateFrom(&parser, default_time_);
@@ -291,7 +288,6 @@ TEST_F(MDnsCacheTest, GoodbyePacket) {
   std::unique_ptr<const RecordParsed> record_goodbye;
   std::unique_ptr<const RecordParsed> record_hello;
   std::unique_ptr<const RecordParsed> record_goodbye2;
-  std::vector<const RecordParsed*> results;
 
   record_goodbye = RecordParsed::CreateFrom(&parser, default_time_);
   record_hello = RecordParsed::CreateFrom(&parser, default_time_);

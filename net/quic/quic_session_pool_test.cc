@@ -2062,9 +2062,6 @@ TEST_P(QuicSessionPoolTest, PoolingSkipDns) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  const std::string kRightALPN = quic::AlpnForVersion(version_);
-  const std::string kWrongALPN = "h2";
-
   url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
                               kDefaultServerPort);
   host_resolver_->set_synchronous_mode(true);

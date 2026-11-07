@@ -1018,7 +1018,6 @@ TEST_P(BidirectionalStreamQuicImplTest, CoalesceDataBuffersNotHeadersFrame) {
   const std::string kBody2 = "data keep coming";
   std::string header = ConstructDataHeader(kBody1.length());
   std::string header2 = ConstructDataHeader(kBody2.length());
-  std::vector<std::string> two_writes = {kBody1, kBody2};
   AddWrite(ConstructRequestHeadersPacketInner(
       GetNthClientInitiatedBidirectionalStreamId(0), !kFin, DEFAULT_PRIORITY,
       &spdy_request_headers_frame_length));

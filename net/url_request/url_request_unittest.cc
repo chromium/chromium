@@ -5068,7 +5068,6 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
       ADD_FAILURE() << "Not enough log entries";
       return entries.size();
     }
-    std::string delegate_info;
     EXPECT_EQ(NetLogEventType::DELEGATE_INFO, entries[log_position].type);
     EXPECT_EQ(NetLogEventPhase::BEGIN, entries[log_position].phase);
     EXPECT_EQ(

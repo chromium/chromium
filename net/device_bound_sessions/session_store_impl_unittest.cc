@@ -471,8 +471,7 @@ TEST_F(SessionStoreImplTest, DeleteSessions) {
       {"https://c.bar.test/index.html", "session2",
        "https://bar.test"},  // schemeful site 2
   };
-  SessionStore::SessionsMap expected_sessions =
-      CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
+  CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
 
   auto site1 = net::SchemefulSite(GURL(cfgs[0].url));
   auto site2 = net::SchemefulSite(GURL(cfgs[2].url));
@@ -535,8 +534,7 @@ TEST_F(SessionStoreImplTest, DropLowerSchemaVersionSessions) {
       {"https://c.bar.test/index.html", "session2", "https://bar.test"},
   };
 
-  SessionStore::SessionsMap saved_sessions =
-      CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
+  CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
 
   AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kDeviceBoundSessions,
@@ -558,8 +556,7 @@ TEST_F(SessionStoreImplTest, DropHigherSchemaVersionSessions) {
       {"https://c.bar.test/index.html", "session2", "https://bar.test"},
   };
 
-  SessionStore::SessionsMap saved_sessions =
-      CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
+  CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
 
   AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kDeviceBoundSessions,

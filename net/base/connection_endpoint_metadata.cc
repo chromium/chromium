@@ -92,7 +92,6 @@ std::optional<ConnectionEndpointMetadata> ConnectionEndpointMetadata::FromValue(
 
   ConnectionEndpointMetadata metadata;
 
-  std::vector<std::string> alpns;
   for (const base::Value& alpn : *alpns_list) {
     if (!alpn.is_string())
       return std::nullopt;

@@ -215,7 +215,6 @@ class WritersTest : public TestWithTaskEnvironment {
     TestHttpCacheTransaction* transaction = transactions_.begin()->get();
     TestCompletionCallback callback;
 
-    std::string content;
     int rv = 0;
     auto buf = base::MakeRefCounted<IOBufferWithSize>(5);
     rv = writers_->Read(buf.get(), 5, callback.callback(), transaction);
@@ -741,7 +740,6 @@ TEST_F(WritersTest, ReadMultipleDeleteWaitingTransaction) {
   AddTransactionToExistingWriters();
   AddTransactionToExistingWriters();
 
-  std::vector<std::string> contents(4);
   ReadAllDeleteTransaction(DeleteTransactionType::WAITING);
 }
 
@@ -754,7 +752,6 @@ TEST_F(WritersTest, ReadMultipleDeleteIdleTransaction) {
   AddTransactionToExistingWriters();
   AddTransactionToExistingWriters();
 
-  std::vector<std::string> contents(3);
   ReadAllDeleteTransaction(DeleteTransactionType::IDLE);
 }
 

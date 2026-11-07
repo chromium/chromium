@@ -263,7 +263,6 @@ TEST(CookieUtilTest, GetCookieDomainWithString_UrlSubdomain) {
 // is not allowed.
 TEST(CookieUtilTest, GetCookieDomainWithString_SubstringButUrlNotSubdomain) {
   CookieInclusionStatus status;
-  std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
       GURL("http://myglobex.com"), "globex.com", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(

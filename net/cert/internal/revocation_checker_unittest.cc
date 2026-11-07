@@ -483,12 +483,6 @@ TEST(RevocationChecker, SkipEntireInvalidCRLDistributionPoints) {
   policy.allow_unable_to_check = false;
   policy.allow_missing_info = false;
 
-  std::string crl_data_as_string_for_some_reason =
-      BuildCrl(root->GetSubject(), root->GetKey(),
-               /*revoked_serials=*/{});
-  std::vector<uint8_t> crl_data(crl_data_as_string_for_some_reason.begin(),
-                                crl_data_as_string_for_some_reason.end());
-
   // No methods on |mock_fetcher| should be called.
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
 

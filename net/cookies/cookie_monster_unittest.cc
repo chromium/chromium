@@ -117,7 +117,6 @@ const char kTopLevelDomainPlus1[] = "http://www.harvard.edu";
 const char kTopLevelDomainPlus2[] = "http://www.math.harvard.edu";
 const char kTopLevelDomainPlus2Secure[] = "https://www.math.harvard.edu";
 const char kTopLevelDomainPlus3[] = "http://www.bourbaki.math.harvard.edu";
-const char kOtherDomain[] = "http://www.mit.edu";
 
 struct CookieMonsterTestTraits {
   static std::unique_ptr<CookieStore> Create() {
@@ -290,7 +289,6 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
         GURL(kTopLevelDomainPlus3).GetHost());
     std::string url_top_level_domain_secure(
         GURL(kTopLevelDomainPlus2Secure).GetHost());
-    std::string url_other(GURL(kOtherDomain).GetHost());
 
     this->DeleteAll(cm);
 
@@ -2412,7 +2410,6 @@ TEST_F(CookieMonsterTest, TestPartitionedCookiesGarbageCollection_MaxCookies) {
   EXPECT_THAT(cookies, CookieStringIs(
                            testing::Not(testing::Contains(testing::Key("0")))));
   for (size_t i = 1; i < 181; ++i) {
-    std::string cookie = base::StrCat({base::NumberToString(i), "=0"});
     EXPECT_THAT(cookies, CookieStringIs(testing::Contains(
                              testing::Key(base::NumberToString(i)))))
         << "Failed to find cookie " << i;

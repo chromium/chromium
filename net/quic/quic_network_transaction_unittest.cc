@@ -180,7 +180,6 @@ std::string GenerateQuicAltSvcHeaderValue(
     std::string host,
     uint16_t port) {
   std::string value;
-  std::string version_string;
   bool first_version = true;
   for (const auto& version : versions) {
     if (first_version) {

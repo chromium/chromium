@@ -88,7 +88,6 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
 
   // Parse request's the first header line.
   // Request main main header, eg. GET /foobar.html HTTP/1.1
-  std::string request_headers;
   {
     const std::string header_line = ShiftLine();
     http_request_->all_headers += header_line + "\r\n";

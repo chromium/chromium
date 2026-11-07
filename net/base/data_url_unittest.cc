@@ -436,7 +436,6 @@ TEST_P(DataURLTest, Image) {
   EXPECT_TRUE(charset.empty());
 
   ASSERT_TRUE(headers);
-  std::string value;
   EXPECT_EQ(headers->GetStatusLine(), "HTTP/1.1 200 OK");
   EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"), "image/png");
 }

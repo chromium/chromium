@@ -123,7 +123,6 @@ TEST_F(BrotliSourceStreamTest, IgnoreExtraData) {
                           MockSourceStream::SYNC);
   // Add an EOF.
   source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
-  std::string actual_output;
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
   EXPECT_EQ(0, bytes_read);

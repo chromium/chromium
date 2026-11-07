@@ -3058,7 +3058,6 @@ TEST_F(TcpConnectJobTest, OneConnectorGetLoadState) {
 
   // Start the request, initially waiting on DNS.
   EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
-  std::vector<ConnectionAttempt> expected_connection_attempts;
   EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
   // DNS request returns some IP addresses, but does not complete. We start
@@ -3104,7 +3103,6 @@ TEST_F(TcpConnectJobTest, TwoConnectorsGetLoadState) {
 
   // Start the request, initially waiting on DNS.
   EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
-  std::vector<ConnectionAttempt> expected_connection_attempts;
   EXPECT_EQ(connect_job_->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
   // DNS request returns some IP addresses, but does not complete. We start

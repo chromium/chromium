@@ -147,7 +147,6 @@ TEST_P(ProofTest, Verify) {
   bool ok, first_ok;
   quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain;
   quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> first_chain;
-  string error_details;
   quic::QuicCryptoProof proof, first_proof;
   quic::QuicSocketAddress server_addr;
   quic::QuicSocketAddress client_addr;
@@ -285,7 +284,6 @@ TEST_P(ProofTest, UseAfterFree) {
   bool called = false;
   bool ok;
   quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain;
-  string error_details;
   quic::QuicCryptoProof proof;
   quic::QuicSocketAddress server_addr;
   quic::QuicSocketAddress client_addr;

@@ -1843,7 +1843,6 @@ TEST_F(DelayedStreamSocketTest, OnUploadSpaceAvailableSurfacesDrainError) {
   // pending_write_callback_ regardless of `pending_write_buffer_`).
   constexpr int kCap = 16 * 1024;
   const std::string kFirstData(kCap + 4 * 1024, 'a');
-  const std::string kFirstChunkData(kCap, 'a');
   const std::string kSecondData(4 * 1024, 'b');
   // First inner Write returns SYNC error; the buffer is Reset and the
   // pending Write2 callback gets that error.

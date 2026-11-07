@@ -144,7 +144,6 @@ TEST(AddressListTest, CreateFromIPAddressList) {
 
   AddressList test_list =
       AddressList::CreateFromIPAddressList(ip_list, std::move(aliases));
-  std::string canonical_name;
   EXPECT_THAT(test_list.dns_aliases(), UnorderedElementsAre(kCanonicalName));
   EXPECT_EQ(std::size(tests), test_list.size());
 }

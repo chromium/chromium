@@ -443,7 +443,6 @@ TEST(InputFileParsersTest, ParseCertificatesFileInvalidTimestamp) {
       "E2j3m+jTVIv3CZ+ivGxggZQ8ZYN8FJ/iTW3pXGojogHh0NRJJ8dM\n"
       "-----END CERTIFICATE-----";
 
-  std::string missing_timestamp = certificate;
   EXPECT_FALSE(ParseCertificatesFile(certificate, &pinsets, &unused));
 
   std::string incorrect_timestamp = bad_timestamp_prefix + certificate;

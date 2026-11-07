@@ -3498,7 +3498,6 @@ TEST_F(CertVerifyProcBuiltinTest,
 
   const std::string kSctList = "SCT list";
   const std::string kLog1 = "log1";
-  const std::string kLog2 = "log2";
   base::Time now = base::Time::Now();
   base::Time t1 = now - base::Days(2);
   base::Time future_t = now + base::Days(1);

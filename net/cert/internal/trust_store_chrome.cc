@@ -257,7 +257,6 @@ ChromeRootStoreData::CreateFromRootStoreProto(
         std::move(chrome_root_store_data_anchor.value()));
   }
 
-  std::vector<ChromeRootStoreData::Anchor> additional_certs;
   for (const auto& anchor : proto.additional_certs()) {
     std::optional<ChromeRootStoreData::Anchor> chrome_root_store_data_anchor =
         CreateChromeRootStoreDataAnchor(anchor);

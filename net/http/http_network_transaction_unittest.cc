@@ -10627,7 +10627,6 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
 
-  std::string response_data;
   auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
   rv = trans.Read(buf.get(), 256, callback.callback());
   EXPECT_EQ(1, callback.GetResult(rv));
@@ -10757,7 +10756,6 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
 
-  std::string response_data;
   auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
   EXPECT_EQ(1, trans->Read(buf.get(), 256, callback.callback()));
   trans.reset();
@@ -10863,7 +10861,6 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyLoadTimingTwoHttpRequests) {
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
 
-  std::string response_data;
   auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
   rv = trans->Read(buf.get(), 256, callback.callback());
   EXPECT_EQ(1, callback.GetResult(rv));
@@ -19097,7 +19094,6 @@ TEST_P(HttpNetworkTransactionTest, IdentifyQuicBroken) {
   url::SchemeHostPort server("https", "origin.example.org", 443);
   HostPortPair alternative("alternative.example.org", 443);
   std::string origin_url = "https://origin.example.org:443";
-  std::string alternative_url = "https://alternative.example.org:443";
 
   // Negotiate HTTP/1.1 with alternative.example.org.
   SSLSocketDataProvider ssl(ASYNC, OK);
@@ -19158,8 +19154,6 @@ TEST_P(HttpNetworkTransactionTest, IdentifyQuicNotBroken) {
   HostPortPair alternative1("alternative1.example.org", 443);
   HostPortPair alternative2("alternative2.example.org", 443);
   std::string origin_url = "https://origin.example.org:443";
-  std::string alternative_url1 = "https://alternative1.example.org:443";
-  std::string alternative_url2 = "https://alternative2.example.org:443";
 
   // Negotiate HTTP/1.1 with alternative1.example.org.
   SSLSocketDataProvider ssl(ASYNC, OK);
@@ -25860,7 +25854,6 @@ void CheckContentEncodingMatching(SpdySessionDependencies* session_deps,
   };
 
   std::string response_code = "200 OK";
-  std::string extra;
   if (!location.empty()) {
     response_code = "301 Redirect\r\nLocation: ";
     response_code.append(location);

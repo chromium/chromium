@@ -98,7 +98,6 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
         temp_dir_.GetPath().Append(cookie_filename), client_task_runner_,
         background_task_runner_, /*restore_old_session_cookies=*/true,
         /*crypto_delegate=*/nullptr, /*enable_exclusive_access=*/false);
-    std::vector<CanonicalCookie*> cookies;
     Load();
     ASSERT_EQ(0u, cookies_.size());
     // Creates kNumDomains*kCookiesPerDomain cookies from kNumDomains eTLD+1s.

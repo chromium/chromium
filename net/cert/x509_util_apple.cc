@@ -71,7 +71,6 @@ CreateSecCertificateArrayForX509Certificate(
       CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
   if (!cert_list)
     return base::apple::ScopedCFTypeRef<CFMutableArrayRef>();
-  std::string bytes;
   base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert(
       CreateSecCertificateFromBytes(CryptoBufferAsSpan(cert->cert_buffer())));
   if (!sec_cert) {
