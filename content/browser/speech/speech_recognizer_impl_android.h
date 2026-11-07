@@ -9,9 +9,10 @@
 
 #include <memory>
 
-#include "base/android/scoped_java_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/speech/speech_recognizer.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_thread.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
 
@@ -21,6 +22,8 @@ class SpeechRecognitionEventListener;
 
 class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
  public:
+  class UiPeer;
+
   SpeechRecognizerImplAndroid(SpeechRecognitionEventListener* listener,
                               int session_id);
 
@@ -38,18 +41,6 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
   bool IsActive() const override;
   bool IsCapturingAudio() const override;
 
-  // Called from Java methods via JNI.
-  void OnAudioStart(JNIEnv* env);
-  void OnSoundStart(JNIEnv* env);
-  void OnSoundEnd(JNIEnv* env);
-  void OnAudioEnd(JNIEnv* env);
-  void OnRecognitionResults(JNIEnv* env,
-                            const base::android::JavaRef<jobjectArray>& strings,
-                            const base::android::JavaRef<jfloatArray>& floats,
-                            bool interim);
-  void OnRecognitionError(JNIEnv* env, int32_t error);
-  void OnRecognitionEnd(JNIEnv* env);
-
  private:
   enum State {
     STATE_IDLE = 0,
@@ -57,16 +48,20 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
     STATE_AWAITING_FINAL_RESULT
   };
 
-  void StartRecognitionOnUIThread(const std::string& language,
-                                  bool continuous,
-                                  bool interim_results);
+  void OnAudioStartOnIOThread();
+  void OnSoundStartOnIOThread();
+  void OnSoundEndOnIOThread();
+  void OnAudioEndOnIOThread();
   void OnRecognitionResultsOnIOThread(
       std::vector<media::mojom::WebSpeechRecognitionResultPtr> results);
+  void OnRecognitionErrorOnIOThread(int32_t error);
+  void OnRecognitionEndOnIOThread();
 
   ~SpeechRecognizerImplAndroid() override;
 
-  base::android::ScopedJavaGlobalRef<jobject> j_recognition_;
   State state_;
+  std::unique_ptr<UiPeer, BrowserThread::DeleteOnUIThread> ui_peer_;
+  base::WeakPtrFactory<SpeechRecognizerImplAndroid> io_weak_factory_{this};
 };
 
 }  // namespace content

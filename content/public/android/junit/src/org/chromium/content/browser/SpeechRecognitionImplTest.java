@@ -12,7 +12,6 @@ import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -28,6 +27,8 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,14 +64,22 @@ public class SpeechRecognitionImplTest {
     @Mock private SpeechRecognitionImpl.Natives mNativesMock;
     @Mock private SpeechRecognizer mRecognizerMock;
 
+    private JniRawPtr<SpeechRecognitionImpl.NativeUiPeer> mNativePtr;
     private SpeechRecognitionImpl mSpeechRecognition;
     private RecognitionListener mListener;
 
     @Before
     public void setUp() {
         SpeechRecognitionImplJni.setInstanceForTesting(mNativesMock);
-        mSpeechRecognition = new SpeechRecognitionImpl(NATIVE_PTR, mRecognizerMock);
+        mNativePtr = JniRawPtr.createForTesting(NATIVE_PTR);
+        mSpeechRecognition = new SpeechRecognitionImpl(mNativePtr, mRecognizerMock);
         mListener = mSpeechRecognition.getListenerForTesting();
+    }
+
+    @After
+    public void tearDown() {
+        mSpeechRecognition.onNativeDestroyed();
+        SpeechRecognitionImplJni.setInstanceForTesting(null);
     }
 
     private void startRecognition(boolean continuous, boolean interimResults) {
@@ -98,31 +107,37 @@ public class SpeechRecognitionImplTest {
 
     @Test
     public void testCreateSpeechRecognitionWiresShadowRecognizer() {
-        SpeechRecognitionImpl impl = SpeechRecognitionImpl.createSpeechRecognition(NATIVE_PTR);
-        impl.startRecognition(LANGUAGE, /* continuous= */ false, /* interimResults= */ true);
+        JniRawPtr<SpeechRecognitionImpl.NativeUiPeer> nativePtr =
+                JniRawPtr.createForTesting(NATIVE_PTR);
+        SpeechRecognitionImpl impl = SpeechRecognitionImpl.createSpeechRecognition(nativePtr);
+        try {
+            impl.startRecognition(LANGUAGE, /* continuous= */ false, /* interimResults= */ true);
 
-        SpeechRecognizer recognizer = ShadowSpeechRecognizer.getLatestSpeechRecognizer();
-        assertNotNull(recognizer);
-        ShadowLooper.idleMainLooper();
-        ShadowSpeechRecognizer shadowRecognizer = shadowOf(recognizer);
+            SpeechRecognizer recognizer = ShadowSpeechRecognizer.getLatestSpeechRecognizer();
+            assertNotNull(recognizer);
+            ShadowLooper.idleMainLooper();
+            ShadowSpeechRecognizer shadowRecognizer = shadowOf(recognizer);
 
-        shadowRecognizer.triggerOnPartialResults(resultsBundle("hello"));
-        verify(mNativesMock)
-                .onRecognitionResults(
-                        eq(NATIVE_PTR),
-                        aryEq(new String[] {"hello"}),
-                        aryEq(FULL_CONFIDENCE),
-                        eq(true));
+            shadowRecognizer.triggerOnPartialResults(resultsBundle("hello"));
+            verify(mNativesMock)
+                    .onRecognitionResults(
+                            eq(nativePtr),
+                            aryEq(new String[] {"hello"}),
+                            aryEq(FULL_CONFIDENCE),
+                            eq(true));
 
-        shadowRecognizer.triggerOnResults(resultsBundle("hello world"));
-        verify(mNativesMock)
-                .onRecognitionResults(
-                        eq(NATIVE_PTR),
-                        aryEq(new String[] {"hello world"}),
-                        aryEq(FULL_CONFIDENCE),
-                        eq(false));
-        verify(mNativesMock).onRecognitionEnd(NATIVE_PTR);
-        assertTrue(shadowRecognizer.isDestroyed());
+            shadowRecognizer.triggerOnResults(resultsBundle("hello world"));
+            verify(mNativesMock)
+                    .onRecognitionResults(
+                            eq(nativePtr),
+                            aryEq(new String[] {"hello world"}),
+                            aryEq(FULL_CONFIDENCE),
+                            eq(false));
+            verify(mNativesMock).onRecognitionEnd(nativePtr);
+            assertTrue(shadowRecognizer.isDestroyed());
+        } finally {
+            impl.onNativeDestroyed();
+        }
     }
 
     @Test
@@ -133,11 +148,11 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(true));
-        verify(mNativesMock, never()).onRecognitionEnd(anyLong());
+        verify(mNativesMock, never()).onRecognitionEnd(any());
     }
 
     @Test
@@ -149,19 +164,19 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(true));
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello world"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(true));
         verify(mNativesMock, never())
-                .onRecognitionResults(anyLong(), any(), any(), /* provisional= */ eq(false));
-        verify(mNativesMock, never()).onRecognitionEnd(anyLong());
+                .onRecognitionResults(any(), any(), any(), /* provisional= */ eq(false));
+        verify(mNativesMock, never()).onRecognitionEnd(any());
     }
 
     @Test
@@ -180,13 +195,13 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello world"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(true));
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"你好世界"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(true));
@@ -202,7 +217,7 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"translating"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(true));
@@ -214,7 +229,7 @@ public class SpeechRecognitionImplTest {
 
         mListener.onPartialResults(resultsBundle("hello"));
 
-        verify(mNativesMock, never()).onRecognitionResults(anyLong(), any(), any(), anyBoolean());
+        verify(mNativesMock, never()).onRecognitionResults(any(), any(), any(), anyBoolean());
     }
 
     @Test
@@ -227,11 +242,11 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello world"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(false));
-        verify(mNativesMock, never()).onRecognitionEnd(anyLong());
+        verify(mNativesMock, never()).onRecognitionEnd(any());
         verify(mRecognizerMock, never()).destroy();
     }
 
@@ -250,14 +265,14 @@ public class SpeechRecognitionImplTest {
         mListener.onPartialResults(finalPartialResultsBundle("hello world"));
 
         verify(mNativesMock, never())
-                .onRecognitionResults(anyLong(), any(), any(), /* provisional= */ eq(true));
+                .onRecognitionResults(any(), any(), any(), /* provisional= */ eq(true));
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello world"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(false));
-        verify(mNativesMock, never()).onRecognitionEnd(anyLong());
+        verify(mNativesMock, never()).onRecognitionEnd(any());
     }
 
     @Test
@@ -268,11 +283,11 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello world"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(false));
-        verify(mNativesMock, never()).onRecognitionEnd(anyLong());
+        verify(mNativesMock, never()).onRecognitionEnd(any());
         verify(mRecognizerMock, never()).destroy();
     }
 
@@ -290,13 +305,13 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello world"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(false));
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"how are you"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(false));
@@ -309,8 +324,8 @@ public class SpeechRecognitionImplTest {
         mListener.onEndOfSegmentedSession();
 
         verify(mRecognizerMock).destroy();
-        verify(mNativesMock).onRecognitionEnd(NATIVE_PTR);
-        verify(mNativesMock, never()).onRecognitionError(anyLong(), anyInt());
+        verify(mNativesMock).onRecognitionEnd(mNativePtr);
+        verify(mNativesMock, never()).onRecognitionError(any(), anyInt());
     }
 
     @Test
@@ -328,22 +343,22 @@ public class SpeechRecognitionImplTest {
         mListener.onEndOfSegmentedSession();
 
         InOrder inOrder = inOrder(mNativesMock, mRecognizerMock);
-        inOrder.verify(mNativesMock).onAudioStart(NATIVE_PTR);
-        inOrder.verify(mNativesMock).onSoundStart(NATIVE_PTR);
+        inOrder.verify(mNativesMock).onAudioStart(mNativePtr);
+        inOrder.verify(mNativesMock).onSoundStart(mNativePtr);
         inOrder.verify(mRecognizerMock).stopListening();
-        inOrder.verify(mNativesMock).onSoundEnd(NATIVE_PTR);
-        inOrder.verify(mNativesMock).onAudioEnd(NATIVE_PTR);
+        inOrder.verify(mNativesMock).onSoundEnd(mNativePtr);
+        inOrder.verify(mNativesMock).onAudioEnd(mNativePtr);
         inOrder.verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello world"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(false));
         inOrder.verify(mRecognizerMock).destroy();
-        inOrder.verify(mNativesMock).onRecognitionEnd(NATIVE_PTR);
-        verify(mNativesMock, times(1)).onSoundEnd(NATIVE_PTR);
-        verify(mNativesMock, times(1)).onAudioEnd(NATIVE_PTR);
-        verify(mNativesMock, never()).onRecognitionError(anyLong(), anyInt());
+        inOrder.verify(mNativesMock).onRecognitionEnd(mNativePtr);
+        verify(mNativesMock, times(1)).onSoundEnd(mNativePtr);
+        verify(mNativesMock, times(1)).onAudioEnd(mNativePtr);
+        verify(mNativesMock, never()).onRecognitionError(any(), anyInt());
     }
 
     @Test
@@ -354,8 +369,8 @@ public class SpeechRecognitionImplTest {
 
         verify(mRecognizerMock).cancel();
         verify(mRecognizerMock).destroy();
-        verify(mNativesMock).onRecognitionError(NATIVE_PTR, SpeechRecognitionErrorCode.ABORTED);
-        verify(mNativesMock).onRecognitionEnd(NATIVE_PTR);
+        verify(mNativesMock).onRecognitionError(mNativePtr, SpeechRecognitionErrorCode.ABORTED);
+        verify(mNativesMock).onRecognitionEnd(mNativePtr);
 
         mListener.onPartialResults(resultsBundle("hello"));
         mListener.onSegmentResults(resultsBundle("hello world"));
@@ -375,12 +390,12 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello world"}),
                         aryEq(new float[] {0.9f}),
                         eq(false));
         verify(mRecognizerMock).destroy();
-        verify(mNativesMock).onRecognitionEnd(NATIVE_PTR);
+        verify(mNativesMock).onRecognitionEnd(mNativePtr);
     }
 
     @Test
@@ -391,9 +406,9 @@ public class SpeechRecognitionImplTest {
         // results bundle.
         mListener.onResults(new Bundle());
 
-        verify(mNativesMock, never()).onRecognitionResults(anyLong(), any(), any(), anyBoolean());
+        verify(mNativesMock, never()).onRecognitionResults(any(), any(), any(), anyBoolean());
         verify(mRecognizerMock).destroy();
-        verify(mNativesMock).onRecognitionEnd(NATIVE_PTR);
+        verify(mNativesMock).onRecognitionEnd(mNativePtr);
     }
 
     @Test
@@ -411,8 +426,8 @@ public class SpeechRecognitionImplTest {
         mListener.onSegmentResults(new Bundle());
         mListener.onSegmentResults(resultsBundle(""));
 
-        verify(mNativesMock, never()).onRecognitionResults(anyLong(), any(), any(), anyBoolean());
-        verify(mNativesMock, never()).onRecognitionEnd(anyLong());
+        verify(mNativesMock, never()).onRecognitionResults(any(), any(), any(), anyBoolean());
+        verify(mNativesMock, never()).onRecognitionEnd(any());
     }
 
     @Test
@@ -439,25 +454,25 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello", "hallo"}),
                         aryEq(new float[] {1.0f, 1.0f}),
                         eq(false));
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"first", "second"}),
                         aryEq(new float[] {0.9f, 0.0f}),
                         eq(false));
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"one", "two"}),
                         aryEq(new float[] {1.0f, 1.0f}),
                         eq(false));
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"world"}),
                         aryEq(FULL_CONFIDENCE),
                         eq(false));
@@ -473,7 +488,7 @@ public class SpeechRecognitionImplTest {
 
         verify(mNativesMock)
                 .onRecognitionResults(
-                        eq(NATIVE_PTR),
+                        eq(mNativePtr),
                         aryEq(new String[] {"hello", "hallo"}),
                         aryEq(new float[] {1.0f, 1.0f}),
                         eq(false));
@@ -537,17 +552,17 @@ public class SpeechRecognitionImplTest {
         mListener.onEndOfSpeech();
         mListener.onSegmentResults(resultsBundle("second sentence"));
 
-        verify(mNativesMock, times(1)).onAudioStart(NATIVE_PTR);
-        verify(mNativesMock, times(1)).onSoundStart(NATIVE_PTR);
-        verify(mNativesMock, never()).onSoundEnd(anyLong());
-        verify(mNativesMock, never()).onAudioEnd(anyLong());
+        verify(mNativesMock, times(1)).onAudioStart(mNativePtr);
+        verify(mNativesMock, times(1)).onSoundStart(mNativePtr);
+        verify(mNativesMock, never()).onSoundEnd(any());
+        verify(mNativesMock, never()).onAudioEnd(any());
 
         mListener.onEndOfSegmentedSession();
         InOrder inOrder = inOrder(mNativesMock, mRecognizerMock);
-        inOrder.verify(mNativesMock).onSoundEnd(NATIVE_PTR);
-        inOrder.verify(mNativesMock).onAudioEnd(NATIVE_PTR);
+        inOrder.verify(mNativesMock).onSoundEnd(mNativePtr);
+        inOrder.verify(mNativesMock).onAudioEnd(mNativePtr);
         inOrder.verify(mRecognizerMock).destroy();
-        inOrder.verify(mNativesMock).onRecognitionEnd(NATIVE_PTR);
+        inOrder.verify(mNativesMock).onRecognitionEnd(mNativePtr);
     }
 
     @Test
@@ -557,28 +572,42 @@ public class SpeechRecognitionImplTest {
         // Ignored while in STATE_IDLE before onReadyForSpeech.
         mListener.onBeginningOfSpeech();
         mListener.onEndOfSpeech();
-        verify(mNativesMock, never()).onSoundStart(anyLong());
-        verify(mNativesMock, never()).onSoundEnd(anyLong());
-        verify(mNativesMock, never()).onAudioEnd(anyLong());
+        verify(mNativesMock, never()).onSoundStart(any());
+        verify(mNativesMock, never()).onSoundEnd(any());
+        verify(mNativesMock, never()).onAudioEnd(any());
 
         // Transition to STATE_AWAITING_SPEECH, then end speech without beginning speech.
         mListener.onReadyForSpeech(new Bundle());
-        verify(mNativesMock, times(1)).onAudioStart(NATIVE_PTR);
+        verify(mNativesMock, times(1)).onAudioStart(mNativePtr);
         mListener.onEndOfSpeech();
-        verify(mNativesMock, never()).onSoundEnd(anyLong());
-        verify(mNativesMock, times(1)).onAudioEnd(NATIVE_PTR);
+        verify(mNativesMock, never()).onSoundEnd(any());
+        verify(mNativesMock, times(1)).onAudioEnd(mNativePtr);
 
         // Any trailing onReadyForSpeech or onBeginningOfSpeech arriving after onEndOfSpeech (while
         // awaiting final result) must not restart audio or sound capture.
         mListener.onReadyForSpeech(new Bundle());
         mListener.onBeginningOfSpeech();
-        verify(mNativesMock, times(1)).onAudioStart(NATIVE_PTR);
-        verify(mNativesMock, never()).onSoundStart(anyLong());
+        verify(mNativesMock, times(1)).onAudioStart(mNativePtr);
+        verify(mNativesMock, never()).onSoundStart(any());
 
         // When onError or onResults finally terminates the session, onAudioEnd is not repeated.
         mListener.onError(SpeechRecognizer.ERROR_NO_MATCH);
-        verify(mNativesMock, times(1)).onAudioEnd(NATIVE_PTR);
-        verify(mNativesMock).onRecognitionError(NATIVE_PTR, SpeechRecognitionErrorCode.NO_MATCH);
-        verify(mNativesMock).onRecognitionEnd(NATIVE_PTR);
+        verify(mNativesMock, times(1)).onAudioEnd(mNativePtr);
+        verify(mNativesMock).onRecognitionError(mNativePtr, SpeechRecognitionErrorCode.NO_MATCH);
+        verify(mNativesMock).onRecognitionEnd(mNativePtr);
+    }
+
+    @Test
+    public void testOnNativeDestroyedReleasesWithoutCallingNative() {
+        startRecognition(/* continuous= */ true, /* interimResults= */ true);
+        mListener.onReadyForSpeech(new Bundle());
+        verify(mNativesMock).onAudioStart(mNativePtr);
+
+        mSpeechRecognition.onNativeDestroyed();
+        verify(mRecognizerMock).destroy();
+
+        mListener.onBeginningOfSpeech();
+        mListener.onResults(resultsBundle("hello"));
+        verifyNoMoreInteractions(mNativesMock);
     }
 }

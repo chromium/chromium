@@ -23,6 +23,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -81,12 +85,14 @@ public class SpeechRecognitionImpl {
     // PROVIDER_MIN_VERSION as selected by initialize().
     private static @Nullable ComponentName sRecognitionProvider;
 
+    @JniType("::content::SpeechRecognizerImplAndroid::UiPeer")
+    interface NativeUiPeer extends JniTypeToken {}
+
     private final Intent mIntent;
     private final RecognitionListener mListener;
     private @Nullable SpeechRecognizer mRecognizer;
 
-    // Native pointer to C++ SpeechRecognizerImplAndroid.
-    private long mNativeSpeechRecognizerImplAndroid;
+    private @Nullable JniRawPtr<NativeUiPeer> mNativeSpeechRecognizerImplAndroid;
 
     // Remember if we are using continuous recognition.
     private boolean mContinuous;
@@ -99,7 +105,7 @@ public class SpeechRecognitionImpl {
 
         @Override
         public void onBeginningOfSpeech() {
-            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+            if (mNativeSpeechRecognizerImplAndroid == null) return;
             if (mState != STATE_AWAITING_SPEECH) return;
 
             mState = STATE_CAPTURING_SPEECH;
@@ -117,7 +123,7 @@ public class SpeechRecognitionImpl {
             // equivalent (onsoundend) event. Thus, the only way to provide a valid onsoundend
             // event is to trigger it when the last result is received or the session is aborted.
             if (!mContinuous) {
-                if (mNativeSpeechRecognizerImplAndroid == 0) return;
+                if (mNativeSpeechRecognizerImplAndroid == null) return;
                 if (mState == STATE_AWAITING_SPEECH || mState == STATE_CAPTURING_SPEECH) {
                     if (mState == STATE_CAPTURING_SPEECH) {
                         SpeechRecognitionImplJni.get()
@@ -181,7 +187,7 @@ public class SpeechRecognitionImpl {
 
         @Override
         public void onReadyForSpeech(Bundle bundle) {
-            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+            if (mNativeSpeechRecognizerImplAndroid == null) return;
             if (mState != STATE_IDLE) return;
 
             mState = STATE_AWAITING_SPEECH;
@@ -211,7 +217,7 @@ public class SpeechRecognitionImpl {
         public void onRmsChanged(float rms) {}
 
         private void handleResults(Bundle bundle, boolean provisional) {
-            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+            if (mNativeSpeechRecognizerImplAndroid == null) return;
             if (provisional && !mInterimResults) return;
 
             // Not every bundle carries a transcript: an empty bundle ends a continuous session
@@ -320,7 +326,9 @@ public class SpeechRecognitionImpl {
     }
 
     @VisibleForTesting
-    SpeechRecognitionImpl(long nativeSpeechRecognizerImplAndroid, SpeechRecognizer recognizer) {
+    SpeechRecognitionImpl(
+            JniRawPtr<NativeUiPeer> nativeSpeechRecognizerImplAndroid,
+            SpeechRecognizer recognizer) {
         mContinuous = false;
         mInterimResults = false;
         mNativeSpeechRecognizerImplAndroid = nativeSpeechRecognizerImplAndroid;
@@ -330,24 +338,7 @@ public class SpeechRecognitionImpl {
         mRecognizer.setRecognitionListener(mListener);
     }
 
-    // This function destroys everything when recognition is done, taking care to properly tear
-    // down by calling On{Sound,Audio}End if corresponding On{Audio,Sound}Start were called.
-    private void terminate(int error) {
-        if (mNativeSpeechRecognizerImplAndroid == 0) return;
-
-        if (mState == STATE_AWAITING_SPEECH || mState == STATE_CAPTURING_SPEECH) {
-            if (mState == STATE_CAPTURING_SPEECH) {
-                SpeechRecognitionImplJni.get().onSoundEnd(mNativeSpeechRecognizerImplAndroid);
-            }
-            SpeechRecognitionImplJni.get().onAudioEnd(mNativeSpeechRecognizerImplAndroid);
-        }
-        mState = STATE_IDLE;
-
-        if (error != SpeechRecognitionErrorCode.NONE) {
-            SpeechRecognitionImplJni.get()
-                    .onRecognitionError(mNativeSpeechRecognizerImplAndroid, error);
-        }
-
+    private void destroyRecognizer() {
         try {
             if (mRecognizer != null) {
                 mRecognizer.destroy();
@@ -358,13 +349,47 @@ public class SpeechRecognitionImpl {
             Log.w(TAG, "Destroy threw exception " + mRecognizer, e);
         }
         mRecognizer = null;
-        SpeechRecognitionImplJni.get().onRecognitionEnd(mNativeSpeechRecognizerImplAndroid);
-        mNativeSpeechRecognizerImplAndroid = 0;
+    }
+
+    // This function destroys everything when recognition is done, taking care to properly tear
+    // down by calling On{Sound,Audio}End if corresponding On{Audio,Sound}Start were called.
+    private void terminate(int error) {
+        JniRawPtr<NativeUiPeer> nativePtr = mNativeSpeechRecognizerImplAndroid;
+        if (nativePtr == null) return;
+        mNativeSpeechRecognizerImplAndroid = null;
+
+        if (mState == STATE_AWAITING_SPEECH || mState == STATE_CAPTURING_SPEECH) {
+            if (mState == STATE_CAPTURING_SPEECH) {
+                SpeechRecognitionImplJni.get().onSoundEnd(nativePtr);
+            }
+            SpeechRecognitionImplJni.get().onAudioEnd(nativePtr);
+        }
+        mState = STATE_IDLE;
+
+        if (error != SpeechRecognitionErrorCode.NONE) {
+            SpeechRecognitionImplJni.get().onRecognitionError(nativePtr, error);
+        }
+
+        destroyRecognizer();
+        SpeechRecognitionImplJni.get().onRecognitionEnd(nativePtr);
+        nativePtr.release();
     }
 
     @CalledByNative
     @VisibleForTesting
-    static SpeechRecognitionImpl createSpeechRecognition(long nativeSpeechRecognizerImplAndroid) {
+    void onNativeDestroyed() {
+        if (mNativeSpeechRecognizerImplAndroid != null) {
+            mNativeSpeechRecognizerImplAndroid.release();
+            mNativeSpeechRecognizerImplAndroid = null;
+        }
+        mState = STATE_IDLE;
+        destroyRecognizer();
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    static SpeechRecognitionImpl createSpeechRecognition(
+            JniRawPtr<NativeUiPeer> nativeSpeechRecognizerImplAndroid) {
         SpeechRecognizer recognizer;
         if (sRecognitionProvider != null) {
             recognizer =
@@ -447,22 +472,22 @@ public class SpeechRecognitionImpl {
     @NativeMethods
     interface Natives {
         // Native JNI calls to content/browser/speech/speech_recognizer_impl_android.cc
-        void onAudioStart(long nativeSpeechRecognizerImplAndroid);
+        void onAudioStart(JniPtr<NativeUiPeer> self);
 
-        void onSoundStart(long nativeSpeechRecognizerImplAndroid);
+        void onSoundStart(JniPtr<NativeUiPeer> self);
 
-        void onSoundEnd(long nativeSpeechRecognizerImplAndroid);
+        void onSoundEnd(JniPtr<NativeUiPeer> self);
 
-        void onAudioEnd(long nativeSpeechRecognizerImplAndroid);
+        void onAudioEnd(JniPtr<NativeUiPeer> self);
 
         void onRecognitionResults(
-                long nativeSpeechRecognizerImplAndroid,
+                JniPtr<NativeUiPeer> self,
                 String[] results,
                 float @Nullable [] scores,
                 boolean provisional);
 
-        void onRecognitionError(long nativeSpeechRecognizerImplAndroid, int error);
+        void onRecognitionError(JniPtr<NativeUiPeer> self, int error);
 
-        void onRecognitionEnd(long nativeSpeechRecognizerImplAndroid);
+        void onRecognitionEnd(JniPtr<NativeUiPeer> self);
     }
 }
