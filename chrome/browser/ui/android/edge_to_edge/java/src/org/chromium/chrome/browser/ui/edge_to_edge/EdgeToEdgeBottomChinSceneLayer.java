@@ -3,11 +3,17 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -27,9 +33,11 @@ import org.chromium.ui.resources.ResourceManager;
 @JNINamespace("android")
 @NullMarked
 public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements SceneOverlay {
+    @JniType("::android::EdgeToEdgeBottomChinSceneLayer")
+    interface NativeEdgeToEdgeBottomChinSceneLayer extends JniTypeToken {}
 
     /** Handle to the native side of this class. */
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativeEdgeToEdgeBottomChinSceneLayer> mNativePtr;
 
     /** Whether the {@link SceneLayer} is visible. */
     private boolean mIsVisible;
@@ -139,15 +147,24 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
 
     @Override
     protected void initializeNative() {
-        if (mNativePtr == 0) {
+        if (mNativePtr == null) {
             mNativePtr = EdgeToEdgeBottomChinSceneLayerJni.get().init(this);
         }
-        assert mNativePtr != 0;
+        assert mNativePtr != null;
+    }
+
+    @Override
+    public void destroy() {
+        if (mNativePtr == null) return;
+        mNativePtr.release();
+        mNativePtr = null;
+        super.destroy();
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        EdgeToEdgeBottomChinSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
+        EdgeToEdgeBottomChinSceneLayerJni.get()
+                .setContentTree(assertNonNull(mNativePtr), contentTree);
     }
 
     @Override
@@ -155,7 +172,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         EdgeToEdgeBottomChinSceneLayerJni.get()
                 .updateEdgeToEdgeBottomChinLayer(
-                        mNativePtr,
+                        assertNonNull(mNativePtr),
                         (int) viewport.width(),
                         mHeight,
                         mColor,
@@ -181,12 +198,13 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
 
     @NativeMethods
     interface Natives {
-        long init(EdgeToEdgeBottomChinSceneLayer self);
+        JniRawPtr<NativeEdgeToEdgeBottomChinSceneLayer> init(EdgeToEdgeBottomChinSceneLayer self);
 
-        void setContentTree(long nativeEdgeToEdgeBottomChinSceneLayer, SceneLayer contentTree);
+        void setContentTree(
+                JniPtr<NativeEdgeToEdgeBottomChinSceneLayer> self, SceneLayer contentTree);
 
         void updateEdgeToEdgeBottomChinLayer(
-                long nativeEdgeToEdgeBottomChinSceneLayer,
+                JniPtr<NativeEdgeToEdgeBottomChinSceneLayer> self,
                 int containerWidth,
                 int containerHeight,
                 int colorARGB,

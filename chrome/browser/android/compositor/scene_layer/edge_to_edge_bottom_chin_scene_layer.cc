@@ -12,9 +12,12 @@
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ui/android/edge_to_edge/jni_headers/EdgeToEdgeBottomChinSceneLayer_jni.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/ui_base_switches.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/edge_to_edge/jni_headers/EdgeToEdgeBottomChinSceneLayer_jni.h"
 
 using base::android::JavaRef;
 
@@ -112,13 +115,11 @@ bool EdgeToEdgeBottomChinSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static int64_t JNI_EdgeToEdgeBottomChinSceneLayer_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& jobj) {
+static jni_zero::JniRawPtr<EdgeToEdgeBottomChinSceneLayer>
+JNI_EdgeToEdgeBottomChinSceneLayer_Init(JNIEnv* env,
+                                        const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
-  EdgeToEdgeBottomChinSceneLayer* scene_layer =
-      new EdgeToEdgeBottomChinSceneLayer(env, jobj);
-  return reinterpret_cast<intptr_t>(scene_layer);
+  return jni_zero::MakeRaw(new EdgeToEdgeBottomChinSceneLayer(env, jobj));
 }
 
 }  // namespace android
