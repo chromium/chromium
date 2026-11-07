@@ -8,8 +8,11 @@
 #include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "chrome/browser/ui/android/edge_to_edge/jni_headers/EdgeToEdgeTopScalpSceneLayer_jni.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/edge_to_edge/jni_headers/EdgeToEdgeTopScalpSceneLayer_jni.h"
 
 using base::android::JavaRef;
 
@@ -80,13 +83,11 @@ bool EdgeToEdgeTopScalpSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static int64_t JNI_EdgeToEdgeTopScalpSceneLayer_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& jobj) {
+static jni_zero::JniRawPtr<EdgeToEdgeTopScalpSceneLayer>
+JNI_EdgeToEdgeTopScalpSceneLayer_Init(JNIEnv* env,
+                                      const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
-  EdgeToEdgeTopScalpSceneLayer* scene_layer =
-      new EdgeToEdgeTopScalpSceneLayer(env, jobj);
-  return reinterpret_cast<intptr_t>(scene_layer);
+  return jni_zero::MakeRaw(new EdgeToEdgeTopScalpSceneLayer(env, jobj));
 }
 
 }  // namespace android

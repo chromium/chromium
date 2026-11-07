@@ -4,11 +4,17 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -26,9 +32,11 @@ import org.chromium.ui.resources.ResourceManager;
 @JNINamespace("android")
 @NullMarked
 public class EdgeToEdgeTopScalpSceneLayer extends SceneOverlayLayer implements SceneOverlay {
+    @JniType("::android::EdgeToEdgeTopScalpSceneLayer")
+    interface NativeEdgeToEdgeTopScalpSceneLayer extends JniTypeToken {}
 
     /** Handle to the native side of this class. */
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativeEdgeToEdgeTopScalpSceneLayer> mNativePtr;
 
     /** Whether the {@link SceneLayer} is visible. */
     private boolean mIsVisible;
@@ -109,15 +117,16 @@ public class EdgeToEdgeTopScalpSceneLayer extends SceneOverlayLayer implements S
 
     @Override
     protected void initializeNative() {
-        if (mNativePtr == 0) {
+        if (mNativePtr == null) {
             mNativePtr = EdgeToEdgeTopScalpSceneLayerJni.get().init(this);
         }
-        assert mNativePtr != 0;
+        assert mNativePtr != null;
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        EdgeToEdgeTopScalpSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
+        EdgeToEdgeTopScalpSceneLayerJni.get()
+                .setContentTree(assertNonNull(mNativePtr), contentTree);
     }
 
     @Override
@@ -125,7 +134,7 @@ public class EdgeToEdgeTopScalpSceneLayer extends SceneOverlayLayer implements S
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         EdgeToEdgeTopScalpSceneLayerJni.get()
                 .updateEdgeToEdgeTopScalpLayer(
-                        mNativePtr,
+                        assertNonNull(mNativePtr),
                         (int) viewport.width(),
                         mHeight,
                         mColor,
@@ -146,19 +155,21 @@ public class EdgeToEdgeTopScalpSceneLayer extends SceneOverlayLayer implements S
 
     @Override
     public void destroy() {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
+        mNativePtr.release();
+        mNativePtr = null;
         super.destroy();
-        mNativePtr = 0;
     }
 
     @NativeMethods
     interface Natives {
-        long init(EdgeToEdgeTopScalpSceneLayer self);
+        JniRawPtr<NativeEdgeToEdgeTopScalpSceneLayer> init(EdgeToEdgeTopScalpSceneLayer self);
 
-        void setContentTree(long nativeEdgeToEdgeTopScalpSceneLayer, SceneLayer contentTree);
+        void setContentTree(
+                JniPtr<NativeEdgeToEdgeTopScalpSceneLayer> self, SceneLayer contentTree);
 
         void updateEdgeToEdgeTopScalpLayer(
-                long nativeEdgeToEdgeTopScalpSceneLayer,
+                JniPtr<NativeEdgeToEdgeTopScalpSceneLayer> self,
                 int containerWidth,
                 int containerHeight,
                 int colorARGB,
