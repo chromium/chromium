@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
@@ -254,6 +255,11 @@ class AskBeforeHttpDialogControllerUiTest
   void UseIncognitoBrowser() {
     ASSERT_EQ(nullptr, incognito_browser_.get());
     incognito_browser_ = CreateIncognitoBrowser();
+    // Window activation is asynchronous on some platforms (e.g. Wayland). Wait
+    // for the Incognito window to become active, otherwise the dialog may be
+    // shown in an inactive window and its initially focused view won't get
+    // focus.
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(incognito_browser_));
   }
   bool IsIncognito() const { return incognito_browser_ != nullptr; }
 
