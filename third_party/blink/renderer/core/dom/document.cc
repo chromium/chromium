@@ -3357,15 +3357,22 @@ void Document::NotifyDisplayLockChangedForSVGResources(const Element& element) {
   // `element` can only be a descendant of an SVG resource target if it has a
   // <foreignObject> flat-tree ancestor.
   const SVGForeignObjectElement* enclosing_foreign_object = nullptr;
-  if (svg_extensions_ && svg_extensions_->MayContainForeignObjects() &&
-      element.isConnected() && !IsFlatTreeTraversalForbidden() &&
+  if (element.isConnected() && !IsFlatTreeTraversalForbidden() &&
       !IsSlotAssignmentDirty()) {
-    for (const Node& ancestor : FlatTreeTraversal::AncestorsOf(element)) {
-      if (const auto* foreign_object =
-              DynamicTo<SVGForeignObjectElement>(ancestor)) {
-        enclosing_foreign_object = foreign_object;
-        break;
+    if (svg_extensions_ && svg_extensions_->MayContainForeignObjects()) {
+      for (const Node& ancestor : FlatTreeTraversal::AncestorsOf(element)) {
+        if (const auto* foreign_object =
+                DynamicTo<SVGForeignObjectElement>(ancestor)) {
+          enclosing_foreign_object = foreign_object;
+          break;
+        }
       }
+    }
+    // A childless non-SVG element outside <foreignObject> cannot be or contain
+    // an SVG resource target.
+    if (!enclosing_foreign_object && !element.IsSVGElement() &&
+        !FlatTreeTraversal::HasChildren(element)) {
+      return;
     }
   }
   HeapVector<Member<SVGTreeScopeResources>, 16> scope_resources(

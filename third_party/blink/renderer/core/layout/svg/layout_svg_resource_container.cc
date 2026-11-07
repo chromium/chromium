@@ -38,9 +38,11 @@ namespace {
 LocalSVGResource* ResourceForContainer(
     const LayoutSVGResourceContainer& resource_container) {
   const SVGElement& element = *resource_container.GetElement();
-  return element.GetTreeScope()
-      .EnsureSVGTreeScopedResources()
-      .ExistingResourceForId(element.GetIdAttribute());
+  SVGTreeScopeResources* scope_resources =
+      element.GetTreeScope().ExistingSVGTreeScopedResources();
+  return scope_resources
+             ? scope_resources->ExistingResourceForId(element.GetIdAttribute())
+             : nullptr;
 }
 
 float ObjectBoundingBoxUnitToUserUnits(const Length& length,

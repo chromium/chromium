@@ -967,9 +967,13 @@ void SVGElement::MarkForLayoutAndParentResourceInvalidation(
 }
 
 void SVGElement::NotifyResourceClients() const {
+  SVGTreeScopeResources* scope_resources =
+      GetTreeScope().ExistingSVGTreeScopedResources();
+  if (!scope_resources) {
+    return;
+  }
   LocalSVGResource* resource =
-      GetTreeScope().EnsureSVGTreeScopedResources().ExistingResourceForId(
-          GetIdAttribute());
+      scope_resources->ExistingResourceForId(GetIdAttribute());
   if (!resource || resource->Target(SVGResource::Usage::kElement) != this) {
     return;
   }

@@ -175,6 +175,9 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   ScopedStyleResolver& EnsureScopedStyleResolver();
   void ClearScopedStyleResolver();
 
+  SVGTreeScopeResources* ExistingSVGTreeScopedResources() const {
+    return svg_tree_scoped_resources_.Get();
+  }
   SVGTreeScopeResources& EnsureSVGTreeScopedResources();
 
   StyleSheetList& StyleSheets();

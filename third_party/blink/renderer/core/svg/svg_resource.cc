@@ -363,17 +363,21 @@ bool IsResourceTargetAffectedByDisplayLock(
 void LocalSVGResource::NotifyDisplayLockChanged(
     const Element& element,
     const SVGForeignObjectElement* enclosing_foreign_object) {
-  if (!target_ || !IsResourceTargetAffectedByDisplayLock(
-                      *target_, element, enclosing_foreign_object)) {
+  if (!target_) {
     return;
   }
-  if (LayoutSVGResourceContainer* container =
-          ResourceContainerNoCycleCheck(Usage::kElement)) {
+  LayoutSVGResourceContainer* container =
+      ResourceContainerNoCycleCheck(Usage::kElement);
+  if (!container && clients_.empty()) {
+    return;
+  }
+  if (!IsResourceTargetAffectedByDisplayLock(*target_, element,
+                                             enclosing_foreign_object)) {
+    return;
+  }
+  if (container) {
     container->ClearInvalidationMask();
     container->RemoveAllClientsFromCache();
-    return;
-  }
-  if (clients_.empty()) {
     return;
   }
   Document& document = tree_scope_->GetDocument();

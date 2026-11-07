@@ -98,8 +98,11 @@ void SVGFilterElement::SvgAttributeChanged(
 }
 
 LocalSVGResource* SVGFilterElement::AssociatedResource() const {
-  return GetTreeScope().EnsureSVGTreeScopedResources().ExistingResourceForId(
-      GetIdAttribute());
+  SVGTreeScopeResources* scope_resources =
+      GetTreeScope().ExistingSVGTreeScopedResources();
+  return scope_resources
+             ? scope_resources->ExistingResourceForId(GetIdAttribute())
+             : nullptr;
 }
 
 void SVGFilterElement::PrimitiveAttributeChanged(
