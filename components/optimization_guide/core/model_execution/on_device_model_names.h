@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_NAMES_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_NAMES_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -38,16 +39,39 @@ enum class OnDeviceBaseModel {
 // Converts an OnDeviceBaseModel enum to the UMA BaseModel variant name.
 // These must remain in sync with BaseModel variants in
 // tools/metrics/histograms/metadata/optimization/histograms.xml.
+// TODO(crbug.com/582309438): Move model metadata (including logging/UMA enums
+// and names) into the manifest as explicit data.
 std::string ConvertBaseModelToUmaModelName(OnDeviceBaseModel base_model);
 
 // Converts a component key string (from manifest) to the OnDeviceBaseModel
 // enum.
+// TODO(crbug.com/582309438): Move model metadata into the manifest
+// as explicit data.
 OnDeviceBaseModel ConvertComponentKeyToEnum(const std::string& key);
 
 // Converts a component key to the UMA BaseModel variant name.
 // These must remain in sync with BaseModel variants in
 // tools/metrics/histograms/metadata/optimization/histograms.xml.
+// TODO(crbug.com/582309438): Move model metadata (including
+// logging/UMA enums and names) into the manifest as explicit data.
 std::string ConvertComponentKeyToUmaModelName(const std::string& key);
+
+// User-visible grouping of base models. Models that are not mapped to a
+// category return std::nullopt and are hidden from user-facing surfaces until
+// approved.
+enum class OnDeviceModelCategory {
+  kGeneralPurpose = 0,
+  kLiveTranscription = 1,
+  kMaxValue = kLiveTranscription,
+};
+
+// Returns the user-visible category for `base_model`, or std::nullopt if the
+// model should be hidden from user-facing surfaces (e.g. unapproved Dev Trial
+// models, shared safety/language-detection models).
+// TODO(crbug.com/582309438): Move model category metadata into the
+// manifest as explicit data.
+std::optional<OnDeviceModelCategory> GetOnDeviceModelCategory(
+    OnDeviceBaseModel base_model);
 
 // Files expected to be in the on-device model bundle.
 inline constexpr base::FilePath::CharType kWeightsFile[] =

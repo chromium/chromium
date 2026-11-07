@@ -70,4 +70,28 @@ std::string ConvertComponentKeyToUmaModelName(const std::string& key) {
   return ConvertBaseModelToUmaModelName(ConvertComponentKeyToEnum(key));
 }
 
+std::optional<OnDeviceModelCategory> GetOnDeviceModelCategory(
+    OnDeviceBaseModel base_model) {
+  switch (base_model) {
+    case OnDeviceBaseModel::kGemma4:
+    case OnDeviceBaseModel::kV3NanoGpu:
+    case OnDeviceBaseModel::kV3NanoCpu:
+      return OnDeviceModelCategory::kGeneralPurpose;
+    case OnDeviceBaseModel::kSpeechRecognitionSmallExpert:
+      return OnDeviceModelCategory::kLiveTranscription;
+    case OnDeviceBaseModel::kUnknown:
+    case OnDeviceBaseModel::kXxs:
+    case OnDeviceBaseModel::kXs:
+    case OnDeviceBaseModel::kV2Nano:
+    case OnDeviceBaseModel::kV3Nano:
+    case OnDeviceBaseModel::kClassifier:
+    case OnDeviceBaseModel::kLanguageDetection:
+    case OnDeviceBaseModel::kProofreaderSmallExpert:
+    case OnDeviceBaseModel::kSummarizerSmallExpert:
+    case OnDeviceBaseModel::kLayaEnWint8:
+    case OnDeviceBaseModel::kLayaMlWint8:
+      return std::nullopt;
+  }
+}
+
 }  // namespace optimization_guide
