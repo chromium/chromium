@@ -96,6 +96,7 @@ struct SchedulerLoopQuarantineConfig {
   bool enable_task_controlled_purge = false;
   bool pause_in_between_tasks = false;
   bool exclude_non_ipc_tasks = false;
+  bool capacity_unlimited = false;
   // Accepts allocations up to this bucket size. If the given number does not
   // match bucket size, it is rounded up to next bucket size.
   size_t max_quarantine_size = BucketIndexLookup::kMaxBucketSize;
@@ -194,7 +195,10 @@ class SchedulerLoopQuarantineBranch {
 
   bool IsQuarantineTarget(internal::BucketSizeDetails size_details) const;
 
-  size_t GetCapacityInBytes() {
+  size_t GetCapacityInBytes() const {
+    if (capacity_unlimited_) {
+      return std::numeric_limits<size_t>::max();
+    }
     return branch_capacity_in_bytes_.load(std::memory_order_relaxed);
   }
   // After shrinking the capacity, this branch may need to `Purge()` to meet the
@@ -298,6 +302,7 @@ class SchedulerLoopQuarantineBranch {
   static void DangerouslyDisablePurge();
 
   bool IsQuarantineEnabledForTesting() const { return enable_quarantine_; }
+  bool IsCapacityUnlimitedForTesting() const { return capacity_unlimited_; }
 
   class ScopedQuarantineExclusion {
     SchedulerLoopQuarantineBranch& branch_;
@@ -353,6 +358,7 @@ class SchedulerLoopQuarantineBranch {
   bool enable_task_controlled_purge_ = false;
   bool pause_in_between_tasks_ = false;
   bool exclude_non_ipc_tasks_ = false;
+  bool capacity_unlimited_ = false;
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   std::atomic_bool being_destructed_ = false;
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
