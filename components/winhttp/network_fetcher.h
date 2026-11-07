@@ -24,7 +24,7 @@
 #include "base/sequence_checker.h"
 #include "components/winhttp/proxy_configuration.h"
 #include "components/winhttp/scoped_hinternet.h"
-#include "components/winhttp/scoped_winttp_proxy_info.h"
+#include "components/winhttp/scoped_winhttp_proxy_info.h"
 #include "url/gurl.h"
 
 namespace base {

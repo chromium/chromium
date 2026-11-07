@@ -14,7 +14,7 @@
 #include "base/win/windows_version.h"
 #include "components/winhttp/net_util.h"
 #include "components/winhttp/proxy_info.h"
-#include "components/winhttp/scoped_winttp_proxy_info.h"
+#include "components/winhttp/scoped_winhttp_proxy_info.h"
 #include "url/gurl.h"
 
 namespace winhttp {

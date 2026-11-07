@@ -34,7 +34,7 @@
 #include "components/winhttp/net_util.h"
 #include "components/winhttp/proxy_info.h"
 #include "components/winhttp/scoped_hinternet.h"
-#include "components/winhttp/scoped_winttp_proxy_info.h"
+#include "components/winhttp/scoped_winhttp_proxy_info.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/url_constants.h"
 

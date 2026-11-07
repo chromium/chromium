@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WINHTTP_SCOPED_WINTTP_PROXY_INFO_H_
-#define COMPONENTS_WINHTTP_SCOPED_WINTTP_PROXY_INFO_H_
+#ifndef COMPONENTS_WINHTTP_SCOPED_WINHTTP_PROXY_INFO_H_
+#define COMPONENTS_WINHTTP_SCOPED_WINHTTP_PROXY_INFO_H_
 
 #include <windows.h>
 
@@ -61,4 +61,4 @@ class ScopedWinHttpProxyInfo {
 
 }  // namespace winhttp
 
-#endif  // COMPONENTS_WINHTTP_SCOPED_WINTTP_PROXY_INFO_H_
+#endif  // COMPONENTS_WINHTTP_SCOPED_WINHTTP_PROXY_INFO_H_

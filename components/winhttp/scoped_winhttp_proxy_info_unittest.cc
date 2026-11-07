@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/winhttp/scoped_winttp_proxy_info.h"
+#include "components/winhttp/scoped_winhttp_proxy_info.h"
 
 #include <windows.h>
 
