@@ -109,14 +109,12 @@ class ConnectionCoordinator::ConnectionRequest {
   // Called when there are no connections to the database.
   virtual void OnNoConnections() = 0;
 
-  // Called when the transaction should be bound.
-  virtual void BindTransactionReceiver() = 0;
-
   // Called when the upgrade transaction has started executing.
-  virtual void UpgradeTransactionStarted(int64_t old_version) = 0;
+  virtual void UpgradeTransactionStarted(Transaction& transaction,
+                                         int64_t old_version) = 0;
 
   // Called when the upgrade transaction has finished.
-  virtual void UpgradeTransactionFinished(bool committed) = 0;
+  virtual void UpgradeTransactionFinished(const Transaction& transaction) = 0;
 
   // Called on each pending task during a force close, before the task is
   // removed from the queue.
@@ -288,8 +286,9 @@ class ConnectionCoordinator::OpenRequest
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
       Log(DatabaseConnectionOpenResult::kSuccessDirectOpen,
           bucket_context_->GetHistogramSuffix());
-      if (pending_->request_shared_connection &&
-          db_->HasConnectionForClient(pending_->client_token())) {
+      if (pending_->shared_connection_id &&
+          db_->HasShareableConnection(pending_->client_info,
+                                      *pending_->shared_connection_id)) {
         OnOpenSuccess(nullptr);
       } else {
         OnOpenSuccess(db_->CreateConnection(
@@ -375,8 +374,12 @@ class ConnectionCoordinator::OpenRequest
       return;
     }
 
+    // Once the client is told that this request succeeded, it holds the
+    // connection that the request created, so the client's later requests may
+    // share it.
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
     if (connection) {
+      connection->set_open_request_transaction_id(pending_->transaction_id);
       pending_remote =
           Connection::MakeSelfOwnedReceiverAndBindRemote(std::move(connection));
     }
@@ -408,10 +411,6 @@ class ConnectionCoordinator::OpenRequest
                 blink::mojom::IDBTransactionDurability::Strict,
                 blink::mojom::IDBTransactionMode::VersionChange));
 
-    // Save a WeakPtr<Transaction> for the BindTransactionReceiver
-    // function to use later.
-    pending_->transaction = transaction->AsWeakPtr();
-
     transaction->ScheduleTask(
         "ChangeDatabaseVersion",
         BindWeakOperation(&Database::VersionChangeOperation, db_->AsWeakPtr(),
@@ -421,17 +420,12 @@ class ConnectionCoordinator::OpenRequest
     transaction->Start();
   }
 
-  void BindTransactionReceiver() override {
-    if (pending_->transaction) {
-      pending_->transaction->BindReceiver(
-          std::move(pending_->pending_mojo_receiver));
-    }
-  }
-
   // Called when the upgrade transaction has started executing.
-  void UpgradeTransactionStarted(int64_t old_version) override {
+  void UpgradeTransactionStarted(Transaction& transaction,
+                                 int64_t old_version) override {
     CHECK(state_ == RequestState::kPendingTransactionComplete);
     CHECK(upgrade_connection_);
+    transaction.BindReceiver(std::move(pending_->pending_mojo_receiver));
 
     if (!factory_client_.is_connected()) {
       // Don't destroy the connection while the current transaction task queue
@@ -448,11 +442,13 @@ class ConnectionCoordinator::OpenRequest
         pending_->data_loss_info.message, GenerateDbMetadata());
   }
 
-  void UpgradeTransactionFinished(bool committed) override {
+  void UpgradeTransactionFinished(const Transaction& transaction) override {
     CHECK(state_ == RequestState::kPendingTransactionComplete);
     // Ownership of connection was already passed along in `UpgradeNeeded`.
-    if (committed) {
+    if (!transaction.aborted()) {
       CHECK_EQ(pending_->version, db_->version());
+      transaction.connection().set_open_request_transaction_id(
+          pending_->transaction_id);
       OnOpenSuccess(nullptr);
     } else {
       CHECK_NE(pending_->version, db_->version());
@@ -622,11 +618,14 @@ class ConnectionCoordinator::DeleteRequest
     }
   }
 
-  void BindTransactionReceiver() override { NOTREACHED(); }
+  void UpgradeTransactionStarted(Transaction& transaction,
+                                 int64_t old_version) override {
+    NOTREACHED();
+  }
 
-  void UpgradeTransactionStarted(int64_t old_version) override { NOTREACHED(); }
-
-  void UpgradeTransactionFinished(bool committed) override { NOTREACHED(); }
+  void UpgradeTransactionFinished(const Transaction& transaction) override {
+    NOTREACHED();
+  }
 
   void OnForceClose(const std::string& message) && override {
     if (factory_client_) {
@@ -705,28 +704,23 @@ void ConnectionCoordinator::OnVersionChangeIgnored() {
   request_queue_.front()->OnVersionChangeIgnored();
 }
 
-void ConnectionCoordinator::OnUpgradeTransactionStarted(int64_t old_version) {
+void ConnectionCoordinator::OnUpgradeTransactionStarted(
+    Transaction& transaction,
+    int64_t old_version) {
   if (request_queue_.empty() || request_queue_.front()->state() !=
                                     RequestState::kPendingTransactionComplete) {
     return;
   }
-  request_queue_.front()->UpgradeTransactionStarted(old_version);
+  request_queue_.front()->UpgradeTransactionStarted(transaction, old_version);
 }
 
-void ConnectionCoordinator::BindVersionChangeTransactionReceiver() {
+void ConnectionCoordinator::OnUpgradeTransactionFinished(
+    const Transaction& transaction) {
   if (request_queue_.empty() || request_queue_.front()->state() !=
                                     RequestState::kPendingTransactionComplete) {
     return;
   }
-  request_queue_.front()->BindTransactionReceiver();
-}
-
-void ConnectionCoordinator::OnUpgradeTransactionFinished(bool committed) {
-  if (request_queue_.empty() || request_queue_.front()->state() !=
-                                    RequestState::kPendingTransactionComplete) {
-    return;
-  }
-  request_queue_.front()->UpgradeTransactionFinished(committed);
+  request_queue_.front()->UpgradeTransactionFinished(transaction);
 }
 
 StatusOr<ConnectionCoordinator::ExecuteTaskResult>

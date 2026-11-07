@@ -30,6 +30,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/task/bind_post_task.h"
@@ -372,7 +373,8 @@ void IDBFactory::OpenInternalImpl(
                           std::move(callbacks_remote), name, version,
                           std::move(transaction_receiver), transaction_id,
                           scheduling_priority,
-                          /*request_shared_connection=*/true);
+                          /*shared_connection_id=*/
+                          cached_connection->open_request_transaction_id());
         return;
       }
       // Upgrade requests invalidate the current connection. We must remove it
@@ -395,12 +397,15 @@ void IDBFactory::OpenInternalImpl(
         // pushed to it when established.
         primary_request->AddSharedRequest(request);
 
-        // Request connection sharing from the browser-side.
+        // Ask the browser to share the connection that the primary request
+        // creates. If the primary request fails, the browser creates a new
+        // connection for this request instead.
         GetRemote()->Open(CreatePendingRemote(request->CreateFactoryClient()),
                           std::move(callbacks_remote), name, version,
                           std::move(transaction_receiver), transaction_id,
                           scheduling_priority,
-                          /*request_shared_connection=*/true);
+                          /*shared_connection_id=*/
+                          primary_request->transaction_id());
         return;
       }
     }
@@ -413,7 +418,7 @@ void IDBFactory::OpenInternalImpl(
                     std::move(callbacks_remote), name, version,
                     std::move(transaction_receiver), transaction_id,
                     scheduling_priority,
-                    /*request_shared_connection=*/false);
+                    /*shared_connection_id=*/std::nullopt);
 }
 
 IDBOpenDBRequest* IDBFactory::open(ScriptState* script_state,

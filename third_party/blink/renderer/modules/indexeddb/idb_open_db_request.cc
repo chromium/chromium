@@ -185,7 +185,7 @@ void IDBOpenDBRequest::OnUpgradeNeeded(
           features::kIndexedDBConnectionDeduplication)) {
     auto* shared_connection = MakeGarbageCollected<SharedIDBDatabaseConnection>(
         GetExecutionContext(), std::move(callbacks_receiver_),
-        std::move(pending_database), metadata);
+        std::move(pending_database), metadata, transaction_id_);
     BindToConnection(shared_connection);
     idb_database = MakeGarbageCollected<IDBDatabase>(
         GetExecutionContext(), shared_connection, connection_priority_);
@@ -249,8 +249,12 @@ void IDBOpenDBRequest::OnOpenDBSuccess(
       // If the browser did not return a new database remote, it means we are
       // sharing an existing connection.
       if (!pending_database.is_valid()) {
-        // The primary request should have already pushed the connection target
-        // to us when it succeeded.
+        // The browser only shares the connection created by the open request
+        // that this request named as `shared_connection_id`, and only after
+        // that request succeeded. So either this request was bound to that
+        // (cached) connection when it was issued, or the primary request it
+        // piggybacked on already pushed the connection target to it when it
+        // succeeded.
         CHECK(shared_connection_target_);
         shared_connection = shared_connection_target_;
         // Discard the callbacks receiver; the shared connection already
@@ -261,7 +265,7 @@ void IDBOpenDBRequest::OnOpenDBSuccess(
         // and register it in the factory cache for future requests to reuse.
         shared_connection = MakeGarbageCollected<SharedIDBDatabaseConnection>(
             GetExecutionContext(), std::move(callbacks_receiver_),
-            std::move(pending_database), metadata);
+            std::move(pending_database), metadata, transaction_id_);
         RegisterSharedConnection(shared_connection, metadata.name);
       }
 

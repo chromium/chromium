@@ -20,10 +20,12 @@ SharedIDBDatabaseConnection::SharedIDBDatabaseConnection(
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
         callbacks_receiver,
     mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
-    const IDBDatabaseMetadata& metadata)
+    const IDBDatabaseMetadata& metadata,
+    int64_t open_request_transaction_id)
     : database_remote_(context),
       callbacks_receiver_(this, context),
-      metadata_(metadata) {
+      metadata_(metadata),
+      open_request_transaction_id_(open_request_transaction_id) {
   if (base::FeatureList::IsEnabled(
           features::kIDBDatabaseExternalMemoryAccounting)) {
     if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {

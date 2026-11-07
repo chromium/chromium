@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
@@ -128,7 +129,7 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
                        u"database_name", /*version=*/1,
                        transaction_remote.BindNewEndpointAndPassReceiver(),
                        /*transaction_id=*/0, /*priority=*/0,
-                       /*request_shared_connection=*/false);
+                       /*shared_connection_id=*/std::nullopt);
   loop_2.Run();
 
   // IDBFactory::DeleteDatabase

@@ -22,6 +22,7 @@
 namespace content::indexed_db {
 class Database;
 struct PendingConnection;
+class Transaction;
 
 class CONTENT_EXPORT ConnectionCoordinator {
   // TODO(crbug.com/498738402): Remove this macro.
@@ -54,11 +55,10 @@ class CONTENT_EXPORT ConnectionCoordinator {
   // pending connection.
   void OnVersionChangeIgnored();
 
-  void BindVersionChangeTransactionReceiver();
+  void OnUpgradeTransactionStarted(Transaction& transaction,
+                                   int64_t old_version);
 
-  void OnUpgradeTransactionStarted(int64_t old_version);
-
-  void OnUpgradeTransactionFinished(bool committed);
+  void OnUpgradeTransactionFinished(const Transaction& transaction);
 
   enum class ExecuteTaskResult {
     // There are more tasks to run, so ExecuteTask() should be called again.

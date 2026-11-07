@@ -62,6 +62,7 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
 
   const String& db_name() const { return db_name_; }
   int64_t version() const { return version_; }
+  int64_t transaction_id() const { return transaction_id_; }
 
   void BindToConnection(SharedIDBDatabaseConnection* connection);
 

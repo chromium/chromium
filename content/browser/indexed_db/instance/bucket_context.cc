@@ -800,7 +800,7 @@ void BucketContext::Open(
         transaction_receiver,
     int64_t transaction_id,
     int scheduling_priority,
-    bool request_shared_connection) {
+    std::optional<int64_t> shared_connection_id) {
   base::ElapsedTimer timer;
   TRACE_EVENT0("IndexedDB", "BucketContext::Open");
   auto scoper = ScopedHandlingRequest();
@@ -847,7 +847,7 @@ void BucketContext::Open(
       transaction_id, version, std::move(transaction_receiver));
   connection->data_loss_info = data_loss_info;
   connection->scheduling_priority = scheduling_priority;
-  connection->request_shared_connection = request_shared_connection;
+  connection->shared_connection_id = shared_connection_id;
 
   ReceiverContext& client = receivers_.current_context();
   connection->client_info = client.client_info;

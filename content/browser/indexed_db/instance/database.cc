@@ -257,12 +257,14 @@ bool Database::OnlyHasOneClient() const {
                      });
 }
 
-bool Database::HasConnectionForClient(
-    const base::UnguessableToken& client_token) const {
-  return std::any_of(connections_.begin(), connections_.end(),
-                     [&client_token](Connection* connection) {
-                       return connection->client_token() == client_token;
-                     });
+bool Database::HasShareableConnection(
+    const storage::BucketClientInfo& client_info,
+    int64_t open_request_transaction_id) const {
+  return std::ranges::any_of(connections_, [&](const Connection* connection) {
+    return connection->open_request_transaction_id() ==
+               open_request_transaction_id &&
+           connection->client_info() == client_info;
+  });
 }
 
 void Database::RequireBlockingTransactionClientsToBeActive(
@@ -332,9 +334,9 @@ Status Database::RunTasks() {
   // complete.
   while (transactions_removed) {
     transactions_removed = false;
-    base::RepeatingClosure on_upgrade_transaction_finished;
     for (Connection* connection : connections_) {
       std::vector<int64_t> txns_to_remove;
+      Transaction* finished_upgrade_transaction = nullptr;
       for (auto const& [_, txn] : connection->transactions()) {
         // Process the queue for transactions that are STARTED or COMMITTING.
         switch (txn->state()) {
@@ -350,22 +352,20 @@ Status Database::RunTasks() {
 
         if (txn->state() == Transaction::FINISHED) {
           if (txn->mode() == blink::mojom::IDBTransactionMode::VersionChange) {
-            CHECK(!on_upgrade_transaction_finished);
-            on_upgrade_transaction_finished = base::BindRepeating(
-                &ConnectionCoordinator::OnUpgradeTransactionFinished,
-                base::Unretained(&connection_coordinator_),
-                /*committed=*/!txn->aborted());
+            CHECK(!finished_upgrade_transaction);
+            finished_upgrade_transaction = txn.get();
           }
           txns_to_remove.push_back(txn->id());
         }
+      }
+      if (finished_upgrade_transaction) {
+        connection_coordinator_.OnUpgradeTransactionFinished(
+            *finished_upgrade_transaction);
       }
       // Do the removals.
       for (int64_t id : txns_to_remove) {
         connection->RemoveTransaction(id);
         transactions_removed = true;
-      }
-      if (on_upgrade_transaction_finished) {
-        on_upgrade_transaction_finished.Run();
       }
     }
   }
@@ -416,8 +416,8 @@ Status Database::VersionChangeOperation(int64_t version,
   IDB_RETURN_IF_ERROR(
       transaction->BackingStoreTransaction()->SetDatabaseVersion(version));
 
-  connection_coordinator_.BindVersionChangeTransactionReceiver();
-  connection_coordinator_.OnUpgradeTransactionStarted(old_version);
+  connection_coordinator_.OnUpgradeTransactionStarted(*transaction,
+                                                      old_version);
   return Status::OK();
 }
 
@@ -1055,10 +1055,6 @@ void Database::NotifyOfIdbInternalsRelevantChange() {
 static_assert(
     blink::mojom::kIDBMaxMessageSize <= IPC::mojom::kChannelMaximumMessageSize,
     "kIDBMaxMessageSize is bigger than IPC::mojom::kChannelMaximumMessageSize");
-
-void Database::CallUpgradeTransactionStartedForTesting(int64_t old_version) {
-  connection_coordinator_.OnUpgradeTransactionStarted(old_version);
-}
 
 Status Database::OpenInternal() {
   auto result = LOG_RESULT(backing_store()->CreateOrOpenDatabase(name_),

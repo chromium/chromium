@@ -72,9 +72,21 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   base::WeakPtr<Database> database() const { return database_; }
   DatabaseCallbacks* callbacks() const { return callbacks_.get(); }
+  const storage::BucketClientInfo& client_info() const { return client_info_; }
   const base::UnguessableToken& client_token() const { return client_token_; }
   const std::map<int64_t, std::unique_ptr<Transaction>>& transactions() const {
     return transactions_;
+  }
+
+  // The `transaction_id` of the open request that created this connection, set
+  // once `OpenSuccess()` is sent for that request. Later open requests from the
+  // same client pass it as `shared_connection_id` to share this connection. See
+  // `blink::mojom::IDBFactory::Open()`.
+  std::optional<int64_t> open_request_transaction_id() const {
+    return open_request_transaction_id_;
+  }
+  void set_open_request_transaction_id(int64_t id) {
+    open_request_transaction_id_ = id;
   }
 
   // Unfortunately, for historical reasons, this version of `IsConnected()` is
@@ -245,6 +257,8 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   // the renderer's scheduler throttling state. See `HasHigherPriorityThan()`
   // for prioritization logic.
   int scheduling_priority_;
+
+  std::optional<int64_t> open_request_transaction_id_;
 
   bool is_shutting_down_ = false;
 

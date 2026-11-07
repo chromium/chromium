@@ -478,15 +478,20 @@ interface IDBFactory {
   // higher priority. This can determine relative execution order for open
   // requests from different clients, but requests from a single client (window,
   // worker, etc) will always execute in order.
-  // If `request_shared_connection` is true, the browser may share an existing
-  // connection to the database if available, to reduce overhead.
+  // If `shared_connection_id` is set, the client would like to reuse, rather
+  // than duplicate, the connection that was created by its earlier `Open()`
+  // call with that `transaction_id`. The browser shares that connection, i.e.
+  // passes a null `IDBDatabase` remote to `IDBFactoryClient.OpenSuccess()`,
+  // only if it is still open and the client has already been sent
+  // `OpenSuccess()` for that earlier call. Otherwise, the request proceeds as
+  // if `shared_connection_id` were not set.
   Open(pending_associated_remote<IDBFactoryClient> client,
        pending_associated_remote<IDBDatabaseCallbacks> database_callbacks,
        mojo_base.mojom.String16 name,
        int64 version,
        pending_associated_receiver<IDBTransaction> version_change_transaction_receiver,
        int64 transaction_id, int32 priority,
-       bool request_shared_connection);
+       int64? shared_connection_id);
 
   // Deletes a database |name| in the frame's origin. If |force_close|
   // is true, any existing connections to that database will be closed

@@ -40,7 +40,8 @@ class MODULES_EXPORT SharedIDBDatabaseConnection final
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
           callbacks_receiver,
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
-      const IDBDatabaseMetadata& metadata);
+      const IDBDatabaseMetadata& metadata,
+      int64_t open_request_transaction_id);
   ~SharedIDBDatabaseConnection() override;
 
   // Registers an IDBDatabase frontend that is sharing this connection.
@@ -73,6 +74,13 @@ class MODULES_EXPORT SharedIDBDatabaseConnection final
 
   const IDBDatabaseMetadata& metadata() const { return metadata_; }
 
+  // The `transaction_id` of the open request that created this connection.
+  // Open requests that share this connection pass it to the browser as
+  // `shared_connection_id`. See `mojom::blink::IDBFactory::Open()`.
+  int64_t open_request_transaction_id() const {
+    return open_request_transaction_id_;
+  }
+
   void ForcedClose() override;
   void VersionChange(int64_t old_version, int64_t new_version) override;
   void Abort(int64_t transaction_id,
@@ -96,6 +104,7 @@ class MODULES_EXPORT SharedIDBDatabaseConnection final
   HeapHashMap<int64_t, Member<IDBDatabase>> transaction_map_;
   V8ExternalMemoryAccounter external_memory_accounter_;
   IDBDatabaseMetadata metadata_;
+  const int64_t open_request_transaction_id_;
   base::OnceClosure disconnect_callback_;
   int pending_sharing_count_ = 0;
 };

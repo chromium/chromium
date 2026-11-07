@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -245,7 +246,7 @@ class SqliteBackingStoreRolloutStageTest
               /*version=*/1,
               transaction_remote.BindNewEndpointAndPassReceiver(),
               /*transaction_id=*/1, /*priority=*/0,
-              /*request_shared_connection=*/false);
+              /*shared_connection_id=*/std::nullopt);
           run_loop.Run();
           break;
         }

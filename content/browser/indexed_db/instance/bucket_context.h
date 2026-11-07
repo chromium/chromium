@@ -295,7 +295,7 @@ class CONTENT_EXPORT BucketContext
                 transaction_receiver,
             int64_t transaction_id,
             int scheduling_priority,
-            bool request_shared_connection) override;
+            std::optional<int64_t> shared_connection_id) override;
   void DeleteDatabase(mojo::PendingAssociatedRemote<
                           blink::mojom::IDBFactoryClient> factory_client,
                       const std::u16string& name,

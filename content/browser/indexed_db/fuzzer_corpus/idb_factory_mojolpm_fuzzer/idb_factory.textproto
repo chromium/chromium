@@ -31,7 +31,6 @@ actions {
       m_version_change_transaction_receiver: 0
       m_transaction_id: 42
       m_priority: 0
-      m_request_shared_connection: 0
     }
   }
 }
@@ -75,6 +74,31 @@ actions {
     id: Bucket
   }
 }
+actions {
+  idb_factory_remote_action {
+    id: 0
+    m_open {
+      m_client: 0
+      m_database_callbacks: 0
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 116 }  # 't'
+            values { value: 101 }  # 'e'
+            values { value: 115 }  # 's'
+            values { value: 116 }  # 't'
+          }
+        }
+      }
+      m_version: 42
+      m_version_change_transaction_receiver: 0
+      m_transaction_id: 43
+      m_priority: 0
+      m_shared_connection_id: 42
+    }
+  }
+}
 sequences {
   action_indexes: 0
   action_indexes: 1
@@ -82,6 +106,8 @@ sequences {
   action_indexes: 2
   action_indexes: 6
   action_indexes: 4
+  action_indexes: 6
+  action_indexes: 7
   action_indexes: 6
   action_indexes: 1
   action_indexes: 3

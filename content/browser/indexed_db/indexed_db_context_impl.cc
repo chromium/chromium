@@ -9,6 +9,7 @@
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <type_traits>
@@ -234,7 +235,7 @@ class MissingBucketErrorEndpoint : public blink::mojom::IDBFactory {
                 transaction_receiver,
             int64_t transaction_id,
             int scheduling_priority,
-            bool request_shared_connection) override {
+            std::optional<int64_t> shared_connection_id) override {
     mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> remote(
         std::move(factory_client));
     remote->Error(blink::mojom::IDBException::kUnknownError,

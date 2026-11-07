@@ -167,7 +167,7 @@ struct MojoConnectionHelper {
                   connection_callbacks.CreateInterfacePtrAndBind(), db_name,
                   version, vc_txn.BindNewEndpointAndPassReceiver(),
                   upgrade_txn_id, /*priority=*/0,
-                  /*request_shared_connection=*/false);
+                  /*shared_connection_id=*/std::nullopt);
   }
 
   void OpenAndExpectUpgradeNeeded(
@@ -329,7 +329,7 @@ class IndexedDBTestBaseWithExtras : public IndexedDBTestBase {
                           blink::IndexedDBDatabaseMetadata::NO_VERSION,
                           transaction_remote.BindNewEndpointAndPassReceiver(),
                           /*host_transaction_id=*/0, /*priority=*/0,
-                          /*request_shared_connection=*/false);
+                          /*shared_connection_id=*/std::nullopt);
     run_loop->Run();
     EXPECT_TRUE(base::DirectoryExists(test_path));
 
@@ -1270,7 +1270,7 @@ TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
                         u"opendb", blink::IndexedDBDatabaseMetadata::NO_VERSION,
                         transaction_remote.BindNewEndpointAndPassReceiver(),
                         /*host_transaction_id=*/0, /*priority=*/0,
-                        /*request_shared_connection=*/false);
+                        /*shared_connection_id=*/std::nullopt);
 
   // Delete with force_close = true.
   MockMojoFactoryClient delete_client;
@@ -1293,7 +1293,7 @@ TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
                         u"opendb", blink::IndexedDBDatabaseMetadata::NO_VERSION,
                         transaction_remote2.BindNewEndpointAndPassReceiver(),
                         /*host_transaction_id=*/42, /*priority=*/0,
-                        /*request_shared_connection=*/false);
+                        /*shared_connection_id=*/std::nullopt);
 
   // Block until expectations are satisfied.
   run_loop_for_first_open.Run();
@@ -2193,7 +2193,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
       database_callbacks.CreateInterfacePtrAndBind(), kDatabaseName,
       /*version=*/1, transaction_remote.BindNewEndpointAndPassReceiver(),
       /*transaction_id=*/2, /*priority=*/0,
-      /*request_shared_connection=*/false);
+      /*shared_connection_id=*/std::nullopt);
   run_loop.Run();
 
   if (IsSqliteBackingStoreEnabled()) {
@@ -2243,7 +2243,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
                          kDatabaseName, db_version,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          /*transaction_id=*/2, /*priority=*/0,
-                         /*request_shared_connection=*/false);
+                         /*shared_connection_id=*/std::nullopt);
     run_loop.Run();
     BucketContext* bucket_context = GetBucketContext(bucket_info.id);
     ASSERT_TRUE(bucket_context);
@@ -2327,7 +2327,7 @@ TEST_P(IndexedDBTest, FilePathLengthLogging) {
                            kDatabaseName, db_version,
                            transaction_remote.BindNewEndpointAndPassReceiver(),
                            /*transaction_id=*/1, /*priority=*/0,
-                           /*request_shared_connection=*/false);
+                           /*shared_connection_id=*/std::nullopt);
       run_loop.Run();
     }
   }
@@ -2362,7 +2362,7 @@ TEST_P(IndexedDBTest, FilePathLengthLogging) {
                            kDatabaseName, db_version,
                            transaction_remote.BindNewEndpointAndPassReceiver(),
                            /*transaction_id=*/1, /*priority=*/0,
-                           /*request_shared_connection=*/false);
+                           /*shared_connection_id=*/std::nullopt);
       run_loop.Run();
     }
   }
@@ -2625,7 +2625,7 @@ TEST_P(IndexedDBTest, BlobWithForgedSize) {
       database_callbacks.CreateInterfacePtrAndBind(), kDatabaseName,
       /*version=*/1, transaction_remote.BindNewEndpointAndPassReceiver(),
       kTransactionId, /*priority=*/0,
-      /*request_shared_connection=*/false);
+      /*shared_connection_id=*/std::nullopt);
   upgrade_loop.Run();
 
   mojo::AssociatedRemote<blink::mojom::IDBDatabase> database(

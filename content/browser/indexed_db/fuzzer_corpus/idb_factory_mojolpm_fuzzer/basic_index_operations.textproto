@@ -42,7 +42,6 @@ actions {
       m_version_change_transaction_receiver: 0
       m_transaction_id: 1
       m_priority: 0
-      m_request_shared_connection: 0
     }
   }
 }

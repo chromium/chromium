@@ -4,6 +4,7 @@
 
 #include "content/browser/indexed_db/indexed_db_test_base.h"
 
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -226,7 +227,7 @@ IndexedDBTestBase::CreateDatabase(
                        version,
                        transaction_remote.BindNewEndpointAndPassReceiver(),
                        transaction_id, /*priority=*/0,
-                       /*request_shared_connection=*/false);
+                       /*shared_connection_id=*/std::nullopt);
 
   transaction_remote->Commit(0);
   EXPECT_CALL(database_callbacks, Complete(transaction_id)).Times(1);
@@ -261,7 +262,7 @@ IndexedDBTestBase::OpenDatabase(
                        /*version=*/1,
                        transaction_remote.BindNewEndpointAndPassReceiver(),
                        transaction_id, /*priority=*/0,
-                       /*request_shared_connection=*/false);
+                       /*shared_connection_id=*/std::nullopt);
   run_loop.Run();
 
   return mojo::AssociatedRemote<blink::mojom::IDBDatabase>(
