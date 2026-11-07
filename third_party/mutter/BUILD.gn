@@ -1949,6 +1949,8 @@ source_set("libmutter") {
     "src/src/backends/native/meta-seat-impl.h",
     "src/src/backends/native/meta-seat-native.c",
     "src/src/backends/native/meta-seat-native.h",
+    "src/src/backends/native/meta-secondary-gpu-copy-state.c",
+    "src/src/backends/native/meta-secondary-gpu-copy-state.h",
     "src/src/backends/native/meta-sprite-native.c",
     "src/src/backends/native/meta-sprite-native.h",
     "src/src/backends/native/meta-stage-native.c",
