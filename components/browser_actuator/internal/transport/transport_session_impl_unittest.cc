@@ -146,6 +146,45 @@ TEST(TransportSessionImplTest,
   EXPECT_OK(session.ProcessDownstreamMessage(downstream));
 }
 
+TEST(TransportSessionImplTest,
+     SendUpstreamProbeMessageDuringDownstreamDispatchSetsRespondingToSeq) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory probe_factory({PayloadType::kProbe},
+                                            FactoryId::kProbe);
+  registry.RegisterFactory(&probe_factory);
+
+  auto probe_handler = std::make_unique<MockTransportHandler>(&session);
+  MockTransportHandler* probe_handler_ptr = probe_handler.get();
+  EXPECT_CALL(probe_factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(probe_handler)));
+
+  TransportProbe response_probe;
+  response_probe.mutable_response()->set_probe_id("probe-seq");
+
+  EXPECT_CALL(*probe_handler_ptr, OnMessage)
+      .WillOnce([&session, &response_probe](PayloadType, std::string_view) {
+        EXPECT_TRUE(
+            session.SendUpstreamMessage(PayloadType::kProbe, response_probe)
+                .has_value());
+      });
+
+  EXPECT_CALL(channel, SendUpstreamMessage("test_session", PayloadType::kProbe,
+                                           testing::Ref(response_probe),
+                                           std::optional<int64_t>(1)));
+
+  ActuatorDownstreamMessage downstream =
+      MakeDownstreamMessage(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE,
+                            ExpectedTypeUrl(PayloadType::kProbe), "payload",
+                            /*sequence_number=*/1);
+  EXPECT_OK(session.ProcessDownstreamMessage(downstream));
+}
+
 TEST(TransportSessionImplTest, SendUpstreamMessageAfterChannelDestruction) {
   auto channel = std::make_unique<MockTransportChannel>();
   TransportSessionImpl session("test_session", channel->GetWeakPtr());

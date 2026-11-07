@@ -94,8 +94,10 @@ TransportSessionImpl::SendUpstreamMessage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (channel_) {
     std::optional<int64_t> responding_to_sequence_number =
-        payload_type == PayloadType::kControl ? dispatching_sequence_number_
-                                              : std::nullopt;
+        (payload_type == PayloadType::kControl ||
+         payload_type == PayloadType::kProbe)
+            ? dispatching_sequence_number_
+            : std::nullopt;
     channel_->SendUpstreamMessage(session_id_, payload_type, message,
                                   responding_to_sequence_number);
     return {};

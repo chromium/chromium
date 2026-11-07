@@ -29,6 +29,7 @@ class ActuatorDownstreamMessage;
 namespace browser_actuator::transport {
 
 class ControlTransportHandlerFactory;
+class ProbeTransportHandlerFactory;
 class StreamConnectionDelegate;
 class TransportHandlerFactoryRegistryImpl;
 class TransportSessionRegistryImpl;
@@ -150,6 +151,9 @@ class TransportChannelImpl : public TransportChannel,
 
   // Factory for control command handlers (CloseChannel, CloseSession).
   std::unique_ptr<ControlTransportHandlerFactory> control_handler_factory_;
+
+  // Factory for synthetic transport probe handlers.
+  std::unique_ptr<ProbeTransportHandlerFactory> probe_handler_factory_;
 
   // The registry to access and control the life cycles for sessions.
   // Declared before `stream_client_` and after `handler_registry_` to

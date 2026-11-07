@@ -18,6 +18,7 @@
 #include "base/uuid.h"
 #include "components/browser_actuator/internal/transport/control_transport_handler.h"
 #include "components/browser_actuator/internal/transport/downstream_message_sequencer.h"
+#include "components/browser_actuator/internal/transport/probe_transport_handler.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/resume_body_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
@@ -57,6 +58,9 @@ TransportChannelImpl::TransportChannelImpl(
                           session_registry_->GetWeakPtr()));
   handler_registry_->RegisterFactory(control_handler_factory_.get());
 
+  probe_handler_factory_ = std::make_unique<ProbeTransportHandlerFactory>();
+  handler_registry_->RegisterFactory(probe_handler_factory_.get());
+
   // The resume delegate carries no state: on every connection attempt it asks
   // the channel to rebuild the WatchSessionsRequest body from the current
   // sessions. Unretained is safe because the channel owns the client — and
@@ -82,6 +86,9 @@ TransportChannelImpl::~TransportChannelImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (session_registry_) {
     session_registry_->RemoveObserver(this);
+  }
+  if (handler_registry_ && probe_handler_factory_) {
+    handler_registry_->UnregisterFactory(probe_handler_factory_.get());
   }
   if (handler_registry_ && control_handler_factory_) {
     handler_registry_->UnregisterFactory(control_handler_factory_.get());
