@@ -9,11 +9,10 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/certificate_helper.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
@@ -38,11 +37,6 @@ class ONCCertificateImporterImplTest : public testing::Test {
     ASSERT_TRUE(public_nssdb_.is_open());
     ASSERT_TRUE(private_nssdb_.is_open());
 
-    task_runner_ = new base::TestSimpleTaskRunner();
-    thread_task_runner_handle_ =
-        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
-            task_runner_);
-
     test_nssdb_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(public_nssdb_.slot())),
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(private_nssdb_.slot())));
@@ -52,17 +46,8 @@ class ONCCertificateImporterImplTest : public testing::Test {
     EXPECT_TRUE(ListCertsInPrivateSlot().empty());
   }
 
-  void TearDown() override {
-    thread_task_runner_handle_.reset();
-    task_runner_.reset();
-  }
-
  protected:
   enum class ImportType { kClientCertificatesOnly, kAllCertificates };
-
-  void OnImportCompleted(bool expected_import_success, bool success) {
-    EXPECT_EQ(expected_import_success, success);
-  }
 
   // Runs the import on the certificates specified in |filename|.
   // |expected_parse_success| should be true if at least one certificate in
@@ -78,17 +63,19 @@ class ONCCertificateImporterImplTest : public testing::Test {
         onc.Extract(::onc::toplevel_config::kCertificates);
     onc_certificates_ = std::move(*certificates_value).TakeList();
 
-    CertificateImporterImpl importer(task_runner_, test_nssdb_.get());
+    CertificateImporterImpl importer(
+        task_environment_.GetMainThreadTaskRunner(), test_nssdb_.get());
     auto onc_parsed_certificates =
         std::make_unique<chromeos::onc::OncParsedCertificates>(
             onc_certificates_);
     EXPECT_EQ(expected_parse_success, !onc_parsed_certificates->has_error());
+    base::test::TestFuture<bool> import_completed;
     importer.ImportClientCertificates(
         onc_parsed_certificates->client_certificates(),
-        base::BindOnce(&ONCCertificateImporterImplTest::OnImportCompleted,
-                       base::Unretained(this), expected_import_success));
+        import_completed.GetCallback());
 
-    task_runner_->RunUntilIdle();
+    ASSERT_TRUE(import_completed.Wait());
+    EXPECT_EQ(expected_import_success, import_completed.Get());
 
     public_list_ = ListCertsInPublicSlot();
     private_list_ = ListCertsInPrivateSlot();
@@ -126,9 +113,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
   crypto::ScopedTestNSSDB public_nssdb_;
   crypto::ScopedTestNSSDB private_nssdb_;
 
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
-      thread_task_runner_handle_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<net::NSSCertDatabaseChromeOS> test_nssdb_;
   base::ListValue onc_certificates_;
   // List of certs in the nssdb's public slot.
