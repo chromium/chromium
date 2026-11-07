@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/contacts_picker_properties.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/jni_zero/system_jni_unchecked_exceptions/ByteBuffer_jni.h"
 #include "url/origin.h"
 
@@ -38,9 +39,8 @@ ContactsProviderAndroid::ContactsProviderAndroid(
       render_frame_host->GetLastCommittedOrigin().GetURL(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-  dialog_.Reset(
-      Java_ContactsDialogHost_create(env, web_contents->GetJavaWebContents(),
-                                     reinterpret_cast<intptr_t>(this)));
+  dialog_.Reset(Java_ContactsDialogHost_create(
+      env, web_contents->GetJavaWebContents(), jni_zero::MakeRaw(this)));
   CHECK(!dialog_.is_null(), base::NotFatalUntil::M159);
 }
 

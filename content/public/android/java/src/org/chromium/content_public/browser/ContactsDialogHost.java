@@ -8,9 +8,14 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -24,9 +29,12 @@ import java.util.List;
 @JNINamespace("content")
 @NullMarked
 public class ContactsDialogHost implements ContactsPickerListener {
+    @JniType("::content::ContactsProviderAndroid")
+    interface NativeContactsProviderAndroid extends JniTypeToken {}
+
     private static final String TAG = "ContactsDialogHost";
 
-    private long mNativeContactsProviderAndroid;
+    private @Nullable JniRawPtr<NativeContactsProviderAndroid> mNativeContactsProviderAndroid;
     private final WebContents mWebContents;
     private boolean mFlowActive = true;
 
@@ -43,22 +51,30 @@ public class ContactsDialogHost implements ContactsPickerListener {
     }
 
     @CalledByNative
-    static ContactsDialogHost create(WebContents webContents, long nativeContactsProviderAndroid) {
+    static ContactsDialogHost create(
+            WebContents webContents,
+            JniRawPtr<NativeContactsProviderAndroid> nativeContactsProviderAndroid) {
         return new ContactsDialogHost(webContents, nativeContactsProviderAndroid);
     }
 
-    private ContactsDialogHost(WebContents webContents, long nativeContactsProviderAndroid) {
+    private ContactsDialogHost(
+            WebContents webContents,
+            JniRawPtr<NativeContactsProviderAndroid> nativeContactsProviderAndroid) {
         mNativeContactsProviderAndroid = nativeContactsProviderAndroid;
         mWebContents = webContents;
     }
 
     @CalledByNative
     void destroy() {
-        mNativeContactsProviderAndroid = 0;
+        if (mNativeContactsProviderAndroid != null) {
+            mNativeContactsProviderAndroid.release();
+            mNativeContactsProviderAndroid = null;
+        }
     }
 
+    @EnsuresNonNullIf(value = "mNativeContactsProviderAndroid", result = false)
     private boolean isDestroyed() {
-        return mNativeContactsProviderAndroid == 0;
+        return mNativeContactsProviderAndroid == null;
     }
 
     @CalledByNative
@@ -73,6 +89,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
         mFlowActive = true;
         if (sContactsPermissionProvider == null) {
             Log.e(TAG, "Permission provider not set");
+            assumeNonNull(mNativeContactsProviderAndroid);
             ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
             mFlowActive = false;
         } else {
@@ -108,7 +125,8 @@ public class ContactsDialogHost implements ContactsPickerListener {
                             }
                             mFlowActive = false;
                             ContactsDialogHostJni.get()
-                                    .endWithPermissionDenied(mNativeContactsProviderAndroid);
+                                    .endWithPermissionDenied(
+                                            assumeNonNull(mNativeContactsProviderAndroid));
                         }
                     });
         }
@@ -121,7 +139,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
             int percentageShared,
             int propertiesSiteRequested,
             int propertiesUserRejected) {
-        if (mNativeContactsProviderAndroid == 0 || !mFlowActive) return;
+        if (mNativeContactsProviderAndroid == null || !mFlowActive) return;
 
         switch (action) {
             case ContactsPickerAction.CANCEL:
@@ -175,7 +193,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
     @NativeMethods
     interface Natives {
         void addContact(
-                long nativeContactsProviderAndroid,
+                JniPtr<NativeContactsProviderAndroid> self,
                 String @Nullable [] names,
                 String @Nullable [] emails,
                 String @Nullable [] tel,
@@ -183,10 +201,10 @@ public class ContactsDialogHost implements ContactsPickerListener {
                 ByteBuffer @Nullable [] icons);
 
         void endContactsList(
-                long nativeContactsProviderAndroid,
+                JniPtr<NativeContactsProviderAndroid> self,
                 int percentageShared,
                 int propertiesSiteRequested);
 
-        void endWithPermissionDenied(long nativeContactsProviderAndroid);
+        void endWithPermissionDenied(JniPtr<NativeContactsProviderAndroid> self);
     }
 }
