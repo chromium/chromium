@@ -166,6 +166,11 @@ class PaymentsFormDataImporter {
       bool is_credit_card_upstream_enabled,
       ukm::SourceId ukm_source_id);
 
+  // Returns true if the cardholder name update should be offered for
+  // `extracted_credit_card`.
+  bool ShouldOfferCardholderNameUpdate(const CreditCard& extracted_credit_card,
+                                       bool is_credit_card_upstream_enabled);
+
   // If the mandatory re-auth opt-in bubble can be shown for a credit card, this
   // function will start the flow and return true. Otherwise, it will return
   // false.
@@ -181,17 +186,18 @@ class PaymentsFormDataImporter {
   // - If `candidate` compares with a masked server card, this function returns
   //   an existing masked server card which has the same last four digits and
   //   the same expiration date as `candidate`, if one exists, with the
-  //   user-entered CVC and valid cardholder name (if missing on the server
-  //   card) copied from `candidate`, and sets `credit_card_import_type_` to
-  //   `kServerCard` (or `kDuplicateLocalServerCard` if a local card was also
-  //   extracted).
+  //   user-entered CVC copied from `candidate` and `extracted_name` (if valid
+  //   and missing on the server card) set on it, and sets
+  //   `credit_card_import_type_` to `kServerCard` (or
+  //   `kDuplicateLocalServerCard` if a local card was also extracted).
   // Or returns the `candidate`:
   // - If there is no matching existing server card.
   // or returns nullopt:
   // - If there is a server card which has the same number as `candidate`, but
   //   the `candidate` does not have expiration date.
   std::optional<CreditCard> TryMatchingExistingServerCard(
-      const CreditCard& candidate);
+      const CreditCard& candidate,
+      const std::u16string& extracted_name);
 
   PaymentsDataManager& payments_data_manager();
 

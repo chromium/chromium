@@ -287,6 +287,12 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
   // overwrite this type if we discover it is already a local or server card.
   credit_card_import_type_ = CreditCardImportType::kNewCard;
 
+  // Capture the cardholder name extracted from `form` before merging with local
+  // cards, so a matched server card does not inherit a local card's name when
+  // `form` has no cardholder name field.
+  const std::u16string extracted_name =
+      candidate.GetInfo(CREDIT_CARD_NAME_FULL, client_->GetAppLocale());
+
   // Attempt to merge with an existing local credit card without presenting a
   // prompt.
   for (const CreditCard* local_card :
@@ -310,7 +316,7 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
 
   // Return `candidate` if no server card is matched but the card in the form is
   // a valid card.
-  return TryMatchingExistingServerCard(candidate);
+  return TryMatchingExistingServerCard(candidate, extracted_name);
 }
 
 bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
@@ -388,6 +394,16 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
     return true;
   }
 
+  // The cardholder name update takes precedence over CVC save.
+  if (ShouldOfferCardholderNameUpdate(*extracted_credit_card,
+                                      is_credit_card_upstream_enabled) &&
+      credit_card_save_manager_->AttemptToOfferCardholderNameUpdate(
+          *extracted_credit_card)) {
+    // TODO(crbug.com/564568880): Log that the Wallet reminder notice was not
+    // shown because the cardholder name update was offered.
+    return true;
+  }
+
   // Proceed with card or CVC saving if applicable.
   if (credit_card_save_manager_->ProceedWithSavingIfApplicable(
           submitted_form, *extracted_credit_card, credit_card_import_type_,
@@ -419,6 +435,31 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
   }
 
   return false;
+}
+
+bool PaymentsFormDataImporter::ShouldOfferCardholderNameUpdate(
+    const CreditCard& extracted_credit_card,
+    bool is_credit_card_upstream_enabled) {
+  // A card with an updated expiration date doesn't match the existing server
+  // card, so it isn't a masked server card here. The expiration date fix
+  // (upload save) takes precedence in that case.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableCardholderNameFixFlow) ||
+      !is_credit_card_upstream_enabled ||
+      extracted_credit_card.record_type() !=
+          CreditCard::RecordType::kMaskedServerCard) {
+    return false;
+  }
+
+  const CreditCard* existing_server_card =
+      payments_data_manager().GetCreditCardByInstrumentId(
+          extracted_credit_card.instrument_id());
+  return existing_server_card && !existing_server_card->HasNameOnCard() &&
+         extracted_credit_card.HasNameOnCard() &&
+         IsValidNameOnCard(extracted_credit_card.GetInfo(
+             CREDIT_CARD_NAME_FULL, client_->GetAppLocale())) &&
+         IsValidCreditCardSecurityCode(extracted_credit_card.cvc(),
+                                       extracted_credit_card.network());
 }
 
 bool PaymentsFormDataImporter::
@@ -460,7 +501,8 @@ Iban PaymentsFormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
 
 std::optional<CreditCard>
 PaymentsFormDataImporter::TryMatchingExistingServerCard(
-    const CreditCard& candidate) {
+    const CreditCard& candidate,
+    const std::u16string& extracted_name) {
   // Used for logging purposes later if we found a matching masked server card
   // with the same last four digits, but different expiration date as
   // `candidate`, and we treat it as a new card.
@@ -492,15 +534,12 @@ PaymentsFormDataImporter::TryMatchingExistingServerCard(
       // if CVC upload save or cardholder name fix flow should be offered.
       CreditCard server_card_with_cvc = *server_card;
       server_card_with_cvc.set_cvc(candidate.cvc());
-      if (!server_card->HasNameOnCard() && candidate.HasNameOnCard()) {
-        std::u16string candidate_name =
-            candidate.GetInfo(CREDIT_CARD_NAME_FULL, client_->GetAppLocale());
-        if (IsValidNameOnCard(candidate_name) &&
-            base::FeatureList::IsEnabled(
-                features::kAutofillEnableCardholderNameFixFlow)) {
-          server_card_with_cvc.SetInfo(CREDIT_CARD_NAME_FULL, candidate_name,
-                                       client_->GetAppLocale());
-        }
+      if (!server_card->HasNameOnCard() && !extracted_name.empty() &&
+          IsValidNameOnCard(extracted_name) &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableCardholderNameFixFlow)) {
+        server_card_with_cvc.SetInfo(CREDIT_CARD_NAME_FULL, extracted_name,
+                                     client_->GetAppLocale());
       }
 
       // If `credit_card_import_type_` was local card, then a local card was
