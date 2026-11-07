@@ -271,6 +271,11 @@ void WebNNTensorImpl::ExportTensorSync(uint64_t flow_id,
 void WebNNTensorImpl::OnDisconnect() {
   ResetMojoReceiver();
   if (is_in_renderer_) {
+    // Defer destruction until pending fast-path tasks on this runner finish.
+    context_->owning_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebNNContextImpl::DestroyTensorFromInRenderer,
+                       context_->AsWeakPtr(), handle()));
     return;
   }
   context_->RemoveWebNNTensorImpl(handle());
