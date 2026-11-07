@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BOOKMARKS_COMBINED_BOOKMARKS_VIEW_H_
-#define CHROME_BROWSER_UI_BOOKMARKS_COMBINED_BOOKMARKS_VIEW_H_
+#ifndef CHROME_BROWSER_BOOKMARKS_COMBINED_BOOKMARKS_VIEW_H_
+#define CHROME_BROWSER_BOOKMARKS_COMBINED_BOOKMARKS_VIEW_H_
 
 #include <memory>
 #include <optional>
@@ -147,4 +147,4 @@ class CombinedBookmarksView : public bookmarks_api::BookmarksView,
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> queued_events_;
 };
 
-#endif  // CHROME_BROWSER_UI_BOOKMARKS_COMBINED_BOOKMARKS_VIEW_H_
+#endif  // CHROME_BROWSER_BOOKMARKS_COMBINED_BOOKMARKS_VIEW_H_

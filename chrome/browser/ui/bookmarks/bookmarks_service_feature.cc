@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/bookmarks/bookmarks_service_feature.h"
 
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
-#include "chrome/browser/ui/bookmarks/combined_bookmarks_view.h"
+#include "chrome/browser/bookmarks/combined_bookmarks_view.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/browser_apis/bookmarks/bookmarks_service_impl.h"
