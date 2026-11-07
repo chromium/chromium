@@ -23,6 +23,7 @@
  */
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
@@ -3473,9 +3474,12 @@ class ScrollingSimTest : public SimTest {
   WebGestureEvent GenerateGestureEvent(WebInputEvent::Type type,
                                        int delta_x = 0,
                                        int delta_y = 0) {
+    // Use the real clock: InputHandlerProxy derives the smooth scroll
+    // animation's `delayed_by` from base::TimeTicks::Now() minus the event
+    // timestamp, so a fixed timestamp makes the animation duration depend
+    // on the machine's uptime.
     WebGestureEvent event(type, WebInputEvent::kNoModifiers,
-                          WebInputEvent::GetStaticTimeStampForTests(),
-                          WebGestureDevice::kTouchpad);
+                          base::TimeTicks::Now(), WebGestureDevice::kTouchpad);
     event.SetPositionInWidget(gfx::PointF(100, 100));
     if (type == WebInputEvent::Type::kGestureScrollUpdate) {
       event.data.scroll_update.delta_x = delta_x;
@@ -3553,7 +3557,13 @@ TEST_F(ScrollingSimTest, MAYBE_BasicScroll) {
   widget.DispatchThroughCcInputHandler(
       GenerateGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
 
-  Compositor().BeginFrame();
+  // Start the smooth scroll animation, then advance past its duration until
+  // the final offset has been synced back to the main thread. Raster so that
+  // each impl frame draws, which the animation needs in order to progress.
+  Compositor().BeginFrame(0.016, /*raster=*/true);
+  for (int i = 0; i < 3 && Compositor().NeedsBeginFrame(); ++i) {
+    Compositor().BeginFrame(0.25, /*raster=*/true);
+  }
 
   Element* scroller = GetElementById("s");
   LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
@@ -3601,7 +3611,13 @@ TEST_F(ScrollingSimTest, MAYBE_BasicScrollClampedToScrollerSize) {
   widget.DispatchThroughCcInputHandler(
       GenerateGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
 
-  Compositor().BeginFrame();
+  // Start the smooth scroll animation, then advance past its duration until
+  // the final offset has been synced back to the main thread. Raster so that
+  // each impl frame draws, which the animation needs in order to progress.
+  Compositor().BeginFrame(0.016, /*raster=*/true);
+  for (int i = 0; i < 3 && Compositor().NeedsBeginFrame(); ++i) {
+    Compositor().BeginFrame(0.25, /*raster=*/true);
+  }
 
   Element* scroller = GetElementById("s");
   LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
