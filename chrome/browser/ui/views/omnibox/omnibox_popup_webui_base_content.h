@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_content_config.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "extensions/browser/view_type_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -25,8 +26,10 @@
 
 class OmniboxContextMenu;
 class OmniboxController;
-class OmniboxPopupPresenterBase;
+class OmniboxPopupContentDelegate;
+class OmniboxPopupContentSizer;
 class OmniboxPopupDeactivationBlocker;
+class OmniboxPopupPresenterDelegate;
 class OmniboxPopupTabSelectionListener;
 class OmniboxPopupUI;
 
@@ -48,14 +51,24 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   using ContentsWrapper = WebUIContentsWrapperT<OmniboxPopupUI>;
 
   OmniboxPopupWebUIBaseContent() = delete;
-  OmniboxPopupWebUIBaseContent(OmniboxPopupPresenterBase* presenter,
+  // Equivalent to a null sizer and a default config. Used by tests that have
+  // no presenter.
+  OmniboxPopupWebUIBaseContent(OmniboxPopupContentDelegate* content_delegate,
+                               LocationBar* location_bar,
+                               OmniboxController* controller,
+                               bool top_rounded_corners);
+  OmniboxPopupWebUIBaseContent(OmniboxPopupContentDelegate* content_delegate,
+                               OmniboxPopupContentSizer* sizer,
+                               OmniboxPopupContentConfig config,
                                LocationBar* location_bar,
                                OmniboxController* controller,
                                bool top_rounded_corners);
   // `contents` is a loaded popup WebContents that another window's content
   // released with `ReleaseContentsWrapper()`, or null. The content adopts it
   // instead of loading a new one.
-  OmniboxPopupWebUIBaseContent(OmniboxPopupPresenterBase* presenter,
+  OmniboxPopupWebUIBaseContent(OmniboxPopupContentDelegate* content_delegate,
+                               OmniboxPopupContentSizer* sizer,
+                               OmniboxPopupContentConfig config,
                                LocationBar* location_bar,
                                OmniboxController* controller,
                                bool top_rounded_corners,
@@ -166,13 +179,16 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   }
   const LocationBar* location_bar() const { return location_bar_.get(); }
 
-  // Returns the presenter associated with this popup content.
-  OmniboxPopupPresenterBase* popup_presenter() {
-    return const_cast<OmniboxPopupPresenterBase*>(
-        std::as_const(*this).popup_presenter());
+  // Returns the delegate associated with this popup content.
+  OmniboxPopupContentDelegate* content_delegate() { return content_delegate_; }
+  const OmniboxPopupContentDelegate* content_delegate() const {
+    return content_delegate_;
   }
-  const OmniboxPopupPresenterBase* popup_presenter() const {
-    return popup_presenter_;
+
+  // Returns the location bar's presenter delegate. Null when the location bar
+  // is null or doesn't provide one.
+  OmniboxPopupPresenterDelegate* presenter_delegate() {
+    return presenter_delegate_;
   }
 
   // Detaches the WebContents and cleans up.
@@ -196,8 +212,18 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   void UpdateAutoFill();
 #endif
 
-  raw_ptr<OmniboxPopupPresenterBase> popup_presenter_ = nullptr;
+  // The content delegate and sizer own (directly or through their container
+  // view) this content view, so they outlive it. The debounce timer that binds
+  // `sizer_` with Unretained is a member of this view, so it is destroyed
+  // first. The location bar host removes the content in its destructor.
+  raw_ptr<OmniboxPopupContentDelegate> content_delegate_ = nullptr;
+  raw_ptr<OmniboxPopupContentSizer> sizer_ = nullptr;
+  const OmniboxPopupContentConfig config_;
   raw_ptr<LocationBar> location_bar_ = nullptr;
+  // `location_bar_->GetPresenterDelegate()`, read once at construction. The
+  // location bar owns the popup view, which owns the presenter, which owns
+  // this content, so the delegate outlives this view.
+  raw_ptr<OmniboxPopupPresenterDelegate> presenter_delegate_ = nullptr;
   // The controller for the Omnibox.
   raw_ptr<OmniboxController> controller_ = nullptr;
 

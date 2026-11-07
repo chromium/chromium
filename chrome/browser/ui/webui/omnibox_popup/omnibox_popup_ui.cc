@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/plural_string_provider.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
@@ -526,13 +525,13 @@ void OmniboxPopupUI::CreatePageHandler(
     composebox_handler_->OptInToDynamicAimFulfillment();
   }
 
-  // If presenter delegate is connected, set the delegate in the handler so the
-  // handler can notify the delegate when there are embedded permissions prompt
-  // changes. Otherwise, once the presenter delegate connects itself, connect
-  // the two there instead. `composebox_handler_` is used since composebox page
-  // handler is where PEPC mojo call lives.
-  if (presenter_delegate_) {
-    composebox_handler_->set_delegate(presenter_delegate_);
+  // If the searchbox handler delegate is connected, set the delegate in the
+  // handler so the handler can notify the delegate when there are embedded
+  // permissions prompt changes. Otherwise, once the delegate connects itself,
+  // connect the two there instead. `composebox_handler_` is used since
+  // composebox page handler is where PEPC mojo call lives.
+  if (searchbox_handler_delegate_) {
+    composebox_handler_->set_delegate(searchbox_handler_delegate_);
   }
 }
 
@@ -596,8 +595,9 @@ void OmniboxPopupUI::ClearContextualSessionHandle() {
   shared_session_handle_.reset();
 }
 
-void OmniboxPopupUI::SetPresenterDelegate(OmniboxPopupPresenterBase* delegate) {
-  presenter_delegate_ = delegate;
+void OmniboxPopupUI::SetSearchboxHandlerDelegate(
+    SearchboxHandler::Delegate* delegate) {
+  searchbox_handler_delegate_ = delegate;
 
   // If the handler is initialized already, set the delegate in the handler so
   // the handler can notify the delegate when there are embedded permissions
@@ -605,7 +605,7 @@ void OmniboxPopupUI::SetPresenterDelegate(OmniboxPopupPresenterBase* delegate) {
   // there instead. `composebox_handler_` is used since composebox page handler
   // is where PEPC mojo call lives.
   if (composebox_handler_) {
-    composebox_handler_->set_delegate(presenter_delegate_);
+    composebox_handler_->set_delegate(searchbox_handler_delegate_);
   }
 }
 

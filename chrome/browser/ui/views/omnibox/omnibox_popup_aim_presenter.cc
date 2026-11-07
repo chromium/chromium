@@ -71,7 +71,8 @@ std::unique_ptr<OmniboxPopupWebUIBaseContent>
 OmniboxPopupAimPresenter::CreateWebUIContent(
     std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) {
   return std::make_unique<OmniboxAimPopupWebUIContent>(
-      this, location_bar(), controller(), std::move(contents));
+      /*content_delegate=*/this, /*sizer=*/this, /*config=*/config(),
+      location_bar(), controller(), std::move(contents));
 }
 
 OmniboxPopupPresenterBase::WebUIContentCreationStrategy

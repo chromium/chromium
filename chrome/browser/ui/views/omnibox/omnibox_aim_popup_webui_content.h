@@ -18,7 +18,8 @@ class WebContents;
 class LocationBar;
 class OmniboxController;
 class OmniboxPopupAimHandler;
-class OmniboxPopupPresenterBase;
+class OmniboxPopupContentDelegate;
+class OmniboxPopupContentSizer;
 
 // The content WebView for the popup of a WebUI Omnibox.
 class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
@@ -26,12 +27,16 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
 
  public:
   OmniboxAimPopupWebUIContent() = delete;
-  OmniboxAimPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
+  OmniboxAimPopupWebUIContent(OmniboxPopupContentDelegate* content_delegate,
+                              OmniboxPopupContentSizer* sizer,
+                              OmniboxPopupContentConfig config,
                               LocationBar* location_bar,
                               OmniboxController* controller);
   // `contents` is a WebContents to adopt, or null; see
   // `OmniboxPopupWebUIBaseContent`.
-  OmniboxAimPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
+  OmniboxAimPopupWebUIContent(OmniboxPopupContentDelegate* content_delegate,
+                              OmniboxPopupContentSizer* sizer,
+                              OmniboxPopupContentConfig config,
                               LocationBar* location_bar,
                               OmniboxController* controller,
                               std::unique_ptr<ContentsWrapper> contents);

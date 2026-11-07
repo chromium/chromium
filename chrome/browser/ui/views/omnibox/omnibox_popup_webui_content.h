@@ -21,7 +21,8 @@
 #include "ui/views/widget/widget.h"
 
 class LocationBar;
-class OmniboxPopupPresenterBase;
+class OmniboxPopupContentDelegate;
+class OmniboxPopupContentSizer;
 class OmniboxPopupHandler;
 
 // The content WebView for the popup of a WebUI Omnibox.
@@ -33,7 +34,9 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // Subclasses pass false for `set_content_url` and call `SetContentURL()`
   // themselves. Loading here would build a WebContents before their overrides
   // (e.g. `EscClosesUI()`) are in place, only for their own load to replace it.
-  OmniboxPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
+  OmniboxPopupWebUIContent(OmniboxPopupContentDelegate* content_delegate,
+                           OmniboxPopupContentSizer* sizer,
+                           OmniboxPopupContentConfig config,
                            LocationBar* location_bar,
                            OmniboxController* controller,
                            bool include_location_bar_cutout,
@@ -41,7 +44,9 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
                            bool set_content_url);
   // `contents` is a WebContents to adopt, or null; see
   // `OmniboxPopupWebUIBaseContent`.
-  OmniboxPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
+  OmniboxPopupWebUIContent(OmniboxPopupContentDelegate* content_delegate,
+                           OmniboxPopupContentSizer* sizer,
+                           OmniboxPopupContentConfig config,
                            LocationBar* location_bar,
                            OmniboxController* controller,
                            bool include_location_bar_cutout,

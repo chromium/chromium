@@ -20,7 +20,8 @@
 #include "ui/views/metadata/view_factory.h"
 
 class LocationBar;
-class OmniboxPopupPresenterBase;
+class OmniboxPopupContentDelegate;
+class OmniboxPopupContentSizer;
 class OmniboxController;
 
 // The content WebView for the full popup (input row + suggestions dropdown) of
@@ -32,12 +33,16 @@ class OmniboxFullPopupWebUIContent
 
  public:
   OmniboxFullPopupWebUIContent() = delete;
-  OmniboxFullPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
+  OmniboxFullPopupWebUIContent(OmniboxPopupContentDelegate* content_delegate,
+                               OmniboxPopupContentSizer* sizer,
+                               OmniboxPopupContentConfig config,
                                LocationBar* location_bar,
                                OmniboxController* controller);
   // `contents` is a WebContents to adopt, or null; see
   // `OmniboxPopupWebUIBaseContent`.
-  OmniboxFullPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
+  OmniboxFullPopupWebUIContent(OmniboxPopupContentDelegate* content_delegate,
+                               OmniboxPopupContentSizer* sizer,
+                               OmniboxPopupContentConfig config,
                                LocationBar* location_bar,
                                OmniboxController* controller,
                                std::unique_ptr<ContentsWrapper> contents);

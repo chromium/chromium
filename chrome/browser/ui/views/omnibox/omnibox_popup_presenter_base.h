@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_config.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_content_delegate.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -53,14 +54,6 @@ namespace omnibox {
 extern const void* kOmniboxWebUIPopupWidgetId;
 }  // namespace omnibox
 
-// An interface representing a deactivation blocker. Keeping an instance of this
-// interface alive prevents the omnibox popup widget from closing when it loses
-// focus.
-class OmniboxPopupDeactivationBlocker {
- public:
-  virtual ~OmniboxPopupDeactivationBlocker() = default;
-};
-
 // A base assistant class for OmniboxPopupViewWebUI, this manages "n" WebViews
 // and a Widget to present the WebUI. This class is an implementation detail and
 // is not expected to grow or change much with omnibox changes.  The concern of
@@ -68,8 +61,9 @@ class OmniboxPopupDeactivationBlocker {
 // concerns and communication between native omnibox code and the WebUI code,
 // work with OmniboxPopupViewWebUI directly.
 class OmniboxPopupPresenterBase
-    : public content::WebContentsObserver,
-      public SearchboxHandler::Delegate,
+    : public OmniboxPopupContentDelegate,
+      public OmniboxPopupContentSizer,
+      public content::WebContentsObserver,
       public permissions::PermissionRequestManager::Observer {
  public:
   // Why `GetOrCreateWebUIContent()` was called. Recorded in traces.
@@ -112,9 +106,10 @@ class OmniboxPopupPresenterBase
   // for managing the lifecycle of the returned blocker (typically via
   // std::unique_ptr). Returns nullptr if
   // `omnibox::kOmniboxKeepOpenOnFileSelection` is disabled.
-  std::unique_ptr<OmniboxPopupDeactivationBlocker> CreateDeactivationBlocker();
-  virtual void OnFileSelectionClosed();
-  virtual void NotifyEscapeKeyPressed() {}
+  std::unique_ptr<OmniboxPopupDeactivationBlocker> CreateDeactivationBlocker()
+      override;
+  void OnFileSelectionClosed() override;
+  void NotifyEscapeKeyPressed() override {}
   bool has_active_blockers() const { return deactivation_blockers_count_ > 0; }
 
   // Show or hide the popup widget with web view.
@@ -122,17 +117,17 @@ class OmniboxPopupPresenterBase
   virtual void Hide();
 
   // Tells whether the popup widget exists.
-  bool IsShown() const;
+  bool IsShown() const override;
 
   // Request focus on the popup widget and its web contents.
   virtual void RequestFocus();
 
   // Caches the height of the WebUI content, which is then used to compute the
   // popup widget bounds.
-  void OnContentHeightChanged(int content_height);
+  void OnContentHeightChanged(int content_height) override;
 
   // Synchronize the popup widget's bounds to its anchor (location bar view).
-  virtual void SynchronizePopupBounds();
+  void SynchronizePopupBounds() override;
 
   // Returns the currently "active" Popup content, whichever one is visible or
   // going to be visible within the popup.
@@ -208,7 +203,7 @@ class OmniboxPopupPresenterBase
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
 
-  // SearchboxHandler::Delegate:
+  // OmniboxPopupContentDelegate (SearchboxHandler::Delegate):
   void OnEmbeddedPermissionDialogChanged(bool is_showing,
                                          const gfx::Size& prompt_size) override;
   OmniboxController* GetOmniboxController() override;
@@ -219,6 +214,7 @@ class OmniboxPopupPresenterBase
     widget_ = std::move(widget);
   }
 
+  const gfx::Size& GetPopupMinimumSize() const override;
   const gfx::Size& get_minimum_size() const { return minimum_size_; }
 
   // Outermost view in the hierarchy; used for hit testing.
@@ -240,7 +236,7 @@ class OmniboxPopupPresenterBase
   bool IsPermissionPromptPreventingClose() const;
 
   // Returns whether the WebUI content view receives focus.
-  virtual bool ShouldReceiveFocus() const;
+  bool ShouldReceiveFocus() const override;
 
  protected:
   // When the WebUI content is created ahead of time. With every strategy,

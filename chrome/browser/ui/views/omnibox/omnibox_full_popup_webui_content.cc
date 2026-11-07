@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_content_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -35,20 +35,28 @@
 #include "ui/views/widget/widget.h"
 
 OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
-    OmniboxPopupPresenterBase* presenter,
+    OmniboxPopupContentDelegate* content_delegate,
+    OmniboxPopupContentSizer* sizer,
+    OmniboxPopupContentConfig config,
     LocationBar* location_bar,
     OmniboxController* controller)
-    : OmniboxFullPopupWebUIContent(presenter,
+    : OmniboxFullPopupWebUIContent(content_delegate,
+                                   sizer,
+                                   config,
                                    location_bar,
                                    controller,
                                    /*contents=*/nullptr) {}
 
 OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
-    OmniboxPopupPresenterBase* presenter,
+    OmniboxPopupContentDelegate* content_delegate,
+    OmniboxPopupContentSizer* sizer,
+    OmniboxPopupContentConfig config,
     LocationBar* location_bar,
     OmniboxController* controller,
     std::unique_ptr<ContentsWrapper> contents)
-    : OmniboxPopupWebUIContent(presenter,
+    : OmniboxPopupWebUIContent(content_delegate,
+                               sizer,
+                               config,
                                location_bar,
                                controller,
                                /*include_location_bar_cutout=*/false,
@@ -141,8 +149,8 @@ void OmniboxFullPopupWebUIContent::OnFocusChangedInPage(
 void OmniboxFullPopupWebUIContent::DidFirstVisuallyNonEmptyPaint() {
   // `OmniboxPopupPresenterBase::CompletedFirstVisuallyNonEmptyPaint()` turns
   // true with this paint, so let `LocationBarView` drop its native focus ring.
-  if (auto* presenter = popup_presenter()) {
-    presenter->delegate().OnPopupFirstVisuallyNonEmptyPaint();
+  if (auto* delegate = presenter_delegate()) {
+    delegate->OnPopupFirstVisuallyNonEmptyPaint();
   }
 }
 
@@ -271,13 +279,9 @@ views::Widget* OmniboxFullPopupWebUIContent::GetWidgetForTextServices() {
 
 const OmniboxPopupHandler* OmniboxFullPopupWebUIContent::GetPopupHandler()
     const {
-  if (!popup_presenter() || !popup_presenter()->GetWebUIContent()) {
-    return nullptr;
-  }
-  const auto* contents_wrapper =
-      popup_presenter()->GetWebUIContent()->contents_wrapper();
+  const auto* wrapper = contents_wrapper();
   const auto* webui_controller =
-      contents_wrapper ? contents_wrapper->GetWebUIController() : nullptr;
+      wrapper ? wrapper->GetWebUIController() : nullptr;
   const auto* popup_ui = static_cast<const OmniboxPopupUI*>(webui_controller);
   return popup_ui ? popup_ui->popup_handler() : nullptr;
 }

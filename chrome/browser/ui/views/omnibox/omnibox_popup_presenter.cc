@@ -52,7 +52,8 @@ std::unique_ptr<OmniboxPopupWebUIBaseContent>
 OmniboxPopupPresenter::CreateWebUIContent(
     std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) {
   return std::make_unique<OmniboxPopupWebUIContent>(
-      this, location_bar(), controller(),
+      /*content_delegate=*/this, /*sizer=*/this, /*config=*/config(),
+      location_bar(), controller(),
       /*include_location_bar_cutout=*/true,
       /*wants_focus=*/false, /*set_content_url=*/true, std::move(contents));
 }

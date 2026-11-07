@@ -23,13 +23,17 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
-    OmniboxPopupPresenterBase* presenter,
+    OmniboxPopupContentDelegate* content_delegate,
+    OmniboxPopupContentSizer* sizer,
+    OmniboxPopupContentConfig config,
     LocationBar* location_bar,
     OmniboxController* controller,
     bool include_location_bar_cutout,
     bool wants_focus,
     bool set_content_url)
-    : OmniboxPopupWebUIContent(presenter,
+    : OmniboxPopupWebUIContent(content_delegate,
+                               sizer,
+                               config,
                                location_bar,
                                controller,
                                include_location_bar_cutout,
@@ -38,7 +42,9 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
                                /*contents=*/nullptr) {}
 
 OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
-    OmniboxPopupPresenterBase* presenter,
+    OmniboxPopupContentDelegate* content_delegate,
+    OmniboxPopupContentSizer* sizer,
+    OmniboxPopupContentConfig config,
     LocationBar* location_bar,
     OmniboxController* controller,
     bool include_location_bar_cutout,
@@ -46,7 +52,9 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
     bool set_content_url,
     std::unique_ptr<ContentsWrapper> contents)
     : OmniboxPopupWebUIBaseContent(
-          presenter,
+          content_delegate,
+          sizer,
+          config,
           location_bar,
           controller,
           /*top_rounded_corners=*/!include_location_bar_cutout,

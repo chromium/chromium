@@ -887,7 +887,7 @@ void OmniboxPopupPresenterBase::PrimaryPageChanged(content::Page& page) {
     auto* webui_controller = wrapper ? wrapper->GetWebUIController() : nullptr;
 
     if (webui_controller) {
-      webui_controller->SetPresenterDelegate(this);
+      webui_controller->SetSearchboxHandlerDelegate(this);
     }
   }
 }
@@ -930,6 +930,10 @@ void OmniboxPopupPresenterBase::OnEmbeddedPermissionDialogChanged(
 
 OmniboxController* OmniboxPopupPresenterBase::GetOmniboxController() {
   return controller();
+}
+
+const gfx::Size& OmniboxPopupPresenterBase::GetPopupMinimumSize() const {
+  return minimum_size_;
 }
 
 OmniboxPopupPresenterBase::ScopedDeactivationBlocker::ScopedDeactivationBlocker(

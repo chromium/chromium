@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -44,7 +45,6 @@ class ContextualSearchboxHandler;
 class OmniboxController;
 class OmniboxPopupAimHandler;
 class OmniboxPopupHandler;
-class OmniboxPopupPresenterBase;
 class OmniboxPopupUI;
 
 namespace contextual_search {
@@ -178,7 +178,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
     return !!shared_session_handle_;
   }
 
-  void SetPresenterDelegate(OmniboxPopupPresenterBase* delegate);
+  void SetSearchboxHandlerDelegate(SearchboxHandler::Delegate* delegate);
 
   // Moving the popup's WebContents to another browser window of the same
   // profile is done in two steps. `DetachFromWindow()` runs while the old
@@ -226,7 +226,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
 
-  raw_ptr<OmniboxPopupPresenterBase> presenter_delegate_ = nullptr;
+  raw_ptr<SearchboxHandler::Delegate> searchbox_handler_delegate_ = nullptr;
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
