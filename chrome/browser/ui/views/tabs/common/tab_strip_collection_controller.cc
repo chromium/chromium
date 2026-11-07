@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 
 #include <algorithm>
+#include <memory>
+#include <utility>
 #include <variant>
 
 #include "base/check_deref.h"
@@ -54,11 +56,14 @@
 #include "components/tabs/public/tab_context_menu_command.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
@@ -326,7 +331,33 @@ void TabStripCollectionController::SelectTab(
     tab_index = split_tabs::GetIndexOfLastActiveTab(model_, split_id.value());
   }
 
+  views::Widget* widget = browser_view_ ? browser_view_->GetWidget() : nullptr;
+  std::unique_ptr<viz::PeakGpuMemoryTracker> tracker;
+  if (model_->active_index() != tab_index.value() && widget &&
+      widget->GetCompositor()) {
+    tracker = content::PeakGpuMemoryTrackerFactory::Create(
+        viz::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
+  }
+
   model_->ActivateTabAt(tab_index.value(), gesture_detail);
+
+  if (tracker) {
+    if (views::Widget* post_activate_widget =
+            browser_view_ ? browser_view_->GetWidget() : nullptr;
+        post_activate_widget && post_activate_widget->GetCompositor()) {
+      post_activate_widget->GetCompositor()
+          ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+              [](std::unique_ptr<viz::PeakGpuMemoryTracker> tracker,
+                 const viz::FrameTimingDetails& frame_timing_details) {
+                // This callback will be ran once the ui::Compositor presents
+                // the next frame. The destruction of `tracker` will get the
+                // peak GPU memory and record a histogram.
+              },
+              std::move(tracker)));
+    } else {
+      tracker->Cancel();
+    }
+  }
 }
 
 void TabStripCollectionController::CloseTab(

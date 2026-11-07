@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1418,6 +1419,61 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabStripControllerFocusFreezingBrowserTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
+
+class TabStripCollectionControllerPixelBrowserTest
+    : public TabStripCollectionControllerBrowserTest {
+ public:
+  void SetUp() override {
+    EnablePixelOutput();
+    TabStripCollectionControllerBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerPixelBrowserTest,
+                       SelectTabRecordsPeakGpuMemoryUsage) {
+  AppendTab();
+  TabStripModel* model = browser()->GetTabStripModel();
+  ASSERT_EQ(2, model->count());
+  model->ActivateTabAt(0);
+  ASSERT_EQ(0, model->active_index());
+
+  base::HistogramTester histogram_tester;
+  // Selecting the already-active tab should not record peak GPU memory.
+  vertical_tab_strip_controller()->SelectTab(
+      model->GetTabAtIndex(0),
+      TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kMouse));
+  EXPECT_EQ(0, model->active_index());
+
+  vertical_tab_strip_controller()->SelectTab(
+      model->GetTabAtIndex(1),
+      TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kMouse));
+  EXPECT_EQ(1, model->active_index());
+
+  BrowserView::GetBrowserViewForBrowser(browser())->SchedulePaint();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !histogram_tester
+                .GetAllSamples("Memory.GPU.PeakMemoryUsage2.ChangeTab2")
+                .empty();
+  }));
+  histogram_tester.ExpectTotalCount("Memory.GPU.PeakMemoryUsage2.ChangeTab2",
+                                    1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabStripCollectionControllerPixelBrowserTest,
     testing::Values(TabStripOrientation::kVertical,
                     TabStripOrientation::kHorizontal),
     [](const testing::TestParamInfo<TabStripOrientation>& info) {
