@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {ReadAloudNode, TsReadModelImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAloudModelImpl, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -11,7 +11,7 @@ import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 suite('ReadAloudModel', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
-  let model: TsReadModelImpl;
+  let model: ReadAloudModelImpl;
 
   function assertTextEmpty() {
     assertEquals('', model.getCurrentTextContent());
@@ -78,7 +78,7 @@ suite('ReadAloudModel', () => {
 
   setup(() => {
     audioBrowserProxy = setupTestEnvironment().audioBrowserProxy;
-    model = new TsReadModelImpl();
+    model = new ReadAloudModelImpl();
   });
 
   test('getCurrentText opening punctuation ignored', async () => {
@@ -2254,7 +2254,7 @@ suite('ReadAloudModel', () => {
       // The model listens for phrase boundaries only if phrase highlighting is
       // enabled when it's created, so enable it and recreate the model.
       audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
-      model = new TsReadModelImpl();
+      model = new ReadAloudModelImpl();
     });
 
     test('falls back to word highlighting without boundaries', async () => {

@@ -63,6 +63,7 @@ export type {LanguageToastElement} from './read_aloud/language_toast.js';
 export {currentReadHighlightClass, Highlight, MovementGranularity, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, SentenceHighlight, WordHighlight} from './read_aloud/movement.js';
 export type {ReadAloudModelBrowserProxy} from './read_aloud/read_aloud_model_browser_proxy.js';
 export {getReadAloudModel, setInstance} from './read_aloud/read_aloud_model_browser_proxy.js';
+export {ReadAloudModelImpl} from './read_aloud/read_aloud_model_impl.js';
 export {ReadAloudNodeStore} from './read_aloud/read_aloud_node_store.js';
 export type {AncestorNode, Segment} from './read_aloud/read_aloud_types.js';
 export {ReadAloudNode} from './read_aloud/read_aloud_types.js';
@@ -73,7 +74,6 @@ export {MAX_SPEECH_LENGTH, SpeechController} from './read_aloud/speech_controlle
 export {PauseActionSource, SpeechEngineState, SpeechModel} from './read_aloud/speech_model.js';
 export {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting, textEndsWithOpeningPunctuation} from './read_aloud/speech_presentation_rules.js';
 export {TextSegmenter} from './read_aloud/text_segmenter.js';
-export {TsReadModelImpl} from './read_aloud/ts_model_impl.js';
 export type {TtsClient, TtsUtterance} from './read_aloud/tts_client.js';
 export {getFilteredVoiceList} from './read_aloud/tts_voice_filtering.js';
 export type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';

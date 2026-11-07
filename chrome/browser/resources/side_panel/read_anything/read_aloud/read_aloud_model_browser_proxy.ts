@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ReadAloudModelImpl} from './read_aloud_model_impl.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';
-import {TsReadModelImpl} from './ts_model_impl.js';
 
 // Proxy class used to wrap text segmentation calls, so that tests can replace
 // the text segmentation implementation.
@@ -43,7 +43,7 @@ export interface ReadAloudModelBrowserProxy {
 }
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {
-  return instance || (instance = new TsReadModelImpl());
+  return instance || (instance = new ReadAloudModelImpl());
 }
 
 export function setInstance(obj: ReadAloudModelBrowserProxy|null) {

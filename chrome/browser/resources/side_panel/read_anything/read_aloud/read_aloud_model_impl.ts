@@ -22,9 +22,9 @@ import {TextSegmenter} from './text_segmenter.js';
 // realistic phrase highlighting usage.
 const PHRASE_PREFETCH_WINDOW_SIZE = 5;
 
-// Read aloud model implementation based in TS to be used when the
-// ReadAnythingReadAloudTSTextSegmentation flag is enabled.
-export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
+// Read aloud model implementation that segments the DOM content of the
+// Reading mode panel into sentences, words, and phrases for Read Aloud.
+export class ReadAloudModelImpl implements ReadAloudModelBrowserProxy {
   private textSegmenter_: TextSegmenter = TextSegmenter.getInstance();
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();
@@ -46,7 +46,8 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
 
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
       Segment[] {
-    if (this.currentIndex_ < 0 || !this.sentences_[this.currentIndex_] || index < 0) {
+    if (this.currentIndex_ < 0 || !this.sentences_[this.currentIndex_] ||
+        index < 0) {
       return [];
     }
     const currentSentence = this.sentences_[this.currentIndex_]!;
