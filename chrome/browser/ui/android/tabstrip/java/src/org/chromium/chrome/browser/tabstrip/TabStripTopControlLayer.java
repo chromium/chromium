@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -400,7 +399,6 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
             assert canTransitionWithoutTabStrip() : "Transition finished when mTabStrip == null.";
         }
 
-        recordTabStripTransitionFinished(success);
         if (!success) {
             Log.i(TAG, "Transition canceled.");
         }
@@ -408,11 +406,6 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         if (mTransitionFinishedCallback != null) {
             mTransitionFinishedCallback.onResult(success);
         }
-    }
-
-    private void recordTabStripTransitionFinished(boolean finished) {
-        RecordHistogram.recordBooleanHistogram(
-                "Android.DynamicTopChrome.TabStripTransition.Finished", finished);
     }
 
     private boolean canTransitionWithoutTabStrip() {
