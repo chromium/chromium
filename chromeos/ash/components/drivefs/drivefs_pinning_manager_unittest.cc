@@ -2470,13 +2470,16 @@ TEST_F(DriveFsPinningManagerTest, DropQuery) {
         return FileError::FILE_ERROR_OK;
       });
 
+  RunLoop run_loop;
   PinningManager::Query query;
-  EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
-  drivefs_.StartSearchQuery(query.BindNewPipeAndPassReceiver(),
-                            QueryParameters::New());
+  mojo::Receiver<SearchQuery> query_receiver(
+      &drivefs_, query.BindNewPipeAndPassReceiver());
+  // The response releases the query after Stop() invalidates the manager's
+  // weak pointer.
+  query_receiver.set_disconnect_handler(run_loop.QuitClosure());
 
   manager.GetNextPage(Id(101), Path("/root/My Folder"), std::move(query));
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 }
 
 // Tests PinningManager::OnSearchResult() when a query finishes and there are
