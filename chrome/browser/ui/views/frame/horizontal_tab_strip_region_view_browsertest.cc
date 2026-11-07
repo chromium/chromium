@@ -10,8 +10,9 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -35,8 +36,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
@@ -369,4 +374,40 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewTest,
 
   EXPECT_FALSE(is_action_container_in_caption);
   EXPECT_TRUE(is_grab_handle_in_caption);
+}
+
+class HorizontalTabStripRegionViewUnifiedTest : public InProcessBrowserTest {
+ public:
+  HorizontalTabStripRegionViewUnifiedTest() {
+    feature_list_.InitAndEnableFeature(tabs::kTabStripUnification);
+  }
+  HorizontalTabStripRegionViewUnifiedTest(
+      const HorizontalTabStripRegionViewUnifiedTest&) = delete;
+  HorizontalTabStripRegionViewUnifiedTest& operator=(
+      const HorizontalTabStripRegionViewUnifiedTest&) = delete;
+  ~HorizontalTabStripRegionViewUnifiedTest() override = default;
+
+ protected:
+  views::Button* new_tab_button() {
+    return BrowserElementsViews::From(browser())->GetViewAs<views::Button>(
+        kNewTabButtonElementId);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
+                       RecordsNewTabButtonUserAction) {
+  base::UserActionTester user_action_tester;
+  ASSERT_NE(new_tab_button(), nullptr);
+
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(5, 5),
+                             gfx::Point(5, 5), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(new_tab_button()).NotifyClick(press_event);
+
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount("NewTab_Button"));
 }

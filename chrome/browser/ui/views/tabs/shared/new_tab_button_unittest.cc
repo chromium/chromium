@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -110,6 +111,7 @@ TEST_F(NewTabButtonTest, TriggerableEventFlags) {
 }
 
 TEST_F(NewTabButtonTest, LeftClickButtonCreatesNewTabAndUpdatesInkDrop) {
+  base::UserActionTester user_action_tester;
   EXPECT_FALSE(new_tab_action_invoked_);
 
   ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(5, 5),
@@ -127,12 +129,14 @@ TEST_F(NewTabButtonTest, LeftClickButtonCreatesNewTabAndUpdatesInkDrop) {
   button_->OnMouseReleased(release_event);
 
   EXPECT_TRUE(new_tab_action_invoked_);
+  EXPECT_EQ(1, user_action_tester.GetActionCount("NewTab_Button"));
   EXPECT_NE(views::InkDrop::Get(button_)->GetInkDrop()->GetTargetInkDropState(),
             views::InkDropState::ACTION_PENDING);
 }
 
 #if BUILDFLAG(IS_LINUX)
 TEST_F(NewTabButtonTest, MiddleClickExecutesCallbackAndUpdatesInkDropOnLinux) {
+  base::UserActionTester user_action_tester;
   bool callback_called = false;
   button_->SetMiddleClickCallbackForTesting(base::BindRepeating(
       [](bool* called) { *called = true; }, &callback_called));
@@ -152,6 +156,7 @@ TEST_F(NewTabButtonTest, MiddleClickExecutesCallbackAndUpdatesInkDropOnLinux) {
   button_->OnMouseReleased(release_event);
 
   EXPECT_TRUE(callback_called);
+  EXPECT_EQ(1, user_action_tester.GetActionCount("NewTab_Button"));
   EXPECT_NE(views::InkDrop::Get(button_)->GetInkDrop()->GetTargetInkDropState(),
             views::InkDropState::ACTION_PENDING);
 }
