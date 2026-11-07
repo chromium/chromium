@@ -307,6 +307,14 @@ static const CodecInfo kMPEG4FLACCodecInfo = {"flac", CodecInfo::AUDIO, nullptr,
                                               CodecInfo::HISTOGRAM_FLAC};
 static const CodecInfo kMPEG4FLACCodecInfo2 = {
     "fLaC", CodecInfo::AUDIO, nullptr, CodecInfo::HISTOGRAM_FLAC};
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+static const CodecInfo kAV2CodecInfo1 = {"av2E.*", CodecInfo::VIDEO, nullptr,
+                                         CodecInfo::HISTOGRAM_AV2};
+static const CodecInfo kAV2CodecInfo2 = {"av2e.*", CodecInfo::VIDEO, nullptr,
+                                         CodecInfo::HISTOGRAM_AV2};
+static const CodecInfo kAV2CodecInfo3 = {"av02.*", CodecInfo::VIDEO, nullptr,
+                                         CodecInfo::HISTOGRAM_AV2};
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || BUILDFLAG(ENABLE_IAMF_TOOLS)
 static const CodecInfo kIAMFCodecInfo1 = {"iamf", CodecInfo::AUDIO, nullptr,
                                           CodecInfo::HISTOGRAM_IAMF};
@@ -373,6 +381,11 @@ static const auto kVideoMP4Codecs = std::to_array<const CodecInfo* const>({
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     &kAV1CodecInfo,
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+    &kAV2CodecInfo1,
+    &kAV2CodecInfo2,
+    &kAV2CodecInfo3,
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || BUILDFLAG(ENABLE_IAMF_TOOLS)
     &kIAMFCodecInfo1,
     &kIAMFCodecInfo2,
