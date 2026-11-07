@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -53,6 +54,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -115,6 +117,25 @@ std::unique_ptr<AppMenuModel> CreateAppMenuModel(
   app_menu_model->Init();
   return app_menu_model;
 }
+
+class TestMenuModelDelegate : public ui::MenuModelDelegate {
+ public:
+  explicit TestMenuModelDelegate(ui::MenuModel* model) : model_(model) {
+    model_->SetMenuModelDelegate(this);
+  }
+  TestMenuModelDelegate(const TestMenuModelDelegate&) = delete;
+  TestMenuModelDelegate& operator=(const TestMenuModelDelegate&) = delete;
+  ~TestMenuModelDelegate() override { model_->SetMenuModelDelegate(nullptr); }
+
+  void OnIconChanged(int command_id) override {}
+  void OnMenuStructureChanged() override { ++structure_changes_; }
+
+  int structure_changes() const { return structure_changes_; }
+
+ private:
+  const raw_ptr<ui::MenuModel> model_;
+  int structure_changes_ = 0;
+};
 
 class OtherDeviceTabsSubMenuModelTest : public InProcessBrowserTest {
  public:
@@ -206,6 +227,17 @@ class OtherDeviceTabsSubMenuModelTest : public InProcessBrowserTest {
     return u"session_name" +
            base::NumberToString16(
                recent_tabs_builder_.GetSessionID(device_index).id());
+  }
+
+  // Deletes the device registered at `device_index` from session sync.
+  void DeleteDevice(size_t device_index) {
+    // Mirrors RecentTabsBuilderTestHelper's session tagging.
+    SessionSyncServiceFactory::GetForProfile(browser()->GetProfile())
+        ->GetOpenTabsUIDelegate()
+        ->DeleteForeignSession(
+            "session_tag" +
+            base::NumberToString(
+                recent_tabs_builder_.GetSessionID(device_index).id()));
   }
 
   std::unique_ptr<OtherDeviceTabsSubMenuModel> CreateModel() {
@@ -501,6 +533,70 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, MoreTabsFlyoutFavicon) {
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       bitmap, *flyout->GetIconAt(0).GetImage().ToSkBitmap()));
   model->SetMenuModelDelegate(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       UpdatesWhenDevicesChange) {
+  SetUpSignedInWithTabSync();
+
+  std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+  TestMenuModelDelegate delegate(model.get());
+  EXPECT_EQ(0u, model->GetItemCount());
+  EXPECT_EQ(0, delegate.structure_changes());
+
+  const base::Time now = base::Time::Now();
+  recent_tabs_builder_.AddSession();
+  recent_tabs_builder_.AddWindow(0);
+  recent_tabs_builder_.AddTabWithInfo(0, 0, now - base::Minutes(10), u"Old");
+  recent_tabs_builder_.ExportToSessionSync(sync_processor_.get());
+
+  // Initial sync merge and applying entity changes each fire a notification.
+  EXPECT_EQ(2, delegate.structure_changes());
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true}});
+  EXPECT_THAT(LabelsInRange(*model, 0, model->GetItemCount()),
+              ElementsAre(DeviceName(0), u"Old"));
+
+  recent_tabs_builder_.AddTabWithInfo(0, 0, now - base::Minutes(5), u"New");
+  recent_tabs_builder_.ExportToSessionSync(sync_processor_.get());
+
+  EXPECT_EQ(3, delegate.structure_changes());
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_COMMAND, true}});
+  EXPECT_THAT(LabelsInRange(*model, 0, model->GetItemCount()),
+              ElementsAre(DeviceName(0), u"New", u"Old"));
+
+  recent_tabs_builder_.AddSession();
+  recent_tabs_builder_.AddWindow(1);
+  recent_tabs_builder_.AddTabWithInfo(1, 0, now - base::Minutes(1), u"Other");
+  recent_tabs_builder_.ExportToSessionSync(sync_processor_.get());
+
+  EXPECT_EQ(4, delegate.structure_changes());
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_SEPARATOR, true},
+                       {ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_COMMAND, true}});
+  EXPECT_THAT(LabelsInRange(*model, 0, 2),
+              ElementsAre(DeviceName(1), u"Other"));
+  EXPECT_THAT(LabelsInRange(*model, 3, model->GetItemCount()),
+              ElementsAre(DeviceName(0), u"New", u"Old"));
+
+  DeleteDevice(1);
+
+  EXPECT_EQ(5, delegate.structure_changes());
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_COMMAND, true}});
+  EXPECT_THAT(LabelsInRange(*model, 0, model->GetItemCount()),
+              ElementsAre(DeviceName(0), u"New", u"Old"));
+
+  DeleteDevice(0);
+
+  EXPECT_EQ(6, delegate.structure_changes());
+  EXPECT_EQ(0u, model->GetItemCount());
 }
 
 // --- App menu integration --------------------------------------------------

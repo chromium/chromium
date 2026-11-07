@@ -1219,7 +1219,8 @@ TEST_F(ActionAppMenuTest, PopulatesTabGroupsSubmenu) {
 }
 
 TEST_F(ActionAppMenuTest, RecentTabsMinorIcon) {
-  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
+                                     base::DoNothing());
   auto parent = actions::ActionItem::Builder().Build();
 
   RecentTabItem tab_with_group(RecentTabItem::Type::kTab, u"Grouped Tab");
@@ -4962,7 +4963,8 @@ TEST_F(ActionAppMenuTest, SafetyHubNotificationMetrics) {
 
 TEST_F(ActionAppMenuTest, RecentTabsDynamicMenuMetrics) {
   base::UserActionTester user_action_tester;
-  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
+                                     base::DoNothing());
   auto parent = actions::ActionItem::Builder().Build();
 
   RecentTabItem local_tab(RecentTabItem::Type::kTab, u"Local Tab");
@@ -5053,8 +5055,8 @@ TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
 TEST_F(ActionAppMenuTest, TabsFromOtherDevicesAndSendTabToSelfMetrics) {
   base::HistogramTester histogram_tester;
 
-  ActionAppMenuManager menu_manager(&mock_window_interface_,
-                                    &mock_drag_and_drop_host_);
+  ActionAppMenuManager menu_manager(
+      &mock_window_interface_, &mock_drag_and_drop_host_, base::DoNothing());
   menu_manager.CreateMenuHierarchy();
 
   // TargetDeviceCount should not be logged when the menu hierarchy is
@@ -5614,7 +5616,8 @@ TEST_F(ActionAppMenuTest, RecentTabsByDateHistoryInSidePanel) {
   testing::NiceMock<MockSidePanelUI> mock_side_panel_ui(
       mock_window_interface_.GetUnownedUserDataHost());
 
-  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
+                                     base::DoNothing());
   auto parent = actions::ActionItem::Builder().Build();
   dynamic_menu.BuildRecentTabsActions(parent.get());
 
@@ -5637,7 +5640,8 @@ TEST_F(ActionAppMenuTest, RecentTabsByDateHistoryInSidePanel) {
 }
 
 TEST_F(ActionAppMenuTest, CreateOtherDeviceTabsActionsWithDevices) {
-  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
+                                     base::DoNothing());
   auto other_device_tabs_submenu =
       actions::ActionItem::Builder()
           .SetActionId(kActionOtherDeviceTabsSubmenu)
@@ -5901,7 +5905,8 @@ TEST_F(ActionAppMenuTest, UserGeneratedBookmarkTitlesEscapeAmpersands) {
 
 TEST_F(ActionAppMenuTest,
        RecentTabsDynamicMenu_UserGeneratedItemsEscapeAmpersands) {
-  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_,
+                                     base::DoNothing());
   auto parent = actions::ActionItem::Builder().Build();
 
   RecentTabItem tab_item(RecentTabItem::Type::kTab, u"A&B Tab");

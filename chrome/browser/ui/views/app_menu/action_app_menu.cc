@@ -214,9 +214,13 @@ ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
                              base::RepeatingClosure on_menu_closed_callback)
     : browser_window_interface_(browser_window_interface),
       on_menu_closed_callback_(std::move(on_menu_closed_callback)),
-      menu_manager_(
-          std::make_unique<ActionAppMenuManager>(browser_window_interface,
-                                                 /*drag_and_drop_host=*/this)) {
+      menu_manager_(std::make_unique<ActionAppMenuManager>(
+          browser_window_interface,
+          /*drag_and_drop_host=*/this,
+          // Unretained is safe because `this` owns `menu_manager_`.
+          base::BindRepeating(&ActionAppMenu::RebuildSubmenu,
+                              base::Unretained(this),
+                              kActionOtherDeviceTabsSubmenu))) {
   menu_manager_->CreateMenuHierarchy();
 }
 
@@ -738,6 +742,27 @@ void ActionAppMenu::RemoveSubmenuActionsFromMap(
   }
 }
 
+void ActionAppMenu::RebuildSubmenu(actions::ActionId submenu_action_id) {
+  auto action_it = command_to_action_map_.find(submenu_action_id);
+  if (action_it == command_to_action_map_.end()) {
+    return;
+  }
+  views::MenuItemView* menu_item = root_->GetMenuItemByID(submenu_action_id);
+  CHECK(menu_item);
+  actions::BaseAction* submenu_action = action_it->second;
+  // Rows not built yet; WillShowMenu() builds them from the new actions.
+  if (menu_item->GetSubmenu()->GetMenuItems().empty() &&
+      !menu_item->GetSubmenu()->IsShowing()) {
+    submenu_action->PopulateChildItems();
+    return;
+  }
+  RemoveSubmenuActionsFromMap(menu_item);
+  menu_item->RemoveAllMenuItems();
+  submenu_action->PopulateChildItems();
+  PopulateMenu(menu_item, submenu_action);
+  menu_item->ChildrenChanged();
+}
+
 void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,
                                       int mouse_event_flags) {
   if (!action_to_execute_on_close_.has_value()) {
@@ -860,8 +885,8 @@ void ActionAppMenu::PopulateItemsBelowSearchBar() {
   actions::ActionItem* const app_menu_root = menu_manager_->GetAppMenuRoot();
   const auto& children = app_menu_root->GetChildren().children();
   for (size_t i = 0; i < children.size(); ++i) {
-    const auto display_type = children[i]->GetProperty(
-        AppMenuActionItem::kDisplayTypeKey);
+    const auto display_type =
+        children[i]->GetProperty(AppMenuActionItem::kDisplayTypeKey);
     if (display_type == AppMenuActionItem::DisplayType::kSearch) {
       PopulateMenu(root_, app_menu_root, i + 1);
       return;
@@ -900,7 +925,6 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
       has_submenu ? views::MenuItemView::Type::kSubMenu
                   : (is_checkable ? views::MenuItemView::Type::kCheckbox
                                   : views::MenuItemView::Type::kNormal);
-
 
   views::MenuItemView* menu_item = parent_menu_item->AddMenuItemView(
       std::make_unique<AppMenuItemView>(parent_menu_item, command_id,

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -55,8 +56,11 @@ bool MayHaveMnemonics(const RecentTabItem& item) {
 
 }  // namespace
 
-RecentTabsDynamicMenu::RecentTabsDynamicMenu(BrowserWindowInterface* browser)
-    : browser_window_interface_(browser) {}
+RecentTabsDynamicMenu::RecentTabsDynamicMenu(
+    BrowserWindowInterface* browser,
+    base::RepeatingClosure rebuild_submenu_callback)
+    : browser_window_interface_(browser),
+      rebuild_submenu_callback_(std::move(rebuild_submenu_callback)) {}
 
 RecentTabsDynamicMenu::~RecentTabsDynamicMenu() = default;
 
@@ -78,6 +82,14 @@ void RecentTabsDynamicMenu::BuildRecentTabsActions(
 
 void RecentTabsDynamicMenu::BuildOtherDeviceTabsActions(
     actions::BaseAction* parent_item) {
+  if (!foreign_session_updated_subscription_) {
+    if (sync_sessions::SessionSyncService* service =
+            SessionSyncServiceFactory::GetForProfile(
+                browser_window_interface_->GetProfile())) {
+      foreign_session_updated_subscription_ =
+          service->SubscribeToForeignSessionsChanged(rebuild_submenu_callback_);
+    }
+  }
   parent_item->ResetActionList();
   // Populate device headers, open tabs, and dividers ordered by recency.
   CreateRecentTabsAction(parent_item,

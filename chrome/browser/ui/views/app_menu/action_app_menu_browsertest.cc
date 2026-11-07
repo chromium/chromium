@@ -74,6 +74,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/widget_test_api.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -602,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
   helper.AddTabWithInfo(1, 0, now - base::Minutes(20), u"Oldest");
   helper.ExportToSessionSync(sync_processor.get());
 
-  RecentTabsDynamicMenu dynamic_menu(browser());
+  RecentTabsDynamicMenu dynamic_menu(browser(), base::DoNothing());
   std::unique_ptr<actions::ActionItem> root =
       actions::ActionItem::Builder().Build();
   dynamic_menu.BuildOtherDeviceTabsActions(root.get());
@@ -776,6 +777,67 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
       browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
   histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
                                      MENU_ACTION_OTHER_DEVICE_TAB, 1);
+
+  menu_control->CloseMenu();
+}
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
+                       OtherDeviceTabsSubmenuUpdatesWhenDevicesChange) {
+  std::unique_ptr<syncer::DataTypeProcessor> sync_processor =
+      StartSessionSync();
+
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+  // Activation changes close menus; ignore them since the test spins the loop
+  // while the menu is open.
+  views::DisableActivationChangeHandlingForTests();
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
+  ASSERT_TRUE(action_menu);
+  views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* other_device_tabs_item =
+      root->GetMenuItemByID(kActionOtherDeviceTabsSubmenu);
+  ASSERT_TRUE(other_device_tabs_item);
+  other_device_tabs_item->GetMenuController()->SelectItemAndOpenSubmenu(
+      other_device_tabs_item);
+  ASSERT_TRUE(other_device_tabs_item->GetSubmenu()->IsShowing());
+
+  const base::Time now = base::Time::Now();
+  RecentTabsBuilderTestHelper helper;
+  helper.AddSession();
+  helper.AddWindow(0);
+  helper.AddTabWithInfo(0, 0, now - base::Minutes(10), u"Old");
+  helper.ExportToSessionSync(sync_processor.get());
+  ASSERT_TRUE(FindMenuItemByTitle(other_device_tabs_item, u"Old"));
+
+  helper.AddTabWithInfo(0, 0, now - base::Minutes(5), u"New");
+  helper.ExportToSessionSync(sync_processor.get());
+
+  std::vector<std::u16string> titles;
+  for (views::MenuItemView* item :
+       other_device_tabs_item->GetSubmenu()->GetMenuItems()) {
+    titles.push_back(item->title());
+  }
+  EXPECT_THAT(titles,
+              testing::ElementsAre(GetSessionName(helper, 0), u"New", u"Old"));
+
+  views::MenuItemView* tab_item =
+      FindMenuItemByTitle(other_device_tabs_item, u"New");
+  ASSERT_TRUE(tab_item);
+  const std::vector<RecentTabItem> items =
+      RecentTabsBuilder::BuildOtherDeviceTabs(browser()->GetProfile());
+  ASSERT_EQ(3u, items.size());
+  const GURL expected_url = items[1].url();
+
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  action_menu->ExecuteCommand(tab_item->GetCommand(), 0);
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(
+      expected_url,
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 
   menu_control->CloseMenu();
 }

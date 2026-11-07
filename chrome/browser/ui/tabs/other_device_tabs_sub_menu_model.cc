@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/remote_tabs_menu_util.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "ui/base/models/menu_model_delegate.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
 
@@ -32,6 +33,13 @@ OtherDeviceTabsSubMenuModel::OtherDeviceTabsSubMenuModel(
           SessionSyncServiceFactory::GetForProfile(browser->GetProfile())),
       next_menu_id_(AppMenuModel::kMinOtherDeviceTabsCommandId) {
   CHECK(log_menu_metrics_callback_);
+  CHECK(session_sync_service_);
+  // Unretained is safe because `this` owns the subscription.
+  foreign_session_updated_subscription_ =
+      session_sync_service_->SubscribeToForeignSessionsChanged(
+          base::BindRepeating(
+              &OtherDeviceTabsSubMenuModel::OnForeignSessionUpdated,
+              base::Unretained(this)));
   Build();
 }
 
@@ -88,6 +96,16 @@ void OtherDeviceTabsSubMenuModel::Build() {
   }
 }
 
+void OtherDeviceTabsSubMenuModel::OnForeignSessionUpdated() {
+  Clear();
+  more_tabs_sub_menus_.clear();
+  favicon_weak_ptr_factory_.InvalidateWeakPtrs();
+  Build();
+  if (ui::MenuModelDelegate* delegate = menu_model_delegate()) {
+    delegate->OnMenuStructureChanged();
+  }
+}
+
 void OtherDeviceTabsSubMenuModel::OpenTab(const std::string& session_tag,
                                           SessionID tab_id,
                                           int event_flags) {
@@ -95,11 +113,9 @@ void OtherDeviceTabsSubMenuModel::OpenTab(const std::string& session_tag,
 
   // Restore the selected foreign tab using the window disposition derived
   // from event flags (e.g. foreground vs. background tab on middle-click).
-  sync_sessions::OpenTabsUIDelegate* open_tabs =
-      session_sync_service_ ? session_sync_service_->GetOpenTabsUIDelegate()
-                            : nullptr;
   remote_tabs_menu_util::OpenForeignSessionTab(
-      browser_, open_tabs, session_tag, tab_id,
+      browser_, session_sync_service_->GetOpenTabsUIDelegate(), session_tag,
+      tab_id,
       ui::DispositionFromEventFlags(
           event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab),
       base::UserMetricsAction("WrenchMenu_OpenRecentTabFromDevice"));

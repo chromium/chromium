@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -22,7 +24,8 @@
 // submenu
 class RecentTabsDynamicMenu {
  public:
-  explicit RecentTabsDynamicMenu(BrowserWindowInterface* browser);
+  RecentTabsDynamicMenu(BrowserWindowInterface* browser,
+                        base::RepeatingClosure rebuild_submenu_callback);
   ~RecentTabsDynamicMenu();
 
   base::WeakPtr<RecentTabsDynamicMenu> GetWeakPtr() {
@@ -63,6 +66,8 @@ class RecentTabsDynamicMenu {
       RecentTabItem recent_item);
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  base::RepeatingClosure rebuild_submenu_callback_;
+  base::CallbackListSubscription foreign_session_updated_subscription_;
   base::CancelableTaskTracker cancelable_task_tracker_;
   base::WeakPtrFactory<RecentTabsDynamicMenu> weak_ptr_factory_{this};
 };
