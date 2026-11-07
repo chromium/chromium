@@ -401,8 +401,8 @@ export class SelectionController {
       return null;
     }
 
-    let anchorNode = this.nodeStore_.getDomNode(anchorNodeId);
-    let focusNode = this.nodeStore_.getDomNode(focusNodeId);
+    let anchorNode = this.getDomNodeForAxOffset_(anchorNodeId, anchorOffset);
+    let focusNode = this.getDomNodeForAxOffset_(focusNodeId, focusOffset);
     if (!anchorNode || !focusNode) {
       return null;
     }
@@ -435,6 +435,25 @@ export class SelectionController {
     focusOffset -= adjustedFocus.offset;
 
     return {anchorNode, anchorOffset, focusNode, focusOffset};
+  }
+
+  // With Readability, one AXNode's text can be split across several sibling
+  // DOM nodes (see ContentController.mapBlockToAxNodes_), but the NodeStore
+  // only returns one of them for an AX ID. Returns the sibling that contains
+  // `axOffset`, i.e. the last one whose AX node offset is at or before it.
+  // TODO(crbug.com/582908703): Investigate if selection offsets should be
+  // applied more broadly.
+  private getDomNodeForAxOffset_(axNodeId: number, axOffset: number): Node
+      |undefined {
+    let result = this.nodeStore_.getDomNode(axNodeId);
+    const siblings = result?.parentNode?.childNodes ?? [];
+    for (const sibling of siblings) {
+      if (this.nodeStore_.getAxId(sibling) === axNodeId &&
+          this.nodeStore_.getAxNodeOffset(sibling) <= axOffset) {
+        result = sibling;
+      }
+    }
+    return result;
   }
 
   // Returns true if the node maps to a valid AX ID in the NodeStore.
