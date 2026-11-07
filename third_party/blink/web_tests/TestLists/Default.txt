@@ -505,7 +505,6 @@ fast/events/constructors/gamepad-event-constructor.html
 fast/events/constructors/page-transition-event-constructor.html
 fast/events/event-fired-after-removal.html
 fast/events/focus-remove-focuesed-node.html
-fast/eventsource/eventsource-attribute-listeners.html
 fast/events/pointerevents/mouse-pointer-transition-events.html
 fast/events/reveal-link-when-focused.html
 fast/events/simulated-click-on-anchor-with-target-blank.html

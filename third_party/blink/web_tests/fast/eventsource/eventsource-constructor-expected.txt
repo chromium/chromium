@@ -1,8 +1,0 @@
-Test EventSource constructor functionality. Should print a series of PASS messages followed by DONE.
-
-PASS: missing argument to EventSource constructor resulted in an exception (TypeError: Failed to construct 'EventSource': 1 argument required, but only 0 present.)
-PASS: passing an invalid URL to the EventSource constructor resulted in an exception (SyntaxError: Failed to construct 'EventSource': Cannot open an EventSource to 'http://webserver:eighty/'. The URL is invalid.)
-PASS: no exception when passing an URL blocked by Content Security Policy to the EventSource constructor
-PASS: no exception when passing a second argument to the EventSource constructor
-DONE
-
