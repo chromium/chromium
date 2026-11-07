@@ -11,6 +11,7 @@
 #include "url/gurl.h"
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }
 
@@ -26,7 +27,7 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
 // Tracks how long the offline page is showing and the reason why it gets
 // closed (e.g. page is refreshed after coming back online or web contents gets
 // destroyed).
-void TrackOfflinePageVisibility(content::RenderFrameHost* render_frame_host);
+void TrackOfflinePageVisibility(content::NavigationHandle& navigation_handle);
 
 }  // namespace web_app
 

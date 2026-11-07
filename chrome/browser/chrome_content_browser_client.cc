@@ -9042,7 +9042,7 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
       // Use the alternative error page dictionary to override the error page.
       alternative_error_page_override_info->alternative_error_page_params.Set(
           error_page::kOverrideErrorPage, base::Value(true));
-      web_app::TrackOfflinePageVisibility(render_frame_host);
+      web_app::TrackOfflinePageVisibility(navigation_handle);
       return alternative_error_page_override_info;
     }
   }

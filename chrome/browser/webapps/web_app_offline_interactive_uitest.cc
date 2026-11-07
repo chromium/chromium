@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/webapps/web_app_offline.h"
+
 #include <string_view>
 
 #include "base/base64.h"
@@ -427,6 +429,38 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
   histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
   EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
               ElementsAre(base::Bucket(/* min= */ 2, /* count= */ 1)));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    WebAppOfflinePageTest,
+    WebContentsDestroyedBeforeOfflinePageCommitsDoesNotCrashOrLog) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL target_url =
+      embedded_test_server()->GetURL("/banners/no-sw-with-colors.html");
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
+  // The test tears down via browser()->GetProfile(), so the PWA app
+  // browser must exist before the original browser is closed below.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
+  browser_created_observer.Wait();
+  WebAppIconWaiter(browser()->GetProfile(), app_id).Wait();
+
+  content::TestNavigationManager nav_manager(web_contents, target_url);
+  web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  // Simulate DefaultOfflineWebContentsObserver registration prior to commit,
+  // then destroy the WebContents before the navigation commits.
+  ASSERT_NE(nav_manager.GetNavigationHandle(), nullptr);
+  web_app::TrackOfflinePageVisibility(*nav_manager.GetNavigationHandle());
+  CloseBrowser(web_contents);
+
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppOfflinePageTest);

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/webapps/web_app_offline.h"
 
+#include <stdint.h>
+
+#include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -38,8 +41,10 @@ enum class ClosingReason {
 // conditions above are met.
 class DefaultOfflineWebContentsObserver : public content::WebContentsObserver {
  public:
-  explicit DefaultOfflineWebContentsObserver(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
+  DefaultOfflineWebContentsObserver(content::WebContents* web_contents,
+                                    int64_t error_page_navigation_id)
+      : WebContentsObserver(web_contents),
+        error_page_navigation_id_(error_page_navigation_id) {}
 
   DefaultOfflineWebContentsObserver() = delete;
 
@@ -47,45 +52,52 @@ class DefaultOfflineWebContentsObserver : public content::WebContentsObserver {
   // WebContentsObserver:
 
   void WebContentsDestroyed() override {
-    // Note: After calling this function, the class deletes itself.
+    CHECK(!error_page_url_.is_empty());
     LogAndExit(ClosingReason::kWebContentsDestroyed);
   }
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->IsSameDocument())
-      return;
-
-    // The first successful navigation ending is always the error page, where we
-    // set the `error_page_url_`. A new navigation (after that) means we should
-    // end tracking, because either the network connection is back online (and
-    // the app has successfully loaded), or the user has navigated away from the
-    // app.
-    if (!error_page_url_.is_empty()) {
-      if (error_page_url_ != navigation_handle->GetURL()) {
-        // Note: After calling this function, the class deletes itself.
-        LogAndExit(ClosingReason::kNewNavigation);
-      } else {
-        // Note: After calling this function, the class deletes itself.
-        LogAndExit(ClosingReason::kNetworkReestablished);
-      }
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
+        navigation_handle->IsSameDocument()) {
       return;
     }
 
-    // If we have no error_page_url_ then this is the end of the first
-    // navigation. Since this class is created when we detect an error page is
-    // about to be shown, we just need to grab the URL and start the timer.
-    // TODO(crbug.com/575489700): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK(navigation_handle->IsErrorPage());
-    CHECK(error_page_url_.is_empty(), base::NotFatalUntil::M162);
-    error_page_url_ = navigation_handle->GetURL();
-    timer_start_ = base::TimeTicks::Now();
+    // If we have no `error_page_url_`, wait for the tracked error-page
+    // navigation to finish. Since this class is created before the error page
+    // commits in the renderer, the navigation may be aborted or discarded
+    // during WebContents shutdown without committing.
+    if (error_page_url_.is_empty()) {
+      if (navigation_handle->GetNavigationId() != error_page_navigation_id_) {
+        return;
+      }
+      if (!navigation_handle->HasCommitted()) {
+        delete this;
+        return;
+      }
+      CHECK(navigation_handle->IsErrorPage());
+      error_page_url_ = navigation_handle->GetURL();
+      timer_start_ = base::TimeTicks::Now();
+      return;
+    }
+
+    if (!navigation_handle->HasCommitted()) {
+      return;
+    }
+
+    if (error_page_url_ != navigation_handle->GetURL()) {
+      // Note: After calling this function, the class deletes itself.
+      LogAndExit(ClosingReason::kNewNavigation);
+    } else {
+      // Note: After calling this function, the class deletes itself.
+      LogAndExit(ClosingReason::kNetworkReestablished);
+    }
   }
 
   // Logs the metrics for the error page and deletes self. This class should not
   // be used after calling this function.
   void LogAndExit(ClosingReason reason) {
+    CHECK(!timer_start_.is_null());
     base::TimeDelta delta = base::TimeTicks::Now() - timer_start_;
     UMA_HISTOGRAM_ENUMERATION("WebApp.DefaultOffline.ClosingReason", reason);
     UMA_HISTOGRAM_CUSTOM_TIMES("WebApp.DefaultOffline.DurationShown", delta,
@@ -95,6 +107,7 @@ class DefaultOfflineWebContentsObserver : public content::WebContentsObserver {
     delete this;  // No further processing should take place after this point.
   }
 
+  const int64_t error_page_navigation_id_;
   GURL error_page_url_;
   base::TimeTicks timer_start_;
 };
@@ -115,14 +128,17 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void TrackOfflinePageVisibility(content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host == nullptr)
-    return;  // Some browser_tests pass a null `render_frame_host`.
+void TrackOfflinePageVisibility(content::NavigationHandle& navigation_handle) {
+  CHECK(navigation_handle.IsInPrimaryMainFrame());
+  CHECK(!navigation_handle.HasCommitted());
+  content::WebContents* web_contents = navigation_handle.GetWebContents();
+  if (web_contents == nullptr) {
+    return;
+  }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
   // This class manages its own lifetime.
-  new DefaultOfflineWebContentsObserver(web_contents);
+  new DefaultOfflineWebContentsObserver(web_contents,
+                                        navigation_handle.GetNavigationId());
 }
 
 }  // namespace web_app
