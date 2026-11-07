@@ -37,6 +37,7 @@
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
+#include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_download_progress_observer.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
@@ -592,6 +593,9 @@ TEST_F(AILanguageModelTest, AppendTelemetry) {
 
   session.reset();
 
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.PromptApi",
+      optimization_guide::SessionImpl::AddContextResult::kUsingOnDevice, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution."
       "OnDeviceDestroyedWhileWaitingForResponseTime.PromptApi",
@@ -618,6 +622,11 @@ TEST_F(AILanguageModelTest, AppendErrorTelemetry) {
     EXPECT_EQ(responder.error_status(),
               blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
   }
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.PromptApi",
+      optimization_guide::SessionImpl::AddContextResult::
+          kFailedConstructingInput,
+      1);
 
   // Responder disconnect while waiting.
   fake_broker_->settings().set_append_delay(base::Minutes(1));
@@ -640,6 +649,9 @@ TEST_F(AILanguageModelTest, AppendErrorTelemetry) {
     session->Destroy();
     EXPECT_FALSE(responder.WaitForCompletion());
   }
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.PromptApi",
+      optimization_guide::SessionImpl::AddContextResult::kUsingOnDevice, 2);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution."
       "OnDeviceDestroyedWhileWaitingForResponseTime.PromptApi",
