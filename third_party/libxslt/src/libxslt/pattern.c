@@ -581,6 +581,15 @@ xsltTestCompMatchDirect(xsltTransformContextPtr ctxt, xsltCompMatchPtr comp,
 	    nocache = 1;
 
 	if (nocache == 0) {
+	    /*
+	     * xmlXPathEval can re-enter this function for the same cache
+	     * slot, e.g. through a lazily evaluated global variable whose
+	     * value runs xsl:number. The nested call may free or replace
+	     * the cached object, so re-read it instead of using the value
+	     * read before the evaluation.
+	     */
+	    list = (xmlXPathObjectPtr)
+		XSLT_RUNTIME_EXTRA_LST(ctxt, sel->lenExtra);
 	    if (list != NULL)
 		xmlXPathFreeObject(list);
 	    list = newlist;
