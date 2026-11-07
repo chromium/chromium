@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -410,4 +411,22 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
 
   EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(1, user_action_tester.GetActionCount("NewTab_Button"));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
+                       RecordsTimeToCreateNewTabFromPress) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NE(new_tab_button(), nullptr);
+
+  // Adding a tab without pressing the button should not record the metric.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  histogram_tester.ExpectTotalCount("TabStrip.TimeToCreateNewTabFromPress", 0);
+
+  // Pressing the new tab button should record the creation latency once.
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(5, 5),
+                             gfx::Point(5, 5), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(new_tab_button()).NotifyClick(press_event);
+  histogram_tester.ExpectTotalCount("TabStrip.TimeToCreateNewTabFromPress", 1);
 }

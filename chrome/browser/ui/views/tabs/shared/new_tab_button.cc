@@ -123,6 +123,7 @@ void NewTabButton::NotifyClick(const ui::Event& event) {
   if (event.IsMouseEvent()) {
     const ui::MouseEvent& mouse = static_cast<const ui::MouseEvent&>(event);
     if (mouse.IsOnlyMiddleMouseButton()) {
+      NotifyWillInvokeAction();
       views::InkDrop::Get(this)->AnimateToState(
           views::InkDropState::ACTION_TRIGGERED,
           ui::LocatedEvent::FromIfValid(&event));

@@ -137,6 +137,10 @@ TEST_F(NewTabButtonTest, LeftClickButtonCreatesNewTabAndUpdatesInkDrop) {
 #if BUILDFLAG(IS_LINUX)
 TEST_F(NewTabButtonTest, MiddleClickExecutesCallbackAndUpdatesInkDropOnLinux) {
   base::UserActionTester user_action_tester;
+  bool will_invoke_called = false;
+  base::CallbackListSubscription subscription =
+      button_->RegisterWillInvokeActionCallback(base::BindRepeating(
+          [](bool* called) { *called = true; }, &will_invoke_called));
   bool callback_called = false;
   button_->SetMiddleClickCallbackForTesting(base::BindRepeating(
       [](bool* called) { *called = true; }, &callback_called));
@@ -155,6 +159,7 @@ TEST_F(NewTabButtonTest, MiddleClickExecutesCallbackAndUpdatesInkDropOnLinux) {
                                ui::EF_MIDDLE_MOUSE_BUTTON);
   button_->OnMouseReleased(release_event);
 
+  EXPECT_TRUE(will_invoke_called);
   EXPECT_TRUE(callback_called);
   EXPECT_EQ(1, user_action_tester.GetActionCount("NewTab_Button"));
   EXPECT_NE(views::InkDrop::Get(button_)->GetInkDrop()->GetTargetInkDropState(),

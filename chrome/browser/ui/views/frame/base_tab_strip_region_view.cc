@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <variant>
 
@@ -494,7 +495,10 @@ views::View* BaseTabStripRegionView::GetDefaultFocusableChild() {
 
 void BaseTabStripRegionView::OnChildrenAdded(
     const tabs::TabCollectionNodes& handles) {
-  if (new_tab_button_pressed_start_time_.has_value()) {
+  const bool has_tab = std::ranges::any_of(handles, [](const auto& handle) {
+    return std::holds_alternative<tabs::TabHandle>(handle);
+  });
+  if (has_tab && new_tab_button_pressed_start_time_.has_value()) {
     base::UmaHistogramTimes(
         "TabStrip.TimeToCreateNewTabFromPress",
         base::TimeTicks::Now() - new_tab_button_pressed_start_time_.value());

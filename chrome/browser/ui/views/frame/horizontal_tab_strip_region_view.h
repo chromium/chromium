@@ -185,6 +185,7 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 
   base::CallbackListSubscription subscription_;
+  base::CallbackListSubscription new_tab_button_pressed_subscription_;
 };
 
 using HorizontalTabStripRegionView = HorizontalTabStripRegionViewOld;
