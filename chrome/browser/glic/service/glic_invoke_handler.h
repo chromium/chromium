@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INVOKE_HANDLER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -32,6 +34,13 @@ class GlicInstanceImpl;
 
 class SequentialTaskGroup;
 enum class GlicTaskType;
+
+// Formats best-effort internal diagnostic context for invocation error
+// callbacks (carries no stability guarantee).
+std::string FormatInvokeDiagnosticInfo(
+    std::optional<GlicTaskType> last_active_task,
+    std::optional<ClientLoadState> client_load_state_at_start,
+    std::optional<ClientLoadErrorReason> client_load_error_reason);
 
 // Handles an invocation of Glic, parsing options and communicating with the
 // instance's host.
@@ -146,6 +155,7 @@ class GlicInvokeHandler {
   const bool requires_client_invoke_;
 
   bool should_wait_for_load_ = false;
+  std::optional<ClientLoadState> client_load_state_at_start_;
   base::CallbackListSubscription tab_destruction_subscription_;
   base::CallbackListSubscription conversation_subscription_;
   base::CallbackListSubscription actuating_subscription_;

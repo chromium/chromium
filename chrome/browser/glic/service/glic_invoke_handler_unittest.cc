@@ -5,13 +5,18 @@
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 
 #include <optional>
+#include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/service/glic_invoke_task.h"
 #include "content/public/browser/global_routing_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -126,5 +131,53 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<GlicInvokeHandlerTest::ParamType>& info) {
       return info.param.test_name;
     });
+
+TEST(GlicInvokeHandlerDiagnosticTest,
+     EveryClientLoadStateProducesDistinctDiagnosticInfo) {
+  constexpr std::string_view kPrefix = "load_state_at_start=";
+  std::set<std::string> seen;
+  for (ClientLoadState state :
+       {ClientLoadState::kLoading, ClientLoadState::kReady,
+        ClientLoadState::kError}) {
+    const std::string info =
+        FormatInvokeDiagnosticInfo(std::nullopt, state, std::nullopt);
+    ASSERT_THAT(info, testing::StartsWith(kPrefix));
+    EXPECT_GT(info.size(), kPrefix.size());
+    EXPECT_TRUE(seen.insert(info).second) << "Duplicate diagnostic: " << info;
+  }
+}
+
+TEST(GlicInvokeHandlerDiagnosticTest,
+     EveryClientLoadErrorReasonProducesDistinctDiagnosticInfo) {
+  constexpr std::string_view kPrefix = "load_error=";
+  std::set<std::string> seen;
+  for (int value = 0;
+       value <= static_cast<int>(ClientLoadErrorReason::kMaxValue); ++value) {
+    const auto reason = static_cast<ClientLoadErrorReason>(value);
+    const std::string info =
+        FormatInvokeDiagnosticInfo(std::nullopt, std::nullopt, reason);
+    ASSERT_THAT(info, testing::StartsWith(kPrefix));
+    EXPECT_GT(info.size(), kPrefix.size())
+        << "Empty load_error token for reason " << value;
+    EXPECT_TRUE(seen.insert(info).second)
+        << "Duplicate diagnostic \"" << info << "\" for reason " << value;
+  }
+}
+
+TEST(GlicInvokeHandlerDiagnosticTest, FormatInvokeDiagnosticInfo) {
+  EXPECT_EQ(
+      FormatInvokeDiagnosticInfo(std::nullopt, std::nullopt, std::nullopt), "");
+  EXPECT_EQ(FormatInvokeDiagnosticInfo(GlicTaskType::kWaitForClientReady,
+                                       std::nullopt, std::nullopt),
+            "stage=WAIT_FOR_CLIENT_READY");
+  EXPECT_EQ(FormatInvokeDiagnosticInfo(GlicTaskType::kWaitForClientReady,
+                                       ClientLoadState::kLoading, std::nullopt),
+            "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING");
+  EXPECT_EQ(FormatInvokeDiagnosticInfo(GlicTaskType::kWaitForClientReady,
+                                       ClientLoadState::kLoading,
+                                       ClientLoadErrorReason::kOffline),
+            "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
+            "load_error=OFFLINE");
+}
 
 }  // namespace glic

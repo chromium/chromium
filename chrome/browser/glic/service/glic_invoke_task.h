@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INVOKE_TASK_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -55,7 +56,11 @@ enum class GlicTaskType : int {
   kWaitForClientReady = 17,
   kMaxValue = kWaitForClientReady,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeTimeoutStage)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeTimeoutStage,//chrome/browser/glic/service/glic_invoke_task.cc:GlicTaskTypeToDiagnosticString)
+
+// Returns a `SCREAMING_SNAKE_CASE` identifier for `task_type` for best-effort
+// internal invocation diagnostic strings (carries no stability guarantee).
+std::string_view GlicTaskTypeToDiagnosticString(GlicTaskType task_type);
 
 class GlicInvokeTask {
  public:

@@ -32,7 +32,7 @@ class ActorGeminiPanelToolBrowserTest;
 namespace ttc {
 class AiOverlayTools;
 class ToolController;
-}
+}  // namespace ttc
 
 namespace skills {
 class SkillsUiTabController;
@@ -91,6 +91,23 @@ class InvokeWithAutoSubmitPasskeyProvider {
 
 using InvokeWithAutoSubmitPasskey =
     base::PassKey<InvokeWithAutoSubmitPasskeyProvider>;
+
+// Passkey for subscribing to opaque invocation failure diagnostics on
+// `GlicInvokeOptions`. Reach out to c/b/glic/API_OWNERS before adding new
+// callers.
+class InvokeErrorDiagnosticsPasskeyProvider {
+ public:
+  using PassKey = base::PassKey<InvokeErrorDiagnosticsPasskeyProvider>;
+
+ private:
+  static PassKey GetPassKey() { return PassKey(); }
+
+  friend class GlicApiTestPasskeys;
+  friend class GlicInvokeBrowserTest;
+};
+
+using InvokeErrorDiagnosticsPasskey =
+    base::PassKey<InvokeErrorDiagnosticsPasskeyProvider>;
 
 }  // namespace glic
 

@@ -11,4 +11,10 @@ InvokeWithAutoSubmitPasskey GlicApiTestPasskeys::GetPassKey() {
   return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
 }
 
+// static
+InvokeErrorDiagnosticsPasskey
+GlicApiTestPasskeys::GetErrorDiagnosticsPassKey() {
+  return InvokeErrorDiagnosticsPasskeyProvider::GetPassKey();
+}
+
 }  // namespace glic

@@ -12,6 +12,7 @@ namespace glic {
 class GlicApiTestPasskeys {
  public:
   static InvokeWithAutoSubmitPasskey GetPassKey();
+  static InvokeErrorDiagnosticsPasskey GetErrorDiagnosticsPassKey();
 };
 
 }  // namespace glic

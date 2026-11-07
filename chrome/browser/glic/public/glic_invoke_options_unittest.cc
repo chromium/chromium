@@ -4,10 +4,15 @@
 
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
+#include <optional>
 #include <set>
+#include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
+#include "chrome/browser/glic/test_support/glic_api_test_passkeys.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -59,6 +64,33 @@ TEST(GlicInvokeOptionsTest, RequiresPromptClipboardPolicyCheck) {
   options.prompts.clear();
   EXPECT_CHECK_DEATH(options.RequiresPromptClipboardPolicyCheck(),
                      base::NotFatalUntil::M163);
+}
+
+TEST(GlicInvokeOptionsTest, OnErrorWithDiagnosticsCallbackMoveSemantics) {
+  std::optional<std::pair<GlicInvokeError, std::string>> received;
+  GlicInvokeOptions options(glic::mojom::InvocationSource::kOsButton);
+  options.SetOnErrorWithDiagnostics(
+      GlicApiTestPasskeys::GetErrorDiagnosticsPassKey(),
+      base::BindOnce(
+          [](std::optional<std::pair<GlicInvokeError, std::string>>* out,
+             GlicInvokeError error, std::string diagnostic_info) {
+            *out = std::make_pair(error, std::move(diagnostic_info));
+          },
+          &received));
+
+  GlicInvokeOptions moved_options(std::move(options));
+  auto callback = moved_options.TakeOnErrorWithDiagnostics(
+      GlicApiTestPasskeys::GetErrorDiagnosticsPassKey());
+  ASSERT_TRUE(callback);
+  std::move(callback).Run(
+      GlicInvokeError::kClientLoadError,
+      "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;load_error="
+      "OFFLINE");
+  EXPECT_EQ(received,
+            std::make_pair(
+                GlicInvokeError::kClientLoadError,
+                std::string("stage=WAIT_FOR_CLIENT_READY;load_state_at_start="
+                            "LOADING;load_error=OFFLINE")));
 }
 
 }  // namespace

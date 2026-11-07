@@ -4,11 +4,13 @@
 
 #include "chrome/browser/glic/service/glic_invoke_task.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -791,5 +793,49 @@ std::optional<GlicTaskType> PastePolicyTask::GetType() const {
 std::optional<GlicTaskType> WaitForClientReadyTask::GetType() const {
   return GlicTaskType::kWaitForClientReady;
 }
+
+// LINT.IfChange(GlicTaskTypeToDiagnosticString)
+std::string_view GlicTaskTypeToDiagnosticString(GlicTaskType task_type) {
+  switch (task_type) {
+    case GlicTaskType::kUnknown:
+      return "UNKNOWN";
+    case GlicTaskType::kSequentialTaskGroup:
+      return "SEQUENTIAL_TASK_GROUP";
+    case GlicTaskType::kParallelTaskGroup:
+      return "PARALLEL_TASK_GROUP";
+    case GlicTaskType::kWaitForNavigation:
+      return "WAIT_FOR_NAVIGATION";
+    case GlicTaskType::kSetTabPendingActuation:
+      return "SET_TAB_PENDING_ACTUATION";
+    case GlicTaskType::kShowInstance:
+      return "SHOW_INSTANCE";
+    case GlicTaskType::kSetupHiddenPanel:
+      return "SETUP_HIDDEN_PANEL";
+    case GlicTaskType::kMaybeInitializeHiddenClient:
+      return "MAYBE_INITIALIZE_HIDDEN_CLIENT";
+    case GlicTaskType::kWaitForClientConnected:
+      return "WAIT_FOR_CLIENT_CONNECTED";
+    case GlicTaskType::kPostCallback:
+      return "POST_CALLBACK";
+    case GlicTaskType::kStabilization:
+      return "STABILIZATION";
+    case GlicTaskType::kWaitForFreCompletion:
+      return "WAIT_FOR_FRE_COMPLETION";
+    case GlicTaskType::kSendToClient:
+      return "SEND_TO_CLIENT";
+    case GlicTaskType::kWaitForActuation:
+      return "WAIT_FOR_ACTUATION";
+    case GlicTaskType::kClipboardPolicy:
+      return "CLIPBOARD_POLICY";
+    case GlicTaskType::kCopyPolicy:
+      return "COPY_POLICY";
+    case GlicTaskType::kPastePolicy:
+      return "PASTE_POLICY";
+    case GlicTaskType::kWaitForClientReady:
+      return "WAIT_FOR_CLIENT_READY";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//chrome/browser/glic/service/glic_invoke_task.h:GlicTaskType)
 
 }  // namespace glic

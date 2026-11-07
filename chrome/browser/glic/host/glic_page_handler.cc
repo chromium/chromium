@@ -63,6 +63,7 @@ namespace {
 // Translates the wire enum into the browser-side vocabulary. Exhaustive with
 // no default so that a new mojom value cannot be added without deciding what
 // it means.
+// LINT.IfChange(ToClientLoadErrorReason)
 ClientLoadErrorReason ToClientLoadErrorReason(
     mojom::ClientLoadErrorReason reason) {
   switch (reason) {
@@ -100,6 +101,7 @@ ClientLoadErrorReason ToClientLoadErrorReason(
       return ClientLoadErrorReason::kPendingProviderChange;
   }
 }
+// LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)
 
 }  // namespace
 

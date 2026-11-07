@@ -4,14 +4,19 @@
 
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/host.h"
@@ -100,7 +105,84 @@ mojom::ActuationTarget GetMojoActuationTarget(const Target& target) {
       target.actuation_target);
 }
 
+// LINT.IfChange(ClientLoadStateToDiagnosticString)
+std::string_view ClientLoadStateToDiagnosticString(ClientLoadState state) {
+  switch (state) {
+    case ClientLoadState::kLoading:
+      return "LOADING";
+    case ClientLoadState::kReady:
+      return "READY";
+    case ClientLoadState::kError:
+      return "ERROR";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadState)
+
+// LINT.IfChange(ClientLoadErrorReasonToDiagnosticString)
+std::string_view ClientLoadErrorReasonToDiagnosticString(
+    ClientLoadErrorReason reason) {
+  switch (reason) {
+    case ClientLoadErrorReason::kUnknown:
+      return "UNKNOWN";
+    case ClientLoadErrorReason::kUnavailable:
+      return "UNAVAILABLE";
+    case ClientLoadErrorReason::kIneligibleAccount:
+      return "INELIGIBLE_ACCOUNT";
+    case ClientLoadErrorReason::kLocationMismatch:
+      return "LOCATION_MISMATCH";
+    case ClientLoadErrorReason::kDisabledByAdmin:
+      return "DISABLED_BY_ADMIN";
+    case ClientLoadErrorReason::kOffline:
+      return "OFFLINE";
+    case ClientLoadErrorReason::kSignIn:
+      return "SIGN_IN";
+    case ClientLoadErrorReason::kCookieSyncFailed:
+      return "COOKIE_SYNC_FAILED";
+    case ClientLoadErrorReason::kGuestLoadFailed:
+      return "GUEST_LOAD_FAILED";
+    case ClientLoadErrorReason::kGuestProcessGone:
+      return "GUEST_PROCESS_GONE";
+    case ClientLoadErrorReason::kClientError:
+      return "CLIENT_ERROR";
+    case ClientLoadErrorReason::kClientLoadTimeout:
+      return "CLIENT_LOAD_TIMEOUT";
+    case ClientLoadErrorReason::kWarmedTimeout:
+      return "WARMED_TIMEOUT";
+    case ClientLoadErrorReason::kGuestOriginBlocked:
+      return "GUEST_ORIGIN_BLOCKED";
+    case ClientLoadErrorReason::kGuestApiNotAllowed:
+      return "GUEST_API_NOT_ALLOWED";
+    case ClientLoadErrorReason::kPendingProviderChange:
+      return "PENDING_PROVIDER_CHANGE";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)
+
 }  // namespace
+
+std::string FormatInvokeDiagnosticInfo(
+    std::optional<GlicTaskType> last_active_task,
+    std::optional<ClientLoadState> client_load_state_at_start,
+    std::optional<ClientLoadErrorReason> client_load_error_reason) {
+  std::vector<std::string> parts;
+  if (last_active_task.has_value()) {
+    parts.push_back(base::StrCat(
+        {"stage=", GlicTaskTypeToDiagnosticString(*last_active_task)}));
+  }
+  if (client_load_state_at_start.has_value()) {
+    parts.push_back(base::StrCat(
+        {"load_state_at_start=",
+         ClientLoadStateToDiagnosticString(*client_load_state_at_start)}));
+  }
+  if (client_load_error_reason.has_value()) {
+    parts.push_back(base::StrCat(
+        {"load_error=",
+         ClientLoadErrorReasonToDiagnosticString(*client_load_error_reason)}));
+  }
+  return base::JoinString(parts, ";");
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 static tabs::TabInterface* CreateBrowserAndGetActiveTab(Profile* profile) {
@@ -466,7 +548,8 @@ void GlicInvokeHandler::Invoke() {
   // coordinator while resolving this invocation. The client load state is
   // captured here, before any task has run, so it reflects what the
   // invocation inherited rather than what it caused.
-  metrics_->SetClientLoadStateAtStart(instance_->host().client_load_state());
+  client_load_state_at_start_ = instance_->host().client_load_state();
+  metrics_->SetClientLoadStateAtStart(*client_load_state_at_start_);
   metrics_->RecordStarted();
   instance_->instance_metrics().SetActiveInvocationId(
       metrics_->GetInvocationId());
@@ -549,12 +632,25 @@ void GlicInvokeHandler::OnError(GlicInvokeError error) {
     main_task_->NotifySequenceCompleted(/*success=*/false);
   }
 
-  metrics_->RecordError(error, GetLastActiveTaskType());
+  const std::optional<GlicTaskType> last_active_task = GetLastActiveTaskType();
+  metrics_->RecordError(error, last_active_task);
   instance_->instance_metrics().SetActiveInvocationId(std::nullopt);
 
   if (options_.on_error) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(options_.on_error), error));
+  }
+  if (options_.on_error_with_diagnostics_) {
+    const std::optional<ClientLoadErrorReason> client_load_error_reason =
+        instance_->host().client_load_state() == ClientLoadState::kError
+            ? instance_->host().client_load_error_reason()
+            : std::nullopt;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(options_.on_error_with_diagnostics_), error,
+                       FormatInvokeDiagnosticInfo(last_active_task,
+                                                  client_load_state_at_start_,
+                                                  client_load_error_reason)));
   }
 
   // The completion callback deletes `this`.

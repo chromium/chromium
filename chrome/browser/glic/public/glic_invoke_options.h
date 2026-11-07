@@ -11,10 +11,11 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -26,6 +27,7 @@ class BrowserWindowInterface;
 
 namespace glic {
 class GlicInstance;
+class InvokeErrorDiagnosticsPasskeyProvider;
 
 // Use ongoing conversation for the tab if it exists. Otherwise, fall back
 // to the default behavior for opening the UI (typically a new conversation).
@@ -219,6 +221,12 @@ struct PromptPolicy {
   PolicyCheck policy_check = PolicyCheck::kClipboard;
 };
 
+// NOTE: Selected values of this enum are mapped to wire `chrome_error_code`
+// strings in `ExperimentalTriggering` `TaskUpdate.metadata` (see
+// `GlicInvokeErrorToChromeErrorCode`) and consumed by downstream server-side
+// (non-UMA) telemetry and alerting. Avoid changing the semantics of existing
+// values or splitting them without updating the downstream mapping and
+// coordinating with `chrome/browser/glic/experimental_triggering/OWNERS`.
 // LINT.IfChange(GlicInvokeError)
 // Possible errors that can occur during a Glic invocation.
 enum class GlicInvokeError {
@@ -343,6 +351,19 @@ struct GlicInvokeOptions {
   // `prompt_policy`. `prompts` must not be empty when `prompt_policy` is set.
   bool RequiresPromptClipboardPolicyCheck() const;
 
+  // Intended for internal diagnostic pass-through only. Reach out to
+  // c/b/glic/API_OWNERS before adding new callers.
+  // Invoked asynchronously alongside `on_error` when the invocation fails. The
+  // second parameter is an opaque, human-readable diagnostic string whose
+  // format and contents reflect internal Glic implementation state and carry no
+  // stability guarantee; callers must not parse or branch on it.
+  void SetOnErrorWithDiagnostics(
+      base::PassKey<InvokeErrorDiagnosticsPasskeyProvider>,
+      base::OnceCallback<void(GlicInvokeError, std::string)> callback);
+  base::OnceCallback<void(GlicInvokeError, std::string)>
+      TakeOnErrorWithDiagnostics(
+          base::PassKey<InvokeErrorDiagnosticsPasskeyProvider>);
+
   // The invocation source or a specific payload.
   std::variant<glic::mojom::InvocationSource, glic::mojom::InvocationPayloadPtr>
       source_or_payload;
@@ -443,6 +464,13 @@ struct GlicInvokeOptions {
   // Browser-specific callback for when the invocation fails.
   // This is called asynchronously.
   base::OnceCallback<void(GlicInvokeError)> on_error;
+
+ private:
+  friend class GlicInstanceCoordinatorImpl;
+  friend class GlicInvokeHandler;
+
+  base::OnceCallback<void(GlicInvokeError, std::string)>
+      on_error_with_diagnostics_;
 };
 
 // Configuration options for invoking Glic with auto-submit.

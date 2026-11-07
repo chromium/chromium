@@ -94,6 +94,17 @@ class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
     return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
   }
 
+  static InvokeErrorDiagnosticsPasskey GetErrorDiagnosticsPassKey() {
+    return InvokeErrorDiagnosticsPasskeyProvider::GetPassKey();
+  }
+
+  static void SetOnErrorWithDiagnostics(
+      GlicInvokeOptions& options,
+      base::OnceCallback<void(GlicInvokeError, std::string)> callback) {
+    options.SetOnErrorWithDiagnostics(GetErrorDiagnosticsPassKey(),
+                                      std::move(callback));
+  }
+
   // Puts `instance` into live (audio) mode, as the web client would.
   [[nodiscard]] TestResult<> EnterLiveMode(GlicInstanceImpl* instance) {
     RETURN_IF_ERROR(WaitForGlicClient(instance));
@@ -291,15 +302,20 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithEmptyConversationId) {
   base::test::TestFuture<GlicInvokeError> error_future;
+  base::test::TestFuture<GlicInvokeError, std::string> diagnostics_future;
   GlicInvokeOptions options(glic::Target(glic::ConversationId("")),
                             mojom::InvocationSource::kOsButton);
   options.on_error = error_future.GetCallback();
+  SetOnErrorWithDiagnostics(options, diagnostics_future.GetCallback());
   options.target.surface = DefaultSurface{
       GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
 
   coordinator().Invoke(std::move(options));
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConversationId);
+  EXPECT_EQ(
+      diagnostics_future.Get(),
+      std::make_tuple(GlicInvokeError::kInvalidConversationId, std::string()));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
@@ -1250,16 +1266,25 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
                        InvokeTimeoutBehaviors) {
   // 1. Test custom short timeout
   base::test::TestFuture<GlicInvokeError> short_error_future;
+  base::test::TestFuture<GlicInvokeError, std::string> short_diagnostics_future;
   GlicInvokeOptions short_options(mojom::InvocationSource::kOsButton);
   short_options.on_error = short_error_future.GetCallback();
+  SetOnErrorWithDiagnostics(short_options,
+                            short_diagnostics_future.GetCallback());
   short_options.timeout = base::Milliseconds(1);
   short_options.target.surface = DefaultSurface{
       GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
 
   coordinator().Invoke(std::move(short_options));
 
-  // The first invoke should time out quickly.
+  // The first invoke should time out quickly and report the active task stage.
   EXPECT_EQ(short_error_future.Get(), GlicInvokeError::kTimeout);
+  EXPECT_EQ(
+      short_diagnostics_future.Get(),
+      std::make_tuple(
+          GlicInvokeError::kTimeout,
+          std::string(
+              "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING")));
 
   // 2. Test that a longer timeout actually takes longer, ensuring the
   // specified duration isn't being ignored resulting in an instant timeout.
@@ -1900,9 +1925,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   ASSERT_TRUE(rfh);
 
   base::test::TestFuture<GlicInvokeError> error_future;
+  base::test::TestFuture<GlicInvokeError, std::string> diagnostics_future;
   GlicInvokeOptions options(glic::Target(*tab),
                             mojom::InvocationSource::kOsButton);
   options.on_error = error_future.GetCallback();
+  SetOnErrorWithDiagnostics(options, diagnostics_future.GetCallback());
   options.additional_context =
       AdditionalTabContext(CreateMockAdditionalContext(), rfh->GetGlobalId(),
                            PolicyCheck::kClipboard);
@@ -1913,6 +1940,9 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   coordinator().Invoke(std::move(options));
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConfiguration);
+  EXPECT_EQ(
+      diagnostics_future.Get(),
+      std::make_tuple(GlicInvokeError::kInvalidConfiguration, std::string()));
   EXPECT_FALSE(GetInstanceForTab(tab));
 }
 
@@ -3758,10 +3788,12 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
 
   GlicHistogramTester histogram_tester;
   base::test::TestFuture<GlicInvokeError> error_future;
+  base::test::TestFuture<GlicInvokeError, std::string> diagnostics_future;
 
   GlicInvokeOptions options(glic::Target(*tab),
                             mojom::InvocationSource::kOsButton);
   options.on_error = error_future.GetCallback();
+  SetOnErrorWithDiagnostics(options, diagnostics_future.GetCallback());
 
   coordinator().Invoke(std::move(options));
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
@@ -3774,6 +3806,20 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
   ASSERT_OK(DisconnectWebClient(instance));
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kClientLoadError);
+  EXPECT_EQ(diagnostics_future.Get<GlicInvokeError>(),
+            GlicInvokeError::kClientLoadError);
+  if (IsNoWebviewEnabled()) {
+    EXPECT_EQ(diagnostics_future.Get<std::string>(),
+              "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
+              "load_error=GUEST_PROCESS_GONE");
+  } else {
+    EXPECT_THAT(diagnostics_future.Get<std::string>(),
+                testing::AnyOf(
+                    "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
+                    "load_error=GUEST_PROCESS_GONE",
+                    "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
+                    "load_error=CLIENT_ERROR"));
+  }
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeError::kClientLoadError, 1);
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
@@ -4026,14 +4072,21 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeInitFailureBrowserTest,
 
   GlicHistogramTester histogram_tester;
   base::test::TestFuture<GlicInvokeError> error_future;
+  base::test::TestFuture<GlicInvokeError, std::string> diagnostics_future;
 
   GlicInvokeOptions options(glic::Target(*tab),
                             mojom::InvocationSource::kOsButton);
   options.on_error = error_future.GetCallback();
+  SetOnErrorWithDiagnostics(options, diagnostics_future.GetCallback());
 
   coordinator().Invoke(std::move(options));
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kClientLoadError);
+  EXPECT_EQ(diagnostics_future.Get(),
+            std::make_tuple(
+                GlicInvokeError::kClientLoadError,
+                std::string("stage=WAIT_FOR_CLIENT_READY;load_state_at_start="
+                            "LOADING;load_error=CLIENT_ERROR")));
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeError::kClientLoadError, 1);
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
@@ -4109,25 +4162,38 @@ class GlicInvokeOfflineBrowserTest : public GlicInvokeBrowserTest {
 // never starts and end only by timing out.
 IN_PROC_BROWSER_TEST_F(GlicInvokeOfflineBrowserTest,
                        InvokeFailsAgainWhenFailureIsNotRetriedOnShow) {
-  // Resolves to the invocation's error, or nullopt if it succeeded, so that an
-  // invocation that wrongly succeeds while offline fails the assertion rather
-  // than hanging the test until the launcher timeout.
-  using Outcome = std::optional<GlicInvokeError>;
+  // Resolves to the invocation's error and diagnostics, or nullopt if it
+  // succeeded, so that an invocation that wrongly succeeds while offline fails
+  // the assertion rather than hanging the test until the launcher timeout.
+  using Outcome = std::optional<std::pair<GlicInvokeError, std::string>>;
   auto invoke = [this](GlicInvokeOptions options) -> Outcome {
     base::test::TestFuture<Outcome> outcome;
+    base::test::TestFuture<GlicInvokeError> error_future;
     // Keeps a regression from taking the default minute to show up as
     // kTimeout.
     options.timeout = base::Seconds(10);
     options.on_success = base::BindOnce(outcome.GetCallback(), Outcome());
-    options.on_error = outcome.GetCallback<GlicInvokeError>();
+    options.on_error = error_future.GetCallback();
+    SetOnErrorWithDiagnostics(
+        options,
+        base::BindOnce([](GlicInvokeError error, std::string diagnostic_info) {
+          return Outcome(std::make_pair(error, std::move(diagnostic_info)));
+        }).Then(outcome.GetCallback()));
     coordinator().Invoke(std::move(options));
-    return outcome.Get();
+    Outcome result = outcome.Get();
+    if (result.has_value()) {
+      EXPECT_EQ(error_future.Get(), result->first);
+    }
+    return result;
   };
 
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_EQ(invoke(GlicInvokeOptions(glic::Target(*tab),
                                      mojom::InvocationSource::kOsButton)),
-            GlicInvokeError::kClientLoadError);
+            std::make_pair(
+                GlicInvokeError::kClientLoadError,
+                std::string("stage=WAIT_FOR_CLIENT_READY;load_state_at_start="
+                            "LOADING;load_error=OFFLINE")));
   GlicInstanceImpl* instance = GetInstanceForTab(tab);
   ASSERT_TRUE(instance);
   ASSERT_EQ(instance->host().GetPrimaryWebUiState(),
@@ -4144,7 +4210,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOfflineBrowserTest,
   GlicHistogramTester histogram_tester;
   EXPECT_EQ(invoke(GlicInvokeOptions(glic::Target(*tab, instance->id()),
                                      mojom::InvocationSource::kOsButton)),
-            GlicInvokeError::kClientLoadError);
+            std::make_pair(
+                GlicInvokeError::kClientLoadError,
+                std::string("stage=WAIT_FOR_CLIENT_READY;load_state_at_start="
+                            "ERROR;load_error=OFFLINE")));
   EXPECT_EQ(instance->host().GetPrimaryWebUiState(),
             mojom::WebUiState::kOffline);
   EXPECT_EQ(instance->host().client_load_error_reason(),
@@ -4167,6 +4236,7 @@ IN_PROC_BROWSER_TEST_F(
       tab_list->GetActiveTab()->GetBrowserWindowInterface();
 
   base::test::TestFuture<std::optional<GlicInvokeError>> outcome;
+  base::test::TestFuture<GlicInvokeError, std::string> diagnostics_future;
   GlicInvokeOptions options(mojom::InvocationSource::kExperimentalTriggering);
   options.timeout = base::Seconds(10);
   options.target.conversation = glic::NewConversation{};
@@ -4175,6 +4245,7 @@ IN_PROC_BROWSER_TEST_F(
   options.prompts = {"test prompt"};
   options.on_success = base::BindOnce(outcome.GetCallback(), std::nullopt);
   options.on_error = outcome.GetCallback<GlicInvokeError>();
+  SetOnErrorWithDiagnostics(options, diagnostics_future.GetCallback());
 
   GlicInvokeWithAutoSubmitOptions auto_submit_options;
   auto_submit_options.show_panel = false;
@@ -4183,6 +4254,11 @@ IN_PROC_BROWSER_TEST_F(
                                      std::move(auto_submit_options));
 
   EXPECT_EQ(outcome.Get(), GlicInvokeError::kClientLoadError);
+  EXPECT_EQ(diagnostics_future.Get(),
+            std::make_tuple(
+                GlicInvokeError::kClientLoadError,
+                std::string("stage=WAIT_FOR_CLIENT_READY;load_state_at_start="
+                            "LOADING;load_error=OFFLINE")));
   ASSERT_EQ(tab_list->GetTabCount(), initial_tab_count + 1);
   tabs::TabInterface* background_tab = tab_list->GetTab(initial_tab_count);
   ASSERT_TRUE(background_tab);
@@ -4238,11 +4314,13 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOfflineBrowserTest,
 
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   base::test::TestFuture<std::optional<GlicInvokeError>> outcome;
+  base::test::TestFuture<GlicInvokeError, std::string> diagnostics_future;
   GlicInvokeOptions options(glic::Target(*tab),
                             mojom::InvocationSource::kOsButton);
   options.timeout = base::Seconds(10);
   options.on_success = base::BindOnce(outcome.GetCallback(), std::nullopt);
   options.on_error = outcome.GetCallback<GlicInvokeError>();
+  SetOnErrorWithDiagnostics(options, diagnostics_future.GetCallback());
 
   coordinator().Invoke(std::move(options));
   GlicInstanceImpl* instance = GetInstanceForTab(tab);
@@ -4250,6 +4328,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOfflineBrowserTest,
   ErrorReasonAtTransitionObserver observer(instance->host());
 
   EXPECT_EQ(outcome.Get(), GlicInvokeError::kClientLoadError);
+  EXPECT_EQ(diagnostics_future.Get(),
+            std::make_tuple(
+                GlicInvokeError::kClientLoadError,
+                std::string("stage=WAIT_FOR_CLIENT_READY;load_state_at_start="
+                            "LOADING;load_error=OFFLINE")));
   EXPECT_EQ(
       observer.reason_at_first_error(),
       std::optional<ClientLoadErrorReason>(ClientLoadErrorReason::kOffline));

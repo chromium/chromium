@@ -154,6 +154,7 @@ void RecordSelectionOverlayMetrics(
 // from structured.xml. Written as an exhaustive switch with no default so that
 // adding a ClientLoadErrorReason without adding the matching structured.xml
 // variant is a compile error rather than a silently mislabelled metric.
+// LINT.IfChange(ToStructuredReason)
 metrics::structured::events::v2::glic::GlicClientLoadErrorReason
 ToStructuredReason(ClientLoadErrorReason reason) {
   using Reason =
@@ -193,6 +194,7 @@ ToStructuredReason(ClientLoadErrorReason reason) {
       return Reason::PENDING_PROVIDER_CHANGE;
   }
 }
+// LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)
 #endif
 
 std::string_view GetTurnModeSuffix(bool is_actor) {

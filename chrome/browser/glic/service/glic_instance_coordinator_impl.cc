@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdint>
 #include <functional>
+#include <string>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -764,6 +765,12 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(options.on_error), error));
     }
+    if (options.on_error_with_diagnostics_) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(options.on_error_with_diagnostics_), error,
+                         std::string()));
+    }
   };
 
   if (!GlicEnabling::IsEnabledForProfile(profile_)) {
@@ -806,9 +813,7 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
   if (options.RequiresContextClipboardPolicyCheck() &&
       options.RequiresPromptClipboardPolicyCheck()) {
     metrics->RecordError(GlicInvokeError::kInvalidConfiguration);
-    if (options.on_error) {
-      std::move(options.on_error).Run(GlicInvokeError::kInvalidConfiguration);
-    }
+    notify_error(GlicInvokeError::kInvalidConfiguration);
     return nullptr;
   }
 
