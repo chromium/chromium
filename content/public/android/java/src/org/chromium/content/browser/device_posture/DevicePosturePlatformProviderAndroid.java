@@ -7,6 +7,7 @@ package org.chromium.content.browser.device_posture;
 import android.graphics.Rect;
 import android.os.Build;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.window.extensions.layout.DisplayFeature;
 import androidx.window.extensions.layout.FoldingFeature;
 import androidx.window.extensions.layout.WindowLayoutInfo;
@@ -15,6 +16,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,7 +41,8 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
     private boolean mListening;
 
     @CalledByNative
-    private static DevicePosturePlatformProviderAndroid create(
+    @VisibleForTesting
+    static DevicePosturePlatformProviderAndroid create(
             long nativeDevicePosturePlatformProvider, WebContentsImpl webContents) {
         return new DevicePosturePlatformProviderAndroid(
                 nativeDevicePosturePlatformProvider, webContents);
@@ -58,7 +61,14 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
     }
 
     @CalledByNative
-    private void startListening() {
+    @VisibleForTesting
+    void startListening() {
+        // DeviceInfo.isFoldable() requires Sensor.TYPE_HINGE_ANGLE and !isDesktop, intentionally
+        // excluding non-foldables, desktop, and legacy Android 9/10 foldables (such as Galaxy Z
+        // Fold2 and Z Flip) that lack a standard hinge-angle sensor.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || !DeviceInfo.isFoldable()) {
+            return;
+        }
         if (ContentFeatureMap.isEnabled(BlinkFeatures.DEVICE_POSTURE)
                 || ContentFeatureMap.isEnabled(BlinkFeatures.VIEWPORT_SEGMENTS)) {
             mListening = true;

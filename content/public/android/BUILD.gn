@@ -749,6 +749,7 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/accessibility/FakeAndroidCacheUnitTest.java",
     "junit/src/org/chromium/content/browser/accessibility/captioning/CaptioningChangeDelegateUnitTest.java",
     "junit/src/org/chromium/content/browser/androidoverlay/DialogOverlayCoreTest.java",
+    "junit/src/org/chromium/content/browser/device_posture/DevicePosturePlatformProviderAndroidTest.java",
     "junit/src/org/chromium/content/browser/input/AutocorrectManagerTest.java",
     "junit/src/org/chromium/content/browser/input/CursorAnchorInfoControllerUnitTest.java",
     "junit/src/org/chromium/content/browser/input/ImeAdapterImplTest.java",
