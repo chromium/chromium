@@ -502,8 +502,14 @@ void BaseTabStripRegionView::OnChildrenAdded(
   if (has_tab) {
     Profile* const profile =
         browser_view_ ? browser_view_->GetProfile() : nullptr;
-    if (profile && profile->IsGuestSession()) {
-      base::UmaHistogramCounts100("Tab.Count.Guest", tab_strip_model_->count());
+    if (profile) {
+      if (profile->IsGuestSession()) {
+        base::UmaHistogramCounts100("Tab.Count.Guest",
+                                    tab_strip_model_->count());
+      } else if (profile->IsIncognitoProfile()) {
+        base::UmaHistogramCounts100("Tab.Count.Incognito",
+                                    tab_strip_model_->count());
+      }
     }
 
     if (new_tab_button_pressed_start_time_.has_value()) {

@@ -510,3 +510,14 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedGuestTest,
   chrome::AddTabAt(guest_browser, GURL("about:blank"), -1, true);
   histogram_tester.ExpectUniqueSample("Tab.Count.Guest", 2, 1);
 }
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
+                       RecordsTabCountIncognito) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_NE(incognito_browser, nullptr);
+  ASSERT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
+
+  base::HistogramTester histogram_tester;
+  chrome::AddTabAt(incognito_browser, GURL("about:blank"), -1, true);
+  histogram_tester.ExpectUniqueSample("Tab.Count.Incognito", 2, 1);
+}
