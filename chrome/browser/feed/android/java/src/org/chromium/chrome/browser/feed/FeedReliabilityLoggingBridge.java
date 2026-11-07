@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.feed;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.Initializer;
@@ -22,7 +25,10 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 @JNINamespace("feed::android")
 @NullMarked
 public class FeedReliabilityLoggingBridge {
-    private final long mNativePtr;
+    @JniType("::feed::android::FeedReliabilityLoggingBridge")
+    interface NativeFeedReliabilityLoggingBridge extends JniTypeToken {}
+
+    private final JniUniquePtr<NativeFeedReliabilityLoggingBridge> mNativePtr;
     private FeedLaunchReliabilityLogger mLaunchLogger;
     private @Nullable FeedUserInteractionReliabilityLogger mUserInteractionLogger;
     private @Nullable DiscoverAboveTheFoldRenderResult mRenderResult;
@@ -48,12 +54,12 @@ public class FeedReliabilityLoggingBridge {
         }
     }
 
-    public long getNativePtr() {
+    public JniPtr<NativeFeedReliabilityLoggingBridge> getNativePtr() {
         return mNativePtr;
     }
 
     public void destroy() {
-        FeedReliabilityLoggingBridgeJni.get().destroy(mNativePtr);
+        mNativePtr.destroy();
     }
 
     @CalledByNative
@@ -220,8 +226,6 @@ public class FeedReliabilityLoggingBridge {
 
     @NativeMethods
     public interface Natives {
-        long init(FeedReliabilityLoggingBridge thisRef);
-
-        void destroy(long nativeFeedReliabilityLoggingBridge);
+        JniUniquePtr<NativeFeedReliabilityLoggingBridge> init(FeedReliabilityLoggingBridge thisRef);
     }
 }

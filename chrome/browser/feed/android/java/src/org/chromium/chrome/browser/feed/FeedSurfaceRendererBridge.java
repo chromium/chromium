@@ -260,7 +260,8 @@ public class FeedSurfaceRendererBridge {
                 FeedSurfaceRendererBridge self,
                 @JniType("Profile*") Profile profile,
                 @StreamKind int streamKind,
-                long nativeFeedReliabilityLoggingBridge);
+                JniPtr<FeedReliabilityLoggingBridge.NativeFeedReliabilityLoggingBridge>
+                        nativeFeedReliabilityLoggingBridge);
 
         // Member functions, must not be called after destroy().
         void loadMore(

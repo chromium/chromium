@@ -25,9 +25,6 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLoggingBridge {
       delete;
   ~FeedReliabilityLoggingBridge() override;
 
-  // Called by Java to delete this object.
-  void Destroy(JNIEnv* env);
-
   // ::feed::ReliabilityLogger implementation.
   void LogFeedLaunchOtherStart(base::TimeTicks timestamp) override;
   void LogCacheReadStart(base::TimeTicks timestamp) override;

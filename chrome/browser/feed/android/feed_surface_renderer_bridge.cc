@@ -55,11 +55,9 @@ JNI_FeedSurfaceRendererBridge_Init(
     const JavaRef<jobject>& j_this,
     Profile* profile,
     int32_t stream_kind,
-    int64_t native_feed_reliability_logging_bridge) {
+    FeedReliabilityLoggingBridge* reliability_logging_bridge) {
   return jni_zero::MakeUnique<FeedSurfaceRendererBridge>(
-      j_this, profile, stream_kind,
-      reinterpret_cast<FeedReliabilityLoggingBridge*>(
-          native_feed_reliability_logging_bridge));
+      j_this, profile, stream_kind, reliability_logging_bridge);
 }
 
 FeedSurfaceRendererBridge::FeedSurfaceRendererBridge(

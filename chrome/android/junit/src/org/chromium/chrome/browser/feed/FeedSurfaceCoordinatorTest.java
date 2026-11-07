@@ -171,10 +171,6 @@ public class FeedSurfaceCoordinatorTest {
     // Mocked JNI.
     @Mock private FeedSurfaceRendererBridge.Natives mFeedSurfaceRendererBridgeJniMock;
 
-    @Mock
-    private JniUniquePtr<FeedSurfaceRendererBridge.NativeFeedSurfaceRendererBridge>
-            mNativeSurfaceRenderer;
-
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedProcessScopeDependencyProvider.Natives mProcessScopeJniMock;
     @Mock private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
@@ -223,11 +219,13 @@ public class FeedSurfaceCoordinatorTest {
         mLayoutManager = new LinearLayoutManager(mActivity);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         FeedSurfaceRendererBridgeJni.setInstanceForTesting(mFeedSurfaceRendererBridgeJniMock);
-        when(mFeedSurfaceRendererBridgeJniMock.init(any(), any(), anyInt(), anyLong()))
-                .thenReturn(mNativeSurfaceRenderer);
+        when(mFeedSurfaceRendererBridgeJniMock.init(any(), any(), anyInt(), any()))
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(1L));
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedProcessScopeDependencyProviderJni.setInstanceForTesting(mProcessScopeJniMock);
         FeedReliabilityLoggingBridgeJni.setInstanceForTesting(mFeedReliabilityLoggingBridgeJniMock);
+        when(mFeedReliabilityLoggingBridgeJniMock.init(any()))
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(1L));
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead()).thenReturn(5);

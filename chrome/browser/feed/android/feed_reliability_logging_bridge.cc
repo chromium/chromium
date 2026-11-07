@@ -11,6 +11,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feed/android/jni_headers/FeedReliabilityLoggingBridge_jni.h"
@@ -102,10 +103,11 @@ int CombinedNetworkStatusCodeToCanonicalStatus(
 
 }  // namespace
 
-static int64_t JNI_FeedReliabilityLoggingBridge_Init(
+static jni_zero::JniUniquePtr<FeedReliabilityLoggingBridge>
+JNI_FeedReliabilityLoggingBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_this) {
-  return reinterpret_cast<intptr_t>(new FeedReliabilityLoggingBridge(j_this));
+  return jni_zero::MakeUnique<FeedReliabilityLoggingBridge>(j_this);
 }
 
 FeedReliabilityLoggingBridge::FeedReliabilityLoggingBridge(
@@ -241,10 +243,6 @@ void FeedReliabilityLoggingBridge::ReportExperiments(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedReliabilityLoggingBridge_reportExperiments(env, java_ref_,
                                                       experiment_ids);
-}
-
-void FeedReliabilityLoggingBridge::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 }  // namespace android
