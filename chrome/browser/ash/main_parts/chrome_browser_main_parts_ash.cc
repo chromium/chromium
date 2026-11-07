@@ -1389,6 +1389,10 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         std::make_unique<parent_access::ParentAccessService>(
             g_browser_process->local_state());
 
+    // Enable Chrome OS USB detection before ChromeSessionManager::Initialize
+    // so it observes the primary user session start.
+    cros_usb_detector_ = std::make_unique<CrosUsbDetector>();
+
     g_browser_process->platform_part()->chrome_session_manager()->Initialize(
         g_browser_process->metrics_service(),
         g_browser_process->GetFeatures()->application_locale_storage(),
@@ -1578,13 +1582,6 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 
   auto_screen_brightness_controller_ =
       std::make_unique<power::auto_screen_brightness::Controller>();
-
-  // Enable Chrome OS USB detection.
-  cros_usb_detector_ = std::make_unique<CrosUsbDetector>();
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&CrosUsbDetector::ConnectToDeviceManager,
-                                base::Unretained(cros_usb_detector_.get())));
 
   // USB detection for ash notifications.
   ash_usb_detector_ = std::make_unique<AshUsbDetector>();

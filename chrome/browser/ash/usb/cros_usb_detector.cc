@@ -16,6 +16,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -32,7 +34,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -43,8 +45,14 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
@@ -150,14 +158,6 @@ uint32_t GetFilteredInterfacesMask(
   return mask;
 }
 
-Profile* profile() {
-  return ProfileManager::GetActiveUserProfile();
-}
-
-crostini::CrostiniManager* manager() {
-  return crostini::CrostiniManager::GetForProfile(profile());
-}
-
 // Delegate for CrosUsb notification
 class CrosUsbNotificationDelegate
     : public message_center::NotificationDelegate {
@@ -204,12 +204,13 @@ class CrosUsbNotificationDelegate
   }
 
   void HandleShowSettings(const std::string& sub_page) {
-    auto* user =
-        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
-    if (user) {
-      // TODO(crbug.com/447287122): Revisit here to see if we always have the
-      // user.
-      ash::SettingsAppManager::Get()->Open(*user, {.sub_page = sub_page});
+    const session_manager::Session* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
+    if (primary_session) {
+      ash::SettingsAppManager::Get()->Open(
+          CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+              primary_session->account_id())),
+          {.sub_page = sub_page});
     }
   }
 
@@ -261,7 +262,8 @@ bool IsPlayStoreEnabledWithArcVmForProfile(const Profile* profile) {
   return arc::IsArcPlayStoreEnabledForProfile(profile) && arc::IsArcVmEnabled();
 }
 
-void ShowNotificationForDevice(const std::string& guid,
+void ShowNotificationForDevice(Profile& profile,
+                               const std::string& guid,
                                const std::u16string& label) {
   message_center::RichNotificationData rich_notification_data;
   std::vector<std::string> vm_names;
@@ -276,7 +278,7 @@ void ShowNotificationForDevice(const std::string& guid,
 
   rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
 
-  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile())) {
+  if (crostini::CrostiniFeatures::Get()->IsEnabled(&profile)) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX);
     rich_notification_data.buttons.emplace_back(
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
@@ -286,7 +288,7 @@ void ShowNotificationForDevice(const std::string& guid,
     settings_sub_page =
         chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
   }
-  if (IsPlayStoreEnabledWithArcVmForProfile(profile())) {
+  if (IsPlayStoreEnabledWithArcVmForProfile(&profile)) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM);
     vm_name_button_text =
         l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM_BUTTON);
@@ -300,8 +302,8 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath;
   }
 
-  if (bruschetta::IsInstalled(profile(), bruschetta::GetBruschettaAlphaId())) {
-    vm_name = bruschetta::GetOverallVmName(profile());
+  if (bruschetta::IsInstalled(&profile, bruschetta::GetBruschettaAlphaId())) {
+    vm_name = bruschetta::GetOverallVmName(&profile);
     rich_notification_data.buttons.emplace_back(
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
             IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
@@ -448,6 +450,7 @@ CrosUsbDetector::CrosUsbDetector() {
   CiceroneClient::Get()->AddObserver(this);
   ConciergeClient::Get()->AddVmObserver(this);
   disks::DiskMountManager::GetInstance()->AddObserver(this);
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
 }
 
 CrosUsbDetector::~CrosUsbDetector() {
@@ -518,16 +521,17 @@ void CrosUsbDetector::ConnectToDeviceManager() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
-  PrefService* prefs = profile()->GetPrefs();
+bool CrosUsbDetector::ShouldShowNotification(Profile& profile,
+                                             const UsbDevice& device) {
+  PrefService* prefs = profile.GetPrefs();
   if (!prefs->GetBoolean(ash::prefs::kUsbDetectorNotificationEnabled) ||
       !prefs->GetBoolean(guest_os::prefs::kGuestOsUSBNotificationEnabled)) {
     return false;
   }
 
-  if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
-      !IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
-      !bruschetta::IsInstalled(profile(), bruschetta::GetBruschettaAlphaId())) {
+  if (!crostini::CrostiniFeatures::Get()->IsEnabled(&profile) &&
+      !IsPlayStoreEnabledWithArcVmForProfile(&profile) &&
+      !bruschetta::IsInstalled(&profile, bruschetta::GetBruschettaAlphaId())) {
     return false;
   }
 
@@ -544,13 +548,17 @@ void CrosUsbDetector::OnContainerStarted(
     const vm_tools::cicerone::ContainerStartedSignal& signal) {
   const auto guest_id =
       guest_os::GuestId(signal.vm_name(), signal.container_name());
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
   for (auto& it : usb_devices_) {
     auto& device = it.second;
     if (device.shared_guest_id == guest_id && device.guest_port.has_value()) {
       VLOG(1) << "Connecting " << device.label << " to " << guest_id.vm_name
               << ":" << guest_id.container_name;
-      AttachUsbDeviceToContainer(guest_id, *device.guest_port,
-                                 device.info->guid, base::DoNothing());
+      AttachUsbDeviceToContainer(primary_session->account_id(), guest_id,
+                                 *device.guest_port, device.info->guid,
+                                 base::DoNothing());
     }
   }
 }
@@ -622,6 +630,15 @@ void CrosUsbDetector::OnMountEvent(
   }
 }
 
+void CrosUsbDetector::OnUserSessionStarted(bool is_primary_user) {
+  if (is_primary_user) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&CrosUsbDetector::ConnectToDeviceManager,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
 std::string UsbDeviceIdentifier(device::mojom::UsbDeviceInfoPtr& device_info) {
   std::string serial_number =
       device_info->serial_number.has_value()
@@ -661,14 +678,20 @@ void CrosUsbDetector::OnDeviceChecked(
   std::string guid = device_info->guid;
   std::u16string label = new_device.label;
 
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
+  CHECK(profile);
+
   // If device exists in persistent passthrough dict, skip notifications and
   // connect it to the appropriate guest.
-  PrefService* prefs = profile()->GetPrefs();
-  const base::DictValue& persistent_passthrough_devices =
-      prefs->GetDict(guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
-
-  const std::string* device = persistent_passthrough_devices.FindString(
-      UsbDeviceIdentifier(device_info));
+  const std::string* device =
+      profile->GetPrefs()
+          ->GetDict(guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices)
+          .FindString(UsbDeviceIdentifier(device_info));
 
   LOG(WARNING) << "Checking for persistence of USB device ["
                << UsbDeviceIdentifier(device_info) << "], "
@@ -697,12 +720,13 @@ void CrosUsbDetector::OnDeviceChecked(
   }
 
   // Some devices should not trigger the notification.
-  if (hide_notification || !ShouldShowNotification(result.first->second)) {
+  if (hide_notification ||
+      !ShouldShowNotification(*profile, result.first->second)) {
     VLOG(1) << "Not showing USB notification for " << label;
     return;
   }
 
-  ShowNotificationForDevice(guid, label);
+  ShowNotificationForDevice(*profile, guid, label);
 }
 
 void CrosUsbDetector::OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device) {
@@ -789,6 +813,10 @@ void CrosUsbDetector::AttachUsbDeviceToGuest(
   }
 
   auto& device = it->second;
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  const AccountId& account_id = primary_session->account_id();
 
   // If we tried to share a device to a VM that wasn't started,
   // |shared_guest_id| would be set but |guest_port| would be empty. Once the VM
@@ -806,18 +834,30 @@ void CrosUsbDetector::AttachUsbDeviceToGuest(
       // the new container is stopped, detach it from the old container first,
       // so that it can be attached later.
       DetachUsbDeviceFromContainer(
-          guest_id.vm_name, *device.guest_port, device.info->guid,
+          account_id, guest_id.vm_name, *device.guest_port, device.info->guid,
           base::BindOnce(&CrosUsbDetector::ContainerAttachAfterDetach,
-                         weak_ptr_factory_.GetWeakPtr(), guest_id,
+                         weak_ptr_factory_.GetWeakPtr(), account_id, guest_id,
                          *device.guest_port, guid, std::move(callback)));
       return;
     }
   }
 
-  UnmountFilesystems(guest_id, guid, std::move(callback));
+  UnmountFilesystems(account_id, guest_id, guid, std::move(callback));
 }
 
 void CrosUsbDetector::DetachUsbDeviceFromVm(
+    const std::string& vm_name,
+    const std::string& guid,
+    base::OnceCallback<void(bool success)> callback) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  DetachUsbDeviceFromVm(primary_session->account_id(), vm_name, guid,
+                        std::move(callback));
+}
+
+void CrosUsbDetector::DetachUsbDeviceFromVm(
+    const AccountId& account_id,
     const std::string& vm_name,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback) {
@@ -860,7 +900,9 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
 
   vm_tools::concierge::DetachUsbDeviceRequest request;
   request.set_vm_name(vm_name);
-  request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
+  request.set_owner_id(user.username_hash());
   request.set_guest_port(*device.guest_port);
 
   ConciergeClient::Get()->DetachUsbDevice(
@@ -879,6 +921,7 @@ void CrosUsbDetector::OnListAttachedDevices(
 }
 
 void CrosUsbDetector::UnmountFilesystems(
+    const AccountId& account_id,
     const guest_os::GuestId& guest_id,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback) {
@@ -893,11 +936,12 @@ void CrosUsbDetector::UnmountFilesystems(
   FilesystemUnmounter::UnmountPaths(
       it->second.mount_points,
       base::BindOnce(&CrosUsbDetector::OnUnmountFilesystems,
-                     weak_ptr_factory_.GetWeakPtr(), guest_id, guid,
+                     weak_ptr_factory_.GetWeakPtr(), account_id, guest_id, guid,
                      std::move(callback)));
 }
 
 void CrosUsbDetector::OnUnmountFilesystems(
+    const AccountId& account_id,
     const guest_os::GuestId& guest_id,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback,
@@ -921,19 +965,21 @@ void CrosUsbDetector::OnUnmountFilesystems(
   // Detach first if device is attached elsewhere
   if (device.guest_port.has_value()) {
     LOG(WARNING) << "Device was attached already, detaching before attaching.";
-    DetachUsbDeviceFromVm(device.shared_guest_id->vm_name, guid,
-                          base::BindOnce(&CrosUsbDetector::AttachAfterDetach,
-                                         weak_ptr_factory_.GetWeakPtr(),
-                                         guest_id, guid, std::move(callback)));
+    DetachUsbDeviceFromVm(
+        account_id, device.shared_guest_id->vm_name, guid,
+        base::BindOnce(&CrosUsbDetector::AttachAfterDetach,
+                       weak_ptr_factory_.GetWeakPtr(), account_id, guest_id,
+                       guid, std::move(callback)));
   } else {
     // The device isn't attached.
     LOG(WARNING) << "Device was available (not attached to vm).";
-    AttachAfterDetach(guest_id, guid, std::move(callback),
+    AttachAfterDetach(account_id, guest_id, guid, std::move(callback),
                       /*detach_success=*/true);
   }
 }
 
 void CrosUsbDetector::AttachAfterDetach(
+    const AccountId& account_id,
     const guest_os::GuestId& guest_id,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback,
@@ -964,8 +1010,8 @@ void CrosUsbDetector::AttachAfterDetach(
       LOG(WARNING) << "Device was already claimed.";
       // We take a dup here which will be closed if DoVmAttach fails.
       base::ScopedFD device_fd(dup(claim_it->second.device_file.get()));
-      DoVmAttach(guest_id, device.info.Clone(), std::move(device_fd),
-                 std::move(callback));
+      DoVmAttach(account_id, guest_id, device.info.Clone(),
+                 std::move(device_fd), std::move(callback));
     } else {
       LOG(WARNING) << "Device " << guid << " already claimed and awaiting fd.";
       std::move(callback).Run(false);
@@ -990,7 +1036,7 @@ void CrosUsbDetector::AttachAfterDetach(
   device_manager_->OpenFileDescriptor(
       guid, kAllInterfacesMask, mojo::PlatformHandle(std::move(read_end)),
       base::BindOnce(&CrosUsbDetector::OnAttachUsbDeviceOpened,
-                     weak_ptr_factory_.GetWeakPtr(), guest_id,
+                     weak_ptr_factory_.GetWeakPtr(), account_id, guest_id,
                      device.info.Clone(), std::move(callback)));
 
   // Close any associated notifications (the user isn't using them). This
@@ -1002,6 +1048,7 @@ void CrosUsbDetector::AttachAfterDetach(
 }
 
 void CrosUsbDetector::OnAttachUsbDeviceOpened(
+    const AccountId& account_id,
     const guest_os::GuestId& guest_id,
     device::mojom::UsbDeviceInfoPtr device_info,
     base::OnceCallback<void(bool success)> callback,
@@ -1013,23 +1060,28 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
   }
   devices_claimed_[device_info->guid].device_file =
       base::ScopedFD(file.Duplicate().TakePlatformFile());
-  if (!manager()) {
+  if (!crostini::CrostiniManager::GetForProfile(Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              account_id)))) {
     LOG(ERROR) << "Attaching device without Crostini manager instance";
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  DoVmAttach(guest_id, device_info.Clone(),
+  DoVmAttach(account_id, guest_id, device_info.Clone(),
              base::ScopedFD(file.TakePlatformFile()), std::move(callback));
 }
 
 void CrosUsbDetector::DoVmAttach(
+    const AccountId& account_id,
     const guest_os::GuestId& guest_id,
     device::mojom::UsbDeviceInfoPtr device_info,
     base::ScopedFD fd,
     base::OnceCallback<void(bool success)> callback) {
   vm_tools::concierge::AttachUsbDeviceRequest request;
   request.set_vm_name(guest_id.vm_name);
-  request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
+  request.set_owner_id(user.username_hash());
   request.set_bus_number(device_info->bus_number);
   request.set_port_number(device_info->port_number);
   request.set_vendor_id(device_info->vendor_id);
@@ -1038,11 +1090,12 @@ void CrosUsbDetector::DoVmAttach(
   ConciergeClient::Get()->AttachUsbDevice(
       std::move(fd), std::move(request),
       base::BindOnce(&CrosUsbDetector::OnUsbDeviceAttachFinished,
-                     weak_ptr_factory_.GetWeakPtr(), guest_id,
+                     weak_ptr_factory_.GetWeakPtr(), account_id, guest_id,
                      std::move(device_info), std::move(callback)));
 }
 
 void CrosUsbDetector::OnUsbDeviceAttachFinished(
+    const AccountId& account_id,
     const guest_os::GuestId& guest_id,
     device::mojom::UsbDeviceInfoPtr device_info,
     base::OnceCallback<void(bool success)> callback,
@@ -1068,7 +1121,11 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
     }
   }
 
-  PrefService* prefs = profile()->GetPrefs();
+  PrefService* prefs =
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUserAndModify(account_id))
+          .GetProfilePrefs();
+  CHECK(prefs);
   if (success) {
     LOG(WARNING) << "Successful connection of "
                  << UsbDeviceIdentifier(device_info);
@@ -1094,7 +1151,7 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
   }
 
   if (success && !guest_id.container_name.empty()) {
-    AttachUsbDeviceToContainer(guest_id, response->guest_port(),
+    AttachUsbDeviceToContainer(account_id, guest_id, response->guest_port(),
                                device_info->guid, std::move(callback));
   } else {
     SignalUsbDeviceObservers();
@@ -1103,6 +1160,7 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
 }
 
 void CrosUsbDetector::AttachUsbDeviceToContainer(
+    const AccountId& account_id,
     const guest_os::GuestId& guest_id,
     uint8_t guest_port,
     const std::string& guid,
@@ -1110,7 +1168,9 @@ void CrosUsbDetector::AttachUsbDeviceToContainer(
   vm_tools::cicerone::AttachUsbToContainerRequest request;
   request.set_vm_name(guest_id.vm_name);
   request.set_container_name(guest_id.container_name);
-  request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
+  request.set_owner_id(user.username_hash());
   request.set_port_num(static_cast<int32_t>(guest_port));
 
   CiceroneClient::Get()->AttachUsbToContainer(
@@ -1151,13 +1211,16 @@ void CrosUsbDetector::OnContainerAttachFinished(
 }
 
 void CrosUsbDetector::DetachUsbDeviceFromContainer(
+    const AccountId& account_id,
     const std::string& vm_name,
     uint8_t guest_port,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback) {
   vm_tools::cicerone::DetachUsbFromContainerRequest request;
   request.set_vm_name(vm_name);
-  request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
+  request.set_owner_id(user.username_hash());
   request.set_port_num(static_cast<int32_t>(guest_port));
 
   CiceroneClient::Get()->DetachUsbFromContainer(
@@ -1199,6 +1262,7 @@ void CrosUsbDetector::OnContainerDetachFinished(
 }
 
 void CrosUsbDetector::ContainerAttachAfterDetach(
+    const AccountId& account_id,
     const guest_os::GuestId& guest_id,
     uint8_t guest_port,
     const std::string& guid,
@@ -1231,7 +1295,8 @@ void CrosUsbDetector::ContainerAttachAfterDetach(
   // Set the container name so if the container is stopped, the device will be
   // attached after the container starts.
   device.shared_guest_id->container_name = guest_id.container_name;
-  AttachUsbDeviceToContainer(guest_id, guest_port, guid, std::move(callback));
+  AttachUsbDeviceToContainer(account_id, guest_id, guest_port, guid,
+                             std::move(callback));
 }
 
 void CrosUsbDetector::OnUsbDeviceDetachFinished(
