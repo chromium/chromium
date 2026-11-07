@@ -25,6 +25,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -47,17 +48,10 @@ WebContentsObserverProxy::WebContentsObserverProxy(WebContents* web_contents)
 
 WebContentsObserverProxy::~WebContentsObserverProxy() {}
 
-static int64_t JNI_WebContentsObserverProxy_Init(JNIEnv* env,
-                                                 WebContents* web_contents) {
+static jni_zero::JniUniquePtr<WebContentsObserverProxy>
+JNI_WebContentsObserverProxy_Init(JNIEnv* env, WebContents* web_contents) {
   CHECK(web_contents);
-
-  WebContentsObserverProxy* native_observer =
-      new WebContentsObserverProxy(web_contents);
-  return reinterpret_cast<intptr_t>(native_observer);
-}
-
-void WebContentsObserverProxy::Destroy(JNIEnv* env) {
-  delete this;
+  return jni_zero::MakeUnique<WebContentsObserverProxy>(web_contents);
 }
 
 void WebContentsObserverProxy::WebContentsDestroyed() {

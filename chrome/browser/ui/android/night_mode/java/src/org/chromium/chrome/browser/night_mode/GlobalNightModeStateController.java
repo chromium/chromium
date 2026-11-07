@@ -18,6 +18,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -123,6 +124,15 @@ class GlobalNightModeStateController
         SystemNightModeMonitor.getInstance().removeObserver(this);
         ContextUtils.getAppSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(mPreferenceListener);
+    }
+
+    void destroy() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    stop();
+                    ApplicationStatus.unregisterApplicationStateListener(this);
+                    mObservers.clear();
+                });
     }
 
     private void updateNightMode() {

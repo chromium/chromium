@@ -7,6 +7,8 @@ package org.chromium.content.browser.webcontents;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,10 +32,18 @@ public class WebContentsObserverProxyTest {
     @Mock private WebContentsObserver mWebContentsObserver2;
     @Mock private WebContentsObserverProxy.Natives mWebContentsObserverProxyJni;
 
+    private JniUniquePtr<WebContentsObserverProxy.NativeWebContentsObserverProxy> mNativeProxy;
+
     @Before
     public void setUp() {
         WebContentsObserverProxyJni.setInstanceForTesting(mWebContentsObserverProxyJni);
-        when(mWebContentsObserverProxyJni.init(any())).thenReturn(1L);
+        mNativeProxy = JniUniquePtr.createForTesting(1L);
+        when(mWebContentsObserverProxyJni.init(any())).thenReturn(mNativeProxy);
+    }
+
+    @After
+    public void tearDown() {
+        mNativeProxy.destroy();
     }
 
     @Test

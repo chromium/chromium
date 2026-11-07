@@ -3302,6 +3302,7 @@ class TabImpl implements Tab, TabInternal {
             status = TabImplJni.get().destroyWebContents(mNativeTabAndroid);
             if (status == TabDestroyStatus.SLOW_SHUTDOWN) {
                 contentsToDestroy.setTopLevelNativeWindow(null);
+                contentsToDestroy.clearJavaWebContentsObservers();
             }
         } else {
             // This branch is to not delete the WebContents, but just to release the WebContent from

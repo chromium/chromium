@@ -31,8 +31,6 @@ class WebContentsObserverProxy : public WebContentsObserver {
 
   ~WebContentsObserverProxy() override;
 
-  void Destroy(JNIEnv* env);
-
  private:
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;

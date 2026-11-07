@@ -62,9 +62,16 @@ public class GlobalNightModeStateProviderHolder {
                 sInstance = new GlobalNightModeStateController();
             }
             // Do not cache the singleton between tests since the creation logic depends on flags.
-            ResettersForTesting.register(() -> sInstance = null);
+            ResettersForTesting.register(() -> reset());
         }
         return sInstance;
+    }
+
+    static void reset() {
+        if (sInstance instanceof GlobalNightModeStateController controller) {
+            controller.destroy();
+        }
+        sInstance = null;
     }
 
     static void setInstanceForTesting(NightModeStateProvider instance) {

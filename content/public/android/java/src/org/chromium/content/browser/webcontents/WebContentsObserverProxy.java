@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -33,15 +35,18 @@ import org.chromium.url.GURL;
 import java.util.Iterator;
 
 /**
- * Serves as a compound observer proxy for dispatching WebContentsObserver callbacks,
- * avoiding redundant JNI-related work when there are multiple Java-based observers.
+ * Serves as a compound observer proxy for dispatching WebContentsObserver callbacks, avoiding
+ * redundant JNI-related work when there are multiple Java-based observers.
  */
 @JNINamespace("content")
 @NullMarked
 class WebContentsObserverProxy extends WebContentsObserver {
+    @JniType("::content::WebContentsObserverProxy")
+    interface NativeWebContentsObserverProxy extends JniTypeToken {}
+
     private final ObserverList<WebContentsObserver> mObservers;
 
-    private long mNativeWebContentsObserverProxy;
+    private @Nullable JniUniquePtr<NativeWebContentsObserverProxy> mNativeWebContentsObserverProxy;
     private int mObserverCallsCurrentlyHandling;
 
     /**
@@ -60,10 +65,11 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     /**
      * Add an observer to the list of proxied observers.
+     *
      * @param observer The WebContentsObserver instance to add.
      */
     void addObserver(WebContentsObserver observer) {
-        assert mNativeWebContentsObserverProxy != 0;
+        assert mNativeWebContentsObserverProxy != null;
         mObservers.addObserver(observer);
     }
 
@@ -564,9 +570,9 @@ class WebContentsObserverProxy extends WebContentsObserver {
         assert mObservers.isEmpty() : remainingObservers;
         mObservers.clear();
 
-        if (mNativeWebContentsObserverProxy != 0) {
-            WebContentsObserverProxyJni.get().destroy(mNativeWebContentsObserverProxy);
-            mNativeWebContentsObserverProxy = 0;
+        if (mNativeWebContentsObserverProxy != null) {
+            mNativeWebContentsObserverProxy.destroy();
+            mNativeWebContentsObserverProxy = null;
         }
     }
 
@@ -578,8 +584,7 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("content::WebContents*") WebContents webContents);
-
-        void destroy(long nativeWebContentsObserverProxy);
+        JniUniquePtr<NativeWebContentsObserverProxy> init(
+                @JniType("content::WebContents*") WebContents webContents);
     }
 }
