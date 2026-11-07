@@ -10,6 +10,10 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -25,7 +29,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @JNINamespace("javascript_dialogs")
 @NullMarked
 public class JavascriptTabModalDialog extends JavascriptModalDialog {
-    private long mNativeDialogPointer;
+    @JniType("::javascript_dialogs::TabModalDialogViewAndroid")
+    interface NativeTabModalDialogViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeTabModalDialogViewAndroid> mNativeDialogPointer;
 
     /** Constructor for initializing contents to be shown on the dialog. */
     private JavascriptTabModalDialog(
@@ -50,19 +57,21 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
     }
 
     @CalledByNative
-    private void showDialog(WindowAndroid window, long nativeDialogPointer) {
+    boolean showDialog(
+            WindowAndroid window, JniRawPtr<NativeTabModalDialogViewAndroid> nativeDialogPointer) {
         assert window != null;
         Context context = window.getContext().get();
         ModalDialogManager dialogManager = window.getModalDialogManager();
         // If the context has gone away, then just clean up the native pointer.
         if (context == null || dialogManager == null) {
-            JavascriptTabModalDialogJni.get().cancel(nativeDialogPointer, false);
-            return;
+            nativeDialogPointer.release();
+            return false;
         }
 
         // Cache the native dialog pointer so that we can use it to return the response.
         mNativeDialogPointer = nativeDialogPointer;
         show(context, dialogManager, ModalDialogManager.ModalDialogType.TAB);
+        return true;
     }
 
     @CalledByNative
@@ -73,7 +82,10 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
     @CalledByNative
     private void dismiss() {
         dismiss(DialogDismissalCause.DISMISSED_BY_NATIVE);
-        mNativeDialogPointer = 0;
+        if (mNativeDialogPointer != null) {
+            mNativeDialogPointer.release();
+            mNativeDialogPointer = null;
+        }
     }
 
     /**
@@ -83,21 +95,21 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
      */
     @Override
     protected void accept(String promptResult, boolean suppressDialogs) {
-        if (mNativeDialogPointer == 0) return;
+        if (mNativeDialogPointer == null) return;
         JavascriptTabModalDialogJni.get().accept(mNativeDialogPointer, promptResult);
     }
 
     /** Sends notification to native that the user cancels the dialog. */
     @Override
     protected void cancel(boolean buttonClicked, boolean suppressDialogs) {
-        if (mNativeDialogPointer == 0) return;
+        if (mNativeDialogPointer == null) return;
         JavascriptTabModalDialogJni.get().cancel(mNativeDialogPointer, buttonClicked);
     }
 
     @NativeMethods
     interface Natives {
-        void accept(long nativeTabModalDialogViewAndroid, String prompt);
+        void accept(JniPtr<NativeTabModalDialogViewAndroid> self, String prompt);
 
-        void cancel(long nativeTabModalDialogViewAndroid, boolean buttonClicked);
+        void cancel(JniPtr<NativeTabModalDialogViewAndroid> self, boolean buttonClicked);
     }
 }

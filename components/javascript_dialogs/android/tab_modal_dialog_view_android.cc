@@ -10,6 +10,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -139,9 +140,9 @@ TabModalDialogViewAndroid::TabModalDialogViewAndroid(
 void TabModalDialogViewAndroid::Show() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jwindow = jwindow_weak_ref_.get(env);
-  if (jwindow) {
-    Java_JavascriptTabModalDialog_showDialog(env, dialog_jobject_, jwindow,
-                                             reinterpret_cast<intptr_t>(this));
+  if (jwindow && !Java_JavascriptTabModalDialog_showDialog(
+                     env, dialog_jobject_, jwindow, jni_zero::MakeRaw(this))) {
+    Cancel(env, /*button_clicked=*/false);
   }
 }
 
