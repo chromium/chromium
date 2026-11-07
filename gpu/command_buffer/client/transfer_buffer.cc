@@ -9,11 +9,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <climits>
 
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/numerics/clamped_math.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 
@@ -145,8 +147,9 @@ static unsigned int ComputePOTSize(unsigned int dimension) {
   // undefined behavior.
   return (dimension == 0)
              ? 0
-             : 1 << std::min(static_cast<int>(sizeof(dimension) * CHAR_BIT - 1),
-                             base::bits::Log2Ceiling(dimension));
+             : 1u << std::min(
+                   static_cast<int>(sizeof(dimension) * CHAR_BIT - 1),
+                   base::bits::Log2Ceiling(dimension));
 }
 
 void TransferBuffer::ReallocateRingBuffer(unsigned int size, bool shrink) {
@@ -154,7 +157,8 @@ void TransferBuffer::ReallocateRingBuffer(unsigned int size, bool shrink) {
   // pointer that hasn't been released.
   DCHECK(!shrink || !outstanding_result_pointer_);
   // What size buffer would we ask for if we needed a new one?
-  unsigned int needed_buffer_size = ComputePOTSize(size + result_size_);
+  unsigned int needed_buffer_size =
+      ComputePOTSize(base::ClampAdd(size, result_size_));
   DCHECK_EQ(needed_buffer_size % alignment_, 0u)
       << "Buffer size is not a multiple of alignment_";
   needed_buffer_size = std::max(needed_buffer_size, min_buffer_size_);
@@ -200,14 +204,16 @@ void TransferBuffer::ShrinkOrExpandRingBufferIfNecessary(
     return;
 
   unsigned int available_size = GetFreeSize();
-  high_water_mark_ =
-      std::max(high_water_mark_, last_allocated_size_ - available_size +
-                                     size_to_allocate +
-                                     GetPreviousRingBufferUsedBytes());
+  unsigned int new_high_water_mark = base::ClampAdd(
+      last_allocated_size_ - available_size,
+      base::ClampAdd(size_to_allocate, GetPreviousRingBufferUsedBytes()));
+  high_water_mark_ = std::min(max_buffer_size_,
+                              std::max(high_water_mark_, new_high_water_mark));
   if (size_to_allocate > available_size) {
     // Try to expand the ring buffer.
     ReallocateRingBuffer(high_water_mark_);
-  } else if (bytes_since_last_shrink_ > high_water_mark_ * kShrinkThreshold) {
+  } else if (bytes_since_last_shrink_ >
+             uint64_t{high_water_mark_} * kShrinkThreshold) {
     // The intent of the above check is to limit the frequency of buffer shrink
     // attempts. Unfortunately if an application uploads a large amount of data
     // once and from then on uploads only a small amount per frame, it will be a
@@ -217,9 +223,11 @@ void TransferBuffer::ShrinkOrExpandRingBufferIfNecessary(
     // instead, and consider shrinking at the end of each frame (for clients
     // that have a notion of frames).
     bytes_since_last_shrink_ = 0;
-    ReallocateRingBuffer(high_water_mark_ + high_water_mark_ / 4,
+    ReallocateRingBuffer(base::ClampAdd(high_water_mark_, high_water_mark_ / 4),
                          true /* shrink */);
-    high_water_mark_ = size_to_allocate + GetPreviousRingBufferUsedBytes();
+    high_water_mark_ = std::min<unsigned int>(
+        max_buffer_size_,
+        base::ClampAdd(size_to_allocate, GetPreviousRingBufferUsedBytes()));
   }
 }
 

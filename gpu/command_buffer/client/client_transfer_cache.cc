@@ -15,8 +15,11 @@ base::span<uint8_t> ClientTransferCache::MapEntry(
     uint32_t size) {
   DCHECK(!mapped_ptr_);
   DCHECK(!transfer_buffer_ptr_);
+  if (size == 0) {
+    return {};
+  }
   mapped_ptr_.emplace(size, client_->cmd_buffer_helper(), mapped_memory);
-  if (!mapped_ptr_->valid()) {
+  if (!mapped_ptr_->valid() || mapped_ptr_->size() < size) {
     mapped_ptr_ = std::nullopt;
     return {};
   }
@@ -28,9 +31,13 @@ base::span<uint8_t> ClientTransferCache::MapTransferBufferEntry(
     uint32_t size) {
   DCHECK(!mapped_ptr_);
   DCHECK(!transfer_buffer_ptr_);
+  if (size == 0) {
+    return {};
+  }
   transfer_buffer_ptr_.emplace(size, client_->cmd_buffer_helper(),
                                transfer_buffer);
-  if (!transfer_buffer_ptr_->valid()) {
+  if (!transfer_buffer_ptr_->valid() || transfer_buffer_ptr_->size() < size) {
+    transfer_buffer_ptr_->Discard();
     transfer_buffer_ptr_ = std::nullopt;
     return {};
   }

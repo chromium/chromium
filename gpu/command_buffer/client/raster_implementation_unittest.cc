@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <memory>
 #include <numeric>
 
@@ -93,6 +94,16 @@ class RasterImplementationTest : public testing::Test {
 
   typedef MockTransferBuffer::ExpectedMemoryInfo ExpectedMemoryInfo;
 
+  class TestTransferBuffer : public MockTransferBuffer {
+   public:
+    using MockTransferBuffer::MockTransferBuffer;
+    unsigned int GetFreeSize() const override { return free_size_; }
+    void SetFreeSize(unsigned int free_size) { free_size_ = free_size; }
+
+   private:
+    unsigned int free_size_ = 0;
+  };
+
   class TestContext {
    public:
     TestContext() : commands_(nullptr), token_(0) {}
@@ -103,7 +114,7 @@ class RasterImplementationTest : public testing::Test {
       SharedMemoryLimits limits = SharedMemoryLimitsForTesting();
       command_buffer_ = std::make_unique<StrictMock<MockClientCommandBuffer>>();
 
-      transfer_buffer_ = base::WrapUnique(new MockTransferBuffer(
+      transfer_buffer_ = base::WrapUnique(new TestTransferBuffer(
           command_buffer_.get(), kTransferBufferSize,
           RasterImplementation::kStartingOffset,
           RasterImplementation::kAlignment, transfer_buffer_initialize_fail));
@@ -114,6 +125,7 @@ class RasterImplementationTest : public testing::Test {
       gpu_control_ = std::make_unique<StrictMock<MockClientGpuControl>>();
       capabilities_.max_texture_size = kMaxTextureSize;
       capabilities_.sync_query = sync_query;
+      capabilities_.texture_rg = true;
       EXPECT_CALL(*gpu_control_, GetCapabilities())
           .WillOnce(ReturnRef(capabilities_));
 
@@ -172,7 +184,7 @@ class RasterImplementationTest : public testing::Test {
     std::unique_ptr<MockClientCommandBuffer> command_buffer_;
     std::unique_ptr<MockClientGpuControl> gpu_control_;
     std::unique_ptr<RasterCmdHelper> helper_;
-    std::unique_ptr<MockTransferBuffer> transfer_buffer_;
+    std::unique_ptr<TestTransferBuffer> transfer_buffer_;
     std::unique_ptr<RasterImplementation> gl_;
     raw_ptr<CommandBufferEntry> commands_;
     int token_;
@@ -309,7 +321,7 @@ class RasterImplementationTest : public testing::Test {
 
   raw_ptr<MockClientGpuControl> gpu_control_;
   raw_ptr<RasterCmdHelper> helper_;
-  raw_ptr<MockTransferBuffer> transfer_buffer_;
+  raw_ptr<TestTransferBuffer> transfer_buffer_;
   raw_ptr<RasterImplementation> gl_;
   raw_ptr<CommandBufferEntry> commands_;
 };
@@ -1283,6 +1295,260 @@ TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncPadding) {
     }
   }
   EXPECT_EQ(v_plane_data, expected_v);
+}
+
+namespace {
+
+class CappedTransferBufferCommandBuffer : public MockClientCommandBuffer {
+ public:
+  void set_max_create_transfer_buffer_size(uint32_t max_size) {
+    max_create_transfer_buffer_size_ = max_size;
+  }
+
+  scoped_refptr<gpu::Buffer> CreateTransferBuffer(
+      uint32_t size,
+      int32_t* id,
+      uint32_t alignment,
+      TransferBufferAllocationOption option) override {
+    if (size > max_create_transfer_buffer_size_) {
+      *id = -1;
+      return nullptr;
+    }
+    return MockClientCommandBuffer::CreateTransferBuffer(size, id, alignment,
+                                                         option);
+  }
+
+ private:
+  uint32_t max_create_transfer_buffer_size_ = UINT32_MAX;
+};
+
+}  // namespace
+
+// https://crbug.com/575525279
+TEST_F(RasterImplementationTest, WritePixelsShortTransferBufferAlloc) {
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  // 64x32 RGBA8888 is 8192 bytes, which is larger than MaxTransferBufferSize()
+  // (448 bytes).
+  SkImageInfo src_info = SkImageInfo::MakeN32Premul(64, 32);
+  size_t src_size = src_info.computeMinByteSize();
+  ASSERT_GT(src_size, MaxTransferBufferSize());
+
+  std::vector<uint8_t> src_pixels(src_size);
+  std::ranges::iota(src_pixels, 1);
+  SkPixmap src_pixmap(src_info, src_pixels.data(), src_info.minRowBytes());
+
+  GLuint total_size = base::bits::AlignUp(
+      static_cast<GLuint>(src_size), static_cast<GLuint>(sizeof(uint64_t)));
+
+  // Simulate TransferBuffer::GetFreeSize() reporting enough space before
+  // AllocUpTo() shrinks the ring buffer and returns a shorter allocation
+  // (MaxTransferBufferSize()).
+  transfer_buffer_->SetFreeSize(total_size);
+
+  // When MappedMemory also fails to allocate, WritePixels must fail with
+  // GL_INVALID_OPERATION rather than writing past the short transfer buffer.
+  SetMappedMemoryLimit(1);
+  GetExpectedMemory(MaxTransferBufferSize());
+  gl_->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+                   GL_TEXTURE_2D, src_pixmap);
+  EXPECT_TRUE(transfer_buffer_->InSync());
+  EXPECT_TRUE(NoCommandsWritten());
+  EXPECT_EQ(GL_INVALID_OPERATION, CheckError());
+
+  // When MappedMemory is available, ScopedSharedMemoryPtr should discard the
+  // short transfer buffer allocation and fall back to MappedMemory.
+  SetMappedMemoryLimit(SharedMemoryLimits::kNoLimit);
+  ClearCommands();
+  GetExpectedMemory(MaxTransferBufferSize());
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
+  gl_->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+                   GL_TEXTURE_2D, src_pixmap);
+  EXPECT_TRUE(transfer_buffer_->InSync());
+  EXPECT_FALSE(NoCommandsWritten());
+  EXPECT_EQ(GL_NO_ERROR, CheckError());
+  EXPECT_EQ(mem.span.first(src_size), base::span(src_pixels));
+}
+
+TEST_F(RasterImplementationTest,
+       WritePixelsYUVFallbackWhenTransferBufferAllocUpToIsShort) {
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  SkYUVAInfo yuva_info({32, 32}, SkYUVAInfo::PlaneConfig::kY_U_V,
+                       SkYUVAInfo::Subsampling::k420,
+                       kJPEG_Full_SkYUVColorSpace);
+  SkYUVAPixmapInfo pixmap_info(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
+                               /*rowBytes=*/nullptr);
+  SkYUVAPixmaps yuva_pixmaps = SkYUVAPixmaps::Allocate(pixmap_info);
+  ASSERT_TRUE(yuva_pixmaps.isValid());
+
+  GLuint total_size = 0;
+  for (int plane = 0; plane < yuva_info.numPlanes(); ++plane) {
+    size_t plane_size = yuva_pixmaps.plane(plane).computeByteSize();
+    auto plane_span = UNSAFE_TODO(base::span(
+        static_cast<uint8_t*>(yuva_pixmaps.plane(plane).writable_addr()),
+        plane_size));
+    std::ranges::iota(plane_span, static_cast<uint8_t>(plane * 10 + 1));
+    total_size += base::bits::AlignUp(static_cast<GLuint>(plane_size),
+                                      static_cast<GLuint>(sizeof(uint64_t)));
+  }
+  ASSERT_GT(total_size, MaxTransferBufferSize());
+
+  transfer_buffer_->SetFreeSize(total_size);
+  GetExpectedMemory(MaxTransferBufferSize());
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
+
+  gl_->WritePixelsYUV(mailbox, yuva_pixmaps);
+  EXPECT_TRUE(transfer_buffer_->InSync());
+  EXPECT_FALSE(NoCommandsWritten());
+
+  GLuint offset = 0;
+  for (int plane = 0; plane < yuva_info.numPlanes(); ++plane) {
+    size_t plane_size = yuva_pixmaps.plane(plane).computeByteSize();
+    auto expected_plane = UNSAFE_TODO(base::span(
+        static_cast<const uint8_t*>(yuva_pixmaps.plane(plane).addr()),
+        plane_size));
+    EXPECT_EQ(mem.span.subspan(offset, plane_size), expected_plane);
+    offset += base::bits::AlignUp(static_cast<GLuint>(plane_size),
+                                  static_cast<GLuint>(sizeof(uint64_t)));
+  }
+  EXPECT_EQ(GL_NO_ERROR, CheckError());
+}
+
+TEST_F(RasterImplementationTest,
+       MapTransferCacheEntryFallbackWhenTransferBufferAllocUpToIsShort) {
+  const uint32_t kEntrySize = MaxTransferBufferSize() + 64;
+  transfer_buffer_->SetFreeSize(kEntrySize);
+  GetExpectedMemory(MaxTransferBufferSize());
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(kEntrySize);
+
+  base::span<uint8_t> mapped = gl_->MapTransferCacheEntry(kEntrySize);
+  EXPECT_TRUE(transfer_buffer_->InSync());
+  ASSERT_EQ(mapped.size(), kEntrySize);
+  EXPECT_EQ(mapped.data(), mem.ptr);
+
+  std::ranges::iota(mapped, 1);
+  gl_->UnmapAndCreateTransferCacheEntry(1u, 1u);
+}
+
+TEST_F(RasterImplementationTest, MapTransferCacheEntryZeroSize) {
+  transfer_buffer_->SetFreeSize(MaxTransferBufferSize());
+  base::span<uint8_t> mapped = gl_->MapTransferCacheEntry(0);
+  EXPECT_TRUE(mapped.empty());
+  EXPECT_EQ(mapped.data(), nullptr);
+  EXPECT_TRUE(transfer_buffer_->InSync());
+
+  // Subsequent non-zero MapTransferCacheEntry must still succeed without
+  // tripping DCHECK(!transfer_buffer_ptr_).
+  constexpr uint32_t kEntrySize = 64;
+  ExpectedMemoryInfo mem = GetExpectedMemory(kEntrySize);
+  mapped = gl_->MapTransferCacheEntry(kEntrySize);
+  ASSERT_EQ(mapped.size(), kEntrySize);
+  EXPECT_EQ(mapped.data(), mem.ptr);
+  gl_->UnmapAndCreateTransferCacheEntry(1u, 1u);
+}
+
+TEST_F(RasterImplementationTest, WritePixelsRowBytesOverflowWhenHeightIsOne) {
+  if constexpr (sizeof(size_t) > sizeof(GLuint)) {
+    gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+    SkImageInfo src_info = SkImageInfo::MakeN32Premul(4, 1);
+    std::vector<uint8_t> src_pixels(src_info.computeMinByteSize(), 0x5A);
+    // When height == 1, SkImageInfo::computeByteSize(rowBytes) ignores rowBytes
+    // because (height - 1) == 0. Ensure WritePixels still rejects a rowBytes
+    // value that overflows GLuint.
+    size_t oversized_row_bytes =
+        static_cast<size_t>(std::numeric_limits<GLuint>::max()) + 4;
+    SkPixmap src_pixmap(src_info, src_pixels.data(), oversized_row_bytes);
+
+    gl_->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+                     GL_TEXTURE_2D, src_pixmap);
+    EXPECT_TRUE(NoCommandsWritten());
+    EXPECT_EQ(GL_INVALID_OPERATION, CheckError());
+  }
+}
+
+TEST_F(RasterImplementationTest, WritePixelsTransferBufferContractDuringAlloc) {
+  constexpr uint32_t kStartSize = 1024;
+  constexpr uint32_t kMinSize = 128;
+  constexpr uint32_t kMaxSize = 4096;
+
+  SharedMemoryLimits limits = SharedMemoryLimitsForTesting();
+  limits.start_transfer_buffer_size = kStartSize;
+  limits.min_transfer_buffer_size = kMinSize;
+  limits.max_transfer_buffer_size = kMaxSize;
+
+  StrictMock<CappedTransferBufferCommandBuffer> cmd_buffer;
+  EXPECT_CALL(cmd_buffer, OnFlush()).Times(AnyNumber());
+  EXPECT_CALL(cmd_buffer, DestroyTransferBuffer(_)).Times(AnyNumber());
+
+  RasterCmdHelper cmd_helper(&cmd_buffer);
+  ASSERT_EQ(cmd_helper.Initialize(limits.command_buffer_size),
+            gpu::ContextResult::kSuccess);
+
+  TransferBuffer real_transfer_buffer(&cmd_helper);
+
+  StrictMock<MockClientGpuControl> gpu_control;
+  Capabilities capabilities;
+  capabilities.max_texture_size = kMaxTextureSize;
+  capabilities.sync_query = true;
+  EXPECT_CALL(gpu_control, GetCapabilities()).WillOnce(ReturnRef(capabilities));
+
+  auto ri = std::make_unique<RasterImplementation>(
+      &cmd_helper, &real_transfer_buffer,
+      /*lose_context_when_out_of_memory=*/false, &gpu_control);
+  EXPECT_CALL(gpu_control, SetGpuControlClient(ri.get())).Times(1);
+  ASSERT_EQ(ri->Initialize(limits), gpu::ContextResult::kSuccess);
+
+  // First expand the ring buffer to kMaxSize (4096 bytes).
+  base::span<uint8_t> expand_block = real_transfer_buffer.Alloc(
+      kMaxSize - RasterImplementation::kStartingOffset);
+  ASSERT_FALSE(expand_block.empty());
+  real_transfer_buffer.FreePendingToken(expand_block.data(),
+                                        cmd_helper.InsertToken());
+
+  // Now advance bytes_since_last_shrink_ past the shrink threshold using
+  // 512-byte allocations so high_water_mark_ is 512 + kStartingOffset (576),
+  // whose target POT buffer size is 1024 (< current_size 4096).
+  constexpr uint32_t kStepAllocSize = 512;
+  for (uint32_t allocated = kMaxSize - RasterImplementation::kStartingOffset;
+       allocated <= (kStepAllocSize + RasterImplementation::kStartingOffset) *
+                        TransferBuffer::kShrinkThreshold;
+       allocated += kStepAllocSize) {
+    base::span<uint8_t> block = real_transfer_buffer.Alloc(kStepAllocSize);
+    ASSERT_FALSE(block.empty());
+    real_transfer_buffer.FreePendingToken(block.data(),
+                                          cmd_helper.InsertToken());
+  }
+
+  // Free size is still 4032 bytes prior to the next allocation.
+  ASSERT_EQ(real_transfer_buffer.GetFreeSize(),
+            kMaxSize - RasterImplementation::kStartingOffset);
+
+  // Restrict subsequent transfer buffer creations to kMinSize (128 bytes),
+  // which only has 64 usable bytes after kStartingOffset.
+  cmd_buffer.set_max_create_transfer_buffer_size(kMinSize);
+
+  // Request WritePixels with 512 bytes (16x8 RGBA8). GetFreeSize() is 4032 >=
+  // 512, so ScopedSharedMemoryPtr attempts TransferBuffer allocation first.
+  // TransferBuffer::AllocUpTo shrinks/reallocates the ring buffer, halving down
+  // to kMinSize (64 usable bytes < 512). WritePixels must not write 512 bytes
+  // into the 64-byte block.
+  SkImageInfo src_info =
+      SkImageInfo::Make(16, 8, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  std::vector<uint8_t> pixels(src_info.computeMinByteSize(), 0x5A);
+  SkPixmap pixmap(src_info, pixels.data(), src_info.minRowBytes());
+
+  ri->WritePixels(gpu::Mailbox::Generate(), 0, 0, GL_TEXTURE_2D, pixmap);
+  EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION), ri->GetError());
+
+  // Now allow MappedMemoryManager to allocate a fallback chunk while the
+  // transfer buffer remains contracted, and verify WritePixels succeeds via
+  // the mapped memory fallback.
+  cmd_buffer.set_max_create_transfer_buffer_size(UINT32_MAX);
+  ri->WritePixels(gpu::Mailbox::Generate(), 0, 0, GL_TEXTURE_2D, pixmap);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ri->GetError());
+
+  EXPECT_CALL(gpu_control, SetGpuControlClient(nullptr)).Times(1);
+  EXPECT_CALL(gpu_control, CancelAllQueries()).Times(1);
+  ri.reset();
 }
 
 #include "gpu/command_buffer/client/raster_implementation_unittest_autogen.h"

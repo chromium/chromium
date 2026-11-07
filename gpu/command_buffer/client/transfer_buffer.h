@@ -159,7 +159,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT TransferBuffer
   unsigned int alignment_;
 
   // Number of bytes since we last attempted to shrink the ring buffer.
-  unsigned int bytes_since_last_shrink_ = 0;
+  uint64_t bytes_since_last_shrink_ = 0;
 
   // the current buffer.
   scoped_refptr<gpu::Buffer> buffer_;

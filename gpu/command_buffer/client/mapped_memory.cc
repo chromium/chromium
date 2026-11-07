@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -103,16 +104,17 @@ base::span<uint8_t> MappedMemoryManager::Alloc(
   }
 
   if (max_allocated_bytes_ != SharedMemoryLimits::kNoLimit &&
-      (allocated_memory_ + size) > max_allocated_bytes_) {
+      (allocated_memory_ > max_allocated_bytes_ ||
+       size > max_allocated_bytes_ - allocated_memory_)) {
     return {};
   }
 
   // Make a new chunk to satisfy the request.
   CommandBuffer* cmd_buf = helper_->command_buffer();
-  base::CheckedNumeric<uint32_t> chunk_size = size;
-  chunk_size = (size + chunk_size_multiple_ - 1) & ~(chunk_size_multiple_ - 1);
   uint32_t safe_chunk_size = 0;
-  if (!chunk_size.AssignIfValid(&safe_chunk_size)) {
+  if (!base::bits::AlignUp(base::CheckedNumeric<uint32_t>(size),
+                           chunk_size_multiple_)
+           .AssignIfValid(&safe_chunk_size)) {
     return {};
   }
 
@@ -135,12 +137,14 @@ base::span<uint8_t> MappedMemoryManager::Alloc(
 
 ScopedDedicatedChunk MappedMemoryManager::AllocDedicatedChunk(uint32_t size) {
   if (max_allocated_bytes_ != SharedMemoryLimits::kNoLimit &&
-      (size > max_allocated_bytes_ - allocated_memory_)) {
+      (allocated_memory_ > max_allocated_bytes_ ||
+       size > max_allocated_bytes_ - allocated_memory_)) {
     return {};
   }
 
   if (max_dedicated_bytes_ != SharedMemoryLimits::kNoLimit &&
-      (size > max_dedicated_bytes_ - dedicated_memory_for_testing_)) {
+      (dedicated_memory_for_testing_ > max_dedicated_bytes_ ||
+       size > max_dedicated_bytes_ - dedicated_memory_for_testing_)) {
     return {};
   }
 

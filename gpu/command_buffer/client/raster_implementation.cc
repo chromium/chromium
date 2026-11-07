@@ -104,22 +104,22 @@ const uint32_t kMaxTransferCacheEntrySizeForTransferBuffer = 1024;
 const size_t kMaxImmediateDeletedPaintCachePaths = 1024;
 constexpr size_t kMaxImmediateDeletedPaintCacheEffects = 10u;
 
-#define DEFINE_PAINT_CACHE_DELETION(                                     \
-    IMMEDIATE_SIZE_CONSTANT, IMMEDIATE_FUNCTION, NON_IMMEDIATE_FUNCTION) \
-  if (ids.size() <= IMMEDIATE_SIZE_CONSTANT) {                           \
-    helper_->IMMEDIATE_FUNCTION(ids.size(), ids.data());                 \
-  } else {                                                               \
-    size_t data_size = ids.size() * sizeof(cc::PaintCacheId);            \
-    ScopedSharedMemoryPtr dest(data_size, transfer_buffer_,              \
-                               mapped_memory_.get(), helper());          \
-    if (dest.valid()) {                                                  \
-      memcpy(dest.address(), ids.data(), data_size);                     \
-      helper_->NON_IMMEDIATE_FUNCTION(ids.size(), dest.shm_id(),         \
-                                      dest.offset());                    \
-    } else {                                                             \
-      SetGLError(GL_INVALID_OPERATION, "glDeletePaintCacheINTERNAL",     \
-                 "couldn't allocate shared memory");                     \
-    }                                                                    \
+#define DEFINE_PAINT_CACHE_DELETION(                                           \
+    IMMEDIATE_SIZE_CONSTANT, IMMEDIATE_FUNCTION, NON_IMMEDIATE_FUNCTION)       \
+  if (ids.size() <= IMMEDIATE_SIZE_CONSTANT) {                                 \
+    helper_->IMMEDIATE_FUNCTION(ids.size(), ids.data());                       \
+  } else {                                                                     \
+    size_t data_size = ids.size() * sizeof(cc::PaintCacheId);                  \
+    ScopedSharedMemoryPtr dest(data_size, transfer_buffer_,                    \
+                               mapped_memory_.get(), helper());                \
+    if (dest.valid()) {                                                        \
+      dest.as_byte_span().first(data_size).copy_from(base::as_byte_span(ids)); \
+      helper_->NON_IMMEDIATE_FUNCTION(ids.size(), dest.shm_id(),               \
+                                      dest.offset());                          \
+    } else {                                                                   \
+      SetGLError(GL_INVALID_OPERATION, "glDeletePaintCacheINTERNAL",           \
+                 "couldn't allocate shared memory");                           \
+    }                                                                          \
   }
 
 class ScopedSharedMemoryPtr {
@@ -128,39 +128,57 @@ class ScopedSharedMemoryPtr {
                         TransferBufferInterface* transfer_buffer,
                         MappedMemoryManager* mapped_memory,
                         RasterCmdHelper* helper) {
+    uint32_t checked_size = 0;
+    if (size == 0 ||
+        !base::CheckedNumeric<uint32_t>(size).AssignIfValid(&checked_size)) {
+      return;
+    }
     // Prefer transfer buffer but fall back to MappedMemory if there's not
-    // enough free space.
-    if (transfer_buffer->GetFreeSize() < size) {
-      scoped_mapped_ptr_.emplace(size, helper, mapped_memory);
-    } else {
-      scoped_transfer_ptr_.emplace(size, helper, transfer_buffer);
+    // enough free space or if the transfer buffer allocation is smaller than
+    // requested.
+    if (transfer_buffer->GetFreeSize() >= checked_size) {
+      scoped_transfer_ptr_.emplace(checked_size, helper, transfer_buffer);
+      if (!scoped_transfer_ptr_->valid() ||
+          scoped_transfer_ptr_->size() < checked_size) {
+        scoped_transfer_ptr_->Discard();
+        scoped_transfer_ptr_.reset();
+      }
+    }
+    if (!scoped_transfer_ptr_) {
+      scoped_mapped_ptr_.emplace(checked_size, helper, mapped_memory);
+      if (!scoped_mapped_ptr_->valid() ||
+          scoped_mapped_ptr_->size() < checked_size) {
+        scoped_mapped_ptr_.reset();
+      }
     }
   }
   ~ScopedSharedMemoryPtr() = default;
 
-  GLuint size() {
-    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->size()
-                                : scoped_mapped_ptr_->size();
+  GLint shm_id() const {
+    if (scoped_transfer_ptr_) {
+      return scoped_transfer_ptr_->shm_id();
+    }
+    return scoped_mapped_ptr_ ? scoped_mapped_ptr_->shm_id() : 0;
   }
 
-  GLint shm_id() {
-    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->shm_id()
-                                : scoped_mapped_ptr_->shm_id();
+  GLuint offset() const {
+    if (scoped_transfer_ptr_) {
+      return scoped_transfer_ptr_->offset();
+    }
+    return scoped_mapped_ptr_ ? scoped_mapped_ptr_->offset() : 0;
   }
 
-  GLuint offset() {
-    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->offset()
-                                : scoped_mapped_ptr_->offset();
+  bool valid() const {
+    return (scoped_transfer_ptr_ && scoped_transfer_ptr_->valid()) ||
+           (scoped_mapped_ptr_ && scoped_mapped_ptr_->valid());
   }
 
-  bool valid() {
-    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->valid()
-                                : scoped_mapped_ptr_->valid();
-  }
-
-  void* address() {
-    return scoped_transfer_ptr_ ? scoped_transfer_ptr_->address()
-                                : scoped_mapped_ptr_->address();
+  base::span<uint8_t> as_byte_span() {
+    if (scoped_transfer_ptr_) {
+      return scoped_transfer_ptr_->as_byte_span();
+    }
+    return scoped_mapped_ptr_ ? scoped_mapped_ptr_->as_byte_span()
+                              : base::span<uint8_t>();
   }
 
  private:
@@ -670,15 +688,21 @@ void RasterImplementation::SetErrorMessageCallback(
 
 base::span<uint8_t> RasterImplementation::MapTransferCacheEntry(
     uint32_t serialized_size) {
+  if (serialized_size == 0) {
+    return {};
+  }
   // Prefer to use transfer buffer when possible, since transfer buffer
   // allocations are much cheaper.
-  if (raster_mapped_buffer_ ||
-      transfer_buffer_->GetFreeSize() < serialized_size) {
-    return transfer_cache_.MapEntry(mapped_memory_.get(), serialized_size);
+  if (!raster_mapped_buffer_ &&
+      transfer_buffer_->GetFreeSize() >= serialized_size) {
+    base::span<uint8_t> entry = transfer_cache_.MapTransferBufferEntry(
+        transfer_buffer_, serialized_size);
+    if (!entry.empty()) {
+      return entry;
+    }
   }
 
-  return transfer_cache_.MapTransferBufferEntry(transfer_buffer_,
-                                                serialized_size);
+  return transfer_cache_.MapEntry(mapped_memory_.get(), serialized_size);
 }
 
 void RasterImplementation::UnmapAndCreateTransferCacheEntry(uint32_t type,
@@ -1231,18 +1255,42 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
   // Get the size of the SkColorSpace while maintaining 8-byte alignment.
   GLuint pixels_offset = 0;
   if (src_info.colorSpace()) {
-    pixels_offset = base::bits::AlignUp(
+    size_t color_space_size = base::bits::AlignUp(
         src_info.colorSpace()->writeToMemory(nullptr), sizeof(uint64_t));
+    if (!base::CheckedNumeric<GLuint>(color_space_size)
+             .AssignIfValid(&pixels_offset)) {
+      SetGLError(GL_INVALID_OPERATION, "WritePixels", "size too big");
+      return;
+    }
   }
 
-  GLuint src_size = src_sk_pixmap.computeByteSize();
-  GLuint total_size =
-      pixels_offset +
-      base::bits::AlignUp(src_size, static_cast<GLuint>(sizeof(uint64_t)));
+  size_t src_byte_size = src_sk_pixmap.computeByteSize();
+  if (SkImageInfo::ByteSizeOverflowed(src_byte_size)) {
+    SetGLError(GL_INVALID_OPERATION, "WritePixels", "size too big");
+    return;
+  }
+
+  GLuint src_size = 0;
+  GLuint checked_row_bytes = 0;
+  if (!base::CheckedNumeric<GLuint>(src_byte_size).AssignIfValid(&src_size) ||
+      !base::CheckedNumeric<GLuint>(src_row_bytes)
+           .AssignIfValid(&checked_row_bytes)) {
+    SetGLError(GL_INVALID_OPERATION, "WritePixels", "size too big");
+    return;
+  }
+
+  base::CheckedNumeric<GLuint> total_size = pixels_offset;
+  total_size +=
+      base::bits::AlignUp(uint64_t{src_size}, uint64_t{sizeof(uint64_t)});
+  GLuint checked_total_size = 0;
+  if (!total_size.AssignIfValid(&checked_total_size)) {
+    SetGLError(GL_INVALID_OPERATION, "WritePixels", "size too big");
+    return;
+  }
 
   std::unique_ptr<ScopedSharedMemoryPtr> scoped_shared_memory =
-      std::make_unique<ScopedSharedMemoryPtr>(total_size, transfer_buffer_,
-                                              mapped_memory_.get(), helper());
+      std::make_unique<ScopedSharedMemoryPtr>(
+          checked_total_size, transfer_buffer_, mapped_memory_.get(), helper());
 
   if (!scoped_shared_memory->valid()) {
     SetGLError(GL_INVALID_OPERATION, "WritePixels", "size too big");
@@ -1251,18 +1299,20 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
 
   GLint shm_id = scoped_shared_memory->shm_id();
   GLuint shm_offset = scoped_shared_memory->offset();
-  void* address = scoped_shared_memory->address();
+  base::span<uint8_t> shm_span = scoped_shared_memory->as_byte_span();
 
   if (src_info.colorSpace()) {
-    size_t bytes_written = src_info.colorSpace()->writeToMemory(address);
+    size_t bytes_written = src_info.colorSpace()->writeToMemory(
+        shm_span.first(pixels_offset).data());
     DCHECK_LE(bytes_written, pixels_offset);
   }
-  UNSAFE_TODO(memcpy(static_cast<uint8_t*>(address) + pixels_offset,
-                     src_sk_pixmap.addr(), src_size));
+  shm_span.subspan(pixels_offset, src_size)
+      .copy_from(UNSAFE_TODO(base::span(
+          static_cast<const uint8_t*>(src_sk_pixmap.addr()), src_size)));
 
   helper_->WritePixelsINTERNALImmediate(
       dst_x_offset, dst_y_offset, src_info.width(), src_info.height(),
-      src_row_bytes, src_info.colorType(), src_info.alphaType(), shm_id,
+      checked_row_bytes, src_info.colorType(), src_info.alphaType(), shm_id,
       shm_offset, pixels_offset, dest_mailbox.name);
 }
 
@@ -1279,15 +1329,37 @@ void RasterImplementation::WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
   const std::array<SkPixmap, SkYUVAInfo::kMaxPlanes>& src_sk_pixmaps =
       src_yuv_pixmap.planes();
 
-  GLuint total_size = 0;
+  std::array<GLuint, SkYUVAInfo::kMaxPlanes> plane_row_bytes = {};
+  std::array<GLuint, SkYUVAInfo::kMaxPlanes> plane_sizes = {};
+  std::array<GLuint, SkYUVAInfo::kMaxPlanes> plane_offsets = {};
+  base::CheckedNumeric<GLuint> total_size = 0;
   for (int plane = 0; plane < src_yuv_info.numPlanes(); plane++) {
     CHECK(src_sk_pixmaps[plane].addr());
-    total_size += base::bits::AlignUp(src_sk_pixmaps[plane].computeByteSize(),
-                                      sizeof(uint64_t));
+    size_t plane_byte_size = src_sk_pixmaps[plane].computeByteSize();
+    if (SkImageInfo::ByteSizeOverflowed(plane_byte_size)) {
+      SetGLError(GL_INVALID_OPERATION, "WritePixelsYUV", "size too big");
+      return;
+    }
+    if (!base::CheckedNumeric<GLuint>(plane_byte_size)
+             .AssignIfValid(&plane_sizes[plane]) ||
+        !base::CheckedNumeric<GLuint>(src_sk_pixmaps[plane].rowBytes())
+             .AssignIfValid(&plane_row_bytes[plane]) ||
+        !total_size.AssignIfValid(&plane_offsets[plane])) {
+      SetGLError(GL_INVALID_OPERATION, "WritePixelsYUV", "size too big");
+      return;
+    }
+    total_size += base::bits::AlignUp(uint64_t{plane_sizes[plane]},
+                                      uint64_t{sizeof(uint64_t)});
   }
 
-  ScopedSharedMemoryPtr scoped_shared_memory(total_size, transfer_buffer_,
-                                             mapped_memory_.get(), helper());
+  GLuint checked_total_size = 0;
+  if (!total_size.AssignIfValid(&checked_total_size)) {
+    SetGLError(GL_INVALID_OPERATION, "WritePixelsYUV", "size too big");
+    return;
+  }
+
+  ScopedSharedMemoryPtr scoped_shared_memory(
+      checked_total_size, transfer_buffer_, mapped_memory_.get(), helper());
   if (!scoped_shared_memory.valid()) {
     SetGLError(GL_INVALID_OPERATION, "WritePixelsYUV", "size too big");
     return;
@@ -1295,33 +1367,18 @@ void RasterImplementation::WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
 
   GLint shm_id = scoped_shared_memory.shm_id();
   GLuint shm_offset = scoped_shared_memory.offset();
-  void* address = scoped_shared_memory.address();
+  base::span<uint8_t> shm_span = scoped_shared_memory.as_byte_span();
 
-  // Copy the pixels for first plane at `address`.
-  CHECK(src_sk_pixmaps[0].addr());
-  UNSAFE_TODO(memcpy(static_cast<uint8_t*>(address), src_sk_pixmaps[0].addr(),
-                     src_sk_pixmaps[0].computeByteSize()));
-
-  std::array<GLuint, SkYUVAInfo::kMaxPlanes> plane_offsets = {};
-  for (int plane = 1; plane < src_yuv_info.numPlanes(); plane++) {
-    CHECK(src_sk_pixmaps[plane].addr());
-    // Calculate the offset based on previous plane offset and previous plane
-    // size, and copy pixels for current plane starting at current plane
-    // offset.
-    GLuint prev_plane_size = src_sk_pixmaps[plane - 1].computeByteSize();
-    plane_offsets[plane] =
-        plane_offsets[plane - 1] +
-        base::bits::AlignUp(prev_plane_size,
-                            static_cast<GLuint>(sizeof(uint64_t)));
-    UNSAFE_TODO(memcpy(static_cast<uint8_t*>(address) + plane_offsets[plane],
-                       src_sk_pixmaps[plane].addr(),
-                       src_sk_pixmaps[plane].computeByteSize()));
+  for (int plane = 0; plane < src_yuv_info.numPlanes(); plane++) {
+    shm_span.subspan(plane_offsets[plane], plane_sizes[plane])
+        .copy_from(UNSAFE_TODO(base::span(
+            static_cast<const uint8_t*>(src_sk_pixmaps[plane].addr()),
+            plane_sizes[plane])));
   }
 
   helper_->WritePixelsYUVINTERNALImmediate(
-      src_yuv_info.width(), src_yuv_info.height(), src_sk_pixmaps[0].rowBytes(),
-      src_sk_pixmaps[1].rowBytes(), src_sk_pixmaps[2].rowBytes(),
-      src_sk_pixmaps[3].rowBytes(),
+      src_yuv_info.width(), src_yuv_info.height(), plane_row_bytes[0],
+      plane_row_bytes[1], plane_row_bytes[2], plane_row_bytes[3],
       static_cast<int>(src_yuv_info.planeConfig()),
       static_cast<int>(src_yuv_info.subsampling()),
       static_cast<int>(src_yuv_pixmap_info.dataType()), shm_id, shm_offset,

@@ -498,6 +498,14 @@ TEST_F(MappedMemoryManagerTest, AllocDedicatedChunkRespectsMaxAllocatedBytes) {
   ScopedDedicatedChunk chunk = manager_->AllocDedicatedChunk(kSize);
   EXPECT_FALSE(chunk.valid());
   EXPECT_EQ(0u, manager_->num_chunks());
+
+  // Also test when max_allocated_bytes is lowered below existing allocations.
+  manager_->set_max_allocated_bytes(MappedMemoryManager::kNoLimit);
+  ScopedDedicatedChunk existing = manager_->AllocDedicatedChunk(kSize);
+  ASSERT_TRUE(existing.valid());
+  manager_->set_max_allocated_bytes(kSize / 2);
+  ScopedDedicatedChunk over_limit = manager_->AllocDedicatedChunk(16);
+  EXPECT_FALSE(over_limit.valid());
 }
 
 TEST_F(MappedMemoryManagerTest, AllocDedicatedChunkRespectsMaxDedicatedBytes) {
@@ -515,6 +523,15 @@ TEST_F(MappedMemoryManagerTest, AllocDedicatedChunkRespectsMaxDedicatedBytes) {
       manager_->Alloc(kSize, &pooled_id, &pooled_offset);
   EXPECT_FALSE(pooled_span.empty());
   manager_->Free(pooled_span.data());
+
+  // Also test when max_dedicated_bytes is lowered below existing dedicated
+  // allocations.
+  manager_->set_max_dedicated_bytes_for_testing(MappedMemoryManager::kNoLimit);
+  ScopedDedicatedChunk existing = manager_->AllocDedicatedChunk(kSize);
+  ASSERT_TRUE(existing.valid());
+  manager_->set_max_dedicated_bytes_for_testing(kSize / 2);
+  ScopedDedicatedChunk over_limit = manager_->AllocDedicatedChunk(16);
+  EXPECT_FALSE(over_limit.valid());
 }
 
 TEST_F(MappedMemoryManagerTest, RemoveDedicatedChunk) {
@@ -566,6 +583,21 @@ TEST_F(MappedMemoryManagerTest, RemoveDedicatedChunkChecksIsDedicated) {
 
 TEST_F(MappedMemoryManagerTest, RemoveDedicatedChunkChecksShmIdExists) {
   EXPECT_DEATH_IF_SUPPORTED(manager_->RemoveDedicatedChunk(12345), "");
+}
+
+TEST_F(MappedMemoryManagerTest, ChunkSizeAlignmentOverflow) {
+  constexpr uint32_t kChunkMultiple = 2 * 1024 * 1024;
+  manager_->set_chunk_size_multiple(kChunkMultiple);
+
+  int32_t id = -1;
+  unsigned int offset = 0xFFFFFFFFU;
+  // Request a size near UINT32_MAX that overflows uint32_t when aligned up to
+  // kChunkMultiple.
+  base::span<uint8_t> span = manager_->Alloc(0xFFF00000u, &id, &offset);
+  EXPECT_TRUE(span.empty());
+  EXPECT_EQ(-1, id);
+  EXPECT_EQ(0xFFFFFFFFU, offset);
+  EXPECT_EQ(0u, manager_->num_chunks());
 }
 
 }  // namespace gpu

@@ -517,6 +517,149 @@ TEST_F(TransferBufferExpandContractTest, ShrinkRingBuffer) {
   transfer_buffer_->FreePendingToken(data.data(), token);
 }
 
+TEST_F(TransferBufferExpandContractTest, ShrinkRingBufferLargeHighWaterMark) {
+  int32_t token = helper_->InsertToken();
+  command_buffer_->SetToken(token);
+  EXPECT_TRUE(helper_->HasTokenPassed(token));
+
+  constexpr uint32_t kLargeMaxBufferSize = 64 * 1024 * 1024;
+  constexpr uint32_t kLargeAllocSize = 36 * 1024 * 1024;
+
+  EXPECT_CALL(*command_buffer(), DestroyTransferBuffer(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*command_buffer(), OrderingBarrier(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*command_buffer(),
+              CreateTransferBuffer(kStartTransferBufferSize, _, _, _))
+      .WillOnce(
+          Invoke(command_buffer(),
+                 &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
+      .RetiresOnSaturation();
+  transfer_buffer_->Free();
+  ASSERT_TRUE(transfer_buffer_->Initialize(
+      kStartTransferBufferSize, kStartingOffset, kMinTransferBufferSize,
+      kLargeMaxBufferSize, kAlignment));
+
+  // Expand to 64 MiB with a 36 MiB allocation so that high_water_mark_ * 120
+  // exceeds UINT32_MAX (36 MiB * 120 > 4 GiB).
+  EXPECT_CALL(*command_buffer(), DestroyTransferBuffer(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*command_buffer(), OrderingBarrier(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*command_buffer(),
+              CreateTransferBuffer(kLargeMaxBufferSize, _, _, _))
+      .WillOnce(
+          Invoke(command_buffer(),
+                 &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
+      .RetiresOnSaturation();
+  base::span<uint8_t> data = transfer_buffer_->AllocUpTo(kLargeAllocSize);
+  ASSERT_EQ(data.size(), kLargeAllocSize);
+  transfer_buffer_->FreePendingToken(data.data(), token);
+
+  // Subsequent allocations before reaching 120 * high_water_mark_ must not
+  // prematurely trigger a shrink due to 32-bit multiplication overflow of
+  // high_water_mark_ * kShrinkThreshold (which wraps modulo 2^32 to ~221 MiB,
+  // or between 6 and 7 allocations of 36 MiB).
+  for (uint32_t i = 0; i < TransferBuffer::kShrinkThreshold; ++i) {
+    data = transfer_buffer_->AllocUpTo(kLargeAllocSize);
+    EXPECT_EQ(data.size(), kLargeAllocSize);
+    transfer_buffer_->FreePendingToken(data.data(), token);
+  }
+
+  // Once bytes_since_last_shrink_ exceeds uint64_t{high_water_mark_} *
+  // kShrinkThreshold (> 4 GiB), a small allocation resets high_water_mark_ to
+  // the small allocation size, and the next shrink cycle shrinks the ring
+  // buffer down to kStartTransferBufferSize * 2.
+  for (uint32_t allocated = 0;
+       allocated <= (kStartTransferBufferSize + kStartingOffset) *
+                        TransferBuffer::kShrinkThreshold;
+       allocated += kStartTransferBufferSize) {
+    data = transfer_buffer_->Alloc(kStartTransferBufferSize);
+    EXPECT_FALSE(data.empty());
+    transfer_buffer_->FreePendingToken(data.data(), token);
+  }
+
+  EXPECT_CALL(*command_buffer(), DestroyTransferBuffer(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*command_buffer(), OrderingBarrier(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*command_buffer(),
+              CreateTransferBuffer(kStartTransferBufferSize * 2, _, _, _))
+      .WillOnce(
+          Invoke(command_buffer(),
+                 &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
+      .RetiresOnSaturation();
+  data = transfer_buffer_->Alloc(1);
+  EXPECT_FALSE(data.empty());
+  transfer_buffer_->FreePendingToken(data.data(), token);
+}
+
+TEST_F(TransferBufferExpandContractTest, OversizedAllocClampsHighWaterMark) {
+  int32_t token = helper_->InsertToken();
+  command_buffer_->SetToken(token);
+  EXPECT_TRUE(helper_->HasTokenPassed(token));
+
+  auto ExpectCreateTransferBuffer = [&](int size) {
+    EXPECT_CALL(*command_buffer(), DestroyTransferBuffer(_))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*command_buffer(), OrderingBarrier(_))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*command_buffer(), CreateTransferBuffer(size, _, _, _))
+        .WillOnce(
+            Invoke(command_buffer(),
+                   &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
+        .RetiresOnSaturation();
+  };
+
+  // Requesting a near-UINT32_MAX size (where size + kStartingOffset would
+  // wrap modulo 2^32 to 2 < kAlignment without saturating addition) must clamp
+  // high_water_mark_ to kMaxTransferBufferSize and expand cleanly without
+  // tripping alignment DCHECKs.
+  ExpectCreateTransferBuffer(kMaxTransferBufferSize);
+  base::span<uint8_t> data = transfer_buffer_->AllocUpTo(0xFFFFFFC2u);
+  EXPECT_EQ(kMaxTransferBufferSize - kStartingOffset, data.size());
+  transfer_buffer_->FreePendingToken(data.data(), token);
+
+  // Requesting an oversized exact allocation via Alloc() fails and must keep
+  // high_water_mark_ clamped to kMaxTransferBufferSize so the ring buffer can
+  // still shrink after the normal threshold.
+  data = transfer_buffer_->Alloc(0xD0000000u);
+  EXPECT_TRUE(data.empty());
+
+  for (uint32_t allocated = kMaxTransferBufferSize - kStartingOffset;
+       allocated <= kMaxTransferBufferSize * TransferBuffer::kShrinkThreshold;
+       allocated += kStartTransferBufferSize) {
+    data = transfer_buffer_->Alloc(kStartTransferBufferSize);
+    EXPECT_FALSE(data.empty());
+    transfer_buffer_->FreePendingToken(data.data(), token);
+  }
+
+  // That loop crosses kMaxTransferBufferSize * kShrinkThreshold and resets
+  // high_water_mark_ to kStartTransferBufferSize; the next shrink cycle
+  // shrinks the ring buffer down to kStartTransferBufferSize * 2.
+  for (uint32_t allocated = 0;
+       allocated <= (kStartTransferBufferSize + kStartingOffset) *
+                        TransferBuffer::kShrinkThreshold;
+       allocated += kStartTransferBufferSize) {
+    data = transfer_buffer_->Alloc(kStartTransferBufferSize);
+    EXPECT_FALSE(data.empty());
+    transfer_buffer_->FreePendingToken(data.data(), token);
+  }
+
+  ExpectCreateTransferBuffer(kStartTransferBufferSize * 2);
+  data = transfer_buffer_->Alloc(1);
+  EXPECT_FALSE(data.empty());
+  transfer_buffer_->FreePendingToken(data.data(), token);
+}
+
 TEST_F(TransferBufferExpandContractTest, Contract) {
   // Check it starts at starting size.
   EXPECT_EQ(
