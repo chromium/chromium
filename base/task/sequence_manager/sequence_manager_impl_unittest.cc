@@ -5505,6 +5505,124 @@ TEST_F(SequenceManagerRunOrPostTaskTest,
 }
 
 // Verify that `RunOrPostTask` from another thread does not run the task
+// synchronously when the queue has a fence (tasks blocked by the fence must run
+// first, when the fence is removed).
+TEST_F(SequenceManagerRunOrPostTaskTest, FromOtherThreadFencedQueue) {
+  queue()->InsertFence(TaskQueue::InsertFencePosition::kNow);
+
+  bool did_run_fenced_task = false;
+  EXPECT_TRUE(task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] { did_run_fenced_task = true; })));
+  // Reload empty work queues. The fenced task doesn't run.
+  RunLoop().RunUntilIdle();
+  EXPECT_FALSE(did_run_fenced_task);
+  SimulateInsideRunLoop();
+
+  bool did_run = false;
+  EXPECT_TRUE(other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(task_runner()->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] {
+              EXPECT_TRUE(did_run_fenced_task);
+              did_run = true;
+            })));
+        EXPECT_FALSE(did_run);
+      })));
+
+  FlushOtherThread();
+  EXPECT_FALSE(did_run);
+  RunLoop().RunUntilIdle();
+  EXPECT_FALSE(did_run);
+  queue()->RemoveFence();
+  RunLoop().RunUntilIdle();
+  EXPECT_TRUE(did_run_fenced_task);
+  EXPECT_TRUE(did_run);
+
+  // Sync work is allowed again once the fence is removed.
+  SimulateInsideRunLoop();
+  bool did_run_after_fence_removed = false;
+  EXPECT_TRUE(other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(task_runner()->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] { did_run_after_fence_removed = true; })));
+        EXPECT_TRUE(did_run_after_fence_removed);
+      })));
+  FlushOtherThread();
+  EXPECT_TRUE(did_run_after_fence_removed);
+}
+
+// Verify that `RunOrPostTask` from another thread does not run the task
+// synchronously when the queue has a delayed fence (`InsertFenceAt`).
+TEST_F(SequenceManagerRunOrPostTaskTest, FromOtherThreadDelayedFencedQueue) {
+  TaskQueue::Handle delayed_fence_queue = sequence_manager()->CreateTaskQueue(
+      TaskQueue::Spec(QueueName::TEST_TQ).SetDelayedFencesAllowed(true));
+  scoped_refptr<SingleThreadTaskRunner> delayed_fence_task_runner =
+      delayed_fence_queue->task_runner();
+  delayed_fence_queue->InsertFenceAt(TimeTicks::Now());
+  SimulateInsideRunLoop();
+
+  bool did_run = false;
+  EXPECT_TRUE(other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(delayed_fence_task_runner->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] { did_run = true; })));
+        EXPECT_FALSE(did_run);
+      })));
+
+  FlushOtherThread();
+  EXPECT_FALSE(did_run);
+  RunLoop().RunUntilIdle();
+  EXPECT_FALSE(did_run);
+  delayed_fence_queue->RemoveFence();
+  RunLoop().RunUntilIdle();
+  EXPECT_TRUE(did_run);
+
+  // Sync work is allowed again once the delayed fence is removed.
+  SimulateInsideRunLoop();
+  bool did_run_after_fence_removed = false;
+  EXPECT_TRUE(other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(delayed_fence_task_runner->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] { did_run_after_fence_removed = true; })));
+        EXPECT_TRUE(did_run_after_fence_removed);
+      })));
+  FlushOtherThread();
+  EXPECT_TRUE(did_run_after_fence_removed);
+}
+
+// Verify that `RunOrPostTask` from another thread runs the task synchronously
+// if there is no running task and the only queued task is in a different queue
+// where it is blocked by a fence.
+TEST_F(SequenceManagerRunOrPostTaskTest,
+       FromOtherThreadQueuedTaskInFencedOtherQueue) {
+  other_queue()->InsertFence(TaskQueue::InsertFencePosition::kNow);
+  bool did_run_other_task = false;
+  EXPECT_TRUE(other_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] { did_run_other_task = true; })));
+  // Reload empty work queues. The fenced task doesn't run.
+  RunLoop().RunUntilIdle();
+  EXPECT_FALSE(did_run_other_task);
+  SimulateInsideRunLoop();
+
+  bool did_run = false;
+  EXPECT_TRUE(other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(task_runner()->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] { did_run = true; })));
+        EXPECT_TRUE(did_run);
+      })));
+
+  FlushOtherThread();
+  EXPECT_TRUE(did_run);
+  EXPECT_FALSE(did_run_other_task);
+}
+
+// Verify that `RunOrPostTask` from another thread does not run the task
 // synchronously when `Settings::can_run_tasks_synchronously` is false.
 TEST(SequenceManagerRunOrPostTaskNotAllowedTest, FromOtherThread) {
   auto sequence_manager = SequenceManagerForTest::CreateOnCurrentThread(

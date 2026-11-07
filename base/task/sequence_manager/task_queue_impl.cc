@@ -135,9 +135,11 @@ bool TaskQueueImpl::GuardedTaskPoster::RunOrPostTask(PostedTask task) {
 
   auto sync_work_auth =
       outer_->sequence_manager_->TryAcquireSyncWorkAuthorization();
-  // The queue may be disabled immediately after checking
-  // `IsQueueEnabledFromAnyThread()`. That won't prevent the task from running.
-  if (sync_work_auth.IsValid() && outer_->IsQueueEnabledFromAnyThread()) {
+  // The queue may be disabled or fenced immediately after checking
+  // `IsQueueEnabledAndUnfencedFromAnyThread()`. That won't prevent the task
+  // from running.
+  if (sync_work_auth.IsValid() &&
+      outer_->IsQueueEnabledAndUnfencedFromAnyThread()) {
     RunTaskSynchronously(outer_->associated_thread_.get(),
                          outer_->sequence_manager_->GetDefaultTaskRunner(),
                          std::move(task.callback));
@@ -936,14 +938,17 @@ void TaskQueueImpl::InsertFenceAt(TimeTicks time) {
          "explicitly in TaskQueue::Spec when creating the queue";
 
   // Task queue can have only one fence, delayed or not.
-  RemoveFence();
-  main_thread_only().delayed_fence = time;
+  ResetFences(/*new_delayed_fence=*/time);
 }
 
 void TaskQueueImpl::RemoveFence() {
+  ResetFences(/*new_delayed_fence=*/std::nullopt);
+}
+
+void TaskQueueImpl::ResetFences(std::optional<TimeTicks> new_delayed_fence) {
   std::optional<Fence> previous_fence = main_thread_only().current_fence;
   main_thread_only().current_fence = std::nullopt;
-  main_thread_only().delayed_fence = std::nullopt;
+  main_thread_only().delayed_fence = new_delayed_fence;
 
   bool front_task_unblocked =
       main_thread_only().immediate_work_queue->RemoveFence();
@@ -1175,6 +1180,8 @@ void TaskQueueImpl::UpdateCrossThreadQueueStateLocked() {
   any_thread_.immediate_work_queue_empty =
       main_thread_only().immediate_work_queue->Empty();
   any_thread_.is_enabled = main_thread_only().is_enabled;
+  any_thread_.has_fence = main_thread_only().current_fence.has_value() ||
+                          main_thread_only().delayed_fence.has_value();
 
   if (main_thread_only().throttler) {
     // If there's a Throttler, always ScheduleWork() when immediate work is
@@ -1600,9 +1607,9 @@ TaskQueue::QueuePriority TaskQueueImpl::DefaultPriority() const {
   return sequence_manager()->settings().priority_settings.default_priority();
 }
 
-bool TaskQueueImpl::IsQueueEnabledFromAnyThread() const {
+bool TaskQueueImpl::IsQueueEnabledAndUnfencedFromAnyThread() const {
   base::internal::CheckedAutoLock lock(any_thread_lock_);
-  return any_thread_.is_enabled;
+  return any_thread_.is_enabled && !any_thread_.has_fence;
 }
 
 TaskQueueImpl::DelayedIncomingQueue::DelayedIncomingQueue() = default;

@@ -527,6 +527,8 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
 
   void InsertFence(Fence fence);
 
+  void ResetFences(std::optional<TimeTicks> new_delayed_fence);
+
   void RemoveOnTaskPostedHandler(
       OnTaskPostedCallbackHandleImpl* on_task_posted_callback_handle);
 
@@ -537,8 +539,9 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
            main_thread_only().voter_count;
   }
 
-  // Returns whether the queue is enabled. May be invoked from any thread.
-  bool IsQueueEnabledFromAnyThread() const;
+  // Returns whether the queue is enabled and has no fence (immediate or
+  // delayed). May be invoked from any thread.
+  bool IsQueueEnabledAndUnfencedFromAnyThread() const;
 
   QueueName name_;
   const raw_ptr<SequenceManagerImpl, AcrossTasksDanglingUntriaged>
@@ -569,6 +572,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     bool post_immediate_task_should_schedule_work = true;
     bool unregistered = false;
     bool is_enabled = true;
+    bool has_fence = false;
 
     base::flat_map<raw_ptr<OnTaskPostedCallbackHandleImpl>, OnTaskPostedHandler>
         on_task_posted_handlers;
