@@ -53,7 +53,6 @@ TEST_F(SearchUserModelTest, ExecuteModelWithInput) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  ModelProvider::Request input = {0};
   ExpectClassifierResults(/*input=*/{0}, {kSearchUserModelLabelNone});
 
   ExpectClassifierResults(/*input=*/{1}, {kSearchUserModelLabelLow});

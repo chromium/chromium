@@ -166,7 +166,6 @@ TEST_F(UkmUrlTableTest, MigrateWithProfileId) {
   const GURL kUrl1("https://www.url1.com");
   const base::Time kTimestamp1 = base::Time::Now();
   const UrlId kUrlId1 = UkmUrlTable::GenerateUrlId(kUrl1);
-  const std::string kProfileId = "test_id";
 
   // Create a urls table without profile_id columns.
   EXPECT_TRUE(

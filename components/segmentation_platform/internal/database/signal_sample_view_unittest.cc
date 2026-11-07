@@ -215,7 +215,6 @@ TEST_F(SignalSampleViewTest, SignalSampleViewWithoutQuery) {
 }
 
 TEST_F(SignalSampleViewTest, SignalSampleViewQueryActions) {
-  std::vector<SignalDatabase::DbEntry> samples = GetDatabaseSamples();
   VerifySignalSampleViewQuery(
       SignalSampleView::Query(proto::SignalType::USER_ACTION,
                               base::HashMetricName(kUserAction),
@@ -224,7 +223,6 @@ TEST_F(SignalSampleViewTest, SignalSampleViewQueryActions) {
 }
 
 TEST_F(SignalSampleViewTest, SignalSampleViewHistogram) {
-  std::vector<SignalDatabase::DbEntry> samples = GetDatabaseSamples();
   // Use enum hash as value.
   VerifySignalSampleViewQuery(
       SignalSampleView::Query(proto::SignalType::HISTOGRAM_VALUE,
@@ -234,7 +232,6 @@ TEST_F(SignalSampleViewTest, SignalSampleViewHistogram) {
 }
 
 TEST_F(SignalSampleViewTest, SignalSampleViewEnumFiltering) {
-  std::vector<SignalDatabase::DbEntry> samples = GetDatabaseSamples();
   const uint64_t enum_hash = base::HashMetricName(kEnumHistogram);
   VerifySignalSampleViewQuery(
       SignalSampleView::Query(proto::SignalType::HISTOGRAM_ENUM, enum_hash,

@@ -49,8 +49,6 @@ void PostProcess(const RawResult& raw_result, AnnotatedNumericResult& result) {
 
 RequestDispatcher::RequestDispatcher(StorageService* storage_service)
     : storage_service_(storage_service) {
-  std::set<proto::SegmentId> found_segments;
-
   // Individual models must be loaded from disk or fetched from network. Fill a
   // list to keep track of which ones are still pending.
   uninitialized_segmentation_keys_ =

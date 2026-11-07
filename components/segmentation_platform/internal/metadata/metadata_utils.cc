@@ -528,7 +528,6 @@ using VisitUmaFeature =
 void VisitAllUmaFeatures(const proto::SegmentationModelMetadata& model_metadata,
                          bool include_outputs,
                          VisitUmaFeature visit) {
-  std::vector<proto::UMAFeature> features;
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     visit.Run(model_metadata.features(i));
   }

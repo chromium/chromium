@@ -23,7 +23,6 @@ TEST_F(ChromeUserEngagementTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
-  std::string subsegment_key = GetSubsegmentKey(kPowerUserKey);
   ModelProvider::Request input(28, 0);
   ExpectExecutionWithInput(input, /*expected_error=*/false, {1});
   ExpectClassifierResults(input, {"None"});

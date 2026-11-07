@@ -51,7 +51,6 @@ std::string Config::GetSegmentationFilterName() const {
 }
 
 std::string Config::GetSegmentUmaName(proto::SegmentId segment) const {
-  std::string name = "Other";
   auto it = segments.find(segment);
   if (it == segments.end()) {
     return "Other";

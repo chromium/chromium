@@ -868,18 +868,6 @@ TEST_P(FeatureListQueryProcessorTest, FilteredEnumSamples) {
         .WillOnce(Return(&histogram_enum_samples));
   }
   // The executor must first filter the enum samples.
-  std::vector<SignalDatabase::DbEntry> filtered_enum_samples{
-      SignalDatabase::DbEntry{
-          .type = proto::SignalType::HISTOGRAM_ENUM,
-          .name_hash = base::HashMetricName(histogram_enum_name),
-          .time = clock_.Now(),
-          .value = 2},
-      SignalDatabase::DbEntry{
-          .type = proto::SignalType::HISTOGRAM_ENUM,
-          .name_hash = base::HashMetricName(histogram_enum_name),
-          .time = clock_.Now(),
-          .value = 4},
-  };
   if (!use_sql_db) {
     // Only filtered_enum_samples should be processed.
     EXPECT_CALL(

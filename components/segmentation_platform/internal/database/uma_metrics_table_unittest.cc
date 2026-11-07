@@ -198,7 +198,6 @@ TEST_F(UmaMetricsTableTest, DeleteBeforeTimestamp) {
   ASSERT_TRUE(metrics_table().InitTable());
 
   // Delete on empty table does nothing.
-  std::vector<std::string> empty_set;
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(base::Time()));
   test_util::AssertRowsInUmaMetricsTable(db(), {});
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1));
