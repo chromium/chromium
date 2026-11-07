@@ -67,6 +67,16 @@ bool AddACEToPath(const FilePath& path,
                            DACL_SECURITY_INFORMATION);
 }
 
+std::optional<PUBLIC_OBJECT_BASIC_INFORMATION> QueryObjectBasicInformation(
+    HANDLE handle) {
+  PUBLIC_OBJECT_BASIC_INFORMATION basic_info = {};
+  if (!NT_SUCCESS(::NtQueryObject(handle, ObjectBasicInformation, &basic_info,
+                                  sizeof(basic_info), nullptr))) {
+    return std::nullopt;
+  }
+  return basic_info;
+}
+
 }  // namespace
 
 bool GrantAccessToPath(const FilePath& path,
@@ -145,12 +155,21 @@ void AppendSidVector(std::vector<Sid>& base_sids,
 }
 
 std::optional<ACCESS_MASK> GetGrantedAccess(HANDLE handle) {
-  PUBLIC_OBJECT_BASIC_INFORMATION basic_info = {};
-  if (!NT_SUCCESS(::NtQueryObject(handle, ObjectBasicInformation, &basic_info,
-                                  sizeof(basic_info), nullptr))) {
+  const std::optional<PUBLIC_OBJECT_BASIC_INFORMATION> basic_info =
+      QueryObjectBasicInformation(handle);
+  if (!basic_info) {
     return std::nullopt;
   }
-  return basic_info.GrantedAccess;
+  return basic_info->GrantedAccess;
+}
+
+std::optional<ULONG> GetObjectHandleCount(HANDLE handle) {
+  const std::optional<PUBLIC_OBJECT_BASIC_INFORMATION> basic_info =
+      QueryObjectBasicInformation(handle);
+  if (!basic_info) {
+    return std::nullopt;
+  }
+  return basic_info->HandleCount;
 }
 
 }  // namespace win

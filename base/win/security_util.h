@@ -56,6 +56,10 @@ BASE_EXPORT void AppendSidVector(std::vector<Sid>& base_sids,
 // |handle| specifies any kernel object handle to query.
 BASE_EXPORT std::optional<ACCESS_MASK> GetGrantedAccess(HANDLE handle);
 
+// Gets the number of open handles, in all processes, to the kernel object that
+// |handle| refers to.
+BASE_EXPORT std::optional<ULONG> GetObjectHandleCount(HANDLE handle);
+
 }  // namespace win
 }  // namespace base
 
