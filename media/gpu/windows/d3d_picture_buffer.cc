@@ -118,12 +118,17 @@ D3DStatus D3D11PictureBufferImpl::InitD3D11(
 
 base::expected<ID3D11VideoDecoderOutputView*, D3DStatus>
 D3D11PictureBufferImpl::AcquireOutputView() const {
+  CHECK(output_view_);
   D3DStatus result = BeginSharedImageAccess();
   if (!result.is_ok()) {
     return base::unexpected(std::move(result));
   }
 
   return output_view_.Get();
+}
+
+void D3D11PictureBufferImpl::ResetOutputView() {
+  output_view_.Reset();
 }
 
 base::expected<ID3D12Resource*, D3DStatus>

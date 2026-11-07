@@ -43,6 +43,8 @@
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Eq;
+using ::testing::InSequence;
+using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -133,7 +135,7 @@ class D3DVideoDecoderTest : public ::testing::Test {
     ON_CALL(*mock_d3d11_device_.Get(), GetFeatureLevel)
         .WillByDefault(Return(D3D_FEATURE_LEVEL_11_0));
 
-    mock_d3d11_device_context_ = MakeComPtr<D3D11DeviceContextMock>();
+    mock_d3d11_device_context_ = MakeComPtr<NiceMock<D3D11DeviceContextMock>>();
     ON_CALL(*mock_d3d11_device_.Get(), GetImmediateContext(_))
         .WillByDefault(SetComPointee<0>(mock_d3d11_device_context_.Get()));
 
@@ -606,6 +608,58 @@ TEST_F(D3DVideoDecoderTest, ConfigChangeClearsExistingPictureBuffers) {
                    decode_future2.GetCallback());
   EXPECT_TRUE(decode_future2.Get().is_ok());
   EXPECT_EQ(GetPictureBufferCount(), 0u);
+}
+
+TEST_F(D3DVideoDecoderTest,
+       RecreateDecoderFlushesContextBeforeCreatingNewDecoder) {
+  CreateDecoder();
+
+  VideoDecoderConfig normal =
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
+  EXPECT_CALL(*mock_d3d11_video_device_.Get(), CreateVideoDecoder(_, _, _))
+      .Times(1);
+  InitializeDecoder(normal, true);
+
+  auto wrapper = std::make_unique<FakeTexture2DWrapper>();
+  const gfx::Size size = wrapper->GetSize();
+  auto texture = MakeComPtr<NiceMock<D3D11Texture2DMock>>();
+  AddPictureBuffer(base::MakeRefCounted<D3D11PictureBufferImpl>(
+      task_environment_.GetMainThreadTaskRunner(), std::move(texture),
+      /*array_slice=*/0, std::move(wrapper), size, /*picture_index=*/0));
+
+  VideoDecoderConfig large = TestVideoConfig::Large(VideoCodec::kH264);
+  InitializeDecoder(large, true);
+
+  auto mock_decoder = std::make_unique<NiceMock<MockAcceleratedVideoDecoder>>();
+  ON_CALL(*mock_decoder, GetProfile()).WillByDefault(Return(large.profile()));
+  ON_CALL(*mock_decoder, GetPicSize())
+      .WillByDefault(Return(large.coded_size()));
+  ON_CALL(*mock_decoder, GetVisibleRect())
+      .WillByDefault(Return(large.visible_rect()));
+  ON_CALL(*mock_decoder, GetBitDepth()).WillByDefault(Return(8u));
+  ON_CALL(*mock_decoder, GetChromaSampling())
+      .WillByDefault(Return(VideoChromaSampling::k420));
+  ON_CALL(*mock_decoder, GetVideoColorSpace())
+      .WillByDefault(Return(large.color_space_info()));
+  EXPECT_CALL(*mock_decoder, Decode())
+      .WillOnce(Return(AcceleratedVideoDecoder::kConfigChange))
+      .WillOnce(Return(AcceleratedVideoDecoder::kRanOutOfStreamData));
+  SetAcceleratedVideoDecoder(std::move(mock_decoder));
+
+  {
+    InSequence s;
+    EXPECT_CALL(*mock_d3d11_device_context_.Get(), Flush()).Times(1);
+    EXPECT_CALL(*mock_d3d11_video_device_.Get(), CreateVideoDecoder(_, _, _))
+        .Times(1);
+  }
+
+  const std::array<uint8_t, 1> bitstream = {1};
+  base::test::TestFuture<DecoderStatus> decode_future;
+  decoder_->Decode(DecoderBuffer::CopyFrom(bitstream),
+                   decode_future.GetCallback());
+  EXPECT_TRUE(decode_future.Get().is_ok());
+  EXPECT_EQ(GetPictureBufferCount(), 0u);
+  Mock::VerifyAndClearExpectations(mock_d3d11_device_context_.Get());
 }
 
 }  // namespace media

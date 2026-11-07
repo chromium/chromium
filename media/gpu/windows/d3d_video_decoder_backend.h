@@ -110,6 +110,11 @@ class D3DVideoDecoderBackend {
       base::OnceCallback<void(scoped_refptr<D3DPictureBuffer>)>
           init_done_cb) = 0;
 
+  // Releases cached decoder output textures and flushes pending commands on
+  // the device context so released D3D resources are retired before recreating
+  // a decoder wrapper or tearing down the backend.
+  virtual void ReleaseResources() = 0;
+
   // Returns true if standard DXVA HEVC range-extension profiles should be used
   // for `config`.
   virtual bool ShouldUseDXVADeviceForHEVCRangeExtension(

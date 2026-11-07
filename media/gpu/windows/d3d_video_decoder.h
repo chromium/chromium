@@ -142,6 +142,10 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   // gpu main thread.
   void CreatePictureBuffers();
 
+  // Releases decoder-bound output views on all current picture buffers and
+  // clears |picture_buffers_|.
+  void ClearPictureBuffers();
+
   // Measure the number of picture buffers that are currently unused, and see if
   // it's smaller than the minimum we've seen since we've allocated them.
   void MeasurePictureBufferUsage();
@@ -205,6 +209,13 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   // the ANGLE device for display (plus texture sharing, if needed).
   GetD3DDeviceCB get_d3d_device_cb_;
 
+  // Owns API-specific decoder devices and resource-creation logic. Declared
+  // before decoder_configurator_, texture_selector_, picture_buffers_,
+  // d3d_video_decoder_wrapper_, and accelerated_video_decoder_ so it outlives
+  // all D3D decoder resources and flushes the device context after their
+  // release.
+  std::unique_ptr<D3DVideoDecoderBackend> backend_;
+
   std::unique_ptr<D3DDecoderConfigurator> decoder_configurator_;
 
   std::unique_ptr<TextureSelector> texture_selector_;
@@ -222,11 +233,6 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   // It would be nice to unique_ptr these, but we give a ref to the VideoFrame
   // so that the texture is retained until the mailbox is opened.
   std::vector<scoped_refptr<D3DPictureBuffer>> picture_buffers_;
-
-  std::unique_ptr<AcceleratedVideoDecoder> accelerated_video_decoder_;
-
-  // Owns API-specific decoder devices and resource-creation logic.
-  std::unique_ptr<D3DVideoDecoderBackend> backend_;
 
   State state_ = State::kInitializing;
 
@@ -250,6 +256,8 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   bool use_single_video_decoder_texture_ = false;
 
   std::unique_ptr<D3DVideoDecoderWrapper> d3d_video_decoder_wrapper_;
+
+  std::unique_ptr<AcceleratedVideoDecoder> accelerated_video_decoder_;
 
   // The currently configured bit depth for the decoder. When this changes we
   // need to recreate the decoder.

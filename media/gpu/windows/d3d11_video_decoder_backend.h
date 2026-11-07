@@ -75,6 +75,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderBackend
       MediaLog* media_log,
       base::OnceCallback<void(scoped_refptr<D3DPictureBuffer>)> init_done_cb)
       override;
+  void ReleaseResources() override;
   bool ShouldUseDXVADeviceForHEVCRangeExtension(
       const VideoDecoderConfig& config) const override;
   VideoDecoderType GetDecoderType() const override;

@@ -36,6 +36,12 @@ bool IsFeatureLevelSupported(ComD3D11Device device) {
 D3D11VideoDecoderBackend::D3D11VideoDecoderBackend() = default;
 
 D3D11VideoDecoderBackend::~D3D11VideoDecoderBackend() {
+  ReleaseResources();
+}
+
+void D3D11VideoDecoderBackend::ReleaseResources() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  picture_buffer_texture_.Reset();
   // Drivers may cache released D3D11 resources. Flush to make that less likely.
   if (device_context_) {
     device_context_->Flush();

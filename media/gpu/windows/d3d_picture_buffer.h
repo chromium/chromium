@@ -68,6 +68,11 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
 
   D3DStatus BeginSharedImageAccess() const;
 
+  // Releases any decoder-specific output view bound to this picture buffer
+  // while retaining the underlying texture resource for outstanding client
+  // VideoFrames or in-flight GPU resource initialization tasks.
+  virtual void ResetOutputView() {}
+
   // Initialize |shared_image_dest|.
   D3DStatus ProcessTexture(
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest);
@@ -163,6 +168,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBufferImpl : public D3DPictureBuffer {
       const;
 
   // D3DPictureBuffer:
+  void ResetOutputView() override;
   base::expected<ID3D12Resource*, D3DStatus> GetOrCreateD3D12Resource(
       ID3D12Device* device) override;
 
