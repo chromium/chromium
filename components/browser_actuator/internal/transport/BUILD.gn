@@ -51,6 +51,17 @@ source_set("features") {
   ]
 }
 
+source_set("probe_payload") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "probe_payload.cc",
+    "probe_payload.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("session_stream_recorder") {
   visibility = [
     ":*",
@@ -159,6 +170,7 @@ source_set("unit_tests") {
   sources = [
     "control_transport_handler_unittest.cc",
     "downstream_message_sequencer_unittest.cc",
+    "probe_payload_unittest.cc",
     "resume_body_connection_delegate_unittest.cc",
     "session_stream_recorder_unittest.cc",
     "stream_connection_delegate_unittest.cc",
@@ -175,6 +187,7 @@ source_set("unit_tests") {
     ":channel",
     ":features",
     ":metrics_utils",
+    ":probe_payload",
     ":service",
     ":session_stream_recorder",
     ":transport",
@@ -212,6 +225,7 @@ group("isolation_check") {
     ":channel",
     ":features",
     ":metrics_utils",
+    ":probe_payload",
     ":service",
     ":session_stream_recorder",
     ":transport",
