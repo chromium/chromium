@@ -26,7 +26,28 @@ import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.concurrent.TimeoutException;
 
-/** Common utilities for Trusted Web Activity tests. */
+/**
+ * Common utilities for Trusted Web Activity tests.
+ *
+ * <p><b>How these helpers launch TWAs:</b> {@link #createTrustedWebActivityIntent} constructs an
+ * {@code ACTION_VIEW} intent targeting {@code ChromeLauncherActivity}, which routes through {@code
+ * LaunchIntentDispatcher} into {@link CustomTabActivity} from Chrome's own process and UID rather
+ * than launching from an external client APK launcher activity. {@link #spoofVerification}
+ * registers an in-memory Digital Asset Links bypass via {@link
+ * ChromeOriginVerifier#addVerificationOverride}, and {@link #createSession} associates the test
+ * session token with a caller package name via {@link
+ * CustomTabsConnection#overridePackageNameForSessionForTesting}.
+ *
+ * <p><b>UID and security-boundary limitations:</b> Because both {@link CustomTabsService} session
+ * creation and the {@code ChromeLauncherActivity} launch intent originate inside Chrome's own
+ * process and UID (bypassing any external client APK launcher activity), caller and session checks
+ * run under Chrome's own UID rather than a separate client app UID. As a result, these helpers do
+ * not exercise cross-UID {@code Binder.getCallingUid()} session ownership checks, cross-UID {@code
+ * content://} URI grant validation, independent client task roots, or separate-package OS runtime
+ * permission isolation (unless binding specifically to the {@code
+ * org.chromium.chrome.tests.support} helper APK for bound {@code TrustedWebActivityService} IPC
+ * tests).
+ */
 public class TrustedWebActivityTestUtil {
     /** Waits till verification either succeeds or fails. */
     private static class CurrentPageVerifierWaiter extends CallbackHelper {

@@ -76,7 +76,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/** Integration tests for WebAPK feature. */
+/**
+ * Integration tests for the WebAPK feature.
+ *
+ * <p><b>Harness setup:</b> {@code chrome_public_test_apk} bundles and pre-installs the standalone
+ * {@code JavatestsWebApk.apk} ({@code //chrome/android/webapk/shell_apk:javatests_webapk}, package
+ * {@code org.chromium.webapk.test}) in a separate Android package and UID with {@code
+ * https://pwa-directory.appspot.com/} statically compiled into its manifest {@code <intent-filter>}
+ * and {@code scope_url} metadata ({@code manifest/javatest_manifest_config_delta.json}). {@link
+ * #setUp()} maps that host to the local HTTPS {@code EmbeddedTestServer} via {@code
+ * --host-resolver-rules} and {@link MockCertVerifierRuleAndroid}, and calls {@link
+ * WebApkValidator#setDisableValidationForTesting} because the test APK is signed with the local
+ * build key rather than the production minting key.
+ *
+ * <p><b>Real vs. stubbed boundaries:</b> Launching via {@code org.chromium.webapk.test} exercises
+ * the real cross-UID shell APK trampoline ({@code H2OTransparentLauncherActivity -> SplashActivity
+ * -> WebappLauncherActivity -> SameTaskWebApkActivity}), real {@code PackageManager} metadata and
+ * intent-filter lookup, and cross-UID {@code WebApkService} binding. In {@link
+ * #testInstallAndLaunchWebApk}, a local {@link TestWebServer} ({@code --webapk-server-url}) stubs
+ * the minting server response with {@code org.chromium.webapk.test}, causing {@code
+ * WebApkInstaller} to complete immediately because the package is already installed (skipping
+ * server APK generation and Google Play or {@code PackageInstaller} installation).
+ *
+ * <p>Prefer {@link WebApkActivityTestRule} when testing post-install {@link WebappActivity} UI and
+ * lifecycle without needing installation or the cross-UID shell APK trampoline.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Tests activity start behavior")
@@ -97,15 +121,8 @@ public class WebApkIntegrationTest {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         Uri mapToUri =
                 Uri.parse(mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL("/"));
-        // JavatestsWebApk.apk (//chrome/android/webapk/shell_apk:javatests_webapk, package
-        // org.chromium.webapk.test) has scope_url = "https://pwa-directory.appspot.com/" and
-        // <intent-filter> host pwa-directory.appspot.com statically compiled into its
-        // AndroidManifest.xml at GN build time (from
-        // chrome/android/webapk/shell_apk/manifest/javatest_manifest_config_delta.json).
-        // HOST_RESOLVER_RULES maps pwa-directory.appspot.com to the local EmbeddedTestServer
-        // (127.0.0.1:<port>) so Android PackageManager intent-filter matching and WebApkValidator
-        // match the WebAPK's compiled-in scope while Chrome loads the test page from the local
-        // EmbeddedTestServer.
+        // Route requests for the test WebAPK's compiled-in pwa-directory.appspot.com scope to the
+        // local EmbeddedTestServer (see class Javadoc).
         CommandLine.getInstance()
                 .appendSwitchWithValue(
                         ContentSwitches.HOST_RESOLVER_RULES,
@@ -307,9 +324,8 @@ public class WebApkIntegrationTest {
 
     /**
      * End-to-end integration test verifying that a WebAPK can be installed from a browser tab and
-     * launched into a standalone {@link WebappActivity}, correctly matching {@code
-     * window.matchMedia('(display-mode: standalone)').matches === true} without leaving the
-     * originating browser window with zero tabs.
+     * launched into a standalone {@link WebappActivity}, entering standalone display mode without
+     * leaving the originating browser window with zero tabs.
      */
     @Test
     @LargeTest
@@ -330,15 +346,7 @@ public class WebApkIntegrationTest {
                     webServer.setResponse("/webapkserver", responseProto, responseHeaders);
             CommandLine.getInstance().appendSwitchWithValue("webapk-server-url", serverUrl);
 
-            // JavatestsWebApk.apk (//chrome/android/webapk/shell_apk:javatests_webapk, package
-            // org.chromium.webapk.test) has scope_url = "https://pwa-directory.appspot.com/" and
-            // <intent-filter> host pwa-directory.appspot.com statically compiled into its
-            // AndroidManifest.xml at GN build time (from
-            // chrome/android/webapk/shell_apk/manifest/javatest_manifest_config_delta.json).
-            // HOST_RESOLVER_RULES in setUp() maps pwa-directory.appspot.com to the local
-            // EmbeddedTestServer (127.0.0.1:<port>) so Android PackageManager intent-filter
-            // matching and WebApkValidator match the WebAPK's compiled-in scope while Chrome
-            // loads the test page from the local EmbeddedTestServer.
+            // Matches the scope statically compiled into JavatestsWebApk.apk (see class Javadoc).
             String pageUrl =
                     "https://pwa-directory.appspot.com/chrome/test/data/banners/manifest_test_page.html";
 

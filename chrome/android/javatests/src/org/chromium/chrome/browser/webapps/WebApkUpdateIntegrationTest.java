@@ -49,7 +49,24 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.io.FileInputStream;
 
-/** Integration tests for WebAPK feature. */
+/**
+ * Integration tests for WebAPK startup manifest update detection.
+ *
+ * <p><b>Harness setup:</b> Wraps the application {@link PackageManager} via {@link
+ * PackageManagerWrapper} so {@code PackageManager#getApplicationInfo} returns test metadata ({@link
+ * WebApkMetaDataKeys}) for the pre-installed {@code org.chromium.webapk.test} package pointing to
+ * the local {@link EmbeddedTestServer}, disables APK signature verification via {@link
+ * WebApkValidator#setDisableValidationForTesting}, enables updates via {@code
+ * WebApkUpdateManager#setUpdatesDisabledForTesting}, and passes {@link
+ * ChromeSwitches#CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP} so opening the WebAPK triggers a
+ * manifest update check on startup.
+ *
+ * <p><b>Real vs. stubbed boundaries:</b> Launches {@link WebappActivity} directly via {@link
+ * WebApkActivityTestRule}, detects the changed manifest name, drives and accepts the real
+ * name-change modal confirmation dialog ({@link ModalDialogProperties}), and verifies the
+ * serialized {@link WebApkProto.WebApk} update request proto written to disk. Does not contact a
+ * live WebAPK minting server or install an updated APK via Google Play or {@code PackageInstaller}.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "The update pipeline runs once per startup.")
 @CommandLineFlags.Add({

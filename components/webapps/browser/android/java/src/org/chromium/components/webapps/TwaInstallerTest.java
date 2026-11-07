@@ -35,7 +35,16 @@ import org.chromium.base.test.util.Feature;
 import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
 
-/** Unit tests for {@link TwaInstaller}. */
+/**
+ * Unit tests for {@link TwaInstaller}.
+ *
+ * <p>Complements {@code TwaInstallerIntegrationTest} by running on Robolectric under {@link
+ * Build.VERSION_CODES#CINNAMON_BUN} with a mocked {@link WebAppManager} injected via {@link
+ * TwaInstaller#setWebAppManagerForTesting} and mocked JNI natives. Verifies {@link
+ * WebAppInstallRequest} and {@link WebAppQueryRequest} construction, install outcome callback
+ * mapping (success, user cancellation, and error), and null-service or unsupported-SDK ({@link
+ * Build.VERSION_CODES#BAKLAVA}) fallbacks without requiring a live Android 17+ OS service.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
 public class TwaInstallerTest {
