@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.net.Uri;
-
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -17,15 +15,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
@@ -36,12 +35,16 @@ import org.chromium.url.Origin;
 
 /** An integration test for the payment manifest downloader. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
+// Port 0 matches any port. The switch is parsed once per process, so it must
+// cover the per-test EmbeddedTestServer ports for the whole batch.
+@CommandLineFlags.Add({"ip-address-space-overrides=127.0.0.1:0=public"})
 @MediumTest
 @EnableFeatures(PaymentFeatureList.PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE)
 public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final String EXPECTED_PAYMENT_METHOD_MANIFEST =
             "{\n" + "  \"default_applications\": [\"https://bobpay.test/app.json\"]\n" + "}\n";
@@ -103,10 +106,6 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Before
     public void setUp() throws Throwable {
         mServer = mActivityTestRule.getTestServer();
-        CommandLine.getInstance()
-                .appendSwitchWithValue(
-                        "ip-address-space-overrides",
-                        Uri.parse(mServer.getURL("/")).getAuthority() + "=public");
         mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

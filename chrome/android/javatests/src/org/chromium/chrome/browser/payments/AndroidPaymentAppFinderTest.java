@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.payments;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
-
-import android.net.Uri;
 
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
@@ -19,8 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -28,8 +26,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.AppCreationFailureReason;
@@ -68,29 +66,26 @@ import java.util.Set;
 
 /** An integration test for the Android payment app finder. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// TODO(crbug.com/344662668): Failing when batched, batch this again.
+@Batch(Batch.PER_CLASS)
+// Port 0 matches any port. The switch is parsed once per process, so it must
+// cover the per-test EmbeddedTestServer ports for the whole batch.
+@CommandLineFlags.Add({"ip-address-space-overrides=127.0.0.1:0=public"})
 @MediumTest
 @EnableFeatures(PaymentFeatureList.PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE)
 public class AndroidPaymentAppFinderTest
         implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     /** Simulates a package manager in memory. */
     private final MockPackageManagerDelegate mPackageManager = new MockPackageManagerDelegate();
 
     /** Downloads from the test server. */
     private static class TestServerDownloader extends PaymentManifestDownloader {
-        private GURL mTestServerUrl;
+        private final GURL mTestServerUrl;
 
-        /**
-         * @param url The URL of the test server.
-         */
-        /* package */ void setTestServerUrl(GURL url) {
-            assertWithMessage("Test server URL should be set only once")
-                    .that(mTestServerUrl)
-                    .isNull();
+        TestServerDownloader(GURL url) {
             mTestServerUrl = url;
         }
 
@@ -122,7 +117,7 @@ public class AndroidPaymentAppFinderTest
         }
     }
 
-    private final TestServerDownloader mDownloader = new TestServerDownloader();
+    private GURL mTestServerUrl;
     private WebPageStation mStartingPage;
     private List<PaymentApp> mPaymentApps;
     private boolean mAllPaymentAppsCreated;
@@ -270,13 +265,9 @@ public class AndroidPaymentAppFinderTest
     public void setUp() throws Throwable {
         String testServerUrl =
                 mActivityTestRule.getTestServer().getURL("/components/test/data/payments/");
-        CommandLine.getInstance()
-                .appendSwitchWithValue(
-                        "ip-address-space-overrides",
-                        Uri.parse(testServerUrl).getAuthority() + "=public");
         mStartingPage = mActivityTestRule.startOnBlankPage();
         mPackageManager.reset();
-        mDownloader.setTestServerUrl(new GURL(testServerUrl));
+        mTestServerUrl = new GURL(testServerUrl);
         mPaymentApps = new ArrayList<>();
         mAllPaymentAppsCreated = false;
         mPaymentOptions = new PaymentOptions();
@@ -1920,7 +1911,9 @@ public class AndroidPaymentAppFinderTest
                     AndroidPaymentAppFinder finder =
                             new AndroidPaymentAppFinder(
                                     new WebPaymentsWebDataService(getWebContents()),
-                                    mDownloader,
+                                    // A finder destroys its downloader when done, so each finder
+                                    // needs its own.
+                                    new TestServerDownloader(mTestServerUrl),
                                     new PaymentManifestParser(),
                                     mPackageManager,
                                     /* factoryDelegate= */ this,
