@@ -13,17 +13,16 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -32,11 +31,10 @@ import java.util.concurrent.TimeoutException;
 
 /** A payment integration test for a merchant that requests phone number. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestPhoneTest {
-    public final AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     public final PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule(mCtaTestRule, "payment_request_phone_test.html");
@@ -199,16 +197,6 @@ public class PaymentRequestPhoneTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.USER_ABORTED
-                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_PAYER_DATA
-                        | Event2.REQUEST_PAYER_PHONE
-                        | Event2.REQUEST_METHOD_OTHER;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         // Start and abort the Payment Request.
         mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
@@ -216,6 +204,16 @@ public class PaymentRequestPhoneTest {
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
-        watcher.assertExpected();
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_PAYER_DATA
+                        | Event2.REQUEST_PAYER_PHONE
+                        | Event2.REQUEST_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 }

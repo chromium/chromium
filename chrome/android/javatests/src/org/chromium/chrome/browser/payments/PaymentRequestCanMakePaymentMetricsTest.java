@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,20 +14,19 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.payments.Event2;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -37,11 +37,10 @@ import java.util.concurrent.TimeoutException;
 
 /** A payment integration test for the correct log of the CanMakePayment metrics. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestCanMakePaymentMetricsTest {
-    public final AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     public final PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule(
@@ -67,16 +66,6 @@ public class PaymentRequestCanMakePaymentMetricsTest {
     @Feature({"Payments"})
     @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testCannotMakePayment_UserAbort() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.USER_ABORTED
-                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_METHOD_OTHER
-                        | Event2.CAN_MAKE_PAYMENT_CALLED
-                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -99,7 +88,18 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
-        watcher.assertExpected();
+        // Make sure the canMakePayment events were logged correctly.
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -113,17 +113,6 @@ public class PaymentRequestCanMakePaymentMetricsTest {
     @Feature({"Payments"})
     @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testCannotMakePayment_Complete() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.PAY_CLICKED
-                        | Event2.COMPLETED
-                        | Event2.REQUEST_METHOD_OTHER
-                        | Event2.SELECTED_CREDIT_CARD
-                        | Event2.CAN_MAKE_PAYMENT_CALLED
-                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -155,7 +144,19 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
                 ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
 
-        watcher.assertExpected();
+        // Make sure the canMakePayment events were logged correctly.
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.PAY_CLICKED
+                        | Event2.COMPLETED
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.SELECTED_CREDIT_CARD
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -167,16 +168,6 @@ public class PaymentRequestCanMakePaymentMetricsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testCanMakePayment_MerchantAbort() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.OTHER_ABORTED
-                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_METHOD_OTHER
-                        | Event2.CAN_MAKE_PAYMENT_CALLED
-                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -191,7 +182,18 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.clickNodeAndWait("abort", mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(new String[] {"Abort"});
 
-        watcher.assertExpected();
+        // Make sure the canMakePayment events were logged correctly.
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.OTHER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -202,18 +204,6 @@ public class PaymentRequestCanMakePaymentMetricsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testCanMakePayment_Complete() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.PAY_CLICKED
-                        | Event2.COMPLETED
-                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_METHOD_OTHER
-                        | Event2.SELECTED_OTHER
-                        | Event2.CAN_MAKE_PAYMENT_CALLED
-                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -226,7 +216,20 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
-        watcher.assertExpected();
+        // Make sure the canMakePayment events were logged correctly.
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.PAY_CLICKED
+                        | Event2.COMPLETED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.SELECTED_OTHER
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -238,18 +241,6 @@ public class PaymentRequestCanMakePaymentMetricsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testCanMakePaymentDisabled_Complete() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.PAY_CLICKED
-                        | Event2.COMPLETED
-                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_METHOD_OTHER
-                        | Event2.SELECTED_OTHER
-                        | Event2.CAN_MAKE_PAYMENT_CALLED
-                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrefService prefs =
@@ -271,7 +262,20 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
-        watcher.assertExpected();
+        // Make sure the canMakePayment events were logged correctly.
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.PAY_CLICKED
+                        | Event2.COMPLETED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.SELECTED_OTHER
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -282,14 +286,6 @@ public class PaymentRequestCanMakePaymentMetricsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testNoQuery_UserAbort() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.USER_ABORTED
-                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_METHOD_OTHER;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -312,7 +308,16 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
-        watcher.assertExpected();
+        // Make sure no canMakePayment events were logged.
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -323,16 +328,6 @@ public class PaymentRequestCanMakePaymentMetricsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testNoQuery_Complete() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.PAY_CLICKED
-                        | Event2.COMPLETED
-                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_METHOD_OTHER
-                        | Event2.SELECTED_OTHER;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         // Install the apps so the user can complete the Payment Request.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -345,6 +340,17 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
-        watcher.assertExpected();
+        // Make sure no canMakePayment events were logged.
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.PAY_CLICKED
+                        | Event2.COMPLETED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.SELECTED_OTHER;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 }

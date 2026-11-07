@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -15,11 +16,10 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -37,12 +37,8 @@ import java.util.concurrent.TimeoutException;
 
 /** A payment integration test for a merchant that provides free shipping regardless of address. */
 @RunWith(ParameterizedRunner.class)
-@Batch(Batch.PER_CLASS)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class PaymentRequestFreeShippingTest {
-    // Keep FreshCtaTransitTestRule because testPayWithRender toggles NightMode before activity
-    // launch; toggling NightMode on a live reused ChromeTabbedActivity recreates it and leaks the
-    // old instance via TabImpl (crbug.com/562594074).
     public final FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
@@ -73,8 +69,7 @@ public class PaymentRequestFreeShippingTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled));
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         // Pin the server port for testPayWithRender so origin strings in goldens don't vary.
         mCtaTestRule.getEmbeddedTestServerRule().setServerPort(RENDER_TEST_PORT);
@@ -82,8 +77,7 @@ public class PaymentRequestFreeShippingTest {
 
     @AfterClass
     public static void tearDownAfterActivityDestroyed() {
-        ThreadUtils.runOnUiThreadBlocking(
-                ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
+        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
     }
 
     @Before
@@ -367,15 +361,6 @@ public class PaymentRequestFreeShippingTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
-        int expectedSample =
-                Event2.SHOWN
-                        | Event2.USER_ABORTED
-                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_SHIPPING
-                        | Event2.REQUEST_METHOD_OTHER;
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("PaymentRequest.Events2", expectedSample);
-
         // Start and abort the Payment Request.
         mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
@@ -385,6 +370,15 @@ public class PaymentRequestFreeShippingTest {
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
-        watcher.assertExpected();
+        int expectedSample =
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_SHIPPING
+                        | Event2.REQUEST_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "PaymentRequest.Events2", expectedSample));
     }
 }
