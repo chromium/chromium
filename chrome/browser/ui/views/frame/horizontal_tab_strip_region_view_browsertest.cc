@@ -8,12 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -39,6 +41,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,11 +61,14 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif
 
 class LayoutWaiter : public views::ViewObserver {
  public:
@@ -520,4 +526,33 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
   base::HistogramTester histogram_tester;
   chrome::AddTabAt(incognito_browser, GURL("about:blank"), -1, true);
   histogram_tester.ExpectUniqueSample("Tab.Count.Incognito", 2, 1);
+}
+
+class HorizontalTabStripRegionViewUnifiedIsolatedTest
+    : public HorizontalTabStripRegionViewUnifiedTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HorizontalTabStripRegionViewUnifiedTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+
+ private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  chrome::ScopedChannelOverride channel_override_{
+      chrome::ScopedChannelOverride::Channel::kDev};
+#endif
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedIsolatedTest,
+                       RecordsTabCountIsolated) {
+  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
+  ASSERT_NE(isolated_browser, nullptr);
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+
+  base::HistogramTester histogram_tester;
+  chrome::AddTabAt(isolated_browser, GURL("about:blank"), -1, true);
+  histogram_tester.ExpectUniqueSample("Tab.Count.Isolated", 2, 1);
 }

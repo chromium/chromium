@@ -509,6 +509,9 @@ void BaseTabStripRegionView::OnChildrenAdded(
       } else if (profile->IsIncognitoProfile()) {
         base::UmaHistogramCounts100("Tab.Count.Incognito",
                                     tab_strip_model_->count());
+      } else if (profile->IsEnterpriseIsolatedModeProfile()) {
+        base::UmaHistogramCounts100("Tab.Count.Isolated",
+                                    tab_strip_model_->count());
       }
     }
 
