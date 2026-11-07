@@ -97,8 +97,6 @@ TEST_F(UnexportableKeyProfileGarbageCollectionServiceFactoryMacTest,
   UnexportableSigningKeyId active_key_id;
   UnexportableSigningKeyId orphaned_key_id;
 
-  std::string profile_path_tag =
-      GetConfigForProfilePath(profile.GetPath()).application_tag;
   std::string active_tag = GetConfigForProfile(profile).application_tag;
 
   // Create an OTR profile with the same path, which will be orphaned. Ensure

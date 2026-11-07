@@ -117,7 +117,6 @@ TEST_F(SyncEngineTest, OriginTest) {
   GURL origin("chrome-extension://app_0");
 
   SyncStatusCode sync_status;
-  std::string status;
 
   sync_engine()->RegisterOrigin(
       origin,

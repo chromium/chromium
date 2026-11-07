@@ -1522,8 +1522,8 @@ TEST_P(ThreatDetailsTest, ThreatDOMDetails_EmptyReportNotSent) {
       mojo::Remote<mojom::ThreatReporter>(), main_rfh()->GetWeakDocumentPtr(),
       std::move(outer_params));
 
-  std::string serialized = WaitForThreatDetailsDone(
-      trimmed_report.get(), false /* did_proceed*/, 0 /* num_visit */);
+  WaitForThreatDetailsDone(trimmed_report.get(), false /* did_proceed*/,
+                           0 /* num_visit */);
   EXPECT_FALSE(ReportWasSent());
 }
 

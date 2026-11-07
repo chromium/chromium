@@ -2025,7 +2025,6 @@ TEST_F(TemplateURLServiceTest, DuplicateInputEncodings) {
   data.SetShortName(u"google");
   data.SetKeyword(u"keyword");
   data.SetURL("http://www.google.com/foo/bar");
-  std::vector<std::string> encodings;
   data.input_encodings.push_back("UTF-8");
   data.input_encodings.push_back("UTF-8");
   data.input_encodings.push_back("UTF-16");

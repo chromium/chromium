@@ -678,7 +678,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
       "  mem[i] = i;\n"
       "\"okay\";\n",
       static_cast<unsigned long>(minimal_heap_size));
-  std::string ok;
   ASSERT_EQ("okay",
             content::EvalJs(
                 browser()->tab_strip_model()->GetActiveWebContents(), test_js));

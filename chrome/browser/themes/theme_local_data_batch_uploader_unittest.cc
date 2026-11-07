@@ -733,9 +733,6 @@ using ThemeLocalDataBatchUploaderDeathTest = ThemeLocalDataBatchUploaderTest;
 
 TEST_F(ThemeLocalDataBatchUploaderDeathTest,
        TriggerLocalDataMigrationForItemsWithMoreThanOneItem) {
-  const std::string kExpectedErrorMessageHint =
-      "Only one local theme can exist";
-
   // Local user color theme.
   theme_service()->SetUserColorAndBrowserColorVariant(
       SK_ColorBLUE, ui::mojom::BrowserColorVariant::kTonalSpot);
@@ -755,7 +752,6 @@ TEST_F(ThemeLocalDataBatchUploaderDeathTest,
 
 TEST_F(ThemeLocalDataBatchUploaderDeathTest,
        TriggerLocalDataMigrationForItemsWithInvalidItemIdType) {
-  const std::string kExpectedErrorMessageHint = "Invalid item ID type";
   const syncer::LocalDataItemModel::DataId illegal_item = 1;
 
   // Local user color theme.
@@ -773,7 +769,6 @@ TEST_F(ThemeLocalDataBatchUploaderDeathTest,
 
 TEST_F(ThemeLocalDataBatchUploaderDeathTest,
        TriggerLocalDataMigrationForItemsWithInvalidItemId) {
-  const std::string kExpectedErrorMessageHint = "Invalid item ID";
   const syncer::LocalDataItemModel::DataId illegal_item = "another-theme";
 
   // Local user color theme.

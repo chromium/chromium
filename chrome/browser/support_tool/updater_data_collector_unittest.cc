@@ -98,7 +98,6 @@ class UpdaterDataCollectorTest : public ::testing::Test {
       EXPECT_TRUE(base::ReadFileToString(history_path, &history_contents));
       EXPECT_EQ(history_contents, kHistoryFileContent);
 
-      std::string old_history_contents;
       EXPECT_TRUE(base::ReadFileToString(old_history_path, &history_contents));
       EXPECT_EQ(history_contents, kHistoryFileContent);
     } else {

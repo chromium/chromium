@@ -1470,7 +1470,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTabGroupsTest, TabsWithGroups) {
   CreateTabGroups(browser()->tab_strip_model(), group_spec);
   ASSERT_NO_FATAL_FAILURE(
       CheckTabGrouping(browser()->tab_strip_model(), group_spec));
-  const auto groups = GetTabGroups(browser()->tab_strip_model());
 
   BrowserWindowInterface* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_EQ(kNumTabs, new_browser->GetTabStripModel()->count());
@@ -1700,8 +1699,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TabsWithSplits) {
           {5}, split_tabs::SplitTabVisualData(),
           split_tabs::SplitTabCreatedSource::kTabContextMenu);
 
-  const auto groups = GetTabGroups(browser()->tab_strip_model());
-
   BrowserWindowInterface* new_browser = QuitBrowserAndRestore(browser());
   EXPECT_EQ(kNumTabs, new_browser->GetTabStripModel()->count());
   EXPECT_EQ(new_browser->GetTabStripModel()->IndexOfFirstNonPinnedTab(), 2);
@@ -1784,8 +1781,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SplitVisualDataRestored) {
           split_tabs::SplitTabVisualData(
               split_tabs::SplitTabLayout::kSideBySide, 0.3),
           split_tabs::SplitTabCreatedSource::kTabContextMenu);
-
-  const auto groups = GetTabGroups(browser()->tab_strip_model());
 
   // Update a some of the split visual data.
   browser()->tab_strip_model()->UpdateSplitLayout(

@@ -1387,7 +1387,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   base::RunLoop validator_run_loop;
   enterprise_connectors::test::EventReportValidator validator(client());
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  std::set<std::string> mimetypes = {"text/plain"};
 
   chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
   expected_event.set_url(url.spec());
@@ -1475,7 +1474,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   base::RunLoop validator_run_loop;
   enterprise_connectors::test::EventReportValidator validator(client());
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  std::set<std::string> mimetypes = {"text/plain"};
 
   chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
   expected_event.set_url(url.spec());
@@ -1622,7 +1620,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   base::RunLoop validator_run_loop;
   enterprise_connectors::test::EventReportValidator validator(client());
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  std::set<std::string> mimetypes = {"text/plain"};
 
   chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
   expected_event.set_url(url.spec());
@@ -1704,7 +1701,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   base::RunLoop validator_run_loop;
   enterprise_connectors::test::EventReportValidator validator(client());
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  std::set<std::string> mimetypes = {"text/plain"};
 
   ExpectContentAnalysisResumableMetadataResponse({"dlp"});
   ExpectContentAnalysisResumableContentResponse(response);
@@ -1872,7 +1868,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
   WaitForDeepScanRequest();
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
-  std::set<std::string> mimetypes = {"text/plain"};
 
   chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
   expected_event.set_url(url.spec());
@@ -2011,7 +2006,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
   WaitForDeepScanRequest();
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
-  std::set<std::string> mimetypes = {"text/plain"};
 
   chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
   expected_event.set_url(url.spec());

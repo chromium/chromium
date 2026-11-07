@@ -86,7 +86,6 @@ bool DeserializeInspectionResult(uint32_t min_time_stamp,
   ModuleInspectionResult& inspection_result = value.second.first;
   uint32_t& time_stamp = value.second.second;
 
-  std::u16string location, basename;
   if (!pickle_iterator->ReadString16(&inspection_result.location) ||
       !pickle_iterator->ReadString16(&inspection_result.basename) ||
       !pickle_iterator->ReadString16(&inspection_result.product_name) ||

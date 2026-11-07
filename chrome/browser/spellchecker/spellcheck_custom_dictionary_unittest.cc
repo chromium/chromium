@@ -1061,7 +1061,6 @@ TEST_F(SpellcheckCustomDictionaryTestWithSeparateLocalAndAccountDictionaries,
   }
   Apply(*custom_dictionary2, change2);
 
-  std::set<std::string> local_words = custom_dictionary->GetWords();
   std::set<std::string> account_words = custom_dictionary2->GetWords();
   std::set<std::string> merged_words = base::STLSetUnion<std::set<std::string>>(
       custom_dictionary->GetWords(), custom_dictionary2->GetWords());

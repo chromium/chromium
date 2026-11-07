@@ -599,8 +599,6 @@ TEST_F(LocalFileChangeTrackerTest, RestoreMoveChanges) {
 TEST_F(LocalFileChangeTrackerTest, NextChangedURLsWithRecursiveCopy) {
   EXPECT_EQ(base::File::FILE_OK, file_system_.OpenFileSystem());
 
-  FileSystemURLSet urls;
-
   const char kPath0[] = "dir a";
   const char kPath1[] = "dir a/file";
   const char kPath2[] = "dir a/dir";

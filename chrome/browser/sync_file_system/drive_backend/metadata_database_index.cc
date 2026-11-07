@@ -87,7 +87,6 @@ void ReadDatabaseContents(LevelDBWrapper* db, DatabaseContents* contents) {
   std::unique_ptr<LevelDBWrapper::Iterator> itr(db->NewIterator());
   for (itr->SeekToFirst(); itr->Valid(); itr->Next()) {
     std::string key = itr->key().ToString();
-    std::string value = itr->value().ToString();
 
     std::string file_id;
     if (RemovePrefix(key, kFileMetadataKeyPrefix, &file_id)) {

@@ -31,7 +31,6 @@ IN_PROC_BROWSER_TEST_F(SharingServiceOperationBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::vector<base::FilePath> file_paths;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   SharingServiceOperation::SetSharePickerCallbackForTesting(

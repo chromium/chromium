@@ -98,7 +98,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest,
   ASSERT_TRUE(SetupSync());
 
   // Open tab and access a url on client 0
-  ScopedWindowMap client0_windows;
   std::string url = base::StringPrintf(
       kURLTemplate, base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
 
@@ -132,7 +131,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
 
   // Open tabs on all clients and retain window information.
   for (int i = 0; i < num_clients(); ++i) {
-    ScopedWindowMap windows;
     std::string url = base::StringPrintf(
         kURLTemplate,
         base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());

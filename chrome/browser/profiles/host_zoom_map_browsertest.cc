@@ -264,8 +264,6 @@ IN_PROC_BROWSER_TEST_F(
       signin::GetEmbeddedPromoURL(signin_metrics::AccessPoint::kStartPage,
                                   signin_metrics::Reason::kFetchLstOnly, false);
   GURL test_url = SubstituteTestServerPort(signin_url);
-  std::string test_host(test_url.GetHost());
-  std::string test_scheme(test_url.GetScheme());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   content::WebContents* web_contents =

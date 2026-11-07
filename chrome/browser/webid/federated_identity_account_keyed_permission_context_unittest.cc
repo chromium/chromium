@@ -442,9 +442,6 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   const std::string account_c("wellesley");
 
   // Add a couple of accounts without timestamps.
-  std::string key =
-      base::StringPrintf("%s<%s", identity_provider.Serialize().c_str(),
-                         relying_party_embedder.Serialize().c_str());
 
   base::DictValue new_object;
   new_object.Set("rp-requester", relying_party_requester.Serialize());

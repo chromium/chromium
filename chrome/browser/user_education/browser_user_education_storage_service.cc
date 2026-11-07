@@ -110,7 +110,6 @@ constexpr char kNtpPromoPrefDisabled[] = "in_product_help.ntp_promos.disabled";
 std::optional<user_education::KeyedFeaturePromoDataMap::value_type> ReadKeyData(
     const base::Value& value,
     base::Time now) {
-  std::string key;
   user_education::KeyedFeaturePromoData data;
 
   if (const auto* key_ptr = value.GetIfString()) {

@@ -123,9 +123,6 @@ class IsGuestModeEnabledTest : public testing::TestWithParam<bool> {
     const std::string profile_name = base::StringPrintf(
         "Profile %zu",
         profile_manager_.profile_manager()->GetNumberOfProfiles());
-    const std::string email = base::StringPrintf(
-        "account%zu@gmail.com",
-        profile_manager_.profile_manager()->GetNumberOfProfiles());
 
     Profile* profile = profile_manager_.CreateTestingProfile(
         profile_name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),

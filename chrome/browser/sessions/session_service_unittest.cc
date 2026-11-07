@@ -747,7 +747,6 @@ TEST_F(SessionServiceTest, PruneFromMiddle) {
 
 // Tests possible computations of available ranges.
 TEST_F(SessionServiceTest, AvailableRanges) {
-  const std::string base_url("http://google.com/");
   SessionID tab_id = SessionID::NewUnique();
 
   helper_.PrepareTabInWindow(window_id, tab_id, 0, true);

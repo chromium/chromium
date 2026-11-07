@@ -340,8 +340,6 @@ TEST_F(UnexportableKeyProviderConfigTest,
   const std::string profile11_path_tag =
       GetConfigForProfilePath(profile11.GetPath()).application_tag;
 
-  const std::string profile1_tag =
-      GetConfigForProfile(profile1).application_tag;
   const std::string profile11_tag =
       GetConfigForProfile(profile11).application_tag;
 

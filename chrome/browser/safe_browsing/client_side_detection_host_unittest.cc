@@ -3009,8 +3009,6 @@ class ClientSideDetectionHostCreditCardFormTest
         autofill::CREDIT_CARD_EXP_MONTH,
         autofill::CREDIT_CARD_VERIFICATION_CODE,
     };
-    std::vector<autofill::FieldType> unknown_field_types(
-        4, autofill::UNKNOWN_TYPE);
     std::vector<autofill::FieldType> no_server_field_types(
         4, autofill::NO_SERVER_DATA);
     auto local_field_types =

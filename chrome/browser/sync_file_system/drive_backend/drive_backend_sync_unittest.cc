@@ -807,7 +807,6 @@ TEST_F(DriveBackendSyncTest, RemoteRenameAndRevertTest) {
 
 TEST_F(DriveBackendSyncTest, ReorganizeToOtherFolder) {
   std::string app_id = "example";
-  const base::FilePath::StringType path(FPL("file"));
 
   RegisterApp(app_id);
   AddLocalFolder(app_id, FPL("folder_src"));
@@ -1121,7 +1120,7 @@ TEST_F(DriveBackendSyncTest, ConflictTest_AddFolder_DeleteFile) {
   std::string app_id = "example";
 
   RegisterApp(app_id);
-  std::string app_root_folder_id = GetFileIDByPath(app_id, FPL(""));
+  GetFileIDByPath(app_id, FPL(""));
 
   AddOrUpdateLocalFile(app_id, FPL("conflict_to_pending_remote"), "foo");
   AddOrUpdateLocalFile(app_id, FPL("conflict_to_existing_remote"), "bar");
@@ -1196,7 +1195,7 @@ TEST_F(DriveBackendSyncTest, ConflictTest_DeleteFolder_DeleteFolder) {
   std::string app_id = "example";
 
   RegisterApp(app_id);
-  std::string app_root_folder_id = GetFileIDByPath(app_id, FPL(""));
+  GetFileIDByPath(app_id, FPL(""));
 
   AddLocalFolder(app_id, FPL("conflict_to_pending_remote"));
   AddLocalFolder(app_id, FPL("conflict_to_existing_remote"));
@@ -1267,7 +1266,7 @@ TEST_F(DriveBackendSyncTest, ConflictTest_DeleteFolder_DeleteFile) {
   std::string app_id = "example";
 
   RegisterApp(app_id);
-  std::string app_root_folder_id = GetFileIDByPath(app_id, FPL(""));
+  GetFileIDByPath(app_id, FPL(""));
   AddOrUpdateLocalFile(app_id, FPL("conflict_to_pending_remote"), "foo");
   AddOrUpdateLocalFile(app_id, FPL("conflict_to_existing_remote"), "bar");
 
@@ -1340,7 +1339,7 @@ TEST_F(DriveBackendSyncTest, ConflictTest_AddFile_DeleteFolder) {
   std::string app_id = "example";
 
   RegisterApp(app_id);
-  std::string app_root_folder_id = GetFileIDByPath(app_id, FPL(""));
+  GetFileIDByPath(app_id, FPL(""));
 
   AddLocalFolder(app_id, FPL("conflict_to_pending_remote"));
   AddLocalFolder(app_id, FPL("conflict_to_existing_remote"));
@@ -1611,7 +1610,7 @@ TEST_F(DriveBackendSyncTest, ConflictTest_DeleteFile_UpdateFile) {
 
   RegisterApp(app_id);
 
-  std::string app_root_folder_id = GetFileIDByPath(app_id, FPL(""));
+  GetFileIDByPath(app_id, FPL(""));
   AddOrUpdateLocalFile(app_id, FPL("conflict_to_pending_remote"), "foo");
   AddOrUpdateLocalFile(app_id, FPL("conflict_to_existing_remote"), "bar");
 
@@ -1651,7 +1650,7 @@ TEST_F(DriveBackendSyncTest, ConflictTest_DeleteFile_DeleteFile) {
 
   RegisterApp(app_id);
 
-  std::string app_root_folder_id = GetFileIDByPath(app_id, FPL(""));
+  GetFileIDByPath(app_id, FPL(""));
   AddOrUpdateLocalFile(app_id, FPL("conflict_to_pending_remote"), "foo");
   AddOrUpdateLocalFile(app_id, FPL("conflict_to_existing_remote"), "bar");
 

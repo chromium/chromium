@@ -571,9 +571,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest, NoStartUrl) {
 
   EXPECT_FALSE(registrar_unsafe().GetInstallState(app_id).has_value());
 
-  std::vector<sync_pb::SyncEntity> server_apps =
-      GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
-
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
       base::BucketsAre(base::Bucket(StorageKeyParseResult::kNoStartUrl, 1)));
@@ -605,9 +602,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest, InvalidManifestId) {
 
   EXPECT_FALSE(registrar_unsafe().GetInstallState(app_id).has_value());
 
-  std::vector<sync_pb::SyncEntity> server_apps =
-      GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
-
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
               base::BucketsAre(
                   base::Bucket(StorageKeyParseResult::kInvalidManifestId, 1)));
@@ -621,9 +615,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupClients());
   EXPECT_EQ(0, GetNumWebAppsInSync());
 
-  const std::string app_id = test::InstallDummyWebApp(
-      GetProfile(0), "app name", GURL("https://example.com/"),
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+  test::InstallDummyWebApp(GetProfile(0), "app name",
+                           GURL("https://example.com/"),
+                           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
