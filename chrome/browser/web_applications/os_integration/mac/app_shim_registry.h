@@ -211,6 +211,17 @@ class AppShimRegistry {
   NotificationPermissionStatus GetNotificationPermissionStatusForApp(
       const std::string& app_id);
 
+  // Tracks how many times the macOS system notification recovery / pre-prompt
+  // bubble has been auto-opened for `app_id`. This counter is per app (shared
+  // across all profiles where the app is installed) and is reset when
+  // `SaveNotificationPermissionStatusForApp()` is called with `kGranted` (or
+  // when the app is uninstalled from all profiles).
+  // `IncrementNotificationBubbleAutoOpenCountForApp()` is a no-op if `app_id`
+  // has no entry in the registry.
+  int GetNotificationBubbleAutoOpenCountForApp(const std::string& app_id) const;
+  void IncrementNotificationBubbleAutoOpenCountForApp(
+      const std::string& app_id);
+
   // Register a callback to be called any time data associated with an app
   // changes. The callback is passed the app_id of the changed app.
   base::CallbackListSubscription RegisterAppChangedCallback(

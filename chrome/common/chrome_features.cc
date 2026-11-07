@@ -50,6 +50,13 @@ BASE_FEATURE(kAppShimLaunchChromeSilently, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAppShimNotificationAttribution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Maximum number of times per web app to auto-open the notification recovery /
+// pre-prompt bubble when notifications are blocked at the macOS system level.
+BASE_FEATURE_PARAM(int,
+                   kAppShimNotificationAttributionMaxAutoOpenBubbleCount,
+                   &kAppShimNotificationAttribution,
+                   5);
+
 // When enabled, the KeychainKeyProvider is used to provide the OS Crypt async
 // key.
 BASE_FEATURE(kUseKeychainKeyProvider, base::FEATURE_ENABLED_BY_DEFAULT);

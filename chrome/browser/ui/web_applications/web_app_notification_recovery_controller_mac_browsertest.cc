@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
@@ -76,6 +77,7 @@ class WebAppNotificationRecoveryControllerBrowserTestBase
     WebAppBrowserTestBase::SetUpOnMainThread();
     WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
     start_url_ = embedded_https_test_server().GetURL("/web_apps/basic.html");
+    out_of_scope_url_ = embedded_https_test_server().GetURL("/title1.html");
     app_id_ = InstallPWA(start_url_);
   }
 
@@ -105,6 +107,7 @@ class WebAppNotificationRecoveryControllerBrowserTestBase
 
  protected:
   GURL start_url_;
+  GURL out_of_scope_url_;
   webapps::AppId app_id_;
   raw_ptr<BrowserWindowInterface> target_browser_ = nullptr;
   std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
@@ -157,6 +160,15 @@ class WebAppNotificationRecoveryControllerBrowserTest
         break;
       }
     }
+  }
+
+  void NavigateInTargetBrowser(const GURL& url) {
+    if (!target_browser_) {
+      ASSERT_EQ(url, start_url_);
+      OpenTargetWebApp();
+      return;
+    }
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(target_browser_, url));
   }
 
   ContentSettingImageView* GetNotificationImageView() {
@@ -546,6 +558,73 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationRecoveryControllerBrowserTestBase,
   views::test::WidgetVisibleWaiter(app_widget).Wait();
   EXPECT_TRUE(app_widget->IsVisible());
   EXPECT_TRUE(view->IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppNotificationRecoveryControllerBrowserTest,
+                       FrequencyLimitForAutoOpenBubble) {
+  AllowNotificationsInChrome();
+  SetSystemNotificationPermissionStatus(
+      mac_notifications::mojom::PermissionStatus::kDenied);
+
+  const int max_auto_open_count =
+      features::kAppShimNotificationAttributionMaxAutoOpenBubbleCount.Get();
+
+  // First `max_auto_open_count` occurrences: the recovery bubble auto-opens.
+  for (int i = 1; i <= max_auto_open_count; ++i) {
+    NavigateInTargetBrowser(start_url_);
+    ContentSettingImageView* view = GetNotificationImageView();
+    ASSERT_TRUE(view);
+    EXPECT_TRUE(view->GetVisible());
+    ASSERT_TRUE(view->IsBubbleShowing());
+    view->slide_animation_for_testing().End();
+    EXPECT_TRUE(view->ShouldShowLabel());
+    EXPECT_EQ(i,
+              AppShimRegistry::Get()->GetNotificationBubbleAutoOpenCountForApp(
+                  app_id_));
+
+    ASSERT_TRUE(view->GetBubbleWidget());
+    views::test::WidgetDestroyedWaiter bubble_destroyed_waiter(
+        view->GetBubbleWidget());
+    NavigateInTargetBrowser(out_of_scope_url_);
+    bubble_destroyed_waiter.Wait();
+    EXPECT_FALSE(view->GetVisible());
+    EXPECT_FALSE(view->IsBubbleShowing());
+  }
+
+  // Subsequent occurrences: the bubble no longer auto-opens, while the
+  // "Notifications off" label still expands.
+  NavigateInTargetBrowser(start_url_);
+  ContentSettingImageView* view = GetNotificationImageView();
+  ASSERT_TRUE(view);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_FALSE(view->IsBubbleShowing());
+  EXPECT_TRUE(view->is_animating_label());
+  EXPECT_TRUE(view->ShouldShowLabel());
+  view->slide_animation_for_testing().End();
+  EXPECT_TRUE(view->ShouldShowLabel());
+  EXPECT_EQ(max_auto_open_count,
+            AppShimRegistry::Get()->GetNotificationBubbleAutoOpenCountForApp(
+                app_id_));
+
+  // Granting OS notification permission resets the counter.
+  NavigateInTargetBrowser(out_of_scope_url_);
+  EXPECT_FALSE(view->GetVisible());
+  SetSystemNotificationPermissionStatus(
+      mac_notifications::mojom::PermissionStatus::kGranted);
+  EXPECT_EQ(0, AppShimRegistry::Get()->GetNotificationBubbleAutoOpenCountForApp(
+                   app_id_));
+
+  SetSystemNotificationPermissionStatus(
+      mac_notifications::mojom::PermissionStatus::kNotDetermined);
+  SetSystemNotificationPermissionStatus(
+      mac_notifications::mojom::PermissionStatus::kDenied);
+  NavigateInTargetBrowser(start_url_);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_TRUE(view->IsBubbleShowing());
+  view->slide_animation_for_testing().End();
+  EXPECT_TRUE(view->ShouldShowLabel());
+  EXPECT_EQ(1, AppShimRegistry::Get()->GetNotificationBubbleAutoOpenCountForApp(
+                   app_id_));
 }
 
 }  // namespace

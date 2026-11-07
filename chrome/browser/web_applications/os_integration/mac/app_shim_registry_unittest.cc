@@ -704,4 +704,45 @@ TEST_F(AppShimRegistryTest, NotificationPermissionStatus) {
   }
 }
 
+TEST_F(AppShimRegistryTest, NotificationBubbleAutoOpenCount) {
+  using PermissionStatus = AppShimRegistry::NotificationPermissionStatus;
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  base::FilePath profile_path("/x/y/z/Profile A");
+
+  EXPECT_EQ(0, registry_->GetNotificationBubbleAutoOpenCountForApp(app_id));
+
+  // Incrementing the counter for an uninstalled app should be a no-op.
+  registry_->IncrementNotificationBubbleAutoOpenCountForApp(app_id);
+  EXPECT_EQ(0, registry_->GetNotificationBubbleAutoOpenCountForApp(app_id));
+
+  registry_->OnAppInstalledForProfile(app_id, profile_path);
+  EXPECT_EQ(0, registry_->GetNotificationBubbleAutoOpenCountForApp(app_id));
+
+  registry_->IncrementNotificationBubbleAutoOpenCountForApp(app_id);
+  registry_->IncrementNotificationBubbleAutoOpenCountForApp(app_id);
+  EXPECT_EQ(2, registry_->GetNotificationBubbleAutoOpenCountForApp(app_id));
+
+  // Non-granted permission status updates preserve the counter.
+  registry_->SaveNotificationPermissionStatusForApp(
+      app_id, PermissionStatus::kPromptPending);
+  registry_->SaveNotificationPermissionStatusForApp(
+      app_id, PermissionStatus::kImplicitlyDenied);
+  registry_->SaveNotificationPermissionStatusForApp(
+      app_id, PermissionStatus::kExplicitlyDenied);
+  EXPECT_EQ(2, registry_->GetNotificationBubbleAutoOpenCountForApp(app_id));
+
+  // Granting notification permission resets the counter to 0.
+  registry_->SaveNotificationPermissionStatusForApp(app_id,
+                                                    PermissionStatus::kGranted);
+  EXPECT_EQ(0, registry_->GetNotificationBubbleAutoOpenCountForApp(app_id));
+
+  // Uninstalling the app from all profiles also clears the counter.
+  registry_->SaveNotificationPermissionStatusForApp(
+      app_id, PermissionStatus::kImplicitlyDenied);
+  registry_->IncrementNotificationBubbleAutoOpenCountForApp(app_id);
+  EXPECT_EQ(1, registry_->GetNotificationBubbleAutoOpenCountForApp(app_id));
+  EXPECT_TRUE(registry_->OnAppUninstalledForProfile(app_id, profile_path));
+  EXPECT_EQ(0, registry_->GetNotificationBubbleAutoOpenCountForApp(app_id));
+}
+
 }  // namespace

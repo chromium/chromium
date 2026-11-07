@@ -9,11 +9,14 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
@@ -177,9 +180,32 @@ void WebAppNotificationRecoveryController::MaybeTriggerRecoveryBubble() {
     return;
   }
 
-  if (auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame())) {
-    pscs->SetNotificationsWasDeniedBecauseOfSystemPermission();
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  if (!pscs || pscs->notifications_was_denied_because_of_system_permission()) {
+    return;
+  }
+
+  if (ContentSettingImageModelStates::Get(web_contents())
+          ->BubbleWasAutoOpened(
+              ContentSettingImageModel::ImageType::kNotifications)) {
+    return;
+  }
+
+  // TODO(crbug.com/581969756): Also consider stopping keeping the
+  // "Notifications off" label expanded once the auto-open limit is reached.
+  if (AppShimRegistry::Get()->GetNotificationBubbleAutoOpenCountForApp(
+          *app_id) >=
+      features::kAppShimNotificationAttributionMaxAutoOpenBubbleCount.Get()) {
+    return;
+  }
+
+  pscs->SetNotificationsWasDeniedBecauseOfSystemPermission();
+  if (ContentSettingImageModelStates::Get(web_contents())
+          ->BubbleWasAutoOpened(
+              ContentSettingImageModel::ImageType::kNotifications)) {
+    AppShimRegistry::Get()->IncrementNotificationBubbleAutoOpenCountForApp(
+        *app_id);
   }
 }
 
