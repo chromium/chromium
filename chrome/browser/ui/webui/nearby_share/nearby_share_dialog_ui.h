@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/webui_config.h"
@@ -37,7 +37,7 @@ class NearbyShareDialogUIConfig
  public:
   NearbyShareDialogUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUINearbyShareHost) {}
+                           ash::kChromeUINearbyShareHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

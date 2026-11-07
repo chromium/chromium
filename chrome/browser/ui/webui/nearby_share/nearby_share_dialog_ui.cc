@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources_map.h"
@@ -76,7 +76,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile,
-                                             chrome::kChromeUINearbyShareHost);
+                                             ash::kChromeUINearbyShareHost);
 
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));

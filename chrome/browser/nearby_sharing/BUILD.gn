@@ -201,7 +201,6 @@ source_set("impl") {
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/webui/nearby_share",
-    "//chrome/common",
     "//chrome/services/sharing/public/cpp",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/nearby/common/client",

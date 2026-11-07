@@ -14,7 +14,7 @@ static_library("nearby_share") {
     "shared_resources.h",
   ]
   public_deps = [
-    "//chrome/common",
+    "//ash/constants",
     "//ui/views/controls/webview",
   ]
   deps = [

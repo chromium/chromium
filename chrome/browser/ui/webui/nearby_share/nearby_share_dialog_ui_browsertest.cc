@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 
+#include "ash/constants/webui_url_constants.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/sharesheet/constants.h"
@@ -47,7 +47,7 @@ class TestSharesheetController : public sharesheet::SharesheetController {
 class NearbyShareDialogUITest : public InProcessBrowserTest {
  protected:
   content::WebContents* GetWebContentsForNearbyShareHost() const {
-    GURL kUrl(content::GetWebUIURL(chrome::kChromeUINearbyShareHost));
+    GURL kUrl(content::GetWebUIURL(ash::kChromeUINearbyShareHost));
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
     content::WebContents* web_contents =
         browser()->GetTabStripModel()->GetActiveWebContents();

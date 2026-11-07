@@ -115,6 +115,8 @@ inline constexpr char kChromeUIMultiDeviceInternalsHost[] =
 inline constexpr char kChromeUIMultiDeviceSetupHost[] = "multidevice-setup";
 inline constexpr char kChromeUIMultiDeviceSetupURL[] =
     "chrome://multidevice-setup";
+inline constexpr char kChromeUINearbyShareHost[] = "nearby";
+inline constexpr char kChromeUINearbyShareURL[] = "chrome://nearby/";
 inline constexpr char kChromeUINetworkHost[] = "network";
 inline constexpr char kChromeUINotificationTesterHost[] = "notification-tester";
 inline constexpr char kChromeUIOfficeFallbackHost[] = "office-fallback";

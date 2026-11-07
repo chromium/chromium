@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/webui_url_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/files/file_path.h"
 #include "build/branding_buildflags.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -188,7 +188,7 @@ void NearbyShareAction::LaunchAction(
       gfx::RoundedCornersF(kCornerRadius));
 
   // load chrome://nearby into the webview
-  web_view->LoadInitialURL(GURL(chrome::kChromeUINearbyShareURL));
+  web_view->LoadInitialURL(GURL(ash::kChromeUINearbyShareURL));
 
   // Without requesting focus, the sharesheet will launch in an unfocused state
   // which raises accessibility issues with the "Device name" input.

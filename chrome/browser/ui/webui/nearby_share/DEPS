@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ui",
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/webui",
-  "+chrome/common",
   "+chrome/grit",
   "+chrome/test/base",
 ]
