@@ -380,7 +380,7 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="7" label="Cancelled">
     Execution was cancelled because either AddContext or ExecuteModel was called
-    again.
+    again, or the client cancelled the request.
   </int>
   <int value="8" label="Destroyed while waiting">
     The Session was destroyed while waiting for a response. This likely means

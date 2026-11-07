@@ -54,8 +54,8 @@ class OnDeviceExecution final
     kDisconnectAndMaybeFallback = 5,
     // Received a disconnect while waiting for response and cancelled.
     kDisconnectAndCancel = 6,
-    // Response was cancelled because ExecuteModel() was called while waiting
-    // for response.
+    // Response was cancelled (e.g. because ExecuteModel() was called while
+    // waiting for response or the client cancelled the request).
     kCancelled = 7,
     // SessionImpl was destroyed while waiting for a response.
     kDestroyedWhileWaitingForResponse = 8,

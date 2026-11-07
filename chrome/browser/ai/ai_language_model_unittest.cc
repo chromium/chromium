@@ -23,6 +23,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -402,6 +403,15 @@ TEST_F(AILanguageModelTest, Prompt) {
 }
 
 TEST_F(AILanguageModelTest, PromptTelemetry) {
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_model_versions()
+        ->mutable_on_device_model_service_version()
+        ->mutable_on_device_base_model_metadata()
+        ->set_base_model_name("gemma4_component");
+    return solution_config;
+  }());
+
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibility(
@@ -415,6 +425,20 @@ TEST_F(AILanguageModelTest, PromptTelemetry) {
       "OptimizationGuide.ModelExecution."
       "OnDeviceModelEligibilityReason.PromptApi",
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted",
+      optimization_guide::OnDeviceBaseModel::kGemma4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted.PromptApi",
+      optimization_guide::OnDeviceBaseModel::kGemma4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi",
+      optimization_guide::OnDeviceExecution::Result::kUsedOnDevice, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
+      "Gemma4",
+      optimization_guide::OnDeviceExecution::Result::kUsedOnDevice, 1);
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution."
@@ -431,6 +455,104 @@ TEST_F(AILanguageModelTest, PromptTelemetry) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution."
       "OnDeviceResponseTokensTimeToNextToken.PromptApi",
+      1);
+}
+
+TEST_F(AILanguageModelTest, PromptErrorTelemetry) {
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_model_versions()
+        ->mutable_on_device_model_service_version()
+        ->mutable_on_device_base_model_metadata()
+        ->set_base_model_name("gemma4_component");
+    return solution_config;
+  }());
+
+  auto session = CreateSession();
+  base::HistogramTester histogram_tester;
+
+  // InputTooLarge -> kFailedConstructingMessage
+  {
+    AITestUtils::TestStreamingResponder responder;
+    session->Prompt(MakeInput(std::string(kTestMaxTokens + 1, 'a')), nullptr,
+                    responder.BindRemote());
+    EXPECT_FALSE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.error_status(),
+              blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  }
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi",
+      optimization_guide::OnDeviceExecution::Result::kFailedConstructingMessage,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
+      "Gemma4",
+      optimization_guide::OnDeviceExecution::Result::kFailedConstructingMessage,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted.PromptApi", 0);
+
+  // ResponseExceedsMaxTokens -> kUsedOnDevice
+  {
+    fake_broker_->settings().set_execute_result(
+        {std::string(2 * optimization_guide::kOnDeviceModelMaxTokens, 'a')});
+    AITestUtils::TestStreamingResponder responder;
+    session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
+    EXPECT_FALSE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.error_status(),
+              blink::mojom::ModelStreamingResponseStatus::
+                  kErrorResponseExceedsMaxTokens);
+    fake_broker_->settings().set_execute_result({});
+  }
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
+      "Gemma4",
+      optimization_guide::OnDeviceExecution::Result::kUsedOnDevice, 1);
+
+  // DisconnectErrorUnknown -> kDisconnectAndCancel
+  {
+    fake_broker_->settings().set_execute_error(
+        on_device_model::mojom::GenerateError::kUnknown);
+    AITestUtils::TestStreamingResponder responder;
+    session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
+    EXPECT_FALSE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.error_status(),
+              blink::mojom::ModelStreamingResponseStatus::kErrorUnknown);
+  }
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
+      "Gemma4",
+      optimization_guide::OnDeviceExecution::Result::kDisconnectAndCancel, 1);
+
+  // Responder disconnect while waiting -> kCancelled
+  fake_broker_->settings().execute_error.reset();
+  fake_broker_->settings().set_execute_delay(base::Minutes(1));
+  {
+    AITestUtils::TestStreamingResponder responder;
+    session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
+    session.FlushForTesting();
+  }
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return histogram_tester.GetBucketCount(
+               "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult."
+               "PromptApi.Gemma4",
+               optimization_guide::OnDeviceExecution::Result::kCancelled) == 1;
+  }));
+
+  // Session destroyed while waiting -> kDestroyedWhileWaitingForResponse
+  {
+    AITestUtils::TestStreamingResponder responder;
+    session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
+    session->Destroy();
+    EXPECT_FALSE(responder.WaitForCompletion());
+  }
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi."
+      "Gemma4",
+      optimization_guide::OnDeviceExecution::Result::
+          kDestroyedWhileWaitingForResponse,
       1);
 }
 
@@ -463,7 +585,7 @@ TEST_F(AILanguageModelTest, AppendMultipleContents) {
               ElementsAre("UfoobarE", "UbazEM"));
 }
 
-TEST_F(AILanguageModelTest, AppendDoesNotLogDestroyedMetric) {
+TEST_F(AILanguageModelTest, AppendTelemetry) {
   base::HistogramTester histogram_tester;
   auto session = CreateSession();
   Append(*session, MakeInput("foo"));
@@ -473,6 +595,61 @@ TEST_F(AILanguageModelTest, AppendDoesNotLogDestroyedMetric) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution."
       "OnDeviceDestroyedWhileWaitingForResponseTime.PromptApi",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted.PromptApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi",
+      0);
+}
+
+TEST_F(AILanguageModelTest, AppendErrorTelemetry) {
+  auto session = CreateSession();
+  base::HistogramTester histogram_tester;
+
+  // Input is too large.
+  {
+    AITestUtils::TestStreamingResponder responder;
+    session->Append(MakeInput(std::string(kTestMaxTokens + 1, 'a')),
+                    responder.BindRemote());
+    EXPECT_FALSE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.error_status(),
+              blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  }
+
+  // Responder disconnect while waiting.
+  fake_broker_->settings().set_append_delay(base::Minutes(1));
+  {
+    AITestUtils::TestStreamingResponder responder;
+    session->Append(MakeInput("foo"), responder.BindRemote());
+    task_environment()->FastForwardBy(base::Seconds(1));
+  }
+  task_environment()->FastForwardBy(base::Seconds(1));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceDestroyedWhileWaitingForResponseTime.PromptApi",
+      0);
+
+  // Session destroyed while waiting.
+  {
+    AITestUtils::TestStreamingResponder responder;
+    session->Append(MakeInput("foo"), responder.BindRemote());
+    task_environment()->FastForwardBy(base::Seconds(1));
+    session->Destroy();
+    EXPECT_FALSE(responder.WaitForCompletion());
+  }
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceDestroyedWhileWaitingForResponseTime.PromptApi",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted.PromptApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.PromptApi",
       0);
 }
 
