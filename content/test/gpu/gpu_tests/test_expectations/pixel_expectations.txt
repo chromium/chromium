@@ -584,6 +584,8 @@ crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] Pixel_Offscre
 crbug.com/579448963 [ mac no-asan release ] Pixel_WebGLGreenTriangle_NotInOverlay_AA_Alpha [ RetryOnFailure ]
 crbug.com/579448963 [ mac apple-angle-metal-renderer:-apple-m2 asan ] Pixel_WebGLGreenTriangle_NotInOverlay_AA_Alpha [ Failure ]
 
+crbug.com/582552066 [ android android-pixel-4 ] Pixel_Video_HEVC [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
