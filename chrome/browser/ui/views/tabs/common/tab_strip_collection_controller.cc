@@ -512,6 +512,8 @@ void TabStripCollectionController::ShowTabContextMenu(
 
   context_menu_controller_->RunMenuAt(point, source_type,
                                       collection_node->view()->GetWidget());
+  base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",
+                                TabActivationTypes::kContextMenu);
 }
 
 void TabStripCollectionController::ShowGroupEditorBubble(

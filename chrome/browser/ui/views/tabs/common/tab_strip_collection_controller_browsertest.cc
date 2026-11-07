@@ -7,6 +7,10 @@
 #include <numeric>
 #include <vector>
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -132,6 +136,37 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
     EXPECT_TRUE(check_menu_has_string(IDS_TAB_CXMENU_NEWTABBELOW));
     EXPECT_TRUE(check_menu_has_string(IDS_TAB_CXMENU_CLOSETABSBELOW));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
+                       ShowTabContextMenuRecordsActivationAction) {
+  TabCollectionNode* first_tab_node =
+      unpinned_collection_node()->children()[0].get();
+  ASSERT_TRUE(first_tab_node);
+  ASSERT_NE(first_tab_node->view(), nullptr);
+
+  base::HistogramTester histogram_tester;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([this]() {
+        if (TabContextMenuController* menu_controller =
+                vertical_tab_strip_controller()
+                    ->GetTabContextMenuController()) {
+          menu_controller->CloseMenu();
+        }
+      }));
+
+  vertical_tab_strip_controller()->ShowTabContextMenu(
+      first_tab_node, first_tab_node->view()->GetBoundsInScreen().CenterPoint(),
+      ui::mojom::MenuSourceType::kMouse);
+
+  if (TabContextMenuController* menu_controller =
+          vertical_tab_strip_controller()->GetTabContextMenuController()) {
+    menu_controller->CloseMenu();
+  }
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount("TabStrip.Tab.Views.ActivationAction",
+                                     TabActivationTypes::kContextMenu, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
