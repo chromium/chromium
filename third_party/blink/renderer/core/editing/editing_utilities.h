@@ -59,6 +59,7 @@ class HTMLSpanElement;
 struct LocalCaretRect;
 class Node;
 class SystemClipboard;
+class TextControlElement;
 
 // This file contains a set of helper functions used by the editing commands
 
@@ -80,6 +81,11 @@ CORE_EXPORT bool IsRootEditableElement(const Node&);
 CORE_EXPORT Element* RootEditableElement(const Node&);
 Element* RootEditableElementOf(const Position&);
 Element* RootEditableElementOf(const PositionInFlatTree&);
+// Returns the text control enclosing |position| if the caret may be shown and
+// moved with the keyboard inside of it even when the text control isn't
+// editable, e.g. a readonly <input>. Returns nullptr if the text control is
+// disabled.
+TextControlElement* EnclosingCaretNavigableTextControl(const Position&);
 ContainerNode* RootEditableElementOrTreeScopeRootNodeOf(const Position&);
 // highestEditableRoot returns the highest editable node. If the
 // rootEditableElement of the speicified Position is <body>, this returns the

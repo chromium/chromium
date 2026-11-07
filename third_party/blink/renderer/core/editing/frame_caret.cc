@@ -324,8 +324,8 @@ bool FrameCaret::ShouldShowCaret() const {
   }
 
   Element* root = RootEditableElementOf(CaretPosition().GetPosition());
-  if (!root && RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled()) {
-    root = EnclosingTextControl(CaretPosition().GetPosition());
+  if (!root) {
+    root = EnclosingCaretNavigableTextControl(CaretPosition().GetPosition());
   }
   if (root) {
     // Caret is contained in editable content or a text control. If there is no
@@ -343,8 +343,7 @@ bool FrameCaret::ShouldShowCaret() const {
   const Position& start_pos =
       selection_editor_->ComputeVisibleSelectionInDomTree().Start();
   if (!IsEditablePosition(start_pos) &&
-      (!RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() ||
-       !EnclosingTextControl(start_pos)) &&
+      !EnclosingCaretNavigableTextControl(start_pos) &&
       !frame_->IsCaretBrowsingEnabled()) {
     return false;
   }

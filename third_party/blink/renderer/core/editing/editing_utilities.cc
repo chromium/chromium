@@ -1907,6 +1907,18 @@ bool EditingIgnoresContent(const Node& node) {
          IsEmptyNonEditableNodeInEditable(node);
 }
 
+TextControlElement* EnclosingCaretNavigableTextControl(
+    const Position& position) {
+  if (!RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled()) {
+    return nullptr;
+  }
+  TextControlElement* text_control = EnclosingTextControl(position);
+  if (!text_control || text_control->IsDisabledFormControl()) {
+    return nullptr;
+  }
+  return text_control;
+}
+
 ContainerNode* RootEditableElementOrTreeScopeRootNodeOf(
     const Position& position) {
   Element* const selection_root = RootEditableElementOf(position);

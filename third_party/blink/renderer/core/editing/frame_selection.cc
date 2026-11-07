@@ -893,8 +893,8 @@ bool FrameSelection::ShouldPaintCaret(const LayoutBlock& block) const {
   DCHECK(!result ||
          (ComputeVisibleSelectionInDomTree().IsCaret() &&
           (IsEditablePosition(ComputeVisibleSelectionInDomTree().Start()) ||
-           (RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() &&
-            EnclosingTextControl(ComputeVisibleSelectionInDomTree().Start())) ||
+           EnclosingCaretNavigableTextControl(
+               ComputeVisibleSelectionInDomTree().Start()) ||
            frame_->IsCaretBrowsingEnabled())));
   return result;
 }
@@ -907,8 +907,8 @@ bool FrameSelection::ShouldPaintCaret(
   DCHECK(!result ||
          (ComputeVisibleSelectionInDomTree().IsCaret() &&
           (IsEditablePosition(ComputeVisibleSelectionInDomTree().Start()) ||
-           (RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() &&
-            EnclosingTextControl(ComputeVisibleSelectionInDomTree().Start())) ||
+           EnclosingCaretNavigableTextControl(
+               ComputeVisibleSelectionInDomTree().Start()) ||
            frame_->IsCaretBrowsingEnabled())));
   return result;
 }

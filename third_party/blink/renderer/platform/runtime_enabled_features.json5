@@ -5474,6 +5474,8 @@
       // Enables caret visibility and keyboard selection/navigation for
       // readonly text controls (input and textarea).
       // https://issues.chromium.org/issues/40801366
+      // Behavior changed to exclude disabled text controls, which should not
+      // show a caret: https://issues.chromium.org/issues/581932200
       name: "ReadOnlyTextControlSelection",
       status: "stable",
     },

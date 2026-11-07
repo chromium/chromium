@@ -1155,8 +1155,7 @@ static bool EnabledVisibleSelection(LocalFrame& frame,
       CreateVisibleSelection(frame.GetEditor().SelectionForCommand(event));
   return (selection.IsCaret() &&
           (selection.IsContentEditable() ||
-           (RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() &&
-            EnclosingTextControl(selection.Anchor())) ||
+           EnclosingCaretNavigableTextControl(selection.Anchor()) ||
            frame.IsCaretBrowsingEnabled())) ||
          selection.IsRange();
 }
@@ -1180,8 +1179,7 @@ static bool EnabledVisibleSelectionAndMark(LocalFrame& frame,
       CreateVisibleSelection(frame.GetEditor().SelectionForCommand(event));
   return ((selection.IsCaret() &&
            (selection.IsContentEditable() ||
-            (RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() &&
-             EnclosingTextControl(selection.Anchor())) ||
+            EnclosingCaretNavigableTextControl(selection.Anchor()) ||
             frame.IsCaretBrowsingEnabled())) ||
           selection.IsRange()) &&
          !frame.GetEditor().Mark().IsNone();
@@ -1253,8 +1251,7 @@ static bool EnabledInTextControlOrEditableText(LocalFrame& frame,
       frame.GetEditor().SelectionForCommand(event);
   Position anchor = CreateVisiblePosition(selection.Anchor()).DeepEquivalent();
   return RootEditableElementOf(anchor) ||
-         (RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() &&
-          EnclosingTextControl(anchor));
+         EnclosingCaretNavigableTextControl(anchor);
 }
 
 static bool EnabledInEditableTextOrCaretBrowsing(LocalFrame& frame,
