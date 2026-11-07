@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
@@ -57,6 +58,10 @@ class SplitTabView : public TabCollectionZOrderManager,
 
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
       const gfx::Point& loc_in_view);
+
+  void ShowHover(TabStyle::ShowHoverStyle style);
+  void HideHover(TabStyle::HideHoverStyle style);
+  bool IsHovering() const { return hovered_; }
 
   // Used by children to sync their animation values with the parent.
   double GetHoverAnimationValue() const;

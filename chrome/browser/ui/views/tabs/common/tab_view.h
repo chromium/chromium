@@ -93,6 +93,8 @@ class TabView : public views::View,
   void UpdateFocusFreezing();
 
   void UpdateHovered(bool hovered);
+  void ShowHover(TabStyle::ShowHoverStyle style);
+  void HideHover(TabStyle::HideHoverStyle style);
   bool IsHoverAnimationActive() const;
 
   std::optional<SkColor> GetBackgroundColor();

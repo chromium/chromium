@@ -18,11 +18,15 @@
 
 class BrowserView;
 class ImmersiveRevealedLock;
-class Tab;
 class TabStrip;
 
 namespace gfx {
 class Point;
+class Rect;
+}  // namespace gfx
+
+namespace views {
+class View;
 }
 
 namespace ash {
@@ -54,6 +58,9 @@ class TabScrubber : public ui::EventHandler,
   static gfx::Point GetStartPoint(TabStrip* tab_strip,
                                   int index,
                                   TabScrubber::Direction direction);
+  static gfx::Point GetStartPoint(BrowserView* browser_view,
+                                  int index,
+                                  TabScrubber::Direction direction);
 
   int highlighted_tab() const { return highlighted_tab_; }
   bool IsActivationPending();
@@ -67,6 +74,8 @@ class TabScrubber : public ui::EventHandler,
 
  private:
   friend class TabScrubberTest;
+
+  static gfx::Rect GetTabBoundsInStrip(BrowserView* browser_view, int index);
 
   // ui::EventHandler overrides:
   void OnScrollEvent(ui::ScrollEvent* event) override;
@@ -92,7 +101,7 @@ class TabScrubber : public ui::EventHandler,
   // any.
   void UpdateSwipeX(float x_offset);
 
-  void UpdateHighlightedTab(Tab* new_tab, int new_index);
+  void UpdateHighlightedTab(int new_index);
 
   bool GetEnabledForTesting() const { return enabled_; }
 
@@ -104,8 +113,12 @@ class TabScrubber : public ui::EventHandler,
   // The last browser we used for scrubbing, NULL if |scrubbing_| is false and
   // there is no pending work.
   raw_ptr<BrowserDelegate> browser_ = nullptr;
-  // The TabStrip of the active browser we're scrubbing.
+  // The TabStrip of the active browser we're scrubbing when using legacy
+  // horizontal tabs, or nullptr when using the unified tab strip.
   raw_ptr<TabStrip> tab_strip_ = nullptr;
+  // The tab strip view of the active browser we're scrubbing (either legacy
+  // TabStrip or unified TabStripView).
+  raw_ptr<views::View> tab_strip_view_ = nullptr;
   // The current accumulated x and y positions of a swipe, in the coordinates
   // of the TabStrip of |browser_|.
   float swipe_x_ = -1;

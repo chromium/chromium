@@ -183,6 +183,45 @@ std::optional<BrowserRootView::DropIndex> SplitTabView::GetLinkDropIndex(
   }
 }
 
+void SplitTabView::ShowHover(TabStyle::ShowHoverStyle style) {
+  hovered_ = true;
+
+  float radial_highlight_opacity = 1.0f;
+  for (views::View* child : children()) {
+    if (auto* tab_view = views::AsViewClass<TabView>(child)) {
+      tab_view->UpdateHovered(true);
+      tab_view->SchedulePaint();
+      radial_highlight_opacity = tab_view->radial_highlight_opacity();
+    }
+  }
+
+  if (hover_controller_) {
+    if (style == TabStyle::ShowHoverStyle::kSubtle) {
+      hover_controller_->SetSubtleOpacityScale(radial_highlight_opacity);
+    }
+    hover_controller_->Show(style);
+  }
+
+  SchedulePaint();
+}
+
+void SplitTabView::HideHover(TabStyle::HideHoverStyle style) {
+  hovered_ = false;
+
+  for (views::View* child : children()) {
+    if (auto* tab_view = views::AsViewClass<TabView>(child)) {
+      tab_view->UpdateHovered(false);
+      tab_view->SchedulePaint();
+    }
+  }
+
+  if (hover_controller_) {
+    hover_controller_->Hide(style);
+  }
+
+  SchedulePaint();
+}
+
 double SplitTabView::GetHoverAnimationValue() const {
   if (!hover_controller_) {
     return hovered_ ? 1.0 : 0.0;
@@ -235,26 +274,11 @@ void SplitTabView::UpdateHovered(bool hovered) {
     return;
   }
 
-  hovered_ = hovered;
-
-  float radial_highlight_opacity = 1.0f;
-  for (views::View* child : children()) {
-    if (auto* tab_view = views::AsViewClass<TabView>(child)) {
-      tab_view->UpdateHovered(hovered_);
-      radial_highlight_opacity = tab_view->radial_highlight_opacity();
-    }
+  if (hovered) {
+    ShowHover(TabStyle::ShowHoverStyle::kSubtle);
+  } else {
+    HideHover(TabStyle::HideHoverStyle::kGradual);
   }
-
-  if (hover_controller_) {
-    if (hovered_) {
-      hover_controller_->SetSubtleOpacityScale(radial_highlight_opacity);
-      hover_controller_->Show(TabStyle::ShowHoverStyle::kSubtle);
-    } else {
-      hover_controller_->Hide(TabStyle::HideHoverStyle::kGradual);
-    }
-  }
-
-  SchedulePaint();
 }
 
 int SplitTabView::ComputeHorizontalWidth(
