@@ -35,6 +35,11 @@ namespace updater::test {
 struct HttpRequest;
 class IntegrationTestCommands;
 
+// Update protocol version of a request: `kV4` for protocol 4.0 requests, else
+// `kV3`. Requests that carry no protocol version at all, such as downloads,
+// also get `kV3`.
+enum class ProtocolVersion { kV3, kV4 };
+
 // A test HTTP server that answers expected requests and fails the test on any
 // other request. Expectations are served in the order they are registered,
 // except that entries registered by one `ExpectUnordered` call may be served
@@ -44,17 +49,20 @@ class IntegrationTestCommands;
 // `ScopedServer`; response body providers may.
 class ScopedServer {
  public:
+  // Returns the response body for a request with the given protocol version.
+  using ResponseBodyProvider =
+      base::RepeatingCallback<std::string(ProtocolVersion)>;
+
   // An expected request and the response to it. A request matches if every
-  // matcher in `matchers` succeeds. `response_body_provider` receives `true`
-  // for protocol 4.0 requests.
+  // matcher in `matchers` succeeds. `response_body_provider` receives the
+  // request's protocol version.
   struct Expectation {
     Expectation(request::MatcherGroup matchers,
                 std::string response_body,
                 net::HttpStatusCode response_status_code = net::HTTP_OK);
-    Expectation(
-        request::MatcherGroup matchers,
-        base::RepeatingCallback<std::string(bool)> response_body_provider,
-        net::HttpStatusCode response_status_code = net::HTTP_OK);
+    Expectation(request::MatcherGroup matchers,
+                ResponseBodyProvider response_body_provider,
+                net::HttpStatusCode response_status_code = net::HTTP_OK);
     Expectation(const Expectation&);
     Expectation& operator=(const Expectation&);
     Expectation(Expectation&&) noexcept;
@@ -62,7 +70,7 @@ class ScopedServer {
     ~Expectation();
 
     request::MatcherGroup matchers;
-    base::RepeatingCallback<std::string(bool)> response_body_provider;
+    ResponseBodyProvider response_body_provider;
     net::HttpStatusCode response_status_code;
   };
 
@@ -92,12 +100,11 @@ class ScopedServer {
                   const std::string& response_body,
                   net::HttpStatusCode response_status_code = net::HTTP_OK);
 
-  // Same as above, but `response_body_provider` returns the response body. It
-  // receives `true` for protocol 4.0 requests.
-  void ExpectOnce(
-      request::MatcherGroup matchers,
-      base::RepeatingCallback<std::string(bool)> response_body_provider,
-      net::HttpStatusCode response_status_code = net::HTTP_OK);
+  // Same as above, but `response_body_provider` returns the response body for
+  // the request's protocol version.
+  void ExpectOnce(request::MatcherGroup matchers,
+                  ResponseBodyProvider response_body_provider,
+                  net::HttpStatusCode response_status_code = net::HTTP_OK);
 
   // Registers `expectations` as one group whose requests may arrive in any
   // order. Each request takes the first entry it matches, so list overlapping

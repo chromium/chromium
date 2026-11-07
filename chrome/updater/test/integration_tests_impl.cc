@@ -277,10 +277,11 @@ std::string GetUpdateResponse(const std::string& app_id,
                               const std::string& arguments,
                               const std::string& file_hash,
                               bool use_xz,
-                              bool v4) {
-  auto ResponseFunc = v4 ? GetUpdateResponseV4 : GetUpdateResponseV3;
+                              ProtocolVersion protocol_version) {
+  const bool is_v4 = protocol_version == ProtocolVersion::kV4;
+  auto ResponseFunc = is_v4 ? GetUpdateResponseV4 : GetUpdateResponseV3;
   auto ResponseFuncApp =
-      v4 ? GetUpdateResponseForAppV4 : GetUpdateResponseForAppV3;
+      is_v4 ? GetUpdateResponseForAppV4 : GetUpdateResponseForAppV3;
   return ResponseFunc({ResponseFuncApp(
       app_id, install_data_index, codebase, version, update_file, run_action,
       arguments, file_hash, std::nullopt, use_xz)});
@@ -784,8 +785,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
         absl::StrFormat(R"("%s":"%s")", key, value.GetString()));
   }
   std::vector<std::string> app_requests;
-  std::vector<base::RepeatingCallback<std::string(bool)>>
-      app_response_providers;
+  std::vector<ScopedServer::ResponseBodyProvider> app_response_providers;
   for (const AppUpdateExpectation& app : apps) {
     app_requests.push_back(absl::StrFormat(R"("appid":"%s")", app.app_id));
     if (app.allow_rollback) {
@@ -801,7 +801,8 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
     }
     if (!app.custom_app_response.empty()) {
       app_response_providers.push_back(base::BindRepeating(
-          [](const std::string& response, bool v4) { return response; },
+          [](const std::string& response,
+             ProtocolVersion /*protocol_version*/) { return response; },
           app.custom_app_response));
       continue;
     }
@@ -821,9 +822,11 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
         [](const std::string& app_id, const std::string& url,
            const base::Version& to_version, const base::FilePath& crx_path,
            const std::string& run_action, const std::string& args,
-           std::optional<std::string> response_status, bool use_xz, bool v4) {
-          auto func =
-              v4 ? GetUpdateResponseForAppV4 : GetUpdateResponseForAppV3;
+           std::optional<std::string> response_status, bool use_xz,
+           ProtocolVersion protocol_version) {
+          auto func = protocol_version == ProtocolVersion::kV4
+                          ? GetUpdateResponseForAppV4
+                          : GetUpdateResponseForAppV3;
           return func(app_id, "", url, to_version, crx_path, run_action, args,
                       std::nullopt, response_status, use_xz);
         },
@@ -838,15 +841,18 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
        request::GetScopeMatcher(scope),
        request::GetUpdaterEnableUpdatesMatcher()},
       base::BindRepeating(
-          [](std::vector<base::RepeatingCallback<std::string(bool)>>
+          [](std::vector<ScopedServer::ResponseBodyProvider>
                  app_response_providers,
-             bool v4) {
+             ProtocolVersion protocol_version) {
             std::vector<std::string> app_responses = base::ToVector(
                 app_response_providers,
-                [v4](const base::RepeatingCallback<std::string(bool)>&
-                         provider) { return provider.Run(v4); });
-            return v4 ? GetUpdateResponseV4(app_responses)
-                      : GetUpdateResponseV3(app_responses);
+                [protocol_version](
+                    const ScopedServer::ResponseBodyProvider& provider) {
+                  return provider.Run(protocol_version);
+                });
+            return protocol_version == ProtocolVersion::kV4
+                       ? GetUpdateResponseV4(app_responses)
+                       : GetUpdateResponseV3(app_responses);
           },
           app_response_providers));
 

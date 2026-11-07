@@ -113,8 +113,10 @@ TEST_F(ScopedServerTest, UnexpectedRequestFails) {
 }
 
 TEST_F(ScopedServerTest, ResponseBodyProviderReceivesProtocolVersion) {
-  const auto provider = base::BindRepeating(
-      [](bool is_v4) -> std::string { return is_v4 ? "v4" : "v3"; });
+  const auto provider =
+      base::BindRepeating([](ProtocolVersion protocol_version) -> std::string {
+        return protocol_version == ProtocolVersion::kV4 ? "v4" : "v3";
+      });
   server_.ExpectOnce(PathIs("/update"), provider);
   server_.ExpectOnce(PathIs("/update"), provider, net::HTTP_ACCEPTED);
 
@@ -131,12 +133,13 @@ TEST_F(ScopedServerTest, ResponseBodyProviderReceivesProtocolVersion) {
 
 TEST_F(ScopedServerTest, ResponseBodyProviderCanCallIntoServer) {
   // `ExpectOnce` and the setters take the server's lock.
-  server_.ExpectOnce(PathIs("/first"),
-                     base::BindLambdaForTesting([&](bool /*is_v4*/) {
-                       server_.ExpectOnce(PathIs("/second"), "2");
-                       server_.set_download_delay(base::TimeDelta());
-                       return std::string("1");
-                     }));
+  server_.ExpectOnce(
+      PathIs("/first"),
+      base::BindLambdaForTesting([&](ProtocolVersion /*protocol_version*/) {
+        server_.ExpectOnce(PathIs("/second"), "2");
+        server_.set_download_delay(base::TimeDelta());
+        return std::string("1");
+      }));
 
   EXPECT_EQ(Handle(MakeRequest("/first"))->content(), "1");
   EXPECT_EQ(Handle(MakeRequest("/second"))->content(), "2");
@@ -147,7 +150,9 @@ TEST_F(ScopedServerTest, ExpectUnorderedAcceptsAnyOrder) {
       {{PathIs("/a"), "a"},
        {PathIs("/b"), "b", net::HTTP_NOT_FOUND},
        {PathIs("/c"),
-        base::BindRepeating([](bool /*is_v4*/) { return std::string("c"); })}});
+        base::BindRepeating([](ProtocolVersion /*protocol_version*/) {
+          return std::string("c");
+        })}});
 
   std::unique_ptr<BasicHttpResponse> response = Handle(MakeRequest("/c"));
   EXPECT_EQ(response->code(), net::HTTP_OK);

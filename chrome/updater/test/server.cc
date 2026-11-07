@@ -95,11 +95,14 @@ bool AcceptsGzip(const HttpRequest& request) {
          it->second.find("gzip") != std::string::npos;
 }
 
-// Returns whether the decoded request body has a `"protocol": "4.0"` entry,
-// with any number of spaces after the colon.
-bool IsProtocolV4(const HttpRequest& request) {
+// Returns `kV4` if the decoded request body has a `"protocol": "4.0"` entry,
+// with any number of spaces after the colon, else `kV3`. Requests without a
+// protocol entry, such as downloads, also get `kV3`.
+ProtocolVersion GetProtocolVersion(const HttpRequest& request) {
   return re2::RE2::PartialMatch(request.decoded_content,
-                                R"("protocol": *"4\.0")");
+                                R"("protocol": *"4\.0")")
+             ? ProtocolVersion::kV4
+             : ProtocolVersion::kV3;
 }
 
 }  // namespace
@@ -107,16 +110,18 @@ bool IsProtocolV4(const HttpRequest& request) {
 ScopedServer::Expectation::Expectation(request::MatcherGroup matchers,
                                        std::string response_body,
                                        net::HttpStatusCode response_status_code)
-    : Expectation(
-          std::move(matchers),
-          base::BindRepeating([](const std::string& response_body,
-                                 bool /*is_v4*/) { return response_body; },
-                              std::move(response_body)),
-          response_status_code) {}
+    : Expectation(std::move(matchers),
+                  base::BindRepeating(
+                      [](const std::string& response_body,
+                         ProtocolVersion /*protocol_version*/) {
+                        return response_body;
+                      },
+                      std::move(response_body)),
+                  response_status_code) {}
 
 ScopedServer::Expectation::Expectation(
     request::MatcherGroup matchers,
-    base::RepeatingCallback<std::string(bool)> response_body_provider,
+    ResponseBodyProvider response_body_provider,
     net::HttpStatusCode response_status_code)
     : matchers(std::move(matchers)),
       response_body_provider(std::move(response_body_provider)),
@@ -180,10 +185,9 @@ void ScopedServer::ExpectOnce(request::MatcherGroup matchers,
   ExpectUnordered({{std::move(matchers), response_body, response_status_code}});
 }
 
-void ScopedServer::ExpectOnce(
-    request::MatcherGroup matchers,
-    base::RepeatingCallback<std::string(bool)> response_body_provider,
-    net::HttpStatusCode response_status_code) {
+void ScopedServer::ExpectOnce(request::MatcherGroup matchers,
+                              ResponseBodyProvider response_body_provider,
+                              net::HttpStatusCode response_status_code) {
   ExpectUnordered({{std::move(matchers), std::move(response_body_provider),
                     response_status_code}});
 }
@@ -261,7 +265,7 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
 
   // Runs without holding `lock_`, so the provider may call into this server.
   std::string response_body =
-      expectation->response_body_provider.Run(IsProtocolV4(request));
+      expectation->response_body_provider.Run(GetProtocolVersion(request));
   if (request.relative_url.starts_with(proxy_pac_path())) {
     VLOG(1) << "PAC proxy settings: [ " << response_body << "]";
   }

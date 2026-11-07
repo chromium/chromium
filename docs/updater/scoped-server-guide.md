@@ -171,11 +171,12 @@ test_server.ExpectOnce(
 );
 ```
 
-**2. As a `base::RepeatingCallback<std::string(bool)>`:** This form of
-`ExpectOnce` allows a common implementation to support both Omaha Protocol 4 and
-Omaha Protocol 3.1. `ScopedServer` invokes this callback with a boolean
-`is_protocol_4`, indicating the protocol version parsed from the request, if the
-request successfully matches.
+**2. As a `ScopedServer::ResponseBodyProvider`:** This form of `ExpectOnce`
+takes a `base::RepeatingCallback<std::string(ProtocolVersion)>`, which allows a
+common implementation to support both Omaha Protocol 4 and Omaha Protocol 3.1.
+If the request matches, `ScopedServer` invokes this callback with the protocol
+version parsed from the request: `ProtocolVersion::kV4` for protocol 4.0
+requests, else `ProtocolVersion::kV3`.
 
 #### Examples
 
@@ -184,9 +185,9 @@ Helpers in  `integration_tests_impl.cc`  may be useful (via
 implementing a new one. Some highlights:
 
 * `GetUpdateResponse(app_id, ...)`: Dynamically generates a valid update check
-  response (v3.1 or v4.0 depending on the `bool` argument passed to it by the
-  test server) complete with a specific installation relative path, arguments,
-  and manifest hash.
+  response (v3.1 or v4.0 depending on the `ProtocolVersion` argument passed to
+  it by the test server) complete with a specific installation relative path,
+  arguments, and manifest hash.
 * `GetUpdateResponseV4(app_responses)` / `GetUpdateResponseV3(app_responses)`:
   Wraps a collection of individual app responses in the standard Omaha envelope.
 * `GetUpdateResponseForAppV4(...)`: Returns the specific JSON snippet for a

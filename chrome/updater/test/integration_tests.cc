@@ -143,37 +143,39 @@ void ExpectNoUpdateSequence(
            "request.apps",
            base::ListValue().Append(std::move(app_expectation))))},
       base::BindRepeating(
-          [](const std::string& app_id, bool v4) {
-            return v4 ? absl::StrFormat(
-                            ")]}'\n"
-                            R"({"response":{)"
-                            R"(  "protocol":"4.0",)"
-                            R"(  "apps":[)"
-                            R"(    {)"
-                            R"(      "appid":"%s",)"
-                            R"(      "status":"ok",)"
-                            R"(      "updatecheck":{)"
-                            R"(        "status":"noupdate")"
-                            R"(      })"
-                            R"(    })"
-                            R"(  ])"
-                            R"(}})",
-                            app_id)
-                      : absl::StrFormat(
-                            ")]}'\n"
-                            R"({"response":{)"
-                            R"(  "protocol":"3.1",)"
-                            R"(  "app":[)"
-                            R"(    {)"
-                            R"(      "appid":"%s",)"
-                            R"(      "status":"ok",)"
-                            R"(      "updatecheck":{)"
-                            R"(        "status":"noupdate")"
-                            R"(      })"
-                            R"(    })"
-                            R"(  ])"
-                            R"(}})",
-                            app_id);
+          [](const std::string& app_id, ProtocolVersion protocol_version) {
+            if (protocol_version == ProtocolVersion::kV4) {
+              return absl::StrFormat(
+                  ")]}'\n"
+                  R"({"response":{)"
+                  R"(  "protocol":"4.0",)"
+                  R"(  "apps":[)"
+                  R"(    {)"
+                  R"(      "appid":"%s",)"
+                  R"(      "status":"ok",)"
+                  R"(      "updatecheck":{)"
+                  R"(        "status":"noupdate")"
+                  R"(      })"
+                  R"(    })"
+                  R"(  ])"
+                  R"(}})",
+                  app_id);
+            }
+            return absl::StrFormat(
+                ")]}'\n"
+                R"({"response":{)"
+                R"(  "protocol":"3.1",)"
+                R"(  "app":[)"
+                R"(    {)"
+                R"(      "appid":"%s",)"
+                R"(      "status":"ok",)"
+                R"(      "updatecheck":{)"
+                R"(        "status":"noupdate")"
+                R"(      })"
+                R"(    })"
+                R"(  ])"
+                R"(}})",
+                app_id);
           },
           app_id));
 }
