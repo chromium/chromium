@@ -3147,7 +3147,7 @@ _CONFIG = [
         'allowed': [
             'rust::(Str(ing)?|Box|Vec)',
             'xml_ffi::.*',
-            'base::(StringViewToRustSlice|RustStrToStringView)',
+            'base::(SpanToRustSlice|StringViewToRustSlice|RustStrToStringView)',
             're2::StringPiece',
         ],
     },
