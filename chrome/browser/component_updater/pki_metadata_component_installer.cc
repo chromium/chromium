@@ -222,6 +222,12 @@ PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
 PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
     MtcCaIdAndLandmarkTrustAnchorIds(
         const MtcCaIdAndLandmarkTrustAnchorIds& other) = default;
+PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds&
+PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
+operator=(const MtcCaIdAndLandmarkTrustAnchorIds&) = default;
+PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds&
+PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
+operator=(MtcCaIdAndLandmarkTrustAnchorIds&&) noexcept = default;
 
 PKIMetadataComponentInstallerService::LoadedPKIMetadata::LoadedPKIMetadata() =
     default;

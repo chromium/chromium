@@ -229,6 +229,10 @@ class PKIMetadataComponentInstallerService final {
     MtcCaIdAndLandmarkTrustAnchorIds(const MtcCaIdAndLandmarkTrustAnchorIds&);
     MtcCaIdAndLandmarkTrustAnchorIds(
         MtcCaIdAndLandmarkTrustAnchorIds&&) noexcept;
+    MtcCaIdAndLandmarkTrustAnchorIds& operator=(
+        const MtcCaIdAndLandmarkTrustAnchorIds&);
+    MtcCaIdAndLandmarkTrustAnchorIds& operator=(
+        MtcCaIdAndLandmarkTrustAnchorIds&&) noexcept;
 
     std::vector<uint8_t> ca_id;
     std::vector<std::vector<uint8_t>> landmark_trust_anchor_ids;
