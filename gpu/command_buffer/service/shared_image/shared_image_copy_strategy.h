@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_COPY_STRATEGY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_COPY_STRATEGY_H_
 
+#include "base/functional/callback.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
@@ -14,7 +15,7 @@ class SharedImageBacking;
 // Interface for copy strategies between different shared image backing types.
 class GPU_GLES2_EXPORT SharedImageCopyStrategy {
  public:
-  virtual ~SharedImageCopyStrategy() = default;
+  virtual ~SharedImageCopyStrategy();
 
   // Returns true if this strategy can be used to copy between the given
   // source and destination backings.
@@ -25,6 +26,13 @@ class GPU_GLES2_EXPORT SharedImageCopyStrategy {
   // Returns true on success, false otherwise.
   virtual bool Copy(SharedImageBacking* src_backing,
                     SharedImageBacking* dst_backing) = 0;
+
+  // Performs a potentially asynchronous copy from the source to the destination
+  // backing, invoking `callback` with the result upon completion. Defaults to a
+  // synchronous `Copy()`.
+  virtual void CopyAsync(SharedImageBacking* src_backing,
+                         SharedImageBacking* dst_backing,
+                         base::OnceCallback<void(bool)> callback);
 };
 
 }  // namespace gpu

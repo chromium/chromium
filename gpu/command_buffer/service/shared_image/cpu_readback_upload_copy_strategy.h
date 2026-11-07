@@ -27,6 +27,9 @@ class GPU_GLES2_EXPORT CPUReadbackUploadCopyStrategy
                SharedImageBacking* dst_backing) override;
   bool Copy(SharedImageBacking* src_backing,
             SharedImageBacking* dst_backing) override;
+  void CopyAsync(SharedImageBacking* src_backing,
+                 SharedImageBacking* dst_backing,
+                 base::OnceCallback<void(bool)> callback) override;
 };
 
 }  // namespace gpu

@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
 
+#include <utility>
 #include <vector>
 
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -84,6 +85,21 @@ bool CPUReadbackUploadCopyStrategy::Copy(SharedImageBacking* src_backing,
   }
 
   return true;
+}
+
+void CPUReadbackUploadCopyStrategy::CopyAsync(
+    SharedImageBacking* src_backing,
+    SharedImageBacking* dst_backing,
+    base::OnceCallback<void(bool)> callback) {
+  if (src_backing->GetType() != SharedImageBackingType::kSharedMemory &&
+      dst_backing->GetType() == SharedImageBackingType::kSharedMemory) {
+    auto* dst_shm_backing = static_cast<SharedMemoryImageBacking*>(dst_backing);
+    src_backing->ReadbackToMemoryAsync(dst_shm_backing->pixmaps(),
+                                       std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(Copy(src_backing, dst_backing));
 }
 
 }  // namespace gpu

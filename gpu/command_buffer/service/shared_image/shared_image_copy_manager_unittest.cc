@@ -4,6 +4,11 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/dawn_copy_strategy.h"
@@ -27,6 +32,37 @@
 #endif
 
 namespace gpu {
+namespace {
+
+class AsyncReadbackTestImageBacking : public TestImageBacking {
+ public:
+  using TestImageBacking::TestImageBacking;
+
+  void ReadbackToMemoryAsync(const std::vector<SkPixmap>& pixmaps,
+                             base::OnceCallback<void(bool)> callback) override {
+    pending_pixmaps_ = pixmaps;
+    pending_callback_ = std::move(callback);
+  }
+
+  bool has_pending_readback() const { return !pending_callback_.is_null(); }
+
+  void CompletePendingReadback(bool success, uint32_t pixel_value) {
+    ASSERT_TRUE(pending_callback_);
+    if (success) {
+      for (auto& pixmap : pending_pixmaps_) {
+        *pixmap.writable_addr32(0, 0) = pixel_value;
+      }
+    }
+    pending_pixmaps_.clear();
+    std::move(pending_callback_).Run(success);
+  }
+
+ private:
+  std::vector<SkPixmap> pending_pixmaps_;
+  base::OnceCallback<void(bool)> pending_callback_;
+};
+
+}  // namespace
 
 class SharedImageCopyManagerTest : public SharedImageTestBase {
  public:
@@ -116,6 +152,77 @@ TEST_F(SharedImageCopyManagerTest, CopySharedMemoryDirectViaCpuStrategy) {
   EXPECT_FALSE(strategy_ptr->Copy(shm_backing.get(), other_shm_backing.get()));
   EXPECT_FALSE(
       copy_manager_->CopyImage(shm_backing.get(), other_shm_backing.get()));
+}
+
+TEST_F(SharedImageCopyManagerTest, CopyImageAsyncToSharedMemoryAndFallback) {
+  copy_manager_->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
+
+  constexpr viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  constexpr gfx::Size size(16, 16);
+  constexpr auto usage =
+      SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+
+  auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
+      Mailbox::Generate(),
+      {format, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, usage, "ShmLabel"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false,
+      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+  auto other_shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
+      Mailbox::Generate(),
+      {format, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, usage, "OtherShmLabel"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false,
+      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+  auto async_src = std::make_unique<AsyncReadbackTestImageBacking>(
+      Mailbox::Generate(),
+      SharedImageInfo(format, size, gfx::ColorSpace::CreateSRGB(),
+                      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                      "AsyncSrc"),
+      1024);
+  auto sync_dst = std::make_unique<TestImageBacking>(
+      Mailbox::Generate(),
+      SharedImageInfo(format, size, gfx::ColorSpace::CreateSRGB(),
+                      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                      "SyncDst"),
+      1024);
+
+  // 1. GPU -> SharedMemory delegates to ReadbackToMemoryAsync() into the
+  //    destination SharedMemoryImageBacking's pixmaps without blocking.
+  std::optional<bool> async_result;
+  copy_manager_->CopyImageAsync(async_src.get(), shm_backing.get(),
+                                base::BindLambdaForTesting([&](bool success) {
+                                  async_result = success;
+                                }));
+  EXPECT_FALSE(async_result.has_value());
+  EXPECT_FALSE(async_src->GetReadbackToMemoryCalledAndReset());
+  ASSERT_TRUE(async_src->has_pending_readback());
+
+  async_src->CompletePendingReadback(/*success=*/true,
+                                     /*pixel_value=*/0x12345678u);
+  ASSERT_TRUE(async_result.has_value());
+  EXPECT_TRUE(*async_result);
+  const auto& shm_pixmaps =
+      static_cast<SharedMemoryImageBacking*>(shm_backing.get())->pixmaps();
+  EXPECT_EQ(*shm_pixmaps[0].addr32(0, 0), 0x12345678u);
+
+  // 2. SharedMemory -> GPU falls back to synchronous UploadFromMemory().
+  std::optional<bool> upload_result;
+  copy_manager_->CopyImageAsync(shm_backing.get(), sync_dst.get(),
+                                base::BindLambdaForTesting([&](bool success) {
+                                  upload_result = success;
+                                }));
+  ASSERT_TRUE(upload_result.has_value());
+  EXPECT_TRUE(*upload_result);
+  EXPECT_TRUE(sync_dst->GetUploadFromMemoryCalledAndReset());
+
+  // 3. Unsupported pairs invoke `callback` with false.
+  std::optional<bool> fail_result;
+  copy_manager_->CopyImageAsync(
+      shm_backing.get(), other_shm_backing.get(),
+      base::BindLambdaForTesting([&](bool success) { fail_result = success; }));
+  ASSERT_TRUE(fail_result.has_value());
+  EXPECT_FALSE(*fail_result);
 }
 
 TEST(SharedImageCopyManagerUnitTest, GetEffectiveCopyFormat) {

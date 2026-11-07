@@ -270,6 +270,7 @@ target(link_target_type, "gles2_sources") {
     "shared_image/shared_image_backing_factory.h",
     "shared_image/shared_image_copy_manager.cc",
     "shared_image/shared_image_copy_manager.h",
+    "shared_image/shared_image_copy_strategy.cc",
     "shared_image/shared_image_copy_strategy.h",
     "shared_image/shared_image_factory.cc",
     "shared_image/shared_image_factory.h",

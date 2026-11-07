@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/logging.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_strategy.h"
@@ -30,6 +31,22 @@ bool SharedImageCopyManager::CopyImage(SharedImageBacking* src_backing,
   LOG(ERROR) << "No supported shared image copy strategy found to copy from "
              << src_backing->GetName() << " to " << dst_backing->GetName();
   return false;
+}
+
+void SharedImageCopyManager::CopyImageAsync(
+    SharedImageBacking* src_backing,
+    SharedImageBacking* dst_backing,
+    base::OnceCallback<void(bool)> callback) {
+  for (const auto& strategy : strategies_) {
+    if (strategy->CanCopy(src_backing, dst_backing)) {
+      strategy->CopyAsync(src_backing, dst_backing, std::move(callback));
+      return;
+    }
+  }
+
+  LOG(ERROR) << "No supported shared image copy strategy found to copy from "
+             << src_backing->GetName() << " to " << dst_backing->GetName();
+  std::move(callback).Run(false);
 }
 
 }  // namespace gpu

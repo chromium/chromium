@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
@@ -37,6 +38,13 @@ class GPU_GLES2_EXPORT SharedImageCopyManager
   // given backings. Returns true on success, false otherwise.
   bool CopyImage(SharedImageBacking* src_backing,
                  SharedImageBacking* dst_backing);
+
+  // Performs a potentially asynchronous copy from `src_backing` to
+  // `dst_backing` using the first strategy that supports the pair, invoking
+  // `callback` with the result upon completion.
+  void CopyImageAsync(SharedImageBacking* src_backing,
+                      SharedImageBacking* dst_backing,
+                      base::OnceCallback<void(bool)> callback);
 
  private:
   friend class base::RefCountedThreadSafe<SharedImageCopyManager>;
