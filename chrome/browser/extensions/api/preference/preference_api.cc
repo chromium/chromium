@@ -61,6 +61,9 @@ constexpr char kConversionErrorMessage[] =
 constexpr char kPermissionErrorMessage[] =
     "You do not have permission to access the preference '*'. "
     "Be sure to declare in your manifest what permissions you need.";
+constexpr char kNotControllableErrorMessage[] =
+    "Cannot set the '*' preference because it is not controllable by "
+    "extensions.";
 constexpr char kIncognitoKey[] = "incognito";
 constexpr char kScopeKey[] = "scope";
 constexpr char kIncognitoSpecific[] = "incognitoSpecific";
@@ -422,6 +425,10 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   // Validate new value.
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
+  CHECK(transformer);
+  if (!transformer->IsExtensionModifiable(profile)) {
+    return RespondNow(Error(kNotControllableErrorMessage, pref_key));
+  }
   std::string error;
   bool bad_message = false;
   std::optional<base::Value> browser_pref_value =
