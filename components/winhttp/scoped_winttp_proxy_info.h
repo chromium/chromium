@@ -11,6 +11,7 @@
 #include <winhttp.h>
 
 #include <string>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -18,9 +19,8 @@
 
 namespace winhttp {
 
-// Wrapper class for the WINHTTP_PROXY_INFO structure.
-// Note that certain Win32 APIs expected the strings to be allocated with
-// with GlobalAlloc.
+// Owns a WINHTTP_PROXY_INFO structure and the GlobalAlloc-ed strings it points
+// to, and frees the strings with GlobalFree. Move-only.
 class ScopedWinHttpProxyInfo {
  public:
   ScopedWinHttpProxyInfo() = default;
@@ -28,34 +28,18 @@ class ScopedWinHttpProxyInfo {
   ScopedWinHttpProxyInfo(const ScopedWinHttpProxyInfo& other) = delete;
   ScopedWinHttpProxyInfo& operator=(const ScopedWinHttpProxyInfo& other) =
       delete;
-  ScopedWinHttpProxyInfo(ScopedWinHttpProxyInfo&& other) noexcept {
-    proxy_info_.dwAccessType = other.proxy_info_.dwAccessType;
-    proxy_info_.lpszProxy = other.proxy_info_.lpszProxy;
-    other.proxy_info_.lpszProxy = nullptr;
-
-    proxy_info_.lpszProxyBypass = other.proxy_info_.lpszProxyBypass;
-    other.proxy_info_.lpszProxyBypass = nullptr;
-  }
+  ScopedWinHttpProxyInfo(ScopedWinHttpProxyInfo&& other) noexcept
+      : proxy_info_(std::exchange(other.proxy_info_, {})) {}
 
   ScopedWinHttpProxyInfo& operator=(ScopedWinHttpProxyInfo&& other) noexcept {
-    proxy_info_.dwAccessType = other.proxy_info_.dwAccessType;
-    proxy_info_.lpszProxy = other.proxy_info_.lpszProxy;
-    other.proxy_info_.lpszProxy = nullptr;
-
-    proxy_info_.lpszProxyBypass = other.proxy_info_.lpszProxyBypass;
-    other.proxy_info_.lpszProxyBypass = nullptr;
+    if (this != &other) {
+      FreeStrings();
+      proxy_info_ = std::exchange(other.proxy_info_, {});
+    }
     return *this;
   }
 
-  ~ScopedWinHttpProxyInfo() {
-    if (proxy_info_.lpszProxy) {
-      ::GlobalFree(proxy_info_.lpszProxy);
-    }
-
-    if (proxy_info_.lpszProxyBypass) {
-      ::GlobalFree(proxy_info_.lpszProxyBypass);
-    }
-  }
+  ~ScopedWinHttpProxyInfo() { FreeStrings(); }
 
   bool IsValid() const { return proxy_info_.lpszProxy; }
 
@@ -65,27 +49,55 @@ class ScopedWinHttpProxyInfo {
 
   wchar_t* proxy() const { return proxy_info_.lpszProxy; }
 
+  // Replaces the proxy string, unless `proxy` is empty or the allocation fails.
   void set_proxy(const std::wstring& proxy) {
     if (proxy.empty()) {
       return;
     }
 
-    proxy_info_.lpszProxy = GlobalAlloc(proxy);
+    if (wchar_t* str = GlobalAlloc(proxy)) {
+      FreeString(proxy_info_.lpszProxy);
+      proxy_info_.lpszProxy = str;
+    }
   }
 
+  // Replaces the proxy bypass string, unless `proxy_bypass` is empty or the
+  // allocation fails.
   void set_proxy_bypass(const std::wstring& proxy_bypass) {
     if (proxy_bypass.empty()) {
       return;
     }
 
-    proxy_info_.lpszProxyBypass = GlobalAlloc(proxy_bypass);
+    if (wchar_t* str = GlobalAlloc(proxy_bypass)) {
+      FreeString(proxy_info_.lpszProxyBypass);
+      proxy_info_.lpszProxyBypass = str;
+    }
   }
 
   const WINHTTP_PROXY_INFO* get() const { return &proxy_info_; }
 
-  WINHTTP_PROXY_INFO* receive() { return &proxy_info_; }
+  // Frees the owned strings and returns the cleared structure for a Win32 API
+  // to fill in. This object takes ownership of the strings, which must be
+  // allocated with GlobalAlloc.
+  WINHTTP_PROXY_INFO* receive() {
+    FreeStrings();
+    proxy_info_ = {};
+    return &proxy_info_;
+  }
 
  private:
+  static void FreeString(wchar_t*& str) {
+    if (str) {
+      ::GlobalFree(str);
+      str = nullptr;
+    }
+  }
+
+  void FreeStrings() {
+    FreeString(proxy_info_.lpszProxy);
+    FreeString(proxy_info_.lpszProxyBypass);
+  }
+
   wchar_t* GlobalAlloc(const std::wstring& str) {
     const size_t length = str.length() + 1;
     const size_t size_in_bytes = length * sizeof(wchar_t);
