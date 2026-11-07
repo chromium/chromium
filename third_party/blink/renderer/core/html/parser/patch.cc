@@ -62,8 +62,7 @@ class NodeRemovalScope {
 Patch* Patch::Prepare(ContainerNode* scope,
                       const AtomicString& marker_name,
                       HTMLTemplateElement* template_element) {
-  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() ||
-      marker_name.IsNull()) {
+  if (marker_name.IsNull()) {
     return nullptr;
   }
 
@@ -197,8 +196,6 @@ Patch::Patch(base::PassKey<Patch> key,
 }
 
 void Patch::Finalize(HTMLTemplateElement* template_element) {
-  CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-
   if (ContainerNode* start_parent = start_marker_->parentNode()) {
     start_parent->ParserRemoveChild(*start_marker_);
   }

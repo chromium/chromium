@@ -8501,12 +8501,6 @@ inline constexpr char kDcheckIsFatalDescription[] =
     "By default Chrome will evaluate in this build, but only log failures, "
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 
-inline constexpr char kDocumentPatchingName[] = "Document patching";
-inline constexpr char kDocumentPatchingDescription[] =
-    "Allow out-of-order streaming of HTML content using <template patchfor> "
-    "and node.streamHTMLUnsafe(). "
-    "See https://github.com/WICG/declarative-partial-updates";
-
 inline constexpr char kRouteMatchingName[] = "Route matching";
 inline constexpr char kRouteMatchingDescription[] =
     "Allow definition of routes as e.g. URLPattern. Special CSS rules can be "

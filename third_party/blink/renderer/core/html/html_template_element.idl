@@ -54,7 +54,7 @@
 
     // Used by document patching
     [CEReactions, Reflect, RuntimeEnabled=DeclarativeFragment] attribute DOMString sanitize;
-    [CEReactions, Reflect=for, RuntimeEnabled=DocumentPatching] attribute DOMString htmlFor;
+    [CEReactions, Reflect=for] attribute DOMString htmlFor;
 
     // TODO(crbug.com/545645928) when upstreaming: make these an interface mixin?
     [CEReactions, Reflect, URL, RuntimeEnabled=DeclarativeFragment] attribute USVString src;

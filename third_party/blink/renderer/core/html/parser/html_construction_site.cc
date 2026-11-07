@@ -877,9 +877,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
       CreateElement(token, html_names::xhtmlNamespaceURI));
 
   AtomicString patch_target =
-      RuntimeEnabledFeatures::DocumentPatchingEnabled()
-          ? template_element->FastGetAttribute(html_names::kForAttr)
-          : g_null_atom;
+      template_element->FastGetAttribute(html_names::kForAttr);
 
   auto* active_sanitizer = ActiveSanitizer();
   if (active_sanitizer &&
@@ -958,7 +956,6 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
 
   if (Patch* patch = Patch::Prepare(current_insertion_location.parent,
                                     patch_target, template_element)) {
-    CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
     UseCounter::Count(OwnerDocumentForCurrentNode(), WebFeature::kHTMLPatching);
     template_element->SetPatch(patch);
     if (RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {

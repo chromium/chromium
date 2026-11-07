@@ -9477,10 +9477,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kPictureInPictureMovesToolbarAndroid)},
 #endif
 
-    {"document-patching", flag_descriptions::kDocumentPatchingName,
-     flag_descriptions::kDocumentPatchingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kDocumentPatching)},
-
     {"route-matching", flag_descriptions::kRouteMatchingName,
      flag_descriptions::kRouteMatchingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kRouteMatching)},

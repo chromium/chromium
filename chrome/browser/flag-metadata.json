@@ -3306,11 +3306,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "document-patching",
-    "owners": [ "nrosenthal@chromium.org", "foolip@chromium.org" ],
-    "expiry_milestone": 180
-  },
-  {
     "name": "document-picture-in-picture-animate-resize",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 150
