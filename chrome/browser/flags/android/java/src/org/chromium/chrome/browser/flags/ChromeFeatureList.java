@@ -352,7 +352,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_SAVE_CARD_NON_BLOCKING_DIALOG =
             "AndroidSaveCardNonBlockingDialog";
     public static final String ANDROID_SETTINGS_URL = "AndroidSettingsUrl";
-    public static final String ANDROID_SETUP_LIST = "AndroidSetupList";
     public static final String ANDROID_SET_GOOGLE_ACCOUNT_IN_HELP = "AndroidSetGoogleAccountInHelp";
     public static final String ANDROID_STARTUP_IMPROVEMENTS = "AndroidStartupImprovements";
     // TODO(crbug.com/427496366): Remove once internal clank reference in
@@ -1061,9 +1060,6 @@ public abstract class ChromeFeatureList {
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sAndroidSetupList =
-            newCachedFlag(
-                    ANDROID_SETUP_LIST, /* defaultValue= */ true, /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidStartupImprovements =
             newCachedFlag(
                     ANDROID_STARTUP_IMPROVEMENTS,
@@ -1586,7 +1582,6 @@ public abstract class ChromeFeatureList {
                     sAndroidPageInfoAsAppMenuItem,
                     sAndroidProgressBarCancelOnWindowInvisible,
                     sAndroidProgressBarVisualUpdate,
-                    sAndroidSetupList,
                     sAndroidStartupImprovements,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabPersistentStoreActiveTabPrefs,

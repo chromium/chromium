@@ -28,9 +28,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -53,7 +51,6 @@ import java.util.concurrent.TimeUnit;
 /** Test relating to {@link SetupListManager} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowAppCompatResources.class})
-@Features.EnableFeatures(ChromeFeatureList.ANDROID_SETUP_LIST)
 public class SetupListManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
@@ -134,15 +131,6 @@ public class SetupListManagerUnitTest {
 
         // Because it's completed silently during priming, it shouldn't be awaiting animation.
         assertFalse(manager.isModuleAwaitingCompletionAnimation(ModuleType.HISTORY_SYNC_PROMO));
-    }
-
-    @Test
-    @Features.DisableFeatures(ChromeFeatureList.ANDROID_SETUP_LIST)
-    public void testSetupList_ReturnFalseWhenFeatureDisabled() {
-        // Re-create instance after feature flag is disabled.
-        SetupListManager.setInstanceForTesting(new SetupListManager());
-        assertFalse(SetupListManager.getInstance().isSetupListActive());
-        assertFalse(SetupListManager.getInstance().shouldShowTwoCellLayout());
     }
 
     @Test

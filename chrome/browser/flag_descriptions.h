@@ -1471,10 +1471,6 @@ inline constexpr char kAndroidSettingsUrlName[] = "Android Settings URL";
 inline constexpr char kAndroidSettingsUrlDescription[] =
     "Enables the use of chrome://settings on Android.";
 
-inline constexpr char kAndroidSetupListName[] = "Android Setup List";
-inline constexpr char kAndroidSetupListDescription[] =
-    "Enables the Android Setup List feature.";
-
 inline constexpr char kAndroidTabUiRefactorName[] = "Android Tab UI Refactor";
 inline constexpr char kAndroidTabUiRefactorDescription[] =
     "Enables Tab UI refactoring on Android. For example, modeling tab group "

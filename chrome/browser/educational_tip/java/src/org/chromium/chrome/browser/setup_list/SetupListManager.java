@@ -19,7 +19,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -274,7 +273,7 @@ public class SetupListManager
     }
 
     private static boolean isSetupListAllowed() {
-        return ChromeFeatureList.sAndroidSetupList.isEnabled() && !isFirstRunTriggered();
+        return !isFirstRunTriggered();
     }
 
     /**
