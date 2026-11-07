@@ -2023,11 +2023,6 @@ inline constexpr char kGlicWarmingName[] = "Glic Pre-Warming";
 inline constexpr char kGlicWarmingDescription[] =
     "Enables the pre-warming of the Glic panel's web client.";
 
-inline constexpr char kGlicDaisyChainNewTabsName[] =
-    "Glic Daisy chain new tabs";
-inline constexpr char kGlicDaisyChainNewTabsDescription[] =
-    "Daisy chains new tabs if the active tab when the new tab was create has an"
-    " open glic side panel";
 inline constexpr char kGlicUseToolbarHeightSidePanelName[] =
     "Glic Use Toolbar Height Side Panel";
 inline constexpr char kGlicUseToolbarHeightSidePanelDescription[] =

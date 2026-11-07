@@ -5913,11 +5913,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "glic-daisy-chain-new-tabs",
-    "owners": [ "bryantchandler@chromium.org", "//chrome/browser/glic/OWNERS" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "glic-default-tab-context-setting",
     "owners": [
       "mcrouse@chromium.org",
