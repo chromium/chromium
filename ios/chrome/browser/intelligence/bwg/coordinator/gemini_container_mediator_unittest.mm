@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -367,6 +368,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
 
     scene_state_ = [[SceneState alloc] init];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    TestFullscreenController::CreateForBrowser(browser_.get());
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
@@ -395,6 +397,8 @@ class GeminiContainerMediatorTest : public PlatformTest {
         sessionMetricsManager:session_metrics_manager_];
     mediator_.containerHandler = mock_container_handler_;
     mediator_.fullscreenHandler = mock_fullscreen_handler_;
+    mediator_.fullscreenController =
+        TestFullscreenController::FromBrowser(browser_.get());
     mediator_.geminiHandler = mock_gemini_handler_;
     mediator_.snackbarHandler = mock_snackbar_handler_;
   }
@@ -2231,7 +2235,7 @@ TEST_F(GeminiContainerMediatorTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration, kPageActionMenu,
-       kGeminiLive, kGeminiLiveDormantReasons},
+       kGeminiLive, kGeminiLiveDormantReasons, kFullscreenRefactoring},
       {});
 
   AppendActiveWebState();
@@ -2241,8 +2245,7 @@ TEST_F(GeminiContainerMediatorTest,
 
   [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
   OCMExpect([mock_fullscreen_handler_
-      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
-                                    kUserInitiatedFinishedByCode
+      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
                        animated:YES]);
   NSString* expected_title =
       l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONTINUE_SESSION_SNACKBAR);
@@ -2285,7 +2288,7 @@ TEST_F(GeminiContainerMediatorTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration, kPageActionMenu,
-       kGeminiLive, kGeminiLiveDormantReasons},
+       kGeminiLive, kGeminiLiveDormantReasons, kFullscreenRefactoring},
       {});
 
   AppendActiveWebState();
@@ -2295,8 +2298,7 @@ TEST_F(GeminiContainerMediatorTest,
 
   [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
   OCMExpect([mock_fullscreen_handler_
-      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
-                                    kUserInitiatedFinishedByCode
+      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
                        animated:YES]);
   [[mock_snackbar_handler_ reject] showSnackbarMessage:[OCMArg any]];
 
@@ -2433,6 +2435,78 @@ TEST_F(GeminiContainerMediatorZeroStateTest,
 
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
   EXPECT_TRUE(zero_state_consumer_.hidden);
+}
+
+// Tests that transitioning from thinking (minimized) to responding (auto-expand
+// to medium detent) exits fullscreen when `kFullscreenRefactoring` is disabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestThinkingToRespondingExitsFullscreenLegacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration},
+      {kFullscreenRefactoring});
+
+  TestFullscreenController* fullscreen_controller =
+      TestFullscreenController::FromBrowser(browser_.get());
+  ASSERT_TRUE(fullscreen_controller);
+
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
+
+  // Enter fullscreen while thinking (minimized detent).
+  fullscreen_controller->EnterFullscreen();
+  ASSERT_EQ(0.0, fullscreen_controller->GetProgress());
+
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  // Detent is minimized during thinking, so fullscreen remains active.
+  EXPECT_EQ(0.0, fullscreen_controller->GetProgress());
+
+  // Transitioning from thinking to responding auto-expands to medium detent,
+  // which should exit fullscreen.
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  EXPECT_EQ(1.0, fullscreen_controller->GetProgress());
+}
+
+// Tests that transitioning from thinking (minimized) to responding (auto-expand
+// to medium detent) dispatches `exitFullscreenWithTrigger:animated:` when
+// `kFullscreenRefactoring` is enabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestThinkingToRespondingExitsFullscreenRefactored) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration,
+       kFullscreenRefactoring},
+      {});
+
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
+
+  id strict_fullscreen_handler =
+      OCMStrictProtocolMock(@protocol(FullscreenCommands));
+  mediator_.fullscreenHandler = strict_fullscreen_handler;
+
+  // Transitioning to thinking sets detent to minimized, so fullscreen should
+  // not exit.
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  EXPECT_OCMOCK_VERIFY(strict_fullscreen_handler);
+
+  // Transitioning to responding auto-expands to medium detent, which should
+  // exit fullscreen via `fullscreenHandler`.
+  OCMExpect([strict_fullscreen_handler
+      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                       animated:YES]);
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  EXPECT_OCMOCK_VERIFY(strict_fullscreen_handler);
 }
 
 }  // namespace

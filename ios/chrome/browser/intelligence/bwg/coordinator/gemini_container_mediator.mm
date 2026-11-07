@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -63,6 +64,7 @@
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -420,6 +422,7 @@ class GeminiContainerMediatorTabHelperObserver
   _sharedTabsManager = nullptr;
   _sessionMetricsManager = nil;
   self.fullscreenHandler = nil;
+  _fullscreenController = nullptr;
   self.snackbarHandler = nil;
   _consumer = nil;
   _webStateList = nullptr;
@@ -909,6 +912,10 @@ class GeminiContainerMediatorTabHelperObserver
         setAssistantContainerMediumDetentHeight:std::nullopt];
   }
 
+  if (containerUIState.detent != AssistantContainerDetent::kMinimized) {
+    [self exitFullscreen];
+  }
+
   [self.containerHandler
       animateAssistantContainerToDetent:containerUIState.detent];
   [self.containerHandler
@@ -964,6 +971,17 @@ class GeminiContainerMediatorTabHelperObserver
 }
 
 #pragma mark - Private
+
+// Exits fullscreen mode.
+- (void)exitFullscreen {
+  if (IsFullscreenRefactoringEnabled()) {
+    [self.fullscreenHandler
+        exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                         animated:YES];
+  } else {
+    _fullscreenController->ExitFullscreen();
+  }
+}
 
 // Updates the zero-state consumer with fetched `suggestions` and adapts the
 // medium detent height of the assistant container. Results of superseded
@@ -1307,10 +1325,7 @@ class GeminiContainerMediatorTabHelperObserver
 
 // Handles a dormant status event for an active Live session.
 - (void)handleLiveDormantReason:(GeminiDormantReason)dormantReason {
-  [self.fullscreenHandler
-      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
-                                    kUserInitiatedFinishedByCode
-                       animated:YES];
+  [self exitFullscreen];
   ios::provider::SwitchToMode(GeminiViewMode::kFloaty, /*animated=*/true);
 
   std::optional<int> messageID =

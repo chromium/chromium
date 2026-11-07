@@ -23,6 +23,7 @@ enum class EntryPoint;
 
 class AuthenticationService;
 class Browser;
+class FullscreenController;
 class GeminiContainerMediatorEventHandler;
 class GeminiSharedTabsManager;
 @class GeminiConfiguration;
@@ -60,6 +61,9 @@ class GeminiSharedTabsManager;
 // Handler for fullscreen commands (e.g. exiting fullscreen on mode
 // transitions).
 @property(nonatomic, weak) id<FullscreenCommands> fullscreenHandler;
+
+// Controller for browser fullscreen state.
+@property(nonatomic, assign) FullscreenController* fullscreenController;
 
 // Handler for displaying snackbars.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;

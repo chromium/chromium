@@ -64,10 +64,13 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
     browser_list->AddBrowser(browser_.get());
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
 
+    mock_fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     mock_snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mock_fullscreen_handler_
+                             forProtocol:@protocol(FullscreenCommands)];
     [dispatcher startDispatchingToTarget:mock_gemini_handler_
                              forProtocol:@protocol(GeminiCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler_
@@ -88,6 +91,7 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
   ~GeminiContainerCoordinatorTest() override {
     [coordinator_ stop];
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher stopDispatchingForProtocol:@protocol(FullscreenCommands)];
     [dispatcher stopDispatchingForProtocol:@protocol(GeminiCommands)];
     [dispatcher stopDispatchingForProtocol:@protocol(SettingsCommands)];
     [dispatcher stopDispatchingForProtocol:@protocol(SnackbarCommands)];
@@ -112,6 +116,7 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> personal_profile_ = nullptr;
   std::unique_ptr<TestBrowser> browser_;
+  id mock_fullscreen_handler_;
   id mock_gemini_handler_;
   id mock_settings_handler_;
   ScopedKeyWindow scoped_key_window_;
@@ -284,12 +289,9 @@ TEST_F(GeminiContainerCoordinatorTest,
 
   id mock_container_handler =
       OCMProtocolMock(@protocol(AssistantContainerCommands));
-  id mock_fullscreen_handler = OCMProtocolMock(@protocol(FullscreenCommands));
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   [dispatcher startDispatchingToTarget:mock_container_handler
                            forProtocol:@protocol(AssistantContainerCommands)];
-  [dispatcher startDispatchingToTarget:mock_fullscreen_handler
-                           forProtocol:@protocol(FullscreenCommands)];
 
   __block id<AssistantContainerDelegate> captured_delegate = nil;
   OCMExpect([mock_container_handler
@@ -308,12 +310,11 @@ TEST_F(GeminiContainerCoordinatorTest,
   GeminiContainerMediator* mediator =
       base::apple::ObjCCastStrict<GeminiContainerMediator>(captured_delegate);
   ASSERT_NE(mediator.fullscreenHandler, nil);
-  OCMExpect([mock_fullscreen_handler exitForceFullscreen]);
+  OCMExpect([mock_fullscreen_handler_ exitForceFullscreen]);
   [mediator.fullscreenHandler exitForceFullscreen];
-  EXPECT_OCMOCK_VERIFY(mock_fullscreen_handler);
+  EXPECT_OCMOCK_VERIFY(mock_fullscreen_handler_);
 
   [coordinator_ stop];
-  [dispatcher stopDispatchingForProtocol:@protocol(FullscreenCommands)];
   [dispatcher stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
 }
 

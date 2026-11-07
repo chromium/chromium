@@ -16,6 +16,7 @@
 #import "base/not_fatal_until.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_coordinator.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
@@ -244,6 +245,9 @@
   if (IsFullscreenRefactoringEnabled()) {
     _mediator.fullscreenHandler =
         HandlerForProtocol(dispatcher, FullscreenCommands);
+  } else {
+    _mediator.fullscreenController =
+        FullscreenController::FromBrowser(self.browser);
   }
   _mediator.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
 }
