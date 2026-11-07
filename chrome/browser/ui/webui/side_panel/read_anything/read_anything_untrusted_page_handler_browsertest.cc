@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -45,6 +47,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
@@ -2593,6 +2596,17 @@ class ReadAnythingUntrustedPageHandlerSendFeedbackTest
       : ReadAnythingUntrustedPageHandlerTest(
             {features::kReadAnythingSendFeedback}) {}
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  const std::string* FindExtraDiagnostics(const base::ListValue& sys_info) {
+    auto it = std::ranges::find_if(sys_info, [](const base::Value& entry) {
+      const base::DictValue* dict = entry.GetIfDict();
+      const std::string* key = dict ? dict->FindString("key") : nullptr;
+      return key && *key == "EXTRA_DIAGNOSTICS";
+    });
+    return it != sys_info.end() ? it->GetDict().FindString("value") : nullptr;
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
@@ -2615,6 +2629,85 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
   histogram_tester.ExpectUniqueSample("Feedback.RequestSource",
                                       feedback::kFeedbackSourceReadingMode, 1);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
+                       OnSendFeedback_AttachesReadingModeMetadata) {
+  SetUpHandler();
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip);
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+
+  const std::string expected_font = "Serif";
+  const double expected_font_scale = 1.5;
+  const auto expected_color = read_anything::mojom::Colors::kDark;
+  const auto expected_line_spacing =
+      read_anything::mojom::LineSpacing::kVeryLoose;
+  const auto expected_letter_spacing =
+      read_anything::mojom::LetterSpacing::kWide;
+  const bool expected_links_enabled = false;
+  const bool expected_images_enabled = false;
+  const auto expected_line_focus = read_anything::mojom::LineFocus::kLineStatic;
+  const double expected_speech_rate = 1.5;
+  const auto expected_highlight_granularity =
+      read_anything::mojom::HighlightGranularity::kWord;
+  const auto expected_distillation_state = read_anything::mojom::
+      ReadAnythingDistillationState::kDistillationWithContent;
+
+  OnFontChange(expected_font);
+  OnFontSizeChange(expected_font_scale);
+  OnColorChange(expected_color);
+  OnLineSpaceChange(expected_line_spacing);
+  OnLetterSpaceChange(expected_letter_spacing);
+  OnLinksEnabledChanged(expected_links_enabled);
+  OnImagesEnabledChanged(expected_images_enabled);
+  handler_->OnLineFocusChanged(expected_line_focus, expected_line_focus);
+  OnSpeechRateChange(expected_speech_rate);
+  OnHighlightGranularityChanged(expected_highlight_granularity);
+  handler_->OnDistillationStateChanged(expected_distillation_state);
+
+  GrantUserActivation(rfh);
+  handler_->OnSendFeedback();
+
+  ASSERT_NE(FeedbackDialog::GetInstanceForTest(), nullptr);
+  base::DictValue dialog_args = base::test::ParseJsonDict(
+      FeedbackDialog::GetInstanceForTest()->GetDialogArgs());
+  EXPECT_EQ(*dialog_args.FindString("categoryTag"), "reading_mode");
+
+  const base::ListValue* sys_info = dialog_args.FindList("systemInformation");
+  ASSERT_NE(sys_info, nullptr);
+
+  const std::string* extra_diagnostics_str = FindExtraDiagnostics(*sys_info);
+  ASSERT_NE(extra_diagnostics_str, nullptr);
+
+  base::DictValue diagnostics =
+      base::test::ParseJsonDict(*extra_diagnostics_str);
+  EXPECT_EQ(
+      diagnostics.FindInt("presentation_state"),
+      std::to_underlying(
+          ReadAnythingController::PresentationState::kInImmersiveOverlay));
+  EXPECT_EQ(diagnostics.FindInt("distillation_state"),
+            std::to_underlying(expected_distillation_state));
+  EXPECT_EQ(diagnostics.FindBool("is_pdf"), false);
+  EXPECT_EQ(*diagnostics.FindString("font_name"), expected_font);
+  EXPECT_EQ(diagnostics.FindDouble("font_scale"), expected_font_scale);
+  EXPECT_EQ(diagnostics.FindInt("color_theme"),
+            std::to_underlying(expected_color));
+  EXPECT_EQ(diagnostics.FindInt("line_spacing"),
+            std::to_underlying(expected_line_spacing));
+  EXPECT_EQ(diagnostics.FindInt("letter_spacing"),
+            std::to_underlying(expected_letter_spacing));
+  EXPECT_EQ(diagnostics.FindBool("links_enabled"), expected_links_enabled);
+  EXPECT_EQ(diagnostics.FindBool("images_enabled"), expected_images_enabled);
+  EXPECT_EQ(diagnostics.FindInt("line_focus"),
+            std::to_underlying(expected_line_focus));
+  EXPECT_EQ(diagnostics.FindDouble("speech_rate"), expected_speech_rate);
+  EXPECT_EQ(diagnostics.FindInt("highlight_granularity"),
+            std::to_underlying(expected_highlight_granularity));
+  EXPECT_EQ(diagnostics.FindInt("tts_engine_state"),
+            std::to_underlying(EngineInstallationState::kUnknown));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
                        OnSendFeedback_IgnoresWhenCannotShowFeedback) {

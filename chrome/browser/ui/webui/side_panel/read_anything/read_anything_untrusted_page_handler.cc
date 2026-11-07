@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
@@ -274,6 +275,35 @@ InstallationState GetInstallationStateFromStatusCode(
     case content::LanguageInstallStatus::UNKNOWN:
       return InstallationState::kUnknown;
   }
+}
+
+EngineInstallationState GetTtsEngineInstallationState(
+    extensions::ExtensionRegistry* registry) {
+  if (registry->enabled_extensions().Contains(
+          extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
+    return EngineInstallationState::kEnabled;
+  }
+  if (registry->disabled_extensions().Contains(
+          extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
+    return EngineInstallationState::kDisabled;
+  }
+  if (registry->terminated_extensions().Contains(
+          extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
+    return EngineInstallationState::kTerminated;
+  }
+  if (registry->blocked_extensions().Contains(
+          extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
+    return EngineInstallationState::kBlocked;
+  }
+  if (registry->ready_extensions().Contains(
+          extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
+    return EngineInstallationState::kReady;
+  }
+  if (component_updater::WasmTtsEngineComponentInstallerPolicy::
+          IsWasmTTSEngineDirectorySet()) {
+    return EngineInstallationState::kInstalling;
+  }
+  return EngineInstallationState::kUnknown;
 }
 #endif
 
@@ -1088,13 +1118,54 @@ void ReadAnythingUntrustedPageHandler::OnSendFeedback() {
     return;
   }
 
+  PrefService* prefs = profile_->GetPrefs();
+  // Use IsPdfContents() rather than `is_pdf_with_frame_` so that feedback
+  // reports still log `is_pdf` as true when a PDF is open but its content
+  // frame failed to load or distill.
+  base::DictValue diagnostics =
+      base::DictValue()
+          .Set("presentation_state",
+               std::to_underlying(
+                   GetReadAnythingController()->GetPresentationState()))
+          .Set("distillation_state", std::to_underlying(distillation_state_))
+          .Set("is_pdf", IsPdfContents(GetWebContents(), !!pdf_observer_))
+          .Set("font_name",
+               prefs->GetString(prefs::kAccessibilityReadAnythingFontName))
+          .Set("font_scale",
+               prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale))
+          .Set("color_theme",
+               prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo))
+          .Set("line_spacing",
+               prefs->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing))
+          .Set(
+              "letter_spacing",
+              prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing))
+          .Set("links_enabled",
+               prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled))
+          .Set(
+              "images_enabled",
+              prefs->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled))
+          .Set("line_focus",
+               prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus))
+          .Set("speech_rate",
+               prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate))
+          .Set("highlight_granularity",
+               prefs->GetInteger(
+                   prefs::kAccessibilityReadAnythingHighlightGranularity));
+#if !BUILDFLAG(IS_CHROMEOS)
+  diagnostics.Set("tts_engine_state",
+                  std::to_underlying(GetTtsEngineInstallationState(
+                      extensions::ExtensionRegistry::Get(profile_))));
+#endif
+
+  std::string extra_diagnostics = base::WriteJson(diagnostics).value_or("");
+
   chrome::ShowFeedbackPage(
       tab_->GetBrowserWindowInterface(), feedback::kFeedbackSourceReadingMode,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
       l10n_util::GetStringUTF8(IDS_READING_MODE_FEEDBACK_PLACEHOLDER),
-      /*category_tag=*/kFeedbackCategoryTag,
-      /*extra_diagnostics=*/std::string());
+      /*category_tag=*/kFeedbackCategoryTag, extra_diagnostics);
 }
 
 void ReadAnythingUntrustedPageHandler::OnImagesEnabledChanged(bool enabled) {
@@ -2192,35 +2263,11 @@ void ReadAnythingUntrustedPageHandler::SendTranslationFailed() {
 void ReadAnythingUntrustedPageHandler::LogExtensionState() {
 #if !BUILDFLAG(IS_CHROMEOS)
   // A system voice.
-  EngineInstallationState installation_state;
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile_);
-  if (registry->enabled_extensions().Contains(
-          extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
-    installation_state = EngineInstallationState::kEnabled;
-  } else if (registry->disabled_extensions().Contains(
-                 extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
-    installation_state = EngineInstallationState::kDisabled;
-  } else if (registry->terminated_extensions().Contains(
-                 extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
-    installation_state = EngineInstallationState::kTerminated;
-  } else if (registry->blocked_extensions().Contains(
-                 extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
-    installation_state = EngineInstallationState::kBlocked;
-  } else if (registry->ready_extensions().Contains(
-                 extension_misc::kComponentUpdaterTTSEngineExtensionId)) {
-    installation_state = EngineInstallationState::kReady;
-  } else if (component_updater::WasmTtsEngineComponentInstallerPolicy::
-                 IsWasmTTSEngineDirectorySet()) {
-    installation_state = EngineInstallationState::kInstalling;
-  } else {
-    installation_state = EngineInstallationState::kUnknown;
-  }
-
   base::UmaHistogramEnumeration(
       "Accessibility.ReadAnything."
       "SystemVoiceExtensionInstallationState",
-      installation_state);
+      GetTtsEngineInstallationState(
+          extensions::ExtensionRegistry::Get(profile_)));
 #endif
 }
 
