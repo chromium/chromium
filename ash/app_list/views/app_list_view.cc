@@ -303,7 +303,9 @@ void AppListView::Show(AppListViewState preferred_state) {
   DCHECK(is_fullscreen());
 
   // Ensures that the launcher won't open underneath the a11y keyboard.
-  CloseKeyboardIfVisible();
+  if (delegate_->AppListTargetVisibility()) {
+    CloseKeyboardIfVisible();
+  }
 
   app_list_main_view_->ShowAppListWhenReady();
 

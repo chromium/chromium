@@ -1073,8 +1073,12 @@ void AppsContainerView::OnShown() {
   // kicking in - if a text input loses focus, and a text input gains it within
   // seconds, the virtual keyboard gets reshown. This is undesirable behavior
   // for the app list (where search box gets focus by default).
-  if (keyboard::KeyboardUIController::HasInstance())
+  if (keyboard::KeyboardUIController::HasInstance() &&
+      contents_view_->GetAppListMainView()
+          ->view_delegate()
+          ->AppListTargetVisibility()) {
     keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
+  }
 
   GetViewAccessibility().SetIsLeaf(false);
   is_active_page_ = true;
