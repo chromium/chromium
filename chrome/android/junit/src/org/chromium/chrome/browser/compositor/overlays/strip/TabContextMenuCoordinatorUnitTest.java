@@ -56,6 +56,7 @@ import android.widget.ListView;
 import androidx.annotation.PluralsRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -3819,8 +3820,21 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     public void buildMenuActionItems_WithExtensionItems() {
-        when(mExtensionTabContextMenuBridgeJniMock.init(any())).thenReturn(12345L);
-        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(12345L))
+        List<JniUniquePtr<ExtensionTabContextMenuBridge.NativeExtensionTabContextMenuBridge>>
+                createdPtrs = new ArrayList<>();
+        when(mExtensionTabContextMenuBridgeJniMock.init(any()))
+                .thenAnswer(
+                        inv -> {
+                            var ptr =
+                                    spy(
+                                            JniUniquePtr
+                                                    .<ExtensionTabContextMenuBridge
+                                                                    .NativeExtensionTabContextMenuBridge>
+                                                            createForTesting(12345L));
+                            createdPtrs.add(ptr);
+                            return ptr;
+                        });
+        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(any()))
                 .thenReturn(mMenuModelBridge);
 
         var itemModel =
@@ -3846,7 +3860,8 @@ public class TabContextMenuCoordinatorUnitTest {
         verify(mExtensionTabContextMenuBridgeJniMock).init(any());
 
         mTabContextMenuCoordinator.onMenuDismissed();
-        verify(mExtensionTabContextMenuBridgeJniMock).destroy(12345L);
+        assertEquals(1, createdPtrs.size());
+        verify(createdPtrs.get(0)).destroy();
     }
 
     @Test
@@ -3854,8 +3869,9 @@ public class TabContextMenuCoordinatorUnitTest {
         WebContents webContents2 = Mockito.mock(WebContents.class);
         when(mTab2.getWebContents()).thenReturn(webContents2);
 
-        when(mExtensionTabContextMenuBridgeJniMock.init(webContents2)).thenReturn(12345L);
-        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(12345L))
+        when(mExtensionTabContextMenuBridgeJniMock.init(webContents2))
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(12345L));
+        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(any()))
                 .thenReturn(mMenuModelBridge);
 
         var itemModel =
@@ -3889,14 +3905,14 @@ public class TabContextMenuCoordinatorUnitTest {
         verify(mExtensionTabContextMenuBridgeJniMock, never()).init(mWebContents);
 
         mTabContextMenuCoordinator.onMenuDismissed();
-        verify(mExtensionTabContextMenuBridgeJniMock).destroy(12345L);
     }
 
     @Test
     public void
             buildMenuActionItems_WithExtensionItems_LeadingAndTrailingDividers_NoDuplicateDividers() {
-        when(mExtensionTabContextMenuBridgeJniMock.init(any())).thenReturn(12345L);
-        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(12345L))
+        when(mExtensionTabContextMenuBridgeJniMock.init(any()))
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(12345L));
+        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(any()))
                 .thenReturn(mMenuModelBridge);
 
         var itemModel =

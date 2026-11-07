@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -24,24 +27,30 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionTabContextMenuBridge implements Destroyable {
-    private long mNativeExtensionTabContextMenuBridge;
+    @JniType("::extensions::ExtensionTabContextMenuBridge")
+    interface NativeExtensionTabContextMenuBridge extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeExtensionTabContextMenuBridge>
+            mNativeExtensionTabContextMenuBridge;
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     public static @Nullable ExtensionTabContextMenuBridge create(WebContents webContents) {
-        long nativePtr = ExtensionTabContextMenuBridgeJni.get().init(webContents);
-        if (nativePtr == 0) {
+        JniUniquePtr<NativeExtensionTabContextMenuBridge> nativePtr =
+                ExtensionTabContextMenuBridgeJni.get().init(webContents);
+        if (nativePtr == null) {
             return null;
         }
         return new ExtensionTabContextMenuBridge(nativePtr);
     }
 
-    private ExtensionTabContextMenuBridge(long nativePtr) {
+    private ExtensionTabContextMenuBridge(
+            JniUniquePtr<NativeExtensionTabContextMenuBridge> nativePtr) {
         mNativeExtensionTabContextMenuBridge = nativePtr;
     }
 
     /** Returns the {@link ModelList} of extension menu items for this tab. */
     public ModelList getModelList() {
-        if (mNativeExtensionTabContextMenuBridge == 0) {
+        if (mNativeExtensionTabContextMenuBridge == null) {
             return new ModelList();
         }
         MenuModelBridge menuModelBridge =
@@ -52,19 +61,19 @@ public class ExtensionTabContextMenuBridge implements Destroyable {
 
     @Override
     public void destroy() {
-        if (mNativeExtensionTabContextMenuBridge != 0) {
-            ExtensionTabContextMenuBridgeJni.get().destroy(mNativeExtensionTabContextMenuBridge);
-            mNativeExtensionTabContextMenuBridge = 0;
+        if (mNativeExtensionTabContextMenuBridge != null) {
+            mNativeExtensionTabContextMenuBridge.destroy();
+            mNativeExtensionTabContextMenuBridge = null;
             LifetimeAssert.destroy(mLifetimeAssert);
         }
     }
 
     @NativeMethods
-    public interface Native {
-        long init(@JniType("content::WebContents*") WebContents webContents);
+    interface Native {
+        @Nullable JniUniquePtr<NativeExtensionTabContextMenuBridge> init(
+                @JniType("content::WebContents*") WebContents webContents);
 
-        @Nullable MenuModelBridge getMenuModelBridge(long nativeExtensionTabContextMenuBridge);
-
-        void destroy(long nativeExtensionTabContextMenuBridge);
+        @Nullable MenuModelBridge getMenuModelBridge(
+                JniPtr<NativeExtensionTabContextMenuBridge> self);
     }
 }

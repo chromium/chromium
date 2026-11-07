@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/menus/android/menu_model_bridge.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -50,10 +51,6 @@ ScopedJavaLocalRef<jobject> ExtensionTabContextMenuBridge::GetMenuModelBridge(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
-void ExtensionTabContextMenuBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 bool ExtensionTabContextMenuBridge::IsEmpty() const {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return !menu_model_bridge_;
@@ -62,20 +59,20 @@ bool ExtensionTabContextMenuBridge::IsEmpty() const {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
-static int64_t JNI_ExtensionTabContextMenuBridge_Init(
-    JNIEnv* env,
-    content::WebContents* web_contents) {
+static jni_zero::JniUniquePtr<ExtensionTabContextMenuBridge>
+JNI_ExtensionTabContextMenuBridge_Init(JNIEnv* env,
+                                       content::WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!web_contents) {
-    return 0;
+    return nullptr;
   }
   auto bridge = std::make_unique<ExtensionTabContextMenuBridge>(web_contents);
   if (bridge->IsEmpty()) {
-    return 0;
+    return nullptr;
   }
-  return reinterpret_cast<int64_t>(bridge.release());
+  return jni_zero::MakeUnique(std::move(bridge));
 #else
-  return 0;
+  return nullptr;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 

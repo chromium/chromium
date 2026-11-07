@@ -27,10 +27,9 @@ class ExtensionMenuModel;
 //
 // Lifetime management:
 // An instance of this C++ class is created when its Java counterpart
-// (ExtensionTabContextMenuBridge.java) requests it via JNI. The C++ object's
-// lifetime is tied to its Java peer; when the Java object is no longer needed,
-// its destroy() method calls Destroy() on this C++ object, which calls
-// delete this.
+// (ExtensionTabContextMenuBridge.java) requests it via JNI. The C++ object is
+// owned by its Java peer via JniUniquePtr, and is destroyed via
+// JniUniquePtr's deleter when the Java peer is destroyed.
 class ExtensionTabContextMenuBridge {
  public:
   explicit ExtensionTabContextMenuBridge(content::WebContents* web_contents);
@@ -40,7 +39,6 @@ class ExtensionTabContextMenuBridge {
   ~ExtensionTabContextMenuBridge();
 
   base::android::ScopedJavaLocalRef<jobject> GetMenuModelBridge(JNIEnv* env);
-  void Destroy(JNIEnv* env);
 
   bool IsEmpty() const;
 
