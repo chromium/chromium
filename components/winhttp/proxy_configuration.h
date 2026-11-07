@@ -72,10 +72,11 @@ class AutoProxyConfiguration final : public ProxyConfiguration {
       const GURL& url) const override;
 };
 
-// Sets proxy info on a request handle, if WINHTTP_PROXY_INFO is provided.
+// Sets the proxy on `request_handle` if `winhttp_proxy_info` has a proxy
+// server.
 void SetProxyForRequest(
     HINTERNET request_handle,
-    std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info);
+    const std::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info);
 
 }  // namespace winhttp
 

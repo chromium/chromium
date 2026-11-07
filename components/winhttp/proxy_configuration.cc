@@ -21,15 +21,15 @@ namespace winhttp {
 
 void SetProxyForRequest(
     HINTERNET request_handle,
-    std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info) {
-  if (winhttp_proxy_info.has_value() && winhttp_proxy_info.value().IsValid()) {
-    const ScopedWinHttpProxyInfo& proxy_info = winhttp_proxy_info.value();
-    VLOG(1) << "Setting proxy: " << *(proxy_info.get());
-    HRESULT hr =
-        SetOption(request_handle, WINHTTP_OPTION_PROXY, proxy_info.get());
-    if (FAILED(hr)) {
-      PLOG(ERROR) << "Failed to set WINHTTP_OPTION_PROXY: 0x" << std::hex << hr;
-    }
+    const std::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info) {
+  if (!winhttp_proxy_info || !winhttp_proxy_info->has_proxy()) {
+    return;
+  }
+  VLOG(1) << "Setting proxy: " << *winhttp_proxy_info->get();
+  HRESULT hr = SetOption(request_handle, WINHTTP_OPTION_PROXY,
+                         winhttp_proxy_info->get());
+  if (FAILED(hr)) {
+    PLOG(ERROR) << "Failed to set WINHTTP_OPTION_PROXY: 0x" << std::hex << hr;
   }
 }
 
@@ -96,21 +96,21 @@ std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::DoGetProxyForUrl(
     const std::wstring url_str = base::SysUTF8ToWide(url.spec());
     bool success = ::WinHttpGetProxyForUrl(session_handle, url_str.c_str(),
                                            &auto_proxy_options,
-                                           winhttp_proxy_info.receive());
+                                           winhttp_proxy_info.Receive());
     if (!success && ::GetLastError() == ERROR_WINHTTP_LOGIN_FAILURE) {
       auto_proxy_options.fAutoLogonIfChallenged = true;
       success = ::WinHttpGetProxyForUrl(session_handle, url_str.c_str(),
                                         &auto_proxy_options,
-                                        winhttp_proxy_info.receive());
+                                        winhttp_proxy_info.Receive());
     }
     VLOG_IF(1, !success) << "Failed to auto-detect proxy info.";
   } else {
     winhttp_proxy_info.set_access_type(WINHTTP_ACCESS_TYPE_NAMED_PROXY);
-    winhttp_proxy_info.set_proxy(proxy_info_.proxy);
-    winhttp_proxy_info.set_proxy_bypass(proxy_info_.proxy_bypass);
+    winhttp_proxy_info.SetProxy(proxy_info_.proxy);
+    winhttp_proxy_info.SetProxyBypass(proxy_info_.proxy_bypass);
   }
 
-  if (!winhttp_proxy_info.IsValid()) {
+  if (!winhttp_proxy_info.has_proxy()) {
     return std::nullopt;
   }
   return winhttp_proxy_info;

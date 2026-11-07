@@ -10,6 +10,7 @@ static_library("winhttp") {
     "proxy_configuration.h",
     "proxy_info.h",
     "scoped_hinternet.h",
+    "scoped_winttp_proxy_info.h",
   ]
 
   sources = [
@@ -19,7 +20,7 @@ static_library("winhttp") {
     "proxy_configuration.cc",
     "proxy_info.cc",
     "scoped_hinternet.cc",
-    "scoped_winttp_proxy_info.h",
+    "scoped_winttp_proxy_info.cc",
   ]
 
   public_deps = [
