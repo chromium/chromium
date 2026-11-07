@@ -43,6 +43,13 @@ void LayoutSVGResourceMasker::RemoveAllClientsFromCache() {
                                 kPaintInvalidation);
 }
 
+void LayoutSVGResourceMasker::LastClientRemoved() {
+  NOT_DESTROYED();
+  // Release the cached paint record when unreferenced so it does not retain
+  // memory or become stale while this resource has no clients.
+  cached_paint_record_ = std::nullopt;
+}
+
 PaintRecord LayoutSVGResourceMasker::CreatePaintRecord(PaintFlags paint_flags) {
   NOT_DESTROYED();
   if (cached_paint_record_ && cached_paint_flags_ != paint_flags) {

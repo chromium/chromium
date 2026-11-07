@@ -124,13 +124,25 @@ LayoutSVGResourceClipper::LayoutSVGResourceClipper(SVGClipPathElement* node)
 
 LayoutSVGResourceClipper::~LayoutSVGResourceClipper() = default;
 
-void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
+void LayoutSVGResourceClipper::ClearCache() {
   NOT_DESTROYED();
   clip_content_path_validity_ = kClipContentPathUnknown;
   clip_content_path_ = Path();
   cached_paint_record_ = std::nullopt;
   local_clip_bounds_ = gfx::RectF();
+}
+
+void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
+  NOT_DESTROYED();
+  ClearCache();
   MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
+}
+
+void LayoutSVGResourceClipper::LastClientRemoved() {
+  NOT_DESTROYED();
+  // Release cached clip paths and paint records when unreferenced so they do
+  // not retain memory or become stale while this resource has no clients.
+  ClearCache();
 }
 
 std::optional<Path> LayoutSVGResourceClipper::AsPath() {

@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/paint/skia_paint_canvas.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
@@ -169,6 +175,55 @@ TEST_F(LayoutSVGContainerTest, BoundingBoxesWith3DTransformedChild) {
   auto* g = GetLayoutObjectByElementId("g");
   EXPECT_EQ(gfx::RectF(62.5, 62.5, 75, 75), g->ObjectBoundingBox());
   EXPECT_EQ(gfx::RectF(62.5, 62.5, 75, 75), g->DecoratedBoundingBox());
+}
+
+TEST_F(LayoutSVGContainerTest,
+       MaskCacheClearedOnLastClientRemovedBeforeGCAndDisplayLock) {
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <div id="locked" style="position: absolute">
+      <svg width="0" height="0">
+        <mask id="inner">
+          <rect width="100" height="100" fill="black"/>
+        </mask>
+      </svg>
+    </div>
+    <svg width="100" height="100">
+      <defs>
+        <mask id="outer">
+          <rect width="100" height="100" fill="white" mask="url(#inner)"/>
+        </mask>
+      </defs>
+      <rect id="first" width="100" height="100" fill="red" mask="url(#outer)"/>
+      <rect id="second" width="100" height="100" fill="lime" display="none"/>
+    </svg>
+  )HTML");
+
+  auto paint_center_pixel = [&]() {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(100, 100);
+    bitmap.eraseColor(SK_ColorWHITE);
+    cc::SkiaPaintCanvas(bitmap).drawPicture(
+        GetDocument().View()->GetPaintRecord());
+    return bitmap.getColor(50, 50);
+  };
+  EXPECT_EQ(SK_ColorWHITE, paint_center_pixel());
+
+  GetElementById("first")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      ThreadState::StackState::kNoHeapPointers);
+
+  GetElementById("locked")->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("position: absolute; content-visibility: hidden"));
+  GetElementById("second")->removeAttribute(svg_names::kDisplayAttr);
+  GetElementById("second")->setAttribute(svg_names::kMaskAttr,
+                                         AtomicString("url(#outer)"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(SK_ColorGREEN, paint_center_pixel());
 }
 
 }  // namespace blink

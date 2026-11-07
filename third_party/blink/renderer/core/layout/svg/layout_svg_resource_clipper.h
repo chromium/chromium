@@ -42,6 +42,7 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   }
 
   void RemoveAllClientsFromCache() override;
+  void LastClientRemoved() override;
 
   gfx::RectF ResourceBoundingBox(const gfx::RectF& reference_box);
 
@@ -67,6 +68,7 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
                       const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
 
+  void ClearCache();
   void CalculateLocalClipBounds();
   bool FindCycleFromSelf() const override;
 

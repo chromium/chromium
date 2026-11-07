@@ -42,6 +42,7 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
   }
 
   void RemoveAllClientsFromCache() override;
+  void LastClientRemoved() override;
 
   gfx::RectF ResourceBoundingBox(const gfx::RectF& reference_box,
                                  float reference_box_zoom);
