@@ -82,6 +82,11 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/permissions/system/system_media_permission_cache_mac_test_helper.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/chrome_features.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -2108,5 +2113,121 @@ TEST_F(ContentSettingBubbleModelTest,
   }
 
   system_permission_settings::SetInstanceForTesting(nullptr);
+}
+
+TEST_F(ContentSettingBubbleModelTest,
+       NotificationsBubbleModel_SystemPermissionNotDetermined) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAppShimNotificationAttribution);
+
+  AppShimRegistry::Get()->SetPrefServiceAndUserDataDirForTesting(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      profile()->GetPath().DirName());
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_browser_window;
+  ON_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+  ON_CALL(mock_browser_window, GetProfile())
+      .WillByDefault(testing::Return(profile()));
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  const GURL app_url("https://www.example.com/");
+  WebContentsTester::For(web_contents())->NavigateAndCommit(app_url);
+
+  const webapps::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), "Web App Title", app_url);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                   profile()->GetPath());
+  web_app::WebAppTabHelper::Create(&mock_tab, web_contents());
+  web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
+
+  system_permission_settings::MockPlatformHandle mock_platform_handle;
+  system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+
+  // When Chrome permission is already allowed while system permission is
+  // kNotDetermined, the bubble shows the turned-off-in-macOS text with an
+  // "Allow" button.
+  base::UserActionTester user_action_tester;
+  EXPECT_CALL(mock_platform_handle, OpenSystemSettings).Times(0);
+  ContentSettingNotificationsBubbleModel bubble_model(nullptr, page());
+  const auto& content = bubble_model.bubble_content();
+  EXPECT_EQ(content.title,
+            l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
+  EXPECT_EQ(content.done_button_text,
+            l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+  // Even if the system permission status updates in AppShimRegistry while the
+  // bubble is open, clicking the "Allow" button should still follow the
+  // "Allow" action rather than opening System Settings.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kGranted);
+  bubble_model.OnDoneButtonClicked();
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContentSettings.NotificationsDialog.AllowClicked"));
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount(
+             "ContentSettings.NotificationsDialog.OpenSystemSettingsClicked"));
+
+  system_permission_settings::SetInstanceForTesting(nullptr);
+  AppShimRegistry::Get()->SetPrefServiceAndUserDataDirForTesting(
+      nullptr, base::FilePath());
+}
+
+TEST_F(ContentSettingBubbleModelTest,
+       NotificationsBubbleModel_SystemPermissionImplicitlyDenied) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAppShimNotificationAttribution);
+
+  AppShimRegistry::Get()->SetPrefServiceAndUserDataDirForTesting(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      profile()->GetPath().DirName());
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_browser_window;
+  ON_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(&mock_browser_window));
+  ON_CALL(mock_browser_window, GetProfile())
+      .WillByDefault(testing::Return(profile()));
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  const GURL app_url("https://www.example.com/");
+  WebContentsTester::For(web_contents())->NavigateAndCommit(app_url);
+
+  const webapps::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), "Web App Title", app_url);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                   profile()->GetPath());
+  web_app::WebAppTabHelper::Create(&mock_tab, web_contents());
+  web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
+
+  system_permission_settings::MockPlatformHandle mock_platform_handle;
+  system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+
+  // When system permission is kImplicitlyDenied, the bubble shows the
+  // turned-off-in-macOS text with an "Open System Settings" button.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  base::UserActionTester user_action_tester;
+  EXPECT_CALL(
+      mock_platform_handle,
+      OpenSystemSettings(web_contents(), ContentSettingsType::NOTIFICATIONS));
+  ContentSettingNotificationsBubbleModel bubble_model(nullptr, page());
+  const auto& content = bubble_model.bubble_content();
+  EXPECT_EQ(content.title,
+            l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
+  EXPECT_EQ(content.done_button_text,
+            l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
+  bubble_model.OnDoneButtonClicked();
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContentSettings.NotificationsDialog.AllowClicked"));
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount(
+             "ContentSettings.NotificationsDialog.OpenSystemSettingsClicked"));
+
+  system_permission_settings::SetInstanceForTesting(nullptr);
+  AppShimRegistry::Get()->SetPrefServiceAndUserDataDirForTesting(
+      nullptr, base::FilePath());
 }
 #endif  // BUILDFLAG(IS_MAC)

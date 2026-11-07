@@ -1056,20 +1056,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Permissions.AppShim.OSPermissionRequestResult"
+<histogram
+    name="Notifications.Permissions.AppShim.OSPermissionRequestResult{Source}"
     enum="UNNotificationPermissionRequestResult" expires_after="2027-06-01">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     The result of asking a web app's app shim to request macOS notification
-    permission. Recorded in the browser process after the user grants
-    notification permission in Chrome to a site that is attributed to an
-    installed web app with an app shim (macOS only). Unlike
+    permission. Recorded in the browser process {Source} for a site that is
+    attributed to an installed web app with an app shim (macOS only). Unlike
     Notifications.Permissions.UNNotification.AppShim.PermissionRequest (which is
     recorded in the app shim process), this also captures requests that failed
     because the app shim could not be launched or did not support the
     UNNotification API.
   </summary>
+  <token key="Source">
+    <variant name=""
+        summary="after the user grants notification permission in Chrome"/>
+    <variant name=".FromNotificationsBubble"
+        summary="after the user clicks Allow in the notifications content
+                 setting bubble"/>
+  </token>
 </histogram>
 
 <histogram

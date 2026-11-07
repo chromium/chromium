@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -54,6 +55,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -118,10 +120,15 @@ class WebAppNotificationRecoveryControllerBrowserTest
     // Bounds can exceed the display work area on bots when the bubble is
     // anchored to the top-right PWA titlebar.
     set_should_verify_dialog_bounds(false);
-    ASSERT_EQ(name, "NotificationSystemPermissionDenied");
     AllowNotificationsInChrome();
-    SetSystemNotificationPermissionStatus(
-        mac_notifications::mojom::PermissionStatus::kDenied);
+    if (name == "NotificationSystemPermissionDenied") {
+      SetSystemNotificationPermissionStatus(
+          mac_notifications::mojom::PermissionStatus::kDenied);
+    } else {
+      ASSERT_EQ(name, "NotificationSystemPermissionNotDetermined");
+      SetSystemNotificationPermissionStatus(
+          mac_notifications::mojom::PermissionStatus::kNotDetermined);
+    }
     OpenTargetWebApp();
 
     ContentSettingImageView* view = GetNotificationImageView();
@@ -168,6 +175,91 @@ class WebAppNotificationRecoveryControllerBrowserTest
     return it != views.end() ? *it : nullptr;
   }
 };
+
+IN_PROC_BROWSER_TEST_P(WebAppNotificationRecoveryControllerBrowserTest,
+                       InvokeUi_NotificationSystemPermissionNotDetermined) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppNotificationRecoveryControllerBrowserTest,
+                       PrepromptBubbleAllowRequestsOsPermission) {
+  AllowNotificationsInChrome();
+  SetSystemNotificationPermissionStatus(
+      mac_notifications::mojom::PermissionStatus::kNotDetermined);
+
+  base::HistogramTester histogram_tester;
+  bool os_permission_requested = false;
+  apps::AppShimManager::Get()
+      ->SetNotificationPermissionRequestHandlerForTesting(
+          base::BindLambdaForTesting(
+              [&](const webapps::AppId& app_id,
+                  apps::AppShimManager::RequestNotificationPermissionCallback
+                      callback) {
+                EXPECT_EQ(app_id_, app_id);
+                os_permission_requested = true;
+                SetSystemNotificationPermissionStatus(
+                    mac_notifications::mojom::PermissionStatus::kPromptPending);
+                std::move(callback).Run(
+                    mac_notifications::mojom::RequestPermissionResult::
+                        kPermissionGranted);
+              }));
+  base::ScopedClosureRunner reset_handler(base::BindOnce([]() {
+    apps::AppShimManager::Get()
+        ->SetNotificationPermissionRequestHandlerForTesting({});
+  }));
+
+  OpenTargetWebApp();
+  ContentSettingImageView* view = GetNotificationImageView();
+  ASSERT_TRUE(view);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_TRUE(view->ShouldShowLabel());
+  ASSERT_TRUE(view->IsBubbleShowing());
+  ASSERT_TRUE(view->GetBubbleViewForTesting());
+
+  views::test::WidgetDestroyedWaiter bubble_destroyed_waiter(
+      view->GetBubbleWidget());
+  view->GetBubbleViewForTesting()->AcceptDialog();
+  bubble_destroyed_waiter.Wait();
+  view->slide_animation_for_testing().End();
+
+  EXPECT_TRUE(os_permission_requested);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.OSPermissionRequestResult."
+      "FromNotificationsBubble",
+      mac_notifications::mojom::RequestPermissionResult::kPermissionGranted, 1);
+  EXPECT_FALSE(view->IsBubbleShowing());
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_FALSE(view->ShouldShowLabel());
+
+  SetSystemNotificationPermissionStatus(
+      mac_notifications::mojom::PermissionStatus::kGranted);
+  EXPECT_FALSE(view->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppNotificationRecoveryControllerBrowserTest,
+                       PrepromptBubbleDontAllowBlocksInChromeAndHidesIcon) {
+  AllowNotificationsInChrome();
+  SetSystemNotificationPermissionStatus(
+      mac_notifications::mojom::PermissionStatus::kNotDetermined);
+  OpenTargetWebApp();
+  ContentSettingImageView* view = GetNotificationImageView();
+  ASSERT_TRUE(view);
+  EXPECT_TRUE(view->GetVisible());
+  ASSERT_TRUE(view->IsBubbleShowing());
+  ASSERT_TRUE(view->GetBubbleViewForTesting());
+
+  views::test::WidgetDestroyedWaiter bubble_destroyed_waiter(
+      view->GetBubbleWidget());
+  view->GetBubbleViewForTesting()->CancelDialog();
+  bubble_destroyed_waiter.Wait();
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            HostContentSettingsMapFactory::GetForProfile(profile())
+                ->GetContentSetting(start_url_, start_url_,
+                                    ContentSettingsType::NOTIFICATIONS));
+  EXPECT_FALSE(view->IsBubbleShowing());
+  EXPECT_FALSE(view->GetVisible());
+}
 
 IN_PROC_BROWSER_TEST_P(WebAppNotificationRecoveryControllerBrowserTest,
                        InvokeUi_NotificationSystemPermissionDenied) {

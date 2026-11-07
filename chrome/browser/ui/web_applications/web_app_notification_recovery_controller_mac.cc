@@ -162,11 +162,15 @@ void WebAppNotificationRecoveryController::MaybeTriggerRecoveryBubble() {
   }
 
   using SystemPermissionStatus = AppShimRegistry::NotificationPermissionStatus;
-  const SystemPermissionStatus system_status =
-      AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(*app_id);
-  if (system_status != SystemPermissionStatus::kPromptPending &&
-      system_status != SystemPermissionStatus::kImplicitlyDenied) {
-    return;
+  switch (
+      AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(*app_id)) {
+    case SystemPermissionStatus::kNotDetermined:
+    case SystemPermissionStatus::kPromptPending:
+    case SystemPermissionStatus::kImplicitlyDenied:
+      break;
+    case SystemPermissionStatus::kGranted:
+    case SystemPermissionStatus::kExplicitlyDenied:
+      return;
   }
 
   if (!HasChromeNotificationPermissionForOrigin(web_contents())) {

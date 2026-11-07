@@ -132,6 +132,9 @@ class ContentSettingImageModelTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+    system_permission_settings::SetInstanceForTesting(nullptr);
+#endif
 #if BUILDFLAG(IS_MAC)
     AppShimRegistry::Get()->SetPrefServiceAndUserDataDirForTesting(
         nullptr, base::FilePath());
@@ -702,24 +705,24 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
 
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
+  const GURL app_url("https://www.google.com/");
+  const webapps::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), "Web App Title", app_url);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                   profile()->GetPath());
+
+  web_app::WebAppTabHelper::Create(&mock_tab, web_contents());
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  NavigateAndCommit(app_url);
+  web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents()->GetPrimaryMainFrame());
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::kNotifications);
-
-  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      profile(), "Web App Title", GURL("http://www.google.com"));
-  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
-                                                   profile()->GetPath());
-
-  web_app::WebAppTabHelper::Create(&mock_tab, web_contents());
-
-  web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
 
   // Installed app, but it hasn't interacted with notifications yet.
   content_setting_image_model->Update(web_contents());
@@ -736,14 +739,25 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   EXPECT_FALSE(content_setting_image_model->blocked_on_system_level());
 
   // When notification permission is allowed at the chrome level and the system
-  // level permission is kPromptPending or kImplicitlyDenied (an unintentional
-  // OS block), the indicator should show as blocked, with the label kept
-  // expanded, without auto-opening the bubble unless triggered via
+  // level permission is kNotDetermined, kPromptPending, or kImplicitlyDenied,
+  // the indicator should show as blocked, with the label kept expanded, without
+  // auto-opening the bubble unless triggered via
   // SetNotificationsWasDeniedBecauseOfSystemPermission().
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kNotDetermined);
   HostContentSettingsMapFactory::GetForProfile(profile())
       ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::NOTIFICATIONS);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
+            IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+  EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
+  EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
       app_id, AppShimRegistry::NotificationPermissionStatus::kPromptPending);
   content_setting_image_model->Update(web_contents());
@@ -831,15 +845,24 @@ TEST_F(
 
   // Even without `PageSpecificContentSettings` (such as during
   // `NotifyNavigationEntryCommitted` before `DidFinishNavigation` runs),
-  // unintentional OS blocks (`kPromptPending` / `kImplicitlyDenied`) should
-  // keep the indicator continuously visible without auto-opening the bubble,
-  // while `kExplicitlyDenied` stays hidden unless the page attempts to use
-  // notifications.
+  // `kNotDetermined` and unintentional OS blocks (`kPromptPending` /
+  // `kImplicitlyDenied`) should keep the indicator continuously visible without
+  // auto-opening the bubble, while `kExplicitlyDenied` stays hidden unless the
+  // page attempts to use notifications.
   ASSERT_FALSE(PageSpecificContentSettings::GetForFrame(
       web_contents()->GetPrimaryMainFrame()));
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::kNotifications);
+
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kNotDetermined);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
+            IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+  EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
 
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
       app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
@@ -867,9 +890,18 @@ TEST_F(ContentSettingImageModelTest,
 
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
+  const GURL app_url("https://www.google.com/");
+  const webapps::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), "Web App Title", app_url);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                   profile()->GetPath());
+
+  web_app::WebAppTabHelper::Create(&mock_tab, web_contents());
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  NavigateAndCommit(app_url);
+  web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents()->GetPrimaryMainFrame());
@@ -877,21 +909,17 @@ TEST_F(ContentSettingImageModelTest,
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::kNotifications);
 
-  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      profile(), "Web App Title", GURL("http://www.google.com"));
-  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
-                                                   profile()->GetPath());
-
-  web_app::WebAppTabHelper::Create(&mock_tab, web_contents());
-
-  web_app::WebAppTabHelper::FromWebContents(web_contents())->SetAppId(app_id);
-
   // If the page is marked as having notifications blocked by the system
-  // permission while kPromptPending or kImplicitlyDenied, the notification icon
-  // should show and the bubble should auto-open.
+  // permission while Chrome permission is allowed and system permission is
+  // kNotDetermined, kPromptPending, or kImplicitlyDenied, the notification
+  // icon should show and the bubble should auto-open.
   base::UserActionTester user_action_tester;
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(app_url, app_url,
+                                      ContentSettingsType::NOTIFICATIONS,
+                                      CONTENT_SETTING_ALLOW);
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      app_id, AppShimRegistry::NotificationPermissionStatus::kPromptPending);
+      app_id, AppShimRegistry::NotificationPermissionStatus::kNotDetermined);
   content_settings->SetNotificationsWasDeniedBecauseOfSystemPermission();
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
@@ -901,6 +929,17 @@ TEST_F(ContentSettingImageModelTest,
   EXPECT_TRUE(content_setting_image_model->should_auto_open_bubble());
   EXPECT_TRUE(
       content_setting_image_model->ShouldAutoOpenBubble(web_contents()));
+  EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
+  EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kPromptPending);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
+            IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+  EXPECT_TRUE(content_setting_image_model->should_auto_open_bubble());
   EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
 
@@ -968,6 +1007,38 @@ TEST_F(ContentSettingImageModelTest,
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
   EXPECT_FALSE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+
+  // Revoking Chrome-level permission to CONTENT_SETTING_BLOCK (e.g. clicking
+  // "Don't allow" in the bubble) or resetting it to CONTENT_SETTING_ASK (e.g.
+  // in Page Info / Site Settings) should immediately hide the indicator even
+  // when `SetNotificationsWasDeniedBecauseOfSystemPermission()` or
+  // `OnContentAllowed()` was set on the page.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kNotDetermined);
+  content_settings->OnContentAllowed(ContentSettingsType::NOTIFICATIONS);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(app_url, app_url,
+                                      ContentSettingsType::NOTIFICATIONS,
+                                      CONTENT_SETTING_BLOCK);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(app_url, app_url,
+                                      ContentSettingsType::NOTIFICATIONS,
+                                      CONTENT_SETTING_ALLOW);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(app_url, app_url,
+                                      ContentSettingsType::NOTIFICATIONS,
+                                      CONTENT_SETTING_ASK);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_FALSE(content_setting_image_model->is_visible());
 }
 #endif
 

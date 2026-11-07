@@ -22,10 +22,10 @@ class Widget;
 namespace web_app {
 
 // Observes navigation, active tab changes, and window visibility/activation on
-// macOS to trigger the system notification permission recovery bubble for
-// installed web apps when notifications are allowed in Chrome, but blocked at
-// the OS level without an explicit user denial (i.e. `kPromptPending` or
-// `kImplicitlyDenied`).
+// macOS to trigger the system notification permission bubble for installed web
+// apps when notifications are allowed in Chrome, but not yet granted at the OS
+// level without an explicit user denial (i.e. `kNotDetermined`,
+// `kPromptPending`, or `kImplicitlyDenied`).
 class WebAppNotificationRecoveryController
     : public content::WebContentsObserver,
       public views::WidgetObserver {

@@ -383,7 +383,9 @@ IN_PROC_BROWSER_TEST_F(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   WebAppToolbarButtonContainer::DisableAnimationForTesting(false);
 
-  const GURL app_url("https://test.org");
+  ASSERT_TRUE(embedded_https_test_server().Started());
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/web_apps/basic.html");
   const webapps::AppId app_id =
       helper()->InstallAndLaunchWebApp(browser(), app_url);
 
@@ -411,6 +413,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(app_shim_host);
   app_shim_host->SetNotificationPermissionStatusForTesting(
       mac_notifications::mojom::PermissionStatus::kDenied);
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(app_url, app_url,
+                                      ContentSettingsType::NOTIFICATIONS,
+                                      CONTENT_SETTING_ALLOW);
   content_settings::PageSpecificContentSettings::GetForFrame(
       web_contents->GetPrimaryMainFrame())
       ->SetNotificationsWasDeniedBecauseOfSystemPermission();

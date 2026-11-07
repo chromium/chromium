@@ -664,8 +664,14 @@ class ContentSettingNotificationsBubbleModel
   // ContentSettingBubbleModel:
   void OnDoneButtonClicked() override;
   void OnCancelButtonClicked() override;
+
+ private:
+  // True when the app's macOS notification permission is still kNotDetermined,
+  // meaning the app cannot be configured in macOS System Settings yet and
+  // accepting the bubble must request system permission first.
+  bool should_request_system_permission_ = false;
 };
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_ANDROID)
 // The model for the blocked Framebust bubble.

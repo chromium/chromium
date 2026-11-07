@@ -9555,6 +9555,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSettings.NotificationsDialog.AllowClicked">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user clicked 'Allow' from the content settings notifications bubble to
+    request macOS system notification permission for the web app (which triggers
+    the OS permission prompt and opens macOS System Settings).
+  </description>
+</action>
+
 <action name="ContentSettings.NotificationsDialog.Closed">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
