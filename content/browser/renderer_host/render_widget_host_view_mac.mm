@@ -355,6 +355,9 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
     return;
   }
 
+  // Unbounded surfaces are not supported for remote NSViews (e.g. PWAs).
+  DCHECK(!unbounded_surface_window_);
+
   mojo::PendingAssociatedRemote<remote_cocoa::mojom::RenderWidgetHostNSViewHost>
       client = remote_ns_view_client_receiver_.BindNewEndpointAndPassRemote();
   mojo::PendingAssociatedReceiver<remote_cocoa::mojom::RenderWidgetHostNSView>
@@ -2841,6 +2844,8 @@ RenderWidgetHostViewMac::MaybeUpdateScreenInfosForHiDPI() {
 void RenderWidgetHostViewMac::CreateUnboundedSurface(
     const gfx::Rect& bounds_in_screen,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view) {
+  // Unbounded surfaces are not supported for remote NSViews (e.g. PWAs).
+  DCHECK(!remote_ns_view_);
   unbounded_surface_window_ = std::make_unique<UnboundedSurfaceWindowMac>(
       this, bounds_in_screen, std::move(subframe_view));
   // Blink only sends cursor changes, so seed the new window with the cursor
