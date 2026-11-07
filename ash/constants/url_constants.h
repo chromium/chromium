@@ -221,6 +221,10 @@ inline constexpr char16_t kPrivacyHubGeolocationAccuracyLearnMoreURL[] =
 inline constexpr char kPrivacyHubGeolocationLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=manage_your_location";
 
+// The URL path to Google's Embedded Privacy Policy page.
+inline constexpr char kPrivacyPolicyOnlineURLPath[] =
+    "https://policies.google.com/privacy/embedded";
+
 // The URL for the help center article about local data recovery on Chrome OS
 // devices.
 inline constexpr char kRecoveryLearnMoreURL[] =

@@ -642,10 +642,6 @@ inline constexpr char kPrivacyPolicyURL[] =
 inline constexpr char kPrivacyPolicyURLChina[] =
     "https://policies.google.cn/privacy";
 
-// The URL path to Google's Embedded Privacy Policy page.
-inline constexpr char kPrivacyPolicyOnlineURLPath[] =
-    "https://policies.google.com/privacy/embedded";
-
 // The URL path to Google's Embedded Privacy Policy page for users in China.
 inline constexpr char kPrivacyPolicyEmbeddedURLPathChina[] =
     "https://policies.google.cn/privacy/embedded";

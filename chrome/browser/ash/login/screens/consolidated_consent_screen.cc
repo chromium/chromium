@@ -40,7 +40,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -93,7 +92,7 @@ static constexpr auto kTermsTypeToUrlAndSwitch =
           {ash::external_urls::kArcTosOnlineURLPath,
            switches::kArcTosHostForTests}},
          {ToS::PRIVACY_POLICY,
-          {chrome::kPrivacyPolicyOnlineURLPath,
+          {ash::external_urls::kPrivacyPolicyOnlineURLPath,
            switches::kPrivacyPolicyHostForTests}}});
 
 std::string GetTosHost(const std::string& application_locale, ToS terms_type) {
