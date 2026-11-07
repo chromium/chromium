@@ -27,6 +27,9 @@ specific_include_rules = {
   "isolated_web_app_installer_view_browsertest\\.cc": [
     "+ash/shell.h",
   ],
+  "omnibox_popup_full_presenter\\.cc": [
+    "+ash/ash_element_identifiers.h",
+  ],
   "save_card_bubble_views_browsertest\\.cc": [
     "+chromeos/ash/services/multidevice_setup/public/cpp/prefs.h",
   ],

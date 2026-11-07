@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -33,6 +34,10 @@ class OmniboxPopupUI;
 class OmniboxPopupWebUIBaseContent;
 template <typename T>
 class WebUIContentsWrapperT;
+
+namespace ui {
+class TrackedElement;
+}  // namespace ui
 
 // Implements subclass of OmniboxPopupPresenterBase to present a single full
 // WebUI (input row + suggestions dropdown) into the Omnibox popup.
@@ -150,7 +155,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void FocusPopupContent();
   // Blurs the omnibox unless the browser window, including the popup, is
   // active. Any other window taking activation, including a bubble anchored to
-  // the browser window, blurs it, as with the Views omnibox.
+  // the browser window, blurs it, as with the Views omnibox. On ChromeOS, the
+  // system emoji picker is the exception, until it closes.
   void BlurIfBrowserOrPopupInactive();
   // If the omnibox is focused with the full popup open, blurs it after another
   // window, such as a bubble, took activation, and sets what the browser window
@@ -160,6 +166,14 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // open. Runs after the browser window or popup is activated while
   // `refocus_on_activation_` is set.
   void RefocusAfterActivation();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns whether the system emoji picker is shown, e.g. after picking Emoji
+  // in the omnibox's context menu.
+  static bool IsEmojiPickerShown();
+  // Checks again whether to blur the omnibox once the emoji picker closes.
+  void OnEmojiPickerHidden(ui::TrackedElement* element);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns whether the popup shows only its input row, with nothing painted
   // below the location bar.
@@ -235,6 +249,12 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // which refocuses the popup, or when the omnibox is blurred or the popup is
   // hidden.
   bool refocus_on_activation_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Set while the omnibox is kept focused for the emoji picker. See
+  // `BlurIfBrowserOrPopupInactive()`.
+  base::CallbackListSubscription emoji_picker_hidden_subscription_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Keeps the browser window painting as active while the popup is active, and
   // until a posted task after the browser window or popup deactivates.

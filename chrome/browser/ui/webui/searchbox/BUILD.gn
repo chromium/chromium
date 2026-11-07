@@ -367,5 +367,11 @@ if (enable_webui_ntp && !is_android) {
       "//ui/touch_selection",
       "//ui/views",
     ]
+    if (is_chromeos) {
+      deps += [
+        "//ash",
+        "//chrome/browser/ui/views/bubble",
+      ]
+    }
   }
 }

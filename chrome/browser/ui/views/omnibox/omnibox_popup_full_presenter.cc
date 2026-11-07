@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -57,6 +58,10 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/ash_element_identifiers.h"
+#endif
 
 OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
     LocationBar* location_bar,
@@ -583,10 +588,54 @@ void OmniboxPopupFullPresenter::RefocusAfterActivation() {
 }
 
 void OmniboxPopupFullPresenter::BlurIfBrowserOrPopupInactive() {
-  if (!IsBrowserOrPopupActive()) {
-    BlurForWindowDeactivation();
+  if (IsBrowserOrPopupActive()) {
+    return;
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  // The system emoji picker took activation, e.g. from the Emoji item of the
+  // omnibox's context menu. Once an emoji is picked, it closes and inserts the
+  // emoji into the text input that is focused when its window is reactivated,
+  // as the Views omnibox's `FocusManager` restores focus to it. Keep the
+  // omnibox focused with the popup open, hand focus back to the popup once
+  // the browser window or popup is reactivated, and check again once the
+  // picker closes, in case the user left the browser window instead.
+  if (IsEmojiPickerShown() &&
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull &&
+      controller()->edit_model()->has_focus()) {
+    refocus_on_activation_ = true;
+    if (!emoji_picker_hidden_subscription_) {
+      emoji_picker_hidden_subscription_ =
+          ui::ElementTracker::GetElementTracker()
+              ->AddElementHiddenInAnyContextCallback(
+                  ash::kEmojiPickerElementId,
+                  base::BindRepeating(
+                      &OmniboxPopupFullPresenter::OnEmojiPickerHidden,
+                      base::Unretained(this)));
+    }
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  BlurForWindowDeactivation();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// static
+bool OmniboxPopupFullPresenter::IsEmojiPickerShown() {
+  return !!ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+      ash::kEmojiPickerElementId);
+}
+
+void OmniboxPopupFullPresenter::OnEmojiPickerHidden(
+    ui::TrackedElement* element) {
+  emoji_picker_hidden_subscription_ = {};
+  // Check once activation has moved to the next window.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OmniboxPopupFullPresenter::BlurIfBrowserOrPopupInactive,
+                     weak_factory_.GetWeakPtr()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void OmniboxPopupFullPresenter::BlurForWindowDeactivation() {
   if (controller()->popup_state_manager()->popup_state() !=

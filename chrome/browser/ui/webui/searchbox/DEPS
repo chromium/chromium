@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "full_webui_omnibox_interactive_uitest\\.cc": [
+    "+ash/ash_element_identifiers.h",
+  ],
   ".*unittest\\..*": [
     "+third_party/webrtc/modules/desktop_capture",
   ],

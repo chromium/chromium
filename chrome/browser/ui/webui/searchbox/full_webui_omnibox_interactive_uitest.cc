@@ -194,6 +194,11 @@
 #include "ui/events/test/event_generator.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/ash_element_identifiers.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#endif
+
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAimPopupWebView);
@@ -7181,6 +7186,46 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest,
       InstrumentNextTab(kTab2), ClickContextMenuItem(IDC_EDIT_SEARCH_ENGINES),
       WaitForWebContentsReady(kTab2, settings_url));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Verifies that an emoji picked in the system emoji picker opened from the
+// context menu's Emoji item is inserted into the WebUI input. The picker is
+// a separate window that takes activation from the popup while it's open, and
+// inserts the emoji into whichever text input is focused once it closes.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxContextMenuInteractiveTest,
+                       EmojiPickerInsertsEmojiIntoWebUIInput) {
+  if (IsMenuSimplificationEnabled()) {
+    GTEST_SKIP() << "Menu simplification drops the Emoji item.";
+  }
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kEmojiPickerWebView);
+  // U+1F600 GRINNING FACE, as a JS string literal escape.
+  static constexpr char kEmoji[] = "\\u{1F600}";
+  RunTestSequence(
+      OpenPopupForContextMenu(), RightClickWebUIInputAndWaitForContextMenu(),
+      ClickContextMenuItem(IDS_CONTENT_CONTEXT_EMOJI),
+      InAnyContext(WaitForShow(ash::kEmojiPickerElementId)),
+      InAnyContext(InstrumentNonTabWebView(
+          kEmojiPickerWebView, base::BindLambdaForTesting([]() -> views::View* {
+            auto* const el =
+                ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                    ash::kEmojiPickerElementId);
+            auto* const picker =
+                el ? views::AsViewClass<WebUIBubbleDialogView>(
+                         el->AsA<views::TrackedElementViews>()->view())
+                   : nullptr;
+            return picker ? picker->web_view() : nullptr;
+          }))),
+      // Pick the emoji the way clicking it in the picker does.
+      InSameContext(ExecuteJs(
+          kEmojiPickerWebView,
+          base::StringPrintf(R"(() => document.querySelector('emoji-picker-app')
+                                    .apiProxy.insertEmoji('%s', false, 0))",
+                             kEmoji))),
+      InAnyContext(WaitForHide(ash::kEmojiPickerElementId)),
+      WaitForWebUIInputValue(kEmoji), CheckWebUIInputFocus(true),
+      CheckPopupState(OmniboxPopupState::kFull));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     All,

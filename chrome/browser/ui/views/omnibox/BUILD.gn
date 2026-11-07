@@ -195,6 +195,10 @@ source_set("impl") {
     "//ui/strings:ui_strings_grit",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
+
   if (is_mac) {
     deps += [ ":native_widget_mac" ]
   }
