@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_not_user_action.inc"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -33,10 +34,6 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
     : user_action_callback_(
           base::BindRepeating(&ApplicationBreadcrumbsLogger::OnUserAction,
                               base::Unretained(this))),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kApplicationBreadcrumbsLogger,
-          this),
 #if defined(TOOLKIT_VIEWS)
       any_widget_observer_(views::AnyWidgetPasskey{}),
 #endif  // TOOLKIT_VIEWS
@@ -45,6 +42,12 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
               storage_dir,
               std::move(is_metrics_enabled_callback))) {
   base::AddActionCallback(user_action_callback_);
+  if (auto* memory_pressure_source = base::MemoryPressureSource::MaybeGet()) {
+    memory_pressure_subscription_ =
+        memory_pressure_source->AddCallback(base::BindRepeating(
+            &ApplicationBreadcrumbsLogger::OnMemoryPressureLevelUpdated,
+            base::Unretained(this)));
+  }
 #if defined(TOOLKIT_VIEWS)
   any_widget_observer_.set_closing_callback(base::BindRepeating(
       &ApplicationBreadcrumbsLogger::OnWidgetClosed, base::Unretained(this)));
@@ -78,7 +81,7 @@ void ApplicationBreadcrumbsLogger::OnUserAction(const std::string& action,
   AddEvent(action.c_str());
 }
 
-void ApplicationBreadcrumbsLogger::OnMemoryPressure(
+void ApplicationBreadcrumbsLogger::OnMemoryPressureLevelUpdated(
     base::MemoryPressureLevel memory_pressure_level) {
   const char* pressure_string = "";
   switch (memory_pressure_level) {

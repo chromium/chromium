@@ -8,9 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/metrics/user_metrics.h"
 
 #if defined(TOOLKIT_VIEWS)
@@ -27,14 +28,14 @@ class BreadcrumbPersistentStorageManager;
 
 // Listens for and logs application-wide breadcrumb events to the
 // BreadcrumbManager.
-class ApplicationBreadcrumbsLogger : public base::MemoryPressureListener {
+class ApplicationBreadcrumbsLogger {
  public:
   // Breadcrumbs will be stored in a file in |storage_dir|.
   explicit ApplicationBreadcrumbsLogger(
       const base::FilePath& storage_dir,
       base::RepeatingCallback<bool()> is_metrics_enabled_callback);
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
-  ~ApplicationBreadcrumbsLogger() override;
+  virtual ~ApplicationBreadcrumbsLogger();
 
   // Returns a pointer to the BreadcrumbPersistentStorageManager owned by this
   // instance. May be null.
@@ -48,8 +49,8 @@ class ApplicationBreadcrumbsLogger : public base::MemoryPressureListener {
 
   // Callback which processes and logs memory pressure warnings to the
   // BreadcrumbManager.
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  void OnMemoryPressureLevelUpdated(
+      base::MemoryPressureLevel memory_pressure_level);
 
 #if defined(TOOLKIT_VIEWS)
   // Callback invoked when a widget is closed.
@@ -61,9 +62,8 @@ class ApplicationBreadcrumbsLogger : public base::MemoryPressureListener {
 
   // The callback invoked whenever a user action is registered.
   base::ActionCallback user_action_callback_;
-  // A memory pressure listener which observes memory pressure events.
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  // Subscription to memory pressure notifications.
+  base::CallbackListSubscription memory_pressure_subscription_;
 #if defined(TOOLKIT_VIEWS)
   // Widget listener which observes widget events.
   views::AnyWidgetObserver any_widget_observer_;

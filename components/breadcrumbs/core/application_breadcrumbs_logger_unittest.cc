@@ -7,8 +7,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/test/task_environment.h"
@@ -66,7 +64,6 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
 
   base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ApplicationBreadcrumbsLogger> logger_;
 };
@@ -107,9 +104,9 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, SkipInProductHelpUserActions) {
 TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
   ASSERT_TRUE(OnlyStartupEventLogged());
 
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::MemoryPressureListener::SimulatePressureNotification(
+  memory_pressure_source_.SetMemoryPressureLevel(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   EXPECT_FALSE(OnlyStartupEventLogged());
