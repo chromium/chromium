@@ -6,8 +6,10 @@ package org.chromium.content.browser;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
-import org.jni_zero.NativeMethods;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.lifetime.LifetimeAssert;
@@ -20,19 +22,24 @@ import org.chromium.content_public.common.ChildProcessId;
 @JNINamespace("content")
 @NullMarked
 public class AdditionalNavigationParamsImpl implements AdditionalNavigationParams {
+    @JniType("::content::InitiatorNavigationStateWrapper")
+    interface NativeInitiatorNavigationStateWrapper extends JniTypeToken {}
+
     private final UnguessableToken mInitiatorFrameToken;
     private final ChildProcessId mInitiatorProcessId;
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private long mNativePtr;
+    private @Nullable JniUniquePtr<NativeInitiatorNavigationStateWrapper>
+            mInitiatorNavigationStateWrapper;
 
     @CalledByNative
-    private AdditionalNavigationParamsImpl(
+    AdditionalNavigationParamsImpl(
             @JniType("base::UnguessableToken") UnguessableToken initiatorFrameToken,
             @JniType("content::ChildProcessId") ChildProcessId initiatorProcessId,
-            long nativePtr) {
+            @Nullable JniUniquePtr<NativeInitiatorNavigationStateWrapper>
+                    initiatorNavigationStateWrapper) {
         mInitiatorFrameToken = initiatorFrameToken;
         mInitiatorProcessId = initiatorProcessId;
-        mNativePtr = nativePtr;
+        mInitiatorNavigationStateWrapper = initiatorNavigationStateWrapper;
     }
 
     @CalledByNative
@@ -47,25 +54,17 @@ public class AdditionalNavigationParamsImpl implements AdditionalNavigationParam
     }
 
     @CalledByNative
-    private long takeNativeState() {
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
-        long ptr = mNativePtr;
-        mNativePtr = 0;
-        return ptr;
+    @Nullable JniPtr<NativeInitiatorNavigationStateWrapper> getNativeWrapper() {
+        return mInitiatorNavigationStateWrapper;
     }
 
     @CalledByNative
     @Override
     public void destroy() {
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
-        if (mNativePtr != 0) {
-            AdditionalNavigationParamsImplJni.get().destroy(mNativePtr);
-            mNativePtr = 0;
+        if (mInitiatorNavigationStateWrapper != null) {
+            mInitiatorNavigationStateWrapper.destroy();
+            mInitiatorNavigationStateWrapper = null;
         }
-    }
-
-    @NativeMethods
-    interface Natives {
-        void destroy(long statePtr);
     }
 }
