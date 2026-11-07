@@ -29,8 +29,6 @@ all code recording sites.
 - **Analysis Guidelines:**
   [analysis_guidelines.md](references/analysis_guidelines.md) (Safety checks and
   effort estimation)
-- **Bug Discovery:** [bug_discovery.md](references/bug_discovery.md) (Finding
-  existing trackers)
 - **Discovery Script:** [find_candidates.py](scripts/find_candidates.py)
   (Identify expired histograms in the allowlisted files only)
 - **Automated Review Protocol:**
@@ -165,32 +163,75 @@ calls at once). This ensures stability and allows for precise verification.
 
 Follow the [Verification](../hub/references/verification.md) workflow.
 
-### Step 7: Submission
+### Step 7: Submission & Commit Generation
 
-1. **Bug Tracking:**
+#### 1. Expiry Bug Discovery (Autonomous)
 
-   - Execute the **Bug Discovery and Triage** workflow in
-     `references/bug_discovery.md` using the `<HistogramName>` and
-     `<ExpiryDate>` from the candidate.
-   - **Interactive Pause:** Do NOT proceed until the bug handling is resolved
-     and a Bug ID is resolved (or the user has chosen to skip).
+- For each cleaned histogram, query Buganizer for open expiry tracking bugs. For
+  patterned histograms containing `{...}` tokens, strip the `{...}` suffix and
+  search the un-tokenized name prefix, because expiry bug titles use `.*`
+  instead of `{Token}` names:
+  `get_bugs_with_external(query='"Check expiry of your histograms" "<UnTokenizedHistogramName>" status:open')`
+- Collect the lowest numeric open bug ID found for each cleaned histogram
+  (resolving any legacy Monorail IDs if needed) as `<ExpiryBugID>`, or `"none"`
+  if none are open. Do NOT prompt the user or file a new bug.
 
-2. **Upload Pipeline:**
+#### 2. Prepare Commit Message
 
-   - Determine the obsoletion tag (keep each tag on a single unwrapped line):
-     - If `<ExpiryDate>` is in the past: Set `customObsoletionMessage` to
-       `OBSOLETE_HISTOGRAM[<HistogramName>]=expired`.
-     - If `<ExpiryDate>` is in the future: Set `customObsoletionMessage` to
-       `OBSOLETE_HISTOGRAM[<HistogramName>]=<reason>`.
-   - Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
-     following context variables to the workflow:
-     - **Skill Name:** `histogram-cleanup`
-     - **Branch Name:** `cleanup-<HistogramName>`
-     - **Commit Hashtag:** `histogram-cleanup`
-     - **Cleanup Title:** `Remove expired histogram: <HistogramName>`
-     - **Cleanup Description:**
-       `<Write a concise description of the removed expired histogram (<HistogramName>, expired <ExpiryDate>) and any cleaned-up recording calls, enums, or dead code.>\n\n<customObsoletionMessage>`
-     - **Parent Bug:** `499059525`
-     - **Bug ID:** The resolved `<Bug ID>` from the Bug Tracking step.
-     - **Cleaned Component:** `histograms.xml`
-     - **File Count:** Number of files modified during this cleanup.
+Generate `../commit`. Set `--title` to `Remove expired <Area> histograms` using
+the top histogram prefix or XML metadata folder. Keep the full
+`[histogram-cleanup][LSC] <Title>` line `<= 72` characters (`<Title>` `<= 47`;
+use `Remove expired histograms` if `<Area>` does not fit). Always pass at least
+one `--bug`: one repeatable `--bug "<ExpiryBugID>"` per bug found, or
+`--bug "none"` if none are open. The script adds the parent bug first, so do not
+pass it.
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill histogram-cleanup \
+  --title "Remove expired <Area> histograms" \
+  --bug "<ExpiryBugID>" \
+  --description - \
+  --out-commit ../commit <<'EOF'
+<Brief summary of removed recording sites, dead code, tests, and XML entries.>
+
+OBSOLETE_HISTOGRAMS=<message>
+EOF
+```
+
+The `OBSOLETE_HISTOGRAMS=<message>` line applies to every removed histogram
+(including patterned variants) and must be a single unwrapped line in its own
+final paragraph of the description. Do NOT use `OBSOLETE_HISTOGRAMS[Name]=` or
+singular `OBSOLETE_HISTOGRAM[Name]=` (including
+`OBSOLETE_HISTOGRAM[Name.{Token}]=`, which does not expand patterned variants).
+Choose `<message>`:
+
+- **Expired:** `Expired on <ExpiryDate> and no longer recorded.` (or
+  `Expired and no longer recorded.` if the dates differ or are missing).
+- **Removed before expiry:**
+  `<reason it was removed; replaced by <NewHistogram>, if any>.`
+
+#### 3. Validate Commit File
+
+Pass the same `--bug` flags used in Step 7.2 (one `--bug "<ExpiryBugID>"` per
+bug found, or `--bug "none"` if none):
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill histogram-cleanup \
+  --validate ../commit \
+  --bug "<ExpiryBugID>"
+```
+
+If validation fails, fix the title or description and re-run Steps 7.2–7.3 until
+validation exits 0.
+
+#### 4. Submission Pipeline
+
+Follow [submission.md](../hub/references/submission.md), passing:
+
+- **Branch Name:** `cleanup-<HistogramName>` (without `{...}` token braces for
+  patterned names)
+- **Commit File:** `../commit`
+
+Do NOT pass `--reviewers` or `--cc`.

@@ -116,15 +116,37 @@ Follow the [Verification](../hub/references/verification.md) workflow.
 
 ### Step 6: Submission
 
-Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
-following context variables to the workflow:
+#### 1. Prepare Commit Message
 
-- **Skill Name:** `java-inline-fqn-cleanup`
-- **Branch Name:** `cleanup-fqns-[component-name]`
-- **Commit Hashtag:** `Code Health`
-- **Cleanup Title:** `Clean up inline FQNs in [Component/Directory]`
-- **Cleanup Description:**
-  `Remove inline fully qualified class names and replace them with standard imports in the [Component/Directory] directory.`
-- **Parent Bug:** `528570333`
-- **Cleaned Component:** The parent directory of the batch.
-- **File Count:** Number of files cleaned up.
+Ensure the full `[Code Health][LSC] <Title>` subject is at most 72 characters
+(use a short component name or shorten the title if needed), and generate
+`../commit`:
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill java-inline-fqn-cleanup \
+  --title "Clean up inline FQNs in <Component>" \
+  --description - \
+  --out-commit ../commit <<'EOF'
+Remove inline fully qualified class names and replace them with standard
+imports in <Component/Directory>.
+EOF
+```
+
+#### 2. Validate Commit File
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill java-inline-fqn-cleanup \
+  --validate ../commit
+```
+
+If validation fails, fix the commit title or description and re-run Steps 1–2
+until validation exits 0.
+
+#### 3. Submit CL
+
+Invoke the [Submission](../hub/references/submission.md) workflow, passing:
+
+- **Branch Name:** `cleanup-fqns-<component-name>`
+- **Commit File:** `../commit`

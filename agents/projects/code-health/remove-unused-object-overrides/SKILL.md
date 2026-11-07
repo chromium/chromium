@@ -84,17 +84,38 @@ Follow the [Verification](../hub/references/verification.md) workflow.
 
 ### Step 6: Submission
 
-Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
-following context variables:
+#### 1. Prepare Commit Message
 
-- **Skill Name:** `remove-unused-object-overrides`
-- **Branch Name:** `cleanup-remove-object-overrides-[component-name]`
-- **Commit Hashtag:** `Code Health`
-- **Cleanup Title:** `Remove unused Object overrides in [Component/Directory]`
-- **Cleanup Description:**
-  `Remove unreferenced Java Object overrides (equals, hashCode, toString) in [Component/Directory] to eliminate dead virtual methods from release DEX bytecode while strictly preserving method symmetry.`
-- **Parent Bug:** `544923924`
-- **Bug ID:** `"none"` (to skip creating a new bug, using only the parent bug)
-- **Omit Skill Attribution:** `"true"`
-- **Cleaned Component:** The parent directory of the batch.
-- **File Count:** Number of files cleaned up.
+Ensure the full `[Code Health][LSC] <Title>` subject is at most 72 characters
+(use a short component name or shorten the title if needed), and generate
+`../commit`:
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill remove-unused-object-overrides \
+  --title "Remove unused Object overrides in <Component>" \
+  --description - \
+  --out-commit ../commit <<'EOF'
+Remove unreferenced Java Object overrides (equals, hashCode, toString) in
+<Component/Directory> to eliminate dead virtual methods from release DEX
+bytecode while strictly preserving method symmetry.
+EOF
+```
+
+#### 2. Validate Commit File
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill remove-unused-object-overrides \
+  --validate ../commit
+```
+
+If validation fails, fix the commit title or description and re-run Steps 1–2
+until validation exits 0.
+
+#### 3. Submit CL
+
+Invoke the [Submission](../hub/references/submission.md) workflow, passing:
+
+- **Branch Name:** `cleanup-remove-object-overrides-<component-name>`
+- **Commit File:** `../commit`

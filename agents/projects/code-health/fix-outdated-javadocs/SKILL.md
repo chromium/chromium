@@ -77,17 +77,37 @@ Follow the [Verification](../hub/references/verification.md) workflow.
 
 ### Step 6: Submission
 
-Invoke the [Submission](../hub/references/submission.md) workflow with:
+#### 1. Prepare Commit Message
 
-- **Skill Name:** `fix-outdated-javadocs`
-- **Branch Name:** `cleanup-fix-outdated-javadocs-[component-name]`
-- **Commit Hashtag:** `Code Health`
-- **Cleanup Title:**
-  `Fix outdated and mismatched Javadocs in [Component/Directory]`
-- **Cleanup Description:**
-  `Audit and fix outdated or mismatched Javadoc comments in [Component/Directory] per the Java style guide.`
-- **Parent Bug:** `564124183`
-- **Bug ID:** `"none"`
-- **Omit Skill Attribution:** `"true"`
-- **Cleaned Component:** The parent directory of the batch.
-- **File Count:** Number of files cleaned up.
+Ensure the full `[Code Health][LSC] <Title>` subject is at most 72 characters
+(use a short component name or shorten the title if needed), and generate
+`../commit`:
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill fix-outdated-javadocs \
+  --title "Fix outdated Javadocs in <Component>" \
+  --description - \
+  --out-commit ../commit <<'EOF'
+Audit and fix outdated or mismatched Javadoc comments in
+<Component/Directory> per the Java style guide.
+EOF
+```
+
+#### 2. Validate Commit File
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill fix-outdated-javadocs \
+  --validate ../commit
+```
+
+If validation fails, fix the commit title or description and re-run Steps 1–2
+until validation exits 0.
+
+#### 3. Submit CL
+
+Invoke the [Submission](../hub/references/submission.md) workflow, passing:
+
+- **Branch Name:** `cleanup-fix-outdated-javadocs-<component-name>`
+- **Commit File:** `../commit`

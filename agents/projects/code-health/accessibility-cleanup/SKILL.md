@@ -85,22 +85,46 @@ Follow the [Verification](../hub/references/verification.md) workflow.
 1. **Bug Discovery & Creation:** Execute the bug tracking workflow in
    [bug_discovery.md](references/bug_discovery.md) using the `<SourceFileName>`
    and `<SourceFilePath>` from the candidate.
-   - **Interactive Pause:** Do NOT proceed until the bug handling is resolved
-     and a Bug ID is resolved (or the user has chosen to skip).
+   - **Interactive Pause:** Do NOT proceed until bug handling resolves a
+     `<Bug ID>`, or set `<Bug ID>` to `"none"` if the user chooses to skip
+     filing a bug.
 
 ### Step 7: Submission
 
-Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
-following context variables to the workflow:
+#### 1. Prepare Commit Message
 
-- **Skill Name:** `accessibility-cleanup`
-- **Branch Name:** `cleanup-a11y-<ComponentName>` (where ComponentName is the
+Ensure the full `[Accessibility Cleanup] <Title>` subject is at most 72
+characters (omit `.java` or shorten the title, e.g.
+`Fix accessibility in <Component>`, if needed), and generate `../commit`. Do not
+add `[LSC]` or `LSC Doc:` (this skill is not part of the LSC).
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill accessibility-cleanup \
+  --title "Improve accessibility semantics in <Component>" \
+  --bug "<Bug ID>" \
+  --description - \
+  --out-commit ../commit <<'EOF'
+<Concise description explaining what changed, why, and how.>
+EOF
+```
+
+#### 2. Validate Commit File
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill accessibility-cleanup \
+  --validate ../commit \
+  --bug "<Bug ID>"
+```
+
+If validation fails, fix the commit title or description and re-run Steps 1–2
+until validation exits 0.
+
+#### 3. Submit CL
+
+Invoke the [Submission](../hub/references/submission.md) workflow, passing:
+
+- **Branch Name:** `cleanup-a11y-<ComponentName>` (where `ComponentName` is the
   class name of the candidate file)
-- **Commit Hashtag:** `Accessibility Cleanup`
-- **Cleanup Title:** `Improve accessibility semantics in <SourceFileName>`
-- **Cleanup Description:**
-  `<Write a concise description explaining the changes (what, why, how) for the commit message.>`
-- **Parent Bug:** `531299755`
-- **Bug ID:** The resolved `<Bug ID>` from the Bug Tracking step.
-- **Cleaned Component:** `<SourceFileName>`
-- **File Count:** `1`
+- **Commit File:** `../commit`

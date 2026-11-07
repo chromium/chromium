@@ -78,7 +78,9 @@ syntax rules and examples before making replacements.
      (matching the enum constant name) and any <summary> tags MUST be brief
      descriptions of what the enum tracks.**
    - **Source:**
-     - **Append-Only Logging Comment:** Check if the enum's preceding comment already contains a warning about append-only histogram logging. If it does not, add the standard Chromium metric comment:
+     - **Append-Only Logging Comment:** Check if the enum's preceding comment
+       already contains a warning about append-only histogram logging. If it
+       does not, add the standard Chromium metric comment:
        `// These values are persisted to logs. Entries should not be renumbered and numeric values should never be reused.`
      - **Clean up legacy sync comments (CRITICAL):** Search the enum's preceding
        comments for manual synchronization reminders (e.g.,
@@ -127,15 +129,36 @@ Follow the [Verification](../hub/references/verification.md) workflow.
 
 ### Step 6: Submission
 
-Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
-following context variables to the workflow:
+#### 1. Prepare Commit Message
 
-- **Skill Name:** `lint-sync`
+Ensure the full `[lint-sync][LSC] <Title>` subject is at most 72 characters (use
+a short file name or shorten the title if needed), and generate `../commit`:
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill lint-sync \
+  --title "Add missing LINT guards in <FileName>" \
+  --description - \
+  --out-commit ../commit <<'EOF'
+Add IfThisThenThat lint guards to keep source enums in <SourceFilePath>
+synchronized with enums.xml: <EnumNamesList>.
+EOF
+```
+
+#### 2. Validate Commit File
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_commit_message.py \
+  --skill lint-sync \
+  --validate ../commit
+```
+
+If validation fails, fix the commit title or description and re-run Steps 1–2
+until validation exits 0.
+
+#### 3. Submit CL
+
+Invoke the [Submission](../hub/references/submission.md) workflow, passing:
+
 - **Branch Name:** `lint-sync-<EnumName>`
-- **Commit Hashtag:** `lint-sync`
-- **Cleanup Title:** `Add missing LINT guards in <SourceFilePath>`
-- **Cleanup Description:**
-  `Adding IfThisThenThat lint guards to ensure synchronization between the following source code enums and their metadata representation in enums.xml: <EnumNamesList (comma-separated)>`
-- **Parent Bug:** `498775295`
-- **Cleaned Component:** The source file path.
-- **File Count:** Number of files modified.
+- **Commit File:** `../commit`
