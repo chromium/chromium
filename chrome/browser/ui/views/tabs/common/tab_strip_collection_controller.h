@@ -141,6 +141,12 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   animation_coordinator() {
     return animation_coordinator_;
   }
+  const TabCollectionAnimatingLayoutManager::AnimationCoordinator&
+  animation_coordinator() const {
+    return animation_coordinator_;
+  }
+
+  bool CanPaintThrobberToLayer() const;
 
   // Notifies BrowserCommandController that the tab with keyboard focus has
   // changed.

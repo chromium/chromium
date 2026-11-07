@@ -118,9 +118,10 @@ TabIcon::TabIcon()
 
 TabIcon::~TabIcon() = default;
 
-void TabIcon::SetData(const tabs::TabData& data) {
+void TabIcon::SetData(const tabs::TabData& data, bool can_paint_to_layer) {
   const bool was_showing_load = GetShowingLoadingAnimation();
 
+  can_paint_to_layer_ = can_paint_to_layer;
   inhibit_loading_animation_ = data.should_hide_throbber;
   is_monochrome_favicon_ = data.is_monochrome_favicon;
   SetIcon(data.favicon, data.should_themify_favicon);

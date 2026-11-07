@@ -436,9 +436,10 @@ const TabView& TabView::LayoutManager::TabView() const {
 }
 
 void TabView::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
-  // TODO(crbug.com/467710547): Paint favicon to a layer when tab strip isn't
-  // animating or when dragging isn't in progress or in full screen mode.
   icon_->StepLoadingAnimation(elapsed_time);
+  icon_->SetCanPaintToLayer(
+      collection_node_ &&
+      collection_node_->GetController()->CanPaintThrobberToLayer());
 }
 
 void TabView::CreateFreezingVote(FreezingVoteReason reason) {
@@ -1219,7 +1220,10 @@ void TabView::UpdateTabData(const tabs::TabData& data) {
     UpdateAccessibleName();
   }
 
-  icon_->SetData(tab_data_);
+  icon_->SetData(
+      tab_data_,
+      collection_node_ &&
+          collection_node_->GetController()->CanPaintThrobberToLayer());
   icon_->SetActiveState(tab->IsActivated());
   icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
                       !tab->IsActivated() && tab->IsBlocked());

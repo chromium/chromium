@@ -1093,6 +1093,15 @@ int TabStripCollectionController::GetStrokeThickness() const {
   return browser_view_ && browser_view_->ShouldDrawTabStrokes() ? 1 : 0;
 }
 
+bool TabStripCollectionController::CanPaintThrobberToLayer() const {
+  // Disable layer-painting of throbbers if dragging, if any tab animation is
+  // in progress, or in fullscreen.
+  const views::Widget* widget =
+      browser_view_ ? browser_view_->GetWidget() : nullptr;
+  return widget && !drag_handler_->IsDragging() &&
+         !animation_coordinator_.IsAnimating() && !widget->IsFullscreen();
+}
+
 base::AutoReset<bool> TabStripCollectionController::ScopedAnimateLayout() {
   return base::AutoReset<bool>(&is_animating_layout_change_, true);
 }

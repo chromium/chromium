@@ -2999,3 +2999,42 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterInactiveCloseHideDisabledTest,
   LayoutTab(inactive_tab);
   EXPECT_TRUE(inactive_tab->close_button_for_testing()->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_P(TabViewTest,
+                       ThrobberPaintsToLayerAndLogsUpdateThrobberNotCached) {
+  const auto disable_rich_animations =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+  RunScheduledLayouts();
+
+  TabIcon* icon = tab_view->GetTabIconForTesting();
+  ASSERT_TRUE(icon);
+  ASSERT_FALSE(icon->GetContentsBounds().IsEmpty());
+  ASSERT_EQ(icon->layer(), nullptr);
+
+  base::HistogramTester histogram_tester;
+
+  tabs::TabData loading_data = tab_view->data();
+  loading_data.network_state = tabs::TabNetworkState::kWaiting;
+  tab_view->SetDataForTesting(loading_data);
+  tab_view->StepLoadingAnimation(base::Milliseconds(100));
+
+  EXPECT_NE(icon->layer(), nullptr);
+  if (base::TimeTicks::IsHighResolution()) {
+    histogram_tester.ExpectTotalCount("Tab.Icon.UpdateThrobber.Time.NotCached",
+                                      1);
+  }
+
+  tabs::TabData idle_data = loading_data;
+  idle_data.network_state = tabs::TabNetworkState::kNone;
+  tab_view->SetDataForTesting(idle_data);
+
+  EXPECT_EQ(icon->layer(), nullptr);
+  if (base::TimeTicks::IsHighResolution()) {
+    histogram_tester.ExpectTotalCount("Tab.Icon.UpdateThrobber.Time.NotCached",
+                                      2);
+  }
+}

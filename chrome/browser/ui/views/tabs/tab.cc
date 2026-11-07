@@ -1582,8 +1582,7 @@ void Tab::OnTabDataChanged(TabChangeType tab_change_type,
 
   tabs::TabData old(std::move(data_));
   data_ = tab_data;
-  icon_->SetData(data_);
-  icon_->SetCanPaintToLayer(controller_->CanPaintThrobberToLayer());
+  icon_->SetData(data_, controller_->CanPaintThrobberToLayer());
   UpdateTabIconAttention();
   if (tabs::ShouldUpdateAccessibleName(old, data_)) {
     UpdateAccessibleName();

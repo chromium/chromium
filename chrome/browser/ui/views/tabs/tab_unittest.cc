@@ -11,6 +11,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -623,12 +624,11 @@ TEST_F(TabTest, LayeredThrobber) {
 
 TEST_F(TabTest, EmptyBoundsDeferPaintToLayer) {
   TabIcon icon;
-  icon.SetCanPaintToLayer(true);
   ASSERT_TRUE(icon.GetContentsBounds().IsEmpty());
 
   tabs::TabData data;
   data.network_state = tabs::TabNetworkState::kWaiting;
-  icon.SetData(data);
+  icon.SetData(data, /*can_paint_to_layer=*/true);
   EXPECT_FALSE(icon.layer());
 
   icon.SetBounds(0, 0, gfx::kFaviconSize, gfx::kFaviconSize);
@@ -639,11 +639,29 @@ TEST_F(TabTest, EmptyBoundsDeferPaintToLayer) {
   EXPECT_TRUE(icon.layer());
 
   data.network_state = tabs::TabNetworkState::kNone;
-  icon.SetData(data);
+  icon.SetData(data, /*can_paint_to_layer=*/true);
   EXPECT_FALSE(icon.layer());
 
   icon.SetBounds(0, 0, gfx::kFaviconSize, gfx::kFaviconSize);
   EXPECT_FALSE(icon.layer());
+}
+
+TEST_F(TabTest, SetDataUpdatesCanPaintToLayerBeforeUpdateThrobber) {
+  TabIcon icon;
+  icon.SetBounds(0, 0, 100, 100);
+  ASSERT_FALSE(icon.GetContentsBounds().IsEmpty());
+
+  tabs::TabData data;
+  data.network_state = tabs::TabNetworkState::kNone;
+  icon.SetData(data, /*can_paint_to_layer=*/true);
+  ASSERT_FALSE(icon.layer());
+
+  base::HistogramTester histogram_tester;
+  data.network_state = tabs::TabNetworkState::kWaiting;
+  icon.SetData(data, /*can_paint_to_layer=*/false);
+  EXPECT_FALSE(icon.layer());
+  histogram_tester.ExpectTotalCount("Tab.Icon.UpdateThrobber.Time.NotCached",
+                                    0);
 }
 
 TEST_F(TabTest, TitleHiddenWhenSmall) {

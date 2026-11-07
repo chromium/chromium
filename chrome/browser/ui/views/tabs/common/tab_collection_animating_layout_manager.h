@@ -51,6 +51,7 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
     double current_offset() const { return current_offset_; }
     double starting_offset() const { return starting_offset_; }
     double GetCurrentProgress() const;
+    bool IsAnimating() const { return animation_.is_animating(); }
 
     // views::AnimationDelegateViews:
     void AnimationProgressed(const gfx::Animation* animation) override;
