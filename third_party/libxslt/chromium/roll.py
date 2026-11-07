@@ -76,6 +76,7 @@ PATCHES = [
     '0005-Verify-dictionary-ownership-before-aliasing-attribut.patch',
     '0006-Fix-type-confusion-in-xsltParseTemplateContent.patch',
     '0007-Return-an-empty-node-set-from-document-function-with-invalid-uri.patch',
+    '0008-Fix-use-after-free-in-direct-pattern-match-cache.patch',
 ]
 
 
