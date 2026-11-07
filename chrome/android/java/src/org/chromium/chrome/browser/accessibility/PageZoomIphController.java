@@ -11,11 +11,14 @@ import android.os.Looper;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Controller for In-Product Help for the Page Zoom feature. */
@@ -43,6 +46,18 @@ public class PageZoomIphController {
         mAppMenuHandler = appMenuHandler;
         mToolbarMenuButton = toolbarMenuButton;
         mUserEducationHelper = userEducationHelper;
+    }
+
+    /**
+     * Returns whether the Page Zoom IPH may be shown while {@code tab} is the current tab. It is
+     * not shown on native pages or on the NTP. The WebUI NTP is not a native page, so it is
+     * excluded by URL.
+     */
+    public static boolean shouldShowForTab(@Nullable Tab tab) {
+        return tab != null
+                && tab.getWebContents() != null
+                && !tab.isNativePage()
+                && !UrlUtilities.isNtpUrl(tab.getUrl());
     }
 
     /**

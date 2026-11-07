@@ -1929,10 +1929,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (!didTriggerPromo && PageZoomUtils.shouldShowZoomMenuItem(mActivity)) {
             // Page Zoom IPH should only show if the menu item is visible, and not on NTP or CCT.
-            if (!BuildConfig.IS_FOR_TEST
-                    && tab != null
-                    && tab.getWebContents() != null
-                    && !tab.isNativePage()) {
+            if (!BuildConfig.IS_FOR_TEST && PageZoomIphController.shouldShowForTab(tab)) {
                 PageZoomIphController pageZoomIphController =
                         new PageZoomIphController(
                                 mActivity,
