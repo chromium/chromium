@@ -78,6 +78,9 @@ struct OtpTokenIdentity {
   // value or sender).
   bool IsStrictlyNewerThan(const OtpTokenIdentity& other) const;
 
+  // Returns the cache TTL for this token identity.
+  base::TimeDelta CacheDuration() const;
+
   friend bool operator==(const OtpTokenIdentity&,
                          const OtpTokenIdentity&) = default;
 

@@ -5,17 +5,21 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_COORDINATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_COORDINATOR_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_delivery.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_security_gateway.h"
@@ -34,6 +38,7 @@ namespace autofill {
 
 class AutofillClient;
 class BrowserAutofillManager;
+class FormData;
 
 // Tab-scoped coordinator owned by `AutofillClient`.
 // Starts and stops `OtpSource` instances as OTP fields appear and disappear,
@@ -59,6 +64,11 @@ class OtpCoordinator : public OtpSource::Observer {
   // Starts or renews listening for OTPs for `target`.
   void StartListeningForOtp(const OtpTarget& target);
 
+  // Drops active OTP deliveries for `form_id` whose fields are not in `except`
+  // and stops sources for any origin that has no remaining active targets.
+  void StopListeningForForm(FormGlobalId form_id,
+                            const base::flat_set<FieldGlobalId>& except = {});
+
   // Returns verified, unused OTPs available for `target`.
   std::vector<one_time_tokens::OneTimeToken> GetAvailableTokens(
       const OtpTarget& target) const;
@@ -67,6 +77,15 @@ class OtpCoordinator : public OtpSource::Observer {
   // called or `this` is destroyed.
   void RegisterObserver(Observer* observer);
   void UnregisterObserver(Observer* observer);
+
+  // Marks `filled_value` as consumed across sources and deliveries for
+  // `target.origin`, and suppresses re-offering of matching or older tokens on
+  // `target.origin` until expiration.
+  void OnOtpFilled(const OtpTarget& target, const std::string& filled_value);
+
+  // Consumes any non-empty OTP field value on `form` across sources and
+  // deliveries for the field's origin, and drops the form's deliveries.
+  void OnOtpFormSubmitted(const FormData& form);
 
   // OtpSource::Observer:
   void OnSourceCandidateAvailable(
@@ -79,23 +98,41 @@ class OtpCoordinator : public OtpSource::Observer {
 
   using SiteFrame = std::pair<url::Origin, LocalFrameToken>;
 
-  static SiteFrame GetSiteFrame(const OtpTarget& target);
+  struct UsedToken {
+    OtpTokenIdentity identity;
+    base::TimeTicks recorded_at;
+  };
 
-  void OnDeliveryValidated(OtpTarget target,
+  static SiteFrame GetSiteFrame(const OtpTarget& target);
+  static bool IsUsedTokenExpired(const UsedToken& used, base::TimeTicks now);
+
+  void OnDeliveryValidated(uint64_t generation,
+                           OtpTarget target,
                            OtpCandidate candidate,
                            OtpDeliveryPolicy::Decision decision);
+  void DropDeliveries(base::FunctionRef<bool(const OtpDelivery&)> pred);
+  void StopSourcesIfNoRemainingTargets(const url::Origin& origin);
+  bool IsCandidateSuppressedByUsedTokens(const OtpTarget& target,
+                                         const OtpCandidate& candidate) const;
   std::optional<OtpCandidate> GetAvailableCandidate(FieldGlobalId field) const;
+  bool HasActiveDeliveryForSiteFrame(const SiteFrame& site_frame) const;
   Observer* FindObserverForFrame(LocalFrameToken frame);
   bool IsTargetActiveAndEligible(const OtpTarget& target) const;
 
   const raw_ref<AutofillClient> client_;
   OtpTargetFieldIdentifier target_field_identifier_;
   base::flat_map<FieldGlobalId, OtpDelivery> deliveries_;
+  base::flat_map<url::Origin, std::vector<UsedToken>> used_tokens_per_origin_;
   base::flat_set<SiteFrame> phishing_blocked_site_frames_;
   base::flat_map<SiteFrame, OtpTokenIdentity> in_flight_validations_;
   std::vector<std::unique_ptr<OtpSource>> sources_;
   OtpSecurityGateway security_gateway_;
   base::ObserverList<Observer> observers_;
+
+  // Incremented whenever all active OTP deliveries are cleared so in-flight
+  // `OnDeliveryValidated` callbacks from a previous listening session are
+  // ignored.
+  uint64_t listening_generation_ = 0;
 
   base::WeakPtrFactory<OtpCoordinator> weak_ptr_factory_{this};
 };

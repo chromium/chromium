@@ -13,6 +13,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -32,6 +33,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/fake_sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
@@ -255,6 +257,19 @@ class OtpCoordinatorTest
     return targets;
   }
 
+  FormData BuildFormWithFieldValue(const OtpTarget& target,
+                                   std::string_view value) {
+    FormData form =
+        CHECK_DEREF(autofill_manager().FindCachedFormById(target.form))
+            .ToFormData();
+    for (FormFieldData& field : test_api(form).fields()) {
+      if (field.global_id() == target.field) {
+        field.set_value(base::UTF8ToUTF16(value));
+      }
+    }
+    return form;
+  }
+
   void SendGmailOtp(const std::string& code,
                     base::Time email_time,
                     std::optional<base::TimeTicks> arrival = std::nullopt,
@@ -341,8 +356,6 @@ TEST_F(OtpCoordinatorTest,
               HasValue("111111"));
 
   const base::Time t0 = base::Time::Now();
-  // An already-expired Gmail candidate (> 1 minute old) is ignored before
-  // PhishGuard validation.
   SendGmailOtp("999000", t0 + base::Seconds(10),
                base::TimeTicks::Now() - base::Minutes(2));
   SendGmailOtp("222222", t0 + base::Seconds(20));
@@ -352,7 +365,6 @@ TEST_F(OtpCoordinatorTest,
   EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target),
               HasValue("111111"));
 
-  // Reactive serving re-evaluates live policy (e.g. Gmail OTP pref).
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
   EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
@@ -464,6 +476,135 @@ TEST_F(OtpCoordinatorTest, ServesCommandLineMockOtpWithoutStartingSources) {
   mock_coordinator.StartListeningForOtp(target);
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
   EXPECT_THAT(mock_coordinator.GetAvailableTokens(target), HasValue("999999"));
+}
+
+TEST_F(OtpCoordinatorTest,
+       SuppressesUsedAndOlderCodesUntilExpirationAndOnFormSubmission) {
+  const OtpTarget site1_target = AddOtpForm()[0];
+  const std::vector<OtpTarget> site2_targets =
+      AddOtpForm(/*fields=*/2, GURL("https://other.test"));
+  EXPECT_EQ(gmail_service_->num_callbacks(), 2u);
+
+  const base::Time t0 = base::Time::Now();
+  // Arrive 2m50s ago, then fill now: used-token expiry is measured from
+  // `max(on_device_arrival, recorded_at)` so re-polling 20s later (more than 3m
+  // after `t_sms`, but only 20s after `recorded_at`) still suppresses "111111".
+  const base::TimeTicks t_sms =
+      base::TimeTicks::Now() - (base::Minutes(2) + base::Seconds(50));
+  coordinator_->OnOtpFilled(site1_target, "000999");
+  SendGmailOtp("000999", t0, t_sms - base::Seconds(3));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+
+  sms_otp_service_->SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "111111", t_sms));
+  phish_guard_delegate_->WaitForChecks(2u);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),
+              HasValue("111111"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[0]),
+              HasValue("111111"));
+
+  // Filling on `site1_target` consumes `site1_target`'s delivery and suppresses
+  // older/matching codes on `site1_target.origin`, without consuming
+  // `site2_targets`'s already-validated delivery on another origin.
+  coordinator_->OnOtpFilled(site1_target, "111111");
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[0]),
+              HasValue("111111"));
+
+  // Advance 20s: `Now() - t_sms` is now 3m10s (> 3m), while `Now() -
+  // recorded_at` is 20s (< 3m). Re-polling "111111" must still be suppressed.
+  task_environment_.AdvanceClock(base::Seconds(20));
+  SendGmailOtp("000000", t0 + base::Seconds(5), t_sms - base::Seconds(5));
+  SendGmailOtp("111111", t0, base::TimeTicks::Now());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+
+  SendGmailOtp("222222", t0 + base::Seconds(30), base::TimeTicks::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),
+              HasValue("222222"));
+
+  // Submitting with a different typed value (e.g. a typo) drops the form's
+  // delivery and records the typed value, without consuming the offered code
+  // "222222". Re-listening on `site1_target` re-delivers "222222".
+  coordinator_->OnOtpFormSubmitted(
+      BuildFormWithFieldValue(site1_target, "999888"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+  EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
+
+  coordinator_->StartListeningForOtp(site1_target);
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),
+              HasValue("222222"));
+
+  // Submitting with the offered value "222222" consumes "222222", so
+  // re-listening on `site1_target` keeps "222222" suppressed until its
+  // 1-minute used-code TTL expires.
+  coordinator_->OnOtpFormSubmitted(
+      BuildFormWithFieldValue(site1_target, "222222"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+  coordinator_->StartListeningForOtp(site1_target);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+
+  task_environment_.AdvanceClock(base::Minutes(2));
+  SendGmailOtp("222222", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),
+              HasValue("222222"));
+
+  // Submitting a split single-character multi-box form on `site2_targets`
+  // concatenates its field values ("4" + "2" -> "42") and suppresses "42" on
+  // `site2_targets`'s origin.
+  FormData split_form =
+      CHECK_DEREF(autofill_manager().FindCachedFormById(site2_targets[0].form))
+          .ToFormData();
+  test_api(split_form).field(0).set_value(u"4");
+  test_api(split_form).field(1).set_value(u"2");
+  coordinator_->OnOtpFormSubmitted(split_form);
+  coordinator_->StartListeningForOtp(site2_targets[0]);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "42", base::TimeTicks::Now()));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[0]), IsEmpty());
+}
+
+TEST_F(OtpCoordinatorTest,
+       HandlesStopListeningAndFormSubmissionDuringInFlightPhishGuard) {
+  const OtpTarget site1_target = AddOtpForm()[0];
+  const std::vector<OtpTarget> site2_targets =
+      AddOtpForm(/*fields=*/2, GURL("https://sub.example.test"));
+  EXPECT_EQ(gmail_service_->num_callbacks(), 2u);
+
+  // Hold PhishGuard while `site1_target` keeps `listening_generation_` alive
+  // and `site2_targets[0]` is removed via `StopListeningForForm(..., except)`,
+  // then verify the remaining active field `site2_targets[1]` still receives
+  // the validated candidate.
+  phish_guard_delegate_->HoldCallbacks();
+
+  SendGmailOtp("333333", base::Time::Now() + base::Seconds(10));
+  phish_guard_delegate_->WaitForHeldCallbacks(1u);
+
+  coordinator_->StopListeningForForm(site2_targets[0].form,
+                                     /*except=*/{site2_targets[1].field});
+  std::move(phish_guard_delegate_->held_callbacks()[0])
+      .Run(/*is_phishing=*/false);
+  phish_guard_delegate_->WaitForHeldCallbacks(2u);
+  std::move(phish_guard_delegate_->held_callbacks()[1])
+      .Run(/*is_phishing=*/false);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[0]), IsEmpty());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[1]),
+              HasValue("333333"));
+
+  coordinator_->OnOtpFormSubmitted(
+      BuildFormWithFieldValue(site2_targets[1], "333333"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[1]), IsEmpty());
+
+  const OtpTarget site2_after_submit_target =
+      AddOtpForm(/*fields=*/1, GURL("https://sub.example.test"))[0];
+  coordinator_->StopListeningForForm(site1_target.form);
+  EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
+  coordinator_->StopListeningForForm(site2_after_submit_target.form);
+  EXPECT_EQ(gmail_service_->num_callbacks(), 0u);
+  coordinator_->StartListeningForOtp(site2_after_submit_target);
+  EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
 }
 
 }  // namespace

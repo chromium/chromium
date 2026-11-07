@@ -12,7 +12,9 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -73,6 +75,11 @@ bool OtpTokenIdentity::IsStrictlyNewerThan(
   // SMS vs Gmail, SMS vs SMS, or equal email timestamps: the OTP that
   // reached the device later wins. An exact tie is not "newer".
   return on_device_arrival > other.on_device_arrival;
+}
+
+base::TimeDelta OtpTokenIdentity::CacheDuration() const {
+  return sender.has_value() ? one_time_tokens::kGmailTokenCacheDuration
+                            : one_time_tokens::kCacheDurationForOldTokens;
 }
 
 OtpCandidate::OtpCandidate(one_time_tokens::OneTimeToken token,
