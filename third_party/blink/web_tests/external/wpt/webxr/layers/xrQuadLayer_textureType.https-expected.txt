@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] createQuadLayer with textureType 'texture-array' requires WebGL2 and keeps stereo as stereo - webgl
+  assert_throws_dom: createQuadLayer with textureType 'texture-array' must throw InvalidStateError on WebGL. function "() => binding.createQuadLayer({ ...baseInit, textureType: 'texture-array' })" threw object "TypeError: Failed to execute 'createQuadLayer' on 'XRWebGLBinding': textureType of 'texture-array' is only available with WebGL 2 contexts." that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+Harness: the test ran to completion.
+

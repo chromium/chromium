@@ -1,17 +1,9 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["forwarddelete",""]] "foo[]<br><table><tr><td>bar</table>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<table><tbody><tr><td>bar</td></tr></tbody></table>baz" but got "foo<br><table><tbody><tr><td>bar</td></tr></tbody></table>baz"
-[FAIL] [["forwarddelete",""]] "foo<table><tr><td>bar[]<br></table>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<table><tbody><tr><td>bar</td></tr></tbody></table>baz" but got "foo<table><tbody><tr><td>bar<br></td></tr></tbody></table>baz"
 [FAIL] [["forwarddelete",""]] "<p>foo[]<br><table><tr><td>bar</table><p>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><table><tbody><tr><td>bar</td></tr></tbody></table><p>baz</p>" but got "<p>foo<br></p><table><tbody><tr><td>bar</td></tr></tbody></table><p>baz</p>"
-[FAIL] [["forwarddelete",""]] "<p>foo<table><tr><td>bar[]<br></table><p>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><table><tbody><tr><td>bar</td></tr></tbody></table><p>baz</p>" but got "<p>foo</p><table><tbody><tr><td>bar<br></td></tr></tbody></table><p>baz</p>"
-[FAIL] [["forwarddelete",""]] "<table><tr><td>foo[]<br><td>bar</table>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td>bar</td></tr></tbody></table>" but got "<table><tbody><tr><td>foo<br></td><td>bar</td></tr></tbody></table>"
-[FAIL] [["forwarddelete",""]] "<table><tr><td>foo[]<br><tr><td>bar</table>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td></tr><tr><td>bar</td></tr></tbody></table>" but got "<table><tbody><tr><td>foo<br></td></tr><tr><td>bar</td></tr></tbody></table>"
 [FAIL] [["forwarddelete",""]] "<ol><li>foo[]<li>bar<br>baz</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar<br>baz</li></ol>" but got "<ol><li>foobar</li><li>baz</li></ol>"
 [FAIL] [["defaultparagraphseparator","div"],["forwarddelete",""]] "<ol><li>foo[]<li><p>bar</ol>" queryCommandValue("defaultparagraphseparator") before

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] wrap-inside initial computed value is 'auto'
+  assert_equals: expected (string) "auto" but got (undefined) undefined
+[FAIL] wrap-inside: auto
+  assert_equals: expected (string) "auto" but got (undefined) undefined
+[FAIL] wrap-inside: avoid
+  assert_equals: expected (string) "avoid" but got (undefined) undefined
+[FAIL] wrap-inside ignores invalid values
+  assert_equals: expected "avoid" but got "bogus"
+[FAIL] wrap-inside is not inherited
+  assert_equals: expected (string) "auto" but got (undefined) undefined
+[FAIL] wrap-inside: inherit resolves to the parent value
+  assert_equals: expected (string) "avoid" but got (undefined) undefined
+Harness: the test ran to completion.
+

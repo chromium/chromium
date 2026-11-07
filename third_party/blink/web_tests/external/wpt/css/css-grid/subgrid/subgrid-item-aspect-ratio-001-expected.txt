@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] .grid 3
+  assert_equals: \n<div class="grid two-columns">\n  <div class="subgrid" data-expected-width="100" data-expected-height="100">\n    <div class="stretched" data-expected-width="100" data-expected-height="100"></div>\n  </div>\n  <div class="row-sizer"></div>\n</div>\nwidth expected 100 but got 0
+Harness: the test ran to completion.
+

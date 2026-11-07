@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] discard-before: max-content excludes the collapsed leading space
+  assert_equals: expected 20 but got 30
+[FAIL] discard-after: max-content excludes the collapsed trailing space
+  assert_equals: expected 20 but got 30
+[FAIL] discard-before: min-content merges the words (removes the wrap opportunity)
+  assert_equals: expected 50 but got 40
+[FAIL] discard-after: min-content merges the words (removes the wrap opportunity)
+  assert_equals: expected 50 but got 40
+Harness: the test ran to completion.
+

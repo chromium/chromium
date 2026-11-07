@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-[FAIL] Non-rendered symbol with rect returns zero bbox
+[FAIL] symbol: the non-rendered container reports zero
   assert_equals: symbol1.getBBox().x expected 0 but got 50
-[FAIL] display:none <g> with rect returns zero bbox
+[FAIL] display:none <g>: the non-rendered container reports zero
   assert_equals: g_none.getBBox().x expected 0 but got 70
 Harness: the test ran to completion.
 

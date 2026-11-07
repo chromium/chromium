@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] e.style['min-size'] = "100px" should set min-height
+  assert_equals: min-height should be canonical expected "100px" but got ""
+[FAIL] e.style['min-size'] = "100px" should set min-width
+  assert_equals: min-width should be canonical expected "100px" but got ""
+[FAIL] e.style['min-size'] = "100px" should not set unrelated longhands
+  assert_true: expected true got false
+[FAIL] e.style['min-size'] = "100px 100px" should set min-height
+  assert_equals: min-height should be canonical expected "100px" but got ""
+[FAIL] e.style['min-size'] = "100px 100px" should set min-width
+  assert_equals: min-width should be canonical expected "100px" but got ""
+[FAIL] e.style['min-size'] = "100px 100px" should not set unrelated longhands
+  assert_true: expected true got false
+[FAIL] e.style['min-size'] = "100px 200px" should set min-height
+  assert_equals: min-height should be canonical expected "200px" but got ""
+[FAIL] e.style['min-size'] = "100px 200px" should set min-width
+  assert_equals: min-width should be canonical expected "100px" but got ""
+[FAIL] e.style['min-size'] = "100px 200px" should not set unrelated longhands
+  assert_true: expected true got false
+[FAIL] e.style['min-size'] = "auto" should set min-height
+  assert_equals: min-height should be canonical expected "auto" but got ""
+[FAIL] e.style['min-size'] = "auto" should set min-width
+  assert_equals: min-width should be canonical expected "auto" but got ""
+[FAIL] e.style['min-size'] = "auto" should not set unrelated longhands
+  assert_true: expected true got false
+[FAIL] e.style['min-size'] = "min-content max-content" should set min-height
+  assert_equals: min-height should be canonical expected "max-content" but got ""
+[FAIL] e.style['min-size'] = "min-content max-content" should set min-width
+  assert_equals: min-width should be canonical expected "min-content" but got ""
+[FAIL] e.style['min-size'] = "min-content max-content" should not set unrelated longhands
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

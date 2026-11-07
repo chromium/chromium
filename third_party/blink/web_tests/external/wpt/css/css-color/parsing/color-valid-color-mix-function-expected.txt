@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['color'] = "color-mix(in srgb, red)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color-mix(in srgb, red 100%)" should set the property value
@@ -13,6 +13,18 @@ Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['color'] = "color-mix(in srgb, red 50%, green 30%, blue 20%)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color-mix(in srgb, red 30%, green 60%, blue 90%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color-mix(red 60%, green, blue 50%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color-mix(in srgb, red 60%, green, blue 50%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color-mix(in srgb, red 60%, green, white, blue 50%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color-mix(in srgb, red calc(60%), green, blue 50%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color-mix(in srgb, red calc(60%), green, white, blue 50%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color-mix(in srgb, red 60%, green, blue 40%)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color-mix(in srgb, red 50%, green, blue)" should set the property value
   assert_not_equals: property should be set got disallowed value ""

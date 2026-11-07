@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A document without a policy can have a same-origin child frame with a policy after going back from a same-origin document with one that opened a popup
+  promise_test: Unhandled rejection with value: object "Error: Failed to read a named property 'document' from 'Window': Blocked a frame with origin "https://web-platform.test:8444" from accessing a cross-origin frame."
+Harness: the test ran to completion.
+

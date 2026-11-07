@@ -41,3 +41,34 @@ promise_test(async t => {
   ctx.drawImage(frame, 0, 0);
   verifyOrientedPixels(ctx.getImageData(0, 0, width, height).data, orientation, 'wrapped frame');
 }, 'drawImage() of a VideoFrame wrapping a rotated VideoFrame combines the rotations');
+
+// A frame wrapping a flipped frame: the rotation of the init is applied before the flip of the base frame.
+for (const rotation of [90, 270]) {
+  promise_test(async t => {
+    const base = makeOrientedFrame({rotation: 0, flip: true});
+    t.add_cleanup(() => base.close());
+    const frame = new VideoFrame(base, {rotation});
+    t.add_cleanup(() => frame.close());
+    // The flipped image is rotated.
+    const orientation = {rotation: 360 - rotation, flip: true};
+    verifyOrientedFrameProperties(frame, orientation);
+    const {width, height} = orientedSize(orientation);
+    const ctx = new OffscreenCanvas(width, height).getContext('2d');
+    ctx.drawImage(frame, 0, 0);
+    verifyOrientedPixels(ctx.getImageData(0, 0, width, height).data, orientation, 'wrapped frame');
+  }, `drawImage() of a VideoFrame wrapping a flipped VideoFrame with an init rotation of ${rotation} rotates the flipped image`);
+
+  promise_test(async t => {
+    const base = makeOrientedFrame({rotation, flip: false});
+    t.add_cleanup(() => base.close());
+    const frame = new VideoFrame(base, {flip: true});
+    t.add_cleanup(() => frame.close());
+    // The rotated image is flipped.
+    const orientation = {rotation, flip: true};
+    verifyOrientedFrameProperties(frame, orientation);
+    const {width, height} = orientedSize(orientation);
+    const ctx = new OffscreenCanvas(width, height).getContext('2d');
+    ctx.drawImage(frame, 0, 0);
+    verifyOrientedPixels(ctx.getImageData(0, 0, width, height).data, orientation, 'wrapped frame');
+  }, `drawImage() of a VideoFrame wrapping a VideoFrame rotated by ${rotation} with an init flip flips the rotated image`);
+}

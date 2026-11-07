@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Level 2.0 with max-fs/max-mbps raised allows level 3.1 sized video
+  assert_greater_than: max-fs raises the limit above level 2.0 expected a number greater than 396 but got 225
+Harness: the test ran to completion.
+

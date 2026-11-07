@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Adding margin-trim: block trims the adjoining margins
+  assert_array_equals: expected property 0 to be "0px" but got "10px" (expected array ["0px", "10px"] got ["10px", "10px"])
+[FAIL] Narrowing margin-trim to block-end restores the block-start margin
+  assert_array_equals: expected property 1 to be "0px" but got "10px" (expected array ["10px", "0px"] got ["10px", "10px"])
+Harness: the test ran to completion.
+

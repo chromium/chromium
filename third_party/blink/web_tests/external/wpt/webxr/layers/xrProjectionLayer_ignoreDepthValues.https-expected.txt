@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] XRProjectionLayer.ignoreDepthValues reflects whether the layer has a depth buffer - webgl2
+  assert_false: ignoreDepthValues must be false for a layer created with a depthFormat. expected false got true
+Harness: the test ran to completion.
+

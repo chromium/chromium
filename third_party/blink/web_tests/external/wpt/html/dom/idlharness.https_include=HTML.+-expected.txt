@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] HTMLElement interface: attribute headingOffset
   assert_own_property: expected property "headingOffset" missing
 [FAIL] HTMLElement interface: attribute headingReset
@@ -40,6 +40,102 @@ Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "fastSeek" missing
 [FAIL] HTMLMediaElement interface: operation getStartDate()
   assert_own_property: interface prototype object missing non-static operation expected property "getStartDate" missing
+[FAIL] HTMLInputElement interface: attribute hspace
+  assert_true: The prototype object must have a property "hspace" expected true got false
+[FAIL] HTMLInputElement interface: attribute vspace
+  assert_true: The prototype object must have a property "vspace" expected true got false
+[FAIL] HTMLInputElement interface: document.createElement("input") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: document.createElement("input") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("text") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("text") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("hidden") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("hidden") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("search") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("search") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("tel") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("tel") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("url") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("url") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("email") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("email") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("password") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("password") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("date") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("date") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("month") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("month") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("week") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("week") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("time") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("time") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("datetime-local") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("datetime-local") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("number") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("number") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("range") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("range") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("color") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("color") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("checkbox") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("checkbox") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("radio") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("radio") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("file") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("file") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("submit") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("submit") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("image") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("image") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("reset") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("reset") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("button") must inherit property "hspace" with the proper type
+  assert_inherits: property "hspace" not found in prototype chain
+[FAIL] HTMLInputElement interface: createInput("button") must inherit property "vspace" with the proper type
+  assert_inherits: property "vspace" not found in prototype chain
 [FAIL] HTMLFrameSetElement interface: attribute onpagereveal
   assert_true: The prototype object must have a property "onpagereveal" expected true got false
 [FAIL] HTMLFrameSetElement interface: attribute onpageswap

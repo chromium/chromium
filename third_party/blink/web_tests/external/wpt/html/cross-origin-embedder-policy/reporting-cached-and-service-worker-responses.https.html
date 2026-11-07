@@ -244,4 +244,30 @@ promise_test(async t => {
   checkReport(reports[0], new URL(frameURL).href, location, "reporting", "");
   checkReport(reports[1], new URL(frameURL).href, location, "enforce", "");
 }, "Cross-Origin-Embedder-Policy reports a response a service worker fetched from another URL by that URL");
+
+promise_test(async t => {
+  const [uuid, frameURL] = await createFrameControlledByServiceWorker(t);
+  const location = `${REMOTE_ORIGIN}/common/square.png`;
+  const fetchedURL = `${REMOTE_ORIGIN}/common/redirect.py?location=${encodeURIComponent(location)}`;
+  const url = `${ORIGIN}/common/blank.html?respond-with-fetch-of=${encodeURIComponent(fetchedURL)}`;
+  const { blocked, reports, controlled } = await loadInFrameAndObserveReports(uuid, url, false, 2);
+  assert_true(controlled, "controlled by the service worker");
+  assert_true(blocked, "blocked");
+  assert_equals(reports.length, 2);
+  checkReport(reports[0], new URL(frameURL).href, fetchedURL, "reporting", "");
+  checkReport(reports[1], new URL(frameURL).href, fetchedURL, "enforce", "");
+}, "Cross-Origin-Embedder-Policy reports a redirected response a service worker fetched from another URL by that URL");
+
+promise_test(async t => {
+  t.add_cleanup(() => caches.delete("respond-with-cache-of"));
+  const [uuid, frameURL] = await createFrameControlledByServiceWorker(t);
+  const location = `${REMOTE_ORIGIN}/common/square.png`;
+  const url = `${ORIGIN}/common/blank.html?respond-with-cache-of=${encodeURIComponent(location)}`;
+  const { blocked, reports, controlled } = await loadInFrameAndObserveReports(uuid, url, false, 2);
+  assert_true(controlled, "controlled by the service worker");
+  assert_true(blocked, "blocked");
+  assert_equals(reports.length, 2);
+  checkReport(reports[0], new URL(frameURL).href, location, "reporting", "");
+  checkReport(reports[1], new URL(frameURL).href, location, "enforce", "");
+}, "Cross-Origin-Embedder-Policy reports a Cache API response a service worker responds with by its URL");
 </script>

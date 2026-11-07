@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] element.streamHTML: the adoption agency algorithm does not insert into a document that has a document element
+  assert_equals: expected 0 but got 1
+[FAIL] element.streamHTMLUnsafe: the adoption agency algorithm does not insert into a document that has a document element
+  assert_equals: expected 0 but got 1
+Harness: the test ran to completion.
+

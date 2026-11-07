@@ -14,13 +14,13 @@ const kOrientationSource = [
   ['b', 'b', 'g', 'g'],
 ];
 
-const kOrientationCombinations = [0, 90, 180, 270].map(rotation => ({rotation}));
+const kOrientationCombinations = [false, true].flatMap(flip => [0, 90, 180, 270].map(rotation => ({rotation, flip})));
 
-function orientationDescription({rotation}) {
-  return `a ${rotation} degrees rotated`;
+function orientationDescription({rotation, flip}) {
+  return `a ${rotation} degrees rotated${flip ? ' and flipped' : ''}`;
 }
 
-function makeOrientedFrame({rotation}) {
+function makeOrientedFrame({rotation, flip = false}) {
   const data = new Uint8Array(kOrientationSourceWidth * kOrientationSourceHeight * 4);
   kOrientationSource.forEach((row, y) => row.forEach((name, x) => {
     data.set([...kOrientationColors[name], 255], 4 * (y * kOrientationSourceWidth + x));
@@ -31,6 +31,7 @@ function makeOrientedFrame({rotation}) {
     codedHeight: kOrientationSourceHeight,
     timestamp: 0,
     rotation,
+    flip,
   });
 }
 
@@ -40,9 +41,10 @@ function orientedSize({rotation}) {
                             {width: kOrientationSourceWidth, height: kOrientationSourceHeight};
 }
 
-// The name of the source color rendered at (x, y). The source is rotated clockwise.
-// FIXME: Test flip.
-function expectedColorName({rotation}, x, y) {
+// The name of the source color rendered at (x, y). The source is rotated clockwise, then flipped horizontally.
+function expectedColorName({rotation, flip = false}, x, y) {
+  if (flip)
+    x = orientedSize({rotation}).width - 1 - x;
   const lastRow = kOrientationSourceHeight - 1;
   const lastColumn = kOrientationSourceWidth - 1;
   switch (rotation) {
@@ -76,6 +78,7 @@ function verifyOrientedPixels(pixels, orientation, description) {
 function verifyOrientedFrameProperties(frame, orientation) {
   const {width, height} = orientedSize(orientation);
   assert_equals(frame.rotation, orientation.rotation, 'rotation');
+  assert_equals(frame.flip, !!orientation.flip, 'flip');
   assert_equals(frame.displayWidth, width, 'displayWidth');
   assert_equals(frame.displayHeight, height, 'displayHeight');
   assert_equals(frame.codedWidth, kOrientationSourceWidth, 'codedWidth');

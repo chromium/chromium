@@ -60,7 +60,8 @@ INNER_IFRAME_STYLE = """
 """
 
 
-def test_frame_element(session, inline, iframe):
+@pytest.mark.parametrize("domain", ["", "alt"], ids=["same_origin", "cross_origin"])
+def test_frame_element(session, inline, iframe, domain):
     # Create a reference element which looks exactly like the frame's content
     session.url = inline(
         VIEWPORT_META + "{0}{1}".format(REFERENCE_STYLE, REFERENCE_CONTENT))
@@ -74,8 +75,8 @@ def test_frame_element(session, inline, iframe):
 
     # Capture the frame's element
     iframe_content = "{0}{1}".format(INNER_IFRAME_STYLE, DEFAULT_CONTENT)
-    session.url = inline(
-        VIEWPORT_META + "{0}{1}".format(OUTER_IFRAME_STYLE, iframe(iframe_content)))
+    session.url = inline(VIEWPORT_META + """{0}{1}""".format(
+        OUTER_IFRAME_STYLE, iframe(iframe_content, domain=domain)))
 
     frame = session.find.css("iframe", all=False)
     session.switch_to_frame(frame)

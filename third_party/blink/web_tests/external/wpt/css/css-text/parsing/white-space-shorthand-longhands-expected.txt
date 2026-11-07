@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+[FAIL] white-space: normal
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: pre
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: pre-wrap
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: pre-line
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: nowrap
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: break-spaces
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: collapse
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: preserve
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: preserve-breaks
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: wrap
+  assert_equals: white-space-trim expected (string) "none" but got (undefined) undefined
+[FAIL] white-space: discard-before
+  assert_equals: white-space-trim expected (string) "discard-before" but got (undefined) undefined
+[FAIL] white-space: discard-after
+  assert_equals: white-space-trim expected (string) "discard-after" but got (undefined) undefined
+[FAIL] white-space: discard-inner
+  assert_equals: white-space-trim expected (string) "discard-inner" but got (undefined) undefined
+[FAIL] white-space: preserve nowrap discard-inner
+  assert_equals: white-space-collapse expected "preserve" but got "collapse"
+[FAIL] white-space: discard-before discard-after
+  assert_equals: white-space-trim expected (string) "discard-before discard-after" but got (undefined) undefined
+[FAIL] white-space: discard-inner discard-after discard-before
+  assert_equals: white-space-trim expected (string) "discard-before discard-after discard-inner" but got (undefined) undefined
+[FAIL] white-space: collapse wrap discard-before discard-after discard-inner
+  assert_equals: white-space-trim expected (string) "discard-before discard-after discard-inner" but got (undefined) undefined
+[FAIL] `white-space` should overwrite a previously set `white-space-trim`
+  assert_equals: expected (string) "none" but got (undefined) undefined
+[FAIL] `white-space-trim` set after `white-space` should not be overwritten
+  assert_equals: expected (string) "discard-before" but got (undefined) undefined
+Harness: the test ran to completion.
+

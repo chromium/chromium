@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] streamHTMLUnsafe into <template> content parses <noscript> with the host document's scripting flag
+  assert_equals: <noscript> content must be parsed as RAWTEXT when the host document has scripting enabled expected null but got Element node <p>hidden</p>
+[FAIL] streamAppendHTMLUnsafe into <template> content parses <noscript> with the host document's scripting flag
+  assert_equals: <noscript> content must be parsed as RAWTEXT when the host document has scripting enabled expected null but got Element node <p>hidden</p>
+[FAIL] streamPrependHTMLUnsafe into <template> content parses <noscript> with the host document's scripting flag
+  assert_equals: <noscript> content must be parsed as RAWTEXT when the host document has scripting enabled expected null but got Element node <p>hidden</p>
+Harness: the test ran to completion.
+

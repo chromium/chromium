@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] updateRenderState is applied after the frame callbacks - webgl
+  assert_equals: expected 0.3 but got 0.1
+[FAIL] updateRenderState is applied after the frame callbacks - webgl2
+  assert_equals: expected 0.3 but got 0.1
+Harness: the test ran to completion.
+

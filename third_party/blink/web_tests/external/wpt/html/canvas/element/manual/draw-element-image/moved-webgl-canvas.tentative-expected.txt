@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught InvalidStateError: Failed to execute 'drawElementImage' on 'CanvasRenderingContext2D': The element can only be drawn into its nearest ancestor <canvas>.
+Harness: the test ran to completion.
+

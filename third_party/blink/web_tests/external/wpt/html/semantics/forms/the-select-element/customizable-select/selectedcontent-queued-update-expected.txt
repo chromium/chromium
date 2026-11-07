@@ -11,5 +11,9 @@ This is a testharness.js-based test.
   assert_equals: The queued update should do nothing once selectedcontent was updated. expected 1 but got 2
 [FAIL] Inserting selectedcontent while an update of its select's selectedcontent elements is queued leaves it to that update.
   assert_equals: Inserting selectedcontent should not update it while an update is queued. expected "" but got "two"
+[FAIL] Moving a selectedcontent element and removing the selected option queues a single update.
+  assert_equals: Moving selectedcontent and removing the selected option should update it once. expected 1 but got 2
+[FAIL] Moving a selectedcontent element into a select updates all of its selectedcontent elements.
+  assert_equals: The selectedcontent that was already in the select should be updated once. expected 1 but got 0
 Harness: the test ran to completion.
 

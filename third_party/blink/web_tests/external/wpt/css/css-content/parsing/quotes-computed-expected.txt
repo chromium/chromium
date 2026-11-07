@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property quotes value 'match-parent'
+  assert_true: 'match-parent' is a supported value for quotes. expected true got false
+[FAIL] Property quotes value 'Match-Parent'
+  assert_true: 'Match-Parent' is a supported value for quotes. expected true got false
+Harness: the test ran to completion.
+

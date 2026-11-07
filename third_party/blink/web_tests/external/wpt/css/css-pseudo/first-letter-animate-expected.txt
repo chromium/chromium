@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] 'transform' animation
+  assert_equals: transform expected "none" but got "matrix(1, 0, 0, 1, 50, 0)"
+[FAIL] 'color' + 'transform' animation
+  assert_equals: transform expected "none" but got "matrix(1, 0, 0, 1, 50, 0)"
+Harness: the test ran to completion.
+

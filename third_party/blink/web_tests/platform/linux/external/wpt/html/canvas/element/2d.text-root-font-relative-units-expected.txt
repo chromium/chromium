@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] font: re-setting the same rem font string picks up the new root font-size
+  assert_equals: re-resolved against the updated root font-size expected "16px sans-serif" but got "10px sans-serif"
+[FAIL] font: save and restore keep the root-resolved font of each saved state
+  assert_equals: re-resolved against the updated root font-size expected "16px sans-serif" but got "10px sans-serif"
+[FAIL] font: rex resolves against the root element
+  assert_not_equals: rex tracks the root font-size got disallowed value "22.9492px sans-serif"
+[FAIL] font: rch resolves against the root element
+  assert_not_equals: rch tracks the root font-size got disallowed value "30px sans-serif"
+[FAIL] font: rcap resolves against the root element
+  assert_not_equals: rcap tracks the root font-size got disallowed value "32.7393px sans-serif"
+[FAIL] font: ric resolves against the root element
+  assert_not_equals: ric tracks the root font-size got disallowed value "50px sans-serif"
+Harness: the test ran to completion.
+

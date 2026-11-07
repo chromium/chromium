@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] texImage2D with a same-origin image that is still loading
+  assert_equals: texImage2D after load expected 0 but got 1281
+Harness: the test ran to completion.
+

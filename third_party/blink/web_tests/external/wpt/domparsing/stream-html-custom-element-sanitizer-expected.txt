@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] streamHTML in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] streamAppendHTML in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] streamPrependHTML in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] streamHTMLUnsafe in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] streamAppendHTMLUnsafe in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] streamPrependHTMLUnsafe in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] appendHTML in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] prependHTML in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] appendHTMLUnsafe in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] prependHTMLUnsafe in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] setHTML in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+[FAIL] setHTMLUnsafe in createHTMLDocument() with scoped registry blocks CE constructor when removed (removeElements: ancestor div)
+  assert_false: Scoped CE constructor must not run for sanitized elements in createHTMLDocument() expected false got true
+Harness: the test ran to completion.
+

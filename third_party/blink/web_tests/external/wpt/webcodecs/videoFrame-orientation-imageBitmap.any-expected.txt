@@ -3,5 +3,9 @@ This is a testharness.js-based test.
   assert_equals: bitmap width expected 2 but got 4
 [FAIL] createImageBitmap() of a 270 degrees rotated VideoFrame
   assert_equals: bitmap width expected 2 but got 4
+[FAIL] createImageBitmap() of a 90 degrees rotated and flipped VideoFrame
+  assert_equals: bitmap width expected 2 but got 4
+[FAIL] createImageBitmap() of a 270 degrees rotated and flipped VideoFrame
+  assert_equals: bitmap width expected 2 but got 4
 Harness: the test ran to completion.
 

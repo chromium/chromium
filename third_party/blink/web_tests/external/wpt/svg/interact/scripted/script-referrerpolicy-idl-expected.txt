@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Missing/invalid/null referrerPolicy should reflect as the empty string
+  assert_equals: Missing content attribute should reflect as empty expected (string) "" but got (undefined) undefined
+Harness: the test ran to completion.
+

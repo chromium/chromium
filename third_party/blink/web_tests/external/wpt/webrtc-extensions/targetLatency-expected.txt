@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Valid targetLatency
+  assert_equals: expected (string) "lowest" but got (undefined) undefined
+[FAIL] Invalid targetLatency
+  assert_throws_js: function "() => new RTCPeerConnection({ targetLatency: "whatever" })" did not throw
+[FAIL] Changing targetLatency
+  assert_throws_js: function "() => pc.setConfiguration({ targetLatency: "none" })" did not throw
+Harness: the test ran to completion.
+

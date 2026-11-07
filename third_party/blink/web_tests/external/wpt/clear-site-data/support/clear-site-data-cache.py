@@ -73,6 +73,7 @@ def main(request, response):
     else:
         headers += [(b"Content-Type", b"text/html")]
 
+    headers += [(b"Access-Control-Allow-Origin", b"*")]
     if cache:
         headers += [(b"cache-control", b"public, max-age=31536000, immutable")]
     else:

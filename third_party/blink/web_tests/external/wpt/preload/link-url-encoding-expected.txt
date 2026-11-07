@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] windows-1252 favicon href
+  assert_true: Expected windows-1252 encoding (%DF), got:  expected true got false
+Harness: the test ran to completion.
+

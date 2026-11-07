@@ -22,7 +22,7 @@ function rgbToYuv([r, g, b]) {
 const kSize = 8;
 const kBlockSize = kSize / 2;
 
-function makeI420Frame(rotation) {
+function makeI420Frame(rotation, flip) {
   const chromaSize = kSize / 2;
   const data = new Uint8Array(kSize * kSize + 2 * chromaSize * chromaSize);
   for (let y = 0; y < kSize; ++y) {
@@ -44,11 +44,14 @@ function makeI420Frame(rotation) {
     codedHeight: kSize,
     timestamp: 0,
     rotation,
+    flip,
   });
 }
 
-// The name of the color of the block rendered at the pixel (x, y), the blocks being rotated clockwise.
-function expectedBlockName(rotation, x, y) {
+// The name of the color of the block rendered at the pixel (x, y), the blocks being rotated clockwise then flipped horizontally.
+function expectedBlockName(rotation, flip, x, y) {
+  if (flip)
+    x = kSize - 1 - x;
   const blockX = Math.floor(x / kBlockSize);
   const blockY = Math.floor(y / kBlockSize);
   switch (rotation) {
@@ -60,11 +63,12 @@ function expectedBlockName(rotation, x, y) {
   assert_unreached('unexpected rotation');
 }
 
-for (const {rotation} of kOrientationCombinations) {
+for (const {rotation, flip} of kOrientationCombinations) {
   promise_test(async t => {
-    const frame = makeI420Frame(rotation);
+    const frame = makeI420Frame(rotation, flip);
     t.add_cleanup(() => frame.close());
     assert_equals(frame.rotation, rotation, 'rotation');
+    assert_equals(frame.flip, flip, 'flip');
     assert_equals(frame.displayWidth, kSize, 'displayWidth');
     assert_equals(frame.displayHeight, kSize, 'displayHeight');
 
@@ -75,7 +79,7 @@ for (const {rotation} of kOrientationCombinations) {
       for (let x = 0; x < kSize; ++x) {
         if (!isAwayFromEdge(x) || !isAwayFromEdge(y))
           continue;
-        const name = expectedBlockName(rotation, x, y);
+        const name = expectedBlockName(rotation, flip, x, y);
         const expected = kOrientationColors[name];
         const offset = 4 * (y * kSize + x);
         const actual = Array.from(pixels.subarray(offset, offset + 3));
@@ -85,5 +89,5 @@ for (const {rotation} of kOrientationCombinations) {
         }
       }
     }
-  }, `texImage2D() of a ${rotation} degrees rotated I420 VideoFrame`);
+  }, `texImage2D() of ${orientationDescription({rotation, flip})} I420 VideoFrame`);
 }

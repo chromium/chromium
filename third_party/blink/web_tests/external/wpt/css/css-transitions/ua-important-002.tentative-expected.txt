@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Transitions can't override UA !important declarations on fullscreen elements
+  assert_equals: width expected "800px" but got "200px"
+Harness: the test ran to completion.
+

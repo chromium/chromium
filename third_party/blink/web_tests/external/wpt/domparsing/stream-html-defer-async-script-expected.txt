@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] element.streamPrependHTMLUnsafe: defer scripts do not run if the reference child is removed before a trailing '<' is flushed by close()
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

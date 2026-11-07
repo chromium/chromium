@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] corner-shape: notch with shape-margin
+  assert_array_approx_equals: property 0, expected 92 +/- 2, expected 92 but got 82.390625
+[FAIL] corner-shape: bevel with shape-margin
+  assert_array_approx_equals: property 0, expected 111 +/- 2, expected 111 but got 106.390625
+[FAIL] corner-shape: scoop with shape-margin
+  assert_array_approx_equals: property 0, expected 95 +/- 2, expected 95 but got 86.796875
+[FAIL] corner-shape: superellipse(-.8) with shape-margin
+  assert_array_approx_equals: property 0, expected 96 +/- 2, expected 96 but got 89.03125
+Harness: the test ran to completion.
+

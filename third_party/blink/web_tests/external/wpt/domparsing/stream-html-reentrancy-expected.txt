@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] streamHTMLUnsafe: abort() from a streamed inline script after a parser-blocking script stops parsing after the current token
+  assert_array_equals: parsing stops after the current token when abort() is called from a task lengths differ, expected array ["a"] length 1, got ["a", "b"] length 2
+[FAIL] streamHTMLUnsafe: abort() from a microtask before a streamed script is prepared prevents that script from running
+  assert_false: the script whose end tag was being processed does not run expected false got true
+[FAIL] streamHTMLUnsafe: abort() from a custom element reaction drops text that the current token would insert
+  assert_equals: the reconstructed <b> was inserted expected 2 but got 1
+[FAIL] streamHTMLUnsafe: abort() from a custom element reaction drops elements that the current token would insert
+  assert_equals: the reconstructed <b> was inserted expected 2 but got 1
+[FAIL] streamHTMLUnsafe: abort() from a foster-parented custom element reaction in table text keeps patch markers at </template>
+  assert_equals: foster-parented formatting element connectedCallback ran expected 2 but got 1
+[FAIL] streamAppendHTMLUnsafe: abort() from a streamed inline script after a parser-blocking script stops parsing after the current token
+  assert_array_equals: parsing stops after the current token when abort() is called from a task lengths differ, expected array ["a"] length 1, got ["a", "b"] length 2
+[FAIL] streamAppendHTMLUnsafe: abort() from a microtask before a streamed script is prepared prevents that script from running
+  assert_false: the script whose end tag was being processed does not run expected false got true
+[FAIL] streamAppendHTMLUnsafe: abort() from a custom element reaction drops text that the current token would insert
+  assert_equals: the reconstructed <b> was inserted expected 2 but got 1
+[FAIL] streamAppendHTMLUnsafe: abort() from a custom element reaction drops elements that the current token would insert
+  assert_equals: the reconstructed <b> was inserted expected 2 but got 1
+[FAIL] streamAppendHTMLUnsafe: abort() from a foster-parented custom element reaction in table text keeps patch markers at </template>
+  assert_equals: foster-parented formatting element connectedCallback ran expected 2 but got 1
+[FAIL] streamPrependHTMLUnsafe: abort() from a streamed inline script after a parser-blocking script stops parsing after the current token
+  assert_array_equals: parsing stops after the current token when abort() is called from a task lengths differ, expected array ["a"] length 1, got ["a", "b"] length 2
+[FAIL] streamPrependHTMLUnsafe: abort() from a microtask before a streamed script is prepared prevents that script from running
+  assert_false: the script whose end tag was being processed does not run expected false got true
+[FAIL] streamPrependHTMLUnsafe: abort() from a custom element reaction drops text that the current token would insert
+  assert_equals: the reconstructed <b> was inserted expected 2 but got 1
+[FAIL] streamPrependHTMLUnsafe: abort() from a custom element reaction drops elements that the current token would insert
+  assert_equals: the reconstructed <b> was inserted expected 2 but got 1
+[FAIL] streamPrependHTMLUnsafe: abort() from a foster-parented custom element reaction in table text keeps patch markers at </template>
+  assert_equals: foster-parented formatting element connectedCallback ran expected 2 but got 1
+[FAIL] documentElement.streamHTMLUnsafe: abort() from a foster-parented custom element reaction in table text does not merge <body> attributes
+  assert_equals: foster-parented formatting element connectedCallback ran expected 2 but got 1
+Harness: the test ran to completion.
+

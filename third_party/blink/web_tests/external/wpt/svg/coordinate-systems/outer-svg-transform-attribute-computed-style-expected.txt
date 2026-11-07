@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] transform="rotate(45, 10, 20)" on an outermost svg element computes to translate(10px, 20px) rotate(45deg) translate(-10px, -20px)
+  assert_approx_equals: matrix component 'e' expected 17.071067811865476 +/- 0.00001 but got 17.0711
+Harness: the test ran to completion.
+

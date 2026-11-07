@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] The width and height content attributes do not resize a placeholder canvas
+  assert_equals: placeholder width expected 64 but got 200
+[FAIL] Transferring the OffscreenCanvas preserves the placeholder size
+  assert_equals: placeholder width after transfer expected 64 but got 200
+[FAIL] The width and height content attributes do not change the aspect ratio of a placeholder canvas
+  assert_equals: height is unchanged by the content attributes expected 64 but got 128
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Repeated feature blocks merge without moving existing map entries
+  assert_array_equals: expected property 1 to be "cool" but got "extra" (expected array ["pretty", "cool", "extra"] got ["pretty", "extra", "cool"])
+[FAIL] Invalid parsed declarations neither reserve positions nor overwrite map entries
+  assert_array_equals: lengths differ, expected array ["b", "a"] length 2, got [] length 0
+[FAIL] Updating a parsed map entry preserves its position while deletion and reinsertion append it
+  assert_array_equals: expected property 0 to be "b" but got "a" (expected array ["b", "a"] got ["a", "b"])
+Harness: the test ran to completion.
+

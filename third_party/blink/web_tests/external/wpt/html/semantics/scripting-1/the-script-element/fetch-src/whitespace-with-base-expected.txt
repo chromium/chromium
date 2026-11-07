@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Script src with only ASCII whitespace resolves to the base URL
+  assert_unreached: error event should not fire Reached unreachable code
+Harness: the test ran to completion.
+

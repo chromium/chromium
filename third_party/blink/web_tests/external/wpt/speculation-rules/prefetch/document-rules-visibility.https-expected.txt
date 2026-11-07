@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught NotSupportedError: Failed to execute 'attachShadow' on 'Element': This element does not support attachShadow
+[TIMEOUT] test that empty link with display:contents is NOT prefetched
+  Test timed out
+[NOTRUN] test that link with display:contents and only hidden children is NOT prefetched
+Harness: the test ran to completion.
+

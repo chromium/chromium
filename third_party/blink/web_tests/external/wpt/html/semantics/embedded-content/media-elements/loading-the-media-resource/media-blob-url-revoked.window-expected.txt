@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] media loads from a blob: URL revoked after the fetch started
+  assert_equals: Expected loadeddata event, but got error event instead expected "loadeddata" but got "error"
+Harness: the test ran to completion.
+

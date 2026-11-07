@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] e.style['white-space-trim'] = "none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-before" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-after" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-inner" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-before discard-after" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-before discard-inner" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-after discard-inner" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-before discard-after discard-inner" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-after discard-before" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-inner discard-before" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['white-space-trim'] = "discard-inner discard-after discard-before" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

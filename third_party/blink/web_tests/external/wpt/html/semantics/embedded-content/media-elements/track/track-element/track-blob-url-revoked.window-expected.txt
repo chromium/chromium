@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] track loads from a blob: URL revoked after src is set
+  assert_unreached: error event fired Reached unreachable code
+Harness: the test ran to completion.
+

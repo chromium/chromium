@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] AES-CBC with a 192-bit key rejects 0-byte ciphertext with OperationError
+  promise_test: Unhandled rejection with value: object "OperationError: 192-bit AES keys are not supported"
+[FAIL] AES-CBC with a 192-bit key rejects 1-byte ciphertext with OperationError
+  promise_test: Unhandled rejection with value: object "OperationError: 192-bit AES keys are not supported"
+[FAIL] AES-CBC with a 192-bit key rejects 15-byte ciphertext with OperationError
+  promise_test: Unhandled rejection with value: object "OperationError: 192-bit AES keys are not supported"
+[FAIL] AES-CBC with a 192-bit key rejects 17-byte ciphertext with OperationError
+  promise_test: Unhandled rejection with value: object "OperationError: 192-bit AES keys are not supported"
+[FAIL] AES-CBC with a 192-bit key rejects 31-byte ciphertext with OperationError
+  promise_test: Unhandled rejection with value: object "OperationError: 192-bit AES keys are not supported"
+[FAIL] AES-CBC with a 192-bit key rejects 33-byte ciphertext with OperationError
+  promise_test: Unhandled rejection with value: object "OperationError: 192-bit AES keys are not supported"
+[FAIL] AES-CBC with a 192-bit key decrypts a padded empty message
+  promise_test: Unhandled rejection with value: object "OperationError: 192-bit AES keys are not supported"
+Harness: the test ran to completion.
+

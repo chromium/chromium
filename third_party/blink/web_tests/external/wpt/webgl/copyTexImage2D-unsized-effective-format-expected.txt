@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] An unsized RGBA copy of an RGBA4 image is an RGBA4 source
+  assert_equals: copyTexImage2D into 32854 expected 0 but got 1282
+Harness: the test ran to completion.
+

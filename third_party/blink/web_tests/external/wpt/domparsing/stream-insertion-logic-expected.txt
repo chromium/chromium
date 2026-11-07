@@ -1,0 +1,102 @@
+This is a testharness.js-based test.
+Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] streamBeforeHTMLUnsafe: displacing ref_node mid-chunk drops subsequent nodes/subtrees/text/comments and errors the stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: displacing ref_node mid-chunk with sanitizer and replaceWithChildrenElements drops nodes and errors the stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement inside replaceWithChildrenElements must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: displacing ref_node mid-chunk before a removeElements subtree errors the stream and suppresses custom element construction
+  assert_unreached: Should have rejected: Write that creates a removed element after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: custom element as first token after ref_node displacement is created in an inert document with null custom element registry
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: <img> as first token after ref_node displacement is created in an inert document
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: child of replaceWithChildrenElements as first token after ref_node displacement is created in an inert document
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: adoption agency at the root after ref_node displacement keeps existing nodes and errors the stream
+  assert_unreached: Should have rejected: Adoption agency at the root after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: <template for> after ref_node displacement does not apply and errors the stream
+  assert_unreached: Should have rejected: <template for> after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: ref_node displacement during table-text foster parenting errors the stream without applying <template for>
+  assert_unreached: Should have rejected: Foster-parented character after ref_node displacement in table text must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: whitespace as the only token after mid-chunk displacement errors the stream and is dropped
+  assert_unreached: Should have rejected: whitespace as the only token after displacement must error the stream Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: a comment as the only token after mid-chunk displacement errors the stream and is dropped
+  assert_unreached: Should have rejected: a comment as the only token after displacement must error the stream Reached unreachable code
+[FAIL] streamBeforeHTMLUnsafe: moving ref_node back into parent after mid-chunk displacement does not recover the errored stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: displacing ref_node mid-chunk drops subsequent nodes/subtrees/text/comments and errors the stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: displacing ref_node mid-chunk with sanitizer and replaceWithChildrenElements drops nodes and errors the stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement inside replaceWithChildrenElements must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: displacing ref_node mid-chunk before a removeElements subtree errors the stream and suppresses custom element construction
+  assert_unreached: Should have rejected: Write that creates a removed element after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: custom element as first token after ref_node displacement is created in an inert document with null custom element registry
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: <img> as first token after ref_node displacement is created in an inert document
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: child of replaceWithChildrenElements as first token after ref_node displacement is created in an inert document
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: adoption agency at the root after ref_node displacement keeps existing nodes and errors the stream
+  assert_unreached: Should have rejected: Adoption agency at the root after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: <template for> after ref_node displacement does not apply and errors the stream
+  assert_unreached: Should have rejected: <template for> after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: ref_node displacement during table-text foster parenting errors the stream without applying <template for>
+  assert_unreached: Should have rejected: Foster-parented character after ref_node displacement in table text must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: whitespace as the only token after mid-chunk displacement errors the stream and is dropped
+  assert_unreached: Should have rejected: whitespace as the only token after displacement must error the stream Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: a comment as the only token after mid-chunk displacement errors the stream and is dropped
+  assert_unreached: Should have rejected: a comment as the only token after displacement must error the stream Reached unreachable code
+[FAIL] streamReplaceWithHTMLUnsafe: moving ref_node back into parent after mid-chunk displacement does not recover the errored stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: displacing ref_node mid-chunk drops subsequent nodes/subtrees/text/comments and errors the stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: displacing ref_node mid-chunk with sanitizer and replaceWithChildrenElements drops nodes and errors the stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement inside replaceWithChildrenElements must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: displacing ref_node mid-chunk before a removeElements subtree errors the stream and suppresses custom element construction
+  assert_unreached: Should have rejected: Write that creates a removed element after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: custom element as first token after ref_node displacement is created in an inert document with null custom element registry
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: <img> as first token after ref_node displacement is created in an inert document
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: child of replaceWithChildrenElements as first token after ref_node displacement is created in an inert document
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: adoption agency at the root after ref_node displacement keeps existing nodes and errors the stream
+  assert_unreached: Should have rejected: Adoption agency at the root after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: <template for> after ref_node displacement does not apply and errors the stream
+  assert_unreached: Should have rejected: <template for> after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: ref_node displacement during table-text foster parenting errors the stream without applying <template for>
+  assert_unreached: Should have rejected: Foster-parented character after ref_node displacement in table text must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: whitespace as the only token after mid-chunk displacement errors the stream and is dropped
+  assert_unreached: Should have rejected: whitespace as the only token after displacement must error the stream Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: a comment as the only token after mid-chunk displacement errors the stream and is dropped
+  assert_unreached: Should have rejected: a comment as the only token after displacement must error the stream Reached unreachable code
+[FAIL] streamPrependHTMLUnsafe: moving ref_node back into parent after mid-chunk displacement does not recover the errored stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: displacing ref_node mid-chunk drops subsequent nodes/subtrees/text/comments and errors the stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: displacing ref_node mid-chunk with sanitizer and replaceWithChildrenElements drops nodes and errors the stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement inside replaceWithChildrenElements must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: displacing ref_node mid-chunk before a removeElements subtree errors the stream and suppresses custom element construction
+  assert_unreached: Should have rejected: Write that creates a removed element after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: custom element as first token after ref_node displacement is created in an inert document with null custom element registry
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: <img> as first token after ref_node displacement is created in an inert document
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: child of replaceWithChildrenElements as first token after ref_node displacement is created in an inert document
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: adoption agency at the root after ref_node displacement keeps existing nodes and errors the stream
+  assert_unreached: Should have rejected: Adoption agency at the root after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: <template for> after ref_node displacement does not apply and errors the stream
+  assert_unreached: Should have rejected: <template for> after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: ref_node displacement during table-text foster parenting errors the stream without applying <template for>
+  assert_unreached: Should have rejected: Foster-parented character after ref_node displacement in table text must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: whitespace as the only token after mid-chunk displacement errors the stream and is dropped
+  assert_unreached: Should have rejected: whitespace as the only token after displacement must error the stream Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: a comment as the only token after mid-chunk displacement errors the stream and is dropped
+  assert_unreached: Should have rejected: a comment as the only token after displacement must error the stream Reached unreachable code
+[FAIL] streamAfterHTMLUnsafe: moving ref_node back into parent after mid-chunk displacement does not recover the errored stream
+  assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
+[FAIL] streamHTMLUnsafe: a replaceWithChildrenElements element foster parented before a table that became the document element is dropped with its children
+  assert_equals: expected "<table id=\\"t\\"><script>document.replaceChild(document.getElementById('t'), document.documentElement);</script></table>" but got "<table id=\\"t\\"><script>document.replaceChild(document.getElementById('t'), document.documentElement);</script>x<b>y</b></table>"
+Harness: the test ran to completion.
+

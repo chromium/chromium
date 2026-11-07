@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] var() in a param() value is substituted
+  assert_equals: expected "param(--color, red)" but got "none"
+[FAIL] var() in a param() value uses its fallback when the referenced property is not set
+  assert_equals: expected "param(--color, blue)" but got "none"
+[FAIL] var() in a param() value is substituted from an inherited custom property
+  assert_equals: expected "param(--color, green)" but got "none"
+[FAIL] var() is substituted in one of several param() values
+  assert_equals: expected "param(--a, red), param(--b, blue)" but got "none"
+Harness: the test ran to completion.
+

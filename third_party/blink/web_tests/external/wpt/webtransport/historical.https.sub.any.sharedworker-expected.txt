@@ -5,5 +5,7 @@ This is a testharness.js-based test.
   assert_false: expected false got true
 [FAIL] WebTransportDatagramDuplexStream#outgoingHighWaterMark is removed
   assert_false: expected false got true
+[FAIL] WebTransportError(init) constructor is removed
+  assert_equals: expected "[object Object]" but got "boom"
 Harness: the test ran to completion.
 

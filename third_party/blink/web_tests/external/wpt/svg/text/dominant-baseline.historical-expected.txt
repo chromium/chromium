@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] dominant-baseline does not support the SVG 1.1 values removed in SVG 2
+  assert_false: use-script expected false got true
+[FAIL] dominant-baseline removed values are not parsed in a style declaration
+  assert_equals: use-script should not parse in a style declaration expected "" but got "use-script"
+[FAIL] dominant-baseline removed values are not supported SVG presentation attributes
+  assert_equals: use-script should not apply as a presentation attribute expected "auto" but got "use-script"
+Harness: the test ran to completion.
+

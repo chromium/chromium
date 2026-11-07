@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] animationName should be applied to first-letter pseudo elements.
+  assert_equals: expected "foo" but got "none"
+[FAIL] animationDuration should be applied to first-letter pseudo elements.
+  assert_equals: expected "1s" but got "0s"
+[FAIL] animationTimingFunction should be applied to first-letter pseudo elements.
+  assert_equals: expected "ease-in-out" but got "ease"
+[FAIL] animationDelay should be applied to first-letter pseudo elements.
+  assert_equals: expected "2s" but got "0s"
+[FAIL] animationIterationCount should be applied to first-letter pseudo elements.
+  assert_equals: expected "3" but got "1"
+[FAIL] animationDirection should be applied to first-letter pseudo elements.
+  assert_equals: expected "alternate" but got "normal"
+[FAIL] animationFillMode should be applied to first-letter pseudo elements.
+  assert_equals: expected "forwards" but got "none"
+[FAIL] animationPlayState should be applied to first-letter pseudo elements.
+  assert_equals: expected "paused" but got "running"
+[FAIL] animationComposition should be applied to first-letter pseudo elements.
+  assert_equals: expected "add" but got "replace"
+Harness: the test ran to completion.
+

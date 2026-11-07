@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] streamHTMLUnsafe targeting body does not patch markers in head
+  assert_equals: head marker is not patched expected "Old head" but got "New head"
+[FAIL] streamHTMLUnsafe targeting body patches markers in body without touching head
+  assert_equals: head marker is untouched expected "Old head" but got "New body"
+[FAIL] streamAppendHTMLUnsafe targeting body does not patch markers in head
+  assert_equals: head marker is not patched expected "Old head" but got "New head"
+[FAIL] streamAppendHTMLUnsafe targeting body patches markers in body without touching head
+  assert_equals: head marker is untouched expected "Old head" but got "New body"
+[FAIL] streamPrependHTMLUnsafe targeting body does not patch markers in head
+  assert_equals: head marker is not patched expected "Old head" but got "New head"
+[FAIL] streamPrependHTMLUnsafe targeting body patches markers in body without touching head
+  assert_equals: head marker is untouched expected "Old head" but got "New body"
+[FAIL] streamBeforeHTMLUnsafe targeting body does not patch markers in head
+  assert_equals: head marker is not patched expected "Old head" but got "New head"
+[FAIL] streamBeforeHTMLUnsafe targeting body patches markers in body without touching head
+  assert_equals: head marker is untouched expected "Old head" but got "New body"
+[FAIL] streamAfterHTMLUnsafe targeting body does not patch markers in head
+  assert_equals: head marker is not patched expected "Old head" but got "New head"
+[FAIL] streamAfterHTMLUnsafe targeting body patches markers in body without touching head
+  assert_equals: head marker is untouched expected "Old head" but got "New body"
+[FAIL] streamReplaceWithHTMLUnsafe targeting body does not patch markers in head
+  assert_equals: head marker is not patched expected "Old head" but got "New head"
+[FAIL] streamReplaceWithHTMLUnsafe targeting body patches markers in body without touching head
+  assert_equals: head marker is untouched expected "Old head" but got "New body"
+Harness: the test ran to completion.
+

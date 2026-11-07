@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] streamHTMLUnsafe uses the new document's registry after the target is adopted mid-stream
+  assert_array_equals: the original document's definition must not be used lengths differ, expected array [] length 0, got ["constructed", "connected"] length 2
+[FAIL] streamHTMLUnsafe uses the new document's registry after the target is adopted mid-stream for children of a replaceWithChildrenElements element
+  assert_array_equals: the original document's definition must not be used lengths differ, expected array [] length 0, got ["constructed", "connected"] length 2
+Harness: the test ran to completion.
+

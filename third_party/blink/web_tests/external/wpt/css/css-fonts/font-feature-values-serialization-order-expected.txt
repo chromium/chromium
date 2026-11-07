@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] The font-display descriptor serializes before feature value blocks
+  assert_equals: expected "@font-feature-values Example { font-display: swap; @swash { pretty: 1; } }" but got "@font-feature-values Example { @swash { pretty: 1; } }"
+[FAIL] Block types serialize in a fixed order rather than source order
+  assert_equals: expected "@font-feature-values Example { @swash { a: 1; } @stylistic { a: 2; } @ornaments { a: 3; } @annotation { a: 4; } @character-variant { a: 5 1; } @styleset { a: 6; } }" but got "@font-feature-values Example { @annotation { a: 4; } @ornaments { a: 3; } @stylistic { a: 2; } @swash { a: 1; } @character-variant { a: 5 1; } @styleset { a: 6; } }"
+[FAIL] Merging separated blocks preserves first name positions across and within blocks
+  assert_equals: expected "@font-feature-values Example { @swash { pretty: 1; cool: 5; extra: 4; } @styleset { other: 3; } }" but got "@font-feature-values Example { @swash { pretty: 1; extra: 4; cool: 5; } @styleset { other: 3; } }"
+[FAIL] Invalid declarations neither reserve a name's position nor replace its value
+  assert_equals: expected "@font-feature-values Example { @styleset { b: 2; a: 3; } }" but got "@font-feature-values Example { }"
+[FAIL] The historical-forms block serializes after the other block types
+  assert_equals: expected "@font-feature-values Example { @styleset { b: 2; } @historical-forms { a: 1; } }" but got "@font-feature-values Example { @styleset { b: 2; } }"
+Harness: the test ran to completion.
+

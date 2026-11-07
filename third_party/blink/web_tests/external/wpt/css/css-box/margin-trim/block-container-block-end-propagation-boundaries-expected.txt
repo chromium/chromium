@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] Block-end trimming through a auto wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming through a border wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming through a padding wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming through a fixed wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming through a minimum wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming through a small-minimum wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming through a maximum wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming through a large-maximum wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming through a bfc wrapper
+  assert_equals: The direct child's margin is trimmed expected "0px" but got "20px"
+[FAIL] Block-end trimming updates after sibling and boundary changes
+  assert_equals: expected "0px" but got "50px"
+Harness: the test ran to completion.
+

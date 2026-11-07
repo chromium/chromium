@@ -3,5 +3,17 @@ This is a testharness.js-based test.
   assert_equals: expected "100px" but got ""
 [FAIL] Content authored with size serializes back as the width and height longhands, not as size
   assert_equals: expected "width: 100px; height: 200px;" but got "size: 100px 200px;"
+[FAIL] The min-size shorthand expands to the min-width and min-height longhands
+  assert_equals: expected "100px" but got ""
+[FAIL] Content authored with min-size serializes back as the min-width and min-height longhands, not as min-size
+  assert_equals: expected "min-width: 100px; min-height: 200px;" but got ""
+[FAIL] The min-size shorthand value is still available via getPropertyValue
+  assert_equals: expected "100px 200px" but got ""
+[FAIL] The max-size shorthand expands to the max-width and max-height longhands
+  assert_equals: expected "100px" but got ""
+[FAIL] Content authored with max-size serializes back as the max-width and max-height longhands, not as max-size
+  assert_equals: expected "max-width: 100px; max-height: 200px;" but got ""
+[FAIL] The max-size shorthand value is still available via getPropertyValue
+  assert_equals: expected "100px 200px" but got ""
 Harness: the test ran to completion.
 

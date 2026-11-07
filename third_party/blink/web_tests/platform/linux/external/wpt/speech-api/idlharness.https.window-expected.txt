@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SpeechRecognitionErrorEvent interface object length
   assert_equals: wrong value for SpeechRecognitionErrorEvent.length expected 2 but got 1
 [FAIL] SpeechRecognitionAlternative interface: existence and properties of interface object
@@ -35,6 +35,10 @@ Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SpeechRecognitionResult interface: operation item(unsigned long)
   assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
 [FAIL] SpeechRecognitionResult interface: attribute isFinal
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface: attribute speechStartTime
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface: attribute speechEndTime
   assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
 [FAIL] SpeechRecognitionResultList interface: existence and properties of interface object
   assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing

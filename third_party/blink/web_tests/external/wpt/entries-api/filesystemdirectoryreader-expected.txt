@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] readEntries() enumerates the root directory
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'filesystem')"
+[FAIL] readEntries() returns an empty sequence once done
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'filesystem')"
+[FAIL] readEntries() fails with InvalidStateError when a read is in progress
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'filesystem')"
+[FAIL] createReader() returns a new reader each time
+  Cannot read properties of null (reading 'filesystem')
+Harness: the test ran to completion.
+

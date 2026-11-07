@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] sec-fetch-user - location with user activation
+  assert_own_property: expected property "sec-fetch-user" missing
+[FAIL] sec-fetch-user - location.href with user activation
+  assert_own_property: expected property "sec-fetch-user" missing
+[FAIL] sec-fetch-user - location.assign with user activation
+  assert_own_property: expected property "sec-fetch-user" missing
+[FAIL] sec-fetch-user - location.replace with user activation
+  assert_own_property: expected property "sec-fetch-user" missing
+Harness: the test ran to completion.
+

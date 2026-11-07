@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Inserting text into empty line before a child block should remove the <br> made an empty line
+  assert_equals: expected "<div>x<p>p</p></div>" but got "<div>x<br><p>p</p></div>"
+[FAIL] Inserting text into empty line before a child block should remove the linefeed made an empty line
+  assert_equals: expected "<div>x<p>p</p></div>" but got "<div>x\\n<p>p</p></div>"
+Harness: the test ran to completion.
+

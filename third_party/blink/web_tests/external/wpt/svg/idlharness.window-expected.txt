@@ -1,19 +1,7 @@
 This is a testharness.js-based test.
-Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SVGSVGElement interface: operation createSVGTransformFromMatrix(optional DOMMatrix2DInit)
   assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] SVGUseElementShadowRoot interface: existence and properties of interface object
-  assert_own_property: self does not have own property "SVGUseElementShadowRoot" expected property "SVGUseElementShadowRoot" missing
-[FAIL] SVGUseElementShadowRoot interface object length
-  assert_own_property: self does not have own property "SVGUseElementShadowRoot" expected property "SVGUseElementShadowRoot" missing
-[FAIL] SVGUseElementShadowRoot interface object name
-  assert_own_property: self does not have own property "SVGUseElementShadowRoot" expected property "SVGUseElementShadowRoot" missing
-[FAIL] SVGUseElementShadowRoot interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "SVGUseElementShadowRoot" expected property "SVGUseElementShadowRoot" missing
-[FAIL] SVGUseElementShadowRoot interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "SVGUseElementShadowRoot" expected property "SVGUseElementShadowRoot" missing
-[FAIL] SVGUseElementShadowRoot interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "SVGUseElementShadowRoot" expected property "SVGUseElementShadowRoot" missing
 [FAIL] ShadowAnimation interface: existence and properties of interface object
   assert_own_property: self does not have own property "ShadowAnimation" expected property "ShadowAnimation" missing
 [FAIL] ShadowAnimation interface object length
@@ -32,6 +20,10 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] SVGTransformList interface: operation createSVGTransformFromMatrix(optional DOMMatrix2DInit)
   assert_equals: property has wrong .length expected 0 but got 1
+[FAIL] SVGImageElement interface: attribute referrerPolicy
+  assert_true: The prototype object must have a property "referrerPolicy" expected true got false
+[FAIL] SVGImageElement interface: objects.image must inherit property "referrerPolicy" with the proper type
+  assert_inherits: property "referrerPolicy" not found in prototype chain
 [FAIL] SVGMarkerElement interface: constant SVG_MARKER_ORIENT_AUTO_START_REVERSE on interface object
   assert_own_property: expected property "SVG_MARKER_ORIENT_AUTO_START_REVERSE" missing
 [FAIL] SVGMarkerElement interface: constant SVG_MARKER_ORIENT_AUTO_START_REVERSE on interface prototype object
@@ -44,8 +36,12 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "orient" not found in prototype chain
 [FAIL] SVGScriptElement interface: attribute crossOrigin
   assert_true: The prototype object must have a property "crossOrigin" expected true got false
+[FAIL] SVGScriptElement interface: attribute referrerPolicy
+  assert_true: The prototype object must have a property "referrerPolicy" expected true got false
 [FAIL] SVGScriptElement interface: objects.script must inherit property "crossOrigin" with the proper type
   assert_inherits: property "crossOrigin" not found in prototype chain
+[FAIL] SVGScriptElement interface: objects.script must inherit property "referrerPolicy" with the proper type
+  assert_inherits: property "referrerPolicy" not found in prototype chain
 [FAIL] TimeEvent interface: existence and properties of interface object
   assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
 [FAIL] TimeEvent interface object length

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] A createHTMLDocument document collects a style sheet inserted after parsing
+  assert_equals: the inserted sheet is collected expected 1 but got 0
+[FAIL] Removing a style element from a non-rendered document updates styleSheets
+  assert_equals: removing the element removes the sheet expected 0 but got 1
+Harness: the test ran to completion.
+

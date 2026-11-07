@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Testing the lang attribute
+  assert_equals: ctx.measureText(text).width === tr_width (got 28.974990844726562[number], expected 29.79998779296875[number]) expected 29.79998779296875 but got 28.974990844726562
+Harness: the test ran to completion.
+

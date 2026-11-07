@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A document without a policy and a same-origin child frame that navigated to a document with one are loaded again after a cross-site navigation
+  assert_equals: child frame's URL after going back expected "https://web-platform.test:8444/html/document-isolation-policy/resources/back-forward-cache-frame.html?pipe=header(Document-Isolation-Policy,isolate-and-require-corp)" but got "https://web-platform.test:8444/html/document-isolation-policy/resources/back-forward-cache-frame.html"
+Harness: the test ran to completion.
+
