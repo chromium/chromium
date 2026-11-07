@@ -2,12 +2,12 @@ Name: The ruy matrix multiplication library
 Short Name: ruy
 URL: https://github.com/google/ruy
 Version: N/A
-Revision: 2264753777198e4393fb83c44c693462d57a2be1
-Date: 2026-7-22
+Revision: 6f524b038f29504a2d2a7fff2d79d40194aca493
+Date: 2026-11-06
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
-Security Critical: Yes
+Security Critical: yes
 Shipped: yes
 CPEPrefix: unknown
 
