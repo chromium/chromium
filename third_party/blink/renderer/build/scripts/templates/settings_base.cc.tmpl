@@ -6,7 +6,6 @@
 #include "third_party/blink/renderer/core/settings_base.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/frame/settings_string_converter.h"
 
 namespace blink {
 
@@ -53,15 +52,6 @@ void SettingsBase::Set{{setting.name.to_upper_camel_case()}}({{setting.type|to_p
 }
 
 {% endfor %}
-
-void SettingsBase::SetFromStrings(const String& name, const String& value) {
-{% for setting in settings %}
-  if (name == "{{setting.name}}") {
-    Set{{setting.name.to_upper_camel_case()}}(FromString<{{setting.type}}>()(value));
-    return;
-  }
-{% endfor %}
-}
 
 void SettingsBase::SetDelegate(SettingsDelegate* delegate) {
   delegate_ = delegate;

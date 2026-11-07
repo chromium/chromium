@@ -1,0 +1,36 @@
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
+{{ license() }}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/exported/web_settings_impl.h"
+
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/renderer/core/exported/web_settings_impl_string_converter.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+{% for path in include_paths %}
+#include "{{path}}"
+{% endfor %}
+
+namespace blink {
+
+// Applies the setting called |name| by converting |value| from its string form
+// and calling our setter of the same name. Going through our own setters, rather
+// than writing to Settings directly, keeps settings that are routed through
+// DevToolsEmulator from clobbering active emulation overrides.
+void WebSettingsImpl::SetFromStrings(const WebString& name,
+                                     const WebString& value) {
+  const String name_string = name;
+  const String value_string = value;
+{% for setting in settings %}
+  if (name_string == "{{setting.name}}") {
+    Set{{setting.name.to_upper_camel_case()}}(
+        FromString<{{setting.type}}>()(value_string));
+    return;
+  }
+{% endfor %}
+}
+
+}  // namespace blink

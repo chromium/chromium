@@ -27,7 +27,6 @@ class CORE_EXPORT SettingsBase {
   void Set{{setting.name.to_upper_camel_case()}}({{setting.type|to_passing_type}} {{setting.name.to_snake_case()}});
 {% endfor %}
 
-  void SetFromStrings(const String& name, const String& value);
   void SetDelegate(SettingsDelegate* delegate);
 
  protected:

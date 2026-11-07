@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_STRING_CONVERTER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_STRING_CONVERTER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_STRING_CONVERTER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_STRING_CONVERTER_H_
 
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-// Converter from String to Type for the generated Settings::SetFromStrings().
+// Converter from String to Type for the generated
+// WebSettingsImpl::SetFromStrings().
 
 namespace blink {
 
@@ -41,4 +42,4 @@ struct FromString<double> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_STRING_CONVERTER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_STRING_CONVERTER_H_

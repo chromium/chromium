@@ -7391,6 +7391,51 @@ TEST_F(WebViewTest, TouchEmulationSurvivesWebPreferencesRepush) {
   EXPECT_EQ(kUpdatedEmbedderMaxTouchPoints, settings.GetMaxTouchPoints());
 }
 
+// Command line settings (--blink-settings) are re-applied on every
+// WebPreferences update, through WebSettings::SetFromStrings(). Like
+// WebPreferences, they must go through DevToolsEmulator so that they do not
+// clobber active emulation overrides.
+TEST_F(WebViewTest, SetFromStringsRespectsTouchEmulation) {
+  WebViewImpl* web_view_impl = web_view_helper_.Initialize();
+  Settings& settings = web_view_impl->GetPage()->GetSettings();
+  DevToolsEmulator* emulator = web_view_impl->GetDevToolsEmulator();
+  WebSettings* web_settings = web_view_impl->GetSettings();
+
+  const String kFine = String::Number(
+      static_cast<int>(mojom::blink::PointerType::kPointerFineType));
+  web_settings->SetFromStrings("primaryPointerType", kFine);
+  web_settings->SetFromStrings("maxTouchPoints", "0");
+  EXPECT_EQ(mojom::blink::PointerType::kPointerFineType,
+            settings.GetPrimaryPointerType());
+  EXPECT_EQ(0, settings.GetMaxTouchPoints());
+
+  constexpr int kEmulatedMaxTouchPoints = 5;
+  emulator->SetTouchEventEmulationEnabled(true, kEmulatedMaxTouchPoints);
+  EXPECT_EQ(mojom::blink::PointerType::kPointerCoarseType,
+            settings.GetPrimaryPointerType());
+  EXPECT_EQ(kEmulatedMaxTouchPoints, settings.GetMaxTouchPoints());
+
+  // Re-applying the command line while emulation is active keeps the
+  // override visible.
+  web_settings->SetFromStrings("primaryPointerType", kFine);
+  web_settings->SetFromStrings("maxTouchPoints", "0");
+  EXPECT_EQ(mojom::blink::PointerType::kPointerCoarseType,
+            settings.GetPrimaryPointerType());
+  EXPECT_EQ(kEmulatedMaxTouchPoints, settings.GetMaxTouchPoints());
+
+  // The embedder values are restored once emulation ends.
+  emulator->SetTouchEventEmulationEnabled(false, 0);
+  EXPECT_EQ(mojom::blink::PointerType::kPointerFineType,
+            settings.GetPrimaryPointerType());
+  EXPECT_EQ(0, settings.GetMaxTouchPoints());
+
+  // A plain setting is applied as well.
+  web_settings->SetFromStrings("scrollAnimatorEnabled", "false");
+  EXPECT_FALSE(settings.GetScrollAnimatorEnabled());
+  web_settings->SetFromStrings("scrollAnimatorEnabled", "true");
+  EXPECT_TRUE(settings.GetScrollAnimatorEnabled());
+}
+
 TEST_F(WebViewTest, ApplyWebPreferencesSkipsPrewarmingEmptyFontFamilies) {
   WebViewImpl* web_view_impl = web_view_helper_.Initialize();
   GenericFontFamilySettings& font_settings =

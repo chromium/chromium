@@ -32,10 +32,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
@@ -255,6 +257,38 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
 
   void SetMockGestureTapHighlightsEnabled(bool);
   bool MockGestureTapHighlightsEnabled() const;
+
+  void SetAcceleratedCompositingEnabled(bool);
+  void SetAcceptLanguages(const String&);
+  void SetAutoplayPolicy(AutoplayPolicy::Type);
+  void SetBypassCSP(bool);
+  void SetDisallowFetchForDocWrittenScriptsInMainFrame(bool);
+  void SetDisallowFetchForDocWrittenScriptsInMainFrameIfEffectively2G(bool);
+  void SetDisallowFetchForDocWrittenScriptsInMainFrameOnSlowConnections(bool);
+  void SetDisplayModeOverride(mojom::blink::DisplayMode);
+  void SetDoHtmlPreloadScanning(bool);
+  void SetForceAndroidOverlayScrollbar(bool);
+  void SetEditingBehaviorType(mojom::blink::EditingBehavior);
+  void SetForceTouchEventFeatureDetectionForInspector(bool);
+  void SetLogDnsPrefetchAndPreconnect(bool);
+  void SetLogPreload(bool);
+  void SetMediaTypeOverride(const String&);
+  void SetMultiTargetTapNotificationEnabled(bool);
+  void SetNavigateOnDragDrop(bool);
+  void SetNavigatorPlatformOverride(const String&);
+  void SetParserScriptingFlagPolicy(ParserScriptingFlagPolicy);
+  void SetPlaceRTLScrollbarsOnLeftSideInMainFrame(bool);
+  void SetPrintingMaximumShrinkFactor(float);
+  void SetResizable(bool);
+  void SetSelectionStrategy(SelectionStrategy);
+  void SetScrollAnimatorEnabled(bool);
+  void SetScriptEnabled(bool);
+  void SetStrictPowerfulFeatureRestrictions(bool);
+  void SetTouchEditingEnabled(bool);
+  void SetUseAXMenuList(bool);
+  void SetWebAppCustomManifestUrl(const String&);
+  void SetWindowShowState(ui::mojom::blink::WindowShowState);
+  void SetXSLTDeprecationBannerSuppressed(bool);
 
  private:
   raw_ptr<Settings, UnprotectedInRelease | DanglingUntriaged> settings_;

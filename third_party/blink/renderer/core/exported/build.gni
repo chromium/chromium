@@ -66,6 +66,7 @@ blink_core_sources_exported = [
   "web_serialized_script_value.cc",
   "web_settings_impl.cc",
   "web_settings_impl.h",
+  "web_settings_impl_string_converter.h",
   "web_shared_worker_impl.cc",
   "web_shared_worker_impl.h",
   "web_text_checking_result.cc",

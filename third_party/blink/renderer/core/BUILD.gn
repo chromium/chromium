@@ -742,15 +742,18 @@ group("generated_testing_idls") {
 blink_python_runner("make_core_generated_settings") {
   script = "../build/scripts/make_settings.py"
 
-  inputs = scripts_for_json5_files + [
-             "../build/scripts/make_settings.py",
-             "../build/scripts/templates/settings_base.cc.tmpl",
-             "../build/scripts/templates/settings_base.h.tmpl",
-             "frame/settings.json5",
-           ]
+  inputs =
+      scripts_for_json5_files + [
+        "../build/scripts/make_settings.py",
+        "../build/scripts/templates/settings_base.cc.tmpl",
+        "../build/scripts/templates/settings_base.h.tmpl",
+        "../build/scripts/templates/web_settings_impl_set_from_strings.cc.tmpl",
+        "frame/settings.json5",
+      ]
   outputs = [
     "$blink_core_output_dir/settings_base.cc",
     "$blink_core_output_dir/settings_base.h",
+    "$blink_core_output_dir/web_settings_impl_set_from_strings.cc",
   ]
 
   args = [
