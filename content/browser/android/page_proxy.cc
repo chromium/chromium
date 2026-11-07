@@ -20,13 +20,11 @@ using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-PageProxy::PageProxy(PageImpl* cpp_page) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_PageImpl_Constructor(
-      env, reinterpret_cast<intptr_t>(this),
-      cpp_page->GetMainDocument().lifecycle_state() ==
-          RenderFrameHostLifecycleStateImpl::kPrerendering);
-}
+PageProxy::PageProxy(PageImpl* cpp_page)
+    : java_peer_id_(Java_PageImpl_createAndGetPeerId(
+          AttachCurrentThread(),
+          cpp_page->GetMainDocument().lifecycle_state() ==
+              RenderFrameHostLifecycleStateImpl::kPrerendering)) {}
 
 PageProxy::~PageProxy() {
   JNIEnv* env = AttachCurrentThread();
@@ -34,6 +32,7 @@ PageProxy::~PageProxy() {
   if (!java_page.is_null()) {
     Java_PageImpl_destroy(env, java_page);
   }
+  java_peer_id_ = 0;
 }
 
 void PageProxy::WillDeletePage(bool is_prerendering) {
@@ -46,7 +45,7 @@ void PageProxy::WillDeletePage(bool is_prerendering) {
 
 base::android::ScopedJavaLocalRef<jobject> PageProxy::GetJavaPage() const {
   JNIEnv* env = AttachCurrentThread();
-  return Java_PageImpl_getJavaObject(env, reinterpret_cast<intptr_t>(this));
+  return Java_PageImpl_getJavaObject(env, java_peer_id_);
 }
 
 }  // namespace content

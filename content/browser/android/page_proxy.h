@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ANDROID_PAGE_PROXY_H_
 #define CONTENT_BROWSER_ANDROID_PAGE_PROXY_H_
 
+#include <cstdint>
+
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -26,6 +28,8 @@ class PageProxy final {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaPage() const;
 
+ private:
+  int64_t java_peer_id_ = 0;
 };
 
 }  // namespace content

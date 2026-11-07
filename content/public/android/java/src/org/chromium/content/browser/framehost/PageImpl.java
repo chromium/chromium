@@ -27,13 +27,14 @@ import org.chromium.url.GURL;
 public class PageImpl implements Page {
     // Using ScopedJavaGlobalRef in the owning C++ object to keep the Java object alive consumes an
     // entry per instance in the finite global ref table. This scales poorly with a large number of
-    // WebContents. As a workaround, an entry is kept in a static map from the native pointer to the
-    // Java object to prevent garbage collection.
+    // WebContents. As a workaround, an entry is kept in a static map keyed by a Java-assigned peer
+    // ID to prevent garbage collection.
     private static final LongSparseArray<PageImpl> sPages = new LongSparseArray<>();
+    private static long sNextPeerId = 1;
 
     private boolean mIsPrerendering;
     private GURL mUrl = GURL.emptyGURL();
-    private long mNativePage;
+    private final long mPeerId;
 
     private @Nullable PageDeletionListener mListener;
 
@@ -45,17 +46,20 @@ public class PageImpl implements Page {
         mListener = listener;
     }
 
-    @CalledByNative
-    public PageImpl(long nativePage, boolean isPrerendering) {
-        mNativePage = nativePage;
+    public PageImpl(long peerId, boolean isPrerendering) {
+        mPeerId = peerId;
         mIsPrerendering = isPrerendering;
 
         takePageSnapshot();
+    }
 
-        if (mNativePage != 0) {
-            assert sPages.get(mNativePage) == null;
-            sPages.put(mNativePage, this);
-        }
+    @CalledByNative
+    private static long createAndGetPeerId(boolean isPrerendering) {
+        long peerId = sNextPeerId++;
+        PageImpl page = new PageImpl(peerId, isPrerendering);
+        assert sPages.get(peerId) == null;
+        sPages.put(peerId, page);
+        return peerId;
     }
 
     /** The C++ page is about to be deleted. */
@@ -69,11 +73,10 @@ public class PageImpl implements Page {
 
     @CalledByNative
     private void destroy() {
-        assert mNativePage != 0;
-        var removedValue = sPages.get(mNativePage);
-        sPages.remove(mNativePage);
+        assert mPeerId != 0;
+        var removedValue = sPages.get(mPeerId);
+        sPages.remove(mPeerId);
         assert removedValue == this;
-        mNativePage = 0;
     }
 
     @Override
@@ -98,8 +101,8 @@ public class PageImpl implements Page {
     }
 
     @CalledByNative
-    private static @Nullable PageImpl getJavaObject(long nativePage) {
-        return sPages.get(nativePage);
+    private static @Nullable PageImpl getJavaObject(long peerId) {
+        return sPages.get(peerId);
     }
 
     @Override

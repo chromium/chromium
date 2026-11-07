@@ -343,7 +343,7 @@ public class NavigationHandle {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                new PageImpl(/* nativePage= */ 0, /* isPrerendering= */ false),
+                new PageImpl(/* peerId= */ 0, /* isPrerendering= */ false),
                 isSameOrigin,
                 /* responseHeaders= */ new HashMap<>(),
                 /* ignoredDuplicateNavigationCount= */ 0);
