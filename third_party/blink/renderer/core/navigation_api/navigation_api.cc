@@ -155,8 +155,8 @@ void NavigationApi::InitializeForNewWindow(
     WebFrameLoadType load_type,
     CommitReason commit_reason,
     NavigationApi* previous,
-    const std::vector<WebHistoryItem>& back_entries,
-    const std::vector<WebHistoryItem>& forward_entries,
+    const HeapVector<Member<HistoryItem>>& back_entries,
+    const HeapVector<Member<HistoryItem>>& forward_entries,
     HistoryItem* previous_entry) {
   CHECK(entries_.empty());
 
@@ -192,12 +192,11 @@ void NavigationApi::InitializeForNewWindow(
 
   // Construct |entries_|. Any back entries are inserted, then the current
   // entry, then any forward entries.
-  entries_.reserve(base::checked_cast<wtf_size_t>(back_entries.size() +
-                                                  forward_entries.size() + 1));
+  entries_.reserve(back_entries.size() + forward_entries.size() + 1);
   for (const auto& entry : back_entries)
     entries_.emplace_back(MakeEntryFromItem(*entry));
 
-  current_entry_index_ = base::checked_cast<wtf_size_t>(back_entries.size());
+  current_entry_index_ = back_entries.size();
   entries_.emplace_back(MakeEntryFromItem(current));
 
   for (const auto& entry : forward_entries)

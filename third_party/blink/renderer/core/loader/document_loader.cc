@@ -247,6 +247,16 @@ std::vector<WebString> CopyForceEnabledOriginTrials(
   return base::ToVector(force_enabled_origin_trials, ToWebString);
 }
 
+HeapVector<Member<HistoryItem>> CopyWebHistoryItems(
+    const std::vector<WebHistoryItem>& items) {
+  HeapVector<Member<HistoryItem>> result;
+  result.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(items.size()));
+  for (const auto& item : items) {
+    result.push_back(static_cast<HistoryItem*>(item));
+  }
+  return result;
+}
+
 bool IsPagePopupRunningInWebTest(LocalFrame* frame) {
   return frame && frame->GetPage()->GetChromeClient().IsPopup() &&
          WebTestSupport::IsRunningWebTest();
@@ -443,10 +453,8 @@ struct SameSizeAsDocumentLoader
   AgentClusterKey agent_cluster_key;
   bool is_cross_site_cross_browsing_context_group;
   bool should_have_sticky_user_activation;
-  std::vector<WebHistoryItem> navigation_api_back_entries
-      ALLOW_DISCOURAGED_TYPE("For same size");
-  std::vector<WebHistoryItem> navigation_api_forward_entries
-      ALLOW_DISCOURAGED_TYPE("For same size");
+  HeapVector<Member<HistoryItem>> navigation_api_back_entries;
+  HeapVector<Member<HistoryItem>> navigation_api_forward_entries;
   Member<HistoryItem> navigation_api_previous_entry;
   std::unique_ptr<CodeCacheHost> code_cache_host;
   mojo::PendingRemote<mojom::blink::CodeCacheHost>
@@ -622,8 +630,10 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_site_cross_browsing_context_group),
       should_have_sticky_user_activation_(
           params_->should_have_sticky_user_activation),
-      navigation_api_back_entries_(params_->navigation_api_back_entries),
-      navigation_api_forward_entries_(params_->navigation_api_forward_entries),
+      navigation_api_back_entries_(
+          CopyWebHistoryItems(params_->navigation_api_back_entries)),
+      navigation_api_forward_entries_(
+          CopyWebHistoryItems(params_->navigation_api_forward_entries)),
       navigation_api_previous_entry_(params_->navigation_api_previous_entry),
       extra_data_(std::move(extra_data)),
       navigation_delivery_type_(params_->navigation_delivery_type),
@@ -887,6 +897,8 @@ void DocumentLoader::Trace(Visitor* visitor) const {
   visitor->Trace(document_load_timing_);
   visitor->Trace(prefetched_signed_exchange_manager_);
   visitor->Trace(use_counter_);
+  visitor->Trace(navigation_api_back_entries_);
+  visitor->Trace(navigation_api_forward_entries_);
   visitor->Trace(navigation_api_previous_entry_);
 }
 
@@ -3325,7 +3337,7 @@ void DocumentLoader::CommitNavigation() {
     // to retain the state from which it was initialized.
     navigation_api_back_entries_.clear();
     navigation_api_forward_entries_.clear();
-    navigation_api_previous_entry_ = WebHistoryItem();
+    navigation_api_previous_entry_ = nullptr;
   }
 
   if (commit_reason_ == CommitReason::kXSLT)

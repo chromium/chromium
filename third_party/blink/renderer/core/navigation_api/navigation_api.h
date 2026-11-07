@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
-#include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -50,8 +49,8 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
       WebFrameLoadType,
       CommitReason,
       NavigationApi* previous,
-      const std::vector<WebHistoryItem>& back_entries,
-      const std::vector<WebHistoryItem>& forward_entries,
+      const HeapVector<Member<HistoryItem>>& back_entries,
+      const HeapVector<Member<HistoryItem>>& forward_entries,
       HistoryItem* previous_entry);
   void UpdateForNavigation(HistoryItem&, WebFrameLoadType);
   void SetEntriesForRestore(

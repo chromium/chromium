@@ -83,9 +83,9 @@
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
@@ -880,10 +880,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // the previously committed document did, and the navigation was same-site.
   bool should_have_sticky_user_activation_ = false;
 
-  std::vector<WebHistoryItem> navigation_api_back_entries_
-      ALLOW_DISCOURAGED_TYPE("Matches WebNavigationParams");
-  std::vector<WebHistoryItem> navigation_api_forward_entries_
-      ALLOW_DISCOURAGED_TYPE("Matches WebNavigationParams");
+  HeapVector<Member<HistoryItem>> navigation_api_back_entries_;
+  HeapVector<Member<HistoryItem>> navigation_api_forward_entries_;
   Member<HistoryItem> navigation_api_previous_entry_;
 
   // This is the interface that handles generated code cache
