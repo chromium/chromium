@@ -1006,6 +1006,99 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       SensitiveDirectoryResult::kAllowed);
 }
 
+// Tests that sensitive-path blocklist matching handles case-variant file and
+// directory names (e.g., `_VIMRC` or `VIMFILES` on case-insensitive
+// filesystems).
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_CaseInsensitivePathBlock) {
+  base::FilePath parent_dir = temp_dir_.GetPath().AppendASCII("parent");
+  base::FilePath home_dir = parent_dir.AppendASCII("home");
+  ScopedHomeDirOverride home_override =
+      OverrideHomeDir(home_dir, /*should_skip_check=*/true);
+
+  // Case-variant top-level Vim startup files under `base::DIR_HOME` must be
+  // blocked across triggers.
+  base::FilePath upper_vimrc = home_dir.AppendASCII("_VIMRC");
+  for (AccessTrigger trigger :
+       {AccessTrigger::kOpen, AccessTrigger::kSave,
+        AccessTrigger::kProgrammaticRead, AccessTrigger::kProgrammaticWrite}) {
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(upper_vimrc),
+                  HandleType::kFile, trigger),
+              SensitiveDirectoryResult::kAbort);
+  }
+  for (const char* file_name : {"_Vimrc", "_GVIMRC", "_EXRC"}) {
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(),
+                  PathInfo(home_dir.AppendASCII(file_name)), HandleType::kFile,
+                  AccessTrigger::kSave),
+              SensitiveDirectoryResult::kAbort);
+  }
+
+  // Case-variant blocked directories under `base::DIR_HOME` and their
+  // descendants must also be blocked.
+  for (const char* dir_name : {"VIMFILES", "VimFiles"}) {
+    base::FilePath blocked_dir = home_dir.AppendASCII(dir_name);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(blocked_dir),
+                  HandleType::kDirectory, AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(
+        ConfirmSensitiveEntryAccessSync(
+            permission_context(),
+            PathInfo(blocked_dir.AppendASCII("plugin").AppendASCII("init.vim")),
+            HandleType::kFile, AccessTrigger::kSave),
+        SensitiveDirectoryResult::kAbort);
+  }
+
+  // A strict parent of a blocked path accessed with different casing must
+  // also be blocked.
+  base::FilePath upper_parent_dir = temp_dir_.GetPath().AppendASCII("PARENT");
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(upper_parent_dir),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  // Case-variant `base::DIR_HOME` ancestor components must preserve
+  // `kDontBlockChildren` on `base::DIR_HOME`, `kBlockAllChildren` on its
+  // blocked children/dotfiles, and `kBlockWrite` on nested suffix rules.
+  base::FilePath upper_home_dir = parent_dir.AppendASCII("HOME");
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(upper_home_dir),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(upper_home_dir.AppendASCII("_vimrc")),
+          HandleType::kFile, AccessTrigger::kSave),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(upper_home_dir.AppendASCII(".claude").AppendASCII(
+                    "settings.json")),
+                HandleType::kFile, AccessTrigger::kSave),
+            SensitiveDirectoryResult::kAbort);
+  base::FilePath git_hook_in_upper_home =
+      upper_home_dir.AppendASCII("project")
+          .AppendASCII(".git")
+          .AppendASCII("hooks")
+          .AppendASCII("pre-commit");
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(git_hook_in_upper_home),
+                HandleType::kFile, AccessTrigger::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(git_hook_in_upper_home),
+                HandleType::kFile, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(upper_home_dir.AppendASCII("project").AppendASCII(
+                    "notes.txt")),
+                HandleType::kFile, AccessTrigger::kSave),
+            SensitiveDirectoryResult::kAllowed);
+}
+
 // Tests that hidden dot-files and dot-directories directly under
 // `base::DIR_HOME` (and their descendants) are blocked across access triggers,
 // while dotfiles inside non-dot subdirectories of `base::DIR_HOME` remain
@@ -1141,18 +1234,32 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
   ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
 
-  // Explicitly blocklisted paths under `base::DIR_HOME` remain blocked.
+  // Explicitly blocklisted paths under `base::DIR_HOME` remain blocked,
+  // including case-variant names and descendants.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathInfo(home_dir.AppendASCII(".ssh")),
                 HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(home_dir.AppendASCII(".SSH").AppendASCII("id_rsa")),
+                HandleType::kFile, AccessTrigger::kOpen),
             SensitiveDirectoryResult::kAbort);
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathInfo(home_dir.AppendASCII(".bashrc")),
                 HandleType::kFile, AccessTrigger::kSave),
             SensitiveDirectoryResult::kAbort);
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(home_dir.AppendASCII(".BASHRC")),
+                HandleType::kFile, AccessTrigger::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathInfo(home_dir.AppendASCII(".vim")),
                 HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(home_dir.AppendASCII(".VIMRC")),
+                HandleType::kFile, AccessTrigger::kSave),
             SensitiveDirectoryResult::kAbort);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(

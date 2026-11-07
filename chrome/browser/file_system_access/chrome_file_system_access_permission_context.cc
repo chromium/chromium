@@ -747,23 +747,65 @@ GenerateBlockPaths(bool should_normalize_file_path) {
   return block_path_rules;
 }
 
-// If `path` is a hidden dot-file or dot-directory (`.*`) directly under
-// `home_dir` (or a descendant of one), returns that direct child path under
-// `home_dir`. Otherwise returns an empty `base::FilePath`.
-base::FilePath GetBlockedHomeDotPath(const base::FilePath& path,
-                                     const base::FilePath& home_dir) {
-  base::FilePath relative_path;
-  if (!home_dir.empty() && home_dir.AppendRelativePath(path, &relative_path)) {
-    std::vector<base::FilePath::StringType> relative_components =
-        relative_path.GetComponents();
-    if (!relative_components.empty()) {
-      const auto& direct_child_name = relative_components[0];
-      if (direct_child_name.starts_with(FILE_PATH_LITERAL('.')) &&
-          direct_child_name != base::FilePath::kCurrentDirectory &&
-          direct_child_name != base::FilePath::kParentDirectory) {
-        return home_dir.Append(direct_child_name);
-      }
-    }
+// Returns true if `child_components` is the same as or a descendant of
+// `parent_components`, ignoring case differences.
+bool IsPathOrDescendantIgnoreCase(
+    const std::vector<base::FilePath::StringType>& parent_components,
+    const std::vector<base::FilePath::StringType>& child_components) {
+  if (parent_components.empty() ||
+      parent_components.size() > child_components.size()) {
+    return false;
+  }
+
+  return std::equal(parent_components.begin(), parent_components.end(),
+                    child_components.begin(),
+                    base::FilePath::CompareEqualIgnoreCase);
+}
+
+// Returns true if `child_path` is the same as or a descendant of
+// `parent_path`, ignoring case differences. Unlike
+// `base::FilePath::IsParent()`, this handles case-variant paths returned by
+// native pickers on case-insensitive filesystems.
+bool IsPathOrDescendantIgnoreCase(
+    const base::FilePath& parent_path,
+    const std::vector<base::FilePath::StringType>& parent_components,
+    const base::FilePath& child_path) {
+  // Fast path: Exact match or case-sensitive parent match.
+  if (child_path == parent_path || parent_path.IsParent(child_path)) {
+    return true;
+  }
+  return IsPathOrDescendantIgnoreCase(parent_components,
+                                      child_path.GetComponents());
+}
+
+// Returns true if `parent_components` is a strict parent of
+// `child_components`, ignoring case differences.
+bool IsParentIgnoreCase(
+    const std::vector<base::FilePath::StringType>& parent_components,
+    const std::vector<base::FilePath::StringType>& child_components) {
+  return parent_components.size() < child_components.size() &&
+         IsPathOrDescendantIgnoreCase(parent_components, child_components);
+}
+
+// If `path_components` represents a hidden dot-file or dot-directory (`.*`)
+// directly under `home_dir` (or a descendant of one), returns that direct
+// child path under `home_dir`. Otherwise returns an empty `base::FilePath`.
+base::FilePath GetBlockedHomeDotPath(
+    const std::vector<base::FilePath::StringType>& path_components,
+    const base::FilePath& home_dir) {
+  if (home_dir.empty()) {
+    return base::FilePath();
+  }
+  const std::vector<base::FilePath::StringType> home_components =
+      home_dir.GetComponents();
+  if (!IsParentIgnoreCase(home_components, path_components)) {
+    return base::FilePath();
+  }
+  const auto& direct_child_name = path_components[home_components.size()];
+  if (direct_child_name.starts_with(FILE_PATH_LITERAL('.')) &&
+      direct_child_name != base::FilePath::kCurrentDirectory &&
+      direct_child_name != base::FilePath::kParentDirectory) {
+    return home_dir.Append(direct_child_name);
   }
   return base::FilePath();
 }
@@ -906,7 +948,10 @@ bool ShouldBlockAccessToPath(
   }
 #endif
 
+  const std::vector<base::FilePath::StringType> path_components =
+      path.GetComponents();
   base::FilePath nearest_ancestor;
+  std::vector<base::FilePath::StringType> nearest_ancestor_components;
   BlockType nearest_ancestor_block_type = BlockType::kDontBlockChildren;
   auto should_block_with_rule = [&](const base::FilePath& block_path,
                                     BlockType block_type) -> bool {
@@ -922,15 +967,19 @@ bool ShouldBlockAccessToPath(
       return ShouldBlockAccessToGitPath(block_path, path, handle_type);
     }
 
-    if (path == block_path || path.IsParent(block_path)) {
+    std::vector<base::FilePath::StringType> block_components =
+        block_path.GetComponents();
+    if (IsPathOrDescendantIgnoreCase(path_components, block_components)) {
       LOG(ERROR) << "Blocking access to " << path
                  << " because it is a parent of " << block_path;
       return true;
     }
 
-    if (block_path.IsParent(path) &&
-        (nearest_ancestor.empty() || nearest_ancestor.IsParent(block_path))) {
+    if (IsParentIgnoreCase(block_components, path_components) &&
+        (nearest_ancestor.empty() ||
+         IsParentIgnoreCase(nearest_ancestor_components, block_components))) {
       nearest_ancestor = block_path;
+      nearest_ancestor_components = std::move(block_components);
       nearest_ancestor_block_type = block_type;
     }
     return false;
@@ -960,7 +1009,8 @@ bool ShouldBlockAccessToPath(
           features::kFileSystemAccessBlockHomeDotFiles)) {
     const base::FilePath& home_dir =
         kUseProfilePathForDirHome ? profile_path : block_path_rules.home_path_;
-    base::FilePath blocked_dot_path = GetBlockedHomeDotPath(path, home_dir);
+    base::FilePath blocked_dot_path =
+        GetBlockedHomeDotPath(path_components, home_dir);
     if (!blocked_dot_path.empty() &&
         should_block_with_rule(blocked_dot_path,
                                BlockType::kBlockAllChildren)) {
@@ -974,8 +1024,6 @@ bool ShouldBlockAccessToPath(
   // using case-insensitive comparison and constructs a `current_path` from the
   // root up to the end of the matched subrange (e.g., `/foo/bar/.git/hooks`).
   // This path is then evaluated against the regular block rules.
-  std::vector<base::FilePath::StringType> path_components =
-      path.GetComponents();
   for (const auto& rule : block_path_rules.suffix_block_path_rules_) {
     base::FilePath rule_path(rule.path);
     std::vector<base::FilePath::StringType> rule_components =
@@ -1029,31 +1077,6 @@ bool ShouldBlockAccessToPath(
   VLOG(1) << "Blocking access to " << path << " because it is inside "
           << nearest_ancestor << " and it's kBlockAllChildren";
   return true;
-}
-
-// Returns true if `child_path` is the same as or a descendant of
-// `parent_path`, ignoring case differences. Unlike
-// `base::FilePath::IsParent()`, this handles case-variant paths returned by
-// native pickers on case-insensitive filesystems.
-bool IsPathOrDescendantIgnoreCase(
-    const base::FilePath& parent_path,
-    const std::vector<base::FilePath::StringType>& parent_components,
-    const base::FilePath& child_path) {
-  // Fast path: Exact match or case-sensitive parent match.
-  if (child_path == parent_path || parent_path.IsParent(child_path)) {
-    return true;
-  }
-
-  const std::vector<base::FilePath::StringType> child_components =
-      child_path.GetComponents();
-  if (parent_components.empty() ||
-      parent_components.size() > child_components.size()) {
-    return false;
-  }
-
-  return std::equal(parent_components.begin(), parent_components.end(),
-                    child_components.begin(),
-                    base::FilePath::CompareEqualIgnoreCase);
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
