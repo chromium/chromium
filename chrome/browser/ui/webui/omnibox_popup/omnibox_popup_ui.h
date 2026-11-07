@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -199,6 +200,11 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   // Drive picker waiting for the user.
   bool CanMoveToAnotherWindow() const;
 
+  // When the popup was last hidden, in any window, or null if it was never
+  // shown. Moves with the page.
+  base::TimeTicks last_hidden_time() const { return last_hidden_time_; }
+  void set_last_hidden_time(base::TimeTicks time) { last_hidden_time_ = time; }
+
  private:
   // Called when the Lens icon anchor is shown in any WebUI; triggers the AskG
   // Lens icon IPH if `element` belongs to this popup.
@@ -232,6 +238,8 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
   base::CallbackListSubscription lens_icon_shown_subscription_;
+
+  base::TimeTicks last_hidden_time_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

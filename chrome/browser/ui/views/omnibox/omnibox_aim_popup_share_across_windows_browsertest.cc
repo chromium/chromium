@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_factory.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -264,4 +266,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupShareAcrossWindowsBrowserTest,
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return presenter->CanReleaseWebUIContents(); }));
+}
+
+// Memory pressure drops the idle AI Mode popup, even in the window that was
+// activated last.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupShareAcrossWindowsBrowserTest,
+                       DropIdlePopupsDropsAimPopup) {
+  ShowLoadedAimPopup(browser());
+  HideAimPopup(browser());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetAimPresenter(browser())->CanReleaseWebUIContents(); }));
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->GetWidget()
+      ->OnNativeWidgetActivationChanged(/*active=*/true);
+
+  OmniboxPopupWebUIPoolFactory::GetForProfile(browser()->GetProfile())
+      ->DropIdleWebUIContents();
+
+  EXPECT_FALSE(GetAimPresenter(browser())->GetWebUIContent());
 }

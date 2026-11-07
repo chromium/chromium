@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_factory.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -552,4 +554,71 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsDisabledBrowserTest,
   content::WebContents* other_contents = GetPopupContents(other_browser);
   ASSERT_TRUE(other_contents);
   EXPECT_NE(other_contents, contents);
+}
+
+// Dropping the idle popups, as memory pressure does, destroys an idle popup
+// in an inactive window and keeps a shown one.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
+                       DropIdlePopupsKeepsShownPopup) {
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  content::WebContents* contents = OpenLoadedPopup(browser());
+  OpenLoadedPopup(other_browser);
+  ClosePopup(other_browser);
+  ActivateBrowser(browser());
+  FlushPostedTasks();
+  ASSERT_TRUE(GetPresenter(other_browser)->CanReleaseWebUIContents());
+
+  OmniboxPopupWebUIPoolFactory::GetForProfile(browser()->GetProfile())
+      ->DropIdleWebUIContents();
+
+  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+  EXPECT_EQ(GetPopupContents(browser()), contents);
+}
+
+// Tests dropping idle popups under memory pressure with a timeout for the
+// popup of the window that was activated last.
+class OmniboxPopupShareAcrossWindowsIdleTimeoutBrowserTest
+    : public OmniboxPopupShareAcrossWindowsBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OmniboxPopupShareAcrossWindowsIdleTimeoutBrowserTest() {
+    timeout_feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox::kOmniboxWebUIPopupShareAcrossWindows,
+        {{omnibox::kOmniboxWebUIPopupShareActiveWindowPopupIdleTimeout.name,
+          KeepsActiveWindowPopup() ? "inf" : "0s"}});
+  }
+
+ protected:
+  bool KeepsActiveWindowPopup() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList timeout_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxPopupShareAcrossWindowsIdleTimeoutBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NoTimeout" : "ZeroTimeout";
+                         });
+
+// Without a timeout, dropping the idle popups keeps the idle classic popup of
+// the window that was activated last. With one that has passed, it drops it.
+IN_PROC_BROWSER_TEST_P(OmniboxPopupShareAcrossWindowsIdleTimeoutBrowserTest,
+                       DropIdlePopupsActiveWindowPopup) {
+  // Created first, so that its activation can't take the popup below.
+  CreateBrowser(browser()->GetProfile());
+  content::WebContents* contents = OpenLoadedPopup(browser());
+  ClosePopup(browser());
+  ActivateBrowser(browser());
+  FlushPostedTasks();
+  ASSERT_EQ(GetPopupContents(browser()), contents);
+  ASSERT_TRUE(GetPresenter(browser())->CanReleaseWebUIContents());
+
+  OmniboxPopupWebUIPoolFactory::GetForProfile(browser()->GetProfile())
+      ->DropIdleWebUIContents();
+
+  EXPECT_EQ(GetPopupContents(browser()),
+            KeepsActiveWindowPopup() ? contents : nullptr);
 }

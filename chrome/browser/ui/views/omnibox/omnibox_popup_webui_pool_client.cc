@@ -10,8 +10,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_factory.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -68,6 +70,14 @@ OmniboxPopupWebUIPoolClient::TakeIdleWebUIContents() {
 }
 
 void OmniboxPopupWebUIPoolClient::OnPopupHidden() {
+  if (OmniboxPopupWebUIBaseContent* content = presenter_->GetWebUIContent()) {
+    if (OmniboxPopupUI* popup_ui =
+            content->contents_wrapper()
+                ? content->contents_wrapper()->GetWebUIController()
+                : nullptr) {
+      popup_ui->set_last_hidden_time(base::TimeTicks::Now());
+    }
+  }
   // Posted so that other windows' popups are not destroyed from inside the
   // hide, which can run from a widget activation change.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -79,7 +89,13 @@ void OmniboxPopupWebUIPoolClient::OnPopupHidden() {
 void OmniboxPopupWebUIPoolClient::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
-  if (!active || presenter_->GetWebUIContent()) {
+  if (!active) {
+    return;
+  }
+  if (pool_) {
+    pool_->OnBrowserWindowActivated(widget);
+  }
+  if (presenter_->GetWebUIContent()) {
     return;
   }
   // Post rather than move the popup inside the activation change, which is

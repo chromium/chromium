@@ -6,11 +6,18 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_WEBUI_POOL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+namespace views {
+class Widget;
+}  // namespace views
 
 class OmniboxPopupPresenterBase;
 class OmniboxPopupUI;
@@ -22,8 +29,10 @@ class WebUIContentsWrapperT;
 // idle popup of the same kind from another window instead of loading a new
 // WebContents. Each popup in use stays owned by its window's presenter. Used
 // only with `omnibox::kOmniboxWebUIPopupShareAcrossWindows`. Created by
-// `OmniboxPopupWebUIPoolFactory`.
-class OmniboxPopupWebUIPool : public KeyedService {
+// `OmniboxPopupWebUIPoolFactory`. With
+// `omnibox::kOmniboxWebUIPopupShareDropIdleOnMemoryPressure`, it destroys the
+// idle popups under memory pressure.
+class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
  public:
   OmniboxPopupWebUIPool();
   OmniboxPopupWebUIPool(const OmniboxPopupWebUIPool&) = delete;
@@ -49,8 +58,28 @@ class OmniboxPopupWebUIPool : public KeyedService {
   // windows.
   void DropOtherIdleWebUIContents(const OmniboxPopupPresenterBase& presenter);
 
+  // Records the browser window of the profile that was activated last.
+  void OnBrowserWindowActivated(views::Widget* browser_widget);
+
+  // Destroys the idle popups. A classic or full popup in the browser window
+  // that was activated last is kept until it has been hidden for
+  // `omnibox::kOmniboxWebUIPopupShareActiveWindowPopupIdleTimeout`: the user is
+  // likely to open it again soon, and memory pressure that persists would
+  // otherwise reload it on every use. AI Mode popups are opened less often, so
+  // they are always dropped.
+  void DropIdleWebUIContents();
+
+  // Returns whether memory pressure at `limit` drops the idle popups.
+  static bool ShouldDropIdleWebUIContents(base::MemoryLimit limit);
+
+  // base::MemoryConsumer:
+  void OnReleaseMemory() override;
+  void OnUpdateMemoryLimit() override;
+
  private:
   std::vector<raw_ptr<OmniboxPopupPresenterBase>> presenters_;
+  base::WeakPtr<views::Widget> last_active_browser_widget_;
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
   base::WeakPtrFactory<OmniboxPopupWebUIPool> weak_factory_{this};
 };
 
