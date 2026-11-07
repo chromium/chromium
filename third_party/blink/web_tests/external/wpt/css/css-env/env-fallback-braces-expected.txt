@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Property color value 'env(missing-name, {rgb(1, 2, 3)})'
+  assert_equals: expected "rgb(1, 2, 3)" but got "rgb(0, 0, 0)"
+[FAIL] Property color value 'env(missing-name, { rgb(1, 2, 3) })'
+  assert_equals: expected "rgb(1, 2, 3)" but got "rgb(0, 0, 0)"
+[FAIL] Property color value 'env(missing-name, {rgb(1, 2, 3)} )'
+  assert_equals: expected "rgb(1, 2, 3)" but got "rgb(0, 0, 0)"
+[FAIL] Property font-family value 'env(missing-name, {Arial, sans-serif})'
+  assert_equals: expected "Arial, sans-serif" but got "Times New Roman"
+[FAIL] e.style['color'] = "env(missing-name, {rgb(1, 2, 3)} rgb(4, 5, 6))" should not set the property value
+  assert_equals: expected "" but got "env(missing-name, {rgb(1, 2, 3)} rgb(4, 5, 6))"
+[FAIL] e.style['font-family'] = "env(missing-name, {Arial}, sans-serif)" should not set the property value
+  assert_equals: expected "" but got "env(missing-name, {Arial}, sans-serif)"
+Harness: the test ran to completion.
+

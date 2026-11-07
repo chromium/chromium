@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Text directive allowed in text/html served with mixed-case MIME type
-  assert_true: scrolled to fragment expected true got false
-Harness: the test ran to completion.
-

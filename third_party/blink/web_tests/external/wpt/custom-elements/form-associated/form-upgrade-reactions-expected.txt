@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Detached upgrade, disabled by attribute
+  assert_array_equals: Upgrade reactions expected property 4 to be "associated" but got "disabled" (expected array ["attribute", "disabled", null, "", "associated", Element node <form><upgrade-detached-attribute disabled=""></upgrade-d..., "disabled", true] got ["attribute", "disabled", null, "", "disabled", true, "associated", Element node <form><upgrade-detached-attribute disabled=""></upgrade-d...])
+[FAIL] Connected upgrade, disabled by attribute
+  assert_array_equals: Upgrade reactions expected property 5 to be "associated" but got "disabled" (expected array ["attribute", "disabled", null, "", "connected", "associated", Element node <form><upgrade-connected-attribute disabled=""></upgrade-..., "disabled", true] got ["attribute", "disabled", null, "", "connected", "disabled", true, "associated", Element node <form><upgrade-connected-attribute disabled=""></upgrade-...])
+Harness: the test ran to completion.
+

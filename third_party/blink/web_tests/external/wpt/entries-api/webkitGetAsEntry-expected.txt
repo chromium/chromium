@@ -3,5 +3,7 @@ This is a testharness.js-based test.
   assert_not_equals: got disallowed value null
 [FAIL] FileSystemFileEntry.file() invokes callback with a File
   Cannot read properties of null (reading 'file')
+[FAIL] webkitGetAsEntry() places every file item under the drag data store root
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'isFile')"
 Harness: the test ran to completion.
 
