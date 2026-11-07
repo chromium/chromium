@@ -151,7 +151,6 @@ TEST_F(OnDeviceTailModelServiceTest, MemoryPressureLevel) {
   EXPECT_TRUE(IsExecutorReady());
 
   OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5);
-  std::vector<OnDeviceTailModelExecutor::Prediction> results;
 
   // The executor should be unloaded from memory when memory pressure level is
   // critical.

@@ -104,7 +104,6 @@ class FeaturedSearchProviderTest : public testing::Test {
   void TearDown() override { provider_ = nullptr; }
 
   void RunTest(const std::vector<TestData> cases) {
-    ACMatches matches;
     for (size_t i = 0; i < cases.size(); ++i) {
       SCOPED_TRACE(base::StringPrintf(
           "case %" PRIuS ": %s", i, base::UTF16ToUTF8(cases[i].input).c_str()));

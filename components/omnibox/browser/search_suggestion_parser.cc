@@ -1021,7 +1021,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
   results->suggest_results.clear();
   results->navigation_results.clear();
 
-  std::string type;
   int relevance = default_result_relevance;
   const std::u16string& trimmed_input =
       base::CollapseWhitespace(input_text, false);

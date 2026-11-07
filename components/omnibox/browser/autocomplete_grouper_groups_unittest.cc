@@ -64,7 +64,6 @@ TEST(AutocompleteGrouperGroupsTest, DefaultGroup) {
                       },
                       /*is_zps=*/false,
                       /*is_default=*/true);
-  ACMatches matches{{}, {}, {}};
 
   // Can't be added because `allowed_to_be_default` is false.
   AutocompleteMatch non_default_match{};

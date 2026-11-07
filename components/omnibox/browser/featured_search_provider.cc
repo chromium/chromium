@@ -452,7 +452,6 @@ bool FeaturedSearchProvider::ShouldShowEnterpriseSearchAggregatorIPHMatch()
   // - The user has not deleted the IPH suggestion and we have not shown it more
   //   than the accepted limit during this session.
   // - The user has not successfully used the featured engine.
-  TemplateURLService::TemplateURLVector featured_engines;
   TemplateURL* turl =
       template_url_service_->GetEnterpriseSearchAggregatorEngine();
   if (!turl || !IsEnterpriseSearchAggregatorTemplateURLEnabled(

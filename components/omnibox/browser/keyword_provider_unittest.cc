@@ -310,7 +310,6 @@ TEST_F(KeywordProviderTest, AddKeyword) {
 
 TEST_F(KeywordProviderTest, RemoveKeyword) {
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
-  std::u16string url(u"http://aaaa/?aaaa=1&b={searchTerms}&c");
   template_url_service->Remove(
       template_url_service->GetTemplateURLForKeyword(u"aaaa"));
   ASSERT_TRUE(template_url_service->GetTemplateURLForKeyword(u"aaaa") ==

@@ -131,7 +131,7 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
 // the computed embeddings in `prev_query_cache_`.
 TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
   OnDeviceTailTokenizer::TokenIds ids1({66}), ids2({66, 67});
-  std::vector<float> encoding1, encoding2, cached_encoding;
+  std::vector<float> encoding1, encoding2;
 
   EXPECT_TRUE(executor_->EncodePreviousQuery(ids1, &encoding1));
   EXPECT_TRUE(executor_->EncodePreviousQuery(ids2, &encoding2));
@@ -149,7 +149,7 @@ TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
 // in `rnn_step_cache_`.
 TEST_F(OnDeviceTailModelExecutorTest, TestRunRnnStep) {
   OnDeviceTailTokenizer::TokenIds cache_key1({66, 67, 68}),
-      cache_key2({66, 67, 69}), prev_query_ids({66, 67});
+      cache_key2({66, 67, 69});
   OnDeviceTailTokenizer::TokenId input_id1 = 68, input_id2 = 69;
   OnDeviceTailModelExecutorPublic::RnnCellStates previous_states(kNumLayer,
                                                                  kStateSize);
