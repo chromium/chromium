@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -25,9 +26,8 @@ RelList::RelList(Element* element, const QualifiedName& attr)
     : DOMTokenList(*element, attr) {}
 
 static HashSet<AtomicString>& SupportedTokensLink() {
-  // There is a use counter for <link rel="monetization"> but the feature is
-  // actually not implemented yet, so "monetization" is not included in the
-  // list below. See https://crbug.com/1031476
+  // "monetization" is gated in ValidateTokenValue() instead, because this set
+  // is built once per process. See https://crbug.com/1031476
   // clang-format off
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
                       ({
@@ -68,7 +68,10 @@ bool RelList::ValidateTokenValue(const AtomicString& token_value,
                                  ExceptionState& state) const {
   //  https://html.spec.whatwg.org/C/#linkTypes
   if (GetElement().HasTagName(html_names::kLinkTag) &&
-      SupportedTokensLink().Contains(token_value)) {
+      (SupportedTokensLink().Contains(token_value) ||
+       (token_value == "monetization" &&
+        RuntimeEnabledFeatures::MonetizationEnabled(
+            GetElement().GetExecutionContext())))) {
     return true;
   } else if ((GetElement().HasTagName(html_names::kATag) ||
               GetElement().HasTagName(html_names::kAreaTag) ||
