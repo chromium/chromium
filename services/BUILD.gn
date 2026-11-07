@@ -257,6 +257,7 @@ if (is_android) {
       "//mojo/public/java:base_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/mojom/base:base_java",
+      "//services/device/battery/android:battery_monitor_javatests",
       "//services/shape_detection:shape_detection_java",
       "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
