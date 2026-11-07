@@ -35,17 +35,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackgroundSync.LaunchTask.PlayServicesAvailable"
-    enum="Boolean" expires_after="2024-04-28">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether Google Play Services is available to the Background Sync
-    system on Android, for scheduling future sync events when the browser is not
-    running. This will be logged at most once per run.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundSync.Periodic.Wakeup.DelayTime" units="ms"
     expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>

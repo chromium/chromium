@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
@@ -24,22 +23,18 @@ final class GooglePlayServicesChecker {
     private GooglePlayServicesChecker() {}
 
     /**
-     * Returns true if the Background Sync Manager should be automatically disabled
-     * on startup. This is currently only the case if Play Services is not up to
-     * date, since any sync attempts which fail cannot be reregistered. Better to
-     * wait until Play Services is updated before attempting them.
+     * Returns true if the Background Sync Manager should be automatically disabled on startup. This
+     * is currently only the case if Play Services is not up to date, since any sync attempts which
+     * fail cannot be reregistered. Better to wait until Play Services is updated before attempting
+     * them.
      */
     @CalledByNative
     @VisibleForTesting
     static boolean shouldDisableBackgroundSync() {
-        boolean isAvailable = true;
         if (!ExternalAuthUtils.getInstance().canUseGooglePlayServices()) {
             Log.i(TAG, "Disabling Background Sync because Play Services is not up to date.");
-            isAvailable = false;
+            return true;
         }
-
-        RecordHistogram.recordBooleanHistogram(
-                "BackgroundSync.LaunchTask.PlayServicesAvailable", isAvailable);
-        return !isAvailable;
+        return false;
     }
 }
