@@ -581,11 +581,6 @@ void NoDeleteBrowsingDataDialogHistogram(
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // Fails interacting with both windows.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
 
   // Set history pref to false.
   [ChromeEarlGrey setBoolValue:NO

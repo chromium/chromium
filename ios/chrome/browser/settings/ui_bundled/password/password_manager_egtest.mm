@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <TargetConditionals.h>
-
 #import <utility>
 
 #import "base/functional/callback.h"
-#import "base/ios/ios_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -967,11 +964,6 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
 - (void)testAutoScroll {
-  // TODO(crbug.com/460743577): Flaky on iPad on iOS below 26.
-  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iPad on iOS below 26.");
-  }
-
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
     NSString* password = [NSString stringWithFormat:@"password %d", i];
@@ -1629,15 +1621,7 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 
 // Checks password details page offers move to account option if the password is
 // saved in the local store.
-// TODO(crbug.com/512447836): Test is flaky.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testMovePasswordToAccountStoreIfSignedIn \
-  FLAKY_testMovePasswordToAccountStoreIfSignedIn
-#else
-#define MAYBE_testMovePasswordToAccountStoreIfSignedIn \
-  testMovePasswordToAccountStoreIfSignedIn
-#endif
-- (void)MAYBE_testMovePasswordToAccountStoreIfSignedIn {
+- (void)testMovePasswordToAccountStoreIfSignedIn {
   // Save form to be moved to account later.
   SavePasswordFormToProfileStore();
 
@@ -1702,13 +1686,6 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 // Tests that the Password Manager is opened is search mode when opened from the
 // Search Passwords widget.
 - (void)testOpenSearchPasswordsWidget {
-  // TODO(crbug.com/444185069): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   // Add a saved password to not get the Password Manager's empty state.
   SavePasswordFormToProfileStore();
 
@@ -1740,13 +1717,6 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 // get automatically enabled when going back to the Password Manager when the
 // Password Manager was initially opened with the Search Passwords widget.
 - (void)testGoingBackAfterOpeningInSearchMode {
-  // TODO(crbug.com/444185069): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   // Add a saved password to not get the Password Manager's empty state.
   SavePasswordFormToProfileStore();
 
@@ -2650,13 +2620,6 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 // Test that when user types text in search field, passwords and blocked
 // items are filtered out correctly.
 - (void)testSearchPasswords {
-  // TODO(crbug.com/444185069): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   SaveExamplePasswordForms();
   SaveExampleBlockedFormsToProfileStore();
 
@@ -2694,13 +2657,6 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 
 // Test search and delete all passwords and blocked items.
 - (void)testSearchAndDeleteAllPasswords {
-  // TODO(crbug.com/444185069): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   SaveExamplePasswordForms();
   SaveExampleBlockedFormsToProfileStore();
 
@@ -2757,13 +2713,7 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 // storing just about enough passwords to ensure filling more than one page on
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
-// TODO(crbug.com/442382530): Re-enable this test once it has been fixed.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testManyPasswords FLAKY_testManyPasswords
-#else
-#define MAYBE_testManyPasswords testManyPasswords
-#endif
-- (void)MAYBE_testManyPasswords {
+- (void)testManyPasswords {
   // Enough just to ensure filling more than one page on all devices.
   constexpr int kPasswordsCount = 15;
 
@@ -2841,13 +2791,6 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 
 // Test that the user can edit a password that is part of search results.
 - (void)testCanEditPasswordsFromASearch {
-  // TODO(crbug.com/444185069): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   SaveExamplePasswordForms();
   OpenPasswordManager();
 
@@ -3389,13 +3332,6 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 // Checks the order of the elements in the detail view layout for a federated
 // credential.
 - (void)testLayoutFederated {
-  // TODO(crbug.com/444185069): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   GREYAssert(
       [PasswordSettingsAppInterface
           saveExampleFederatedOriginToProfileStore:
@@ -3842,14 +3778,7 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 }
 
 // Edit a password with only incognito tab opened should work.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testEditPasswordWithOnlyIncognitoTabOpen \
-  DISABLED_testEditPasswordWithOnlyIncognitoTabOpen
-#else
-#define MAYBE_testEditPasswordWithOnlyIncognitoTabOpen \
-  testEditPasswordWithOnlyIncognitoTabOpen
-#endif
-- (void)MAYBE_testEditPasswordWithOnlyIncognitoTabOpen {
+- (void)testEditPasswordWithOnlyIncognitoTabOpen {
   SavePasswordFormToProfileStore();
 
   [ChromeEarlGrey openNewIncognitoTab];

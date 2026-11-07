@@ -31,8 +31,7 @@
 
 // Tests that when changing the default search engine, the URL used for the
 // search is updated.
-// TODO(crbug.com/386926969): Test failing on tablet-device and phone-device.
-- (void)DISABLED_testChangeSearchEngine {
+- (void)testChangeSearchEngine {
   [self startHTTPServer];
   [self addURLRewriter];
 

@@ -718,8 +718,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last reused passwords issue by editing a password through
 // Password Checkup.
-// TODO(crbug.com/511159692): Mark it as flaky and re-enable it once fixed.
-- (void)FLAKY_testResolveLastIssueByEditingPassword {
+- (void)testResolveLastIssueByEditingPassword {
   SaveReusedPasswordFormsToProfileStore();
 
   OpenPasswordCheckupHomepage(
@@ -792,8 +791,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last compromised passwords issue by deleting a password
 // through Password Checkup.
-// TODO(crbug.com/493968696): Test is flaky.
-- (void)FLAKY_testChangeCompromisedPasswordToSafePassword {
+- (void)testChangeCompromisedPasswordToSafePassword {
   SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
@@ -829,15 +827,7 @@ NSString* LeakedPasswordDescription() {
 
 // Tests changing the password of a muted compromised password to a weak
 // password.
-// TODO(crbug.com/452549992): Test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testChangeMutedPasswordToWeakPassword \
-  FLAKY_testChangeMutedPasswordToWeakPassword
-#else
-#define MAYBE_testChangeMutedPasswordToWeakPassword \
-  testChangeMutedPasswordToWeakPassword
-#endif
-- (void)MAYBE_testChangeMutedPasswordToWeakPassword {
+- (void)testChangeMutedPasswordToWeakPassword {
   SaveMutedCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
