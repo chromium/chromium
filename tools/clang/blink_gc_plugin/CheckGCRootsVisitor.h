@@ -43,6 +43,7 @@ class CheckGCRootsVisitor : public RecursiveEdgeVisitor {
   bool is_ref_ = false;
 
   bool should_check_unique_ptrs_;
+  bool should_check_std_collections_;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_CHECK_GC_ROOTS_VISITOR_H_

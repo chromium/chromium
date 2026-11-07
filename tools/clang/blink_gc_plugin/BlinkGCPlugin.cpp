@@ -40,6 +40,8 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.dump_graph = true;
       } else if (arg == "enable-persistent-in-unique-ptr-check") {
         options_.enable_persistent_in_unique_ptr_check = true;
+      } else if (arg == "enable-persistent-in-std-collection-check") {
+        options_.enable_persistent_in_std_collection_check = true;
       } else if (arg == "enable-members-on-stack-check") {
         options_.enable_members_on_stack_check = true;
       } else if (arg == "enable-extra-padding-check") {

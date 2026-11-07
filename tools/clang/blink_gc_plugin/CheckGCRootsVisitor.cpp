@@ -6,8 +6,9 @@
 #include "BlinkGCPluginOptions.h"
 
 CheckGCRootsVisitor::CheckGCRootsVisitor(const BlinkGCPluginOptions& options)
-    : should_check_unique_ptrs_(options.enable_persistent_in_unique_ptr_check) {
-}
+    : should_check_unique_ptrs_(options.enable_persistent_in_unique_ptr_check),
+      should_check_std_collections_(
+          options.enable_persistent_in_std_collection_check) {}
 
 CheckGCRootsVisitor::Errors& CheckGCRootsVisitor::gc_roots() {
   return gc_roots_;
@@ -78,8 +79,7 @@ void CheckGCRootsVisitor::VisitPersistent(Persistent* edge) {
 }
 
 void CheckGCRootsVisitor::VisitCollection(Collection* edge) {
-  // There already is a matcher for handling this.
-  if (edge->IsSTDCollection()) {
+  if (!should_check_std_collections_ && edge->IsSTDCollection()) {
     return;
   }
   RecursiveEdgeVisitor::VisitCollection(edge);
