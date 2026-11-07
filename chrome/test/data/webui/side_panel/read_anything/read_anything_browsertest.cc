@@ -327,8 +327,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudNodeStore) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DomReadAloudNode) {
-  RunSidePanelTest("side_panel/read_anything/dom_read_aloud_node_test.js",
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudNode) {
+  RunSidePanelTest("side_panel/read_anything/read_aloud_node_test.js",
                    "mocha.run()");
 }
 
