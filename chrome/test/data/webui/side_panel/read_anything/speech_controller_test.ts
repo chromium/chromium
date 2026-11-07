@@ -441,6 +441,39 @@ suite('SpeechController', () => {
       assertEquals(
           longSentences.length - spokenTextLength, getSpokenText().length);
     });
+
+    test('with local voice speaks full text', () => {
+      voiceLanguageController.setUserPreferredVoice(createSpeechSynthesisVoice(
+          {lang: 'en', name: 'Google Raccoon', localService: true}));
+
+      onPlayPauseToggle(longSentences);
+
+      assertEquals(longSentences, getSpokenText());
+    });
+
+    test('splits on last comma before max speech length', () => {
+      const lastComma =
+          longSentences.substring(0, MAX_SPEECH_LENGTH).lastIndexOf(', ');
+      assertGT(lastComma, 0);
+
+      onPlayPauseToggle(longSentences);
+
+      assertEquals(longSentences.substring(0, lastComma), getSpokenText());
+      assertEquals(0, readAloudModel.getCallCount('getAccessibleText'));
+    });
+
+    test('without early comma uses accessible text from model', () => {
+      const text = 'my power flurries through the air into the ground- my ' +
+          'soul is spiraling in frozen fractals all around and one thought ' +
+          'crystallizes like an icy blast I\'m never going back- the past is ' +
+          'in the past- let it go, let it go';
+      assertGT(text.indexOf(', '), MAX_SPEECH_LENGTH);
+
+      onPlayPauseToggle(text);
+
+      assertEquals(1, readAloudModel.getCallCount('getAccessibleText'));
+      assertGE(MAX_SPEECH_LENGTH, getSpokenText().length);
+    });
   });
 
   test('stops speech on language-unavailable', async () => {

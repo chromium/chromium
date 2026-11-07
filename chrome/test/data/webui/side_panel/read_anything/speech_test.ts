@@ -5,11 +5,11 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {AudioBrowserProxyImpl, ContentBrowserProxyImpl, ContentController, ContentType, NodeStore, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createAndSetVoices, emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
+import {emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
 import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -21,7 +21,6 @@ suite('Speech', () => {
   let voiceLanguageController: VoiceLanguageController;
   let speechController: SpeechController;
   let contentController: ContentController;
-  let audioProxy: TestAudioBrowserProxy;
   let nodeStore: NodeStore;
 
   const paragraph1: string[] = [
@@ -72,8 +71,7 @@ suite('Speech', () => {
     HTMLElement.prototype.checkVisibility = () => true;
 
     ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
-    audioProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioProxy);
+    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
     VisualBrowserProxyImpl.setInstance(new TestVisualBrowserProxy());
 
     // Ensure the ReadAloudModel is not shared between tests.
@@ -170,16 +168,6 @@ suite('Speech', () => {
     assertEquals(9, speech.getCallCount('speak'));
     const spoken9 = speech.getArgs('speak')[0];
     assertEquals(paragraph1[0], spoken9.text.trim());
-  });
-
-  test('uses set language', () => {
-    const expectedLang = 'fr';
-    audioProxy.baseLanguageForSpeech = expectedLang;
-
-    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-
-    assertEquals(1, speech.getCallCount('speak'));
-    assertEquals(expectedLang, speech.getArgs('speak')[0].lang);
   });
 
   suite('with text selected', () => {
@@ -363,53 +351,5 @@ suite('Speech', () => {
     emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
 
     assertEquals(paragraph1[0], getSpokenText());
-  });
-
-  suite('while playing', () => {
-    setup(() => {
-      const domNode = NodeStore.getInstance().getDomNode(1);
-      speechController.initializeSpeechTree(domNode);
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-    });
-
-    test('voice change cancels and restarts speech', () => {
-      createAndSetVoices(speech, [
-        {lang: 'en', name: 'Google Sheldon'},
-        {lang: 'en', name: 'Google Mary'},
-      ]);
-      speech.reset();
-
-      emitEvent(
-          app, ToolbarEvent.VOICE,
-          {detail: {selectedVoice: speech.getVoices()[1]}});
-
-      assertEquals(2, speech.getCallCount('cancel'));
-      assertEquals(1, speech.getCallCount('speak'));
-      assertEquals(0, speech.getCallCount('pause'));
-    });
-
-    test('rate change cancels and restarts speech', () => {
-      speech.reset();
-
-      emitEvent(app, ToolbarEvent.RATE, {detail: {data: 2}});
-
-      assertEquals(2, speech.getCallCount('cancel'));
-      assertEquals(1, speech.getCallCount('speak'));
-      assertEquals(0, speech.getCallCount('pause'));
-    });
-
-    test('before speech engine is loaded is not playable', async () => {
-      await microtasksFinished();
-      assertFalse(app.$.toolbar.isReadAloudPlayable);
-    });
-
-    test('after speech engine is loaded is playable', async () => {
-      assertEquals(1, speech.getCallCount('speak'));
-
-      speech.getArgs('speak')[0].onstart();
-      await microtasksFinished();
-
-      assertTrue(app.$.toolbar.isReadAloudPlayable);
-    });
   });
 });

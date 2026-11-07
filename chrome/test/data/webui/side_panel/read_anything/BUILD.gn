@@ -62,7 +62,6 @@ build_webui_tests("build") {
     "speech_model_test.ts",
     "speech_presentation_rules_test.ts",
     "speech_test.ts",
-    "speech_uses_max_text_length_test.ts",
     "test_color_updater_browser_proxy.ts",
     "test_metrics_browser_proxy.ts",
     "test_read_aloud_browser_proxy.ts",
