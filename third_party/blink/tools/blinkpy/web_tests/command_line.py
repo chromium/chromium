@@ -156,6 +156,14 @@ def add_configuration_options_group(
         dest='use_xvfb',
         help='Do not run tests with Xvfb',
     )
+    group.add_argument(
+        '--namespace',
+        action='store_true',
+        help=(
+            'Run tests in an isolated network and /tmp/WebKit mount namespace '
+            'so separate checkouts can run tests simultaneously (Linux only).'
+        ),
+    )
     add_common_wpt_options(group)
     if not rwt:
         group.add_argument(

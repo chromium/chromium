@@ -28,6 +28,7 @@
 
 import io
 
+from blinkpy.common.system import namespace
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.common.system.platform_info_mock import MockPlatformInfo
@@ -61,12 +62,23 @@ class MockSystemHost(object):
         self.stderr = io.StringIO()
         self.environ = {'MOCK_ENVIRON_COPY': '1', 'PATH': '/bin:/mock/bin'}
         self.time_return_val = time_return_val
+        self.in_namespace = False
+        self.namespace_runtime_dir = None
 
     def time(self):
         return self.time_return_val
 
     def sleep(self, seconds):
         self.time_return_val += seconds
+
+    def enter_namespace(self, runtime_dir='/tmp/WebKit'):
+        if not namespace.is_supported(self.platform, self.filesystem):
+            raise namespace.NamespaceError(
+                '--namespace is only supported on Linux with unprivileged '
+                'user namespaces enabled.'
+            )
+        self.in_namespace = True
+        self.namespace_runtime_dir = runtime_dir
 
     def print_(self, *args, **kwargs):
         sep = kwargs.get('sep', ' ')

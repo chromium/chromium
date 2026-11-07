@@ -19,7 +19,6 @@ from typing import List, Optional
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
-from blinkpy.common.system.filesystem import FileLockError
 from blinkpy.tool.blink_tool import BlinkTool
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.web_tests import command_line
@@ -549,12 +548,21 @@ class WPTAdapter:
             yield runner_options
 
     def run_tests(self) -> int:
-        lock_file = server_base.lock_path(self.fs, self.host.platform)
+        if self.options.namespace and (
+            self.options.use_upstream_wpt or self.options.stable
+        ):
+            logger.error(
+                '--namespace cannot be used with --use-upstream-wpt or '
+                '--stable because they require external network access.'
+            )
+            return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
         try:
-            with self.fs.lock_file(lock_file):
+            with server_base.acquire_run_lock(
+                self.port, use_namespace=self.options.namespace
+            ):
                 return self._run_tests()
-        except FileLockError:
-            logger.error(server_base.LOCK_HELD_ERROR_MESSAGE, lock_file)
+        except server_base.RunLockError as error:
+            logger.error('%s', error)
             return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
 
     def _run_tests(self) -> int:

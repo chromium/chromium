@@ -245,6 +245,49 @@ class WPTAdapterTest(unittest.TestCase):
         calls.load_runner.assert_called_once()
         calls.run.assert_called_once()
 
+    def test_simultaneous_run_on_linux_suggests_and_supports_namespace(self):
+        self.host.platform.os_name = 'linux'
+        self.host.platform.os_version = 'linux'
+        adapter, calls = self._make_port_test_adapter()
+
+        with self.fs.lock_file('/tmp/WebKit/web_tests.lock'):
+            with self.assertLogs('run_wpt_tests', level='ERROR') as log_ctx:
+                exit_code = adapter.run_tests()
+
+            self.assertEqual(exit_code, exit_codes.UNEXPECTED_ERROR_EXIT_STATUS)
+            self.assertIn(
+                'ERROR:run_wpt_tests:'
+                'Another instance of run_web_tests.py or run_wpt_tests.py is '
+                'holding the OS lock (/tmp/WebKit/web_tests.lock). Pass '
+                '--namespace to run tests from separate checkouts '
+                'simultaneously, or wait for the other run to finish and try '
+                'again.',
+                log_ctx.output,
+            )
+            calls.setup.assert_not_called()
+
+            # With --namespace, a separate checkout runs even while the shared
+            # /tmp/WebKit lock is held.
+            adapter.options.namespace = True
+            self.assertEqual(adapter.run_tests(), exit_codes.OK_EXIT_STATUS)
+            self.assertTrue(self.host.in_namespace)
+            calls.setup.assert_called_once_with()
+
+    def test_namespace_rejected_on_unsupported_platform(self):
+        # Default MockHost uses os_name='mac'.
+        adapter, calls = self._make_port_test_adapter()
+        adapter.options.namespace = True
+        with self.assertLogs('run_wpt_tests', level='ERROR') as log_ctx:
+            exit_code = adapter.run_tests()
+        self.assertEqual(exit_code, exit_codes.UNEXPECTED_ERROR_EXIT_STATUS)
+        self.assertIn(
+            'ERROR:run_wpt_tests:'
+            '--namespace is only supported on Linux with unprivileged user '
+            'namespaces enabled.',
+            log_ctx.output,
+        )
+        calls.setup.assert_not_called()
+
     def test_basic_passthrough(self):
         mock_datetime = self._mocks.enter_context(
             mock.patch('blinkpy.wpt_tests.logging.datetime')

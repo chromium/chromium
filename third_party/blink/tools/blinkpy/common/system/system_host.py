@@ -31,6 +31,7 @@ import platform
 import sys
 import time
 
+from blinkpy.common.system import namespace
 from blinkpy.common.system.executive import Executive
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.platform_info import PlatformInfo
@@ -65,3 +66,11 @@ class SystemHost(object):
 
     def sleep(self, secs):
         time.sleep(secs)
+
+    def enter_namespace(self, runtime_dir='/tmp/WebKit'):
+        if not namespace.is_supported(self.platform, self.filesystem):
+            raise namespace.NamespaceError(
+                '--namespace is only supported on Linux with unprivileged '
+                'user namespaces enabled.'
+            )
+        namespace.enter_namespace(runtime_dir)

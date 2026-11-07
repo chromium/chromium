@@ -27,11 +27,15 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Base class used to start servers used by the web tests."""
 
+import contextlib
 import errno
 import logging
 import socket
 import sys
 import tempfile
+
+from blinkpy.common.system import namespace
+from blinkpy.common.system.filesystem import FileLockError
 
 
 _log = logging.getLogger(__name__)
@@ -66,11 +70,27 @@ class ServerError(Exception):
     pass
 
 
+class RunLockError(Exception):
+    """Raised when a test run lock or namespace cannot be acquired."""
+
+
 LOCK_HELD_ERROR_MESSAGE = (
     'Another instance of run_web_tests.py or run_wpt_tests.py is holding the '
     'OS lock (%s). Simultaneous runs are not supported due to shared server '
     'ports; wait for the other run to finish and try again.'
 )
+
+LOCK_HELD_NAMESPACE_ERROR_MESSAGE = (
+    'Another instance of run_web_tests.py or run_wpt_tests.py is holding the '
+    'OS lock (%s). Pass --namespace to run tests from separate checkouts '
+    'simultaneously, or wait for the other run to finish and try again.'
+)
+
+
+def lock_held_error_message(platform, filesystem=None):
+    if namespace.is_supported(platform, filesystem):
+        return LOCK_HELD_NAMESPACE_ERROR_MESSAGE
+    return LOCK_HELD_ERROR_MESSAGE
 
 
 def runtime_path(filesystem, platform):
@@ -90,6 +110,50 @@ def runtime_path(filesystem, platform):
 
 def lock_path(filesystem, platform):
     return filesystem.join(runtime_path(filesystem, platform), 'web_tests.lock')
+
+
+@contextlib.contextmanager
+def acquire_run_lock(port, use_namespace=False):
+    """Acquires the shared runtime lock or enters an isolated Linux namespace.
+
+    `--namespace` isolates machine-global loopback ports and `/tmp/WebKit` from
+    other checkouts on the same machine; it does not isolate checkout or build
+    files for simultaneous runs within one checkout.
+    """
+    host = port.host
+    fs = host.filesystem
+    platform = host.platform
+
+    if use_namespace:
+        if platform.is_linux():
+            if (
+                port.port_name in ('android', 'webview')
+                or port.operating_system() == 'android'
+            ):
+                raise RunLockError(
+                    '--namespace is not supported for Android targets because '
+                    'adb requires the host network namespace.'
+                )
+            if port.port_name != 'linux':
+                raise RunLockError(
+                    '--namespace is only supported for Linux desktop targets '
+                    f'(got {port.name()}).'
+                )
+        try:
+            host.enter_namespace(runtime_path(fs, platform))
+        except OSError as error:
+            raise RunLockError(str(error)) from error
+        yield
+        return
+
+    shared_lock = lock_path(fs, platform)
+    try:
+        with fs.lock_file(shared_lock):
+            yield
+    except FileLockError as error:
+        raise RunLockError(
+            lock_held_error_message(platform, fs) % shared_lock
+        ) from error
 
 
 class ServerBase(object):

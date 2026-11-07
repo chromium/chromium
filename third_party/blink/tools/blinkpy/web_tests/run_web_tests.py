@@ -35,7 +35,6 @@ import traceback
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
-from blinkpy.common.system.filesystem import FileLockError
 from blinkpy.web_tests import command_line
 from blinkpy.web_tests.controllers.manager import Manager
 from blinkpy.web_tests.models import test_run_results
@@ -237,10 +236,10 @@ def _set_up_derived_options(port, options, args):
 
 def run(port, options, args, printer):
     _set_up_derived_options(port, options, args)
-    fs = port.host.filesystem
-    lock_file = server_base.lock_path(fs, port.host.platform)
     try:
-        with fs.lock_file(lock_file):
+        with server_base.acquire_run_lock(
+            port, use_namespace=options.namespace
+        ):
             manager = Manager(port, options, printer)
             printer.print_config(port)
             run_details = manager.run(args)
@@ -250,8 +249,8 @@ def run(port, options, args, printer):
             )
             printer.flush()
             return run_details
-    except FileLockError:
-        _log.error(server_base.LOCK_HELD_ERROR_MESSAGE, lock_file)
+    except server_base.RunLockError as error:
+        _log.error('%s', error)
         printer.flush()
         return test_run_results.RunDetails(
             exit_code=exit_codes.UNEXPECTED_ERROR_EXIT_STATUS

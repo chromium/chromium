@@ -40,6 +40,7 @@
 ../common/system/executive.py
 ../common/system/filesystem.py
 ../common/system/log_utils.py
+../common/system/namespace.py
 ../common/system/path.py
 ../common/system/platform_info.py
 ../common/system/profiler.py
