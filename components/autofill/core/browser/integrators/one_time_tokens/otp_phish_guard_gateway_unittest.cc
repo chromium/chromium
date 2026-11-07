@@ -332,5 +332,46 @@ TEST_F(OtpPhishGuardGatewayTest,
   histogram_tester.ExpectTotalCount(OtpPhishGuardGateway::kVerdictHistogram, 0);
 }
 
+// Verifies that if `OtpPhishGuardDelegate` drops its callback (e.g. network
+// failure or timeout inside `PasswordProtectionService`),
+// `OtpPhishGuardGateway` times out after `kCheckTimeout`, completes the check,
+// and drains subsequent queued checks instead of stalling the tab queue.
+TEST_F(OtpPhishGuardGatewayTest,
+       Check_DroppedCallbackTimesOutAndDrainsNextCheck) {
+  base::HistogramTester histogram_tester;
+  OtpPhishGuardGateway gateway(client_);
+  const LocalFrameToken frame_1 = test::MakeLocalFrameToken();
+  const LocalFrameToken frame_2 = test::MakeLocalFrameToken();
+
+  base::OnceCallback<void(bool)> late_first_cb;
+  EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_1, _))
+      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
+        late_first_cb = std::move(cb);
+      });
+  EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_2, _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> first_future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> second_future;
+  gateway.Check(frame_1, first_future.GetCallback());
+  gateway.Check(frame_2, second_future.GetCallback());
+  EXPECT_FALSE(first_future.IsReady());
+  EXPECT_FALSE(second_future.IsReady());
+
+  task_environment_.FastForwardBy(OtpPhishGuardGateway::kCheckTimeout);
+  EXPECT_EQ(first_future.Get(), OneTimeTokensPhishGuardVerdict::kUnknown);
+  EXPECT_EQ(second_future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
+  histogram_tester.ExpectBucketCount(OtpPhishGuardGateway::kVerdictHistogram,
+                                     OneTimeTokensPhishGuardVerdict::kUnknown,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      OtpPhishGuardGateway::kVerdictHistogram,
+      OneTimeTokensPhishGuardVerdict::kNotPhishing, 1);
+
+  // If the first check's callback is invoked after timing out, it is ignored.
+  ASSERT_TRUE(late_first_cb);
+  std::move(late_first_cb).Run(/*is_phishing=*/true);
+}
+
 }  // namespace
 }  // namespace autofill

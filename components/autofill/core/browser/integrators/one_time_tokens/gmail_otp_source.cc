@@ -278,7 +278,8 @@ bool GmailOtpSource::ProcessMatchedToken(
     const url::Origin& origin,
     const one_time_tokens::OneTimeToken& token) {
   CHECK_EQ(token.type(), one_time_tokens::OneTimeTokenType::kGmail);
-  if (origin.opaque() || token.value().empty()) {
+  if (origin.opaque() || token.value().empty() ||
+      IsTokenExpired(token, base::TimeTicks::Now())) {
     return false;
   }
 

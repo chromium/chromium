@@ -7,11 +7,13 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -24,6 +26,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/form_cache_query_util.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -34,6 +37,8 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
+#include "components/one_time_tokens/core/common/one_time_token_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -63,9 +68,68 @@ using ::autofill::test::GetServerTypes;
 using ::one_time_tokens::OneTimeToken;
 using ::one_time_tokens::OneTimeTokenRetrievalError;
 using ::one_time_tokens::OneTimeTokenType;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Property;
 using ::testing::Test;
 
 constexpr char kTestUrl[] = "https://example.test";
+
+auto HasValue(std::string_view code) {
+  return ElementsAre(Property(&OneTimeToken::value, code));
+}
+
+class FakeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
+ public:
+  void StartOtpPhishGuardCheck(
+      LocalFrameToken,
+      base::OnceCallback<void(bool is_phishing)> callback) override {
+    if (hold_callbacks_) {
+      held_callbacks_.push_back(std::move(callback));
+      if (on_check_) {
+        std::move(on_check_).Run();
+      }
+      return;
+    }
+    std::move(callback).Run(/*is_phishing=*/false);
+    ++completed_checks_;
+    if (on_check_) {
+      std::move(on_check_).Run();
+    }
+  }
+
+  void HoldCallbacks() { hold_callbacks_ = true; }
+
+  void WaitForChecks(size_t expected_additional = 1) {
+    const size_t target = last_observed_checks_ + expected_additional;
+    while (completed_checks_ < target) {
+      base::test::TestFuture<void> future;
+      on_check_ = future.GetCallback();
+      ASSERT_TRUE(future.Wait());
+    }
+    last_observed_checks_ = completed_checks_;
+  }
+
+  void WaitForHeldCallbacks(size_t expected_count) {
+    while (held_callbacks_.size() < expected_count) {
+      base::test::TestFuture<void> future;
+      on_check_ = future.GetCallback();
+      ASSERT_TRUE(future.Wait());
+    }
+    ASSERT_EQ(held_callbacks_.size(), expected_count);
+  }
+
+  std::vector<base::OnceCallback<void(bool)>>& held_callbacks() {
+    return held_callbacks_;
+  }
+
+ private:
+  bool hold_callbacks_ = false;
+  size_t completed_checks_ = 0;
+  size_t last_observed_checks_ = 0;
+  std::vector<base::OnceCallback<void(bool)>> held_callbacks_;
+  base::OnceClosure on_check_;
+};
 
 class TestFrameObserver : public OtpCoordinator::Observer {
  public:
@@ -128,6 +192,10 @@ class OtpCoordinatorTest
     sms_otp_service_ = sms_service.get();
     autofill_client().set_sms_otp_service(std::move(sms_service));
 
+    auto phish_guard = std::make_unique<FakeOtpPhishGuardDelegate>();
+    phish_guard_delegate_ = phish_guard.get();
+    autofill_client().set_otp_phish_guard_delegate(std::move(phish_guard));
+
     auto gmail_service =
         std::make_unique<one_time_tokens::FakeGmailOtpService>();
     gmail_service_ = gmail_service.get();
@@ -143,6 +211,7 @@ class OtpCoordinatorTest
     frame_observer_.reset();
     coordinator_.reset();
     sms_otp_service_ = nullptr;
+    phish_guard_delegate_ = nullptr;
     gmail_service_ = nullptr;
     DestroyAutofillClient();
   }
@@ -188,19 +257,14 @@ class OtpCoordinatorTest
 
   void SendGmailOtp(const std::string& code,
                     base::Time email_time,
+                    std::optional<base::TimeTicks> arrival = std::nullopt,
                     const std::string& sender = "noreply@example.test") {
-    task_environment_.AdvanceClock(base::Milliseconds(1));
+    if (!arrival.has_value()) {
+      task_environment_.AdvanceClock(base::Milliseconds(1));
+      arrival = base::TimeTicks::Now();
+    }
     gmail_service_->ProcessCallbacks(OneTimeToken(
-        OneTimeTokenType::kGmail, code, base::TimeTicks::Now(), sender,
-        email_time));
-  }
-
-  std::string DeliveredTokenValue(const OtpTarget& target) const {
-    return test_api_coordinator()
-        .deliveries()
-        .at(target.field)
-        .GetAvailableCandidate()
-        ->token.value();
+        OneTimeTokenType::kGmail, code, *arrival, sender, email_time));
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -208,6 +272,7 @@ class OtpCoordinatorTest
   base::test::ScopedFeatureList feature_list_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   raw_ptr<one_time_tokens::FakeSmsOtpService> sms_otp_service_ = nullptr;
+  raw_ptr<FakeOtpPhishGuardDelegate> phish_guard_delegate_ = nullptr;
   raw_ptr<one_time_tokens::FakeGmailOtpService> gmail_service_ = nullptr;
   std::unique_ptr<OtpCoordinator> coordinator_;
   std::unique_ptr<TestFrameObserver> frame_observer_;
@@ -218,7 +283,7 @@ TEST_F(OtpCoordinatorTest, IgnoresIneligibleTargets) {
       url::Origin::Create(GURL(kTestUrl)), autofill_driver().GetFrameToken(),
       FormGlobalId(), FieldGlobalId(), autofill_driver().GetFrameToken());
   coordinator_->StartListeningForOtp(ineligible_target);
-  EXPECT_TRUE(test_api_coordinator().deliveries().empty());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(ineligible_target), IsEmpty());
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
 }
 
@@ -234,9 +299,8 @@ TEST_F(OtpCoordinatorTest, UnregisteringOneObserverKeepsSharedManagerEligible) {
 
 TEST_F(OtpCoordinatorTest,
        RenewsSmsSubscriptionAfterErrorAndPreservesTypingState) {
-  const OtpTarget target = AddOtpForm()[0];
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
-
   test_api_coordinator().target_field_identifier().OnTextFieldValueChanged();
   EXPECT_TRUE(test_api_coordinator()
                   .target_field_identifier()
@@ -246,36 +310,160 @@ TEST_F(OtpCoordinatorTest,
       base::unexpected(OneTimeTokenRetrievalError::kSmsOtpBackendTimeout));
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
 
-  coordinator_->StartListeningForOtp(target);
+  coordinator_->StartListeningForOtp(targets[0]);
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
   EXPECT_TRUE(test_api_coordinator()
                   .target_field_identifier()
                   .TypedInAnyFieldAfterOtpDetection());
 }
 
-TEST_F(OtpCoordinatorTest, ResolvesCandidatesAcrossSmsAndGmailOrigins) {
+TEST_F(OtpCoordinatorTest,
+       ReactiveDeliveryExpirationAndPrefGatingAcrossSmsAndGmailOrigins) {
   const OtpTarget target = AddOtpForm()[0];
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
 
   sms_otp_service_->SimulateOtpArrived(OneTimeToken(
       OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 1u);
-  EXPECT_EQ(DeliveredTokenValue(target), "111111");
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("111111"));
+
+  const OtpTarget same_site_second_target = AddOtpForm()[0];
+  EXPECT_EQ(frame_observer_->otp_available_notifications(), 2u);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(same_site_second_target),
+              HasValue("111111"));
 
   const OtpTarget other_origin_target =
       AddOtpForm(1, GURL("https://other.test"))[0];
-  EXPECT_EQ(DeliveredTokenValue(other_origin_target), "111111");
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_EQ(frame_observer_->otp_available_notifications(), 3u);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target),
+              HasValue("111111"));
 
   const base::Time t0 = base::Time::Now();
+  // An already-expired Gmail candidate (> 1 minute old) is ignored before
+  // PhishGuard validation.
+  SendGmailOtp("999000", t0 + base::Seconds(10),
+               base::TimeTicks::Now() - base::Minutes(2));
   SendGmailOtp("222222", t0 + base::Seconds(20));
-  frame_observer_->WaitForNotifications(3u);
-  EXPECT_EQ(DeliveredTokenValue(target), "222222");
-  EXPECT_EQ(DeliveredTokenValue(other_origin_target), "111111");
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_EQ(frame_observer_->otp_available_notifications(), 4u);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target),
+              HasValue("111111"));
+
+  // Reactive serving re-evaluates live policy (e.g. Gmail OTP pref).
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
 
   SendGmailOtp("000000", t0 + base::Seconds(5));
-  SendGmailOtp("333333", t0 + base::Seconds(25), "noreply@other.test");
-  frame_observer_->WaitForNotifications(4u);
-  EXPECT_EQ(DeliveredTokenValue(target), "222222");
-  EXPECT_EQ(DeliveredTokenValue(other_origin_target), "333333");
+  SendGmailOtp("333333", t0 + base::Seconds(25), std::nullopt,
+               "noreply@other.test");
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_EQ(frame_observer_->otp_available_notifications(), 5u);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target),
+              HasValue("333333"));
+
+  // After 61 seconds, the 1-minute Gmail TTL expires (and a newly added field
+  // on `other.test` does not inherit the expired Gmail candidate "333333"),
+  // while the 3-minute SMS token ("111111") remains valid.
+  const OtpTarget third_origin_target =
+      AddOtpForm(1, GURL("https://third.test"))[0];
+  phish_guard_delegate_->WaitForChecks();
+  task_environment_.AdvanceClock(base::Seconds(61));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target), IsEmpty());
+  const OtpTarget late_other_origin_target =
+      AddOtpForm(1, GURL("https://other.test"))[0];
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(late_other_origin_target),
+              HasValue("111111"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(third_origin_target),
+              HasValue("111111"));
+}
+
+TEST_F(OtpCoordinatorTest,
+       DeduplicatesInFlightPhishGuardAndValidatesStrictlyNewerCandidate) {
+  phish_guard_delegate_->HoldCallbacks();
+
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
+
+  const base::Time t0 = base::Time::Now();
+  const base::TimeTicks t1_arrival = base::TimeTicks::Now();
+  SendGmailOtp("111111", t0 + base::Seconds(10), t1_arrival);
+  phish_guard_delegate_->WaitForHeldCallbacks(1u);
+
+  // Re-registering or receiving a duplicate/older candidate while PhishGuard is
+  // in flight does not queue redundant checks, while a strictly newer candidate
+  // queues a follow-up check.
+  SendGmailOtp("111111", t0 + base::Seconds(10), t1_arrival);
+  coordinator_->StartListeningForOtp(targets[0]);
+  EXPECT_EQ(phish_guard_delegate_->held_callbacks().size(), 1u);
+
+  SendGmailOtp("222222", t0 + base::Seconds(20));
+  std::move(phish_guard_delegate_->held_callbacks()[0])
+      .Run(/*is_phishing=*/false);
+  frame_observer_->WaitForNotifications(1u);
+  phish_guard_delegate_->WaitForHeldCallbacks(2u);
+
+  std::move(phish_guard_delegate_->held_callbacks()[1])
+      .Run(/*is_phishing=*/false);
+  EXPECT_EQ(frame_observer_->otp_available_notifications(), 2u);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), HasValue("222222"));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[1]), HasValue("222222"));
+
+  frame_observer_.reset();
+  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), IsEmpty());
+}
+
+TEST_F(OtpCoordinatorTest, PhishingVerdictBlocksSiteFrameAndClearsOriginCache) {
+  phish_guard_delegate_->HoldCallbacks();
+
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
+
+  const base::Time t0 = base::Time::Now();
+  SendGmailOtp("333333", t0 + base::Seconds(30));
+  phish_guard_delegate_->WaitForHeldCallbacks(1u);
+  std::move(phish_guard_delegate_->held_callbacks()[0])
+      .Run(/*is_phishing=*/true);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), IsEmpty());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[1]), IsEmpty());
+
+  // After a phishing verdict, subsequent candidates and newly added fields on
+  // the same `(origin, frame)` remain blocked and the origin cache is cleared,
+  // while other sites continue to validate and deliver candidates.
+  const OtpTarget post_phishing_target = AddOtpForm(1)[0];
+  SendGmailOtp("444444", t0 + base::Seconds(40));
+  EXPECT_EQ(phish_guard_delegate_->held_callbacks().size(), 1u);
+  const OtpTarget other_site_target =
+      AddOtpForm(1, GURL("https://sub.example.test"))[0];
+  phish_guard_delegate_->WaitForHeldCallbacks(2u);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), IsEmpty());
+  EXPECT_THAT(coordinator_->GetAvailableTokens(post_phishing_target),
+              IsEmpty());
+  std::move(phish_guard_delegate_->held_callbacks()[1])
+      .Run(/*is_phishing=*/false);
+  EXPECT_THAT(coordinator_->GetAvailableTokens(other_site_target),
+              HasValue("444444"));
+}
+
+TEST_F(OtpCoordinatorTest, ServesCommandLineMockOtpWithoutStartingSources) {
+  const OtpTarget target =
+      AddOtpForm(/*fields=*/1, GURL(kTestUrl), /*listen=*/false)[0];
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      one_time_tokens::switches::kMockOtpValue, "999999");
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("999999"));
+
+  OtpCoordinator mock_coordinator(&autofill_client());
+  TestFrameObserver mock_observer(&autofill_manager(), &mock_coordinator);
+  mock_coordinator.StartListeningForOtp(target);
+  EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
+  EXPECT_THAT(mock_coordinator.GetAvailableTokens(target), HasValue("999999"));
 }
 
 }  // namespace

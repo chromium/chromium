@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_PHISH_GUARD_GATEWAY_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_PHISH_GUARD_GATEWAY_H_
 
+#include <optional>
+
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -28,6 +31,7 @@ class OtpPhishGuardGateway {
       "Autofill.OneTimeTokens.PhishGuard.Latency";
   static constexpr char kVerdictHistogram[] =
       "Autofill.OneTimeTokens.PhishGuard.Verdict";
+  static constexpr base::TimeDelta kCheckTimeout = base::Seconds(10);
 
   using VerdictCallback =
       base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)>;
@@ -66,14 +70,16 @@ class OtpPhishGuardGateway {
   };
 
   void DrainPendingChecks();
-  void OnPhishGuardCheckCompleted(base::TimeTicks start_time,
-                                  VerdictCallback callback,
-                                  bool is_phishing_site);
+  void OnPhishGuardCheckCompleted(std::optional<bool> is_phishing_site);
 
   const raw_ref<AutofillClient> client_;
   DispatchState dispatch_state_ = DispatchState::kIdle;
   base::queue<PendingCheck> pending_checks_;
+  base::TimeTicks in_flight_start_time_;
+  VerdictCallback in_flight_callback_;
+  base::OneShotTimer in_flight_timeout_timer_;
 
+  base::WeakPtrFactory<OtpPhishGuardGateway> in_flight_weak_ptr_factory_{this};
   base::WeakPtrFactory<OtpPhishGuardGateway> weak_ptr_factory_{this};
 };
 

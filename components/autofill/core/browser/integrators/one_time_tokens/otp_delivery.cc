@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
 #include "components/one_time_tokens/core/browser/sms_otp_service.h"
@@ -17,8 +18,11 @@ namespace {
 
 bool IsExpired(const OtpCandidate& candidate) {
   const base::TimeTicks arrival = candidate.token.on_device_arrival_time();
-  return arrival.is_null() || base::TimeTicks::Now() - arrival >
-                                  one_time_tokens::kCacheDurationForOldTokens;
+  const base::TimeDelta lifetime =
+      candidate.token.type() == one_time_tokens::OneTimeTokenType::kGmail
+          ? one_time_tokens::kGmailTokenCacheDuration
+          : one_time_tokens::kCacheDurationForOldTokens;
+  return arrival.is_null() || base::TimeTicks::Now() - arrival > lifetime;
 }
 
 }  // namespace
