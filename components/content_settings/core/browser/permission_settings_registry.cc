@@ -105,7 +105,7 @@ const PermissionSettingsInfo* PermissionSettingsRegistry::Register(
   base::Value default_value = delegate->ToValue(initial_default_value);
   const WebsiteSettingsInfo* website_settings_info =
       website_settings_registry_->Register(
-          type, name, std::move(default_value), sync_status,
+          type, std::string(name), std::move(default_value), sync_status,
           WebsiteSettingsInfo::NOT_LOSSY, scoping_type, platforms,
           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
 
