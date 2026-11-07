@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -714,9 +715,12 @@ const TabDragHandler& DraggedTabsContainer::GetDragHandler() const {
 
 tabs::VerticalTabStripCollapseState
 DraggedTabsContainer::GetTabStripCollapseState() const {
-  const auto* controller =
-      collection_node_ ? collection_node_->GetController() : nullptr;
-  if (!controller) {
+  if (!collection_node_) {
+    return tabs::VerticalTabStripCollapseState::kExpanded;
+  }
+  CHECK_EQ(collection_node_->orientation(), TabStripOrientation::kVertical);
+  const auto* controller = collection_node_->GetController();
+  if (!controller || !controller->GetStateController()) {
     return tabs::VerticalTabStripCollapseState::kExpanded;
   }
   return controller->GetStateController()->GetCollapseState();
