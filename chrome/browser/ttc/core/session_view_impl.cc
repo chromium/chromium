@@ -5,34 +5,15 @@
 #include "chrome/browser/ttc/core/session_view_impl.h"
 
 #include <memory>
+#include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "chrome/browser/ttc/core/overlay_controller.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
-#include "chrome/browser/ttc/core/voice_plate_controller.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
-#include "chrome/browser/ui/views/voice/waveform_mode.h"
 
 namespace ttc {
-
-using voice::WaveformMode;
-
-namespace {
-
-WaveformMode ToWaveformMode(UiState state) {
-  switch (state) {
-    case UiState::kInitializing:
-      return WaveformMode::kProcessing;
-    case UiState::kLive:
-      return WaveformMode::kLive;
-  }
-
-  NOTREACHED();
-}
-
-}  // namespace
 
 ToastId GetToastIdForError(ErrorCode error) {
   switch (error) {
@@ -59,11 +40,10 @@ ToastId GetToastIdForError(ErrorCode error) {
 }
 
 SessionViewImpl::SessionViewImpl(SessionViewDelegate& delegate)
-    : SessionView(delegate),
-      voice_plate_controller_(std::make_unique<VoicePlateController>(
-          *delegate.GetProfile(),
-          base::BindRepeating(&SessionViewImpl::OnVoicePlateCloseClicked,
-                              base::Unretained(this)))) {}
+    : SessionView(delegate) {
+  overlay_controller_ =
+      std::make_unique<OverlayController>(*delegate.GetProfile(), *this);
+}
 
 SessionViewImpl::~SessionViewImpl() = default;
 
@@ -75,19 +55,20 @@ void SessionViewImpl::OnError(ErrorCode error) {
 }
 
 void SessionViewImpl::OnUserAudioLevelUpdate(float audio_level) {
-  if (voice_plate_controller_) {
-    voice_plate_controller_->UpdateAudioLevel(audio_level);
-  }
+  audio_level_callbacks_.Notify(audio_level);
+}
+
+void SessionViewImpl::EndSessionAsync() {
+  delegate().EndSessionAsync();
+}
+
+base::CallbackListSubscription SessionViewImpl::RegisterAudioLevelCallback(
+    base::RepeatingCallback<void(float)> callback) {
+  return audio_level_callbacks_.Add(std::move(callback));
 }
 
 void SessionViewImpl::OnUiStateChanged(UiState state) {
-  if (voice_plate_controller_) {
-    voice_plate_controller_->SetMode(ToWaveformMode(state));
-  }
-}
-
-void SessionViewImpl::OnVoicePlateCloseClicked() {
-  delegate().EndSessionAsync();
+  overlay_controller_->ApplyUiState(state);
 }
 
 }  // namespace ttc

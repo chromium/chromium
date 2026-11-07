@@ -8,8 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/ttc/ttc_view_delegate.h"
 #include "chrome/browser/ui/views/voice/waveform_mode.h"
 #include "chrome/browser/ui/views/voice/waveform_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -35,12 +36,26 @@ namespace ttc {
 using voice::WaveformMode;
 using voice::WaveformView;
 
+namespace {
+
+WaveformMode ToWaveformMode(UiState state) {
+  switch (state) {
+    case UiState::kInitializing:
+      return WaveformMode::kProcessing;
+    case UiState::kLive:
+    default:
+      return WaveformMode::kLive;
+  }
+}
+
+}  // namespace
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcVoicePlate, kViewElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcVoicePlate, kWaveformElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcVoicePlate, kCloseButtonElementId);
 
 TtcVoicePlate::TtcVoicePlate(views::View* anchor_view,
-                             base::RepeatingClosure close_callback)
+                             TtcViewDelegate& delegate)
     : VoicePlate(anchor_view) {
   const ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
 
@@ -60,7 +75,8 @@ TtcVoicePlate::TtcVoicePlate(views::View* anchor_view,
 
   views::ImageButton* close_button =
       contents->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-          std::move(close_callback),
+          base::BindRepeating(&TtcViewDelegate::EndSessionAsync,
+                              base::Unretained(&delegate)),
           features::IsRoundedIconsEnabled()
               ? vector_icons::kCloseIcon
               : vector_icons::kCloseChromeRefreshOldIcon,
@@ -83,16 +99,21 @@ TtcVoicePlate::TtcVoicePlate(views::View* anchor_view,
   SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_TTC_ENTRYPOINT_LABEL));
   // The plate is recreated each time it moves to another window. An alert
   // dialog (the default for bubbles without a focused view) would re-announce
-  // it on every move; SetMode() announces when listening starts instead.
+  // it on every move; ApplyUiState() announces when listening starts instead.
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
 
   SetContentsView(std::move(contents));
   CreateWidget();
+
+  audio_level_subscription_ =
+      delegate.RegisterAudioLevelCallback(base::BindRepeating(
+          &TtcVoicePlate::UpdateAudioLevel, base::Unretained(this)));
 }
 
 TtcVoicePlate::~TtcVoicePlate() = default;
 
-void TtcVoicePlate::SetMode(WaveformMode mode) {
+void TtcVoicePlate::ApplyUiState(UiState state) {
+  const WaveformMode mode = ToWaveformMode(state);
   if (mode == waveform_view_->mode()) {
     return;
   }
@@ -121,6 +142,10 @@ void TtcVoicePlate::SetMode(WaveformMode mode) {
   if (mode == WaveformMode::kLive && GetWidget() && GetWidget()->IsVisible()) {
     waveform_accessibility.AnnouncePolitely(name);
   }
+}
+
+void TtcVoicePlate::Show() {
+  VoicePlate::Show();
 }
 
 void TtcVoicePlate::UpdateAudioLevel(float audio_level) {

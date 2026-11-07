@@ -7,19 +7,21 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/views/ttc/ttc_view_delegate.h"
 #include "components/ttc/app/public/error_codes.h"
 
 namespace ttc {
 
+class OverlayController;
 class SessionViewDelegate;
-class VoicePlateController;
 
 ToastId GetToastIdForError(ErrorCode error);
 
-class SessionViewImpl : public SessionView {
+class SessionViewImpl : public SessionView, public TtcViewDelegate {
  public:
   explicit SessionViewImpl(SessionViewDelegate& delegate);
   ~SessionViewImpl() override;
@@ -30,16 +32,20 @@ class SessionViewImpl : public SessionView {
   void OnError(ErrorCode error) override;
   void OnUserAudioLevelUpdate(float audio_level) override;
 
+  // TtcViewDelegate:
+  void EndSessionAsync() override;
+  base::CallbackListSubscription RegisterAudioLevelCallback(
+      base::RepeatingCallback<void(float)> callback) override;
+
  private:
   // SessionView:
   void OnUiStateChanged(UiState state) override;
 
-  // Invoked when the user clicks the voice plate's close button.
-  void OnVoicePlateCloseClicked();
+  // The views that show the audio level subscribe to it here.
+  base::RepeatingCallbackList<void(float)> audio_level_callbacks_;
 
-  // Owns the main UI surface for the session and keeps it in the active
-  // window.
-  std::unique_ptr<VoicePlateController> voice_plate_controller_;
+  // Owns the UI the session shows on top of the browser window.
+  std::unique_ptr<OverlayController> overlay_controller_;
 };
 
 }  // namespace ttc

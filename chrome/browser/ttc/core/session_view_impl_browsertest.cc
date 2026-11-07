@@ -216,6 +216,54 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, DetachedTabMovesUI) {
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ClosingWindowKeepsUIState) {
+#if BUILDFLAG(IS_LINUX)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP()
+        << "Programmatic window activation is not supported in the Weston "
+           "reference implementation of Wayland used by test bots.";
+  }
+#endif
+
+  BrowserWindowInterface* const second_browser = CreateBrowser(profile());
+
+  // clang-format off
+  RunTestSequence(
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              ActivateSurface(kBrowserViewElementId)),
+
+    StartSession(),
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              WaitForShow(TtcVoicePlate::kViewElementId)),
+
+    Do([this]() {
+      session_controller().SetSessionLifecycle(SessionLifecycle::kLive);
+    }),
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                                &voice::WaveformView::mode,
+                                voice::WaveformMode::kLive))
+  );
+  // clang-format on
+
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      second_browser);
+  second_browser->GetTabStripModel()->CloseAllTabs();
+  browser_destroyed_observer.Wait();
+
+  // clang-format off
+  RunTestSequence(
+    InContext(BrowserElements::From(browser())->GetContext(),
+              ActivateSurface(kBrowserViewElementId),
+              WaitForShow(TtcVoicePlate::kViewElementId),
+              CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                                &voice::WaveformView::mode,
+                                voice::WaveformMode::kLive)),
+    CheckHasSession(true)
+  );
+  // clang-format on
+}
+
 IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ToastShowsOnError) {
   // clang-format off
   RunTestSequence(
