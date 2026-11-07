@@ -8,9 +8,7 @@
 
 #import <optional>
 
-#import "ios/chrome/app/startup/remote_actor_startup_test_util.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
-#import "ios/chrome/browser/passwords/model/remote_actor/test/scoped_keychain_access_group_override.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -18,63 +16,54 @@
 
 namespace {
 
-class RemoteActorURLParserTest : public PlatformTest {
- protected:
-  ~RemoteActorURLParserTest() override { CleanupRemoteActorTestData(); }
+using RemoteActorURLParserTest = PlatformTest;
 
-  ScopedRemoteActorKeychainAccessGroupOverrideForTesting keychain_override_{
-      nil};
-};
+// Tests that `ExtractRemoteActorRequestFromURL()` extracts and unescapes the
+// `payload` and `nonce` query parameters without populating `request`.
+TEST_F(RemoteActorURLParserTest, ExtractRemoteActorRequestFromURL_Valid) {
+  NSString* url_string = [NSString
+      stringWithFormat:@"chromium://%@?%@=a%%2Bb%%3D&%@=c%%2Fd%%3D",
+                       kRemoteActorURLHost, kRemoteActorPayloadQueryParam,
+                       kRemoteActorNonceQueryParam];
 
-// Tests that `ParseRemoteActorRequestFromURL()` successfully parses and
-// decrypts a valid Remote Actor URL.
-TEST_F(RemoteActorURLParserTest, ParseRemoteActorRequestFromURL_Valid) {
-  RemoteActorTestData test_data = CreateRemoteActorTestData(@"chromium");
-
-  std::optional<RemoteActorRequest> parsed =
-      ParseRemoteActorRequestFromURL(net::GURLWithNSURL(test_data.url));
-  ASSERT_TRUE(parsed.has_value());
-  EXPECT_EQ(test_data.expectation.payload, parsed->payload);
-  EXPECT_EQ(test_data.expectation.nonce, parsed->nonce);
-  EXPECT_EQ(test_data.expectation.request.gaia_id(), parsed->request.gaia_id());
-  EXPECT_EQ(test_data.expectation.request.domain(), parsed->request.domain());
-  EXPECT_EQ(test_data.expectation.request.task_id(), parsed->request.task_id());
+  std::optional<RemoteActorRequest> extracted =
+      ExtractRemoteActorRequestFromURL(
+          net::GURLWithNSURL([NSURL URLWithString:url_string]));
+  ASSERT_TRUE(extracted.has_value());
+  EXPECT_EQ("a+b=", extracted->payload);
+  EXPECT_EQ("c/d=", extracted->nonce);
+  EXPECT_FALSE(extracted->request.has_value());
 }
 
-// Tests that `ParseRemoteActorRequestFromURL()` returns `std::nullopt` when
+// Tests that `ExtractRemoteActorRequestFromURL()` returns `std::nullopt` when
 // payload or nonce query parameters are missing or empty.
 TEST_F(RemoteActorURLParserTest,
-       ParseRemoteActorRequestFromURL_MissingPayloadOrNonce) {
+       ExtractRemoteActorRequestFromURL_MissingPayloadOrNonce) {
   NSString* missing_nonce_string = [NSString
       stringWithFormat:@"chromium://%@?%@=some_payload", kRemoteActorURLHost,
                        kRemoteActorPayloadQueryParam];
-  EXPECT_FALSE(ParseRemoteActorRequestFromURL(
+  EXPECT_FALSE(ExtractRemoteActorRequestFromURL(
       net::GURLWithNSURL([NSURL URLWithString:missing_nonce_string])));
 
   NSString* missing_payload_string = [NSString
       stringWithFormat:@"chromium://%@?%@=some_nonce", kRemoteActorURLHost,
                        kRemoteActorNonceQueryParam];
-  EXPECT_FALSE(ParseRemoteActorRequestFromURL(
+  EXPECT_FALSE(ExtractRemoteActorRequestFromURL(
       net::GURLWithNSURL([NSURL URLWithString:missing_payload_string])));
 
   NSString* empty_payload_string = [NSString
       stringWithFormat:@"chromium://%@?%@=&%@=some_nonce", kRemoteActorURLHost,
                        kRemoteActorPayloadQueryParam,
                        kRemoteActorNonceQueryParam];
-  EXPECT_FALSE(ParseRemoteActorRequestFromURL(
+  EXPECT_FALSE(ExtractRemoteActorRequestFromURL(
       net::GURLWithNSURL([NSURL URLWithString:empty_payload_string])));
-}
 
-// Tests that `ParseRemoteActorRequestFromURL()` returns `std::nullopt` when
-// the payload cannot be decrypted.
-TEST_F(RemoteActorURLParserTest,
-       ParseRemoteActorRequestFromURL_InvalidPayload) {
-  NSString* url_string = [NSString
-      stringWithFormat:@"chromium://%@?%@=invalid_payload&%@=invalid_nonce",
+  NSString* empty_nonce_string = [NSString
+      stringWithFormat:@"chromium://%@?%@=some_payload&%@=",
                        kRemoteActorURLHost, kRemoteActorPayloadQueryParam,
                        kRemoteActorNonceQueryParam];
-  EXPECT_FALSE(ParseRemoteActorRequestFromURL(
-      net::GURLWithNSURL([NSURL URLWithString:url_string])));
+  EXPECT_FALSE(ExtractRemoteActorRequestFromURL(
+      net::GURLWithNSURL([NSURL URLWithString:empty_nonce_string])));
 }
 
 }  // namespace

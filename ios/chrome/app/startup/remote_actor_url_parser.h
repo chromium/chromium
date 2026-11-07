@@ -11,10 +11,10 @@
 
 class GURL;
 
-// Parses and decrypts a Remote Actor credential sharing request from `url`.
-// Returns `std::nullopt` if the required query parameters are missing or if
-// decryption/parsing fails.
-std::optional<RemoteActorRequest> ParseRemoteActorRequestFromURL(
+// Extracts the encrypted `payload` and `nonce` query parameters from `url`
+// without accessing the Keychain. Returns `std::nullopt` if either query
+// parameter is missing or empty.
+std::optional<RemoteActorRequest> ExtractRemoteActorRequestFromURL(
     const GURL& url);
 
 #endif  // IOS_CHROME_APP_STARTUP_REMOTE_ACTOR_URL_PARSER_H_
