@@ -129,7 +129,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const std::vector<gpu::GPUInfo::GPUDevice> secondary_gpus;
   const std::string driver_vendor = "driver_vendor";
   const std::string driver_version = "driver_version";
-  const std::string driver_date = "driver_date";
   const std::string pixel_shader_version = "pixel_shader_version";
   const std::string vertex_shader_version = "vertex_shader_version";
   const std::string machine_model_name = "machine_model_name";

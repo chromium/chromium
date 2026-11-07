@@ -628,7 +628,6 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 
     use_software_gl = gl::IsSoftwareGLImplementation(*requested_impl);
     if (use_software_gl) {
-      std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
       std::string use_angle =
           command_line->GetSwitchValueASCII(switches::kUseANGLE);
       if (use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName ||
