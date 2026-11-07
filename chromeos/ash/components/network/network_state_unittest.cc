@@ -12,6 +12,7 @@
 
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -85,7 +86,8 @@ class NetworkStateTest : public testing::Test {
   void AddCellularDevice() {
     helper_.device_test()->AddDevice(
         kTestCellularDevicePath, shill::kTypeCellular, kTestCellularDeviceName);
-    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(base::test::RunUntil(
+        [this] { return GetCellularDevice() != nullptr; }));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
