@@ -92,7 +92,6 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
-    "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",

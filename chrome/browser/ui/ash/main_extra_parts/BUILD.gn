@@ -13,7 +13,6 @@ static_library("main_extra_parts") {
   public_deps = [
     "//base",
     "//chrome/browser:main_extra_parts",
-    "//chrome/common:buildflags",
     "//chromeos/components/mahi/public/cpp",
   ]
 

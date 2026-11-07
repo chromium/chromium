@@ -377,7 +377,6 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/common:constants",
-    "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/browser_context_helper",

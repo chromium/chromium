@@ -11,7 +11,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

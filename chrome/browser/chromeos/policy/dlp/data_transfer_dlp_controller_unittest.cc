@@ -22,7 +22,6 @@
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"

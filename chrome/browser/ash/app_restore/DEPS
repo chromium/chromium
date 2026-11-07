@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/startup",
   "+chrome/browser/ui/webui/ash/settings",
-  "+chrome/common/buildflags.h",
   "+chrome/common/chrome_switches.h",
 ]
 

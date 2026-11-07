@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/common/buildflags.h"
 #include "chromeos/ash/components/login/readahead/login_readahead_performer.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 

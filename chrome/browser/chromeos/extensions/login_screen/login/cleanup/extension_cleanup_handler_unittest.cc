@@ -18,7 +18,6 @@
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

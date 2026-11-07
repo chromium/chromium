@@ -59,7 +59,6 @@
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

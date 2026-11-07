@@ -47,7 +47,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/office_fallback",
   "+chrome/browser/ui/webui/extensions",
-  "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",

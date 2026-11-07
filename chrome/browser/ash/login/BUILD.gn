@@ -624,7 +624,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/login:test_support",
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/wallpaper:test_support",
-    "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
