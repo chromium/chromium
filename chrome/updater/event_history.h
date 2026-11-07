@@ -98,6 +98,9 @@ struct HistoryEventError {
 template <typename T>
 class HistoryEventBuilder {
  public:
+  HistoryEventBuilder(const HistoryEventBuilder&) = delete;
+  HistoryEventBuilder& operator=(const HistoryEventBuilder&) = delete;
+
   // Events are assigned a process-unique identifier on construction (see
   // `GenerateEventId`), though this may be overridden via this setter.
   T& SetEventId(const std::string& event_id) {
@@ -175,8 +178,6 @@ class HistoryEventBuilder {
 
  protected:
   HistoryEventBuilder() = default;
-  HistoryEventBuilder(const HistoryEventBuilder&) = delete;
-  HistoryEventBuilder& operator=(const HistoryEventBuilder&) = delete;
   HistoryEventBuilder(HistoryEventBuilder&&) noexcept = default;
   HistoryEventBuilder& operator=(HistoryEventBuilder&&) noexcept = default;
   virtual ~HistoryEventBuilder() = default;
