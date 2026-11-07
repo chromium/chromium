@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_diffuse_lighting_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_drop_shadow_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_flood_element.h"
@@ -99,8 +100,17 @@ SVGLayoutResult LayoutSVGFilterPrimitive::UpdateSVGLayout(
     const SVGLayoutInfo&) {
   NOT_DESTROYED();
   ClearNeedsLayout();
-  return SVGLayoutResult(/*bounds_changed=*/false,
-                         /*has_viewport_dependence=*/false);
+  // The primitive subregion is resolved against the viewport when the
+  // filter is built, so a primitive with relative lengths makes the
+  // containing <filter> viewport dependent (and thus invalidated when the
+  // viewport changes).
+  const auto& element = To<SVGFilterPrimitiveStandardAttributes>(*GetNode());
+  const bool has_viewport_dependence =
+      element.x()->CurrentValue()->IsRelative() ||
+      element.y()->CurrentValue()->IsRelative() ||
+      element.width()->CurrentValue()->IsRelative() ||
+      element.height()->CurrentValue()->IsRelative();
+  return SVGLayoutResult(/*bounds_changed=*/false, has_viewport_dependence);
 }
 
 }  // namespace blink

@@ -50,10 +50,12 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
     const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  if (layout_info.viewport_changed && HasViewportDependence() &&
-      IsSVGTransformableContainer()) {
-    // TODO: This will be called if any descendant has a viewport dependency,
-    // not just if this container has one.
+  // If this container itself depends on the viewport (as determined during
+  // the previous layout), the local transform needs to be recomputed when
+  // the viewport changes. This covers both transformable containers (i.e
+  // transform-box: view-box) and markers (markerWidth/markerHeight/refX/refY
+  // with relative lengths).
+  if (layout_info.viewport_changed && self_has_viewport_dependence_) {
     SetNeedsTransformUpdate();
   }
 

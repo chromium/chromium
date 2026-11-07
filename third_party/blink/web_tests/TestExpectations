@@ -2877,8 +2877,6 @@ crbug.com/563046526 external/wpt/svg/render/order/z-index.tentative.svg [ Failur
 crbug.com/562303032 external/wpt/css/css-text/hyphens/hyphenate-limit-lines-001.html [ Failure ]
 crbug.com/562303032 external/wpt/css/css-text/word-spacing/word-spacing-combining-mark-002.html [ Failure ]
 crbug.com/562303034 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-legend-not-first.html [ Failure ]
-crbug.com/562425279 external/wpt/svg/styling/invalidation/pct-filter.html [ Failure ]
-crbug.com/562425279 external/wpt/svg/styling/invalidation/pct-marker.html [ Failure ]
 crbug.com/562546856 external/wpt/web-extensions/browser.alarms.extension.html [ Failure ]
 crbug.com/562425277 [ Mac ] external/wpt/webrtc-encoded-transform/RTCEncodedFrame-shared-buffer.https.html [ Skip Timeout ]
 crbug.com/562425277 [ Mac ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-write-rules.https.html [ Skip Timeout ]

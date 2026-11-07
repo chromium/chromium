@@ -49,10 +49,20 @@ SVGLayoutResult LayoutSVGResourceMarker::UpdateSVGLayout(
   base::AutoReset<bool> in_layout_change(&is_in_layout_, true);
 
   ClearInvalidationMask();
+
   // LayoutSVGHiddenContainer overrides UpdateSVGLayout(). We need the
   // LayoutSVGContainer behavior for calculating local transformations and paint
   // invalidation.
-  return LayoutSVGContainer::UpdateSVGLayout(layout_info);
+  const SVGLayoutResult result =
+      LayoutSVGContainer::UpdateSVGLayout(layout_info);
+
+  // Since this bypasses LayoutSVGResourceContainer::UpdateSVGLayout(), also
+  // make sure that clients referencing this marker are invalidated if we
+  // re-laid out due to a viewport dependence.
+  if (layout_info.viewport_changed && result.has_viewport_dependence) {
+    RemoveAllClientsFromCache();
+  }
+  return result;
 }
 
 bool LayoutSVGResourceMarker::FindCycleFromSelf() const {
