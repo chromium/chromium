@@ -1940,14 +1940,20 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TRIM_MEMORY_BACKGROUND_IS_SEVERE, false);
     public static final MutableFlagWithSafeDefault sUndoableTabClosureRework =
             newMutableFlagWithSafeDefault(UNDOABLE_TAB_CLOSURE_REWORK, false);
+    // Only takes effect while sUserEducationFramework is also enabled.
     public static final MutableFlagWithSafeDefault sUserEducationAggressivelyCooldownIphs =
             newMutableFlagWithSafeDefault(USER_EDUCATION_AGGRESSIVELY_COOLDOWN_IPHS, false);
+    // Only takes effect while sUserEducationFramework is also enabled.
     public static final MutableFlagWithSafeDefault sUserEducationBlueBubbleCooldownGroup =
             newMutableFlagWithSafeDefault(USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP, false);
+    // Only takes effect while sUserEducationFramework is also enabled.
     public static final MutableFlagWithSafeDefault sUserEducationEnterprisePolicy =
             newMutableFlagWithSafeDefault(USER_EDUCATION_ENTERPRISE_POLICY, false);
+    // Top-level flag for the Android User Education framework. The sUserEducation* sub-flags are
+    // only honored while this flag is also enabled, so every caller checks both.
     public static final MutableFlagWithSafeDefault sUserEducationFramework =
             newMutableFlagWithSafeDefault(USER_EDUCATION_FRAMEWORK, false);
+    // Only takes effect while sUserEducationFramework is also enabled.
     public static final MutableFlagWithSafeDefault sUserEducationInterruptiveCooldownGroup =
             newMutableFlagWithSafeDefault(USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP, false);
     public static final MutableFlagWithSafeDefault sXplatSyncedSetupThemes =

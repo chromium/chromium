@@ -613,8 +613,7 @@ public class TipsUtils {
 
                             Tracker tracker = null;
                             if (!shouldAlwaysShowOptInPromo()
-                                    && ChromeFeatureList.sUserEducationInterruptiveCooldownGroup
-                                            .isEnabled()) {
+                                    && TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
                                 if (profile == null) {
                                     return;
                                 }
@@ -668,7 +667,7 @@ public class TipsUtils {
 
         // When the interruptive IPH cooldown group is enabled, frequency and cooldown limits are
         // enforced by Feature Engagement instead of SharedPreferences.
-        if (ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled()) {
+        if (TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
             return true;
         }
 

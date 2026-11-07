@@ -14,7 +14,6 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -116,8 +115,7 @@ public class RestoreTabsFeatureHelper {
         // successfully, IPH must show. Alternatively, the former lets the logic know if the promo
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
-        boolean isCooldownEnabled =
-                ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled();
+        boolean isCooldownEnabled = TrackerFactory.isInterruptiveCooldownGroupEnabled();
         FeatureProperties featureProperties =
                 new FeatureProperties(
                         UiFormat.BOTTOM_SHEET,

@@ -64,6 +64,26 @@ public final class TrackerFactory {
     }
 
     /**
+     * Returns whether the interruptive IPH cooldown group applies, i.e. both the
+     * UserEducationFramework flag and the UserEducationInterruptiveCooldownGroup sub-flag are
+     * enabled.
+     */
+    public static boolean isInterruptiveCooldownGroupEnabled() {
+        return ChromeFeatureList.sUserEducationFramework.isEnabled()
+                && ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled();
+    }
+
+    /**
+     * Returns whether the blue bubble IPH cooldown group applies, i.e. both the
+     * UserEducationFramework flag and the UserEducationBlueBubbleCooldownGroup sub-flag are
+     * enabled.
+     */
+    public static boolean isBlueBubbleCooldownGroupEnabled() {
+        return ChromeFeatureList.sUserEducationFramework.isEnabled()
+                && ChromeFeatureList.sUserEducationBlueBubbleCooldownGroup.isEnabled();
+    }
+
+    /**
      * Sets up a testing factory in C++ and pass it a Tracker object for wrapping and proxying of
      * calls back up to Java.
      *

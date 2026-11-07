@@ -13,7 +13,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -67,15 +66,14 @@ public final class FullscreenSigninPromoLauncher {
         // `FullscreenSigninAndHistorySyncCoordinator#destroy()` must pair it with a call to
         // `Tracker#dismissed()`. Other fullscreen flows (e.g. `launchPromoIfForced` and
         // `launchForcedSigninFlow`) bypass the tracker check and pass `false`.
+        boolean isCooldownGroupEnabled = TrackerFactory.isInterruptiveCooldownGroupEnabled();
         @Nullable Intent intent =
                 createActivityIntent(
                         context,
                         profile,
                         signinAndHistorySyncActivityLauncher,
                         SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO,
-                        /* shouldCallTrackerDismissed= */ ChromeFeatureList
-                                .sUserEducationInterruptiveCooldownGroup
-                                .isEnabled());
+                        /* shouldCallTrackerDismissed= */ isCooldownGroupEnabled);
         if (intent == null) {
             return false;
         }
@@ -83,7 +81,7 @@ public final class FullscreenSigninPromoLauncher {
         // Check `shouldTriggerFullscreenPromo` only after `createActivityIntent` returns a
         // non-null Intent so we don't trigger the FET feature (and start the cooldown) when the
         // sign-in/history-sync UI cannot be shown.
-        if (!shouldTriggerFullscreenPromo(profile)) {
+        if (isCooldownGroupEnabled && !shouldTriggerFullscreenPromo(profile)) {
             return false;
         }
 
@@ -277,9 +275,7 @@ public final class FullscreenSigninPromoLauncher {
      * the promo UI is dismissed.
      */
     private static boolean shouldTriggerFullscreenPromo(Profile profile) {
-        if (!ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled()) {
-            return true;
-        }
+        assert TrackerFactory.isInterruptiveCooldownGroupEnabled();
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         FeatureProperties featureProperties =
                 new FeatureProperties(

@@ -79,7 +79,8 @@ bool AndroidBlueBubbleConfigurationProvider::MaybeProvideFeatureConfiguration(
     FeatureConfig& config,
     const FeatureVector& known_features,
     const GroupVector& known_groups) const {
-  if (!base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(chrome::android::kUserEducationFramework) ||
+      !base::FeatureList::IsEnabled(
           chrome::android::kUserEducationBlueBubbleCooldownGroup) ||
       !config.valid || config.trigger.name.empty() ||
       !IsBlueBubbleFeature(feature)) {

@@ -10,7 +10,8 @@
 namespace feature_engagement {
 
 // Enforces standard frequency limits on Android Blue Bubble IPH features when
-// `chrome::android::kUserEducationBlueBubbleCooldownGroup` is enabled:
+// both `chrome::android::kUserEducationFramework` and
+// `chrome::android::kUserEducationBlueBubbleCooldownGroup` are enabled:
 //   * At most 3 impressions per feature over a 360-day window.
 //   * At least a 7-day cooldown between impressions of the same feature.
 // Existing configurations that are already stricter (e.g. 1 per lifetime or a

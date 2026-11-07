@@ -34,10 +34,27 @@ class AndroidBlueBubbleConfigurationProviderTest : public testing::Test {
   AndroidBlueBubbleConfigurationProvider provider_;
 };
 
-TEST_F(AndroidBlueBubbleConfigurationProviderTest, FlagDisabled_NoOp) {
+TEST_F(AndroidBlueBubbleConfigurationProviderTest,
+       CooldownGroupFlagDisabled_NoOp) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      chrome::android::kUserEducationBlueBubbleCooldownGroup);
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationFramework},
+      {chrome::android::kUserEducationBlueBubbleCooldownGroup});
+
+  FeatureConfig config =
+      CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 5),
+                                   /*window=*/360, /*storage=*/360));
+  EXPECT_FALSE(provider_.MaybeProvideFeatureConfiguration(
+      kIPHTabSwitcherButtonFeature, config, {}, {}));
+  EXPECT_EQ(config.trigger.comparator, Comparator(LESS_THAN, 5));
+  EXPECT_TRUE(config.event_configs.empty());
+}
+
+TEST_F(AndroidBlueBubbleConfigurationProviderTest, FrameworkFlagDisabled_NoOp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationBlueBubbleCooldownGroup},
+      {chrome::android::kUserEducationFramework});
 
   FeatureConfig config =
       CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 5),
@@ -50,8 +67,11 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest, FlagDisabled_NoOp) {
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
        NonBlueBubbleFeature_Ignored) {
-  base::test::ScopedFeatureList feature_list{
-      chrome::android::kUserEducationBlueBubbleCooldownGroup};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationFramework,
+       chrome::android::kUserEducationBlueBubbleCooldownGroup},
+      {});
 
   FeatureConfig config =
       CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 5),
@@ -64,8 +84,11 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
        OnePerLifetime_PreservedWithoutModification) {
-  base::test::ScopedFeatureList feature_list{
-      chrome::android::kUserEducationBlueBubbleCooldownGroup};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationFramework,
+       chrome::android::kUserEducationBlueBubbleCooldownGroup},
+      {});
 
   FeatureConfig config = CreateBaseConfig(EventConfig(
       "test_trigger", Comparator(EQUAL, 0), /*window=*/360, /*storage=*/360));
@@ -78,8 +101,11 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
        AlreadyCompliant_PreservedWithoutModification) {
-  base::test::ScopedFeatureList feature_list{
-      chrome::android::kUserEducationBlueBubbleCooldownGroup};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationFramework,
+       chrome::android::kUserEducationBlueBubbleCooldownGroup},
+      {});
 
   FeatureConfig config = CreateBaseConfig(EventConfig(
       "test_trigger", Comparator(EQUAL, 0), /*window=*/7, /*storage=*/360));
@@ -94,8 +120,11 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
        TightensLooseLifetimeAndAddsCooldown) {
-  base::test::ScopedFeatureList feature_list{
-      chrome::android::kUserEducationBlueBubbleCooldownGroup};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationFramework,
+       chrome::android::kUserEducationBlueBubbleCooldownGroup},
+      {});
 
   FeatureConfig config =
       CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 5),
@@ -113,8 +142,11 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
        TightensShortCooldownAndAddsLifetimeCap) {
-  base::test::ScopedFeatureList feature_list{
-      chrome::android::kUserEducationBlueBubbleCooldownGroup};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationFramework,
+       chrome::android::kUserEducationBlueBubbleCooldownGroup},
+      {});
 
   FeatureConfig config = CreateBaseConfig(EventConfig(
       "test_trigger", Comparator(LESS_THAN, 1), /*window=*/1, /*storage=*/90));
@@ -131,8 +163,11 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
        ReplacesShortCooldownInEventConfigs) {
-  base::test::ScopedFeatureList feature_list{
-      chrome::android::kUserEducationBlueBubbleCooldownGroup};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationFramework,
+       chrome::android::kUserEducationBlueBubbleCooldownGroup},
+      {});
 
   FeatureConfig config =
       CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 3),
@@ -153,8 +188,11 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
        PreservesStricterCooldownWhileAddingLifetimeCap) {
-  base::test::ScopedFeatureList feature_list{
-      chrome::android::kUserEducationBlueBubbleCooldownGroup};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome::android::kUserEducationFramework,
+       chrome::android::kUserEducationBlueBubbleCooldownGroup},
+      {});
 
   FeatureConfig config = CreateBaseConfig(EventConfig(
       "test_trigger", Comparator(EQUAL, 0), /*window=*/90, /*storage=*/90));

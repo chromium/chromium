@@ -210,8 +210,7 @@ public class NotificationPermissionController {
         @PermissionRequestMode int requestMode = shouldRequestPermission();
         if (requestMode == PermissionRequestMode.DO_NOT_REQUEST) return false;
 
-        if (mProfile != null
-                && ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled()) {
+        if (mProfile != null && TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
             Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
             FeatureProperties featureProperties =
                     new FeatureProperties(
@@ -246,8 +245,7 @@ public class NotificationPermissionController {
     }
 
     private void notifyTrackerDismissed() {
-        if (mProfile != null
-                && ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled()) {
+        if (mProfile != null && TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
             TrackerFactory.getTrackerForProfile(mProfile)
                     .dismissed(FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE);
         }

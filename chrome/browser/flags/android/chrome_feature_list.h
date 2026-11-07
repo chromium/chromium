@@ -360,10 +360,18 @@ BASE_DECLARE_FEATURE(kUsePLinkInHelp);
 BASE_DECLARE_FEATURE(kUseWebUiBookmarksAndroid);
 BASE_DECLARE_FEATURE(kUseWebUiNtp3PDSE);
 BASE_DECLARE_FEATURE(kUseWebUiNtpAndroid);
+// Only takes effect while kUserEducationFramework is also enabled.
 BASE_DECLARE_FEATURE(kUserEducationAggressivelyCooldownIphs);
+// Only takes effect while kUserEducationFramework is also enabled.
 BASE_DECLARE_FEATURE(kUserEducationBlueBubbleCooldownGroup);
+// Only takes effect while kUserEducationFramework is also enabled.
 BASE_DECLARE_FEATURE(kUserEducationEnterprisePolicy);
+// Top-level flag for the Android User Education framework. The four
+// kUserEducation* sub-flags (aggressive IPH cooldown, blue bubble cooldown
+// group, enterprise policy, interruptive IPH cooldown group) are only honored
+// while this flag is also enabled, so every caller checks both.
 BASE_DECLARE_FEATURE(kUserEducationFramework);
+// Only takes effect while kUserEducationFramework is also enabled.
 BASE_DECLARE_FEATURE(kUserEducationInterruptiveCooldownGroup);
 BASE_DECLARE_FEATURE(kVerifyStartupSigninState);
 BASE_DECLARE_FEATURE(kVirtualKeyboardResizesContentTransientOvershootFix);

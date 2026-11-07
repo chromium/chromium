@@ -430,7 +430,10 @@ public class TipsUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
+    })
     public void testShouldShowTipsOptInPromo_CooldownGroupEnabledBypassesSharedPreferencesCaps() {
         when(mSharedPreferences.readInt(
                         ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0))
@@ -449,8 +452,30 @@ public class TipsUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
+    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_FRAMEWORK)
+    public void
+            testShouldShowTipsOptInPromo_CooldownGroupEnabledBypassesSharedPreferencesCaps_FrameworkDisabled() {
+        when(mSharedPreferences.readInt(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0))
+                .thenReturn(TipsUtils.getMaxTipsOptInPromoShowCount());
+        when(mSharedPreferences.readLong(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,
+                        0))
+                .thenReturn(System.currentTimeMillis());
+
+        assertFalse(
+                TipsUtils.shouldShowTipsOptInPromo(
+                        /* notificationsEnabled= */ false,
+                        mSharedPreferences,
+                        /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                                TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
+    }
+
+    @Test
     @EnableFeatures({
         ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS,
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
         ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
     })
     public void testMaybeShowTipsOptInPromo_CooldownGroupEnabledAndNullProfile_DoesNotShow() {

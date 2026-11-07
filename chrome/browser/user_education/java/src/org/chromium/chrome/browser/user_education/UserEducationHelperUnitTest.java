@@ -269,7 +269,10 @@ public class UserEducationHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP)
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP
+    })
     public void testFeatureProperties_CooldownEnabled() {
         TrackerFactory.setTrackerForTests(mTracker);
         UserEducationHelper educationHelper =
@@ -328,6 +331,39 @@ public class UserEducationHelperUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP)
+    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_FRAMEWORK)
+    public void testFeatureProperties_FrameworkDisabled_CooldownDisabled() {
+        TrackerFactory.setTrackerForTests(mTracker);
+        UserEducationHelper educationHelper =
+                new UserEducationHelper(mActivity, mProfile, new Handler());
+        IphCommand testIphCommand =
+                new IphCommandBuilder(
+                                ContextUtils.getApplicationContext().getResources(),
+                                FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
+                                "test",
+                                "test")
+                        .setShowTextBubble(false)
+                        .setAnchorView(new FrameLayout(mActivity))
+                        .build();
+
+        educationHelper.requestShowIph(testIphCommand);
+        Mockito.verify(mTracker).addOnInitializedCallback(mInitCallbackCaptor.capture());
+        mInitCallbackCaptor.getValue().onResult(true);
+
+        FeatureProperties expectedProps =
+                new FeatureProperties(
+                        UiFormat.BLUE_BUBBLE,
+                        /* isBlockedByCooldownGroup= */ false,
+                        /* blocksCooldownGroup= */ false);
+        Mockito.verify(mTracker)
+                .shouldTriggerHelpUi(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE, expectedProps);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP
+    })
     public void testNonOnboardedFeature_UsesLegacyShouldTriggerHelpUi() {
         TrackerFactory.setTrackerForTests(mTracker);
         UserEducationHelper educationHelper =
